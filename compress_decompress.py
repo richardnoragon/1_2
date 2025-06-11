@@ -1,0 +1,250 @@
+from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox
+from PyQt5.QtGui import QDragEnterEvent, QDropEvent
+from PyQt5 import uic
+import sys
+import zipfile
+import os
+import py7zr
+import tarfile
+
+
+class CompressDecompressApp(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        uic.loadUi("compress_decompress.ui", self)
+
+        # Enable drag and drop
+        self.setAcceptDrops(True)
+        self.lineEditFolder.setAcceptDrops(True)
+        self.lineEditOutput.setAcceptDrops(True)
+        self.lineEditDecompress.setAcceptDrops(True)
+
+        # Connect buttons to their respective methods
+        self.buttonBrowseFolder.clicked.connect(self.browse_folder)
+        self.buttonBrowseOutput.clicked.connect(self.browse_output)
+        self.buttonCompress.clicked.connect(self.compress_files)
+        self.buttonBrowseDecompress.clicked.connect(self.browse_decompress)
+        self.buttonDecompress.clicked.connect(self.decompress_files)
+        self.actionExit.triggered.connect(self.close)
+
+        # Set up file filters based on format
+        self.format_filters = {
+            "ZIP": "Zip Files (*.zip)",
+            "7Z": "7-Zip Files (*.7z)",
+            "TAR.GZ": "Gzip Tar Files (*.tar.gz)",
+            "TAR.BZ2": "Bzip2 Tar Files (*.tar.bz2)"
+        }
+
+        # Connect format combo box to update file extension
+        self.comboFormat.currentTextChanged.connect(
+            self.update_output_extension
+        )
+
+    def update_output_extension(self):
+        current_path = self.lineEditOutput.text()
+        if current_path:
+            base_path = os.path.splitext(current_path)[0]
+            if self.comboFormat.currentText() == "ZIP":
+                self.lineEditOutput.setText(base_path + ".zip")
+            elif self.comboFormat.currentText() == "7Z":
+                self.lineEditOutput.setText(base_path + ".7z")
+            elif self.comboFormat.currentText() == "TAR.GZ":
+                self.lineEditOutput.setText(base_path + ".tar.gz")
+            elif self.comboFormat.currentText() == "TAR.BZ2":
+                self.lineEditOutput.setText(base_path + ".tar.bz2")
+
+    def browse_folder(self):
+        folder = QFileDialog.getExistingDirectory(self, "Select Folder")
+        if folder:
+            self.lineEditFolder.setText(folder)
+
+    def browse_output(self):
+        format_filter = self.format_filters[self.comboFormat.currentText()]
+        output_file, _ = QFileDialog.getSaveFileName(
+            self, "Select Output File", filter=format_filter
+        )
+        if output_file:
+            self.lineEditOutput.setText(output_file)
+
+    def compress_files(self):
+        folder_path = self.lineEditFolder.text().strip()
+        output_path = self.lineEditOutput.text().strip()
+        password = self.lineEditPassword.text()
+        compression_level = self.sliderCompLevel.value()
+        format_type = self.comboFormat.currentText()
+
+        if not folder_path or not output_path:
+            QMessageBox.warning(
+                self, "Error", "Please specify both folder and output file."
+            )
+            return
+
+        try:
+            if format_type == "ZIP":
+                self._compress_zip(
+                    folder_path, output_path, password, compression_level
+                )
+            elif format_type == "7Z":
+                self._compress_7z(
+                    folder_path, output_path, password, compression_level
+                )
+            elif format_type == "TAR.GZ":
+                self._compress_targz(
+                    folder_path, output_path, compression_level
+                )
+            elif format_type == "TAR.BZ2":
+                self._compress_tarbz2(
+                    folder_path, output_path, compression_level
+                )
+
+            QMessageBox.information(
+                self, "Success",
+                f"Files compressed successfully to {output_path}"
+            )
+        except Exception as e:
+            QMessageBox.critical(self, "Error", f"An error occurred: {str(e)}")
+
+    def _compress_zip(
+        self, folder_path, output_path, password, compression_level
+    ):
+        compression = zipfile.ZIP_DEFLATED
+        with zipfile.ZipFile(
+            output_path, 'w',
+            compression=compression,
+            compresslevel=compression_level
+        ) as zipf:
+            if password:
+                zipf.setpassword(password.encode())
+            for root, _, files in os.walk(folder_path):
+                for file in files:
+                    file_path = os.path.join(root, file)
+                    arcname = os.path.relpath(file_path, folder_path)
+                    zipf.write(file_path, arcname)
+
+    def _compress_7z(
+        self, folder_path, output_path, password, compression_level
+    ):
+        filters = [{"id": py7zr.FILTER_LZMA2, "preset": compression_level}]
+        with py7zr.SevenZipFile(
+            output_path, 'w',
+            password=password, filters=filters
+        ) as archive:
+            archive.writeall(folder_path, ".")
+
+    def _compress_targz(self, folder_path, output_path, compression_level):
+        with tarfile.open(
+            output_path, "w:gz",
+            compresslevel=compression_level
+        ) as tar:
+            tar.add(folder_path, arcname=".")
+
+    def _compress_tarbz2(self, folder_path, output_path, compression_level):
+        with tarfile.open(
+            output_path, "w:bz2",
+            compresslevel=compression_level
+        ) as tar:
+            tar.add(folder_path, arcname=".")
+
+    def browse_decompress(self):
+        formats = ";;".join(self.format_filters.values())
+        zip_file, _ = QFileDialog.getOpenFileName(
+            self, "Select Archive File",
+            filter=formats
+        )
+        if zip_file:
+            self.lineEditDecompress.setText(zip_file)
+
+    def decompress_files(self):
+        archive_path = self.lineEditDecompress.text().strip()
+        output_folder = QFileDialog.getExistingDirectory(
+            self, "Select Output Folder"
+        )
+        password = self.lineEditPassword.text()
+
+        if not archive_path or not output_folder:
+            QMessageBox.warning(
+                self, "Error",
+                "Please specify both archive file and output folder."
+            )
+            return
+
+        try:
+            if archive_path.endswith('.zip'):
+                self._decompress_zip(archive_path, output_folder, password)
+            elif archive_path.endswith('.7z'):
+                self._decompress_7z(archive_path, output_folder, password)
+            elif archive_path.endswith('.tar.gz'):
+                self._decompress_targz(archive_path, output_folder)
+            elif archive_path.endswith('.tar.bz2'):
+                self._decompress_tarbz2(archive_path, output_folder)
+            else:
+                raise ValueError("Unsupported archive format")
+
+            QMessageBox.information(
+                self, "Success",
+                f"Files decompressed successfully to {output_folder}"
+            )
+        except Exception as e:
+            QMessageBox.critical(self, "Error", f"An error occurred: {str(e)}")
+
+    def _decompress_zip(self, archive_path, output_folder, password):
+        with zipfile.ZipFile(archive_path, 'r') as zipf:
+            if password:
+                zipf.setpassword(password.encode())
+            zipf.extractall(output_folder)
+
+    def _decompress_7z(self, archive_path, output_folder, password):
+        with py7zr.SevenZipFile(
+            archive_path, mode='r',
+            password=password
+        ) as archive:
+            archive.extractall(output_folder)
+
+    def _decompress_targz(self, archive_path, output_folder):
+        with tarfile.open(archive_path, "r:gz") as tar:
+            tar.extractall(output_folder)
+
+    def _decompress_tarbz2(self, archive_path, output_folder):
+        with tarfile.open(archive_path, "r:bz2") as tar:
+            tar.extractall(output_folder)
+
+    def dragEnterEvent(self, event: QDragEnterEvent):
+        if event.mimeData().hasUrls():
+            event.acceptProposedAction()
+            
+    def dropEvent(self, event: QDropEvent):
+        urls = event.mimeData().urls()
+        if not urls:
+            return
+            
+        path = urls[0].toLocalFile()
+        focused_widget = QApplication.focusWidget()
+        
+        if focused_widget == self.lineEditFolder:
+            if os.path.isdir(path):
+                self.lineEditFolder.setText(path)
+            else:
+                QMessageBox.warning(
+                    self, "Error", "Please drop a folder to compress"
+                )
+        elif focused_widget == self.lineEditOutput:
+            if os.path.isdir(os.path.dirname(path)):
+                self.lineEditOutput.setText(path)
+        elif focused_widget == self.lineEditDecompress:
+            is_archive = any(
+                path.lower().endswith(ext)
+                for ext in ['.zip', '.7z', '.tar.gz', '.tar.bz2']
+            )
+            if os.path.isfile(path) and is_archive:
+                self.lineEditDecompress.setText(path)
+            else:
+                QMessageBox.warning(
+                    self, "Error", "Please drop a supported archive file"
+                )
+
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    window = CompressDecompressApp()
+    window.show()
+    sys.exit(app.exec_())

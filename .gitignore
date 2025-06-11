@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+*.venv
+env/
+ENV/
+
+# IDE specific
+.vscode/
+.idea/
+
+# Logs
+logs/
+*.log
+
+# Coverage
+.coverage
+.coveragerc
+htmlcov/
+
+# Tests
+pytest_cache/
+.pytest_cache/
+
+# UI files backup
+*.ui.backup
+*.ui.bak
