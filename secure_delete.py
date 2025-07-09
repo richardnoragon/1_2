@@ -174,7 +174,8 @@ class SecureDeleteThread(QThread):
         self.logic.shred_file(self.filepath, self.passes)
 
 
-class SecureDeleteGUI(BaseWindow):
+class SecureDeleteWindow(BaseWindow):
+    """Main window for the secure file deletion tool."""
     def __init__(self):
         super().__init__()
         # Get the directory containing the current script
@@ -308,8 +309,12 @@ class SecureDeleteGUI(BaseWindow):
         self.progressBar.setValue(0)
 
 
-if __name__ == "__main__":
+def main():
     app = QApplication(sys.argv)
-    window = SecureDeleteGUI()
+    window = SecureDeleteWindow()
+    window.show()
     sys.exit(app.exec_())
+
+if __name__ == "__main__":
+    main()
 

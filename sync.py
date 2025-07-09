@@ -174,7 +174,8 @@ class SyncWorker(QThread):
         self.running = False
 
 
-class SyncGUI(BaseWindow):
+class SyncWindow(BaseWindow):
+    """Main window for file synchronization operations."""
     def __init__(self):
         super().__init__()
         ui_file = os.path.join(SCRIPT_DIR, 'sync.ui')
@@ -469,7 +470,7 @@ class SyncGUI(BaseWindow):
 def main():
     app = QApplication(sys.argv)
     app.setStyle('Fusion')  # Modern style
-    window = SyncGUI()
+    window = SyncWindow()
     window.show()  # Make sure window stays alive
     sys.exit(app.exec_())
 

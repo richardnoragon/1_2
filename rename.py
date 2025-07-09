@@ -17,9 +17,10 @@ from gui.common.dialogs import (
 )
 
 
-class MyGUI(BaseWindow):
+class FileRenamerWindow(BaseWindow):
+    """Main window for batch file renaming operations."""
     def __init__(self):
-        super(MyGUI, self).__init__()
+        super().__init__()
         try:
             # Use absolute path to UI file
             current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -225,8 +226,8 @@ class MyGUI(BaseWindow):
 
 def main():
     app = QApplication(sys.argv)
-    gui = MyGUI()
-    gui.show()
+    window = FileRenamerWindow()
+    window.show()
     sys.exit(app.exec_())
 
 

@@ -25,8 +25,8 @@ from gui.common.dialogs import get_existing_directory
 # size_analyzer_output_ListView
 
 
-class MyGUI(BaseWindow):
-    # initialize the GUI
+class SizeAnalyzerWindow(BaseWindow):
+    """Main window for the Size Analyzer tool."""
     def __init__(self):
         super().__init__()
         # Get the directory where the script is located
@@ -131,6 +131,6 @@ class MyGUI(BaseWindow):
 
 # show GUI
 app = QApplication(sys.argv)
-gui = MyGUI()
-gui.show()
+window = SizeAnalyzerWindow()
+window.show()
 sys.exit(app.exec_())
