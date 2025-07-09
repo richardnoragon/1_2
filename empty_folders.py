@@ -3,6 +3,8 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtCore import Qt, QObject, pyqtSignal
 from PyQt5 import uic
+from gui.common.base_window import BaseWindow
+from gui.common.dialogs import show_error_dialog, show_info_dialog, get_existing_directory
 import sys
 import os
 
@@ -161,7 +163,7 @@ class EmptyFolderLogic(QObject):
         self.finished.emit(False)
 
 
-class EmptyFoldersWindow(QMainWindow):
+class EmptyFoldersWindow(BaseWindow):
     def __init__(self):
         super().__init__()
         ui_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "empty_folders.ui")
@@ -191,7 +193,7 @@ class EmptyFoldersWindow(QMainWindow):
         self.show()
     
     def browse_directory(self):
-        directory = QFileDialog.getExistingDirectory(self, "Select Directory")
+        directory = get_existing_directory(self, "Select Directory")
         if directory:
             self.pathInput.setText(directory)
     
@@ -255,7 +257,7 @@ class EmptyFoldersWindow(QMainWindow):
                 self.folderList.takeItem(self.folderList.row(item))
     
     def show_error(self, message):
-        QMessageBox.warning(self, "Error", message)
+        show_error_dialog(self, "Error", message)
     
     def handle_operation_finished(self, was_find_operation):
         if was_find_operation:

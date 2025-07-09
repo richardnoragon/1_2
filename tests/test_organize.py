@@ -18,6 +18,32 @@ class TestRule(TestCase):
         with open(filepath, 'w') as f:
             f.write(content)
         return filepath
+            
+    def test_rule_initialization(self):
+        """Test Rule object initialization with various parameters"""
+        # Test minimal initialization
+        rule = Rule(name="Test", destination="/tmp", file_types=[".txt"])
+        self.assertEqual(rule.name, "Test")
+        self.assertEqual(rule.destination, "/tmp")
+        self.assertEqual(rule.file_types, [".txt"])
+        self.assertIsNone(rule.contains_text)
+        
+        # Test full initialization
+        now = datetime.now()
+        rule = Rule(
+            name="Full Test",
+            destination="/tmp/full",
+            file_types=[".txt", ".pdf"],
+            created_after=now,
+            created_before=now,
+            modified_after=now,
+            modified_before=now,
+            contains_text="test"
+        )
+        self.assertEqual(rule.name, "Full Test")
+        self.assertEqual(rule.file_types, [".txt", ".pdf"])
+        self.assertEqual(rule.created_after, now)
+        self.assertEqual(rule.contains_text, "test")
 
     def test_rule_file_type_matching(self):
         # Create test files
@@ -167,3 +193,81 @@ class TestMyGUI(TestCase):
         # Check if files were organized
         self.assertTrue(os.path.exists(os.path.join(self.test_dir, 'txt')))
         self.assertTrue(os.path.exists(os.path.join(self.test_dir, 'pdf')))
+        
+    def test_error_handling(self):
+        """Test error handling in the organize method"""
+        # Test with invalid directory
+        self.gui.directory = "/nonexistent/path"
+        with patch('logging.Logger.error') as mock_error:
+            self.gui.organize()
+            mock_error.assert_called()
+            
+        # Test with invalid rule destination
+        self.gui.directory = self.test_dir
+        test_file = os.path.join(self.test_dir, 'test.txt')
+        with open(test_file, 'w') as f:
+            f.write('test content')
+            
+        self.gui.rules.append(Rule(
+            name="Invalid Rule",
+            destination="/nonexistent/path",
+            file_types=['.txt']
+        ))
+        
+        with patch('gui.common.dialogs.show_error_dialog') as mock_error:
+            self.gui.organize()
+            mock_error.assert_called()
+            
+    def test_manage_rules(self):
+        """Test rule addition and validation"""
+        # Create a test rule directly
+        test_rule = Rule(
+            name="Test Rule",
+            destination=os.path.join(self.test_dir, "test_dest"),
+            file_types=[".txt"]
+        )
+        
+        # Add the rule to GUI
+        self.gui.rules.append(test_rule)
+        
+        # Verify rule was added
+        self.assertEqual(len(self.gui.rules), 1)
+        self.assertEqual(self.gui.rules[0].name, "Test Rule")
+        self.assertEqual(self.gui.rules[0].file_types, [".txt"])
+                
+    def test_invalid_directory(self):
+        """Test behavior with invalid directory path"""
+        # Set an invalid directory
+        self.gui.directory = "/nonexistent/path"
+        
+        # Try to organize
+        self.gui.organize()
+        
+        # Nothing should happen, no errors should be raised
+        self.assertEqual(self.gui.directory, "/nonexistent/path")
+            
+    def test_file_filtering(self):
+        """Test that files are organized correctly by extension"""
+        # Create test files with different extensions
+        files = {
+            'doc1.txt': 'content1',
+            'doc2.pdf': 'content2',
+            'doc3.txt': 'content3'
+        }
+        
+        for filename, content in files.items():
+            path = os.path.join(self.test_dir, filename)
+            with open(path, 'w') as f:
+                f.write(content)
+                    
+        self.gui.organize()
+        
+        # Check that files were organized by extension
+        txt_path = os.path.join(self.test_dir, 'txt')
+        pdf_path = os.path.join(self.test_dir, 'pdf')
+        
+        self.assertTrue(os.path.exists(txt_path))
+        self.assertTrue(os.path.exists(pdf_path))
+        self.assertTrue(os.path.exists(os.path.join(txt_path, 'doc1.txt')))
+        self.assertTrue(os.path.exists(os.path.join(txt_path, 'doc3.txt')))
+        self.assertTrue(os.path.exists(os.path.join(pdf_path, 'doc2.pdf')))

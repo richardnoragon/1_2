@@ -1,13 +1,13 @@
 import os
 import sys
+import math
 from PyQt5.QtWidgets import (
-    QApplication, QMainWindow, QFileDialog, QGraphicsScene, QGraphicsView,
+    QApplication, QGraphicsScene, QGraphicsView,
     QGraphicsRectItem, QVBoxLayout
 )
 from PyQt5.QtCore import Qt, QThread, QObject, pyqtSignal
 from PyQt5.QtGui import QPen, QBrush, QColor
-from PyQt5 import uic
-import math
+from gui.common import BaseWindow, get_existing_directory
 
 
 class DiskScanLogic(QObject):
@@ -185,11 +185,9 @@ class DiskScanLogic(QObject):
             )
 
 
-class TreeMapWindow(QMainWindow):
+class TreeMapWindow(BaseWindow):
     def __init__(self):
-        super().__init__()
-        # Load UI
-        uic.loadUi("tree_map.ui", self)
+        super().__init__("tree_map.ui")
         
         # Initialize scene and view for treemap
         self.scene = QGraphicsScene()
@@ -218,7 +216,7 @@ class TreeMapWindow(QMainWindow):
         self.scanner_thread.start()
         
     def select_directory(self):
-        dir_path = QFileDialog.getExistingDirectory(self, "Select Directory")
+        dir_path = get_existing_directory(self, "Select Directory")
         if dir_path:
             self.lblPath.setText(dir_path)
             self.btnStop.setEnabled(True)

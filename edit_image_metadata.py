@@ -340,7 +340,7 @@ class ExifEditorLogic(QObject):
         finally:
             self.finished.emit() # Ensure finished is always emitted
 
-class ImageMetadataEditor(QMainWindow):
+class ImageMetadataEditor(BaseWindow):
     def __init__(self):
         super().__init__()
         # Load the UI
@@ -370,7 +370,7 @@ class ImageMetadataEditor(QMainWindow):
         self.modified_data = {}
         
     def browse_file(self):
-        filepath, _ = QFileDialog.getOpenFileName(
+        filepath, _ = get_open_file_name(
             self,
             "Select Image File",
             "",
@@ -421,12 +421,12 @@ class ImageMetadataEditor(QMainWindow):
             
     def handle_save_result(self, success, message):
         if success:
-            QMessageBox.information(self, "Success", message)
+            show_info_dialogself, "Success", message
         else:
-            QMessageBox.warning(self, "Error", message)
+            show_error_dialogself, "Error", message
             
     def show_error(self, message):
-        QMessageBox.critical(self, "Error", message)
+        show_error_dialogself, "Error", message
         
     def handle_operation_finished(self):
         # Could add a progress bar or status message here if needed

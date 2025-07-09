@@ -8,6 +8,7 @@ import sys
 import subprocess
 import os
 from log_manager import LogManager
+from gui.common.base_window import BaseWindow
 
 
 class RenameWindow(QWidget):
@@ -93,7 +94,7 @@ class StyledButton(QPushButton):
         return icon_path if os.path.exists(icon_path) else None
 
 
-class MyGUI(QMainWindow):
+class MyGUI(BaseWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Richard's File Utilities Hub")

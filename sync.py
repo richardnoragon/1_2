@@ -7,6 +7,9 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox
 from PyQt5.QtCore import QThread, pyqtSignal
 from PyQt5 import uic
 
+from gui.common.base_window import BaseWindow
+from gui.common.dialogs import show_error_dialog, get_existing_directory
+
 # Get the directory containing the script
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -171,7 +174,7 @@ class SyncWorker(QThread):
         self.running = False
 
 
-class SyncGUI(QMainWindow):
+class SyncGUI(BaseWindow):
     def __init__(self):
         super().__init__()
         ui_file = os.path.join(SCRIPT_DIR, 'sync.ui')
@@ -209,7 +212,7 @@ class SyncGUI(QMainWindow):
         self.show()
 
     def select_directory(self, side):
-        directory = QFileDialog.getExistingDirectory(self, "Select Directory")
+        directory = get_existing_directory(self, "Select Directory")
         if directory:
             if side == 'left':
                 self.left_dir = directory
@@ -236,7 +239,11 @@ class SyncGUI(QMainWindow):
                     model.appendRow(item)
         except OSError as e:
             msg = f"Could not read directory: {str(e)}"
-            QMessageBox.warning(self, "Error", msg)
+            show_error_dialog(
+                message=msg,
+                title="Error",
+                parent=self
+            )
 
     def get_file_info(self, file_path):
         try:
@@ -291,7 +298,11 @@ class SyncGUI(QMainWindow):
             self.status_label.setText("Comparison complete - Ready to sync")
         except OSError as e:
             msg = f"Error comparing directories: {str(e)}"
-            QMessageBox.warning(self, "Error", msg)
+            show_error_dialog(
+                message=msg,
+                title="Error",
+                parent=self
+            )
 
     def _add_list_item(self, file, path1, path2, in_first, in_second,
                       model, is_left):
@@ -417,7 +428,11 @@ class SyncGUI(QMainWindow):
 
             except OSError as e:
                 msg = f"Error starting sync: {str(e)}"
-                QMessageBox.warning(self, "Error", msg)
+                show_error_dialog(
+                    message=msg,
+                    title="Error",
+                    parent=self
+                )
 
     def show_preview(self, action, source, target):
         if action == "COPY":
@@ -443,7 +458,11 @@ class SyncGUI(QMainWindow):
         self.compare_directories()  # Refresh the comparison
 
     def handle_error(self, error_msg):
-        QMessageBox.critical(self, "Error", f"Sync error: {error_msg}")
+        show_error_dialog(
+            message=f"Sync error: {error_msg}",
+            title="Error",
+            parent=self
+        )
         self.sync_finished()
 
 

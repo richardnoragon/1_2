@@ -5,16 +5,19 @@ import time
 from datetime import datetime
 from PIL import Image
 from PIL.ExifTags import TAGS
-from mutagen import File as MutagenFile
+from mutagen._file import File as MutagenFile
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
-from PyQt5.QtWidgets import (
-    QMainWindow, QApplication, QFileDialog, QMessageBox
-)
+from PyQt5.QtWidgets import QApplication
 from PyQt5 import uic
-import traceback
+from gui.common.base_window import BaseWindow
+from gui.common.dialogs import (
+    show_error_dialog,
+    show_info_dialog,
+    get_existing_directory
+)
 
 
-class MyGUI(QMainWindow):
+class MyGUI(BaseWindow):
     def __init__(self):
         super(MyGUI, self).__init__()
         try:
@@ -62,12 +65,16 @@ class MyGUI(QMainWindow):
             # Initialize radio buttons
             self.addPrefixRadio.setChecked(True)
         except Exception as e:
-            error_msg = f"Failed to initialize: {str(e)}\n{traceback.format_exc()}"
-            QMessageBox.critical(None, "Error", error_msg)
+            error_msg = f"Failed to initialize: {str(e)}"
+            show_error_dialog(
+                error_msg,
+                title="Error",
+                parent=None
+            )
             sys.exit(1)
 
     def load_directory(self):
-        self.directory = QFileDialog.getExistingDirectory(
+        self.directory = get_existing_directory(
             self, "Select Directory"
         )
         for file in os.listdir(self.directory):
@@ -90,15 +97,17 @@ class MyGUI(QMainWindow):
         indices = self.listView.selectedIndexes()
         for index in indices:
             item = self.listModel.itemFromIndex(index)
-            if item.text() not in self.selected:
+            if item and item.text() not in self.selected:
                 self.selected.append(item.text())
                 self.selectModel.appendRow(QStandardItem(item.text()))
 
     def remove_selection(self):
         indices = self.selectView.selectedIndexes()
         for index in sorted(indices, reverse=True):
-            self.selected.remove(self.selectModel.itemFromIndex(index).text())
-            self.selectModel.removeRow(index.row())
+            item = self.selectModel.itemFromIndex(index)
+            if item:
+                self.selected.remove(item.text())
+                self.selectModel.removeRow(index.row())
 
     def get_file_metadata_date(self, filepath):
         """Extract date from file metadata based on file type."""
@@ -168,7 +177,10 @@ class MyGUI(QMainWindow):
             return
 
         for filename in self.selected:
-            old_path = os.path.join(self.directory, filename)
+            if not self.directory or not filename:
+                continue
+                
+            old_path = str(os.path.join(str(self.directory), filename))
             name, ext = os.path.splitext(filename)
             new_name = name
 
@@ -178,13 +190,13 @@ class MyGUI(QMainWindow):
                 new_name = self.format_date(date, format_str)
             elif self.addPrefixRadio.isChecked():
                 new_name = f"{new_text}{name}"
-            elif (self.removePrefixRadio.isChecked() and 
-                  name.startswith(new_text)):
+            elif (self.removePrefixRadio.isChecked() and
+                    name.startswith(new_text)):
                 new_name = name[len(new_text):]
             elif self.addSuffixRadio.isChecked():
                 new_name = f"{name}{new_text}"
-            elif (self.removeSuffixRadio.isChecked() and 
-                  name.endswith(new_text)):
+            elif (self.removeSuffixRadio.isChecked() and
+                    name.endswith(new_text)):
                 new_name = name[:-len(new_text)]
             elif self.newNameRadio.isChecked():
                 new_name = new_text
@@ -201,8 +213,8 @@ class MyGUI(QMainWindow):
                 date_str = time.strftime('%Y%m%d', time.localtime(date))
                 new_name = f"{name}_{date_str}"
 
-            new_path = os.path.join(self.directory, new_name + ext)
-            if old_path != new_path:
+            new_path = str(os.path.join(str(self.directory), new_name + ext))
+            if old_path != new_path and os.path.isfile(old_path):
                 shutil.move(old_path, new_path)
 
         # Clear selection after renaming
@@ -216,6 +228,7 @@ def main():
     gui = MyGUI()
     gui.show()
     sys.exit(app.exec_())
+
 
 # Make sure main() is only called when the script is run directly
 if __name__ == "__main__":

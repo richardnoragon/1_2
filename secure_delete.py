@@ -2,13 +2,15 @@ import os
 import time
 import random
 import string
-from PyQt5.QtCore import QObject, pyqtSignal
+from PyQt5.QtCore import QObject, pyqtSignal, QThread
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox
-from PyQt5.QtCore import QThread
+from PyQt5.QtWidgets import QApplication, QMessageBox 
 from PyQt5 import uic
 from PyQt5.QtGui import QDragEnterEvent, QDropEvent
-from PyQt5.QtCore import Qt, QUrl
+from gui.common.base_window import BaseWindow
+from gui.common.dialogs import (
+    show_error_dialog, show_info_dialog, get_open_file_name
+)
 
 CHUNK_SIZE = 1024 * 1024  # 1MB buffer for overwriting
 
@@ -172,7 +174,7 @@ class SecureDeleteThread(QThread):
         self.logic.shred_file(self.filepath, self.passes)
 
 
-class SecureDeleteGUI(QMainWindow):
+class SecureDeleteGUI(BaseWindow):
     def __init__(self):
         super().__init__()
         # Get the directory containing the current script
@@ -221,7 +223,7 @@ class SecureDeleteGUI(QMainWindow):
     
     def browse_file(self):
         """Open file dialog to select a file to delete."""
-        filepath, _ = QFileDialog.getOpenFileName(
+        filepath, _ = get_open_file_name(
             self,
             "Select File to Securely Delete",
             "",
@@ -239,14 +241,14 @@ class SecureDeleteGUI(QMainWindow):
             return
         
         # Confirm deletion
-        reply = QMessageBox.warning(
+        reply = QMessageBox.question(
             self,
             "Confirm Secure Delete",
             f"Are you sure you want to securely delete this file?\n{filepath}\n\n"
             "This operation cannot be undone!",
             QMessageBox.Yes | QMessageBox.No,
-            QMessageBox.No
-        )
+            QMessageBox.No)
+        
         
         if reply == QMessageBox.Yes:
             # Get number of passes
@@ -284,13 +286,13 @@ class SecureDeleteGUI(QMainWindow):
     def operation_complete(self, message):
         """Handle completion of the secure deletion."""
         self.statusLabel.setText(message)
-        QMessageBox.information(self, "Operation Complete", message)
+        show_info_dialog(self, "Operation Complete", message)
         self.reset_ui()
     
     def show_error(self, message):
         """Display error message."""
         self.statusLabel.setText(f"Error: {message}")
-        QMessageBox.critical(self, "Error", message)
+        show_error_dialog(self, "Error", message)
         self.reset_ui()
     
     def operation_finished(self):
@@ -311,57 +313,3 @@ if __name__ == "__main__":
     window = SecureDeleteGUI()
     sys.exit(app.exec_())
 
-from PyQt5.QtWidgets import QMainWindow
-from PyQt5 import uic
-from config_manager import ConfigManager
-
-class SecureDelete(QMainWindow):
-    def __init__(self):
-        super().__init__()
-        uic.loadUi("secure_delete.ui", self)
-        
-        # Load settings
-        config = ConfigManager()
-        default_passes = config.get_setting("secure_delete", "default_passes")
-        self.passesSpinBox.setValue(default_passes)
-        
-        # Apply current theme
-        theme = config.get_setting("general", "theme")
-        if theme == "dark":
-            self.apply_dark_theme()
-    
-    def apply_dark_theme(self):
-        """Apply dark theme to this window."""
-        self.setStyleSheet("""
-            QMainWindow { background-color: #2b2b2b; }
-            QWidget { color: #ffffff; }
-            QPushButton { 
-                background-color: #3b3b3b;
-                border: 1px solid #555555;
-                padding: 5px;
-                border-radius: 3px;
-            }
-            QPushButton:hover { background-color: #4b4b4b; }
-            QLineEdit {
-                background-color: #3b3b3b;
-                border: 1px solid #555555;
-                color: #ffffff;
-                padding: 5px;
-            }
-            QSpinBox {
-                background-color: #3b3b3b;
-                border: 1px solid #555555;
-                color: #ffffff;
-                padding: 5px;
-            }
-            QLabel { color: #ffffff; }
-            QProgressBar {
-                border: 1px solid #555555;
-                background-color: #3b3b3b;
-                color: #ffffff;
-                text-align: center;
-            }
-            QProgressBar::chunk {
-                background-color: #4b4b4b;
-            }
-        """)

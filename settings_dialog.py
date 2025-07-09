@@ -1,12 +1,15 @@
-from PyQt5.QtWidgets import QDialog, QFileDialog, QComboBox, QCheckBox, QApplication
+import sys
+from PyQt5.QtWidgets import QFileDialog, QComboBox, QCheckBox, QApplication
 from PyQt5 import uic
 from config_manager import ConfigManager
 from log_manager import LogManager
+from gui.common.base_dialog import BaseDialog
+from gui.common.dialogs import get_existing_directory
 import os
 
-class SettingsDialog(QDialog):
+class SettingsDialog(BaseDialog):
     def __init__(self, parent=None):
-        super().__init__(parent)
+        super().__init__()
         ui_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "settings_dialog.ui")
         uic.loadUi(ui_file, self)
         
@@ -132,7 +135,7 @@ class SettingsDialog(QDialog):
     
     def browse_directory(self):
         """Open directory browser dialog."""
-        directory = QFileDialog.getExistingDirectory(self, "Select Default Directory")
+        directory = get_existing_directory(self, "Select Default Directory")
         if directory:
             self.defaultDirEdit.setText(directory)
     
@@ -142,7 +145,6 @@ class SettingsDialog(QDialog):
         super().accept()
 
 if __name__ == "__main__":
-    import sys
     app = QApplication(sys.argv)
     dialog = SettingsDialog()
     dialog.show()

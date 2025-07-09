@@ -5,8 +5,14 @@ from datetime import datetime
 from PyQt5.QtGui import QStandardItemModel, QStandardItem, QIcon
 from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox
 from PyQt5 import uic
+from gui.common.base_window import BaseWindow
+from gui.common.dialogs import (
+    show_error_dialog,
+    show_info_dialog,
+    get_existing_directory
+)
 
-class CatalogGUI(QMainWindow):
+class CatalogGUI(BaseWindow):
     def __init__(self):
         super().__init__()
         # Load the UI from the .ui file
@@ -57,7 +63,7 @@ class CatalogGUI(QMainWindow):
     
     def load_directory(self):
         """Load directory and display files in the list view"""
-        directory = QFileDialog.getExistingDirectory(self, "Select Directory")
+        directory = get_existing_directory(self, "Select Directory")
         if directory:
             self.directory = directory
             self.directory_label.setText(directory)
@@ -82,7 +88,11 @@ class CatalogGUI(QMainWindow):
                         item = QStandardItem(file)
                         self.listModel.appendRow(item)
         except Exception as e:
-            QMessageBox.warning(self, "Error", f"Could not read directory: {str(e)}")
+                show_error_dialog(
+                f"Could not read directory: {str(e)}",
+                title="Error",
+                parent=self
+            )
     
     def is_duplicate(self, file_path):
         """Check if a file is a duplicate by comparing its content with other files"""
@@ -101,10 +111,12 @@ class CatalogGUI(QMainWindow):
                             with open(other_path, 'rb') as f:
                                 if content == f.read():
                                     return True
-                        except:
+                        except (IOError, OSError):
+                            # Skip files we can't read
                             continue
             return False
-        except:
+        except (IOError, OSError):
+            # Return False if we can't read the source file
             return False
 
     def catalog(self):
@@ -204,7 +216,7 @@ class CatalogGUI(QMainWindow):
             self.status_label.setText("Catalog generated successfully")
             
         except Exception as e:
-            QMessageBox.critical(self, "Error", f"Failed to create catalog: {str(e)}")
+            self.show_error_dialog("Error", f"Failed to create catalog: {str(e)}")
             self.status_label.setText("Error generating catalog")
     
     def open_last_catalog(self):
@@ -212,13 +224,20 @@ class CatalogGUI(QMainWindow):
         if self.last_catalog and os.path.exists(self.last_catalog):
             webbrowser.open(f"file:///{self.last_catalog}")
         else:
-            QMessageBox.warning(self, "Error", "No catalog file available")
+            show_error_dialog(
+                "No catalog file available",
+                title="Error",
+                parent=self
+            )
+
 
 def main():
+    """Main entry point for the catalog application."""
     app = QApplication(sys.argv)
     app.setStyle('Fusion')
-    window = CatalogGUI()
+    gui = CatalogGUI()  # Keep a reference to prevent garbage collection
     sys.exit(app.exec_())
+
 
 if __name__ == "__main__":
     main()

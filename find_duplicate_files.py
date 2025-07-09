@@ -13,6 +13,8 @@ from pathlib import Path
 from PyQt5 import QtWidgets, uic
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import Qt
+from gui.common.base_window import BaseWindow
+from gui.common.dialogs import show_error_dialog, show_info_dialog, get_existing_directory
 
 # Larger files are read by chunks.
 CRITIC_SIZE = 100_000_000  # 100 MB.
@@ -97,7 +99,7 @@ def process_file(file: Path,
         processed_files.append((file, hexdigest))
 
 
-class DuplicateFinderApp(QtWidgets.QMainWindow):
+class DuplicateFinderApp(BaseWindow):
     def __init__(self):
         super().__init__()
         # Create a central widget and set it
@@ -190,8 +192,7 @@ class DuplicateFinderApp(QtWidgets.QMainWindow):
         strategy = self.central_widget.deleteStrategyCombo.currentText()
         
         if strategy == "Move to Folder":
-            folder = QtWidgets.QFileDialog.getExistingDirectory(
-                self, "Select Destination Folder")
+            folder = get_existing_directory(self, "Select Destination Folder")
             if not folder:
                 return
                 
@@ -247,19 +248,18 @@ class DuplicateFinderApp(QtWidgets.QMainWindow):
                     error_count += 1
 
         # Show results
-        QtWidgets.QMessageBox.information(
+        show_info_dialog(
             self, "Operation Complete",
             f"Successfully processed {success_count} files.\n"
-            f"Errors encountered: {error_count}"
-        )
+            f"Errors encountered: {error_count}")
+        
         
         # Refresh the display
         self.find_duplicates()
 
     def browse_folder(self):
         """Show folder selection dialog"""
-        folder = QtWidgets.QFileDialog.getExistingDirectory(
-            self, "Select Folder")
+        folder = get_existing_directory(self, "Select Folder")
         if folder:
             self.central_widget.lineEditFolder.setText(folder)
 
@@ -269,13 +269,11 @@ class DuplicateFinderApp(QtWidgets.QMainWindow):
         file_name = self.central_widget.lineEditFile.text().strip()
 
         if not folder:
-            QtWidgets.QMessageBox.warning(
-                self, "Error", "Please select a folder.")
+            show_error_dialog(self, "Error", "Please select a folder.")
             return
 
         if not file_name:
-            QtWidgets.QMessageBox.warning(
-                self, "Error", "Please enter a file name.")
+            show_error_dialog(self, "Error", "Please enter a file name.")
             return
 
         self.run_duplicate_search(folder, file_name)
@@ -291,10 +289,9 @@ class DuplicateFinderApp(QtWidgets.QMainWindow):
         root = Path(folder)
 
         if not root.exists():
-            QtWidgets.QMessageBox.warning(
-                self, "Error",
-                f"Directory {root} does not exist."
-            )
+            show_error_dialog(self, "Error",
+                f"Directory {root} does not exist.")
+            
             return
 
         # List of processed files.
@@ -368,11 +365,10 @@ class DuplicateFinderApp(QtWidgets.QMainWindow):
         table.resizeColumnsToContents()
         
         total_files = sum(len(files) for files in duplicate_files.values())
-        QtWidgets.QMessageBox.information(
+        show_info_dialog(
             self, "Search Complete",
             f"Found {len(duplicate_files)} groups of duplicate files.\n"
-            f"Total files: {total_files}"
-        )
+            f"Total files: {total_files}")
 
         print("Writing results...")
         with open(file_name, "w", encoding="utf8") as f:

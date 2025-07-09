@@ -1,0 +1,316 @@
+import os
+import shutil
+import re
+import sys
+from datetime import datetime
+from dataclasses import dataclass
+from typing import Optional, List
+from PyQt5.QtCore import Qt, QDateTime
+from PyQt5.QtGui import QStandardItemModel, QStandardItem
+from PyQt5.QtWidgets import (QMainWindow, QApplication, QDialog, QGroupBox,
+                           QVBoxLayout, QHBoxLayout, QLabel, QLineEdit,
+                           QPushButton, QCheckBox, QDateTimeEdit, QDialogButtonBox,
+                           QGridLayout)
+from PyQt5 import uic
+from pathlib import Path
+from log_manager import LogManager
+from gui.common.base_window import BaseWindow
+from gui.common.dialogs import show_error_dialog, show_info_dialog, get_existing_directory
+
+
+@dataclass
+class Rule:
+    name: str
+    destination: str
+    file_types: List[str]
+    created_after: Optional[datetime] = None
+    created_before: Optional[datetime] = None
+    modified_after: Optional[datetime] = None
+    modified_before: Optional[datetime] = None
+    contains_text: Optional[str] = None
+    
+    def matches(self, file_path: str) -> bool:
+        # Check if file exists
+        if not os.path.exists(file_path):
+            return False
+            
+        # Check file type
+        file_name = os.path.basename(file_path)
+        matches_type = False
+        for file_type in self.file_types:
+            if file_type == "*" or file_name.lower().endswith(file_type.lower()):
+                matches_type = True
+                break
+        if not matches_type:
+            return False
+            
+        # Check creation time
+        created_time = datetime.fromtimestamp(os.path.getctime(file_path))
+        if self.created_after and created_time < self.created_after:
+            return False
+        if self.created_before and created_time > self.created_before:
+            return False
+            
+        # Check modification time
+        modified_time = datetime.fromtimestamp(os.path.getmtime(file_path))
+        if self.modified_after and modified_time < self.modified_after:
+            return False
+        if self.modified_before and modified_time > self.modified_before:
+            return False
+            
+        # Check content if specified
+        if self.contains_text:
+            try:
+                with open(file_path, 'r', errors='ignore') as f:
+                    content = f.read()
+                    if self.contains_text not in content:
+                        return False
+            except:
+                return False
+                
+        return True
+
+
+class RuleDialog(BaseWindow):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setup_ui()
+        
+    def setup_ui(self):
+        self.setWindowTitle("Create Organization Rule")
+        layout = QVBoxLayout()
+        
+        # Rule name
+        name_layout = QHBoxLayout()
+        name_layout.addWidget(QLabel("Rule Name:"))
+        self.name_edit = QLineEdit()
+        name_layout.addWidget(self.name_edit)
+        layout.addLayout(name_layout)
+        
+        # Destination folder
+        dest_layout = QHBoxLayout()
+        dest_layout.addWidget(QLabel("Destination Folder:"))
+        self.dest_edit = QLineEdit()
+        self.dest_browse = QPushButton("Browse")
+        self.dest_browse.clicked.connect(self.browse_destination)
+        dest_layout.addWidget(self.dest_edit)
+        dest_layout.addWidget(self.dest_browse)
+        layout.addLayout(dest_layout)
+        
+        # File types
+        type_layout = QHBoxLayout()
+        type_layout.addWidget(QLabel("File Types (comma-separated):"))
+        self.type_edit = QLineEdit()
+        self.type_edit.setPlaceholderText("*.pdf, *.txt, *")
+        type_layout.addWidget(self.type_edit)
+        layout.addLayout(type_layout)
+        
+        # Date filters
+        date_group = QGroupBox("Date Filters")
+        date_layout = QGridLayout()
+        
+        self.created_after = QDateTimeEdit()
+        self.created_before = QDateTimeEdit()
+        self.modified_after = QDateTimeEdit()
+        self.modified_before = QDateTimeEdit()
+        
+        self.created_after_check = QCheckBox("Created After:")
+        self.created_before_check = QCheckBox("Created Before:")
+        self.modified_after_check = QCheckBox("Modified After:")
+        self.modified_before_check = QCheckBox("Modified Before:")
+        
+        date_layout.addWidget(self.created_after_check, 0, 0)
+        date_layout.addWidget(self.created_after, 0, 1)
+        date_layout.addWidget(self.created_before_check, 1, 0)
+        date_layout.addWidget(self.created_before, 1, 1)
+        date_layout.addWidget(self.modified_after_check, 2, 0)
+        date_layout.addWidget(self.modified_after, 2, 1)
+        date_layout.addWidget(self.modified_before_check, 3, 0)
+        date_layout.addWidget(self.modified_before, 3, 1)
+        
+        date_group.setLayout(date_layout)
+        layout.addWidget(date_group)
+        
+        # Content filter
+        content_layout = QHBoxLayout()
+        content_layout.addWidget(QLabel("Contains Text:"))
+        self.content_edit = QLineEdit()
+        content_layout.addWidget(self.content_edit)
+        layout.addLayout(content_layout)
+        
+        # Buttons
+        button_box = QDialogButtonBox(
+            QDialogButtonBox.Ok | QDialogButtonBox.Cancel
+        )
+        button_box.accepted.connect(self.accept)
+        button_box.rejected.connect(self.reject)
+        layout.addWidget(button_box)
+        
+        self.setLayout(layout)
+        
+    def browse_destination(self):
+        folder = get_existing_directory(self, "Select Destination Folder")
+        if folder:
+            self.dest_edit.setText(str(folder))
+            
+    def get_rule(self) -> Optional[Rule]:
+        if not self.name_edit.text() or not self.dest_edit.text():
+            return None
+            
+        file_types = [t.strip() for t in self.type_edit.text().split(',') if t.strip()]
+        if not file_types:
+            file_types = ['*']
+            
+        return Rule(
+            name=self.name_edit.text(),
+            destination=self.dest_edit.text(),
+            file_types=file_types,
+            created_after=self.created_after.dateTime().toPyDateTime() if self.created_after_check.isChecked() else None,
+            created_before=self.created_before.dateTime().toPyDateTime() if self.created_before_check.isChecked() else None,
+            modified_after=self.modified_after.dateTime().toPyDateTime() if self.modified_after_check.isChecked() else None,
+            modified_before=self.modified_before.dateTime().toPyDateTime() if self.modified_before_check.isChecked() else None,
+            contains_text=self.content_edit.text() if self.content_edit.text() else None
+        )
+
+
+class MyGUI(QMainWindow):
+    def __init__(self):
+        super(MyGUI, self).__init__()
+        uic.loadUi("organize.ui", self)
+        
+        self.logger = LogManager().get_logger('OrganizeFiles')
+        self.logger.info('Initializing File Organizer')
+        
+        # Set window title
+        self.setWindowTitle("File Organizer")
+        
+        self.directory = None
+        self.listModel = QStandardItemModel()
+        self.rules = []
+        
+        # Configure list view
+        self.listListView.setModel(self.listModel)
+        self.listListView.setAlternatingRowColors(True)
+        
+        # Add Rules button
+        self.rulesButton = QPushButton("Manage Rules")
+        self.rulesButton.clicked.connect(self.manage_rules)
+        self.verticalLayout.insertWidget(1, self.rulesButton)
+        
+        # Connect signals
+        self.actionselect.triggered.connect(self.load_directory)
+        self.actionexit.triggered.connect(self.close)
+        self.organizePushButton.clicked.connect(self.organize)
+        
+        # Show the window
+        self.show()
+
+    def manage_rules(self):
+        dialog = RuleDialog(self)
+        if dialog.exec_() == QDialog.Accepted:
+            rule = dialog.get_rule()
+            if rule:
+                self.rules.append(rule)
+                show_info_dialog(
+                    f"Rule '{rule.name}' added successfully!",
+                    title="Success",
+                    parent=self
+                )
+
+    def load_directory(self):
+        directory = get_existing_directory(self, "Select Directory")
+        if directory:
+            self.directory = str(directory)
+            self.listModel.clear()
+            self.statusbar.showMessage(f"Selected directory: {self.directory}")
+            for file in os.listdir(self.directory):
+                if os.path.isfile(os.path.join(self.directory, file)):
+                    self.listModel.appendRow(QStandardItem(file))
+        self.listListView.setModel(self.listModel)
+
+    def close(self) -> bool:
+        return super().close()
+
+    def organize(self):
+        """Creates directories according to the file extension of the files in
+        listListView and then moves the files into corresponding directories when
+        organizePushButton is selected. When the recursiveCheckBox is selected,
+        files in the subdirectories will also be searched, directories created
+        and files moved."""
+        if not self.directory or self.directory == ".":
+            show_error_dialog(
+                "Please select a directory first",
+                title="Warning",
+                parent=self
+            )
+            return
+
+        def process_directory(path):
+            for item in os.listdir(path):
+                full_path = os.path.join(path, item)
+                if os.path.isfile(full_path):
+                    file_handled = False
+                    
+                    # First try to apply rules
+                    for rule in self.rules:
+                        if rule.matches(full_path):
+                            # Create destination directory if it doesn't exist
+                            os.makedirs(rule.destination, exist_ok=True)
+                            try:
+                                shutil.move(full_path, os.path.join(rule.destination, item))
+                                file_handled = True
+                                break
+                            except shutil.Error as e:
+                                show_error_dialog(
+                                    f"Could not move file {item}: {str(e)}",
+                                    title="Error",
+                                    parent=self
+                                )
+                    
+                    # If no rules matched, use default extension-based organization
+                    if not file_handled:
+                        _, ext = os.path.splitext(item)
+                        ext = ext[1:] if ext else "no_extension"
+                        ext_dir = os.path.join(str(self.directory), ext)
+                        os.makedirs(ext_dir, exist_ok=True)
+                        try:
+                            shutil.move(full_path, os.path.join(ext_dir, item))
+                        except shutil.Error as e:
+                            show_error_dialog(
+                                f"Could not move file {item}: {str(e)}",
+                                title="Error",
+                                parent=self
+                            )
+                
+                elif os.path.isdir(full_path) and self.recursiveCheckBox.isChecked():
+                    if not item.startswith('.') and item not in os.listdir(self.directory):
+                        process_directory(full_path)
+
+        try:
+            self.logger.info(f'Starting file organization in directory: {self.directory}')
+            process_directory(self.directory)
+            self.listModel.clear()
+            self.logger.info('File organization completed successfully')
+            show_info_dialog(
+                "Files have been organized successfully!",
+                title="Success",
+                parent=self
+            )
+        except Exception as e:
+            self.logger.error(f'Error during file organization: {str(e)}', exc_info=True)
+            show_error_dialog(
+                f"An error occurred: {str(e)}",
+                title="Error",
+                parent=self
+            )
+
+
+def main():
+    app = QApplication(sys.argv)
+    gui = MyGUI()
+    gui.show()
+    sys.exit(app.exec_())
+
+
+if __name__ == "__main__":
+    main()

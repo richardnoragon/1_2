@@ -3,13 +3,16 @@ import math
 import json
 from PyQt5.QtCore import QObject, pyqtSignal
 import sys
-from PyQt5.QtWidgets import (
-    QApplication, QMainWindow, QFileDialog, QMessageBox, QWidget
-)
+from PyQt5.QtWidgets import QApplication, QWidget
 from PyQt5.QtCore import Qt
 from PyQt5 import uic
 from PyQt5.QtGui import QDragEnterEvent, QDropEvent
 from PyQt5.QtCore import Qt, QUrl
+from gui.common.base_window import BaseWindow
+from gui.common.dialogs import (
+    show_error_dialog, show_info_dialog, get_existing_directory,
+    get_open_file_name, get_save_file_name
+)
 
 # Constants
 CHUNK_RW_SIZE = 1024 * 1024  # 1MB read/write buffer
@@ -410,7 +413,7 @@ class FileOperationLogic(QObject):
             self.finished.emit()
 
 
-class FileSplitJoinGUI(QMainWindow):
+class FileSplitJoinGUI(BaseWindow):
     def __init__(self):
         super().__init__()
         # Get the absolute path of the directory containing the script
@@ -507,7 +510,7 @@ class FileSplitJoinGUI(QMainWindow):
     
     def browse_split_input(self):
         """Open file dialog to select input file for splitting."""
-        file_path, _ = QFileDialog.getOpenFileName(
+        file_path, _ = get_open_file_name(
             self, "Select File to Split", "",
             "All Files (*.*)"
         )
@@ -516,7 +519,7 @@ class FileSplitJoinGUI(QMainWindow):
     
     def browse_split_output(self):
         """Open directory dialog to select output location for split files."""
-        dir_path = QFileDialog.getExistingDirectory(
+        dir_path = get_existing_directory(
             self, "Select Output Directory"
         )
         if dir_path:
@@ -524,7 +527,7 @@ class FileSplitJoinGUI(QMainWindow):
     
     def browse_join_input(self):
         """Open file dialog to select first chunk file for joining."""
-        file_path, _ = QFileDialog.getOpenFileName(
+        file_path, _ = get_open_file_name(
             self, "Select First Chunk (.part001)", "",
             "Part Files (*.part001);;All Files (*.*)"
         )
@@ -537,7 +540,7 @@ class FileSplitJoinGUI(QMainWindow):
     
     def browse_join_output(self):
         """Open file dialog to select output file for joined result."""
-        file_path, _ = QFileDialog.getSaveFileName(
+        file_path, _ = get_save_file_name(
             self, "Select Output File", "",
             "All Files (*.*)"
         )
@@ -625,12 +628,12 @@ class FileSplitJoinGUI(QMainWindow):
         """Handle successful operation completion."""
         self.progressBar.setValue(100)
         self.statusLabel.setText(message)
-        QMessageBox.information(self, "Operation Complete", message)
+        show_info_dialog(self, "Operation Complete", message)
     
     def show_error(self, message):
         """Display error message to user."""
         self.statusLabel.setText(f"Error: {message}")
-        QMessageBox.critical(self, "Error", message)
+        show_error_dialog(self, "Error", message)
 
 
 if __name__ == '__main__':

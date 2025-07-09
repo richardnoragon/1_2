@@ -12,12 +12,16 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # import qt modules
 from PyQt5.QtGui import QStandardItemModel, QStandardItem, QDragEnterEvent, QDropEvent
-from PyQt5.QtWidgets import (
-    QApplication, QMainWindow, QFileDialog, QHeaderView
-)
+from PyQt5.QtWidgets import QApplication, QHeaderView
 from PyQt5.QtCore import QDate, Qt, QUrl
-from PyQt5 import uic
 from log_manager import LogManager
+from gui.common import (
+    BaseWindow,
+    show_error_dialog,
+    show_info_dialog,
+    get_existing_directory,
+    ProgressWidget
+)
 
 # a class FilePermissionsGUI, inherits from QMainWindow
 # FileFinderGUI has one menu item, Exit. when the select_pushbutton is pressed
@@ -36,11 +40,10 @@ from log_manager import LogManager
 # the files will be filtered. if no date is selected, then all files will be showen
 
 
-class FileFinderGUI(QMainWindow):
+class FileFinderGUI(BaseWindow):
     def __init__(self):
-        super().__init__()
         # load the GUI's UI definition from the XML file
-        uic.loadUi(os.path.join(SCRIPT_DIR, 'file_finder.ui'), self)
+        super().__init__(os.path.join(SCRIPT_DIR, 'file_finder.ui'))
         
         self.logger = LogManager().get_logger('FileFinder')
         self.logger.info('Initializing File Finder')
@@ -85,11 +88,16 @@ class FileFinderGUI(QMainWindow):
         self.directory_lineEdit.setAcceptDrops(True)
         
         # show the GUI
+        # Add progress widget
+        self.progress_widget = ProgressWidget(self)
+        self.statusbar.addPermanentWidget(self.progress_widget)
+        self.progress_widget.hide()
+        
         self.show()
         
     def select_directory(self):
         # Open a dialog to select a directory
-        dir_path = QFileDialog.getExistingDirectory(self, "Select Directory")
+        dir_path = get_existing_directory(self, "Select Directory")
         # Display the selected directory in window title and line edit
         if dir_path:
             self.directory = dir_path
@@ -106,7 +114,7 @@ class FileFinderGUI(QMainWindow):
             # Open the file with the default application
             os.startfile(file_path)
         except Exception as e:
-            self.statusbar.showMessage(f"Error opening file: {str(e)}", 5000)
+            show_error_dialog(self, "Error", f"Error opening file: {str(e)}")
             self.logger.error(f'Error opening file: {str(e)}', exc_info=True)
 
     # Method to show metadata when a file is selected
@@ -157,9 +165,13 @@ class FileFinderGUI(QMainWindow):
         # Use the directory from select_directory method
         directory = self.directory
         if not directory:
-            self.statusbar.showMessage("Please select a directory first", 5000)
+            show_error_dialog(self, "Error", "Please select a directory first")
             self.logger.warning('No directory selected')
             return
+            
+        # Show progress widget
+        self.progress_widget.show()
+        self.progress_widget.set_text("Searching...")
             
         # Get the filetype from user input or use empty string
         filetype = self.filetype if hasattr(self, 'filetype') else ""
@@ -301,8 +313,12 @@ class FileFinderGUI(QMainWindow):
             
         except Exception as e:
             msg = f"Error searching files: {str(e)}"
-            self.statusbar.showMessage(msg, 5000)
+            show_error_dialog(self, "Error", msg)
             self.logger.error(msg, exc_info=True)
+            
+        finally:
+            # Hide progress widget when done
+            self.progress_widget.hide()
             
         return files
 

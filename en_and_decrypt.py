@@ -6,8 +6,10 @@ import datetime
 
 # Import QT modules
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
-from PyQt5.QtWidgets import *
+from PyQt5.QtWidgets import QApplication
 from PyQt5 import uic
+from gui.common.base_window import BaseWindow
+from gui.common.dialogs import show_error_dialog, show_info_dialog, get_existing_directory
 
 # Import Crypt modules
 import pyAesCrypt
@@ -30,7 +32,7 @@ from cryptography.fernet import Fernet
 # displayed in message_ListView.
 
 
-class en_and_decryptGUI(QMainWindow):
+class en_and_decryptGUI(BaseWindow):
     # initialize the GUI
     def __init__(self):
         super().__init__()
@@ -54,7 +56,7 @@ class en_and_decryptGUI(QMainWindow):
         # self.encrypt_folder_PushButton.clicked.connect(self.encrypt_folder)
 
     def load_directory(self):
-        self.directory = QFileDialog.getExistingDirectory(
+        self.directory = get_existing_directory(
             self, "Select Directory")
         for file in os.listdir(self.directory):
             if os.path.isfile(os.path.join(self.directory, file)):

@@ -4,44 +4,59 @@ import re
 import sys
 
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
-from PyQt5.QtWidgets import *
+from PyQt5.QtWidgets import (QMainWindow, QApplication, QDialog, QListView,
+                           QVBoxLayout, QLabel, QPushButton)
 from PyQt5 import uic
 
+from gui.common.base_window import BaseWindow
+from gui.common.dialogs import get_existing_directory
 
-class MyGUI(QMainWindow):
+
+class MyGUI(BaseWindow):
     def __init__(self):
         super(MyGUI, self).__init__()
         uic.loadUi("cmsd.ui", self)
         self.show()
 
-        self.directory = "."
-        self.listModel = QStandardItemModel()
+        self.left_directory = "."
+        self.right_directory = "."
+        self.left_model = QStandardItemModel()
+        self.right_model = QStandardItemModel()
         self.selectModel = QStandardItemModel()
 
-        self.selectView.setModel(self.selectModel)
+        # Set up list views
+        self.listView.setModel(self.left_model)
+        self.selectView.setModel(self.right_model)
         self.selected = []
 
+        # Connect menu actions
         self.actionOpenLeft.triggered.connect(self.load_directory_left)
         self.actionOpenRight.triggered.connect(self.load_directory_right)
         self.actionexit.triggered.connect(self.close)
-        # self.filterButton.clicked.connect(self.filter_list)
-        # self.selectButton.clicked.connect(self.choose_selection)
-        # self.removeButton.clicked.connect(self.remove_selection)
-        # self.applyButton.clicked.connect(self.rename_files)
 
     def load_directory_left(self):
-        self.directory = QFileDialog.getExistingDirectory(self, "Select Directory")
-        for file in os.listdir(self.directory):
-            if os.path.isfile(os.path.join(self.directory, file)):
-                self.listModel.appendRow(QStandardItem(file))
-        self.listView.setModel(self.listModel)
+        """Load files from selected directory into the left view."""
+        directory = get_existing_directory(self, "Select Left Directory")
+        if directory:
+            self.left_directory = directory
+            self.left_model.clear()
+            dir_path = str(self.left_directory)
+            for file in os.listdir(dir_path):
+                full_path = os.path.join(dir_path, file)
+                if os.path.isfile(full_path):
+                    self.left_model.appendRow(QStandardItem(file))
 
     def load_directory_right(self):
-        self.directory = QFileDialog.getExistingDirectory(self, "Select Directory")
-        for file in os.listdir(self.directory):
-            if os.path.isfile(os.path.join(self.directory, file)):
-                self.listModel.appendRow(QStandardItem(file))
-        self.listView.setModel(self.listModel)
+        """Load files from selected directory into the right view."""
+        directory = get_existing_directory(self, "Select Right Directory")
+        if directory:
+            self.right_directory = directory
+            self.right_model.clear()
+            dir_path = str(self.right_directory)
+            for file in os.listdir(dir_path):
+                full_path = os.path.join(dir_path, file)
+                if os.path.isfile(full_path):
+                    self.right_model.appendRow(QStandardItem(file))
 
     def close(self) -> bool:
         return super().close()

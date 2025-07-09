@@ -1,18 +1,30 @@
 import sys
 import os
-from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox
+from PyQt5.QtWidgets import QApplication
 from PyQt5.QtCore import QThread
-from PyQt5 import uic
 from check_sum import ChecksumLogic
+from gui.common import (
+    BaseWindow,
+    show_error_dialog,
+    show_info_dialog,
+    get_open_file_name,
+    get_save_file_name,
+    get_existing_directory,
+    ProgressWidget
+)
 
 
-class ChecksumGUI(QMainWindow):
+class ChecksumGUI(BaseWindow):
     def __init__(self):
-        super().__init__()
         # Get the directory containing this script
         current_dir = os.path.dirname(os.path.abspath(__file__))
         ui_file = os.path.join(current_dir, 'check_sum.ui')
-        uic.loadUi(ui_file, self)
+        super().__init__(ui_file)
+        
+        # Add progress widget to status bar
+        self.progress_widget = ProgressWidget(self)
+        self.statusBar().addPermanentWidget(self.progress_widget)
+        self.progress_widget.hide()
         
         # Connect signals
         self.browseButton.clicked.connect(self.browse_file)
@@ -37,9 +49,9 @@ class ChecksumGUI(QMainWindow):
         """Open file dialog to select file or directory"""
         mode = self.modeCombo.currentText()
         if 'Directory' in mode:
-            path = QFileDialog.getExistingDirectory(self, "Select Directory")
+            path = get_existing_directory(self, "Select Directory")
         else:
-            path, _ = QFileDialog.getOpenFileName(self, "Select File")
+            path = get_open_file_name(self, "Select File")
             
         if path:
             self.filePathInput.setText(path)
@@ -48,15 +60,11 @@ class ChecksumGUI(QMainWindow):
         """Start the checksum calculation/verification process"""
         path = self.filePathInput.text()
         if not path:
-            QMessageBox.warning(
-                self, 
-                "Error", 
-                "Please select a file or directory"
-            )
+            show_error_dialog(self, "Error", "Please select a file or directory")
             return
             
         if not os.path.exists(path):
-            QMessageBox.warning(self, "Error", "Selected path does not exist")
+            show_error_dialog(self, "Error", "Selected path does not exist")
             return
             
         # Determine mode
@@ -103,6 +111,8 @@ class ChecksumGUI(QMainWindow):
         """Update progress bar"""
         percentage = (current / total) * 100 if total > 0 else 0
         self.progressBar.setValue(int(percentage))
+        self.progress_widget.set_progress(int(percentage))
+        self.progress_widget.set_text(f"Processing: {current}/{total}")
         
     def handle_results(self, results):
         """Display calculation/verification results"""
@@ -112,10 +122,11 @@ class ChecksumGUI(QMainWindow):
                 self.resultsArea.append(f"{path}: {checksum}")
         else:
             self.resultsArea.append(str(results))
+        show_info_dialog(self, "Success", "Checksum calculation completed")
             
     def handle_error(self, error_msg):
         """Display error message"""
-        QMessageBox.warning(self, "Error", error_msg)
+        show_error_dialog(self, "Error", error_msg)
         
     def calculation_finished(self):
         """Clean up after calculation is complete"""
@@ -129,6 +140,7 @@ class ChecksumGUI(QMainWindow):
         self.clearButton.setEnabled(True)
         self.saveButton.setEnabled(True)
         self.progressBar.setValue(0)
+        self.progress_widget.hide()
         
     def clear_results(self):
         """Clear the results area"""
@@ -138,27 +150,22 @@ class ChecksumGUI(QMainWindow):
     def save_results(self):
         """Save results to a file"""
         if not self.resultsArea.toPlainText():
-            QMessageBox.warning(self, "Error", "No results to save")
+            show_error_dialog(self, "Error", "No results to save")
             return
             
-        filename, _ = QFileDialog.getSaveFileName(
+        filename = get_save_file_name(
             self,
             "Save Results",
-            "",
-            "Text Files (*.txt);;All Files (*.*)"
+            file_filter="Text Files (*.txt);;All Files (*.*)"
         )
         
         if filename:
             try:
                 with open(filename, 'w') as f:
                     f.write(self.resultsArea.toPlainText())
-                QMessageBox.information(
-                    self, 
-                    "Success",
-                    "Results saved successfully"
-                )
+                show_info_dialog(self, "Success", "Results saved successfully")
             except Exception as e:
-                QMessageBox.warning(
+                show_error_dialog(
                     self,
                     "Error",
                     f"Failed to save results: {e}"

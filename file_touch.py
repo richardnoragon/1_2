@@ -4,14 +4,16 @@ import sys
 import os
 import platform
 from datetime import datetime, timezone
-from PyQt5.QtCore import QObject, pyqtSignal
+from PyQt5.QtCore import QObject, pyqtSignal, QDateTime
 from PyQt5.QtWidgets import (
-    QApplication, QMainWindow, QFileDialog, QMessageBox,
-    QComboBox, QLabel, QInputDialog
+    QApplication, QComboBox, QLabel, QInputDialog, QMessageBox
 )
-from PyQt5.QtCore import QDateTime
 from PyQt5 import uic
 from PyQt5.QtGui import QDragEnterEvent, QDropEvent
+from gui.common.base_window import BaseWindow
+from gui.common.dialogs import (
+    show_error_dialog, show_info_dialog, get_open_file_name
+)
 from config_manager import ConfigManager
 
 # Note: Reliably *setting* creation time is platform-specific and often 
@@ -100,7 +102,7 @@ class FileTouchLogic(QObject):
             self._is_running = False
             self.finished.emit()
 
-class FileTouchGUI(QMainWindow):
+class FileTouchGUI(BaseWindow):
     def __init__(self):
         super().__init__()
         # Load the UI
@@ -172,11 +174,9 @@ class FileTouchGUI(QMainWindow):
             self.config_manager.save_profile(name, "file_touch", settings)
             self.update_profile_list()
             self.profileCombo.setCurrentText(name)
-            QMessageBox.information(
-                self, 
-                "Success",
-                f"Profile '{name}' saved successfully!"
-            )
+            show_info_dialog(self, "Success",
+                f"Profile '{name}' saved successfully!")
+            
             
     def load_profile(self, profile_name: str):
         """Load timestamp settings from a profile."""
@@ -211,18 +211,14 @@ class FileTouchGUI(QMainWindow):
             
         if reply == QMessageBox.Yes:
             if self.config_manager.delete_profile(profile_name, "file_touch"):
-                QMessageBox.information(
-                    self,
-                    "Success", 
-                    f"Profile '{profile_name}' deleted successfully!"
-                )
+                show_info_dialog(self, "Success",
+                    f"Profile '{profile_name}' deleted successfully!")
+                
                 self.update_profile_list()
             else:
-                QMessageBox.warning(
-                    self,
-                    "Error",
-                    f"Failed to delete profile '{profile_name}'"
-                )
+                show_error_dialog(self, "Error",
+                    f"Failed to delete profile '{profile_name}'")
+                
 
     def dragEnterEvent(self, event: QDragEnterEvent):
         if event.mimeData().hasUrls():
@@ -237,15 +233,13 @@ class FileTouchGUI(QMainWindow):
                 self.filePathEdit.setText(path)
                 self.refresh_timestamps()
             else:
-                QMessageBox.warning(
-                    self,
-                    "Error",
-                    "Please drop a file, not a folder"
-                )
+                show_error_dialog(self, "Error",
+                    "Please drop a file, not a folder")
+                
 
     def browse_file(self):
         """Open file dialog to select a file"""
-        file_path, _ = QFileDialog.getOpenFileName(
+        file_path, _ = get_open_file_name(
             self,
             "Select File",
             "",
@@ -297,7 +291,7 @@ class FileTouchGUI(QMainWindow):
             self.statusBar().showMessage("Timestamps loaded successfully")
 
         except Exception as e:
-            QMessageBox.critical(self, "Error", str(e))
+            show_error_dialog(self, "Error", str(e))
             self.statusBar().showMessage("Error loading timestamps")
             self.applyButton.setEnabled(False)
 
@@ -322,7 +316,7 @@ class FileTouchGUI(QMainWindow):
             self.refresh_timestamps()  # Refresh to show actual changes
 
         except Exception as e:
-            QMessageBox.critical(self, "Error", str(e))
+            show_error_dialog(self, "Error", str(e))
             self.statusBar().showMessage("Error updating timestamps")
 
 def main():
