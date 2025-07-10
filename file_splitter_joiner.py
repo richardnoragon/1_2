@@ -2,33 +2,22 @@ import os
 import math
 import json
 import sys
-from pathlib import Path
-from PyQt5.QtCore import QObject, pyqtSignal, Qt, QUrl
+from PyQt5.QtCore import QObject, pyqtSignal
 from PyQt5.QtWidgets import QApplication
 from PyQt5 import uic
 from PyQt5.QtGui import QDragEnterEvent, QDropEvent
 from gui.common.base_window import BaseWindow
-from gui.common.di            # Load or infer parameters
-            metadata = None
-            num_chunks = 0
-            chunk_pattern = ""
-            padding = 0
-            expected_total_size = None
-            original_filename = None  # For output filename suggestionport (
+from gui.common.dialogs import (
     show_error_dialog, show_info_dialog, get_existing_directory,
     get_open_file_name, get_save_file_name
 )
-from core.file_ops.validation import (
-
+from core.file_ops.validation import validate_file_exists, validate_dir_exists, validate_path_writeable
 from core.error_handler import error_handler
-
-    validate_file_exists, validate_dir_exists, validate_path_writeable,
-    FileValidationError
-)
 
 # Constants
 CHUNK_RW_SIZE = 1024 * 1024  # 1MB read/write buffer
 METADATA_FILENAME = "_metadata.json"
+PART_EXTENSION = ".part001"  # Extension for first chunk file
 
 
 class FileOperationLogic(QObject):
@@ -393,7 +382,6 @@ class FileOperationLogic(QObject):
 
             # --- Perform Joining ---
             self.progress_updated.emit(0, num_chunks, f"Starting join operation for {num_chunks} chunks...")
-            bytes_written_total = 0
             chunks_processed = 0
 
             try:
@@ -420,7 +408,6 @@ class FileOperationLogic(QObject):
                                     if not data:
                                         break  # End of current chunk
                                     outfile.write(data)
-                                    bytes_written_total += len(data)
                         except IOError as read_error:
                             raise IOError(f"Error reading chunk {chunk_filename}: {read_error}") from read_error
                         except Exception as e: # Catch unexpected read errors
@@ -547,10 +534,10 @@ class FileSplitJoinGUI(BaseWindow):
             else:
                 self.show_error("Please drop a folder for output")
         elif focused_widget == self.joinInputPath:
-            if os.path.isfile(path) and path.endswith('.part001'):
+            if os.path.isfile(path) and path.endswith(PART_EXTENSION):
                 self.joinInputPath.setText(path)
-                # Try to suggest output filename by removing .part001
-                suggested_output = path[:-8]
+                # Try to suggest output filename by removing extension
+                suggested_output = path[:-len(PART_EXTENSION)]
                 self.joinOutputPath.setText(suggested_output)
             else:
                 self.show_error("Please drop a .part001 file for joining")
@@ -599,8 +586,8 @@ class FileSplitJoinGUI(BaseWindow):
     def browse_join_input(self):
         """Open file dialog to select first chunk file for joining."""
         file_path, _ = get_open_file_name(
-            self, "Select First Chunk (.part001)", "",
-            "Part Files (*.part001);;All Files (*.*)"
+            self, f"Select First Chunk ({PART_EXTENSION})", "",
+            f"Part Files (*{PART_EXTENSION});;All Files (*.*)"
         )
         if file_path:
             self.joinInputPath.setText(file_path)
@@ -663,8 +650,8 @@ class FileSplitJoinGUI(BaseWindow):
             self.show_error("Please select both input chunk and output file.")
             return
         
-        if not input_path.lower().endswith('.part001'):
-            self.show_error("Please select the first chunk file (ending with .part001)")
+        if not input_path.lower().endswith(PART_EXTENSION.lower()):
+            self.show_error(f"Please select the first chunk file (ending with {PART_EXTENSION})")
             return
         
         if not os.path.exists(input_path):
