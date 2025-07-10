@@ -8,6 +8,9 @@ from queue import Queue
 import threading
 from PyQt5.QtWidgets import QApplication
 from find_duplicate_files import (
+
+from core.error_handler import error_handler
+
     DuplicateFinderApp, get_file_id, get_file_md5, 
     worker, process_file
 )

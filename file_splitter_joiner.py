@@ -1,17 +1,29 @@
 import os
 import math
 import json
-from PyQt5.QtCore import QObject, pyqtSignal
 import sys
-from PyQt5.QtWidgets import QApplication, QWidget
-from PyQt5.QtCore import Qt
+from pathlib import Path
+from PyQt5.QtCore import QObject, pyqtSignal, Qt, QUrl
+from PyQt5.QtWidgets import QApplication
 from PyQt5 import uic
 from PyQt5.QtGui import QDragEnterEvent, QDropEvent
-from PyQt5.QtCore import Qt, QUrl
 from gui.common.base_window import BaseWindow
-from gui.common.dialogs import (
+from gui.common.di            # Load or infer parameters
+            metadata = None
+            num_chunks = 0
+            chunk_pattern = ""
+            padding = 0
+            expected_total_size = None
+            original_filename = None  # For output filename suggestionport (
     show_error_dialog, show_info_dialog, get_existing_directory,
     get_open_file_name, get_save_file_name
+)
+from core.file_ops.validation import (
+
+from core.error_handler import error_handler
+
+    validate_file_exists, validate_dir_exists, validate_path_writeable,
+    FileValidationError
 )
 
 # Constants
@@ -41,18 +53,21 @@ class FileOperationLogic(QObject):
         self.progress_updated.emit(0, 1, "Stopping operation...")
         self._is_running = False
 
-    def _calculate_split_params(self, file_size, split_mode, value, unit_multiplier=1):
+    def _calculate_split_params(
+        self, file_size: int, split_mode: str, value: float,
+        unit_multiplier: int = 1
+    ) -> tuple[int, int]:
         """
         Calculates chunk size and number of chunks based on user input.
 
         Args:
-            file_size (int): The total size of the file to be split.
-            split_mode (str): Either 'size' or 'parts'.
-            value (float or int): The size value or the number of parts.
-            unit_multiplier (int, optional): Multiplier for size units (e.g., 1024 for KB). Defaults to 1.
+            file_size: The total size of the file to be split.
+            split_mode: Either 'size' or 'parts'.
+            value: The size value or the number of parts.
+            unit_multiplier: Multiplier for size units (e.g., 1024 for KB).
 
         Returns:
-            tuple[int, int]: A tuple containing (chunk_size, num_chunks).
+            A tuple containing (chunk_size, num_chunks).
 
         Raises:
             ValueError: If input parameters are invalid (e.g., non-positive).
@@ -75,39 +90,39 @@ class FileOperationLogic(QObject):
             if num_chunks <= 0:
                 raise ValueError("Number of parts must be positive.")
             # Calculate chunk size, ensure last chunk handles remainder
-            # Use ceiling to ensure num_chunks is met, last chunk might be smaller
             chunk_size = math.ceil(file_size / num_chunks)
         else:
             raise ValueError(f"Invalid split mode: {split_mode}")
 
-        # Limit padding practicalities and potential excessive chunk creation
-        if num_chunks > 9999:
+        if num_chunks > 9999:  # Limit padding practicality
             raise ValueError("Too many chunks requested (max 9999).")
 
         return chunk_size, num_chunks
 
-    def split_file(self, input_filepath, output_dir, split_mode, value, unit_multiplier=1):
+    def split_file(
+        self, input_filepath: str, output_dir: str, split_mode: str,
+        value: float, unit_multiplier: int = 1
+    ) -> None:
         """
         Splits the input file into smaller chunks based on specified mode and value.
 
         Args:
-            input_filepath (str): Path to the file to be split.
-            output_dir (str): Directory where chunks will be saved.
-            split_mode (str): Either 'size' or 'parts'.
-            value (float or int): The size value or the number of parts.
-            unit_multiplier (int, optional): Multiplier for size units. Defaults to 1.
+            input_filepath: Path to the file to be split.
+            output_dir: Directory where chunks will be saved.
+            split_mode: Either 'size' or 'parts'.
+            value: The size value or the number of parts.
+            unit_multiplier: Multiplier for size units.
         """
         self._is_running = True
         try:
-            # --- Input Validation ---
-            if not os.path.exists(input_filepath):
-                raise FileNotFoundError(f"Input file not found: {input_filepath}")
-            if not os.path.isfile(input_filepath):
-                raise ValueError(f"Input path is not a file: {input_filepath}")
+            # Input validation using validation module
+            validate_file_exists(input_filepath)
+            
+            # Ensure output directory exists or can be created
             if not os.path.exists(output_dir):
                 os.makedirs(output_dir)
-            elif not os.path.isdir(output_dir):
-                raise ValueError(f"Output path is not a directory: {output_dir}")
+            validate_dir_exists(output_dir)
+            validate_path_writeable(output_dir)
 
             file_size = os.path.getsize(input_filepath)
             base_filename = os.path.basename(input_filepath)
@@ -134,7 +149,11 @@ class FileOperationLogic(QObject):
             padding = max(3, len(str(num_chunks)))
             chunk_pattern = f"{base_filename}.part{{:0{padding}d}}"
 
-            self.progress_updated.emit(0, num_chunks, f"Starting split: {num_chunks} chunks, approx size {chunk_size} bytes...")
+            progress_msg = (
+                f"Starting split: {num_chunks} chunks, "
+                f"approx size {chunk_size} bytes..."
+            )
+            self.progress_updated.emit(0, num_chunks, progress_msg)
 
             # --- Perform Splitting ---
             bytes_written_total = 0
@@ -143,58 +162,86 @@ class FileOperationLogic(QObject):
                 for i in range(num_chunks):
                     if not self._is_running:
                         break
+                    
                     chunk_num = i + 1
                     chunk_filename = chunk_pattern.format(chunk_num)
                     chunk_filepath = os.path.join(output_dir, chunk_filename)
+                    
+                    progress_msg = (
+                        f"Writing chunk {chunk_num}/{num_chunks}: "
+                        f"{chunk_filename}"
+                    )
                     self.progress_updated.emit(
-                        chunks_created, num_chunks,
-                        f"Writing chunk {chunk_num}/{num_chunks}: {chunk_filename}"
+                        chunks_created, num_chunks, progress_msg
                     )
 
                     bytes_written_this_chunk = 0
                     try:
                         with open(chunk_filepath, 'wb') as outfile:
-                            # Read and write in smaller blocks within the larger chunk target
+                            # Read and write in smaller blocks
                             while bytes_written_this_chunk < chunk_size:
                                 if not self._is_running:
                                     break
-                                # Calculate remaining needed for this chunk
-                                remaining_in_chunk = chunk_size - bytes_written_this_chunk
-                                # Determine read size: min of buffer, remaining in chunk, remaining in file
-                                read_size = min(CHUNK_RW_SIZE, remaining_in_chunk, file_size - bytes_written_total)
+                                
+                                # Calculate remaining for this chunk
+                                # Calculate space needed
+                                this_chunk = (
+                                    chunk_size - bytes_written_this_chunk
+                                )
+                                total = (
+                                    file_size - bytes_written_total
+                                )
+                                
+                                # Determine read size
+                                read_size = min(
+                                    CHUNK_RW_SIZE,
+                                    this_chunk,
+                                    total
+                                )
 
-                                if read_size <= 0:  # No more data left in file or chunk full
-                                    break
+                                if read_size <= 0:
+                                    break  # No more data or chunk is full
 
                                 data = infile.read(read_size)
-                                if not data:  # End of input file reached unexpectedly
-                                    break
+                                if not data:
+                                    break  # End of input file
 
                                 outfile.write(data)
                                 bytes_written_this_chunk += len(data)
                                 bytes_written_total += len(data)
 
                     except OSError as write_error:
-                         # Try to clean up the partially written chunk on error
-                         if os.path.exists(chunk_filepath):
-                              try: os.remove(chunk_filepath)
-                              except OSError: pass # Ignore cleanup error
-                         raise OSError(f"Error writing chunk {chunk_filename}: {write_error}") from write_error
+                        # Clean up partial chunk on error
+                        if os.path.exists(chunk_filepath):
+                            try:
+                                os.remove(chunk_filepath)
+                            except OSError:
+                                pass  # Ignore cleanup errors
+                        
+                        error_msg = f"Error writing chunk {chunk_filename}"
+                        raise OSError(
+                            f"{error_msg}: {write_error}"
+                        ) from write_error
 
                     if not self._is_running:
-                        # Clean up the chunk if cancelled during write
+                        # Clean up chunk if cancelled
                         if os.path.exists(chunk_filepath):
-                              try: os.remove(chunk_filepath)
-                              except OSError: pass # Ignore cleanup error
+                            try:
+                                os.remove(chunk_filepath)
+                            except OSError:
+                                pass  # Ignore cleanup error
                         break
 
                     chunks_created += 1
-                    # Emit progress *after* chunk is successfully written
-                    self.progress_updated.emit(chunks_created, num_chunks, f"Finished chunk {chunk_num}/{num_chunks}")
+                    # Emit progress after chunk write
+                    msg = f"Finished chunk {chunk_num}/{num_chunks}"
+                    self.progress_updated.emit(
+                        chunks_created, num_chunks, msg
+                    )
 
             # --- Finalization ---
             if not self._is_running:
-                # TODO: Consider option to clean up all successfully written chunks on cancel?
+                # TODO: Clean up successful chunks on cancel?
                 self.error_occurred.emit("Split operation cancelled.")
             else:
                 # Create metadata file
@@ -202,7 +249,7 @@ class FileOperationLogic(QObject):
                     'original_filename': base_filename,
                     'total_size': file_size,
                     'num_chunks': num_chunks,
-                    # Note: This might be approximate if split by parts, use ceiling value
+                    # Note: Might be approximate if split by parts
                     'chunk_size': chunk_size,
                     'chunk_pattern': chunk_pattern,
                     'padding': padding
@@ -212,52 +259,76 @@ class FileOperationLogic(QObject):
                     with open(meta_filepath, 'w') as metafile:
                         json.dump(metadata, metafile, indent=4)
                 except Exception as e:
-                    # Emit as warning, split itself succeeded
-                    self.error_occurred.emit(f"Warning: Could not write metadata file: {e}")
+                    # Warning only, split succeeded
+                    warn_msg = (
+                        f"Warning: Could not write metadata file: {e}"
+                    )
+                    self.error_occurred.emit(warn_msg)
 
-                self.operation_complete.emit(f"File successfully split into {chunks_created} chunks in {output_dir}.")
+                complete_msg = (
+                    f"File successfully split into {chunks_created} "
+                    f"chunks in {output_dir}."
+                )
+                self.operation_complete.emit(complete_msg)
 
         # --- Error Handling ---
         except (FileNotFoundError, ValueError, IOError) as e:
             self.error_occurred.emit(f"Error: {e}")
         except PermissionError as e:
-            self.error_occurred.emit(f"Permission Error: {e}. Check file/directory permissions.")
+            msg = (
+                f"Permission Error: {e}. "
+                f"Check file/directory permissions."
+            )
+            self.error_occurred.emit(msg)
         except OSError as e:
-            self.error_occurred.emit(f"Disk Error: {e}. Check available disk space or permissions.")
+            msg = (
+                f"Disk Error: {e}. "
+                f"Check available disk space or permissions."
+            )
+            self.error_occurred.emit(msg)
         except Exception as e:
             # Catch-all for unexpected errors
-            self.error_occurred.emit(f"An unexpected error occurred during split: {e}")
+            msg = f"An unexpected error occurred during split: {e}"
+            self.error_occurred.emit(msg)
         finally:
-            # Ensure state is reset and thread signal is emitted regardless of outcome
+            # Reset state and emit completion signal
             self._is_running = False
             self.finished.emit()
 
-    def join_files(self, first_chunk_path, output_filepath):
+    def join_files(
+        self,
+        first_chunk_path: str,
+        output_filepath: str
+    ) -> None:
         """
-        Joins file chunks (starting from the specified first chunk) back into a single file.
+        Joins file chunks back into a single file.
 
         Args:
-            first_chunk_path (str): Path to the first chunk file (e.g., file.part001).
-            output_filepath (str): Path where the joined file will be saved.
+            first_chunk_path: Path to first chunk (e.g., file.part001)
+            output_filepath: Path where joined file will be saved
         """
         self._is_running = True
         try:
-            # --- Input Validation ---
-            if not os.path.exists(first_chunk_path):
-                raise FileNotFoundError(f"First chunk file not found: {first_chunk_path}")
-            if not os.path.isfile(first_chunk_path):
-                raise ValueError(f"Selected path is not a file: {first_chunk_path}")
+            # Input validation using validation module
+            validate_file_exists(first_chunk_path)
+            
+            # Ensure output directory exists
+            output_dir = os.path.dirname(output_filepath)
+            if output_dir:
+                os.makedirs(output_dir, exist_ok=True)
+                validate_path_writeable(output_dir)
 
             chunk_dir = os.path.dirname(first_chunk_path)
             chunk_basename = os.path.basename(first_chunk_path)
 
-            # --- Load Metadata or Infer Parameters ---
+            # Load or infer parameters
             metadata = None
             num_chunks = 0
             chunk_pattern = ""
             padding = 0
             expected_total_size = None
-            original_filename = None # Used for output filename suggestion if not provided
+            # Used for output filename suggestion
+            original_filename = None
 
             meta_filepath = os.path.join(chunk_dir, METADATA_FILENAME)
             if os.path.exists(meta_filepath):

@@ -3,6 +3,12 @@ from pathlib import Path
 from typing import Any, Dict, Optional
 import logging
 
+from core.error_handler import get_error_handler
+
+# Get error handler instance
+error_handler = get_error_handler()
+
+
 
 class ConfigManager:
     _instance = None

@@ -1,5 +1,7 @@
 """Core file operations functionality."""
 import os
+
+from core.error_handler import error_handler
 import shutil
 from datetime import datetime
 from pathlib import Path

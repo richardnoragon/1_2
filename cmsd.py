@@ -11,6 +11,9 @@ from PyQt5 import uic
 from gui.common.base_window import BaseWindow
 from gui.common.dialogs import get_existing_directory
 
+from core.error_handler import error_handler
+
+
 
 class MyGUI(BaseWindow):
     def __init__(self):
@@ -62,7 +65,12 @@ class MyGUI(BaseWindow):
         return super().close()
 
 
-app = QApplication(sys.argv)
-gui = MyGUI()
-gui.show()
-sys.exit(app.exec_())
+def main():
+    app = QApplication(sys.argv)
+    gui = MyGUI()
+    gui.show()
+    sys.exit(app.exec_())
+
+
+if __name__ == '__main__':
+    main()

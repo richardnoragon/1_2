@@ -3,6 +3,9 @@ import os
 import re
 from pathlib import Path
 
+from core.error_handler import error_handler
+
+
 
 def create_migration_script(file_path: Path, changes: list) -> str:
     """Create a migration script with proper path handling."""

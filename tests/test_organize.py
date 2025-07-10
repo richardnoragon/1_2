@@ -6,6 +6,9 @@ from unittest import TestCase
 from unittest.mock import MagicMock, patch
 from organize import Rule, RuleDialog, MyGUI
 
+from core.error_handler import error_handler
+
+
 class TestRule(TestCase):
     def setUp(self):
         self.test_dir = tempfile.mkdtemp()

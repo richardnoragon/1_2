@@ -10,6 +10,9 @@ from PyQt5 import uic
 from gui.common.base_window import BaseWindow
 from gui.common.dialogs import show_error_dialog, get_existing_directory
 
+from core.error_handler import error_handler
+
+
 # Get the directory containing the script
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 

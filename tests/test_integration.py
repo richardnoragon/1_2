@@ -10,6 +10,9 @@ from file_splitter_joiner import FileSplitter
 from organize import FileOrganizer
 from size_analyzer import SizeAnalyzer
 
+from core.error_handler import error_handler
+
+
 class TestIntegration(unittest.TestCase):
     @classmethod
     def setUpClass(cls):

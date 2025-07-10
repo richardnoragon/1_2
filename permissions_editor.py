@@ -7,6 +7,9 @@ from PyQt5 import uic
 from gui.common.base_window import BaseWindow
 from gui.common.dialogs import show_error_dialog, show_info_dialog, get_open_file_names
 
+from core.error_handler import error_handler
+
+
 class FilePermissionsGUI(BaseWindow):
     def __init__(self):
         super().__init__()

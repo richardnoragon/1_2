@@ -6,6 +6,9 @@ import mutagen
 from PyQt5.QtWidgets import QApplication
 from tag_viewer_editor import TagViewerEditor
 
+from core.error_handler import error_handler
+
+
 class TestTagViewerEditor(TestCase):
     @classmethod
     def setUpClass(cls):

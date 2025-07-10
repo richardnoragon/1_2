@@ -5,6 +5,9 @@ from datetime import datetime, timedelta
 from tests.test_utils import TestUtils
 from file_touch import FileToucher  # Update based on actual class name
 
+from core.error_handler import error_handler
+
+
 class TestFileToucher(unittest.TestCase):
     def setUp(self):
         self.test_dir = TestUtils.create_temp_dir()

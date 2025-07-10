@@ -1,27 +1,30 @@
-# import os, sys and pathlib
 import os
 import sys
 import pathlib
 import datetime
-import docx  # for Word documents
-import PyPDF2  # for PDF files
-import chardet  # for detecting text file encoding
-
-# Get the directory containing the script
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-
-# import qt modules
-from PyQt5.QtGui import QStandardItemModel, QStandardItem, QDragEnterEvent, QDropEvent
+import traceback
+import docx
+import PyPDF2
+import chardet
+from PyQt5.QtGui import (
+    QStandardItemModel,
+    QStandardItem,
+    QDragEnterEvent,
+    QDropEvent
+)
 from PyQt5.QtWidgets import QApplication, QHeaderView
-from PyQt5.QtCore import QDate, Qt, QUrl
+from PyQt5.QtCore import QDate, Qt
 from log_manager import LogManager
+from core.error_handler import error_handler
 from gui.common import (
     BaseWindow,
     show_error_dialog,
-    show_info_dialog,
     get_existing_directory,
     ProgressWidget
 )
+
+# Get the directory containing the script
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # a class FilePermissionsGUI, inherits from QMainWindow
 # FileFinderGUI has one menu item, Exit. when the select_pushbutton is pressed
@@ -42,11 +45,14 @@ from gui.common import (
 
 class FileFinderGUI(BaseWindow):
     def __init__(self):
-        # load the GUI's UI definition from the XML file
-        super().__init__(os.path.join(SCRIPT_DIR, 'file_finder.ui'))
-        
-        self.logger = LogManager().get_logger('FileFinder')
-        self.logger.info('Initializing File Finder')
+        try:
+            # load the GUI's UI definition from the XML file
+            super().__init__(os.path.join(SCRIPT_DIR, 'file_finder.ui'))
+            
+            self.logger = LogManager().get_logger('FileFinder')
+            self.logger.info('Initializing File Finder')
+        except Exception as e:
+            error_handler.handle_error(e, "initializing File Finder GUI")
         
         # create a model for the listview
         self.model = QStandardItemModel()
@@ -364,7 +370,16 @@ class FileFinderGUI(BaseWindow):
 
 # show GUI
 if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    gui = FileFinderGUI()
-    gui.show()
-    sys.exit(app.exec_())
+    try:
+        print("Starting File Finder...")
+        app = QApplication(sys.argv)
+        print("QApplication created...")
+        gui = FileFinderGUI()
+        print("GUI instance created...")
+        gui.show()
+        print("GUI shown...")
+        sys.exit(app.exec_())
+    except Exception as e:
+        print(f"Error: {str(e)}")
+        traceback.print_exc()
+        sys.exit(1)

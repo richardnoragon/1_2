@@ -7,6 +7,9 @@ import ast
 import logging
 from typing import List, Dict, Set, Optional
 
+from core.error_handler import error_handler
+
+
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,

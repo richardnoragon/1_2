@@ -4,6 +4,9 @@ from rfuhub import RFUHub
 from log_manager import LogManager
 from config_manager import ConfigManager
 
+from core.error_handler import error_handler
+
+
 
 def main():
     # Initialize logging first

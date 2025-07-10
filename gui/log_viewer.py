@@ -10,6 +10,10 @@ from gui.common.dialogs import (
     show_info_dialog,
     get_save_file_name
 )
+from core.error_handler import get_error_handler
+
+# Get error handler instance
+error_handler = get_error_handler()
 
 
 class LogViewerWindow(BaseWindow):

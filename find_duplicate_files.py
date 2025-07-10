@@ -16,6 +16,9 @@ from PyQt5.QtCore import Qt
 from gui.common.base_window import BaseWindow
 from gui.common.dialogs import show_error_dialog, show_info_dialog, get_existing_directory
 
+from core.error_handler import error_handler
+
+
 # Larger files are read by chunks.
 CRITIC_SIZE = 100_000_000  # 100 MB.
 # Larger files are ignored.

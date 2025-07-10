@@ -8,6 +8,9 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QStandardItemModel
 from rename import MyGUI
 
+from core.error_handler import error_handler
+
+
 class TestRename(TestCase):
     def setUp(self):
         self.app = MagicMock()

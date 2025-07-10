@@ -6,6 +6,9 @@ from PyQt5.QtCore import Qt
 import pytest
 from tests.test_utils import TestUtils
 
+from core.error_handler import error_handler
+
+
 class BaseGuiTest(unittest.TestCase):
     """Base class for GUI tests providing common functionality"""
     

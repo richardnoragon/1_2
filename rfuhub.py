@@ -10,6 +10,9 @@ import os
 from log_manager import LogManager
 from gui.common.base_window import BaseWindow
 
+from core import error_handler
+
+
 
 class RenameWindow(QWidget):
     def __init__(self):

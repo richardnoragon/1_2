@@ -1,3 +1,5 @@
+from core.error_handler import error_handler
+
 # -*- coding: utf-8 -*-
 
 # Form implementation generated from reading ui file 'rename.ui'

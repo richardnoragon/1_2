@@ -5,6 +5,9 @@ import logging
 from datetime import datetime
 import os
 
+from core.error_handler import error_handler
+
+
 # Set up logging
 logging.basicConfig(
     level=logging.INFO,

@@ -1,104 +1,69 @@
 import os
 import tempfile
-from unittest import TestCase
-from unittest.mock import MagicMock, patch
+import shutil
+import pytest
+from unittest.mock import patch
 from PyQt5.QtWidgets import QApplication
-from PyQt5.QtGui import QStandardItem
 from cmsd import MyGUI
 
-class TestCMSD(TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.app = QApplication([])
+@pytest.fixture
+def app():
+    """Fixture to create and manage the QApplication instance"""
+    app = QApplication([])
+    yield app
+    app.quit()
 
-    def setUp(self):
-        self.gui = MyGUI()
-        self.test_dir = tempfile.mkdtemp()
-        self.create_test_files()
-        
-    def tearDown(self):
-        for f in os.listdir(self.test_dir):
-            try:
-                os.remove(os.path.join(self.test_dir, f))
-            except:
-                pass
-        os.rmdir(self.test_dir)
+@pytest.fixture
+def gui(app):
+    """Fixture to create the GUI instance"""
+    return MyGUI()
 
-    @classmethod
-    def tearDownClass(cls):
-        cls.app.quit()
+@pytest.fixture
+def test_dir():
+    """Fixture to create and manage a temporary directory with test files"""
+    temp_dir = tempfile.mkdtemp()
+    test_files = ['test1.txt', 'test2.txt', 'test3.txt']
+    for filename in test_files:
+        with open(os.path.join(temp_dir, filename), 'w') as f:
+            f.write('test content')
+    yield temp_dir
+    shutil.rmtree(temp_dir, ignore_errors=True)
 
-    def create_test_files(self):
-        """Create test files in the temporary directory"""
-        test_files = ['test1.txt', 'test2.txt', 'test3.txt']
-        for filename in test_files:
-            with open(os.path.join(self.test_dir, filename), 'w') as f:
-                f.write('test content')
+def test_initial_state(gui):
+    """Test the initial state of the GUI"""
+    assert gui.left_directory == "."
+    assert gui.right_directory == "."
+    assert gui.left_model.rowCount() == 0
+    assert gui.right_model.rowCount() == 0
+    assert len(gui.selected) == 0
 
-    @patch('PyQt5.QtWidgets.QFileDialog.getExistingDirectory')
-    def test_load_directory_left(self, mock_dialog):
-        # Mock directory selection
-        mock_dialog.return_value = self.test_dir
-        
-        # Test loading left directory
-        self.gui.load_directory_left()
-        
-        # Verify files were loaded into model
-        self.assertEqual(self.gui.listModel.rowCount(), 3)
-        filenames = [self.gui.listModel.item(i).text() 
-                    for i in range(self.gui.listModel.rowCount())]
-        self.assertIn('test1.txt', filenames)
-        self.assertIn('test2.txt', filenames)
-        self.assertIn('test3.txt', filenames)
+@pytest.mark.parametrize("load_func,model_attr", [
+    ("load_directory_left", "left_model"),
+    ("load_directory_right", "right_model")])
+def test_load_directory(gui, test_dir, load_func, model_attr):
+    """Test loading directories into both views"""
+    with patch('gui.common.dialogs.get_existing_directory', return_value=test_dir):
+        getattr(gui, load_func)()
+        model = getattr(gui, model_attr)
+        assert model.rowCount() == 3
+        filenames = [model.item(i).text() for i in range(model.rowCount())]
+        assert all(name in filenames for name in ['test1.txt', 'test2.txt', 'test3.txt'])
 
-    @patch('PyQt5.QtWidgets.QFileDialog.getExistingDirectory')
-    def test_load_directory_right(self, mock_dialog):
-        # Mock directory selection
-        mock_dialog.return_value = self.test_dir
-        
-        # Test loading right directory
-        self.gui.load_directory_right()
-        
-        # Verify files were loaded into model
-        self.assertEqual(self.gui.listModel.rowCount(), 3)
-        filenames = [self.gui.listModel.item(i).text() 
-                    for i in range(self.gui.listModel.rowCount())]
-        self.assertIn('test1.txt', filenames)
-        self.assertIn('test2.txt', filenames)
-        self.assertIn('test3.txt', filenames)
+def test_load_empty_directory(gui, test_dir):
+    """Test loading an empty directory"""
+    empty_dir = os.path.join(test_dir, 'empty')
+    os.makedirs(empty_dir)
+    with patch('gui.common.dialogs.get_existing_directory', return_value=empty_dir):
+        gui.load_directory_left()
+        assert gui.left_model.rowCount() == 0
 
-    def test_initial_state(self):
-        # Test initial state of the GUI
-        self.assertEqual(self.gui.directory, ".")
-        self.assertEqual(self.gui.listModel.rowCount(), 0)
-        self.assertEqual(self.gui.selectModel.rowCount(), 0)
-        self.assertEqual(len(self.gui.selected), 0)
-
-    @patch('PyQt5.QtWidgets.QFileDialog.getExistingDirectory')
-    def test_load_empty_directory(self, mock_dialog):
-        # Create empty directory
-        empty_dir = os.path.join(self.test_dir, 'empty')
-        os.makedirs(empty_dir)
-        mock_dialog.return_value = empty_dir
-        
-        # Test loading empty directory
-        self.gui.load_directory_left()
-        self.assertEqual(self.gui.listModel.rowCount(), 0)
-
-    @patch('PyQt5.QtWidgets.QFileDialog.getExistingDirectory')
-    def test_load_directory_with_subdirs(self, mock_dialog):
-        # Create directory with both files and subdirectories
-        subdir = os.path.join(self.test_dir, 'subdir')
-        os.makedirs(subdir)
-        with open(os.path.join(subdir, 'subfile.txt'), 'w') as f:
-            f.write('test')
-            
-        mock_dialog.return_value = self.test_dir
-        
-        # Test loading directory
-        self.gui.load_directory_left()
-        
-        # Verify only files (not directories) were loaded
-        filenames = [self.gui.listModel.item(i).text() 
-                    for i in range(self.gui.listModel.rowCount())]
-        self.assertNotIn('subdir', filenames)
+def test_load_directory_with_subdirs(gui, test_dir):
+    """Test that only files (not directories) are loaded"""
+    subdir = os.path.join(test_dir, 'subdir')
+    os.makedirs(subdir)
+    with open(os.path.join(subdir, 'subfile.txt'), 'w') as f:
+        f.write('test')
+    with patch('gui.common.dialogs.get_existing_directory', return_value=test_dir):
+        gui.load_directory_left()
+        filenames = [gui.left_model.item(i).text() for i in range(gui.left_model.rowCount())]
+        assert 'subdir' not in filenames

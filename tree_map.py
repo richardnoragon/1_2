@@ -9,8 +9,11 @@ from PyQt5.QtCore import Qt, QThread, QObject, pyqtSignal
 from PyQt5.QtGui import QPen, QBrush, QColor
 from gui.common import BaseWindow, get_existing_directory
 
+from core.error_handler import error_handler
 
-class DiskScanLogic(QObject):
+
+
+class TreeMapLogic(QObject):
     """Scans a directory to calculate item sizes for treemap visualization."""
 
     # Data format: {'path': path, 'items': [{'name': name, 'size': size, ...}]}
@@ -198,7 +201,7 @@ class TreeMapWindow(BaseWindow):
         self.treeMapContainer.layout().addWidget(self.view)
         
         # Initialize disk scanner
-        self.scanner = DiskScanLogic()
+        self.scanner = TreeMapLogic()
         self.scanner_thread = QThread()
         self.scanner.moveToThread(self.scanner_thread)
         

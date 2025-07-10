@@ -8,6 +8,9 @@ import shutil
 import logging
 from typing import Dict, List, Set, Optional
 
+from core.error_handler import error_handler
+
+
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,

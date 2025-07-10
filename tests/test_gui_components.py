@@ -1,11 +1,8 @@
 import unittest
-import sys
-import os
-from PyQt5.QtWidgets import QApplication, QMainWindow
-from PyQt5.QtTest import QTest
-from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QApplication, QPushButton, QTabWidget
 from tests.test_utils import TestUtils
-from rfuhub import RFUHub  # Update based on actual main window class name
+from rfuhub import RFUHub
+
 
 class TestGUIComponents(unittest.TestCase):
     @classmethod
@@ -25,88 +22,102 @@ class TestGUIComponents(unittest.TestCase):
 
     def test_window_title(self):
         """Test that the window title is correct"""
-        self.assertEqual(self.window.windowTitle(), "Richard's File Utilities Hub")
-
-    def test_file_selection(self):
-        """Test the file selection dialog"""
-        # Create a test file
-        test_file = os.path.join(self.test_dir, "test.txt")
-        with open(test_file, 'w') as f:
-            f.write("test content")
-
-        # Simulate file selection
-        self.window.last_directory = self.test_dir  # Set initial directory
-        
-        # Here we're assuming there's a method to programmatically select files
-        # without showing the dialog
-        self.window.select_files([test_file])
-        
-        # Verify the file appears in the file list
-        self.assertIn("test.txt", self.window.get_selected_files())
-
-    def test_menu_actions(self):
-        """Test that menu actions are connected"""
-        # Get all actions
-        actions = self.window.findChildren(QAction)
-        
-        # Verify essential actions exist
-        action_names = [a.text() for a in actions]
-        required_actions = ["Open", "Save", "Exit"]
-        for required in required_actions:
-            self.assertTrue(
-                any(required in name for name in action_names),
-                f"Missing required action: {required}"
-            )
-
-    @unittest.skipIf(os.environ.get('CI') == 'true', "Skip in CI environment")
-    def test_drag_drop(self):
-        """Test drag and drop functionality"""
-        # Create a mock drag event
-        mime_data = QMimeData()
-        mime_data.setUrls([QUrl.fromLocalFile(self.test_dir)])
-        
-        # Create and execute the drop event
-        event = QDropEvent(
-            QPoint(0, 0),
-            Qt.CopyAction,
-            mime_data,
-            Qt.LeftButton,
-            Qt.NoModifier
+        self.assertEqual(
+            self.window.windowTitle(),
+            "Richard's File Utilities Hub"
         )
-        
-        # Assume there's a drop handler
-        self.window.dropEvent(event)
-        
-        # Verify the directory was added
-        self.assertIn(self.test_dir, self.window.get_directories())
 
-    def test_progress_bar(self):
-        """Test progress bar updates"""
-        progress = self.window.findChild(QProgressBar)
-        self.assertIsNotNone(progress)
+    def test_tab_structure(self):
+        """Test that all expected tabs are present"""
+        tab_widget = self.window.findChild(QTabWidget)
+        self.assertIsNotNone(tab_widget)
         
-        # Test progress updates
-        self.window.update_progress(50)
-        self.assertEqual(progress.value(), 50)
+        expected_tabs = [
+            "File Management",
+            "Organization",
+            "Analysis",
+            "Operations",
+            "Metadata",
+            "System",
+            "Administration"
+        ]
         
-        self.window.update_progress(100)
-        self.assertEqual(progress.value(), 100)
+        # Access QTabWidget methods directly
+        tab_count = tab_widget.count()
+        tab_texts = []
+        for i in range(tab_count):
+            tab_texts.append(tab_widget.tabText(i))
+            
+        self.assertEqual(len(tab_texts), len(expected_tabs))
+        for expected in expected_tabs:
+            self.assertIn(expected, tab_texts)
 
-    def test_error_dialog(self):
-        """Test error dialog display"""
-        # Trigger an error
-        error_msg = "Test error message"
-        QTimer.singleShot(100, lambda: self.click_ok_on_error_dialog())
-        self.window.show_error(error_msg)
+    def test_button_existence(self):
+        """Test that all main buttons exist"""
+        buttons = self.window.findChildren(QPushButton)
+        self.assertGreater(len(buttons), 0)
         
-        # Verify error was shown (implementation dependent)
-        self.assertTrue(self.window.last_error_shown == error_msg)
+        required_buttons = [
+            "File Finder",
+            "Catalog Files",
+            "Rename Files",
+            "Exit"
+        ]
+        
+        button_texts = []
+        for btn in buttons:
+            button_texts.append(btn.property("text"))
+            
+        for required in required_buttons:
+            self.assertIn(required, button_texts,
+                         f"Missing required button: {required}")
 
-    def click_ok_on_error_dialog(self):
-        """Helper to click OK on error dialog"""
-        dialog = QApplication.activeModalWidget()
-        if dialog:
-            QTest.keyClick(dialog, Qt.Key_Return)
+    def test_button_click_handling(self):
+        """Test that button clicks trigger correct handler"""
+        # Test the exit button specifically since it's a direct action
+        exit_button = self.window.exit_button
+        self.assertIsNotNone(exit_button)
+        
+        # Store the initial state
+        was_called = False
+        
+        # Create a test handler
+        def test_handler():
+            nonlocal was_called
+            was_called = True
+            
+        # Connect our test handler
+        exit_button.clicked.disconnect()  # Disconnect existing handler
+        exit_button.clicked.connect(test_handler)
+        
+        try:
+            # Simulate clicking the exit button
+            exit_button.click()
+            
+            # Verify our handler was called
+            self.assertTrue(was_called)
+        finally:
+            # Reconnect the original quit handler
+            exit_button.clicked.disconnect()
+            exit_button.clicked.connect(QApplication.instance().quit)
+
+    def test_button_styling(self):
+        """Test that buttons have the correct styling"""
+        buttons = self.window.findChildren(QPushButton)
+        self.assertGreater(len(buttons), 0)
+        
+        for button in buttons:
+            # Check minimum height through property
+            min_height = button.property("minimumHeight")
+            self.assertIsNotNone(min_height)
+            self.assertGreaterEqual(min_height, 50)
+            
+            # Check that style sheet contains essential elements
+            style = button.styleSheet().lower()
+            self.assertIn("background-color", style)
+            self.assertIn("border-radius", style)
+            self.assertIn("padding", style)
+
 
 if __name__ == '__main__':
     unittest.main()

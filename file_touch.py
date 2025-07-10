@@ -16,6 +16,9 @@ from gui.common.dialogs import (
 )
 from config_manager import ConfigManager
 
+from core.error_handler import error_handler
+
+
 # Note: Reliably *setting* creation time is platform-specific and often 
 # requires extra privileges or libraries (like pywin32 on Windows).
 

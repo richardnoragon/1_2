@@ -6,6 +6,9 @@ from tests.test_gui_base import BaseGuiTest
 import os
 import shutil
 
+from core.error_handler import error_handler
+
+
 class TestFileFinder(BaseGuiTest):
     """Test cases for File Finder utility"""
     

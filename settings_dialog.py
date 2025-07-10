@@ -7,6 +7,9 @@ from gui.common.base_dialog import BaseDialog
 from gui.common.dialogs import get_existing_directory
 import os
 
+from core.error_handler import error_handler
+
+
 class SettingsDialog(BaseDialog):
     def __init__(self, parent=None):
         super().__init__()

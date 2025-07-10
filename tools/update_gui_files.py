@@ -3,6 +3,9 @@ import os
 import sys
 from pathlib import Path
 
+from core.error_handler import error_handler
+
+
 def find_gui_files(workspace_path):
     """Find all Python files that might contain GUI code."""
     gui_files = []

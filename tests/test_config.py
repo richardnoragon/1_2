@@ -115,6 +115,9 @@ import os
 import sys
 import json
 
+from core.error_handler import error_handler
+
+
 class TestConfig:
     """Configuration management for test suite"""
     

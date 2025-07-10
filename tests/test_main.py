@@ -5,6 +5,9 @@ from unittest.mock import MagicMock, patch
 from PyQt5.QtWidgets import QApplication
 from main import MyGUI, main, RenameWindow, CatalogWindow, OrganizeWindow
 
+from core.error_handler import error_handler
+
+
 class TestMainApplication(TestCase):
     @classmethod
     def setUpClass(cls):

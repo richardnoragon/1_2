@@ -15,6 +15,9 @@ from gui.common.dialogs import show_error_dialog, show_info_dialog, get_existing
 import pyAesCrypt
 from cryptography.fernet import Fernet
 
+from core.error_handler import error_handler
+
+
 # Create a GUI class, inherits from QMainWindow.
 # The menu has three options, SelectFile, SelectFolder and
 # Exit. If the menu item SelectFile is selected, a system dialog where

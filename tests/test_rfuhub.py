@@ -6,6 +6,9 @@ from config_manager import ConfigManager
 from tests.test_gui_base import BaseGuiTest
 import os
 
+from core.error_handler import error_handler
+
+
 class TestRFUHub(BaseGuiTest):
     """Test cases for RFU Hub main window functionality"""
     

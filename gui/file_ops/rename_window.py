@@ -10,6 +10,9 @@ from PyQt5 import uic
 from core.file_ops.renamer import FileRenamer
 from core.logging_manager import LogManager
 
+from core.error_handler import error_handler
+
+
 
 class RenameWindow(BaseWindow):
     def __init__(self):

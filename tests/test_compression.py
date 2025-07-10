@@ -4,6 +4,9 @@ import shutil
 from tests.test_utils import TestUtils
 from compress_decompress import Compressor  # Update based on actual class name
 
+from core.error_handler import error_handler
+
+
 class TestCompression(unittest.TestCase):
     def setUp(self):
         self.test_dir = TestUtils.create_temp_dir()

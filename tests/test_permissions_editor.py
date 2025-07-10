@@ -8,6 +8,9 @@ from PyQt5.QtGui import QDragEnterEvent, QDropEvent
 from PyQt5.QtWidgets import QApplication
 from permissions_editor import FilePermissionsGUI
 
+from core.error_handler import error_handler
+
+
 class TestFilePermissionsGUI(TestCase):
     @classmethod
     def setUpClass(cls):

@@ -4,6 +4,9 @@ from PyQt5.QtWidgets import QApplication
 from PyQt5.QtCore import QThread
 from check_sum import ChecksumLogic
 from gui.common import (
+
+from core.error_handler import error_handler
+
     BaseWindow,
     show_error_dialog,
     show_info_dialog,

@@ -4,6 +4,9 @@ import logging
 from tests.test_utils import TestUtils
 from log_manager import LogManager
 
+from core.error_handler import error_handler
+
+
 class TestLogging(unittest.TestCase):
     def setUp(self):
         self.test_dir = TestUtils.create_temp_dir()

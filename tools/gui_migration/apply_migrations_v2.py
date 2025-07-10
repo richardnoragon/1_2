@@ -7,6 +7,9 @@ import logging
 import importlib.util
 from typing import List, Optional
 
+from core.error_handler import error_handler
+
+
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,

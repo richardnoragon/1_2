@@ -8,6 +8,9 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication
 from edit_image_metadata import ExifEditorLogic, ImageMetadataEditor, parse_exif_value, format_exif_value
 
+from core.error_handler import error_handler
+
+
 class TestExifEditorLogic(TestCase):
     def setUp(self):
         self.editor_logic = ExifEditorLogic()

@@ -6,6 +6,9 @@ from tests.test_utils import TestUtils
 from organize import FileOrganizer  # Update based on actual class name
 from rename import FileRenamer     # Update based on actual class name
 
+from core.error_handler import error_handler
+
+
 class TestFileOperations(unittest.TestCase):
     def setUp(self):
         self.test_dir = TestUtils.create_temp_dir()

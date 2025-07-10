@@ -4,6 +4,9 @@ from pathlib import Path
 
 from gui_migrator_v2 import GUIMigrationAutomator
 
+from core.error_handler import error_handler
+
+
 def main():
     # Get workspace path from environment or use current directory
     workspace_path = Path.cwd()

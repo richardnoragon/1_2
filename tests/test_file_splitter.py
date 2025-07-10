@@ -4,6 +4,9 @@ import hashlib
 from tests.test_utils import TestUtils
 from file_splitter_joiner import FileSplitter  # Update based on actual class name
 
+from core.error_handler import error_handler
+
+
 class TestFileSplitter(unittest.TestCase):
     def setUp(self):
         self.test_dir = TestUtils.create_temp_dir()

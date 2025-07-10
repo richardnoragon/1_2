@@ -9,6 +9,9 @@ from PyQt5 import uic
 from PyQt5.QtGui import QDragEnterEvent, QDropEvent
 from gui.common.base_window import BaseWindow
 from gui.common.dialogs import (
+
+from core.error_handler import error_handler
+
     show_error_dialog, show_info_dialog, get_open_file_name
 )
 
@@ -163,7 +166,7 @@ class SecureDeleteLogic(QObject):
             self.finished.emit()
 
 
-class SecureDeleteThread(QThread):
+class SecureDeleteWorker(QThread):
     def __init__(self, logic, filepath, passes):
         super().__init__()
         self.logic = logic
@@ -262,7 +265,7 @@ class SecureDeleteWindow(BaseWindow):
             self.cancelButton.setEnabled(True)
             
             # Start deletion in a separate thread
-            self.delete_thread = SecureDeleteThread(self.logic, filepath, passes)
+            self.delete_thread = SecureDeleteWorker(self.logic, filepath, passes)
             self.delete_thread.start()
     
     def cancel_delete(self):

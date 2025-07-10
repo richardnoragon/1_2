@@ -6,6 +6,9 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtCore import Qt
 
+from core.error_handler import error_handler
+
+
 
 def show_error_dialog(
     message: str,
@@ -19,7 +22,7 @@ def show_error_dialog(
         title: Dialog title
         parent: Parent widget
     """
-    show_error_dialogparent, title, message
+    QMessageBox.critical(parent, title, message)
 
 
 def show_info_dialog(
@@ -34,7 +37,7 @@ def show_info_dialog(
         title: Dialog title
         parent: Parent widget
     """
-    show_info_dialogparent, title, message
+    QMessageBox.information(parent, title, message)
 
 
 def show_warning_dialog(
@@ -49,7 +52,7 @@ def show_warning_dialog(
         title: Dialog title
         parent: Parent widget
     """
-    show_error_dialogparent, title, message
+    QMessageBox.warning(parent, title, message)
 
 
 def show_question_dialog(
@@ -97,7 +100,7 @@ def get_open_file_name(
     Returns:
         Selected file path or None if cancelled
     """
-    file_name, _ = get_open_file_name(
+    file_name, _ = QFileDialog.getOpenFileName(
         parent,
         caption,
         str(directory),
@@ -123,7 +126,7 @@ def get_save_file_name(
     Returns:
         Selected file path or None if cancelled
     """
-    file_name, _ = get_save_file_name(
+    file_name, _ = QFileDialog.getSaveFileName(
         parent,
         caption,
         str(directory),
@@ -147,7 +150,7 @@ def get_existing_directory(
     Returns:
         Selected directory path or None if cancelled
     """
-    dir_name = get_existing_directory(
+    dir_name = QFileDialog.getExistingDirectory(
         parent,
         caption,
         str(directory),
@@ -173,7 +176,7 @@ def get_open_file_names(
     Returns:
         List of selected file paths (empty if cancelled)
     """
-    file_names, _ = get_open_file_names(
+    file_names, _ = QFileDialog.getOpenFileNames(
         parent,
         caption,
         str(directory),

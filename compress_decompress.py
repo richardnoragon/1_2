@@ -12,6 +12,9 @@ import os
 import py7zr
 import tarfile
 
+from core.error_handler import error_handler
+
+
 
 class CompressDecompressApp(BaseWindow):
     def __init__(self):

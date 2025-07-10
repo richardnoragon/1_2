@@ -5,6 +5,9 @@ from PyQt5.QtWidgets import QDialog
 from PyQt5.QtCore import Qt, QSize
 from PyQt5 import uic
 
+from core.error_handler import error_handler
+
+
 
 class BaseDialog(QDialog):
     """Base class for all dialogs in the application.

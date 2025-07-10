@@ -4,6 +4,9 @@ import json
 from tests.test_utils import TestUtils
 from config_manager import ConfigManager
 
+from core.error_handler import error_handler
+
+
 class TestConfigManager(unittest.TestCase):
     def setUp(self):
         self.test_dir = TestUtils.create_temp_dir()

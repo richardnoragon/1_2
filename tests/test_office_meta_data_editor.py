@@ -6,6 +6,9 @@ import docx
 from PyQt5.QtWidgets import QApplication
 from office_meta_data_editor import OfficeMetaDataEditorGUI
 
+from core.error_handler import error_handler
+
+
 class TestOfficeMetaDataEditor(TestCase):
     @classmethod
     def setUpClass(cls):

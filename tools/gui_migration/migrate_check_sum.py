@@ -2,6 +2,9 @@
 from pathlib import Path
 import re
 
+from core.error_handler import error_handler
+
+
 
 def migrate():
     file_path = Path('check_sum.py')

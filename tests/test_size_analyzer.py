@@ -4,6 +4,9 @@ import json
 from tests.test_utils import TestUtils
 from size_analyzer import SizeAnalyzer  # Update based on actual class name
 
+from core.error_handler import error_handler
+
+
 class TestSizeAnalyzer(unittest.TestCase):
     def setUp(self):
         self.test_dir = TestUtils.create_temp_dir()

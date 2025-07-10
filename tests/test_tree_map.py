@@ -7,6 +7,9 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication
 from tree_map import DiskScanLogic, TreeMapWindow
 
+from core.error_handler import error_handler
+
+
 class TestDiskScanLogic(TestCase):
     def setUp(self):
         self.test_dir = tempfile.mkdtemp()

@@ -5,6 +5,9 @@ import shutil
 import tempfile
 from PyQt5.QtWidgets import QApplication
 
+from core.error_handler import error_handler
+
+
 class TestUtils:
     _app = None  # Class variable to hold the QApplication instance
     

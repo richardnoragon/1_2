@@ -8,6 +8,9 @@ from gui.common.dialogs import show_error_dialog, show_info_dialog, get_existing
 import sys
 import os
 
+from core.error_handler import error_handler
+
+
 
 class EmptyFolderLogic(QObject):
     """Handles the logic for finding and deleting empty folders."""

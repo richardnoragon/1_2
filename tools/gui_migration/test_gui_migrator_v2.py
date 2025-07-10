@@ -32,6 +32,9 @@ class MainWindow(QMainWindow):
         self.gui_file2.write_text('''
 from PyQt5.QtWidgets import QDialog
 
+from core.error_handler import error_handler
+
+
 class SettingsDialog(QDialog):
     def __init__(self):
         super().__init__()

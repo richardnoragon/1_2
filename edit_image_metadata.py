@@ -9,6 +9,9 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.uic import loadUi
 
+from core.error_handler import error_handler
+
+
 try:
     import piexif
     import piexif.helper

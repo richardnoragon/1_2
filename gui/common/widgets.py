@@ -8,6 +8,9 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtCore import Qt, pyqtSignal
 
+from core.error_handler import error_handler
+
+
 
 class ProgressWidget(QWidget):
     """A widget combining a progress bar with a label and optional cancel button."""

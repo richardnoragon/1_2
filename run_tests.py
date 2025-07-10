@@ -5,6 +5,9 @@ import os
 import subprocess
 import multiprocessing
 
+from core.error_handler import error_handler
+
+
 def parse_args():
     parser = argparse.ArgumentParser(description='Run RFU test suite')
     parser.add_argument('--no-gui', action='store_true',

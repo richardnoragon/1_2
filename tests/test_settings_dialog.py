@@ -5,6 +5,9 @@ from config_manager import ConfigManager
 from tests.test_gui_base import BaseGuiTest
 import os
 
+from core.error_handler import error_handler
+
+
 class TestSettingsDialog(BaseGuiTest):
     """Test cases for settings dialog functionality"""
     
