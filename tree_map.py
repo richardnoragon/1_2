@@ -23,11 +23,13 @@ class TreeMapLogic(QObject):
     finished = pyqtSignal()
 
     def __init__(self):
+        """init."""
         super().__init__()
         self._is_running = False
         self._target_path = None
 
     def stop(self):
+        """stop."""
         self.progress_updated.emit("Stopping scan...", 0, 0)
         self._is_running = False
 
@@ -189,7 +191,9 @@ class TreeMapLogic(QObject):
 
 
 class TreeMapWindow(BaseWindow):
+    """A class that handles tree map window and inherits from BaseWindow."""
     def __init__(self):
+        """init."""
         super().__init__("tree_map.ui")
         
         # Initialize scene and view for treemap
@@ -219,6 +223,7 @@ class TreeMapWindow(BaseWindow):
         self.scanner_thread.start()
         
     def select_directory(self):
+        """selectdirectory."""
         dir_path = get_existing_directory(self, "Select Directory")
         if dir_path:
             self.lblPath.setText(dir_path)
@@ -228,18 +233,30 @@ class TreeMapWindow(BaseWindow):
             self.scanner.start_scan(dir_path)
     
     def stop_scan(self):
+        """stopscan."""
         self.scanner.stop()
         self.btnStop.setEnabled(False)
     
     def update_progress(self, message, current, total):
+        """updateprogress.
+        Args:
+            message (Any): Description of message
+        Args:
+            current (Any): Description of current
+        Args:
+            total (Any): Description of total"""
         self.lblStatus.setText(message)
         if total > 0:
             self.progressBar.setValue(int((current / total) * 100))
     
     def show_error(self, message):
+        """showerror.
+        Args:
+            message (Any): Description of message"""
         self.lblStatus.setText(f"Error: {message}")
     
     def scan_finished(self):
+        """scanfinished."""
         self.btnStop.setEnabled(False)
         
     def draw_treemap(self, data):

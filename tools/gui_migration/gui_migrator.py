@@ -21,6 +21,9 @@ class GUIFileMigrator:
     """Class to handle migration of GUI files to use common utilities."""
     
     def __init__(self, workspace_path: str):
+        """init.
+        Args:
+            workspace_path (str): Description of workspace_path"""
         self.workspace_path = Path(workspace_path)
         self.gui_files: List[Path] = []
         self.qt_imports: Dict[Path, Set[str]] = {}
@@ -178,6 +181,7 @@ class GUIFileMigrator:
         return "\n".join(script_content)
 
 def main():
+    """main."""
     if len(sys.argv) != 2:
         print("Usage: python gui_migrator.py <workspace_path>")
         sys.exit(1)

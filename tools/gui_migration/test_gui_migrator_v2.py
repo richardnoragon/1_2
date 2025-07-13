@@ -8,7 +8,9 @@ from tools.gui_migration.gui_migrator_v2 import GUIMigrationAutomator
 
 
 class TestGUIMigrationAutomator(unittest.TestCase):
+    """A class that handles test g u i migration automator."""
     def setUp(self):
+        """setup."""
         # Create a temporary workspace
         self.temp_dir = Path(tempfile.mkdtemp())
         
@@ -51,6 +53,7 @@ def add(a, b):
         self.automator._test_mode = True  # Enable test mode
 
     def tearDown(self):
+        """teardown."""
         # Clean up temporary directory
         shutil.rmtree(self.temp_dir)
 

@@ -16,7 +16,9 @@ from core.error_handler import error_handler
 
 
 class MyGUI(BaseWindow):
+    """A class that handles my g u i and inherits from BaseWindow."""
     def __init__(self):
+        """init."""
         super(MyGUI, self).__init__()
         uic.loadUi("cmsd.ui", self)
         self.show()
@@ -62,10 +64,14 @@ class MyGUI(BaseWindow):
                     self.right_model.appendRow(QStandardItem(file))
 
     def close(self) -> bool:
+        """close.
+        Returns:
+            bool: Description of value"""
         return super().close()
 
 
 def main():
+    """main."""
     app = QApplication(sys.argv)
     gui = MyGUI()
     gui.show()

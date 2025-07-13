@@ -6,13 +6,15 @@ from unittest import TestCase
 from unittest.mock import MagicMock, patch
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QStandardItemModel
-from rename import MyGUI
+from rfuhub import MyGUI
 
 from core.error_handler import error_handler
 
 
 class TestRename(TestCase):
+    """A class that handles test rename and inherits from TestCase."""
     def setUp(self):
+        """setup."""
         self.app = MagicMock()
         self.gui = MyGUI()
         self.test_dir = tempfile.mkdtemp()
@@ -25,19 +27,23 @@ class TestRename(TestCase):
                 f.write('test content')
 
     def tearDown(self):
+        """teardown."""
         shutil.rmtree(self.test_dir)
 
     def test_load_directory(self):
+        """testloaddirectory."""
         with patch('PyQt5.QtWidgets.QFileDialog.getExistingDirectory', return_value=self.test_dir):
             self.gui.load_directory()
             self.assertEqual(self.gui.listModel.rowCount(), len(self.test_files))
 
     def test_filter_list(self):
+        """testfilterlist."""
         self.gui.filterEdit.setText('test1')
         self.gui.filter_list()
         self.assertEqual(self.gui.listModel.rowCount(), 1)
 
     def test_choose_selection(self):
+        """testchooseselection."""
         self.gui.listModel = QStandardItemModel()
         for file in self.test_files:
             self.gui.listModel.appendRow(QStandardItemModel().itemFromIndex(file))
@@ -49,6 +55,7 @@ class TestRename(TestCase):
         self.assertEqual(self.gui.selectModel.rowCount(), 1)
 
     def test_rename_files_prefix(self):
+        """testrenamefilesprefix."""
         # Test prefix addition
         self.gui.selected = ['test1.txt']
         self.gui.nameEdit.setText('prefix_')
@@ -58,6 +65,7 @@ class TestRename(TestCase):
         self.assertTrue(os.path.exists(os.path.join(self.test_dir, 'prefix_test1.txt')))
 
     def test_rename_files_suffix(self):
+        """testrenamefilessuffix."""
         # Test suffix addition
         self.gui.selected = ['test1.txt']
         self.gui.nameEdit.setText('_suffix')
@@ -67,6 +75,7 @@ class TestRename(TestCase):
         self.assertTrue(os.path.exists(os.path.join(self.test_dir, 'test1_suffix.txt')))
 
     def test_rename_files_case_changes(self):
+        """testrenamefilescasechanges."""
         # Create a mixed-case test file
         test_file = 'TestCase.txt'
         with open(os.path.join(self.test_dir, test_file), 'w') as f:
@@ -80,6 +89,7 @@ class TestRename(TestCase):
         self.assertTrue(os.path.exists(os.path.join(self.test_dir, 'testcase.txt')))
 
     def test_metadata_date_formatting(self):
+        """testmetadatadateformatting."""
         test_date = datetime(2025, 4, 8, 12, 30, 45)
         
         # Test different date formats
@@ -96,6 +106,7 @@ class TestRename(TestCase):
             self.assertEqual(result, expected)
 
     def test_get_file_metadata_date(self):
+        """testgetfilemetadatadate."""
         # Test fallback to file modification time for regular files
         test_file = os.path.join(self.test_dir, 'test1.txt')
         result = self.gui.get_file_metadata_date(test_file)

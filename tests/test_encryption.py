@@ -1,15 +1,18 @@
 import unittest
 import os
+import unittest
 from tests.test_utils import TestUtils
-from en_and_decrypt import Encryptor  # Update based on actual class name
+from en_and_decrypt import en_and_decryptGUI
 
 from core.error_handler import error_handler
 
 
 class TestEncryption(unittest.TestCase):
+    """A class that handles test encryption."""
     def setUp(self):
+        """setup."""
         self.test_dir = TestUtils.create_temp_dir()
-        self.encryptor = Encryptor()
+        self.encryptor = en_and_decryptGUI()
         
         # Create test file with sensitive content
         self.test_file = os.path.join(self.test_dir, "sensitive.txt")
@@ -20,6 +23,7 @@ class TestEncryption(unittest.TestCase):
         self.password = "test_password123"
 
     def tearDown(self):
+        """teardown."""
         TestUtils.cleanup_temp_dir(self.test_dir)
 
     def test_encrypt_decrypt_file(self):

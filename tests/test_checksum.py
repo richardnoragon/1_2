@@ -1,16 +1,19 @@
 import unittest
 import os
 import hashlib
+import unittest
 from tests.test_utils import TestUtils
-from check_sum import Checksummer  # Update based on actual class name
+from check_sum import ChecksumLogic
 
 from core.error_handler import error_handler
 
 
 class TestChecksummer(unittest.TestCase):
+    """A class that handles test checksummer."""
     def setUp(self):
+        """setup."""
         self.test_dir = TestUtils.create_temp_dir()
-        self.checksummer = Checksummer()
+        self.checksummer = ChecksumLogic(target_path="", algorithm="sha256")
         
         # Create test files with known content
         self.test_files = {}
@@ -34,6 +37,7 @@ class TestChecksummer(unittest.TestCase):
             }
 
     def tearDown(self):
+        """teardown."""
         TestUtils.cleanup_temp_dir(self.test_dir)
 
     def test_calculate_md5(self):
@@ -103,6 +107,9 @@ class TestChecksummer(unittest.TestCase):
         progress_values = []
         
         def progress_callback(percent):
+            """progresscallback.
+        Args:
+            percent (Any): Description of percent"""
             progress_values.append(percent)
         
         # Calculate checksum with progress tracking

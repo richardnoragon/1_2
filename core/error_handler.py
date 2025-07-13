@@ -10,9 +10,13 @@ from PyQt5.QtWidgets import QMessageBox
 
 
 class ErrorHandler:
+    """A class that handles error handler."""
     _instance = None
     
     def __new__(cls):
+        """new.
+        Args:
+            cls (Any): Description of cls"""
         if cls._instance is None:
             cls._instance = super(ErrorHandler, cls).__new__(cls)
             cls._instance._initialize()

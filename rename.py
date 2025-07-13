@@ -162,7 +162,7 @@ class FileRenamerWindow(BaseWindow):
         - Apply button
         """
         self.actionSelect.triggered.connect(self.load_directory)
-        self.actionexit.triggered.connect(self.close)
+        self.actionExit.triggered.connect(self.close)
         self.filterButton.clicked.connect(self.filter_list)
         self.selectButton.clicked.connect(self.choose_selection)
         self.removeButton.clicked.connect(self.remove_selection)
@@ -526,6 +526,7 @@ class FileRenamerWindow(BaseWindow):
 
 
 def main():
+    """main."""
     app = QApplication(sys.argv)
     window = FileRenamerWindow()
     window.show()

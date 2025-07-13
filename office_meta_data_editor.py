@@ -11,7 +11,9 @@ from core.error_handler import error_handler
 
 
 class OfficeMetaDataEditorGUI(BaseWindow):
+    """A class that handles office meta data editor g u i and inherits from BaseWindow."""
     def __init__(self):
+        """init."""
         super().__init__()
         # load the GUI's UI definition from the XML file
         uic.loadUi('office_meta_data_editor.ui', self)
@@ -44,6 +46,7 @@ class OfficeMetaDataEditorGUI(BaseWindow):
         self.show()
 
     def select(self):
+        """select."""
         try:
             fileName = get_open_file_name(
                 self,
@@ -75,6 +78,7 @@ class OfficeMetaDataEditorGUI(BaseWindow):
             show_error_dialog(self, "Error", f"Error opening file: {str(e)}")
 
     def set_meta_data(self):
+        """setmetadata."""
         try:
             if not self.current_file:
                 show_error_dialog(self, "Warning", "Please select a file first.")

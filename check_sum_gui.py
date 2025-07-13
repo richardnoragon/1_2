@@ -3,10 +3,8 @@ import os
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtCore import QThread
 from check_sum import ChecksumLogic
-from gui.common import (
-
 from core.error_handler import error_handler
-
+from gui.common import (
     BaseWindow,
     show_error_dialog,
     show_info_dialog,
@@ -18,6 +16,15 @@ from core.error_handler import error_handler
 
 
 class ChecksumGUI(BaseWindow):
+    """GUI application for calculating and verifying file/directory checksums.
+    
+    Inherits from BaseWindow and provides functionality for:
+    - Calculating checksums for files and directories
+    - Verifying checksums against provided values
+    - Supporting multiple hash algorithms
+    - Showing progress during operations
+    """
+    
     def __init__(self):
         # Get the directory containing this script
         current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -63,21 +70,28 @@ class ChecksumGUI(BaseWindow):
         """Start the checksum calculation/verification process"""
         path = self.filePathInput.text()
         if not path:
-            show_error_dialog(self, "Error", "Please select a file or directory")
+            show_error_dialog(
+                "Please select a file or directory",
+                parent=self
+            )
             return
             
         if not os.path.exists(path):
-            show_error_dialog(self, "Error", "Selected path does not exist")
+            show_error_dialog("Selected path does not exist", parent=self)
             return
             
         # Determine mode
         mode_text = self.modeCombo.currentText().lower()
         if 'directory' in mode_text:
-            mode = ('calculate_dir' if 'calculate' in mode_text 
-                   else 'verify_dir')
+            mode = (
+                'calculate_dir' if 'calculate' in mode_text
+                else 'verify_dir'
+            )
         else:
-            mode = ('calculate_file' if 'calculate' in mode_text 
-                   else 'verify_file')
+            mode = (
+                'calculate_file' if 'calculate' in mode_text
+                else 'verify_file'
+            )
             
         # Get algorithm
         algorithm = self.algorithmCombo.currentText().lower().replace('-', '')
@@ -125,7 +139,7 @@ class ChecksumGUI(BaseWindow):
                 self.resultsArea.append(f"{path}: {checksum}")
         else:
             self.resultsArea.append(str(results))
-        show_info_dialog(self, "Success", "Checksum calculation completed")
+        show_info_dialog("Checksum calculation completed", parent=self)
             
     def handle_error(self, error_msg):
         """Display error message"""
@@ -153,7 +167,7 @@ class ChecksumGUI(BaseWindow):
     def save_results(self):
         """Save results to a file"""
         if not self.resultsArea.toPlainText():
-            show_error_dialog(self, "Error", "No results to save")
+            show_error_dialog("No results to save", parent=self)
             return
             
         filename = get_save_file_name(
@@ -166,7 +180,7 @@ class ChecksumGUI(BaseWindow):
             try:
                 with open(filename, 'w') as f:
                     f.write(self.resultsArea.toPlainText())
-                show_info_dialog(self, "Success", "Results saved successfully")
+                show_info_dialog("Results saved successfully", parent=self)
             except Exception as e:
                 show_error_dialog(
                     self,

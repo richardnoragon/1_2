@@ -103,7 +103,9 @@ def process_file(file: Path,
 
 
 class DuplicateFinderApp(BaseWindow):
+    """A class that handles duplicate finder app and inherits from BaseWindow."""
     def __init__(self):
+        """init."""
         super().__init__()
         # Create a central widget and set it
         self.central_widget = QtWidgets.QWidget()

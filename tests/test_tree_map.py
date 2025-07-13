@@ -5,17 +5,20 @@ from unittest import TestCase
 from unittest.mock import MagicMock, patch
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication
-from tree_map import DiskScanLogic, TreeMapWindow
+from tree_map import TreeMapLogic, TreeMapWindow
 
 from core.error_handler import error_handler
 
 
 class TestDiskScanLogic(TestCase):
+    """A class that handles test disk scan logic and inherits from TestCase."""
     def setUp(self):
+        """setup."""
         self.test_dir = tempfile.mkdtemp()
         self.scanner = DiskScanLogic()
         
     def tearDown(self):
+        """teardown."""
         shutil.rmtree(self.test_dir)
         
     def create_test_files(self, structure):
@@ -33,6 +36,7 @@ class TestDiskScanLogic(TestCase):
                     f.write(b'0' * size)
 
     def test_basic_scan(self):
+        """testbasicscan."""
         # Create test files
         test_files = {
             'small.txt': 100,
@@ -60,6 +64,7 @@ class TestDiskScanLogic(TestCase):
         )
 
     def test_nested_directory_scan(self):
+        """testnesteddirectoryscan."""
         # Create nested directory structure
         structure = {
             'dir1': {
@@ -84,6 +89,7 @@ class TestDiskScanLogic(TestCase):
         self.assertEqual(scanned_size, total_size)
 
     def test_stop_scan(self):
+        """teststopscan."""
         # Create large test structure
         structure = {f'file{i}.txt': 1000 for i in range(100)}
         self.create_test_files(structure)
@@ -100,6 +106,7 @@ class TestDiskScanLogic(TestCase):
         self.assertFalse(self.scanner._is_running)
 
     def test_error_handling(self):
+        """testerrorhandling."""
         error_signal = MagicMock()
         self.scanner.error_occurred.connect(error_signal)
         
@@ -108,27 +115,38 @@ class TestDiskScanLogic(TestCase):
         error_signal.assert_called_once()
 
 class TestTreeMapWindow(TestCase):
+    """A class that handles test tree map window and inherits from TestCase."""
     @classmethod
     def setUpClass(cls):
+        """setupclass.
+        Args:
+            cls (Any): Description of cls"""
         # Create QApplication instance
         cls.app = QApplication([])
         
     def setUp(self):
+        """setup."""
         self.window = TreeMapWindow()
         self.test_dir = tempfile.mkdtemp()
         
     def tearDown(self):
+        """teardown."""
         shutil.rmtree(self.test_dir)
         
     @classmethod
     def tearDownClass(cls):
+        """teardownclass.
+        Args:
+            cls (Any): Description of cls"""
         cls.app.quit()
 
     def test_initial_state(self):
+        """testinitialstate."""
         self.assertFalse(self.window.btnStop.isEnabled())
         self.assertEqual(self.window.progressBar.value(), 0)
 
     def test_draw_treemap(self):
+        """testdrawtreemap."""
         # Test with sample data
         test_data = {
             'path': self.test_dir,
@@ -145,6 +163,7 @@ class TestTreeMapWindow(TestCase):
         self.assertEqual(len(self.window.scene.items()), 3)
 
     def test_format_size(self):
+        """testformatsize."""
         test_cases = [
             (500, "500.0 B"),
             (1024, "1.0 KB"),
@@ -156,12 +175,14 @@ class TestTreeMapWindow(TestCase):
             self.assertEqual(self.window.format_size(size), expected)
 
     def test_empty_directory(self):
+        """testemptydirectory."""
         test_data = {'path': self.test_dir, 'items': []}
         self.window.draw_treemap(test_data)
         self.assertEqual(len(self.window.scene.items()), 0)
         self.assertEqual(self.window.lblStatus.text(), "No items to display")
 
     def test_stop_scan_button(self):
+        """teststopscanbutton."""
         with patch('PyQt5.QtWidgets.QFileDialog.getExistingDirectory', 
                   return_value=self.test_dir):
             self.window.select_directory()

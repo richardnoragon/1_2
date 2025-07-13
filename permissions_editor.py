@@ -11,7 +11,9 @@ from core.error_handler import error_handler
 
 
 class FilePermissionsGUI(BaseWindow):
+    """A class that handles file permissions g u i and inherits from BaseWindow."""
     def __init__(self):
+        """init."""
         super().__init__()
         uic.loadUi('permissions_editor.ui', self)
         
@@ -36,14 +38,21 @@ class FilePermissionsGUI(BaseWindow):
         self.show()
         
     def dragEnterEvent(self, event: QDragEnterEvent):
+        """dragenterevent.
+        Args:
+            event (QDragEnterEvent): Description of event"""
         if event.mimeData().hasUrls():
             event.acceptProposedAction()
             
     def dropEvent(self, event: QDropEvent):
+        """dropevent.
+        Args:
+            event (QDropEvent): Description of event"""
         files = [url.toLocalFile() for url in event.mimeData().urls()]
         self.add_files(files)
         
     def select_files(self):
+        """selectfiles."""
         files = get_open_file_names(
             self,
             "Select Files",
@@ -54,6 +63,9 @@ class FilePermissionsGUI(BaseWindow):
             self.add_files(files)
             
     def add_files(self, files):
+        """addfiles.
+        Args:
+            files (Any): Description of files"""
         for file in files:
             if not self.model.findItems(file):
                 item = QStandardItem(file)
@@ -61,6 +73,9 @@ class FilePermissionsGUI(BaseWindow):
                 self.update_file_permissions(file)
                 
     def update_file_permissions(self, file):
+        """updatefilepermissions.
+        Args:
+            file (Any): Description of file"""
         try:
             self.read_checkBox.setChecked(os.access(file, os.R_OK))
             self.write_checkBox.setChecked(os.access(file, os.W_OK))
@@ -69,6 +84,7 @@ class FilePermissionsGUI(BaseWindow):
             show_error_dialog(self, "Error", f"Could not read permissions for {file}: {str(e)}")
 
     def set_permissions(self):
+        """setpermissions."""
         if self.model.rowCount() == 0:
             show_info_dialog(self, "No Files", "Please add files to modify their permissions")
             return

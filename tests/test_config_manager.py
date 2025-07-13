@@ -8,12 +8,18 @@ from core.error_handler import error_handler
 
 
 class TestConfigManager(unittest.TestCase):
+    """A class that handles test config manager."""
     def setUp(self):
+        """setup."""
         self.test_dir = TestUtils.create_temp_dir()
         self.config_file = os.path.join(self.test_dir, "config.json")
-        self.config_manager = ConfigManager(self.config_file)
+        self.config_manager = ConfigManager()
+        # Store original config path and replace it
+        self.original_config_path = self.config_manager.config_path
+        self.config_manager.config_path = self.config_file
 
     def tearDown(self):
+        """teardown."""
         TestUtils.cleanup_temp_dir(self.test_dir)
 
     def test_default_config(self):

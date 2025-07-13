@@ -58,6 +58,7 @@ def restore_backup(backup_path: Path, original_path: Path) -> bool:
         return False
 
 def main():
+    """main."""
     parser = argparse.ArgumentParser(
         description="Apply GUI migrations to multiple files"
     )

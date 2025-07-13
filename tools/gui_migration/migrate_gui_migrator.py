@@ -7,6 +7,7 @@ from core.error_handler import error_handler
 
 
 def migrate():
+    """migrate."""
     file_path = Path('tools\gui_migration\gui_migrator.py')
     with open(file_path, 'r', encoding='utf-8') as f:
         content = f.read()

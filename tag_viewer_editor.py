@@ -4,6 +4,7 @@ This module provides functionality to view and edit metadata tags in various
 audio and video file formats using a graphical interface.
 """
 
+import os
 import sys
 
 from core.error_handler import error_handler
@@ -15,10 +16,7 @@ from mutagen.mp3 import MP3
 from mutagen.mp4 import MP4
 from typing import Any, cast
 
-from PyQt5.QtWidgets import (
-    QApplication,
-    QFileDialog
-)
+from PyQt5.QtWidgets import QApplication
 from PyQt5.QtCore import QModelIndex
 from PyQt5.QtGui import (
     QStandardItemModel,
@@ -28,7 +26,7 @@ from PyQt5 import uic
 
 # Local imports
 from gui.common.base_window import BaseWindow
-from gui.common.dialogs import show_error_dialog
+from gui.common.dialogs import show_error_dialog, get_open_file_name
 
 # Supported file extensions and their descriptions
 FILE_FILTERS = (
@@ -75,7 +73,8 @@ class TagViewerEditor(BaseWindow):
         
     def _setup_ui(self) -> None:
         """Load and initialize the UI components."""
-        uic.loadUi('tag_viewer_editor.ui', self)
+        ui_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "tag_viewer_editor.ui")
+        uic.loadUi(ui_file, self)
         self.metadataTable.horizontalHeader().setStretchLastSection(True)
         
     def _init_metadata_model(self) -> None:
@@ -93,15 +92,15 @@ class TagViewerEditor(BaseWindow):
         - Update tag button
         - Table selection changes
         """
-        self.actionOpen.triggered.connect(self._browse_file)
-        self.actionExit.triggered.connect(self.close)
+        self.openAction.triggered.connect(self._browse_file)
+        self.exitAction.triggered.connect(self.close)
         self.browseButton.clicked.connect(self._browse_file)
         self.updateButton.clicked.connect(self._update_tag)
         self.metadataTable.clicked.connect(self._on_table_click)
         
     def _browse_file(self) -> None:
         """Open file dialog and load selected audio/video file."""
-        file_path, _ = QFileDialog.getOpenFileName(
+        file_path = get_open_file_name(
             self,
             "Open Audio/Video File",
             "",
@@ -118,7 +117,7 @@ class TagViewerEditor(BaseWindow):
                 show_error_dialog("Error", msg, self)
                 return
 
-            self._current_file = file_path
+            self._current_file = str(file_path)
             self._current_tags = tags
             self._display_metadata()
 

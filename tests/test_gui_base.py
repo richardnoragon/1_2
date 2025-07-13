@@ -178,6 +178,9 @@ class BaseGuiTest(unittest.TestCase):
         """
         dialogs = []
         def dialog_shown(dialog):
+            """dialogshown.
+        Args:
+            dialog (Any): Description of dialog"""
             if isinstance(dialog, dialog_type):
                 dialogs.append(dialog)
         

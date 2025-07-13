@@ -5,6 +5,7 @@ from rfuhub import RFUHub
 
 
 class TestGUIComponents(unittest.TestCase):
+    """A class that handles test g u i components."""
     @classmethod
     def setUpClass(cls):
         """Create the application once for all tests"""
@@ -83,6 +84,7 @@ class TestGUIComponents(unittest.TestCase):
         
         # Create a test handler
         def test_handler():
+            """testhandler."""
             nonlocal was_called
             was_called = True
             

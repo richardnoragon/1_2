@@ -19,7 +19,11 @@ error_handler = get_error_handler()
 
 
 class SettingsDialog(QDialog):
+    """A class that handles settings dialog and inherits from QDialog."""
     def __init__(self, parent=None):
+        """init.
+        Args:
+            parent (Any): Description of parent"""
         super().__init__(parent)
         self.config = ConfigManager()
         self.setup_ui()

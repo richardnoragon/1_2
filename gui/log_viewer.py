@@ -17,7 +17,9 @@ error_handler = get_error_handler()
 
 
 class LogViewerWindow(BaseWindow):
+    """A class that handles log viewer window and inherits from BaseWindow."""
     def __init__(self):
+        """init."""
         super().__init__()
         
         # Initialize log manager first

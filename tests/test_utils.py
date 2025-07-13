@@ -9,6 +9,7 @@ from core.error_handler import error_handler
 
 
 class TestUtils:
+    """A class that handles test utils."""
     _app = None  # Class variable to hold the QApplication instance
     
     @classmethod
@@ -106,6 +107,9 @@ class TestUtils:
             bool: True if directories are identical
         """
         def get_relative_paths(directory):
+            """getrelativepaths.
+        Args:
+            directory (Any): Description of directory"""
             paths = set()
             for root, _, files in os.walk(directory):
                 for file in files:

@@ -122,6 +122,7 @@ def apply_migration(
         return False
 
 def main():
+    """main."""
     parser = argparse.ArgumentParser(
         description="Apply GUI migrations to files"
     )

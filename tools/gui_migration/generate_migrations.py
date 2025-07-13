@@ -85,6 +85,7 @@ def create_migration_files(migration_dir: Path, migration_plans: dict):
 
 
 def main():
+    """main."""
     # Example usage:
     migration_dir = Path("tools/gui_migration/scripts")
     

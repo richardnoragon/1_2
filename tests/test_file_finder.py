@@ -1,6 +1,6 @@
 import unittest
 from PyQt5.QtWidgets import QDialog
-from file_finder import FileFinder
+from file_finder import FileFinderGUI, FileFinder
 from config_manager import ConfigManager
 from tests.test_gui_base import BaseGuiTest
 import os
@@ -13,6 +13,7 @@ class TestFileFinder(BaseGuiTest):
     """Test cases for File Finder utility"""
     
     def setUp(self):
+        """setup."""
         super().setUp()
         # Create test directory structure
         self.test_files = self.create_test_files()

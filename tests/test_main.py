@@ -3,21 +3,30 @@ import sys
 from unittest import TestCase
 from unittest.mock import MagicMock, patch
 from PyQt5.QtWidgets import QApplication
-from main import MyGUI, main, RenameWindow, CatalogWindow, OrganizeWindow
+from rfuhub import MyGUI, RenameWindow, CatalogWindow, OrganizeWindow
+from main import main
 
 from core.error_handler import error_handler
 
 
 class TestMainApplication(TestCase):
+    """A class that handles test main application and inherits from TestCase."""
     @classmethod
     def setUpClass(cls):
+        """setupclass.
+        Args:
+            cls (Any): Description of cls"""
         cls.app = QApplication([])
 
     def setUp(self):
+        """setup."""
         self.gui = MyGUI()
         
     @classmethod
     def tearDownClass(cls):
+        """teardownclass.
+        Args:
+            cls (Any): Description of cls"""
         cls.app.quit()
 
     def test_initial_window_state(self):
@@ -116,25 +125,34 @@ class TestSubWindows(TestCase):
     
     @classmethod
     def setUpClass(cls):
+        """setupclass.
+        Args:
+            cls (Any): Description of cls"""
         cls.app = QApplication([])
 
     @classmethod
     def tearDownClass(cls):
+        """teardownclass.
+        Args:
+            cls (Any): Description of cls"""
         cls.app.quit()
 
     def test_rename_window(self):
+        """testrenamewindow."""
         window = RenameWindow()
         self.assertEqual(window.windowTitle(), "Rename Window")
         self.assertEqual(window.geometry().width(), 400)
         self.assertEqual(window.geometry().height(), 300)
 
     def test_catalog_window(self):
+        """testcatalogwindow."""
         window = CatalogWindow()
         self.assertEqual(window.windowTitle(), "Catalog Window")
         self.assertEqual(window.geometry().width(), 400)
         self.assertEqual(window.geometry().height(), 300)
 
     def test_organize_window(self):
+        """testorganizewindow."""
         window = OrganizeWindow()
         self.assertEqual(window.windowTitle(), "Organize Window")
         self.assertEqual(window.geometry().width(), 400)

@@ -50,6 +50,7 @@ def run_tool(script_name, timeout=5):
     return True
 
 def main():
+    """main."""
     logging.info("Starting GUI tools test run")
     logging.info("=" * 50)
     

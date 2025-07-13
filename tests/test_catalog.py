@@ -1,15 +1,18 @@
 import unittest
 import os
+import unittest
 from tests.test_utils import TestUtils
-from catalog import CatalogGenerator  # Update this import based on actual class name
+from catalog import CatalogWindow
 
 from core.error_handler import error_handler
 
 
 class TestCatalog(unittest.TestCase):
+    """A class that handles test catalog."""
     def setUp(self):
+        """setup."""
         self.test_dir = TestUtils.create_temp_dir()
-        self.catalog_gen = CatalogGenerator()
+        self.catalog_gen = CatalogWindow()
         
         # Create test directory structure
         self.subdir = os.path.join(self.test_dir, "subdir")
@@ -25,6 +28,7 @@ class TestCatalog(unittest.TestCase):
             f.write("subcontent")
 
     def tearDown(self):
+        """teardown."""
         TestUtils.cleanup_temp_dir(self.test_dir)
         for file in self.test_files:
             TestUtils.cleanup_temp_file(file)

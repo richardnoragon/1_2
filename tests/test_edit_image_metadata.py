@@ -12,11 +12,14 @@ from core.error_handler import error_handler
 
 
 class TestExifEditorLogic(TestCase):
+    """A class that handles test exif editor logic and inherits from TestCase."""
     def setUp(self):
+        """setup."""
         self.editor_logic = ExifEditorLogic()
         self.test_dir = tempfile.mkdtemp()
         
     def tearDown(self):
+        """teardown."""
         if hasattr(self, 'test_file') and os.path.exists(self.test_file):
             os.remove(self.test_file)
         os.rmdir(self.test_dir)
@@ -43,6 +46,7 @@ class TestExifEditorLogic(TestCase):
         return test_file
 
     def test_load_exif(self):
+        """testloadexif."""
         self.test_file = self.create_test_image()
         
         # Mock the signals
@@ -63,6 +67,7 @@ class TestExifEditorLogic(TestCase):
         self.assertIn(piexif.ExifIFD.DateTimeOriginal, loaded_data['Exif'])
 
     def test_save_exif(self):
+        """testsaveexif."""
         self.test_file = self.create_test_image()
         
         # Load initial EXIF
@@ -98,6 +103,7 @@ class TestExifEditorLogic(TestCase):
         self.assertEqual(new_data['0th'][piexif.ImageIFD.Make], b'New Camera')
 
     def test_invalid_file(self):
+        """testinvalidfile."""
         # Test with non-existent file
         error_signal = MagicMock()
         self.editor_logic.error_occurred.connect(error_signal)
@@ -106,21 +112,30 @@ class TestExifEditorLogic(TestCase):
         error_signal.assert_called_once()
 
 class TestImageMetadataEditor(TestCase):
+    """A class that handles test image metadata editor and inherits from TestCase."""
     @classmethod
     def setUpClass(cls):
+        """setupclass.
+        Args:
+            cls (Any): Description of cls"""
         cls.app = QApplication([])
 
     def setUp(self):
+        """setup."""
         self.editor = ImageMetadataEditor()
         self.test_dir = tempfile.mkdtemp()
         
     def tearDown(self):
+        """teardown."""
         if hasattr(self, 'test_file') and os.path.exists(self.test_file):
             os.remove(self.test_file)
         os.rmdir(self.test_dir)
 
     @classmethod
     def tearDownClass(cls):
+        """teardownclass.
+        Args:
+            cls (Any): Description of cls"""
         cls.app.quit()
 
     def create_test_image(self):
@@ -140,6 +155,9 @@ class TestImageMetadataEditor(TestCase):
 
     @patch('PyQt5.QtWidgets.QFileDialog.getOpenFileName')
     def test_browse_file(self, mock_dialog):
+        """testbrowsefile.
+        Args:
+            mock_dialog (Any): Description of mock_dialog"""
         self.test_file = self.create_test_image()
         mock_dialog.return_value = (self.test_file, '')
         
@@ -149,6 +167,7 @@ class TestImageMetadataEditor(TestCase):
         self.assertTrue(self.editor.saveButton.isEnabled())
 
     def test_handle_item_changed(self):
+        """testhandleitemchanged."""
         self.test_file = self.create_test_image()
         self.editor.current_file = self.test_file
         self.editor.exif_logic.load_exif(self.test_file)
@@ -169,7 +188,9 @@ class TestImageMetadataEditor(TestCase):
                     break
 
 class TestExifHelperFunctions(TestCase):
+    """A class that handles test exif helper functions and inherits from TestCase."""
     def test_format_exif_value(self):
+        """testformatexifvalue."""
         test_cases = [
             (b"Test String", "Test String"),
             ((100, 1), "100/1"),
@@ -181,6 +202,7 @@ class TestExifHelperFunctions(TestCase):
             self.assertEqual(format_exif_value(input_value), expected_output)
 
     def test_parse_exif_value(self):
+        """testparseexifvalue."""
         test_cases = [
             ("Test String", str, "Test String"),
             ("100/1", (1, 1), (100, 1)),

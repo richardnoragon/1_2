@@ -5,6 +5,7 @@ from core.error_handler import error_handler
 
 
 def migrate():
+    """migrate."""
     file_path = Path(r'C:\Users\HP1\1_2\cmsd.py')
     content = file_path.read_text(encoding='utf-8')
 

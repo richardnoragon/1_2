@@ -9,9 +9,13 @@ from PyQt5 import uic
 
 from core.file_ops.renamer import FileRenamer
 from core.logging_manager import LogManager
-
 from core.error_handler import error_handler
-
+from gui.common import (
+    BaseWindow,
+    show_error_dialog,
+    show_info_dialog,
+    get_existing_directory
+)
 
 
 class RenameWindow(BaseWindow):
@@ -70,7 +74,7 @@ class RenameWindow(BaseWindow):
         except (IOError, ValueError) as e:
             msg = f"Failed to initialize: {str(e)}"
             self.logger.error(msg, exc_info=True)
-            show_error_dialogNone, "Error", msg
+            show_error_dialog(msg, parent=self)
             sys.exit(1)
 
     def load_directory(self):
@@ -86,7 +90,7 @@ class RenameWindow(BaseWindow):
         except OSError as e:
             msg = f"Failed to load directory: {str(e)}"
             self.logger.error(msg, exc_info=True)
-            show_error_dialogself, "Error", msg
+            show_error_dialog(msg, parent=self)
     
     def refresh_file_list(self, filter_text: str = ""):
         """Refresh the file list with optional filtering."""
@@ -104,7 +108,7 @@ class RenameWindow(BaseWindow):
         except OSError as e:
             msg = f"Failed to refresh file list: {str(e)}"
             self.logger.error(msg, exc_info=True)
-            show_error_dialogself, "Error", msg
+            show_error_dialog(msg, parent=self)
 
     def filter_list(self):
         """Filter the file list based on user input."""
@@ -114,7 +118,7 @@ class RenameWindow(BaseWindow):
         except ValueError as e:
             msg = f"Failed to filter list: {str(e)}"
             self.logger.error(msg, exc_info=True)
-            show_error_dialogself, "Error", msg
+            show_error_dialog(msg, parent=self)
 
     def choose_selection(self):
         """Add selected files to the rename list."""
@@ -131,7 +135,7 @@ class RenameWindow(BaseWindow):
         except ValueError as e:
             msg = f"Failed to add selection: {str(e)}"
             self.logger.error(msg, exc_info=True)
-            show_error_dialogself, "Error", msg
+            show_error_dialog(msg, parent=self)
 
     def remove_selection(self):
         """Remove selected files from the rename list."""
@@ -147,7 +151,7 @@ class RenameWindow(BaseWindow):
         except (ValueError, IndexError) as e:
             msg = f"Failed to remove selection: {str(e)}"
             self.logger.error(msg, exc_info=True)
-            show_error_dialogself, "Error", msg
+            show_error_dialog(msg, parent=self)
 
     def get_rename_mode(self) -> tuple:
         """Get the current rename mode and parameters."""
@@ -182,7 +186,7 @@ class RenameWindow(BaseWindow):
         except (AttributeError, ValueError) as e:
             msg = f"Failed to get rename mode: {str(e)}"
             self.logger.error(msg, exc_info=True)
-            show_error_dialogself, "Error", msg
+            show_error_dialog("Error", msg, self)
             return None, None, None
 
     def rename_files(self):
@@ -206,22 +210,19 @@ class RenameWindow(BaseWindow):
             # Check results and show appropriate message
             success_count = sum(1 for result in results if result)
             if success_count == len(results):
-                show_info_dialog
-                    self,
-                    "Success",
-                    "All files renamed successfully"
-                
+                show_info_dialog(
+                    "All files renamed successfully",
+                    parent=self
+                )
             elif success_count == 0:
-                show_error_dialog
-                    self,
-                    "Warning",
-                    "Failed to rename any files"
-                
+                show_error_dialog(
+                    "Failed to rename any files",
+                    parent=self
+                )
             else:
-                show_error_dialog
-                    self,
-                    "Partial Success",
-                    f"Renamed {success_count} out of {len(results} files"
+                show_error_dialog(
+                    f"Renamed {success_count} out of {len(results)} files",
+                    parent=self
                 )
             
             # Clear selection and refresh
@@ -232,7 +233,7 @@ class RenameWindow(BaseWindow):
         except (IOError, ValueError) as e:
             msg = f"Failed to rename files: {str(e)}"
             self.logger.error(msg, exc_info=True)
-            show_error_dialogself, "Error", msg
+            show_error_dialog(msg, parent=self)
 
 
 def main():

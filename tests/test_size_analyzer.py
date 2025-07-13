@@ -2,13 +2,15 @@ import unittest
 import os
 import json
 from tests.test_utils import TestUtils
-from size_analyzer import SizeAnalyzer  # Update based on actual class name
+from size_analyzer import SizeAnalyzerWindow
 
 from core.error_handler import error_handler
 
 
 class TestSizeAnalyzer(unittest.TestCase):
+    """A class that handles test size analyzer."""
     def setUp(self):
+        """setup."""
         self.test_dir = TestUtils.create_temp_dir()
         self.analyzer = SizeAnalyzer()
         
@@ -16,6 +18,7 @@ class TestSizeAnalyzer(unittest.TestCase):
         self.create_test_structure()
 
     def tearDown(self):
+        """teardown."""
         TestUtils.cleanup_temp_dir(self.test_dir)
 
     def create_test_structure(self):
@@ -155,6 +158,9 @@ class TestSizeAnalyzer(unittest.TestCase):
         progress_values = []
         
         def progress_callback(percent):
+            """progresscallback.
+        Args:
+            percent (Any): Description of percent"""
             progress_values.append(percent)
         
         # Analyze with progress tracking

@@ -472,7 +472,9 @@ class FileOperationLogic(QObject):
 
 
 class FileSplitJoinGUI(BaseWindow):
+    """A class that handles file split join g u i and inherits from BaseWindow."""
     def __init__(self):
+        """init."""
         super().__init__()
         # Get the absolute path of the directory containing the script
         script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -512,10 +514,16 @@ class FileSplitJoinGUI(BaseWindow):
         self.show()
         
     def dragEnterEvent(self, event: QDragEnterEvent):
+        """dragenterevent.
+        Args:
+            event (QDragEnterEvent): Description of event"""
         if event.mimeData().hasUrls():
             event.acceptProposedAction()
             
     def dropEvent(self, event: QDropEvent):
+        """dropevent.
+        Args:
+            event (QDropEvent): Description of event"""
         urls = event.mimeData().urls()
         if not urls:
             return

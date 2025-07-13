@@ -31,6 +31,7 @@ class FileTouchLogic(QObject):
     finished = pyqtSignal()
 
     def __init__(self):
+        """init."""
         super().__init__()
         self._is_running = False
 
@@ -106,7 +107,9 @@ class FileTouchLogic(QObject):
             self.finished.emit()
 
 class FileTouchGUI(BaseWindow):
+    """A class that handles file touch g u i and inherits from BaseWindow."""
     def __init__(self):
+        """init."""
         super().__init__()
         # Load the UI
         ui_file = os.path.join(os.path.dirname(__file__), "file_touch.ui")
@@ -224,10 +227,16 @@ class FileTouchGUI(BaseWindow):
                 
 
     def dragEnterEvent(self, event: QDragEnterEvent):
+        """dragenterevent.
+        Args:
+            event (QDragEnterEvent): Description of event"""
         if event.mimeData().hasUrls():
             event.acceptProposedAction()
             
     def dropEvent(self, event: QDropEvent):
+        """dropevent.
+        Args:
+            event (QDropEvent): Description of event"""
         urls = event.mimeData().urls()
         if urls:
             # Use the first dropped item's path

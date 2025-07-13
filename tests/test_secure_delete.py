@@ -2,13 +2,15 @@ import unittest
 import os
 import time
 from tests.test_utils import TestUtils
-from secure_delete import SecureDelete  # Update based on actual class name
+from secure_delete import SecureDeleteLogic
 
 from core.error_handler import error_handler
 
 
 class TestSecureDelete(unittest.TestCase):
+    """A class that handles test secure delete."""
     def setUp(self):
+        """setup."""
         self.test_dir = TestUtils.create_temp_dir()
         self.secure_delete = SecureDelete()
         
@@ -21,6 +23,7 @@ class TestSecureDelete(unittest.TestCase):
             self.test_files.append(file_path)
 
     def tearDown(self):
+        """teardown."""
         TestUtils.cleanup_temp_dir(self.test_dir)
 
     def test_single_pass_wipe(self):
@@ -79,6 +82,9 @@ class TestSecureDelete(unittest.TestCase):
         progress_values = []
         
         def progress_callback(percent):
+            """progresscallback.
+        Args:
+            percent (Any): Description of percent"""
             progress_values.append(percent)
         
         # Create a larger test file
@@ -103,6 +109,9 @@ class TestSecureDelete(unittest.TestCase):
         progress_values = []
         
         def progress_callback(percent):
+            """progresscallback.
+        Args:
+            percent (Any): Description of percent"""
             progress_values.append(percent)
             if percent > 50:
                 cancel_flag['cancel'] = True

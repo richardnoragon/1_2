@@ -10,6 +10,7 @@ from PyQt5.QtWidgets import (
 from PyQt5.uic import loadUi
 
 from core.error_handler import error_handler
+from gui.common.base_window import BaseWindow
 
 
 try:
@@ -148,6 +149,7 @@ class ExifEditorLogic(QObject):
     finished = pyqtSignal() # Signal completion of load/save attempt
 
     def __init__(self):
+        """init."""
         super().__init__()
         self._filepath = None
         self.original_exif_dict = None  # Store the raw loaded dict from piexif
@@ -344,7 +346,9 @@ class ExifEditorLogic(QObject):
             self.finished.emit() # Ensure finished is always emitted
 
 class ImageMetadataEditor(BaseWindow):
+    """A class that handles image metadata editor and inherits from BaseWindow."""
     def __init__(self):
+        """init."""
         super().__init__()
         # Load the UI
         uifile_path = os.path.join(os.path.dirname(__file__), "edit_image_metadata.ui")
@@ -373,6 +377,7 @@ class ImageMetadataEditor(BaseWindow):
         self.modified_data = {}
         
     def browse_file(self):
+        """browsefile."""
         filepath, _ = get_open_file_name(
             self,
             "Select Image File",
@@ -385,6 +390,9 @@ class ImageMetadataEditor(BaseWindow):
             self.exif_logic.load_exif(filepath)
             
     def update_exif_view(self, exif_data):
+        """updateexifview.
+        Args:
+            exif_data (Any): Description of exif_data"""
         self.exifTreeWidget.clear()
         self.modified_data = exif_data
         
@@ -412,6 +420,11 @@ class ImageMetadataEditor(BaseWindow):
         self.actionSave.setEnabled(True)
         
     def handle_item_changed(self, item, column):
+        """handleitemchanged.
+        Args:
+            item (Any): Description of item
+        Args:
+            column (Any): Description of column"""
         if column == 2 and item.data(1, Qt.UserRole):  # Only handle value column changes
             ifd_name, tag_code = item.data(1, Qt.UserRole)
             new_value = item.text(column)
@@ -419,23 +432,34 @@ class ImageMetadataEditor(BaseWindow):
                 self.modified_data[ifd_name][tag_code]['value'] = new_value
                 
     def save_changes(self):
+        """savechanges."""
         if self.current_file and self.modified_data:
             self.exif_logic.save_exif(self.current_file, self.modified_data)
             
     def handle_save_result(self, success, message):
+        """handlesaveresult.
+        Args:
+            success (Any): Description of success
+        Args:
+            message (Any): Description of message"""
         if success:
             show_info_dialogself, "Success", message
         else:
             show_error_dialogself, "Error", message
             
     def show_error(self, message):
+        """showerror.
+        Args:
+            message (Any): Description of message"""
         show_error_dialogself, "Error", message
         
     def handle_operation_finished(self):
+        """handleoperationfinished."""
         # Could add a progress bar or status message here if needed
         pass
         
     def show_about(self):
+        """showabout."""
         QMessageBox.about(
             self,
             "About Image Metadata Editor",
@@ -445,6 +469,7 @@ class ImageMetadataEditor(BaseWindow):
         )
 
 def main():
+    """main."""
     app = QApplication(sys.argv)
     window = ImageMetadataEditor()
     window.show()

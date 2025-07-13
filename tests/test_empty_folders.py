@@ -1,13 +1,33 @@
 import unittest
 import os
+import unittest
 from tests.test_utils import TestUtils
-from empty_folders import EmptyFolderCleaner  # Update based on actual class name
+from empty_folders import EmptyFolderLogic, EmptyFolderCleaner
 
 from core.error_handler import error_handler
 
 
 class TestEmptyFolderCleaner(unittest.TestCase):
+    """Test suite for the EmptyFolderCleaner class.
+    
+    Tests the functionality for:
+    - Finding empty folders recursively
+    - Cleaning up empty folders
+    - Handling hidden files
+    - Applying ignore patterns
+    - Dry run operations
+    - Age-based filtering
+    - Error handling
+    """
+    
     def setUp(self):
+        """Set up test environment before each test.
+        
+        Creates:
+        - A temporary test directory
+        - An EmptyFolderCleaner instance
+        - A test directory structure with various folder types
+        """
         self.test_dir = TestUtils.create_temp_dir()
         self.cleaner = EmptyFolderCleaner()
         
@@ -15,6 +35,10 @@ class TestEmptyFolderCleaner(unittest.TestCase):
         self.create_test_structure()
 
     def tearDown(self):
+        """Clean up test environment after each test.
+        
+        Removes the temporary test directory and all its contents.
+        """
         TestUtils.cleanup_temp_dir(self.test_dir)
 
     def create_test_structure(self):

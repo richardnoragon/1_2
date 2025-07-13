@@ -36,8 +36,10 @@ from core.error_handler import error_handler
 
 
 class en_and_decryptGUI(BaseWindow):
+    """A class that handles g u i and inherits from BaseWindow."""
     # initialize the GUI
     def __init__(self):
+        """init."""
         super().__init__()
         # load the GUI
         uic.loadUi('en_and_decrypt'
@@ -59,6 +61,7 @@ class en_and_decryptGUI(BaseWindow):
         # self.encrypt_folder_PushButton.clicked.connect(self.encrypt_folder)
 
     def load_directory(self):
+        """loaddirectory."""
         self.directory = get_existing_directory(
             self, "Select Directory")
         for file in os.listdir(self.directory):
@@ -72,6 +75,7 @@ class en_and_decryptGUI(BaseWindow):
     # be displayed in message_ListView.
 
     def generate_key(self):
+        """generatekey."""
         # generate a random 12 character string
         key = Fernet.generate_key()
         # append current date and time to key
@@ -94,6 +98,7 @@ class en_and_decryptGUI(BaseWindow):
     # message_ListView.
 
     def check_encryption(self):
+        """checkencryption."""
         # get the selected directory
         directory = self.directory
         # check if the directory exists
@@ -149,6 +154,7 @@ class en_and_decryptGUI(BaseWindow):
     # message_ListView
 
     def load_key(self):
+        """loadkey."""
         # get the selected directory
         directory = self.directory
         # check if the directory exists
@@ -168,6 +174,7 @@ class en_and_decryptGUI(BaseWindow):
     # the message_ListView.
 
     def encrypt_file(self):
+        """encryptfile."""
         # get the selected directory
         directory = self.directory
         # check if the directory exists
@@ -189,6 +196,7 @@ class en_and_decryptGUI(BaseWindow):
     # message_ListView.
 
     def decrypt_file(self):
+        """decryptfile."""
         # get the selected directory
         directory = self.directory
         # check if the directory exists
@@ -209,6 +217,7 @@ class en_and_decryptGUI(BaseWindow):
     # message_ListView
 
     def encrypt_folder(self):
+        """encryptfolder."""
         # get the selected directory
         directory = self.directory
         # check if the directory exists
@@ -230,6 +239,7 @@ class en_and_decryptGUI(BaseWindow):
     # message_ListView
 
     def decrypt_folder(self):
+        """decryptfolder."""
         # get the selected directory
         directory = self.directory
         # check if the directory exists
@@ -246,6 +256,7 @@ class en_and_decryptGUI(BaseWindow):
 
 
 def main():
+    """main."""
     app = QApplication([])
     window = en_and_decryptGUI()
     app.exec_()

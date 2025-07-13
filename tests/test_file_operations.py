@@ -3,14 +3,39 @@ import os
 import shutil
 from datetime import datetime
 from tests.test_utils import TestUtils
-from organize import FileOrganizer  # Update based on actual class name
-from rename import FileRenamer     # Update based on actual class name
+from rfuhub import OrganizeWindow
+from rename import FileRenamerWindow
 
 from core.error_handler import error_handler
 
 
 class TestFileOperations(unittest.TestCase):
+    """Test suite for file organization and renaming operations.
+    
+    Tests the functionality of:
+    - Organizing files by extension
+    - Organizing files by date
+    - Adding prefixes to filenames
+    - Renaming files using patterns
+    - Converting filename case
+    - Adding dates to filenames
+    
+    Each test creates its own set of test files in a temporary directory.
+    """
+    
     def setUp(self):
+        """Set up test environment before each test.
+        
+        Creates:
+        - A temporary test directory
+        - FileOrganizer and FileRenamer instances
+        - A set of test files with different extensions:
+            - document.doc
+            - document.pdf
+            - photo.jpg
+            - song.mp3
+        Each file contains "test content"
+        """
         self.test_dir = TestUtils.create_temp_dir()
         self.organizer = FileOrganizer()
         self.renamer = FileRenamer()
@@ -28,6 +53,7 @@ class TestFileOperations(unittest.TestCase):
                 f.write("test content")
 
     def tearDown(self):
+        """teardown."""
         TestUtils.cleanup_temp_dir(self.test_dir)
 
     def test_organize_by_extension(self):

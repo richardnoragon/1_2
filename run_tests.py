@@ -9,6 +9,7 @@ from core.error_handler import error_handler
 
 
 def parse_args():
+    """parseargs."""
     parser = argparse.ArgumentParser(description='Run RFU test suite')
     parser.add_argument('--no-gui', action='store_true',
                        help='Skip GUI tests')
@@ -27,6 +28,9 @@ def parse_args():
     return parser.parse_args()
 
 def build_pytest_command(args):
+    """buildpytestcommand.
+        Args:
+            args (Any): Description of args"""
     cmd = ['python', '-m', 'pytest']
     
     # Add verbosity
@@ -125,6 +129,7 @@ def run_tests(args):
             vdisplay.stop()
 
 def main():
+    """main."""
     args = parse_args()
     try:
         return run_tests(args)

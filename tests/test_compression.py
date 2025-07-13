@@ -1,16 +1,19 @@
 import unittest
 import os
 import shutil
+import unittest
 from tests.test_utils import TestUtils
-from compress_decompress import Compressor  # Update based on actual class name
+from compress_decompress import CompressDecompressApp
 
 from core.error_handler import error_handler
 
 
 class TestCompression(unittest.TestCase):
+    """A class that handles test compression."""
     def setUp(self):
+        """setup."""
         self.test_dir = TestUtils.create_temp_dir()
-        self.compressor = Compressor()
+        self.compressor = CompressDecompressApp()
         
         # Create test directory structure
         self.source_dir = os.path.join(self.test_dir, "source")
@@ -33,6 +36,7 @@ class TestCompression(unittest.TestCase):
             f.write("Subdirectory content")
 
     def tearDown(self):
+        """teardown."""
         TestUtils.cleanup_temp_dir(self.test_dir)
 
     def test_compress_single_file_zip(self):
@@ -160,6 +164,9 @@ class TestCompression(unittest.TestCase):
         progress_values = []
         
         def progress_callback(percent):
+            """progresscallback.
+        Args:
+            percent (Any): Description of percent"""
             progress_values.append(percent)
         
         # Compress with progress tracking

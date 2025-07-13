@@ -9,6 +9,7 @@ from core.error_handler import error_handler
 
 
 def main():
+    """main."""
     # Initialize logging first
     logger = LogManager().get_logger('Main')
     logger.info('Starting Richards Files Utilities')

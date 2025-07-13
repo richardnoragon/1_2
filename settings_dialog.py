@@ -11,7 +11,11 @@ from core.error_handler import error_handler
 
 
 class SettingsDialog(BaseDialog):
+    """A class that handles settings dialog and inherits from BaseDialog."""
     def __init__(self, parent=None):
+        """init.
+        Args:
+            parent (Any): Description of parent"""
         super().__init__()
         ui_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "settings_dialog.ui")
         uic.loadUi(ui_file, self)

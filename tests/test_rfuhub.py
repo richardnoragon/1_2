@@ -13,6 +13,7 @@ class TestRFUHub(BaseGuiTest):
     """Test cases for RFU Hub main window functionality"""
     
     def setUp(self):
+        """setup."""
         super().setUp()
         self.config_file = os.path.join(self.test_dir, "test_config.json")
         self.config_manager = ConfigManager(self.config_file)

@@ -2,13 +2,15 @@ import unittest
 import os
 import time
 from tests.test_utils import TestUtils
-from sync import FileSynchronizer  # Update based on actual class name
+from sync import SyncWindow
 
 from core.error_handler import error_handler
 
 
 class TestFileSynchronization(unittest.TestCase):
+    """A class that handles test file synchronization."""
     def setUp(self):
+        """setup."""
         self.test_dir = TestUtils.create_temp_dir()
         self.synchronizer = FileSynchronizer()
         
@@ -35,6 +37,7 @@ class TestFileSynchronization(unittest.TestCase):
             f.write("Subdir content")
 
     def tearDown(self):
+        """teardown."""
         TestUtils.cleanup_temp_dir(self.test_dir)
 
     def test_basic_sync(self):
@@ -150,6 +153,9 @@ class TestFileSynchronization(unittest.TestCase):
         progress_values = []
         
         def progress_callback(percent):
+            """progresscallback.
+        Args:
+            percent (Any): Description of percent"""
             progress_values.append(percent)
         
         # Perform sync with progress tracking

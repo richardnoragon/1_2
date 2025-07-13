@@ -6,6 +6,7 @@ __all__ = ['LogManager', 'LogManagerGUI']
 
 # Import GUI components only when needed
 def get_log_viewer():
+    """getlogviewer."""
     from gui.log_viewer import LogViewerWindow
     return LogViewerWindow
 

@@ -17,6 +17,7 @@ from core.error_handler import error_handler
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 class SyncWorker(QThread):
+    """A class that handles sync worker and inherits from QThread."""
     progress = pyqtSignal(int)
     status = pyqtSignal(str)
     finished = pyqtSignal()
@@ -25,6 +26,15 @@ class SyncWorker(QThread):
 
     def __init__(self, source_files, target_files, source_dir, target_dir,
                  options):
+        """Initialize the SyncWorker.
+        
+        Args:
+            source_files (dict): Source files dictionary
+            target_files (dict): Target files dictionary
+            source_dir (str): Source directory path
+            target_dir (str): Target directory path
+            options (dict): Sync options
+        """
         super().__init__()
         self.source_files = source_files
         self.target_files = target_files
@@ -34,6 +44,9 @@ class SyncWorker(QThread):
         self.running = True
 
     def backup_file(self, file_path):
+        """backupfile.
+        Args:
+            file_path (Any): Description of file_path"""
         if not self.options['backup']:
             return
         backup_path = f"{file_path}.bak"
@@ -43,6 +56,11 @@ class SyncWorker(QThread):
             self.status.emit(f"Backup created: {base_name}")
 
     def should_copy_file(self, src_path, tgt_path):
+        """shouldcopyfile.
+        Args:
+            src_path (Any): Description of src_path
+        Args:
+            tgt_path (Any): Description of tgt_path"""
         if not os.path.exists(tgt_path):
             return True, "new"
             
@@ -63,6 +81,7 @@ class SyncWorker(QThread):
         return False, "skipped"
 
     def run(self):
+        """run."""
         try:
             if self.options['sync_mode'] == 'mirror':
                 self.mirror_sync()
@@ -80,6 +99,7 @@ class SyncWorker(QThread):
             self.error.emit(str(e))
 
     def mirror_sync(self):
+        """mirrorsync."""
         total_files = len(self.source_files)
         for idx, file in enumerate(self.source_files):
             if not self.running:
@@ -109,6 +129,7 @@ class SyncWorker(QThread):
             self.progress.emit(int((idx + 1) * 100 / total_files))
 
     def update_sync(self):
+        """updatesync."""
         total_files = len(self.source_files)
         for idx, file in enumerate(self.source_files):
             if not self.running:
@@ -129,6 +150,7 @@ class SyncWorker(QThread):
             self.progress.emit(int((idx + 1) * 100 / total_files))
 
     def two_way_sync(self):
+        """twowaysync."""
         all_files = set(self.source_files) | set(self.target_files)
         total_files = len(all_files)
         
@@ -174,12 +196,14 @@ class SyncWorker(QThread):
             self.progress.emit(int((idx + 1) * 100 / total_files))
 
     def stop(self):
+        """stop."""
         self.running = False
 
 
 class SyncWindow(BaseWindow):
     """Main window for file synchronization operations."""
     def __init__(self):
+        """init."""
         super().__init__()
         ui_file = os.path.join(SCRIPT_DIR, 'sync.ui')
         uic.loadUi(ui_file, self)
@@ -216,6 +240,9 @@ class SyncWindow(BaseWindow):
         self.show()
 
     def select_directory(self, side):
+        """selectdirectory.
+        Args:
+            side (Any): Description of side"""
         directory = get_existing_directory(self, "Select Directory")
         if directory:
             if side == 'left':
@@ -232,6 +259,11 @@ class SyncWindow(BaseWindow):
             self.compare_pushButton.setEnabled(both_dirs)
 
     def update_file_list(self, model, directory):
+        """updatefilelist.
+        Args:
+            model (Any): Description of model
+        Args:
+            directory (Any): Description of directory"""
         model.clear()
         try:
             files = sorted(os.listdir(directory))
@@ -250,6 +282,9 @@ class SyncWindow(BaseWindow):
             )
 
     def get_file_info(self, file_path):
+        """getfileinfo.
+        Args:
+            file_path (Any): Description of file_path"""
         try:
             stats = os.stat(file_path)
             modified = datetime.fromtimestamp(
@@ -260,6 +295,9 @@ class SyncWindow(BaseWindow):
             return "Could not read file info"
 
     def format_size(self, size):
+        """formatsize.
+        Args:
+            size (Any): Description of size"""
         for unit in ['B', 'KB', 'MB', 'GB']:
             if size < 1024:
                 return f"{size:.1f} {unit}"
@@ -267,6 +305,7 @@ class SyncWindow(BaseWindow):
         return f"{size:.1f} TB"
 
     def compare_directories(self):
+        """comparedirectories."""
         if not (self.left_dir and self.right_dir):
             return
 
@@ -310,6 +349,15 @@ class SyncWindow(BaseWindow):
 
     def _add_list_item(self, file, path1, path2, in_first, in_second,
                       model, is_left):
+        """addlistitem.
+        Args:
+            file (Any): Description of file
+            path1 (Any): Description of path1
+            path2 (Any): Description of path2
+            in_first (Any): Description of in_first
+            in_second (Any): Description of in_second
+            model (Any): Description of model
+            is_left (Any): Description of is_left"""
         if not in_first:
             return
 
@@ -332,6 +380,7 @@ class SyncWindow(BaseWindow):
         model.appendRow(item)
 
     def get_sync_options(self):
+        """getsyncoptions."""
         # Get sync mode
         if self.mirror_radio.isChecked():
             sync_mode = 'mirror'
@@ -357,6 +406,7 @@ class SyncWindow(BaseWindow):
         }
 
     def sync_directories(self):
+        """syncdirectories."""
         if not (self.left_dir and self.right_dir):
             return
 
@@ -439,6 +489,13 @@ class SyncWindow(BaseWindow):
                 )
 
     def show_preview(self, action, source, target):
+        """showpreview.
+        Args:
+            action (Any): Description of action
+        Args:
+            source (Any): Description of source
+        Args:
+            target (Any): Description of target"""
         if action == "COPY":
             msg = (f"Would copy: {os.path.basename(source)} -> "
                   f"{os.path.basename(target)}")
@@ -448,6 +505,7 @@ class SyncWindow(BaseWindow):
             self.status_label.setText(msg)
 
     def sync_finished(self):
+        """syncfinished."""
         # Re-enable all UI elements
         self.sync_pushButton.setEnabled(True)
         self.compare_pushButton.setEnabled(True)
@@ -462,6 +520,9 @@ class SyncWindow(BaseWindow):
         self.compare_directories()  # Refresh the comparison
 
     def handle_error(self, error_msg):
+        """handleerror.
+        Args:
+            error_msg (Any): Description of error_msg"""
         show_error_dialog(
             message=f"Sync error: {error_msg}",
             title="Error",
@@ -471,6 +532,7 @@ class SyncWindow(BaseWindow):
 
 
 def main():
+    """main."""
     app = QApplication(sys.argv)
     app.setStyle('Fusion')  # Modern style
     window = SyncWindow()

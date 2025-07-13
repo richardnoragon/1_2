@@ -1,14 +1,16 @@
 import unittest
 import os
 from tests.test_utils import TestUtils
-from office_meta_data_editor import OfficeMetaEditor  # Update based on actual class name
-from tag_viewer_editor import TagEditor  # Update based on actual class name
+from office_meta_data_editor import OfficeMetaDataEditorGUI
+from tag_viewer_editor import TagViewerEditor
 
 from core.error_handler import error_handler
 
 
 class TestMetadataManagement(unittest.TestCase):
+    """A class that handles test metadata management."""
     def setUp(self):
+        """setup."""
         self.test_dir = TestUtils.create_temp_dir()
         self.office_editor = OfficeMetaEditor()
         self.tag_editor = TagEditor()
@@ -22,6 +24,7 @@ class TestMetadataManagement(unittest.TestCase):
         self._create_minimal_mp3(self.mp3_file)
 
     def tearDown(self):
+        """teardown."""
         TestUtils.cleanup_temp_dir(self.test_dir)
 
     def _create_minimal_docx(self, filepath):

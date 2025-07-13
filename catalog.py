@@ -57,10 +57,10 @@ class CatalogWindow(BaseWindow):
         - Icons and initial UI state
         """
         super().__init__()
-        self._setup_ui()
         self._init_models()
-        self._connect_signals()
+        self._setup_ui()  # Load UI before connecting signals
         self._setup_icons()
+        self._connect_signals()  # Connect signals after UI is loaded
         self._set_initial_state()
         self.show()
         
@@ -104,11 +104,19 @@ class CatalogWindow(BaseWindow):
         - Catalog generation button
         - Menu actions
         """
-        self.selectFolderButton.clicked.connect(self._load_directory)
-        self.actionselect.triggered.connect(self._load_directory)
-        self.actionexit.triggered.connect(self.close)
-        self.actionopen_catalog.triggered.connect(self._open_last_catalog)
-        self.catalogPushButton.clicked.connect(self._generate_catalog)
+        # Connect buttons
+        if hasattr(self, 'selectFolderButton'):
+            self.selectFolderButton.clicked.connect(self._load_directory)
+        if hasattr(self, 'catalogPushButton'):    
+            self.catalogPushButton.clicked.connect(self._generate_catalog)
+            
+        # Connect menu actions
+        if hasattr(self, 'actionexit'):
+            self.actionexit.triggered.connect(self.close)
+        if hasattr(self, 'actionselect'):
+            self.actionselect.triggered.connect(self._load_directory)
+        if hasattr(self, 'actionopen_catalog'):
+            self.actionopen_catalog.triggered.connect(self._open_last_catalog)
         
     def _set_initial_state(self) -> None:
         """Set the initial state of UI elements.
@@ -439,18 +447,6 @@ class CatalogWindow(BaseWindow):
             
         self.status_label.setText("Catalog generated successfully")
     
-    def open_last_catalog(self):
-        """Open the last generated catalog in the default web browser"""
-        if self.last_catalog and os.path.exists(self.last_catalog):
-            webbrowser.open(f"file:///{self.last_catalog}")
-        else:
-            show_error_dialog(
-                "No catalog file available",
-                title="Error",
-                parent=self
-            )
-
-
     def _open_last_catalog(self) -> None:
         """Open the last generated catalog in the default web browser.
         
@@ -470,7 +466,7 @@ def main() -> None:
     """Main entry point for the catalog application."""
     app = QApplication(sys.argv)
     app.setStyle('Fusion')
-    window = CatalogWindow()  # Keep reference to prevent garbage collection
+    _ = CatalogWindow()  # Keep reference to prevent garbage collection
     sys.exit(app.exec_())
 
 

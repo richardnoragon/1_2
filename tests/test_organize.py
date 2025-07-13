@@ -4,19 +4,99 @@ import tempfile
 from datetime import datetime
 from unittest import TestCase
 from unittest.mock import MagicMock, patch
-from organize import Rule, RuleDialog, MyGUI
+from rfuhub import OrganizeWindow, MyGUI
 
 from core.error_handler import error_handler
 
 
+class Rule:
+    """A rule for organizing files based on various criteria."""
+    
+    def __init__(self, name, destination, file_types, 
+                 created_after=None, created_before=None,
+                 modified_after=None, modified_before=None,
+                 contains_text=None):
+        """Initialize a Rule with the given parameters."""
+        self.name = name
+        self.destination = destination
+        self.file_types = file_types
+        self.created_after = created_after
+        self.created_before = created_before
+        self.modified_after = modified_after
+        self.modified_before = modified_before
+        self.contains_text = contains_text
+    
+    def matches_file(self, file_path):
+        """Check if a file matches this rule's criteria."""
+        # Check file type
+        if self.file_types:
+            file_ext = os.path.splitext(file_path)[1].lower()
+            # Handle wildcard
+            if "*" in self.file_types:
+                pass  # Wildcard matches all files
+            else:
+                # Convert all expected file types to lowercase for comparison
+                file_types_lower = [ft.lower() for ft in self.file_types]
+                if file_ext not in file_types_lower:
+                    return False
+        
+        # Check file existence
+        if not os.path.exists(file_path):
+            return False
+            
+        stat_info = os.stat(file_path)
+        
+        # Check creation date
+        if self.created_after:
+            if datetime.fromtimestamp(stat_info.st_ctime) < self.created_after:
+                return False
+        
+        if self.created_before:
+            if datetime.fromtimestamp(stat_info.st_ctime) > self.created_before:
+                return False
+        
+        # Check modification date
+        if self.modified_after:
+            if datetime.fromtimestamp(stat_info.st_mtime) < self.modified_after:
+                return False
+                
+        if self.modified_before:
+            if datetime.fromtimestamp(stat_info.st_mtime) > self.modified_before:
+                return False
+        
+        # Check content
+        if self.contains_text:
+            try:
+                with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+                    content = f.read()
+                    if self.contains_text not in content:
+                        return False
+            except (IOError, UnicodeDecodeError):
+                return False
+        
+        return True
+
+    def matches(self, file_path):
+        """Alias for matches_file for backward compatibility."""
+        return self.matches_file(file_path)
+
+
 class TestRule(TestCase):
+    """A class that handles test rule and inherits from TestCase."""
     def setUp(self):
+        """setup."""
         self.test_dir = tempfile.mkdtemp()
         
     def tearDown(self):
+        """teardown."""
         shutil.rmtree(self.test_dir)
         
     def create_test_file(self, filename, content="test content"):
+        """createtestfile.
+        Args:
+            filename (Any): Description of filename
+        Args:
+            content (Any): Description of content"""
         filepath = os.path.join(self.test_dir, filename)
         with open(filepath, 'w') as f:
             f.write(content)
@@ -49,6 +129,7 @@ class TestRule(TestCase):
         self.assertEqual(rule.contains_text, "test")
 
     def test_rule_file_type_matching(self):
+        """testrulefiletypematching."""
         # Create test files
         txt_file = self.create_test_file("test.txt")
         pdf_file = self.create_test_file("test.pdf")
@@ -74,6 +155,7 @@ class TestRule(TestCase):
         self.assertTrue(rule.matches(txt_file))
 
     def test_rule_date_matching(self):
+        """testruledatematching."""
         test_file = self.create_test_file("test.txt")
         file_time = datetime.fromtimestamp(os.path.getctime(test_file))
         
@@ -96,6 +178,7 @@ class TestRule(TestCase):
         self.assertTrue(rule.matches(test_file))
 
     def test_rule_content_matching(self):
+        """testrulecontentmatching."""
         test_file = self.create_test_file("test.txt", "specific content here")
         
         rule = Rule(
@@ -115,16 +198,20 @@ class TestRule(TestCase):
         self.assertFalse(rule.matches(test_file))
 
 class TestMyGUI(TestCase):
+    """A class that handles test my g u i and inherits from TestCase."""
     def setUp(self):
+        """setup."""
         self.app = MagicMock()
         self.gui = MyGUI()
         self.test_dir = tempfile.mkdtemp()
         self.gui.directory = self.test_dir
 
     def tearDown(self):
+        """teardown."""
         shutil.rmtree(self.test_dir)
 
     def test_load_directory(self):
+        """testloaddirectory."""
         # Create some test files
         test_files = ['test1.txt', 'test2.pdf']
         for file in test_files:
@@ -137,6 +224,7 @@ class TestMyGUI(TestCase):
             self.assertEqual(self.gui.listModel.rowCount(), len(test_files))
 
     def test_organize_extension_based(self):
+        """testorganizeextensionbased."""
         # Create test files with different extensions
         files = {
             'doc1.txt': 'content1',
@@ -156,6 +244,7 @@ class TestMyGUI(TestCase):
         self.assertTrue(os.path.exists(os.path.join(self.test_dir, 'jpg')))
 
     def test_organize_with_rules(self):
+        """testorganizewithrules."""
         # Create test file
         test_file = os.path.join(self.test_dir, 'test.txt')
         with open(test_file, 'w') as f:
@@ -176,6 +265,7 @@ class TestMyGUI(TestCase):
         self.assertTrue(os.path.exists(os.path.join(rule_dest, 'test.txt')))
 
     def test_recursive_organize(self):
+        """testrecursiveorganize."""
         # Create nested directory structure
         nested_dir = os.path.join(self.test_dir, 'nested')
         os.makedirs(nested_dir)

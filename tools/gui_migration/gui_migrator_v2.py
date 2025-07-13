@@ -23,6 +23,9 @@ class GUIMigrationAutomator:
     """Automates the migration of GUI files to use common utilities."""
     
     def __init__(self, workspace_path: Path):
+        """init.
+        Args:
+            workspace_path (Path): Description of workspace_path"""
         self.workspace_path = workspace_path
         self.migration_dir = workspace_path / "tools" / "gui_migration" / "scripts"
         self.gui_files: List[Path] = []
@@ -251,6 +254,7 @@ class GUIMigrationAutomator:
 
 
 def main():
+    """main."""
     if len(sys.argv) != 2:
         print("Usage: python gui_migrator.py <workspace_path>")
         sys.exit(1)

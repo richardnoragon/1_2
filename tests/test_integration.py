@@ -4,27 +4,30 @@ import time
 from PyQt5.QtWidgets import QApplication
 from tests.test_utils import TestUtils
 from rfuhub import RFUHub
-from file_finder import FileFinder
-from encrypt_decrypt import Encryptor
-from file_splitter_joiner import FileSplitter
-from organize import FileOrganizer
-from size_analyzer import SizeAnalyzer
+from file_finder import FileFinderGUI
+from en_and_decrypt import en_and_decryptGUI
+from file_splitter_joiner import FileSplitJoinGUI
+from rfuhub import OrganizeWindow
+from size_analyzer import SizeAnalyzerWindow
 
 from core.error_handler import error_handler
 
 
 class TestIntegration(unittest.TestCase):
+    """A class that handles test integration."""
     @classmethod
     def setUpClass(cls):
         """Create the application once for all tests"""
         cls.app = TestUtils.get_test_app()
 
     def setUp(self):
+        """setup."""
         self.test_dir = TestUtils.create_temp_dir()
         self.hub = RFUHub()
         self.create_test_environment()
 
     def tearDown(self):
+        """teardown."""
         TestUtils.cleanup_temp_dir(self.test_dir)
         self.hub.close()
 

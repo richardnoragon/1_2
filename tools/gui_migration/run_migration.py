@@ -8,6 +8,7 @@ from core.error_handler import error_handler
 
 
 def main():
+    """main."""
     # Get workspace path from environment or use current directory
     workspace_path = Path.cwd()
     

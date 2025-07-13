@@ -12,12 +12,18 @@ import os
 import py7zr
 import tarfile
 
-from core.error_handler import error_handler
 
+# Archive format constants
+FORMAT_ZIP = "ZIP"
+FORMAT_7Z = "7Z"
+FORMAT_TAR_GZ = "TAR.GZ"
+FORMAT_TAR_BZ2 = "TAR.BZ2"
 
 
 class CompressDecompressApp(BaseWindow):
+    """Handles compression and decompression with various archive formats."""
     def __init__(self):
+        """Initialize the compression/decompression app."""
         super().__init__()
         uic.loadUi("compress_decompress.ui", self)
 
@@ -37,10 +43,10 @@ class CompressDecompressApp(BaseWindow):
 
         # Set up file filters based on format
         self.format_filters = {
-            "ZIP": "Zip Files (*.zip)",
-            "7Z": "7-Zip Files (*.7z)",
-            "TAR.GZ": "Gzip Tar Files (*.tar.gz)",
-            "TAR.BZ2": "Bzip2 Tar Files (*.tar.bz2)"
+            FORMAT_ZIP: "Zip Files (*.zip)",
+            FORMAT_7Z: "7-Zip Files (*.7z)",
+            FORMAT_TAR_GZ: "Gzip Tar Files (*.tar.gz)",
+            FORMAT_TAR_BZ2: "Bzip2 Tar Files (*.tar.bz2)"
         }
 
         # Connect format combo box to update file extension
@@ -49,32 +55,38 @@ class CompressDecompressApp(BaseWindow):
         )
 
     def update_output_extension(self):
+        """updateoutputextension."""
         current_path = self.lineEditOutput.text()
         if current_path:
             base_path = os.path.splitext(current_path)[0]
-            if self.comboFormat.currentText() == "ZIP":
+            if self.comboFormat.currentText() == FORMAT_ZIP:
                 self.lineEditOutput.setText(base_path + ".zip")
-            elif self.comboFormat.currentText() == "7Z":
+            elif self.comboFormat.currentText() == FORMAT_7Z:
                 self.lineEditOutput.setText(base_path + ".7z")
-            elif self.comboFormat.currentText() == "TAR.GZ":
+            elif self.comboFormat.currentText() == FORMAT_TAR_GZ:
                 self.lineEditOutput.setText(base_path + ".tar.gz")
-            elif self.comboFormat.currentText() == "TAR.BZ2":
+            elif self.comboFormat.currentText() == FORMAT_TAR_BZ2:
                 self.lineEditOutput.setText(base_path + ".tar.bz2")
 
     def browse_folder(self):
+        """browsefolder."""
         folder = get_existing_directory(self, "Select Folder")
         if folder:
             self.lineEditFolder.setText(folder)
 
     def browse_output(self):
+        """browseoutput."""
         format_filter = self.format_filters[self.comboFormat.currentText()]
         output_file = get_save_file_name(
-            self, "Select Output File", filter=format_filter
+            caption="Select Output File",
+            parent=self,
+            file_filter=format_filter
         )
         if output_file:
             self.lineEditOutput.setText(output_file)
 
     def compress_files(self):
+        """compressfiles."""
         folder_path = self.lineEditFolder.text().strip()
         output_path = self.lineEditOutput.text().strip()
         password = self.lineEditPassword.text()
@@ -82,7 +94,11 @@ class CompressDecompressApp(BaseWindow):
         format_type = self.comboFormat.currentText()
 
         if not folder_path or not output_path:
-            show_error_dialog(self, "Error", "Please specify both folder and output file.")
+            show_error_dialog(
+                title="Error",
+                message="Please specify both folder and output file.",
+                parent=self
+            )
             return
 
         try:
@@ -103,15 +119,33 @@ class CompressDecompressApp(BaseWindow):
                     folder_path, output_path, compression_level
                 )
 
-            show_info_dialog(self, "Success",
-                f"Files compressed successfully to {output_path}")
+            show_info_dialog(
+                title="Success",
+                message=f"Files compressed successfully to {output_path}",
+                parent=self
+            )
             
         except Exception as e:
-            show_error_dialog(self, "Error", f"An error occurred: {str(e)}")
+            show_error_dialog(
+                title="Error",
+                message=f"An error occurred: {str(e)}",
+                parent=self
+            )
 
     def _compress_zip(
-        self, folder_path, output_path, password, compression_level
-    ):
+            self,
+            folder_path: str,
+            output_path: str,
+            password: str,
+            compression_level: int):
+        """Compresses files into a ZIP archive.
+
+        Args:
+            folder_path: Path to the folder to compress
+            output_path: Path where the ZIP file will be saved
+            password: Optional password for encryption
+            compression_level: Level of compression to use
+        """
         compression = zipfile.ZIP_DEFLATED
         with zipfile.ZipFile(
             output_path, 'w',
@@ -127,8 +161,19 @@ class CompressDecompressApp(BaseWindow):
                     zipf.write(file_path, arcname)
 
     def _compress_7z(
-        self, folder_path, output_path, password, compression_level
-    ):
+            self,
+            folder_path: str,
+            output_path: str,
+            password: str,
+            compression_level: int):
+        """Compresses files into a 7z archive.
+
+        Args:
+            folder_path: Path to the folder to compress
+            output_path: Path where the 7z file will be saved
+            password: Optional password for encryption
+            compression_level: Level of compression to use
+        """
         filters = [{"id": py7zr.FILTER_LZMA2, "preset": compression_level}]
         with py7zr.SevenZipFile(
             output_path, 'w',
@@ -137,6 +182,13 @@ class CompressDecompressApp(BaseWindow):
             archive.writeall(folder_path, ".")
 
     def _compress_targz(self, folder_path, output_path, compression_level):
+        """Compresses files into a tar.gz archive.
+
+        Args:
+            folder_path (str): Path to the folder to compress
+            output_path (str): Path where the tar.gz file will be saved
+            compression_level (int): Level of compression to use
+        """
         with tarfile.open(
             output_path, "w:gz",
             compresslevel=compression_level
@@ -144,6 +196,13 @@ class CompressDecompressApp(BaseWindow):
             tar.add(folder_path, arcname=".")
 
     def _compress_tarbz2(self, folder_path, output_path, compression_level):
+        """Compresses files into a tar.bz2 archive.
+
+        Args:
+            folder_path (str): Path to the folder to compress
+            output_path (str): Path where the tar.bz2 file will be saved
+            compression_level (int): Level of compression to use
+        """
         with tarfile.open(
             output_path, "w:bz2",
             compresslevel=compression_level
@@ -151,15 +210,18 @@ class CompressDecompressApp(BaseWindow):
             tar.add(folder_path, arcname=".")
 
     def browse_decompress(self):
+        """browsedecompress."""
         formats = ";;".join(self.format_filters.values())
         zip_file = get_open_file_name(
-            self, "Select Archive File",
-            filter=formats
+            caption="Select Archive File",
+            parent=self,
+            file_filter=formats
         )
         if zip_file:
             self.lineEditDecompress.setText(zip_file)
 
     def decompress_files(self):
+        """decompressfiles."""
         archive_path = self.lineEditDecompress.text().strip()
         output_folder = get_existing_directory(
             self, "Select Output Folder"
@@ -167,8 +229,11 @@ class CompressDecompressApp(BaseWindow):
         password = self.lineEditPassword.text()
 
         if not archive_path or not output_folder:
-            show_error_dialog(self, "Error",
-                "Please specify both archive file and output folder.")
+            show_error_dialog(
+                title="Error",
+                message="Please specify both archive file and output folder.",
+                parent=self
+            )
             return
 
         try:
@@ -183,19 +248,40 @@ class CompressDecompressApp(BaseWindow):
             else:
                 raise ValueError("Unsupported archive format")
 
-            show_info_dialog(self, "Success",
-                f"Files decompressed successfully to {output_folder}")
+            show_info_dialog(
+                title="Success",
+                message=f"Files decompressed successfully to {output_folder}",
+                parent=self
+            )
             
         except Exception as e:
-            show_error_dialog(self, "Error", f"An error occurred: {str(e)}")
+            show_error_dialog(
+                title="Error",
+                message=f"An error occurred: {str(e)}",
+                parent=self
+            )
 
     def _decompress_zip(self, archive_path, output_folder, password):
+        """Decompresses files from a ZIP archive.
+
+        Args:
+            archive_path (str): Path to the ZIP archive to decompress
+            output_folder (str): Path to extract the files to
+            password (str): Optional password for encrypted archives
+        """
         with zipfile.ZipFile(archive_path, 'r') as zipf:
             if password:
                 zipf.setpassword(password.encode())
             zipf.extractall(output_folder)
 
     def _decompress_7z(self, archive_path, output_folder, password):
+        """Decompresses files from a 7z archive.
+
+        Args:
+            archive_path (str): Path to the 7z archive to decompress
+            output_folder (str): Path to extract the files to
+            password (str): Optional password for encrypted archives
+        """
         with py7zr.SevenZipFile(
             archive_path, mode='r',
             password=password
@@ -203,19 +289,41 @@ class CompressDecompressApp(BaseWindow):
             archive.extractall(output_folder)
 
     def _decompress_targz(self, archive_path, output_folder):
+        """Decompresses files from a tar.gz archive.
+
+        Args:
+            archive_path (str): Path to the tar.gz archive to decompress
+            output_folder (str): Path to extract the files to
+        """
         with tarfile.open(archive_path, "r:gz") as tar:
             tar.extractall(output_folder)
 
     def _decompress_tarbz2(self, archive_path, output_folder):
+        """Decompresses files from a tar.bz2 archive.
+
+        Args:
+            archive_path (str): Path to the tar.bz2 archive to decompress
+            output_folder (str): Path to extract the files to
+        """
         with tarfile.open(archive_path, "r:bz2") as tar:
             tar.extractall(output_folder)
 
-    def dragEnterEvent(self, event: QDragEnterEvent):
-        if event.mimeData().hasUrls():
-            event.acceptProposedAction()
-            
-    def dropEvent(self, event: QDropEvent):
-        urls = event.mimeData().urls()
+    def dragEnterEvent(self, a0: QDragEnterEvent):
+        """Handle drag enter event for drag and drop operation.
+
+        Args:
+            a0 (QDragEnterEvent): The drag enter event object
+        """
+        if a0.mimeData().hasUrls():
+            a0.acceptProposedAction()
+
+    def dropEvent(self, a0: QDropEvent):
+        """Handle drop event for drag and drop operation.
+
+        Args:
+            a0 (QDropEvent): The drop event object
+        """
+        urls = a0.mimeData().urls()
         if not urls:
             return
             
@@ -226,7 +334,10 @@ class CompressDecompressApp(BaseWindow):
             if os.path.isdir(path):
                 self.lineEditFolder.setText(path)
             else:
-                show_error_dialog(self, "Error", "Please drop a folder to compress")
+                show_error_dialog(
+                    title="Error",
+                    message="Please drop a folder to compress",
+                    parent=self)
                 
         elif focused_widget == self.lineEditOutput:
             if os.path.isdir(os.path.dirname(path)):
@@ -239,7 +350,10 @@ class CompressDecompressApp(BaseWindow):
             if os.path.isfile(path) and is_archive:
                 self.lineEditDecompress.setText(path)
             else:
-                show_error_dialog(self, "Error", "Please drop a supported archive file")
+                show_error_dialog(
+                    title="Error",
+                    message="Please drop a supported archive file",
+                    parent=self)
 
 
 if __name__ == "__main__":

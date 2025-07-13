@@ -10,21 +10,30 @@ from core.error_handler import error_handler
 
 
 class TestOfficeMetaDataEditor(TestCase):
+    """A class that handles test office meta data editor and inherits from TestCase."""
     @classmethod
     def setUpClass(cls):
+        """setupclass.
+        Args:
+            cls (Any): Description of cls"""
         cls.app = QApplication([])
 
     def setUp(self):
+        """setup."""
         self.editor = OfficeMetaDataEditorGUI()
         self.test_dir = tempfile.mkdtemp()
         
     def tearDown(self):
+        """teardown."""
         if hasattr(self, 'test_file') and os.path.exists(self.test_file):
             os.remove(self.test_file)
         os.rmdir(self.test_dir)
 
     @classmethod
     def tearDownClass(cls):
+        """teardownclass.
+        Args:
+            cls (Any): Description of cls"""
         cls.app.quit()
 
     def create_test_document(self, filename="test.docx"):
@@ -38,6 +47,9 @@ class TestOfficeMetaDataEditor(TestCase):
 
     @patch('PyQt5.QtWidgets.QFileDialog.getOpenFileName')
     def test_select_file(self, mock_dialog):
+        """testselectfile.
+        Args:
+            mock_dialog (Any): Description of mock_dialog"""
         # Create a test document and mock file dialog
         self.test_file = self.create_test_document()
         mock_dialog.return_value = (self.test_file, '')
@@ -54,6 +66,7 @@ class TestOfficeMetaDataEditor(TestCase):
         self.assertEqual(self.editor.author_model.item(0).text(), "Test Author")
 
     def test_set_metadata(self):
+        """testsetmetadata."""
         # Create a test document
         self.test_file = self.create_test_document()
         self.editor.current_file = self.test_file
@@ -73,6 +86,7 @@ class TestOfficeMetaDataEditor(TestCase):
         self.assertEqual(doc.core_properties.author, "New Author")
 
     def test_set_metadata_no_file(self):
+        """testsetmetadatanofile."""
         # Test attempting to set metadata without selecting a file
         self.editor.current_file = None
         with patch('PyQt5.QtWidgets.QMessageBox.warning') as mock_warning:
@@ -81,6 +95,9 @@ class TestOfficeMetaDataEditor(TestCase):
 
     @patch('PyQt5.QtWidgets.QFileDialog.getOpenFileName')
     def test_select_invalid_file(self, mock_dialog):
+        """testselectinvalidfile.
+        Args:
+            mock_dialog (Any): Description of mock_dialog"""
         # Test selecting a non-existent file
         mock_dialog.return_value = ("/nonexistent/file.docx", '')
         with patch('PyQt5.QtWidgets.QMessageBox.critical') as mock_critical:
@@ -88,6 +105,7 @@ class TestOfficeMetaDataEditor(TestCase):
             mock_critical.assert_called_once()
 
     def test_empty_metadata(self):
+        """testemptymetadata."""
         # Create document with empty metadata
         self.test_file = os.path.join(self.test_dir, "empty.docx")
         doc = docx.Document()

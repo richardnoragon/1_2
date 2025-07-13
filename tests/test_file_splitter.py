@@ -2,13 +2,15 @@ import unittest
 import os
 import hashlib
 from tests.test_utils import TestUtils
-from file_splitter_joiner import FileSplitter  # Update based on actual class name
+from file_splitter_joiner import FileSplitJoinGUI
 
 from core.error_handler import error_handler
 
 
 class TestFileSplitter(unittest.TestCase):
+    """A class that handles test file splitter."""
     def setUp(self):
+        """setup."""
         self.test_dir = TestUtils.create_temp_dir()
         self.splitter = FileSplitter()
         
@@ -23,6 +25,7 @@ class TestFileSplitter(unittest.TestCase):
             self.original_hash = hashlib.sha256(f.read()).hexdigest()
 
     def tearDown(self):
+        """teardown."""
         TestUtils.cleanup_temp_dir(self.test_dir)
 
     def test_split_by_size(self):
@@ -94,6 +97,9 @@ class TestFileSplitter(unittest.TestCase):
         progress_values = []
         
         def progress_callback(percent):
+            """progresscallback.
+        Args:
+            percent (Any): Description of percent"""
             progress_values.append(percent)
         
         # Split with progress tracking

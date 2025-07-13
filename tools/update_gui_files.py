@@ -51,6 +51,7 @@ def print_update_plan(gui_files):
         print("  - Update to use common widgets")
 
 def main():
+    """main."""
     if len(sys.argv) != 2:
         print("Usage: python update_gui_files.py <workspace_path>")
         sys.exit(1)

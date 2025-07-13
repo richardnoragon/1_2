@@ -12,15 +12,21 @@ from core.error_handler import error_handler
 
 
 class TestFilePermissionsGUI(TestCase):
+    """A class that handles test file permissions g u i and inherits from TestCase."""
     @classmethod
     def setUpClass(cls):
+        """setupclass.
+        Args:
+            cls (Any): Description of cls"""
         cls.app = QApplication([])
 
     def setUp(self):
+        """setup."""
         self.editor = FilePermissionsGUI()
         self.test_dir = tempfile.mkdtemp()
         
     def tearDown(self):
+        """teardown."""
         for file in os.listdir(self.test_dir):
             os.chmod(os.path.join(self.test_dir, file), 0o777)  # Reset permissions
             os.remove(os.path.join(self.test_dir, file))
@@ -28,6 +34,9 @@ class TestFilePermissionsGUI(TestCase):
 
     @classmethod
     def tearDownClass(cls):
+        """teardownclass.
+        Args:
+            cls (Any): Description of cls"""
         cls.app.quit()
 
     def create_test_file(self, filename="test.txt", permissions=0o666):
@@ -40,6 +49,9 @@ class TestFilePermissionsGUI(TestCase):
 
     @patch('PyQt5.QtWidgets.QFileDialog.getOpenFileNames')
     def test_select_files(self, mock_dialog):
+        """testselectfiles.
+        Args:
+            mock_dialog (Any): Description of mock_dialog"""
         # Create test files
         test_file1 = self.create_test_file("test1.txt")
         test_file2 = self.create_test_file("test2.txt")
@@ -54,6 +66,7 @@ class TestFilePermissionsGUI(TestCase):
         self.assertEqual(self.editor.model.item(1).text(), test_file2)
 
     def test_add_files(self):
+        """testaddfiles."""
         # Create test file
         test_file = self.create_test_file()
         
@@ -65,6 +78,7 @@ class TestFilePermissionsGUI(TestCase):
         self.assertEqual(self.editor.model.item(0).text(), test_file)
 
     def test_update_file_permissions(self):
+        """testupdatefilepermissions."""
         # Create file with read-only permissions
         test_file = self.create_test_file(permissions=0o444)
         
@@ -77,6 +91,7 @@ class TestFilePermissionsGUI(TestCase):
         self.assertFalse(self.editor.execute_checkBox.isChecked())
 
     def test_set_permissions(self):
+        """testsetpermissions."""
         # Create test file
         test_file = self.create_test_file(permissions=0o666)
         self.editor.add_files([test_file])
@@ -98,12 +113,14 @@ class TestFilePermissionsGUI(TestCase):
         self.assertTrue(bool(new_mode & stat.S_IEXEC))
 
     def test_set_permissions_no_files(self):
+        """testsetpermissionsnofiles."""
         # Test setting permissions with no files selected
         with patch('PyQt5.QtWidgets.QMessageBox.information') as mock_info:
             self.editor.set_permissions()
             mock_info.assert_called_once()
 
     def test_drag_and_drop(self):
+        """testdraganddrop."""
         # Create test file
         test_file = self.create_test_file()
         
@@ -129,12 +146,14 @@ class TestFilePermissionsGUI(TestCase):
         self.assertEqual(self.editor.model.item(0).text(), test_file)
 
     def test_error_handling(self):
+        """testerrorhandling."""
         # Test with non-existent file
         with patch('PyQt5.QtWidgets.QMessageBox.warning') as mock_warning:
             self.editor.update_file_permissions("/nonexistent/file.txt")
             mock_warning.assert_called_once()
 
     def test_permission_update_failure(self):
+        """testpermissionupdatefailure."""
         # Create test file that will fail permission update
         test_file = self.create_test_file()
         self.editor.add_files([test_file])

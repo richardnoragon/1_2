@@ -9,9 +9,6 @@ from PyQt5 import uic
 from PyQt5.QtGui import QDragEnterEvent, QDropEvent
 from gui.common.base_window import BaseWindow
 from gui.common.dialogs import (
-
-from core.error_handler import error_handler
-
     show_error_dialog, show_info_dialog, get_open_file_name
 )
 
@@ -27,11 +24,13 @@ class SecureDeleteLogic(QObject):
     finished = pyqtSignal()                       # signals thread completion
 
     def __init__(self):
+        """init."""
         super().__init__()
         self._is_running = False
         self._filepath = None
 
     def stop(self):
+        """stop."""
         self.progress_updated.emit(0, 1, "Stopping deletion...")
         self._is_running = False
 
@@ -167,19 +166,29 @@ class SecureDeleteLogic(QObject):
 
 
 class SecureDeleteWorker(QThread):
+    """A class that handles secure delete worker and inherits from QThread."""
     def __init__(self, logic, filepath, passes):
+        """init.
+        Args:
+            logic (Any): Description of logic
+        Args:
+            filepath (Any): Description of filepath
+        Args:
+            passes (Any): Description of passes"""
         super().__init__()
         self.logic = logic
         self.filepath = filepath
         self.passes = passes
         
     def run(self):
+        """run."""
         self.logic.shred_file(self.filepath, self.passes)
 
 
 class SecureDeleteWindow(BaseWindow):
     """Main window for the secure file deletion tool."""
     def __init__(self):
+        """init."""
         super().__init__()
         # Get the directory containing the current script
         current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -211,10 +220,16 @@ class SecureDeleteWindow(BaseWindow):
         self.show()
 
     def dragEnterEvent(self, event: QDragEnterEvent):
+        """dragenterevent.
+        Args:
+            event (QDragEnterEvent): Description of event"""
         if event.mimeData().hasUrls():
             event.acceptProposedAction()
             
     def dropEvent(self, event: QDropEvent):
+        """dropevent.
+        Args:
+            event (QDropEvent): Description of event"""
         urls = event.mimeData().urls()
         if urls:
             # Use the first dropped item's path
@@ -227,7 +242,7 @@ class SecureDeleteWindow(BaseWindow):
     
     def browse_file(self):
         """Open file dialog to select a file to delete."""
-        filepath, _ = get_open_file_name(
+        filepath = get_open_file_name(
             self,
             "Select File to Securely Delete",
             "",
@@ -313,6 +328,7 @@ class SecureDeleteWindow(BaseWindow):
 
 
 def main():
+    """main."""
     app = QApplication(sys.argv)
     window = SecureDeleteWindow()
     window.show()

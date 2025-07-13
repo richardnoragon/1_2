@@ -5,7 +5,9 @@ from tests.test_utils import TestUtils
 from config_manager import ConfigManager
 
 class TestConfigManager(unittest.TestCase):
+    """A class that handles test config manager."""
     def setUp(self):
+        """setup."""
         self.test_dir = TestUtils.create_temp_dir()
         self.config_file = os.path.join(self.test_dir, "test_config.json")
         self.config_manager = ConfigManager(self.config_file)
@@ -21,6 +23,7 @@ class TestConfigManager(unittest.TestCase):
         }
 
     def tearDown(self):
+        """teardown."""
         TestUtils.cleanup_temp_dir(self.test_dir)
 
     def test_save_load_config(self):

@@ -8,12 +8,15 @@ from core.error_handler import error_handler
 
 
 class TestLogManager(unittest.TestCase):
+    """A class that handles test log manager."""
     def setUp(self):
+        """setup."""
         self.test_dir = TestUtils.create_temp_dir()
         self.log_file = os.path.join(self.test_dir, "test.log")
         self.log_manager = LogManager(self.log_file)
 
     def tearDown(self):
+        """teardown."""
         TestUtils.cleanup_temp_dir(self.test_dir)
         # Reset logging configuration
         logging.getLogger().handlers = []
