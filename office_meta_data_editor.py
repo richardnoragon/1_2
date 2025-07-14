@@ -1,25 +1,29 @@
 import os
 import sys
+from typing import Optional
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
 from PyQt5.QtWidgets import QApplication
 from PyQt5 import uic
 from gui.common.base_window import BaseWindow
-from gui.common.dialogs import show_error_dialog, show_info_dialog, get_open_file_name
+from gui.common.dialogs import (
+    show_error_dialog, show_info_dialog, get_open_file_name
+)
 import docx
-
-from core.error_handler import error_handler
 
 
 class OfficeMetaDataEditorGUI(BaseWindow):
-    """A class that handles office meta data editor g u i and inherits from BaseWindow."""
-    def __init__(self):
-        """init."""
+    """A class that handles office meta data editor GUI and inherits
+    from BaseWindow.
+    """
+    
+    def __init__(self) -> None:
+        """Initialize the Office metadata editor GUI."""
         super().__init__()
         # load the GUI's UI definition from the XML file
         uic.loadUi('office_meta_data_editor.ui', self)
         
         # Initialize instance variable for current file
-        self.current_file = None
+        self.current_file: Optional[str] = None
         
         # create a model for the listview
         self.model = QStandardItemModel()
@@ -45,22 +49,27 @@ class OfficeMetaDataEditorGUI(BaseWindow):
         
         self.show()
 
-    def select(self):
-        """select."""
+    def select(self) -> None:
+        """Select an office document and load its metadata.
+        
+        Opens a file dialog to select a Word document and loads its metadata
+        into the appropriate fields for editing.
+        """
         try:
-            fileName = get_open_file_name(
+            file_name = get_open_file_name(
                 self,
                 'Select Office Document',
                 '',
                 "Office Documents (*.docx *.doc *.xlsx *.xls *.pptx *.ppt)"
             )
             
-            if fileName:
-                self.current_file = str(fileName)  # Convert Path to string
+            if file_name:
+                self.current_file = str(file_name)  # Convert Path to string
                 self.model.clear()
                 self.model.appendRow(QStandardItem(self.current_file))
                 
-                document = docx.Document(str(fileName))  # Convert Path to string
+                document = docx.Document(
+                    str(file_name))  # Convert Path to string
                 
                 # Clear previous models
                 self.title_model.clear()
@@ -69,26 +78,38 @@ class OfficeMetaDataEditorGUI(BaseWindow):
                 self.modified_model.clear()
                 
                 # Add metadata to models
-                self.title_model.appendRow(QStandardItem(str(document.core_properties.title or "")))
-                self.author_model.appendRow(QStandardItem(str(document.core_properties.author or "")))
-                self.created_model.appendRow(QStandardItem(str(document.core_properties.created or "")))
-                self.modified_model.appendRow(QStandardItem(str(document.core_properties.modified or "")))
+                self.title_model.appendRow(QStandardItem(
+                    str(document.core_properties.title or "")))
+                self.author_model.appendRow(QStandardItem(
+                    str(document.core_properties.author or "")))
+                self.created_model.appendRow(QStandardItem(
+                    str(document.core_properties.created or "")))
+                self.modified_model.appendRow(QStandardItem(
+                    str(document.core_properties.modified or "")))
                 
         except Exception as e:
             show_error_dialog(self, "Error", f"Error opening file: {str(e)}")
 
-    def set_meta_data(self):
-        """setmetadata."""
+    def set_meta_data(self) -> None:
+        """Save the edited metadata back to the office document.
+        
+        Updates the document's core properties with the values from the
+        GUI fields and saves the changes to the file.
+        """
         try:
             if not self.current_file:
-                show_error_dialog(self, "Warning", "Please select a file first.")
+                show_error_dialog(
+                    self, "Warning", "Please select a file first.")
                 return
                 
-            document = docx.Document(str(self.current_file))  # Convert Path to string
+            document = docx.Document(
+                str(self.current_file))  # Convert Path to string
             
             # Get text from the first item in each model
-            title = self.title_model.item(0).text() if self.title_model.item(0) else ""
-            author = self.author_model.item(0).text() if self.author_model.item(0) else ""
+            title = (self.title_model.item(0).text()
+                     if self.title_model.item(0) else "")
+            author = (self.author_model.item(0).text()
+                      if self.author_model.item(0) else "")
             
             # Update document properties
             document.core_properties.title = title
@@ -96,12 +117,20 @@ class OfficeMetaDataEditorGUI(BaseWindow):
             
             # Save the changes
             document.save(str(self.current_file))  # Convert Path to string
-            show_info_dialog(self, "Success", "Metadata updated successfully!")
+            show_info_dialog(self, "Success",
+                           "Metadata updated successfully!")
             
         except Exception as e:
-            show_error_dialog(self, "Error", f"Error updating metadata: {str(e)}")
+            show_error_dialog(self, "Error",
+                            f"Error updating metadata: {str(e)}")
+
+
+def main() -> None:
+    """Main function to run the Office metadata editor application."""
+    app = QApplication(sys.argv)
+    OfficeMetaDataEditorGUI()
+    sys.exit(app.exec_())
+
 
 if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    gui = OfficeMetaDataEditorGUI()
-    sys.exit(app.exec_())
+    main()

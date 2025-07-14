@@ -7,14 +7,9 @@ audio and video file formats using a graphical interface.
 import os
 import sys
 
-from core.error_handler import error_handler
 # Third-party imports
 from mutagen._file import File  # Note: Using internal module
-from mutagen.id3 import ID3
-from mutagen.flac import FLAC
-from mutagen.mp3 import MP3
-from mutagen.mp4 import MP4
-from typing import Any, cast
+from typing import Any, cast, Optional
 
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtCore import QModelIndex
@@ -48,8 +43,8 @@ class TagViewerEditor(BaseWindow):
         _metadata_model: Model for metadata table view
     """
 
-    _current_file: str | None
-    _current_tags: Any | None
+    _current_file: Optional[str]
+    _current_tags: Optional[Any]
     _metadata_model: QStandardItemModel
 
     def __init__(self) -> None:
@@ -73,7 +68,10 @@ class TagViewerEditor(BaseWindow):
         
     def _setup_ui(self) -> None:
         """Load and initialize the UI components."""
-        ui_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "tag_viewer_editor.ui")
+        ui_file = os.path.join(
+            os.path.dirname(os.path.abspath(__file__)),
+            "tag_viewer_editor.ui"
+        )
         uic.loadUi(ui_file, self)
         self.metadataTable.horizontalHeader().setStretchLastSection(True)
         
@@ -100,29 +98,29 @@ class TagViewerEditor(BaseWindow):
         
     def _browse_file(self) -> None:
         """Open file dialog and load selected audio/video file."""
-        file_path = get_open_file_name(
-            self,
-            "Open Audio/Video File",
-            "",
-            FILE_FILTERS
-        )
+        file_path: str = str(get_open_file_name(
+            parent=self,
+            caption="Open Audio/Video File",
+            directory="",
+            file_filter=FILE_FILTERS
+        ) or "")
 
         if not file_path:
             return
 
         try:
-            tags = cast(Any, File(file_path))
+            tags: Any = cast(Any, File(file_path))
             if not tags:
-                msg = "File format not supported or file does not exist."
+                msg: str = "File format not supported or file does not exist."
                 show_error_dialog("Error", msg, self)
                 return
 
-            self._current_file = str(file_path)
+            self._current_file = file_path
             self._current_tags = tags
             self._display_metadata()
 
         except Exception as e:
-            msg = f"Could not load metadata: {str(e)}"
+            msg: str = f"Could not load metadata: {str(e)}"
             show_error_dialog("Error", msg, self)
 
     def _display_metadata(self) -> None:
@@ -135,8 +133,8 @@ class TagViewerEditor(BaseWindow):
 
         # Add each tag to the model
         for tag, value in self._current_tags.items():
-            tag_item = QStandardItem(str(tag))
-            value_item = QStandardItem(str(value))
+            tag_item: QStandardItem = QStandardItem(str(tag))
+            value_item: QStandardItem = QStandardItem(str(value))
             self._metadata_model.appendRow([tag_item, value_item])
 
     def _update_tag(self) -> None:
@@ -144,8 +142,8 @@ class TagViewerEditor(BaseWindow):
         if not self._current_tags or not self._current_file:
             return
 
-        tag = self.tagNameEdit.text().strip()
-        value = self.tagValueEdit.text().strip()
+        tag: str = self.tagNameEdit.text().strip()
+        value: str = self.tagValueEdit.text().strip()
 
         if not tag or not value:
             show_error_dialog(
@@ -180,18 +178,16 @@ class TagViewerEditor(BaseWindow):
             return
 
         # Get selected tag name and value
-        row = index.row()
-        item = self._metadata_model.item(row, 0)
-        if item:
-            tag = item.text()
-        else:
+        row: int = index.row()
+        tag_item: Optional[QStandardItem] = self._metadata_model.item(row, 0)
+        if not tag_item:
             return
+        tag: str = tag_item.text()
             
-        item = self._metadata_model.item(row, 1)
-        if item:
-            value = item.text()
-        else:
+        value_item: Optional[QStandardItem] = self._metadata_model.item(row, 1)
+        if not value_item:
             return
+        value: str = value_item.text()
 
         # Update input fields
         self.tagNameEdit.setText(tag)

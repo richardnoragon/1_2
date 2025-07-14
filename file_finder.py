@@ -1,11 +1,11 @@
 import os
 import sys
-import pathlib
 import datetime
-import traceback
+import subprocess
 import docx
 import PyPDF2
 import chardet
+from typing import List, Any
 from PyQt5.QtGui import (
     QStandardItemModel,
     QStandardItem,
@@ -13,7 +13,7 @@ from PyQt5.QtGui import (
     QDropEvent
 )
 from PyQt5.QtWidgets import QApplication, QHeaderView, QDialog, QLineEdit
-from PyQt5.QtCore import QDate, Qt
+from PyQt5.QtCore import QDate, QModelIndex
 from log_manager import LogManager
 from core.error_handler import error_handler
 from gui.common import (
@@ -57,8 +57,8 @@ class FileFinderGUI(BaseWindow):
     Inherits from BaseWindow to maintain consistent GUI behavior.
     """
     
-    def __init__(self, config_manager=None):
-        """init."""
+    def __init__(self, config_manager=None) -> None:
+        """Initialize the file finder GUI."""
         try:
             # load the GUI's UI definition from the XML file
             super().__init__(os.path.join(SCRIPT_DIR, 'file_finder.ui'))
@@ -116,7 +116,7 @@ class FileFinderGUI(BaseWindow):
         
         self.show()
         
-    def select_directory(self):
+    def select_directory(self) -> None:
         """Open directory selection dialog and update window state.
         
         Opens a dialog for directory selection and if a directory is chosen:
@@ -128,59 +128,84 @@ class FileFinderGUI(BaseWindow):
         dir_path = get_existing_directory(self, "Select Directory")
         # Display the selected directory in window title and line edit
         if dir_path:
-            self.directory = dir_path
+            self.directory = str(dir_path)
             self.setWindowTitle(f"File Finder - {self.directory}")
             self.directory_lineEdit.setText(self.directory)
             
     # Method to open a file when double-clicked in the listview
-    def open_file(self, index):
-        """openfile.
+    def open_file(self, index: QModelIndex) -> None:
+        """Open a file when double-clicked in the listview.
+        
         Args:
-            index (Any): Description of index"""
-        try:
-            # Get the file name from the model
-            file_name = self.model.itemFromIndex(index).text()
-            # Create the full path
-            file_path = os.path.join(self.directory, file_name)
-            # Open the file with the default application
-            os.startfile(file_path)
-        except Exception as e:
-            show_error_dialog(f"Error opening file: {str(e)}", "Error", self)
-            self.logger.error(f'Error opening file: {str(e)}', exc_info=True)
+            index: The index of the selected file in the list view
+        """
+        file_path = self.model.data(index)
+        if file_path:
+            full_path = os.path.join(self.directory, file_path)
+            try:
+                if os.name == 'nt':  # Windows
+                    os.startfile(full_path)
+                else:  # macOS and Linux
+                    subprocess.run(['open', full_path])
+            except Exception as e:
+                self.logger.error(f"Error opening file: {str(e)}")
+                show_error_dialog(self, "Error", f"Could not open file: {str(e)}")
 
     # Method to show metadata when a file is selected
-    def show_metadata(self, index):
-        """showmetadata.
+    def show_metadata(self, index: QModelIndex) -> None:
+        """Display metadata for the selected file.
+        
         Args:
-            index (Any): Description of index"""
+            index: The index of the selected file in the list view
+        """
+        file_path = self.model.data(index)
+        if not file_path:
+            return
+            
+        full_path = os.path.join(self.directory, file_path)
+        file_name = os.path.basename(full_path)
+        
         try:
-            # Clear previous metadata
+            # Clear existing metadata
             self.meta_model.removeRows(0, self.meta_model.rowCount())
             
-            # Get the file name from the model
-            file_name = self.model.itemFromIndex(index).text()
-            # Create the full path
-            file_path = os.path.join(self.directory, file_name)
             # Get file info
-            file_info = pathlib.Path(file_path)
+            file_info = pathlib.Path(full_path)
             
-            # Add metadata to the table
-            self.add_meta_row("Name", file_info.name)
+            # Add basic file properties
+            self.add_meta_row("Name", file_name)
+            self.add_meta_row("Path", full_path)
             self.add_meta_row("Size", f"{file_info.stat().st_size:,} bytes")
-            self.add_meta_row("Created", datetime.datetime.fromtimestamp(file_info.stat().st_ctime).strftime('%Y-%m-%d %H:%M:%S'))
-            self.add_meta_row("Modified", datetime.datetime.fromtimestamp(file_info.stat().st_mtime).strftime('%Y-%m-%d %H:%M:%S'))
-            self.add_meta_row("Type", file_info.suffix)
-            self.add_meta_row("Path", str(file_info.parent))
             
-            # Show success message
-            self.statusbar.showMessage(f"Metadata loaded for {file_name}", 3000)
-            self.logger.info(f'Metadata loaded for {file_name}')
+            # Format dates
+            created_time = datetime.datetime.fromtimestamp(
+                file_info.stat().st_ctime
+            ).strftime('%Y-%m-%d %H:%M:%S')
+            modified_time = datetime.datetime.fromtimestamp(
+                file_info.stat().st_mtime
+            ).strftime('%Y-%m-%d %H:%M:%S')
+            
+            self.add_meta_row("Created", created_time)
+            self.add_meta_row("Modified", modified_time)
+            
+            self.statusbar.showMessage(
+                f"Metadata loaded for {file_name}", 3000
+            )
         except Exception as e:
-            self.statusbar.showMessage(f"Error loading metadata: {str(e)}", 5000)
-            self.logger.error(f'Error loading metadata: {str(e)}', exc_info=True)
+            self.statusbar.showMessage(
+                f"Error loading metadata: {str(e)}", 5000
+            )
+            self.logger.error(
+                f'Error loading metadata: {str(e)}', exc_info=True
+            )
             
-    def add_meta_row(self, property_name, value):
-        """Helper method to add a row to the metadata table"""
+    def add_meta_row(self, property_name: str, value: Any) -> None:
+        """Helper method to add a row to the metadata table.
+        
+        Args:
+            property_name: The name of the property to display
+            value: The value of the property
+        """
         row = self.meta_model.rowCount()
         self.meta_model.setItem(row, 0, QStandardItem(property_name))
         self.meta_model.setItem(row, 1, QStandardItem(str(value)))
@@ -191,239 +216,243 @@ class FileFinderGUI(BaseWindow):
     # be displayed in the line boxes and the content will be rendered in ?Box.
     # with a double click on the file name, the file will be opened with the
     # installed and reqisted program.
-    def search(self):
-        """search."""
+    def search(self) -> None:
+        """Perform file search based on current criteria.
+        
+        Clears existing results and searches for files matching:
+        - Selected file types (office, media, or all)
+        - Date ranges (created, modified, or both)
+        - File name patterns
+        """
         # clear the model
         self.model.clear()
         self.meta_model.removeRows(0, self.meta_model.rowCount())
         
         # Use the directory from select_directory method
         directory = self.directory
-        if not directory:
-            show_error_dialog("Please select a directory first", "Error", self)
-            self.logger.warning('No directory selected')
+        filetype = self.filetype_lineEdit.text().strip()
+        
+        # Get date range
+        from_date = self.from_dateEdit.date().toPyDate()
+        till_date = self.till_dateEdit.date().toPyDate()
+        
+        # Get checkbox states
+        office = self.office_checkBox.isChecked()
+        media = self.media_checkBox.isChecked()
+        all_files = self.all_checkBox.isChecked()
+        created = self.created_radioButton.isChecked()
+        modified = self.modified_radioButton.isChecked()
+        created_modified = self.created_modified_radioButton.isChecked()
+        
+        if not directory or not os.path.exists(directory):
+            show_error_dialog(self, "Error", "Please select a valid directory")
             return
             
-        # Show progress widget
-        self.progress_widget.show()
-        self.progress_widget.set_text("Searching...")
-            
-        # Get the filetype from user input or use empty string
-        filetype = self.filetype if hasattr(self, 'filetype') else ""
-        # get the from date from the dateEdit
-        from_date = self.from_dateEdit.date().toPyDate()
-        # get the till date from the dateEdit
-        till_date = self.till_dateEdit.date().toPyDate()
-        # get the created_radioButton
-        created = self.created_radioButton.isChecked()
-        # get the modified_radioButton
-        modified = self.modified_radioButton.isChecked()
-        # get the created_modified_radioButton
-        created_modified = self.created_modified_radioButton.isChecked()
-        # get the officecheckBox - fix typo in variable name
-        office = self.office_checkBox.isChecked()
-        # get the mediacheckBox
-        media = self.media_checkBox.isChecked()
-        # get the allcheckBox
-        all_files = self.all_checkBox.isChecked()
+        # Get files matching criteria
+        files = self.get_files(
+            directory, filetype, from_date, till_date,
+            created, modified, created_modified, office, media, all_files
+        )
         
-        # get the selected files
-        self.logger.info(f'Starting search in {directory} with filetype {filetype}')
-        files = self.get_files(directory, filetype, from_date, till_date,
-                               created, modified, created_modified, office, media, all_files)
-                               
-        # add the files to the model
-        for file in files:
-            self.model.appendRow(QStandardItem(file))
+        # Display results
+        for file_path in files:
+            self.model.appendRow(QStandardItem(file_path))
             
-        # Update status bar with results
-        self.statusbar.showMessage(f"Found {len(files)} files", 5000)
+        self.statusbar.showMessage(
+            f"Found {len(files)} files", 3000
+        )
         self.logger.info(f'Found {len(files)} files')
 
-    def search_file_content(self, file_path, search_text):
-        """Search for text content within a file based on its type.
+    def search_file_content(self, file_path: str, search_text: str) -> bool:
+        """Search for text within file content.
         
         Args:
-            file_path: Path object pointing to the file to search
-            search_text: String to search for in the file
+            file_path: Path to the file to search
+            search_text: Text to search for
             
         Returns:
-            bool: True if search_text is found in the file, False otherwise
-            
-        Supported file types:
-            - Text files (.txt, .py, .md, .json, .xml, .csv)
-            - Word documents (.docx)
-            - PDF documents (.pdf)
+            True if text is found, False otherwise
         """
-        if not search_text:
-            return True  # If no search text, include the file
+        try:
+            file_path_obj = pathlib.Path(file_path)
             
-        try:
-            ext = file_path.suffix.lower()
-            if ext in ['.txt', '.py', '.md', '.json', '.xml', '.csv']:
-                return self.search_text_file(file_path, search_text)
-            elif ext in ['.docx']:
-                return self.search_word_document(file_path, search_text)
-            elif ext in ['.pdf']:
-                return self.search_pdf_document(file_path, search_text)
-            return False  # Unsupported file type
-        except Exception as e:
-            self.statusbar.showMessage(f"Error searching in {file_path.name}: {str(e)}", 5000)
-            self.logger.error(f'Error searching in {file_path.name}: {str(e)}', exc_info=True)
-            return False
-
-    def search_text_file(self, file_path, search_text):
-        """Search within text-based files"""
-        try:
-            # Detect the file encoding
-            with open(file_path, 'rb') as raw_file:
-                result = chardet.detect(raw_file.read())
-                encoding = result['encoding'] if result['encoding'] else 'utf-8'
-
-            # Read and search the file
-            with open(file_path, 'r', encoding=encoding) as file:
-                content = file.read().lower()
-                return search_text.lower() in content
+            if file_path_obj.suffix.lower() == '.txt':
+                return self.search_text_file(str(file_path_obj), search_text)
+            elif file_path_obj.suffix.lower() == '.docx':
+                return self.search_word_document(str(file_path_obj), search_text)
+            elif file_path_obj.suffix.lower() == '.pdf':
+                return self.search_pdf_document(str(file_path_obj), search_text)
+            else:
+                return False
         except Exception:
             return False
-
-    def search_word_document(self, file_path, search_text):
-        """Search within Word documents"""
+    
+    def search_text_file(self, file_path: str, search_text: str) -> bool:
+        """Search for text in a text file.
+        
+        Args:
+            file_path: Path to the text file
+            search_text: Text to search for
+            
+        Returns:
+            True if text is found, False otherwise
+        """
+        try:
+            with open(file_path, 'rb') as f:
+                raw_data = f.read()
+                
+            result = chardet.detect(raw_data)
+            encoding = result['encoding'] if result['encoding'] else 'utf-8'
+            
+            text = raw_data.decode(encoding, errors='ignore')
+            return search_text.lower() in text.lower()
+        except Exception:
+            return False
+    
+    def search_word_document(self, file_path: str, search_text: str) -> bool:
+        """Search for text in a Word document.
+        
+        Args:
+            file_path: Path to the Word document
+            search_text: Text to search for
+            
+        Returns:
+            True if text is found, False otherwise
+        """
         try:
             doc = docx.Document(file_path)
-            text_content = ' '.join([paragraph.text for paragraph in doc.paragraphs])
+            text_content = ' '.join([p.text for p in doc.paragraphs])
             return search_text.lower() in text_content.lower()
         except Exception:
             return False
-
-    def search_pdf_document(self, file_path, search_text):
-        """Search within PDF documents"""
+    
+    def search_pdf_document(self, file_path: str, search_text: str) -> bool:
+        """Search for text in a PDF document.
+        
+        Args:
+            file_path: Path to the PDF document
+            search_text: Text to search for
+            
+        Returns:
+            True if text is found, False otherwise
+        """
         try:
             with open(file_path, 'rb') as file:
-                pdf_reader = PyPDF2.PdfReader(file)
+                reader = PyPDF2.PdfReader(file)
                 text_content = ''
-                for page in pdf_reader.pages:
+                for page in reader.pages:
                     text_content += page.extract_text()
                 return search_text.lower() in text_content.lower()
         except Exception:
             return False
 
     def get_files(
-        self, directory, filetype, from_date, till_date, created,
-        modified, created_modified, office, media, all_files
-    ):
+        self,
+        directory: str,
+        filetype: str,
+        from_date: datetime.date,
+        till_date: datetime.date,
+        created: bool,
+        modified: bool,
+        created_modified: bool,
+        office: bool,
+        media: bool,
+        all_files: bool
+    ) -> List[str]:
         """Find files matching the specified criteria.
         
         Args:
-            directory (str): Base directory to search
-            filetype (str): File extension or name pattern to match
-            from_date (date): Start date for file filtering
-            till_date (date): End date for file filtering
-            created (bool): Consider file creation date
-            modified (bool): Consider file modification date
-            created_modified (bool): Consider both creation and modification dates
-            office (bool): Include office document types
-            media (bool): Include media file types
-            all_files (bool): Include all file types
+            directory: Base directory to search
+            filetype: File extension or name pattern to match
+            from_date: Start date for file filtering
+            till_date: End date for file filtering
+            created: Consider file creation date
+            modified: Consider file modification date
+            created_modified: Consider both creation and modification dates
+            office: Include office document types
+            media: Include media file types
+            all_files: Include all file types
             
         Returns:
-            list: Relative paths of matching files
+            List of file paths relative to the base directory
         """
         files = []
-        path = pathlib.Path(directory)
-        search_text = self.content_search_lineEdit.text().strip()
         
-        # Convert Python date to timestamp for comparison
-        from_timestamp = (
-            datetime.datetime.combine(from_date, datetime.time.min).timestamp()
-        )
-        till_timestamp = (
-            datetime.datetime.combine(till_date, datetime.time.max).timestamp()
-        )
-        
-        try:
-            self.statusbar.showMessage("Searching files...", 0)
-            self.logger.info('Searching files...')
+        # Determine file extensions to include
+        extensions = []
+        if office:
+            extensions.extend(['docx', 'doc', 'xlsx', 'xls', 'pptx', 'ppt'])
+        if media:
+            extensions.extend(['mp3', 'mp4', 'avi', 'mkv', 'jpg', 'png', 'gif'])
+        if all_files:
+            extensions = ['*']
             
-            for file in path.rglob('*'):
-                if file.is_file():
-                    # Skip hidden files (starting with .) by default
-                    if file.name.startswith('.'):
+        # Walk through directory
+        for root, dirs, filenames in os.walk(directory):
+            for filename in filenames:
+                file_path = os.path.join(root, filename)
+                relative_path = os.path.relpath(file_path, directory)
+                
+                # Check file type
+                if extensions != ['*']:
+                    file_ext = filename.split('.')[-1].lower() if '.' in filename else ''
+                    if file_ext not in extensions and filetype not in filename.lower():
                         continue
                         
-                    if filetype in file.name:
-                        if self.in_date_range(
-                            file, from_timestamp, till_timestamp,
-                            created, modified, created_modified
-                        ):
-                            ext = file.suffix.lower()
-                            is_office = (
-                                office and ext in ['.pptx', '.docx', '.xlsx']
-                            )
-                            is_media = (
-                                media and ext in [
-                                    '.avi', '.mp3', '.mkv', '.mp4', '.wav', '.mov'
-                                ]
-                            )
-                            
-                            if is_office or is_media or all_files:
-                                if (search_text and 
-                                    not self.search_file_content(file, search_text)):
-                                    continue
-                                
-                                files.append(str(file.relative_to(path)))
-            
-            files.sort()
-            msg = f"Found {len(files)} matching files"
-            self.statusbar.showMessage(msg, 5000)
-            self.logger.info(msg)
-            
-        except Exception as e:
-            msg = f"Error searching files: {str(e)}"
-            show_error_dialog(msg, "Error", self)
-            self.logger.error(msg, exc_info=True)
-            
-        finally:
-            # Hide progress widget when done
-            self.progress_widget.hide()
-            
-        return files
+                # Check date range
+                if not self.in_date_range(
+                    file_path, from_date, till_date,
+                    created, modified, created_modified
+                ):
+                    continue
+                    
+                files.append(relative_path)
+                
+        return sorted(files)
 
     def in_date_range(
-        self, file, from_timestamp, till_timestamp,
-        created, modified, created_modified
-    ):
-        """Check if file's timestamps are within the specified date range.
+        self,
+        file_path: str,
+        from_date: datetime.date,
+        till_date: datetime.date,
+        created: bool,
+        modified: bool,
+        created_modified: bool
+    ) -> bool:
+        """Check if file falls within specified date range.
         
         Args:
-            file: Path object pointing to the file to check
-            from_timestamp: Start time as Unix timestamp
-            till_timestamp: End time as Unix timestamp
-            created: Check creation time
-            modified: Check modification time
-            created_modified: Check both creation and modification times
+            file_path: Path to the file
+            from_date: Start date for filtering
+            till_date: End date for filtering
+            created: Check creation date
+            modified: Check modification date
+            created_modified: Check both dates
             
         Returns:
-            bool: True if file timestamps are within range, False otherwise
+            True if file is within date range, False otherwise
         """
         try:
+            file_stat = os.stat(file_path)
+            
             if created:
-                return from_timestamp <= file.stat().st_ctime <= till_timestamp
+                file_date = datetime.date.fromtimestamp(file_stat.st_ctime)
             elif modified:
-                return from_timestamp <= file.stat().st_mtime <= till_timestamp
+                file_date = datetime.date.fromtimestamp(file_stat.st_mtime)
             elif created_modified:
-                c_time = file.stat().st_ctime
-                m_time = file.stat().st_mtime
-                return (
-                    (from_timestamp <= c_time <= till_timestamp) or
-                    (from_timestamp <= m_time <= till_timestamp)
-                )
+                # Check both creation and modification dates
+                create_date = datetime.date.fromtimestamp(file_stat.st_ctime)
+                modify_date = datetime.date.fromtimestamp(file_stat.st_mtime)
+                return (from_date <= create_date <= till_date or 
+                        from_date <= modify_date <= till_date)
             else:
                 return True
+                
+            return from_date <= file_date <= till_date
         except Exception:
             return False
 
-    def dragEnterEvent(self, event: QDragEnterEvent):
+    def dragEnterEvent(self, event: QDragEnterEvent) -> None:
         """Handle drag enter events for directory dropping.
         
         Args:
@@ -431,26 +460,33 @@ class FileFinderGUI(BaseWindow):
         """
         if event.mimeData().hasUrls():
             event.acceptProposedAction()
-            
-    def dropEvent(self, event: QDropEvent):
+    
+    def dropEvent(self, event: QDropEvent) -> None:
         """Handle directory drop events.
         
         Args:
             event: The drop event to handle
-            
-        If a directory is dropped, updates the current directory path.
-        Otherwise shows an error message.
         """
         urls = event.mimeData().urls()
-        if urls:
-            # Use the first dropped item's path
+        if urls and urls[0].isLocalFile():
             path = urls[0].toLocalFile()
             if os.path.isdir(path):
                 self.directory = path
                 self.directory_lineEdit.setText(path)
-                self.setWindowTitle(f"File Finder - {self.directory}")
-            else:
-                self.statusbar.showMessage("Please drop a folder", 3000)
+                self.setWindowTitle(f"File Finder - {path}")
+    
+    def save_settings(self) -> None:
+        """Save current settings for future sessions."""
+        # Implementation for saving settings
+        pass
+    
+    def show(self) -> None:
+        """Show the file finder window."""
+        super().show()
+    
+    def close(self) -> None:
+        """Close the file finder window."""
+        super().close()
 
 
 class FileFinderLogic:

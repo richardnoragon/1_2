@@ -3,38 +3,38 @@ import sys
 import math
 from PyQt5.QtWidgets import (
     QApplication, QGraphicsScene, QGraphicsView,
-    QGraphicsRectItem, QVBoxLayout
+    QGraphicsRectItem, QVBoxLayout, QHBoxLayout, 
+    QPushButton, QLabel, QGroupBox, QProgressBar
 )
 from PyQt5.QtCore import Qt, QThread, QObject, pyqtSignal
-from PyQt5.QtGui import QPen, QBrush, QColor
-from gui.common import BaseWindow, get_existing_directory
+from PyQt5.QtGui import QPen, QBrush, QColor, QPainter
+from typing import Dict, Any, Optional, List
 
-from core.error_handler import error_handler
-
+from gui.standard_window import StandardWindow
+from gui.themes import ThemeManager, Colors
 
 
 class TreeMapLogic(QObject):
     """Scans a directory to calculate item sizes for treemap visualization."""
 
-    # Data format: {'path': path, 'items': [{'name': name, 'size': size, ...}]}
     progress_updated = pyqtSignal(str, int, int)  # message, current, total
     scan_complete = pyqtSignal(dict)
     error_occurred = pyqtSignal(str)
     finished = pyqtSignal()
 
-    def __init__(self):
-        """init."""
+    def __init__(self) -> None:
+        """Initialize the tree map logic."""
         super().__init__()
-        self._is_running = False
-        self._target_path = None
+        self._is_running: bool = False
+        self._target_path: Optional[str] = None
 
-    def stop(self):
-        """stop."""
+    def stop(self) -> None:
+        """Stop the scanning process."""
         self.progress_updated.emit("Stopping scan...", 0, 0)
         self._is_running = False
 
-    def start_scan(self, target_path):
-        """Initiates the directory scan process."""
+    def start_scan(self, target_path: str) -> None:
+        """Initiate the directory scan process."""
         if not os.path.isdir(target_path):
             self.error_occurred.emit(
                 f"Error: Not a valid directory: {target_path}")
@@ -43,327 +43,317 @@ class TreeMapLogic(QObject):
 
         self._is_running = True
         self._target_path = target_path
-        scan_data = {'path': target_path, 'items': []}
-        total_size = 0
-        items_processed = 0
+        scan_data: Dict[str, Any] = {'path': target_path, 'items': []}
+        total_size: int = 0
+        items_processed: int = 0
 
         try:
             # First Pass: Count items for progress
-            all_entries = []
-            try:
-                with os.scandir(target_path) as entries:
-                    for entry in entries:
-                        if not self._is_running:
-                            break
-                        all_entries.append(entry)
-            except PermissionError:
-                self.error_occurred.emit(
-                    f"Permission denied accessing: {target_path}")
-                self._is_running = False
-            except Exception as e:
-                self.error_occurred.emit(
-                    f"Error listing directory {target_path}: {e}")
-                self._is_running = False
-
-            if not self._is_running:
-                self.progress_updated.emit("Scan cancelled.", 0, 0)
-                self.finished.emit()
-                return
-
-            total_items = len(all_entries)
-            self.progress_updated.emit(
-                f"Scanning {total_items} items in "
-                f"{os.path.basename(target_path)}...",
-                0, total_items
+            total_items: int = sum(
+                len(files) + len(dirs)
+                for _, dirs, files in os.walk(target_path)
             )
-
-            # Second Pass: Get sizes
-            for entry in all_entries:
+            
+            # Second Pass: Calculate sizes
+            for root, dirs, files in os.walk(target_path):
                 if not self._is_running:
                     break
-                items_processed += 1
-                self.progress_updated.emit(
-                    f"Processing: {entry.name}",
-                    items_processed,
-                    total_items
-                )
-                item_path = entry.path
-                item_size = 0
-                try:
-                    if entry.is_dir(follow_symlinks=False):
-                        item_size = self._get_dir_size(item_path)
-                    elif entry.is_file(follow_symlinks=False):
-                        item_size = entry.stat(follow_symlinks=False).st_size
-                    else:
-                        continue
-
-                    if item_size > 0:
+                    
+                for name in files + dirs:
+                    if not self._is_running:
+                        break
+                        
+                    full_path: str = os.path.join(root, name)
+                    try:
+                        if os.path.isfile(full_path):
+                            size: int = os.path.getsize(full_path)
+                        elif os.path.isdir(full_path):
+                            size: int = self._get_dir_size(full_path)
+                        else:
+                            continue
+                            
+                        item_type: str = (
+                            'file' if os.path.isfile(full_path)
+                            else 'directory'
+                        )
                         scan_data['items'].append({
-                            'name': entry.name,
-                            'size': item_size,
-                            'path': item_path
+                            'name': name,
+                            'path': full_path,
+                            'size': size,
+                            'type': item_type
                         })
-                        total_size += item_size
-                except PermissionError:
+                        total_size += size
+                        
+                    except (OSError, PermissionError):
+                        continue
+                    
+                    items_processed += 1
                     self.progress_updated.emit(
-                        f"Skipping (permission denied): {entry.name}",
-                        items_processed,
-                        total_items
-                    )
-                except FileNotFoundError:
-                    self.progress_updated.emit(
-                        f"Skipping (not found/broken link?): {entry.name}",
-                        items_processed,
-                        total_items
-                    )
-                except Exception as e:
-                    self.progress_updated.emit(
-                        f"Skipping (error): {entry.name} - {e}",
-                        items_processed,
-                        total_items
-                    )
+                        f"Scanning: {name}", items_processed, total_items)
 
             if self._is_running:
-                self.progress_updated.emit(
-                    f"Scan finished for {os.path.basename(target_path)}. "
-                    "Preparing results...",
-                    total_items,
-                    total_items
-                )
+                scan_data['total_size'] = total_size
                 self.scan_complete.emit(scan_data)
 
         except Exception as e:
-            if self._is_running:
-                self.error_occurred.emit(
-                    f"An unexpected error occurred during scan: {e}")
+            self.error_occurred.emit(str(e))
         finally:
-            if self._is_running:
-                self._is_running = False
             self.finished.emit()
 
-    def _get_dir_size(self, dir_path):
-        """Recursively calculates the total size of a directory."""
-        total_size = 0
-        if not self._is_running:
-            return 0
+    def _get_dir_size(self, path: str) -> int:
+        """Calculate total size of a directory."""
+        total: int = 0
         try:
-            for dirpath, dirnames, filenames in os.walk(
-                dir_path,
-                topdown=True,
-                onerror=self._handle_walk_error
-            ):
-                if not self._is_running:
-                    break
-                for f in filenames:
-                    if not self._is_running:
-                        break
-                    fp = os.path.join(dirpath, f)
-                    if not os.path.islink(fp) and os.path.isfile(fp):
-                        try:
-                            total_size += os.path.getsize(fp)
-                        except FileNotFoundError:
-                            self.progress_updated.emit(
-                                f"Skipping (link/not found): {fp}", -1, -1)
-                        except PermissionError:
-                            self.progress_updated.emit(
-                                f"Skipping (permission): {fp}", -1, -1)
-                        except Exception as e:
-                            self.progress_updated.emit(
-                                f"Skipping (error getting size): {fp} - {e}",
-                                -1, -1
-                            )
-        except PermissionError:
-            self.progress_updated.emit(
-                f"Skipping directory (permission): {dir_path}", -1, -1)
-        except Exception as e:
-            self.progress_updated.emit(
-                f"Error walking directory {dir_path}: {e}", -1, -1)
-        return total_size
-
-    def _handle_walk_error(self, os_error):
-        """Handles errors during os.walk, typically permission errors."""
-        if self._is_running:
-            self.progress_updated.emit(
-                f"Cannot access: {os_error.filename} ({os_error.strerror})",
-                -1,
-                -1
-            )
+            for entry in os.scandir(path):
+                try:
+                    if entry.is_file():
+                        total += entry.stat().st_size
+                    elif entry.is_dir():
+                        total += self._get_dir_size(entry.path)
+                except (OSError, PermissionError):
+                    continue
+        except (OSError, PermissionError):
+            pass
+        return total
 
 
-class TreeMapWindow(BaseWindow):
-    """A class that handles tree map window and inherits from BaseWindow."""
-    def __init__(self):
-        """init."""
-        super().__init__("tree_map.ui")
+class TreeMapView(QGraphicsView):
+    """Custom graphics view for displaying treemap visualization."""
+    
+    def __init__(self) -> None:
+        super().__init__()
+        self.setRenderHint(QPainter.Antialiasing)
+        self.setMinimumSize(400, 300)
+
+
+class TreeMapGUI(StandardWindow):
+    """Tree map visualization utility with standardized styling."""
+    
+    def __init__(self) -> None:
+        super().__init__("Tree Map Visualization")
+        self.scan_thread: Optional[QThread] = None
+        self.tree_map_logic: Optional[TreeMapLogic] = None
+        self.scan_data: Optional[Dict[str, Any]] = None
+        self.directory_path: str = ""
         
-        # Initialize scene and view for treemap
-        self.scene = QGraphicsScene()
-        self.view = QGraphicsView(self.scene)
-        self.treeMapContainer.layout() or self.treeMapContainer.setLayout(
-            QVBoxLayout()
+        self._setup_ui()
+        
+    def _setup_ui(self) -> None:
+        """Setup the user interface with standardized styling."""
+        # Create header
+        header = self.create_header("Tree Map Visualization")
+        self.main_layout.addWidget(header)
+        
+        # Create control group
+        control_group = self.create_group_box("Controls")
+        control_layout = QVBoxLayout()
+        
+        # Directory selection
+        dir_layout = QHBoxLayout()
+        self.dir_label = QLabel("No directory selected")
+        ThemeManager.style_label(self.dir_label)
+        
+        select_btn = self.create_button(
+            "Select Directory", self.select_directory
         )
-        self.treeMapContainer.layout().addWidget(self.view)
+        scan_btn = self.create_button(
+            "Scan Directory", self.start_scan, primary=False
+        )
         
-        # Initialize disk scanner
-        self.scanner = TreeMapLogic()
-        self.scanner_thread = QThread()
-        self.scanner.moveToThread(self.scanner_thread)
+        dir_layout.addWidget(self.dir_label)
+        dir_layout.addWidget(select_btn)
+        dir_layout.addWidget(scan_btn)
         
-        # Connect signals
-        self.btnSelectDirectory.clicked.connect(self.select_directory)
-        self.btnStop.clicked.connect(self.stop_scan)
-        self.scanner.progress_updated.connect(self.update_progress)
-        self.scanner.scan_complete.connect(self.draw_treemap)
-        self.scanner.error_occurred.connect(self.show_error)
-        self.scanner.finished.connect(self.scan_finished)
+        control_layout.addLayout(dir_layout)
+        control_group.setLayout(control_layout)
+        self.main_layout.addWidget(control_group)
         
-        # Connect menu actions
-        self.actionExit.triggered.connect(self.close)
+        # Create visualization group
+        viz_group = self.create_group_box("Visualization")
+        viz_layout = QVBoxLayout()
         
-        self.scanner_thread.start()
+        # Progress bar
+        self.progress_bar = self.create_progress_bar()
+        self.progress_bar.setVisible(False)
         
-    def select_directory(self):
-        """selectdirectory."""
-        dir_path = get_existing_directory(self, "Select Directory")
-        if dir_path:
-            self.lblPath.setText(dir_path)
-            self.btnStop.setEnabled(True)
-            self.progressBar.setValue(0)
-            self.scene.clear()
-            self.scanner.start_scan(dir_path)
-    
-    def stop_scan(self):
-        """stopscan."""
-        self.scanner.stop()
-        self.btnStop.setEnabled(False)
-    
-    def update_progress(self, message, current, total):
-        """updateprogress.
-        Args:
-            message (Any): Description of message
-        Args:
-            current (Any): Description of current
-        Args:
-            total (Any): Description of total"""
-        self.lblStatus.setText(message)
-        if total > 0:
-            self.progressBar.setValue(int((current / total) * 100))
-    
-    def show_error(self, message):
-        """showerror.
-        Args:
-            message (Any): Description of message"""
-        self.lblStatus.setText(f"Error: {message}")
-    
-    def scan_finished(self):
-        """scanfinished."""
-        self.btnStop.setEnabled(False)
+        # Graphics view for treemap
+        self.scene = QGraphicsScene()
+        self.view = TreeMapView()
+        self.view.setScene(self.scene)
         
-    def draw_treemap(self, data):
-        """Draw the treemap visualization using the scanned data."""
-        self.scene.clear()
+        viz_layout.addWidget(self.progress_bar)
+        viz_layout.addWidget(self.view)
+        viz_group.setLayout(viz_layout)
+        self.main_layout.addWidget(viz_group)
         
-        # Get total size and sort items by size
-        items = sorted(data['items'], key=lambda x: x['size'], reverse=True)
-        total_size = sum(item['size'] for item in items)
+        # Create info group
+        info_group = self.create_group_box("Information")
+        info_layout = QVBoxLayout()
         
-        if total_size == 0:
-            self.lblStatus.setText("No items to display")
+        self.info_label = QLabel("Select a directory to visualize")
+        ThemeManager.style_label(self.info_label)
+        info_layout.addWidget(self.info_label)
+        
+        info_group.setLayout(info_layout)
+        self.main_layout.addWidget(info_group)
+        
+    def select_directory(self) -> None:
+        """Select directory to visualize."""
+        directory: str = self.get_directory_path(
+            "Select Directory to Visualize"
+        )
+        if directory:
+            self.dir_label.setText(os.path.basename(directory))
+            self.directory_path = directory
+            self.show_status_message(f"Selected: {directory}")
+            
+    def start_scan(self) -> None:
+        """Start scanning the selected directory."""
+        if not self.directory_path:
+            self.show_error_dialog("Error", "Please select a directory first")
             return
             
-        # Calculate available space
-        view_width = self.view.width() - 20
-        view_height = self.view.height() - 20
+        self.progress_bar.setVisible(True)
+        self.progress_bar.setValue(0)
+        self.show_status_message("Scanning directory...")
         
-        # Draw rectangles
-        self.draw_rectangles(items, total_size, 0, 0, view_width, view_height)
+        # Clear previous visualization
+        self.scene.clear()
         
-        # Fit scene in view
-        self.scene.setSceneRect(self.scene.itemsBoundingRect())
-        self.view.fitInView(self.scene.sceneRect(), Qt.KeepAspectRatio)
+        # Create and start scan thread
+        self.tree_map_logic = TreeMapLogic()
+        self.scan_thread = QThread()
+        self.tree_map_logic.moveToThread(self.scan_thread)
         
-        self.lblStatus.setText(f"Scan complete: {len(items)} items found")
-    
-    def draw_rectangles(self, items, total_size, x, y, width, height):
-        """Recursively draw rectangles for the treemap."""
+        # Connect signals
+        self.tree_map_logic.progress_updated.connect(self.update_progress)
+        self.tree_map_logic.scan_complete.connect(self.display_treemap)
+        self.tree_map_logic.error_occurred.connect(self.handle_error)
+        self.tree_map_logic.finished.connect(self.scan_thread.quit)
+        
+        # Use a local variable to avoid type issues
+        logic = self.tree_map_logic
+        self.scan_thread.started.connect(
+            lambda: logic.start_scan(self.directory_path)
+        )
+        
+        self.scan_thread.start()
+        
+    def update_progress(self, message: str, current: int, total: int) -> None:
+        """Update progress bar during scanning."""
+        self.progress_bar.setMaximum(total)
+        self.progress_bar.setValue(current)
+        self.show_status_message(message)
+        
+    def display_treemap(self, scan_data: Dict[str, Any]) -> None:
+        """Display the treemap visualization."""
+        self.scan_data = scan_data
+        self.progress_bar.setVisible(False)
+        
+        if not scan_data['items']:
+            self.show_info_dialog("Info", "No items found in directory")
+            return
+            
+        # Calculate layout
+        total_size: int = scan_data['total_size']
+        items: List[Dict[str, Any]] = sorted(
+            scan_data['items'], key=lambda x: x['size'], reverse=True
+        )[:50]
+        
+        # Create treemap rectangles
+        self._create_treemap_rectangles(items, total_size)
+        
+        # Update info
+        self.info_label.setText(
+            f"Directory: {os.path.basename(scan_data['path'])}\n"
+            f"Total Size: {self._format_size(total_size)}\n"
+            f"Items: {len(scan_data['items'])}"
+        )
+        
+        self.show_status_message("Visualization complete")
+        
+    def _create_treemap_rectangles(
+        self, items: List[Dict[str, Any]], total_size: int
+    ) -> None:
+        """Create rectangles for treemap visualization."""
         if not items:
             return
             
-        # Calculate area for first item
-        item = items[0]
-        item_ratio = item['size'] / total_size
+        # Simple treemap layout (squarified)
+        view_width: int = 400
+        view_height: int = 300
         
-        # Decide orientation (horizontal or vertical split)
-        if width > height:
-            # Horizontal split
-            item_width = width * item_ratio
-            self.create_rectangle(x, y, item_width, height, item)
+        x: int = 0
+        y: int = 0
+        
+        for item in items:
+            if total_size == 0:
+                continue
+                
+            proportion: float = item['size'] / total_size
+            rect_width: int = max(20, int(view_width * proportion))
+            rect_height: int = max(20, int(view_height * proportion**0.5))
             
-            # Recursively draw remaining items
-            remaining_width = width - item_width
-            if remaining_width > 0 and len(items) > 1:
-                remaining_size = sum(i['size'] for i in items[1:])
-                self.draw_rectangles(
-                    items[1:],
-                    remaining_size,
-                    x + item_width,
-                    y,
-                    remaining_width,
-                    height
-                )
+            # Color based on file type and size
+            color: QColor = self._get_item_color(item)
+            
+            rect = QGraphicsRectItem(x, y, rect_width, rect_height)
+            rect.setBrush(QBrush(color))
+            rect.setPen(QPen(Qt.black, 1))
+            
+            self.scene.addItem(rect)
+            
+            x += rect_width
+            if x >= view_width:
+                x = 0
+                y += rect_height
+                
+    def _get_item_color(self, item: Dict[str, Any]) -> QColor:
+        """Get color for treemap item based on type and size."""
+        if item['type'] == 'directory':
+            return QColor(Colors.ACCENT)
         else:
-            # Vertical split
-            item_height = height * item_ratio
-            self.create_rectangle(x, y, width, item_height, item)
+            # Color intensity based on file size
+            size_ratio: float = min(
+                item['size'] / (1024 * 1024), 1.0
+            )  # Normalize to 1MB
+            return QColor(
+                int(255 * size_ratio),
+                int(100 * (1 - size_ratio)),
+                50
+            )
             
-            # Recursively draw remaining items
-            remaining_height = height - item_height
-            if remaining_height > 0 and len(items) > 1:
-                remaining_size = sum(i['size'] for i in items[1:])
-                self.draw_rectangles(
-                    items[1:],
-                    remaining_size,
-                    x,
-                    y + item_height,
-                    width,
-                    remaining_height
-                )
-    
-    def create_rectangle(self, x, y, width, height, item):
-        """Create a rectangle item for the treemap with appropriate styling."""
-        rect = QGraphicsRectItem(x, y, width, height)
-        
-        # Calculate color based on size (larger items are darker)
-        color_value = max(100, 255 - int(math.log2(item['size']) * 10))
-        color = QColor(color_value, color_value, 255)
-        
-        rect.setBrush(QBrush(color))
-        rect.setPen(QPen(Qt.black, 1))
-        
-        # Add tooltip with item info
-        size_str = self.format_size(item['size'])
-        rect.setToolTip(f"{item['name']}\n{size_str}")
-        
-        self.scene.addItem(rect)
-        return rect
-    
-    def format_size(self, size):
-        """Format file size in human readable format."""
+    def _format_size(self, size_bytes: int) -> str:
+        """Format file size in human-readable format."""
+        size: float = float(size_bytes)
         for unit in ['B', 'KB', 'MB', 'GB', 'TB']:
-            if size < 1024:
+            if size < 1024.0:
                 return f"{size:.1f} {unit}"
-            size /= 1024
+            size /= 1024.0
         return f"{size:.1f} PB"
-    
-    def resizeEvent(self, event):
-        """Handle window resize event to update treemap."""
-        super().resizeEvent(event)
-        if self.scene.items():
-            self.view.fitInView(self.scene.sceneRect(), Qt.KeepAspectRatio)
+        
+    def handle_error(self, error_message: str) -> None:
+        """Handle errors during scanning."""
+        self.progress_bar.setVisible(False)
+        self.show_error_dialog("Error", error_message)
+        
+    def closeEvent(self, event) -> None:
+        """Clean up when closing."""
+        if self.scan_thread and self.scan_thread.isRunning():
+            if self.tree_map_logic:
+                self.tree_map_logic.stop()
+            self.scan_thread.quit()
+            self.scan_thread.wait()
+        event.accept()
+
+
+def main() -> None:
+    """Main function to run the tree map utility."""
+    app: QApplication = QApplication(sys.argv)
+    window: TreeMapGUI = TreeMapGUI()
+    window.show()
+    sys.exit(app.exec_())
 
 
 if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    window = TreeMapWindow()
-    window.show()
-    sys.exit(app.exec_())
+    main()

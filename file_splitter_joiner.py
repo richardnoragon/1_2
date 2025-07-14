@@ -1,18 +1,8 @@
 import os
 import math
 import json
-import sys
+from typing import Dict, Any, Optional, Tuple
 from PyQt5.QtCore import QObject, pyqtSignal
-from PyQt5.QtWidgets import QApplication
-from PyQt5 import uic
-from PyQt5.QtGui import QDragEnterEvent, QDropEvent
-from gui.common.base_window import BaseWindow
-from gui.common.dialogs import (
-    show_error_dialog, show_info_dialog, get_existing_directory,
-    get_open_file_name, get_save_file_name
-)
-from core.file_ops.validation import validate_file_exists, validate_dir_exists, validate_path_writeable
-from core.error_handler import error_handler
 
 # Constants
 CHUNK_RW_SIZE = 1024 * 1024  # 1MB read/write buffer
@@ -32,12 +22,12 @@ class FileOperationLogic(QObject):
     # signals thread completion
     finished = pyqtSignal()
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initializes the FileOperationLogic."""
         super().__init__()
         self._is_running = False
 
-    def stop(self):
+    def stop(self) -> None:
         """Stops the current operation."""
         self.progress_updated.emit(0, 1, "Stopping operation...")
         self._is_running = False
@@ -45,7 +35,7 @@ class FileOperationLogic(QObject):
     def _calculate_split_params(
         self, file_size: int, split_mode: str, value: float,
         unit_multiplier: int = 1
-    ) -> tuple[int, int]:
+    ) -> Tuple[int, int]:
         """
         Calculates chunk size and number of chunks based on user input.
 
@@ -93,7 +83,7 @@ class FileOperationLogic(QObject):
         value: float, unit_multiplier: int = 1
     ) -> None:
         """
-        Splits the input file into smaller chunks based on specified mode and value.
+        Splits the input file into smaller chunks based on specified mode.
 
         Args:
             input_filepath: Path to the file to be split.
@@ -104,21 +94,22 @@ class FileOperationLogic(QObject):
         """
         self._is_running = True
         try:
-            # Input validation using validation module
-            validate_file_exists(input_filepath)
+            # Input validation
+            if not os.path.exists(input_filepath):
+                raise FileNotFoundError(f"Input file not found: {input_filepath}")
             
             # Ensure output directory exists or can be created
             if not os.path.exists(output_dir):
                 os.makedirs(output_dir)
-            validate_dir_exists(output_dir)
-            validate_path_writeable(output_dir)
-
+            
             file_size = os.path.getsize(input_filepath)
             base_filename = os.path.basename(input_filepath)
 
             # --- Handle Empty File ---
             if file_size == 0:
-                self.operation_complete.emit("Input file is empty. No chunks created.")
+                self.operation_complete.emit(
+                    "Input file is empty. No chunks created."
+                )
                 self._is_running = False
                 self.finished.emit()
                 return
@@ -128,13 +119,15 @@ class FileOperationLogic(QObject):
                 file_size, split_mode, value, unit_multiplier
             )
 
-            if num_chunks == 0: # Should only happen for zero size file, handled above
-                self.operation_complete.emit("No chunks needed (likely zero-byte file).")
+            if num_chunks == 0:  # Should only happen for zero size file
+                self.operation_complete.emit(
+                    "No chunks needed (likely zero-byte file)."
+                )
                 self._is_running = False
                 self.finished.emit()
                 return
 
-            # Determine padding length (e.g., 3 for up to 999 chunks -> .part001)
+            # Determine padding length (e.g., 3 for up to 999 chunks)
             padding = max(3, len(str(num_chunks)))
             chunk_pattern = f"{base_filename}.part{{:0{padding}d}}"
 
@@ -173,7 +166,6 @@ class FileOperationLogic(QObject):
                                     break
                                 
                                 # Calculate remaining for this chunk
-                                # Calculate space needed
                                 this_chunk = (
                                     chunk_size - bytes_written_this_chunk
                                 )
@@ -230,15 +222,13 @@ class FileOperationLogic(QObject):
 
             # --- Finalization ---
             if not self._is_running:
-                # TODO: Clean up successful chunks on cancel?
                 self.error_occurred.emit("Split operation cancelled.")
             else:
                 # Create metadata file
-                metadata = {
+                metadata: Dict[str, Any] = {
                     'original_filename': base_filename,
                     'total_size': file_size,
                     'num_chunks': num_chunks,
-                    # Note: Might be approximate if split by parts
                     'chunk_size': chunk_size,
                     'chunk_pattern': chunk_pattern,
                     'padding': padding
@@ -249,9 +239,7 @@ class FileOperationLogic(QObject):
                         json.dump(metadata, metafile, indent=4)
                 except Exception as e:
                     # Warning only, split succeeded
-                    warn_msg = (
-                        f"Warning: Could not write metadata file: {e}"
-                    )
+                    warn_msg = f"Warning: Could not write metadata file: {e}"
                     self.error_occurred.emit(warn_msg)
 
                 complete_msg = (
@@ -261,20 +249,6 @@ class FileOperationLogic(QObject):
                 self.operation_complete.emit(complete_msg)
 
         # --- Error Handling ---
-        except (FileNotFoundError, ValueError, IOError) as e:
-            self.error_occurred.emit(f"Error: {e}")
-        except PermissionError as e:
-            msg = (
-                f"Permission Error: {e}. "
-                f"Check file/directory permissions."
-            )
-            self.error_occurred.emit(msg)
-        except OSError as e:
-            msg = (
-                f"Disk Error: {e}. "
-                f"Check available disk space or permissions."
-            )
-            self.error_occurred.emit(msg)
         except Exception as e:
             # Catch-all for unexpected errors
             msg = f"An unexpected error occurred during split: {e}"
@@ -298,79 +272,95 @@ class FileOperationLogic(QObject):
         """
         self._is_running = True
         try:
-            # Input validation using validation module
-            validate_file_exists(first_chunk_path)
+            # Input validation
+            if not os.path.exists(first_chunk_path):
+                raise FileNotFoundError(f"Input file not found: {first_chunk_path}")
             
             # Ensure output directory exists
             output_dir = os.path.dirname(output_filepath)
             if output_dir:
                 os.makedirs(output_dir, exist_ok=True)
-                validate_path_writeable(output_dir)
 
             chunk_dir = os.path.dirname(first_chunk_path)
             chunk_basename = os.path.basename(first_chunk_path)
 
             # Load or infer parameters
-            metadata = None
+            metadata: Optional[Dict[str, Any]] = None
             num_chunks = 0
             chunk_pattern = ""
             padding = 0
-            expected_total_size = None
-            # Used for output filename suggestion
-            original_filename = None
+            expected_total_size: Optional[int] = None
+            original_filename: Optional[str] = None
 
             meta_filepath = os.path.join(chunk_dir, METADATA_FILENAME)
             if os.path.exists(meta_filepath):
                 try:
                     with open(meta_filepath, 'r') as f:
                         metadata = json.load(f)
-                    num_chunks = metadata['num_chunks']
-                    chunk_pattern = metadata['chunk_pattern']
-                    padding = metadata['padding']
-                    # Optional fields from metadata
-                    expected_total_size = metadata.get('total_size')
-                    original_filename = metadata.get('original_filename')
-                    self.progress_updated.emit(0, 1, f"Loaded metadata for '{original_filename or 'file'}'")
-                except (json.JSONDecodeError, KeyError, Exception) as e:
-                    self.progress_updated.emit(0, 1, f"Warning: Metadata file invalid ({e}), attempting manual join.")
-                    metadata = None  # Reset on failure, proceed with inference
+                    if metadata is not None:
+                        num_chunks = metadata['num_chunks']
+                        chunk_pattern = metadata['chunk_pattern']
+                        padding = metadata['padding']
+                        expected_total_size = metadata.get('total_size')
+                        original_filename = metadata.get('original_filename')
+                        self.progress_updated.emit(
+                            0, 1, f"Loaded metadata for '{original_filename or 'file'}'"
+                        )
+                except (json.JSONDecodeError, KeyError) as e:
+                    self.progress_updated.emit(
+                        0, 1, f"Warning: Metadata file invalid ({e}), "
+                        "attempting manual join."
+                    )
+                    metadata = None
             else:
-                 self.progress_updated.emit(0, 1, "Metadata file not found, attempting manual join.")
-
+                self.progress_updated.emit(
+                    0, 1, "Metadata file not found, attempting manual join."
+                )
 
             # --- Infer Parameters if Metadata Failed/Missing ---
             if not metadata:
                 # Infer from first chunk name (e.g., file.part001)
-                parts = chunk_basename.rsplit('.part', 1) # Use rsplit for names like "archive.tar.gz.part001"
+                parts = chunk_basename.rsplit('.part', 1)
                 if len(parts) != 2 or not parts[1].isdigit():
-                    raise ValueError("Cannot infer chunk sequence from filename. Expected format like 'filename.partXXX'.")
+                    raise ValueError(
+                        "Cannot infer chunk sequence from filename. "
+                        "Expected format like 'filename.partXXX'."
+                    )
 
                 base_filename_inferred = parts[0]
                 padding = len(parts[1])
                 # Ensure first part number matches inference logic (should be 1)
                 try:
                     if int(parts[1]) != 1:
-                         raise ValueError(f"Expected first chunk number to be 1, found {int(parts[1])} in '{chunk_basename}'.")
-                except ValueError: # Should not happen due to isdigit() check, but safety first
-                     raise ValueError("Chunk number suffix is not a valid integer.")
+                        raise ValueError(
+                            f"Expected first chunk number to be 1, "
+                            f"found {int(parts[1])} in '{chunk_basename}'."
+                        )
+                except ValueError:
+                    raise ValueError("Chunk number suffix is not a valid integer.")
 
                 chunk_pattern = f"{base_filename_inferred}.part{{:0{padding}d}}"
 
-                # Count chunks manually (less reliable but necessary fallback)
+                # Count chunks manually
                 num_chunks = 0
                 for i in range(1, 10000):  # Check up to 9999 chunks
                     check_path = os.path.join(chunk_dir, chunk_pattern.format(i))
                     if os.path.exists(check_path):
                         num_chunks += 1
                     else:
-                        break  # Stop at the first missing chunk in sequence
+                        break
 
-                if num_chunks == 0: # Should be at least 1 if first_chunk_path exists
-                    raise ValueError("Could not find any valid sequential chunks to join starting from the provided file.")
+                if num_chunks == 0:
+                    raise ValueError(
+                        "Could not find any valid sequential chunks to join "
+                        "starting from the provided file."
+                    )
 
-                expected_total_size = None  # Cannot know for sure without metadata
-                original_filename = base_filename_inferred # Use inferred name
-                self.progress_updated.emit(0, num_chunks, f"Found {num_chunks} potential chunks based on pattern.")
+                expected_total_size = None
+                original_filename = base_filename_inferred
+                self.progress_updated.emit(
+                    0, num_chunks, f"Found {num_chunks} potential chunks based on pattern."
+                )
 
             # --- Prepare Output ---
             output_dir = os.path.dirname(output_filepath)
@@ -378,10 +368,14 @@ class FileOperationLogic(QObject):
                 try:
                     os.makedirs(output_dir)
                 except OSError as e:
-                     raise OSError(f"Could not create output directory '{output_dir}': {e}") from e
+                    raise OSError(
+                        f"Could not create output directory '{output_dir}': {e}"
+                    ) from e
 
             # --- Perform Joining ---
-            self.progress_updated.emit(0, num_chunks, f"Starting join operation for {num_chunks} chunks...")
+            self.progress_updated.emit(
+                0, num_chunks, f"Starting join operation for {num_chunks} chunks..."
+            )
             chunks_processed = 0
 
             try:
@@ -394,7 +388,9 @@ class FileOperationLogic(QObject):
                         chunk_filepath = os.path.join(chunk_dir, chunk_filename)
 
                         if not os.path.exists(chunk_filepath):
-                            raise FileNotFoundError(f"Missing chunk required for join: {chunk_filename}")
+                            raise FileNotFoundError(
+                                f"Missing chunk required for join: {chunk_filename}"
+                            )
 
                         self.progress_updated.emit(
                             chunks_processed, num_chunks,
@@ -406,26 +402,36 @@ class FileOperationLogic(QObject):
                                 while self._is_running:
                                     data = infile.read(CHUNK_RW_SIZE)
                                     if not data:
-                                        break  # End of current chunk
+                                        break
                                     outfile.write(data)
                         except IOError as read_error:
-                            raise IOError(f"Error reading chunk {chunk_filename}: {read_error}") from read_error
-                        except Exception as e: # Catch unexpected read errors
-                            raise IOError(f"Unexpected error processing chunk {chunk_filename}: {e}") from e
+                            raise IOError(
+                                f"Error reading chunk {chunk_filename}: {read_error}"
+                            ) from read_error
+                        except Exception as e:
+                            raise IOError(
+                                f"Unexpected error processing chunk {chunk_filename}: {e}"
+                            ) from e
 
                         if not self._is_running:
                             break
 
                         chunks_processed += 1
-                        # Emit progress *after* chunk is successfully processed
-                        self.progress_updated.emit(chunks_processed, num_chunks, f"Finished processing chunk {chunk_num}/{num_chunks}")
+                        self.progress_updated.emit(
+                            chunks_processed, num_chunks,
+                            f"Finished processing chunk {chunk_num}/{num_chunks}"
+                        )
 
             except OSError as write_error:
                 # Clean up the partially written output file on write error
                 if os.path.exists(output_filepath):
-                    try: os.remove(output_filepath)
-                    except OSError: pass # Ignore cleanup error
-                raise OSError(f"Error writing to output file '{output_filepath}': {write_error}") from write_error
+                    try:
+                        os.remove(output_filepath)
+                    except OSError:
+                        pass
+                raise OSError(
+                    f"Error writing to output file '{output_filepath}': {write_error}"
+                ) from write_error
 
             # --- Finalization ---
             if not self._is_running:
@@ -434,275 +440,22 @@ class FileOperationLogic(QObject):
                     try:
                         os.remove(output_filepath)
                     except OSError:
-                        pass # Ignore cleanup error
+                        pass
                 self.error_occurred.emit("Join operation cancelled.")
             else:
-                # Final Verification (optional, but recommended)
+                # Final Verification
                 try:
                     final_size = os.path.getsize(output_filepath)
                 except OSError:
-                    final_size = -1 # Indicate size check failed
+                    final_size = -1
 
                 verification_msg = ""
                 if expected_total_size is not None and final_size >= 0:
                     if final_size == expected_total_size:
-                        verification_msg = f" Final size ({final_size} bytes) matches expected size."
+                        verification_msg = (
+                            f" Final size ({final_size} bytes) matches expected size."
+                        )
                     else:
-                        verification_msg = f" WARNING: Final size ({final_size} bytes) does NOT match expected size ({expected_total_size} bytes)!"
-                elif final_size < 0:
-                    verification_msg = " Could not verify final file size."
-
-                self.operation_complete.emit(f"Successfully joined {chunks_processed} chunks into {output_filepath}.{verification_msg}")
-
-        # --- Error Handling ---
-        except (FileNotFoundError, ValueError, IOError) as e:
-            self.error_occurred.emit(f"Error: {e}")
-        except PermissionError as e:
-            self.error_occurred.emit(f"Permission Error: {e}. Check file/directory permissions.")
-        except OSError as e:
-             # Catch disk space issues during join or dir creation
-            self.error_occurred.emit(f"Disk Error: {e}. Check available disk space or permissions.")
-        except Exception as e:
-            # Catch-all for unexpected errors
-            self.error_occurred.emit(f"An unexpected error occurred during join: {e}")
-        finally:
-            # Ensure state is reset and thread signal is emitted regardless of outcome
-            self._is_running = False
-            self.finished.emit()
-
-
-class FileSplitJoinGUI(BaseWindow):
-    """A class that handles file split join g u i and inherits from BaseWindow."""
-    def __init__(self):
-        """init."""
-        super().__init__()
-        # Get the absolute path of the directory containing the script
-        script_dir = os.path.dirname(os.path.abspath(__file__))
-        # Build the absolute path to the UI file
-        ui_file = os.path.join(script_dir, "file_splitter_joiner.ui")
-        
-        # Check if UI file exists
-        if not os.path.exists(ui_file):
-            raise FileNotFoundError(f"UI file not found: {ui_file}")
-            
-        # Load the UI file
-        uic.loadUi(ui_file, self)
-        
-        # Initialize backend logic
-        self.logic = FileOperationLogic()
-        
-        # Connect signals from backend
-        self.logic.progress_updated.connect(self.update_progress)
-        self.logic.operation_complete.connect(self.operation_completed)
-        self.logic.error_occurred.connect(self.show_error)
-        
-        # Enable drag and drop
-        self.setAcceptDrops(True)
-        self.splitInputPath.setAcceptDrops(True)
-        self.splitOutputPath.setAcceptDrops(True)
-        self.joinInputPath.setAcceptDrops(True)
-        self.joinOutputPath.setAcceptDrops(True)
-        
-        # Connect UI elements
-        self.setup_connections()
-        
-        # Setup initial state
-        self.splitBySize.toggled.connect(self.update_split_controls)
-        self.splitByParts.toggled.connect(self.update_split_controls)
-        
-        # Show the window
-        self.show()
-        
-    def dragEnterEvent(self, event: QDragEnterEvent):
-        """dragenterevent.
-        Args:
-            event (QDragEnterEvent): Description of event"""
-        if event.mimeData().hasUrls():
-            event.acceptProposedAction()
-            
-    def dropEvent(self, event: QDropEvent):
-        """dropevent.
-        Args:
-            event (QDropEvent): Description of event"""
-        urls = event.mimeData().urls()
-        if not urls:
-            return
-            
-        path = urls[0].toLocalFile()
-        focused_widget = QApplication.focusWidget()
-        
-        if focused_widget == self.splitInputPath:
-            if os.path.isfile(path):
-                self.splitInputPath.setText(path)
-            else:
-                self.show_error("Please drop a file for splitting")
-        elif focused_widget == self.splitOutputPath:
-            if os.path.isdir(path):
-                self.splitOutputPath.setText(path)
-            else:
-                self.show_error("Please drop a folder for output")
-        elif focused_widget == self.joinInputPath:
-            if os.path.isfile(path) and path.endswith(PART_EXTENSION):
-                self.joinInputPath.setText(path)
-                # Try to suggest output filename by removing extension
-                suggested_output = path[:-len(PART_EXTENSION)]
-                self.joinOutputPath.setText(suggested_output)
-            else:
-                self.show_error("Please drop a .part001 file for joining")
-        elif focused_widget == self.joinOutputPath:
-            if os.path.isdir(os.path.dirname(path)):
-                self.joinOutputPath.setText(path)
-    
-    def setup_connections(self):
-        """Setup signal/slot connections for UI elements."""
-        # Split tab connections
-        self.splitBrowseInput.clicked.connect(self.browse_split_input)
-        self.splitBrowseOutput.clicked.connect(self.browse_split_output)
-        self.splitButton.clicked.connect(self.start_split)
-        
-        # Join tab connections
-        self.joinBrowseInput.clicked.connect(self.browse_join_input)
-        self.joinBrowseOutput.clicked.connect(self.browse_join_output)
-        self.joinButton.clicked.connect(self.start_join)
-
-        # Menu connections
-        self.actionExit.triggered.connect(self.close)
-    
-    def update_split_controls(self):
-        """Enable/disable appropriate controls based on split mode."""
-        self.sizeValue.setEnabled(self.splitBySize.isChecked())
-        self.sizeUnit.setEnabled(self.splitBySize.isChecked())
-        self.partsValue.setEnabled(self.splitByParts.isChecked())
-    
-    def browse_split_input(self):
-        """Open file dialog to select input file for splitting."""
-        file_path, _ = get_open_file_name(
-            self, "Select File to Split", "",
-            "All Files (*.*)"
-        )
-        if file_path:
-            self.splitInputPath.setText(file_path)
-    
-    def browse_split_output(self):
-        """Open directory dialog to select output location for split files."""
-        dir_path = get_existing_directory(
-            self, "Select Output Directory"
-        )
-        if dir_path:
-            self.splitOutputPath.setText(dir_path)
-    
-    def browse_join_input(self):
-        """Open file dialog to select first chunk file for joining."""
-        file_path, _ = get_open_file_name(
-            self, f"Select First Chunk ({PART_EXTENSION})", "",
-            f"Part Files (*{PART_EXTENSION});;All Files (*.*)"
-        )
-        if file_path:
-            self.joinInputPath.setText(file_path)
-            # Try to suggest output filename by removing .part001
-            if file_path.lower().endswith('.part001'):
-                suggested_output = file_path[:-8]  # Remove .part001
-                self.joinOutputPath.setText(suggested_output)
-    
-    def browse_join_output(self):
-        """Open file dialog to select output file for joined result."""
-        file_path, _ = get_save_file_name(
-            self, "Select Output File", "",
-            "All Files (*.*)"
-        )
-        if file_path:
-            self.joinOutputPath.setText(file_path)
-    
-    def start_split(self):
-        """Start the file split operation."""
-        input_path = self.splitInputPath.text()
-        output_dir = self.splitOutputPath.text()
-        
-        if not input_path or not output_dir:
-            self.show_error("Please select both input file and output directory.")
-            return
-        
-        if not os.path.exists(input_path):
-            self.show_error("Input file does not exist.")
-            return
-        
-        # Calculate split parameters
-        if self.splitBySize.isChecked():
-            split_mode = 'size'
-            value = float(self.sizeValue.value())
-            unit_multiplier = {
-                0: 1,  # Bytes
-                1: 1024,  # KB
-                2: 1024 * 1024,  # MB
-                3: 1024 * 1024 * 1024  # GB
-            }[self.sizeUnit.currentIndex()]
-        else:  # Split by parts
-            split_mode = 'parts'
-            value = self.partsValue.value()
-            unit_multiplier = 1
-        
-        # Start the operation
-        try:
-            self.statusLabel.setText("Starting split operation...")
-            self.progressBar.setValue(0)
-            self.logic.split_file(input_path, output_dir, split_mode, value, unit_multiplier)
-        except Exception as e:
-            self.show_error(f"Failed to start split operation: {str(e)}")
-    
-    def start_join(self):
-        """Start the file join operation."""
-        input_path = self.joinInputPath.text()
-        output_path = self.joinOutputPath.text()
-        
-        if not input_path or not output_path:
-            self.show_error("Please select both input chunk and output file.")
-            return
-        
-        if not input_path.lower().endswith(PART_EXTENSION.lower()):
-            self.show_error(f"Please select the first chunk file (ending with {PART_EXTENSION})")
-            return
-        
-        if not os.path.exists(input_path):
-            self.show_error("Input chunk file does not exist.")
-            return
-        
-        # Create output directory if it doesn't exist
-        output_dir = os.path.dirname(output_path)
-        if output_dir and not os.path.exists(output_dir):
-            try:
-                os.makedirs(output_dir)
-            except OSError as e:
-                self.show_error(f"Could not create output directory: {e}")
-                return
-        
-        # Start the operation
-        try:
-            self.statusLabel.setText("Starting join operation...")
-            self.progressBar.setValue(0)
-            self.logic.join_files(input_path, output_path)
-        except Exception as e:
-            self.show_error(f"Failed to start join operation: {str(e)}")
-    
-    def update_progress(self, value, total, message):
-        """Update progress bar and status message."""
-        if total > 0:
-            percentage = int((value / total) * 100)
-            self.progressBar.setValue(percentage)
-        self.statusLabel.setText(message)
-    
-    def operation_completed(self, message):
-        """Handle successful operation completion."""
-        self.progressBar.setValue(100)
-        self.statusLabel.setText(message)
-        show_info_dialog(self, "Operation Complete", message)
-    
-    def show_error(self, message):
-        """Display error message to user."""
-        self.statusLabel.setText(f"Error: {message}")
-        show_error_dialog(self, "Error", message)
-
-
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    window = FileSplitJoinGUI()
-    sys.exit(app.exec_())
+                        verification_msg = (
+                            f" WARNING: Final size ({final_size} bytes) does NOT "
+                            f"match expected size ({expected_total_size} bytes)!"

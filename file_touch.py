@@ -4,6 +4,7 @@ import sys
 import os
 import platform
 from datetime import datetime, timezone
+from typing import Dict, Optional, Any
 from PyQt5.QtCore import QObject, pyqtSignal, QDateTime
 from PyQt5.QtWidgets import (
     QApplication, QComboBox, QLabel, QInputDialog, QMessageBox
@@ -16,11 +17,12 @@ from gui.common.dialogs import (
 )
 from config_manager import ConfigManager
 
-from core.error_handler import error_handler
 
-
-# Note: Reliably *setting* creation time is platform-specific and often 
+# Note: Reliably *setting* creation time is platform-specific and often
 # requires extra privileges or libraries (like pywin32 on Windows).
+
+SELECT_PROFILE_TEXT = "Select Profile..."
+
 
 class FileTouchLogic(QObject):
     """Handles the logic for getting and setting file timestamps."""
@@ -30,16 +32,16 @@ class FileTouchLogic(QObject):
     error_occurred = pyqtSignal(str)
     finished = pyqtSignal()
 
-    def __init__(self):
+    def __init__(self) -> None:
         """init."""
         super().__init__()
         self._is_running = False
 
-    def stop(self):
+    def stop(self) -> None:
         """Stop the current operation (if possible)."""
         self._is_running = False
 
-    def get_file_timestamps(self, filepath):
+    def get_file_timestamps(self, filepath: str) -> None:
         """Fetches access, modification, and creation timestamps for a file."""
         self._is_running = True
         if not self._is_running:
@@ -66,9 +68,9 @@ class FileTouchLogic(QObject):
             ).astimezone()
 
             # Creation Time (birthtime or ctime)
-            ctime_dt = None
-            if (hasattr(stat_result, 'st_birthtime') and 
-                stat_result.st_birthtime):
+            ctime_dt: Optional[datetime] = None
+            if (hasattr(stat_result, 'st_birthtime') and
+                    stat_result.st_birthtime):
                 ctime_ts = stat_result.st_birthtime
                 ctime_dt = datetime.fromtimestamp(
                     ctime_ts, tz=timezone.utc
@@ -80,7 +82,7 @@ class FileTouchLogic(QObject):
                     ctime_ts, tz=timezone.utc
                 ).astimezone()
 
-            result = {
+            result: Dict[str, Optional[datetime]] = {
                 'access': atime_dt,
                 'modification': mtime_dt,
                 'creation': ctime_dt
@@ -106,9 +108,10 @@ class FileTouchLogic(QObject):
             self._is_running = False
             self.finished.emit()
 
+
 class FileTouchGUI(BaseWindow):
     """A class that handles file touch g u i and inherits from BaseWindow."""
-    def __init__(self):
+    def __init__(self) -> None:
         """init."""
         super().__init__()
         # Load the UI
@@ -116,14 +119,14 @@ class FileTouchGUI(BaseWindow):
         uic.loadUi(ui_file, self)
         
         # Initialize ConfigManager
-        self.config_manager = ConfigManager()
+        self.config_manager: ConfigManager = ConfigManager()
         
         # Enable drag and drop
         self.setAcceptDrops(True)
         self.filePathEdit.setAcceptDrops(True)
         
         # Add profile combo box to toolbar
-        self.profileCombo = QComboBox(self)
+        self.profileCombo: QComboBox = QComboBox(self)
         self.toolBar.addWidget(QLabel("Profile: "))
         self.toolBar.addWidget(self.profileCombo)
         
@@ -148,25 +151,27 @@ class FileTouchGUI(BaseWindow):
         self.update_profile_list()
         self.show()
         
-    def update_profile_list(self):
+    def update_profile_list(self) -> None:
         """Update the profile combo box with available profiles."""
-        current = self.profileCombo.currentText()
+        current: str = self.profileCombo.currentText()
         self.profileCombo.clear()
-        self.profileCombo.addItem("Select Profile...")
-        profiles = self.config_manager.get_profiles("file_touch")
+        self.profileCombo.addItem(SELECT_PROFILE_TEXT)
+        profiles: list[str] = self.config_manager.get_profiles("file_touch")
         self.profileCombo.addItems(profiles)
         if current in profiles:
             self.profileCombo.setCurrentText(current)
             
-    def save_profile(self):
+    def save_profile(self) -> None:
         """Save current timestamp settings as a profile."""
+        name: str
+        ok: bool
         name, ok = QInputDialog.getText(
             self,
             "Save Profile",
             "Enter profile name:"
         )
         if ok and name:
-            settings = {
+            settings: Dict[str, int] = {
                 'access_time': (
                     self.accessTimeEdit.dateTime().toSecsSinceEpoch()
                 ),
@@ -180,16 +185,19 @@ class FileTouchGUI(BaseWindow):
             self.config_manager.save_profile(name, "file_touch", settings)
             self.update_profile_list()
             self.profileCombo.setCurrentText(name)
-            show_info_dialog(self, "Success",
-                f"Profile '{name}' saved successfully!")
+            show_info_dialog(
+                self, "Success",
+                f"Profile '{name}' saved successfully!"
+            )
             
-            
-    def load_profile(self, profile_name: str):
+    def load_profile(self, profile_name: str) -> None:
         """Load timestamp settings from a profile."""
-        if profile_name == "Select Profile...":
+        if profile_name == SELECT_PROFILE_TEXT:
             return
             
-        settings = self.config_manager.load_profile(profile_name, "file_touch")
+        settings: Optional[Dict[str, Any]] = (
+            self.config_manager.load_profile(profile_name, "file_touch")
+        )
         if settings:
             self.accessTimeEdit.setDateTime(QDateTime.fromSecsSinceEpoch(
                 int(settings['access_time'])
@@ -201,13 +209,13 @@ class FileTouchGUI(BaseWindow):
                 int(settings['creation_time'])
             ))
             
-    def delete_profile(self):
+    def delete_profile(self) -> None:
         """Delete the currently selected profile."""
-        profile_name = self.profileCombo.currentText()
-        if profile_name == "Select Profile...":
+        profile_name: str = self.profileCombo.currentText()
+        if profile_name == SELECT_PROFILE_TEXT:
             return
         
-        reply = QMessageBox.question(
+        reply: int = QMessageBox.question(
             self,
             "Confirm Delete",
             f"Are you sure you want to delete profile '{profile_name}'?",
@@ -217,41 +225,44 @@ class FileTouchGUI(BaseWindow):
             
         if reply == QMessageBox.Yes:
             if self.config_manager.delete_profile(profile_name, "file_touch"):
-                show_info_dialog(self, "Success",
-                    f"Profile '{profile_name}' deleted successfully!")
-                
+                show_info_dialog(
+                    self, "Success",
+                    f"Profile '{profile_name}' deleted successfully!"
+                )
                 self.update_profile_list()
             else:
-                show_error_dialog(self, "Error",
-                    f"Failed to delete profile '{profile_name}'")
-                
+                show_error_dialog(
+                    self, "Error",
+                    f"Failed to delete profile '{profile_name}'"
+                )
 
-    def dragEnterEvent(self, event: QDragEnterEvent):
+    def dragEnterEvent(self, a0: QDragEnterEvent) -> None:
         """dragenterevent.
         Args:
-            event (QDragEnterEvent): Description of event"""
-        if event.mimeData().hasUrls():
-            event.acceptProposedAction()
+            a0 (QDragEnterEvent): Description of event"""
+        if a0.mimeData().hasUrls():
+            a0.acceptProposedAction()
             
-    def dropEvent(self, event: QDropEvent):
+    def dropEvent(self, a0: QDropEvent) -> None:
         """dropevent.
         Args:
-            event (QDropEvent): Description of event"""
-        urls = event.mimeData().urls()
+            a0 (QDropEvent): Description of event"""
+        urls = a0.mimeData().urls()
         if urls:
             # Use the first dropped item's path
-            path = urls[0].toLocalFile()
+            path: str = urls[0].toLocalFile()
             if os.path.isfile(path):
                 self.filePathEdit.setText(path)
                 self.refresh_timestamps()
             else:
-                show_error_dialog(self, "Error",
-                    "Please drop a file, not a folder")
-                
+                show_error_dialog(
+                    self, "Error",
+                    "Please drop a file, not a folder"
+                )
 
-    def browse_file(self):
+    def browse_file(self) -> None:
         """Open file dialog to select a file"""
-        file_path, _ = get_open_file_name(
+        file_path = get_open_file_name(
             self,
             "Select File",
             "",
@@ -260,20 +271,20 @@ class FileTouchGUI(BaseWindow):
         if file_path:
             self.filePathEdit.setText(file_path)
 
-    def on_file_path_changed(self):
+    def on_file_path_changed(self) -> None:
         """Handle file path text changes"""
-        file_path = self.filePathEdit.text()
-        has_file = bool(file_path and os.path.isfile(file_path))
+        file_path: str = self.filePathEdit.text()
+        has_file: bool = bool(file_path and os.path.isfile(file_path))
         self.refreshButton.setEnabled(has_file)
         if has_file:
             self.refresh_timestamps()
         else:
             self.applyButton.setEnabled(False)
 
-    def refresh_timestamps(self):
+    def refresh_timestamps(self) -> None:
         """Update the GUI with current file timestamps"""
         try:
-            file_path = self.filePathEdit.text()
+            file_path: str = self.filePathEdit.text()
             if not os.path.exists(file_path):
                 raise FileNotFoundError(f"File not found: {file_path}")
 
@@ -285,11 +296,11 @@ class FileTouchGUI(BaseWindow):
             )
 
             # Modification Time
-            self.modificationTimeEdit.setDateTime(
-                QDateTime.fromSecsSinceEpoch(int(stat.st_mtime))
-            )
+            mod_time = QDateTime.fromSecsSinceEpoch(int(stat.st_mtime))
+            self.modificationTimeEdit.setDateTime(mod_time)
 
             # Creation Time (platform-specific)
+            ctime: float
             if hasattr(stat, 'st_birthtime'):  # macOS, BSD
                 ctime = stat.st_birthtime
             else:  # Windows: creation, Linux: metadata changes
@@ -307,16 +318,16 @@ class FileTouchGUI(BaseWindow):
             self.statusBar().showMessage("Error loading timestamps")
             self.applyButton.setEnabled(False)
 
-    def apply_changes(self):
+    def apply_changes(self) -> None:
         """Apply the timestamp changes to the file"""
         try:
-            file_path = self.filePathEdit.text()
+            file_path: str = self.filePathEdit.text()
             if not os.path.exists(file_path):
                 raise FileNotFoundError(f"File not found: {file_path}")
 
             # Get timestamps from GUI
-            atime = self.accessTimeEdit.dateTime().toSecsSinceEpoch()
-            mtime = self.modificationTimeEdit.dateTime().toSecsSinceEpoch()
+            atime: int = self.accessTimeEdit.dateTime().toSecsSinceEpoch()
+            mtime: int = self.modificationTimeEdit.dateTime().toSecsSinceEpoch()
 
             # Update access and modification times
             os.utime(file_path, (atime, mtime))
@@ -331,11 +342,13 @@ class FileTouchGUI(BaseWindow):
             show_error_dialog(self, "Error", str(e))
             self.statusBar().showMessage("Error updating timestamps")
 
-def main():
+
+def main() -> None:
     """Main entry point for the application."""
-    app = QApplication(sys.argv)
-    window = FileTouchGUI()  # Store the window instance
+    app: QApplication = QApplication(sys.argv)
+    _ = FileTouchGUI()  # Store the window instance
     sys.exit(app.exec_())
+
 
 if __name__ == "__main__":
     main()

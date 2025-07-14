@@ -3,7 +3,6 @@ import os
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtCore import QThread
 from check_sum import ChecksumLogic
-from core.error_handler import error_handler
 from gui.common import (
     BaseWindow,
     show_error_dialog,
@@ -13,6 +12,7 @@ from gui.common import (
     get_existing_directory,
     ProgressWidget
 )
+from typing import Optional
 
 
 class ChecksumGUI(BaseWindow):
@@ -25,7 +25,7 @@ class ChecksumGUI(BaseWindow):
     - Showing progress during operations
     """
     
-    def __init__(self):
+    def __init__(self) -> None:
         # Get the directory containing this script
         current_dir = os.path.dirname(os.path.abspath(__file__))
         ui_file = os.path.join(current_dir, 'check_sum.ui')
@@ -44,31 +44,33 @@ class ChecksumGUI(BaseWindow):
         self.modeCombo.currentTextChanged.connect(self.update_ui_state)
         
         # Initialize state
-        self.checksum_thread = None
-        self.checksum_worker = None
+        self.checksum_thread: Optional[QThread] = None
+        self.checksum_worker: Optional[ChecksumLogic] = None
         self.update_ui_state()
         
-    def update_ui_state(self):
+    def update_ui_state(self) -> None:
         """Update UI elements based on current mode"""
-        mode = self.modeCombo.currentText()
-        is_verify_mode = 'Verify' in mode
+        mode: str = self.modeCombo.currentText()
+        is_verify_mode: bool = 'Verify' in mode
         self.checksumInput.setVisible(is_verify_mode)
         self.checksumInput.setEnabled(is_verify_mode)
         
-    def browse_file(self):
+    def browse_file(self) -> None:
         """Open file dialog to select file or directory"""
-        mode = self.modeCombo.currentText()
+        mode: str = self.modeCombo.currentText()
         if 'Directory' in mode:
-            path = get_existing_directory(self, "Select Directory")
+            path: str = str(
+                get_existing_directory(self, "Select Directory") or ""
+            )
         else:
-            path = get_open_file_name(self, "Select File")
+            path: str = str(get_open_file_name(self, "Select File") or "")
             
         if path:
             self.filePathInput.setText(path)
             
-    def start_calculation(self):
+    def start_calculation(self) -> None:
         """Start the checksum calculation/verification process"""
-        path = self.filePathInput.text()
+        path: str = self.filePathInput.text()
         if not path:
             show_error_dialog(
                 "Please select a file or directory",
@@ -81,21 +83,25 @@ class ChecksumGUI(BaseWindow):
             return
             
         # Determine mode
-        mode_text = self.modeCombo.currentText().lower()
+        mode_text: str = self.modeCombo.currentText().lower()
         if 'directory' in mode_text:
-            mode = (
+            mode: str = (
                 'calculate_dir' if 'calculate' in mode_text
                 else 'verify_dir'
             )
         else:
-            mode = (
+            mode: str = (
                 'calculate_file' if 'calculate' in mode_text
                 else 'verify_file'
             )
             
         # Get algorithm
-        algorithm = self.algorithmCombo.currentText().lower().replace('-', '')
-        
+        algorithm: str = (
+            self.algorithmCombo.currentText()
+            .lower()
+            .replace('-', '')
+        )
+            
         # Create worker in thread
         self.checksum_worker = ChecksumLogic(
             path,
@@ -124,14 +130,14 @@ class ChecksumGUI(BaseWindow):
         # Start processing
         self.checksum_thread.start()
         
-    def update_progress(self, current, total):
+    def update_progress(self, current: int, total: int) -> None:
         """Update progress bar"""
-        percentage = (current / total) * 100 if total > 0 else 0
-        self.progressBar.setValue(int(percentage))
-        self.progress_widget.set_progress(int(percentage))
+        percentage: int = int((current / total) * 100) if total > 0 else 0
+        self.progressBar.setValue(percentage)
+        self.progress_widget.set_progress(percentage)
         self.progress_widget.set_text(f"Processing: {current}/{total}")
         
-    def handle_results(self, results):
+    def handle_results(self, results: object) -> None:
         """Display calculation/verification results"""
         self.resultsArea.clear()
         if isinstance(results, dict):
@@ -141,11 +147,11 @@ class ChecksumGUI(BaseWindow):
             self.resultsArea.append(str(results))
         show_info_dialog("Checksum calculation completed", parent=self)
             
-    def handle_error(self, error_msg):
+    def handle_error(self, error_msg: str) -> None:
         """Display error message"""
-        show_error_dialog(self, "Error", error_msg)
+        show_error_dialog("Error", error_msg, parent=self)
         
-    def calculation_finished(self):
+    def calculation_finished(self) -> None:
         """Clean up after calculation is complete"""
         if self.checksum_thread:
             self.checksum_thread.quit()
@@ -159,22 +165,22 @@ class ChecksumGUI(BaseWindow):
         self.progressBar.setValue(0)
         self.progress_widget.hide()
         
-    def clear_results(self):
+    def clear_results(self) -> None:
         """Clear the results area"""
         self.resultsArea.clear()
         self.progressBar.setValue(0)
         
-    def save_results(self):
+    def save_results(self) -> None:
         """Save results to a file"""
         if not self.resultsArea.toPlainText():
             show_error_dialog("No results to save", parent=self)
             return
             
-        filename = get_save_file_name(
-            self,
-            "Save Results",
+        filename: str = str(get_save_file_name(
+            parent=self,
+            caption="Save Results",
             file_filter="Text Files (*.txt);;All Files (*.*)"
-        )
+        ) or "")
         
         if filename:
             try:
@@ -183,14 +189,14 @@ class ChecksumGUI(BaseWindow):
                 show_info_dialog("Results saved successfully", parent=self)
             except Exception as e:
                 show_error_dialog(
-                    self,
                     "Error",
-                    f"Failed to save results: {e}"
+                    f"Failed to save results: {e}",
+                    parent=self
                 )
 
 
 if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    window = ChecksumGUI()
+    app: QApplication = QApplication(sys.argv)
+    window: ChecksumGUI = ChecksumGUI()
     window.show()
     sys.exit(app.exec_())

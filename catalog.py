@@ -1,7 +1,7 @@
 """File cataloging tool with HTML report generation.
 
-This module provides functionality to create HTML catalogs of files with optional
-metadata and duplicate detection capabilities.
+This module provides functionality to create HTML catalogs of files
+with optional metadata and duplicate detection capabilities.
 """
 
 import os
@@ -17,9 +17,6 @@ from PyQt5 import uic
 
 from gui.common.base_window import BaseWindow
 from gui.common.dialogs import get_existing_directory, show_error_dialog
-
-from core.error_handler import error_handler
-
 
 
 class CatalogWindow(BaseWindow):
@@ -67,7 +64,7 @@ class CatalogWindow(BaseWindow):
     def _init_models(self) -> None:
         """Initialize data models and internal state."""
         self._current_dir = ""
-        self._last_catalog = None
+        self._last_catalog: Optional[str] = None
         self._list_model = QStandardItemModel()
         self.listListView.setModel(self._list_model)
     
@@ -107,7 +104,7 @@ class CatalogWindow(BaseWindow):
         # Connect buttons
         if hasattr(self, 'selectFolderButton'):
             self.selectFolderButton.clicked.connect(self._load_directory)
-        if hasattr(self, 'catalogPushButton'):    
+        if hasattr(self, 'catalogPushButton'):
             self.catalogPushButton.clicked.connect(self._generate_catalog)
             
         # Connect menu actions
@@ -236,7 +233,7 @@ class CatalogWindow(BaseWindow):
             
             # Check against all other files
             for other_path in base_path.rglob('*'):
-                if (other_path.is_file() and 
+                if (other_path.is_file() and
                     other_path != file_path and
                     other_path.stat().st_size == len(content)):
                     try:
@@ -338,8 +335,8 @@ class CatalogWindow(BaseWindow):
         Returns:
             List[Tuple[str, str, str]]: List of (root, filename, rel_path)
         """
-        base_path = Path(self._current_dir)
         files = []
+        base_path = Path(self._current_dir)
         
         if self.recursiveCheckBox.isChecked():
             for path in base_path.rglob('*'):

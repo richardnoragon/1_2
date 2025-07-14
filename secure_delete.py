@@ -1,338 +1,337 @@
 import os
-import time
+import sys
 import random
 import string
+from typing import Optional
 from PyQt5.QtCore import QObject, pyqtSignal, QThread
-import sys
-from PyQt5.QtWidgets import QApplication, QMessageBox 
-from PyQt5 import uic
+from PyQt5.QtWidgets import (QApplication, QVBoxLayout, QHBoxLayout,
+                             QMessageBox, QLabel, QComboBox)
 from PyQt5.QtGui import QDragEnterEvent, QDropEvent
-from gui.common.base_window import BaseWindow
-from gui.common.dialogs import (
-    show_error_dialog, show_info_dialog, get_open_file_name
-)
+
+from gui.standard_window import StandardWindow
+from gui.themes import ThemeManager, Colors
+from gui.common.dialogs import get_open_file_name
 
 CHUNK_SIZE = 1024 * 1024  # 1MB buffer for overwriting
 
 
 class SecureDeleteLogic(QObject):
     """Handles the logic for securely deleting (shredding) files."""
-    progress_updated = pyqtSignal(int, int, str)  # value, total, message (e.g., pass/total_passes)
-    file_progress = pyqtSignal(int, int)        # bytes_processed, total_bytes (for current pass)
+    progress_updated = pyqtSignal(int, int, str)  # value, total, message
+    file_progress = pyqtSignal(int, int)        # bytes_processed, total_bytes
     operation_complete = pyqtSignal(str)          # success message
     error_occurred = pyqtSignal(str)            # error message
     finished = pyqtSignal()                       # signals thread completion
 
-    def __init__(self):
-        """init."""
+    def __init__(self) -> None:
+        """Initialize the secure delete logic."""
         super().__init__()
         self._is_running = False
-        self._filepath = None
+        self._filepath: Optional[str] = None
 
-    def stop(self):
-        """stop."""
+    def stop(self) -> None:
+        """Stop the deletion process."""
         self.progress_updated.emit(0, 1, "Stopping deletion...")
         self._is_running = False
 
-    def _generate_random_bytes(self, length):
-        """Generates a block of random bytes."""
+    def _generate_random_bytes(self, length: int) -> bytes:
+        """Generate a block of random bytes."""
         return os.urandom(length)
 
-    def _generate_random_filename(self, length=16):
-        """Generates a random filename string."""
+    def _generate_random_filename(self, length: int = 16) -> str:
+        """Generate a random filename string."""
         chars = string.ascii_letters + string.digits
         return ''.join(random.choice(chars) for _ in range(length))
 
-    def shred_file(self, filepath, passes=3):
-        """Securely deletes a file by overwriting it multiple times."""
+    def shred_file(self, filepath: str, passes: int = 3) -> None:
+        """Securely delete a file by overwriting it multiple times."""
         self._is_running = True
         self._filepath = filepath
-        current_pass = 0
-
+        
         try:
-            if not os.path.exists(filepath):
-                raise FileNotFoundError(f"File not found: {filepath}")
             if not os.path.isfile(filepath):
-                raise ValueError(f"Path is not a file: {filepath}")
-
-            if passes <= 0:
-                raise ValueError("Number of passes must be positive.")
+                self.error_occurred.emit(f"File not found: {filepath}")
+                return
 
             file_size = os.path.getsize(filepath)
-            self.progress_updated.emit(0, passes, f"Starting secure delete for {os.path.basename(filepath)} ({passes} passes)")
-
-            # --- Overwriting Passes ---
-            for i in range(passes):
+            
+            for pass_num in range(passes):
                 if not self._is_running:
                     break
-                current_pass = i + 1
-                pass_message = f"Overwrite Pass {current_pass}/{passes}"
-                self.progress_updated.emit(current_pass - 1, passes, pass_message)
-                self.file_progress.emit(0, file_size)
-
-                bytes_written_this_pass = 0
-                pattern_type = ""
-
-                # Define patterns (simple approach based on pass number)
-                if i == 0:
-                    pattern = b'\x00'
-                    pattern_type = "(Zeros)"
-                elif i == 1 and passes > 1:
-                    pattern = b'\xFF'
-                    pattern_type = "(Ones)"
-                else:
-                    pattern = None  # Indicates random data per chunk
-                    pattern_type = "(Random)"
-
-                self.progress_updated.emit(current_pass - 1, passes, f"{pass_message} {pattern_type}")
-
-                try:
-                    # Use 'rb+' to open for reading/writing without truncating
-                    with open(filepath, 'rb+') as f:
-                        while bytes_written_this_pass < file_size:
-                            if not self._is_running:
-                                break
-
-                            chunk_fill_size = min(CHUNK_SIZE, file_size - bytes_written_this_pass)
-
-                            if pattern is not None:
-                                data_to_write = pattern * chunk_fill_size
-                            else:
-                                data_to_write = self._generate_random_bytes(chunk_fill_size)
-
-                            f.seek(bytes_written_this_pass)
-                            f.write(data_to_write)
-                            bytes_written_this_pass += len(data_to_write)
-                            self.file_progress.emit(bytes_written_this_pass, file_size)
-
-                        if not self._is_running:
-                            break
-
-                        # Ensure data is physically written (crucial!)
+                
+                self.progress_updated.emit(
+                    pass_num + 1, passes,
+                    f"Pass {pass_num + 1}/{passes}"
+                )
+                
+                # Overwrite with random data
+                with open(filepath, 'r+b') as f:
+                    f.seek(0)
+                    bytes_written = 0
+                    
+                    while bytes_written < file_size and self._is_running:
+                        chunk_size = min(CHUNK_SIZE, file_size - bytes_written)
+                        random_data = self._generate_random_bytes(chunk_size)
+                        f.write(random_data)
+                        bytes_written += chunk_size
+                        
+                        self.file_progress.emit(bytes_written, file_size)
+                        
+                        # Flush to ensure data is written to disk
                         f.flush()
                         os.fsync(f.fileno())
 
-                except Exception as e:
-                    # Catch errors during file access within a pass
-                    raise IOError(f"Error during overwrite pass {current_pass}: {e}") from e
-
-            if not self._is_running:
-                self.error_occurred.emit("Deletion cancelled during overwriting.")
-                # State is uncertain, do not proceed with delete/rename
-                self.finished.emit()
-                return
-
-            # --- Rename before final delete (Obscurity) ---
-            self.progress_updated.emit(passes, passes, "Renaming file...")
-            new_name = self._generate_random_filename()
-            dir_path = os.path.dirname(filepath)
-            new_filepath = os.path.join(dir_path, new_name)
-            try:
-                # Ensure file is closed before renaming
-                # Rename might fail if handle still open, but 'with open' handles closure.
-                os.rename(filepath, new_filepath)
-                self._filepath = new_filepath  # Update path for deletion
-                self.progress_updated.emit(passes, passes, "File renamed.")
-            except Exception as e:
-                # If rename fails, still try to delete original path but warn
-                self.error_occurred.emit(f"Warning: Could not rename file before deletion: {e}. Attempting deletion of original name.")
-
-            # --- Final Deletion ---
-            if not self._is_running:  # Check again before final delete
-                self.error_occurred.emit("Deletion cancelled before final removal.")
-                # We might have renamed, state is uncertain.
-                self.finished.emit()
-                return
-
-            self.progress_updated.emit(passes, passes, f"Deleting file entry: {os.path.basename(self._filepath)}")
-            try:
-                os.remove(self._filepath)
-                self.operation_complete.emit(f"File securely deleted: {os.path.basename(filepath)} (final name: {os.path.basename(self._filepath)})")
-            except Exception as e:
-                raise OSError(f"Error deleting final file entry '{self._filepath}': {e}") from e
-
-        except (FileNotFoundError, ValueError, IOError, OSError) as e:
-            if self._is_running:  # Don't emit error if stopped
-                self.error_occurred.emit(f"Error: {e}")
-        except PermissionError as e:
             if self._is_running:
-                self.error_occurred.emit(f"Permission Error: {e}. Check file permissions.")
+                # Rename file multiple times
+                current_path = filepath
+                for i in range(3):
+                    if not self._is_running:
+                        break
+                    dir_name = os.path.dirname(current_path)
+                    new_name = self._generate_random_filename()
+                    new_path = os.path.join(dir_name, new_name)
+                    try:
+                        os.rename(current_path, new_path)
+                        current_path = new_path
+                    except OSError:
+                        break
+
+                # Finally delete the file
+                if self._is_running:
+                    os.remove(current_path)
+                    self.operation_complete.emit(
+                        f"File securely deleted: {os.path.basename(filepath)}")
+
         except Exception as e:
-            if self._is_running:
-                self.error_occurred.emit(f"An unexpected error occurred: {e}")
+            self.error_occurred.emit(str(e))
         finally:
-            self._is_running = False
             self.finished.emit()
 
 
-class SecureDeleteWorker(QThread):
-    """A class that handles secure delete worker and inherits from QThread."""
-    def __init__(self, logic, filepath, passes):
-        """init.
-        Args:
-            logic (Any): Description of logic
-        Args:
-            filepath (Any): Description of filepath
-        Args:
-            passes (Any): Description of passes"""
-        super().__init__()
-        self.logic = logic
-        self.filepath = filepath
-        self.passes = passes
-        
-    def run(self):
-        """run."""
-        self.logic.shred_file(self.filepath, self.passes)
-
-
-class SecureDeleteWindow(BaseWindow):
-    """Main window for the secure file deletion tool."""
-    def __init__(self):
-        """init."""
-        super().__init__()
-        # Get the directory containing the current script
-        current_dir = os.path.dirname(os.path.abspath(__file__))
-        # Build the absolute path to the UI file
-        ui_file = os.path.join(current_dir, "secure_delete.ui")
-        uic.loadUi(ui_file, self)
-        
-        # Enable drag and drop
-        self.setAcceptDrops(True)
-        self.filePathEdit.setAcceptDrops(True)
-        
-        # Initialize attributes and connect signals 
-        self.logic = SecureDeleteLogic()
-        self.delete_thread = None
-        
-        # Connect signals
-        self.browseButton.clicked.connect(self.browse_file)
-        self.deleteButton.clicked.connect(self.secure_delete)
-        self.cancelButton.clicked.connect(self.cancel_delete)
-        self.actionExit.triggered.connect(self.close)
-        
-        # Connect logic signals
-        self.logic.progress_updated.connect(self.update_progress)
-        self.logic.file_progress.connect(self.update_file_progress)
-        self.logic.operation_complete.connect(self.operation_complete)
-        self.logic.error_occurred.connect(self.show_error)
-        self.logic.finished.connect(self.operation_finished)
-        
-        self.show()
-
-    def dragEnterEvent(self, event: QDragEnterEvent):
-        """dragenterevent.
-        Args:
-            event (QDragEnterEvent): Description of event"""
-        if event.mimeData().hasUrls():
-            event.acceptProposedAction()
-            
-    def dropEvent(self, event: QDropEvent):
-        """dropevent.
-        Args:
-            event (QDropEvent): Description of event"""
-        urls = event.mimeData().urls()
-        if urls:
-            # Use the first dropped item's path
-            path = urls[0].toLocalFile()
-            if os.path.isfile(path):
-                self.filePathEdit.setText(path)
-                self.deleteButton.setEnabled(True)
-            else:
-                self.show_error("Please drop a file, not a folder")
+class SecureDeleteGUI(StandardWindow):
+    """Secure file deletion utility with standardized styling."""
     
-    def browse_file(self):
-        """Open file dialog to select a file to delete."""
-        filepath = get_open_file_name(
-            self,
-            "Select File to Securely Delete",
-            "",
-            "All Files (*.*)"
+    def __init__(self) -> None:
+        super().__init__("Secure File Delete")
+        self.delete_thread: Optional[QThread] = None
+        self.delete_logic: Optional[SecureDeleteLogic] = None
+        self.file_path: Optional[str] = None
+        
+        self._setup_ui()
+        
+    def _setup_ui(self) -> None:
+        """Setup the user interface with standardized styling."""
+        # Create header
+        header = self.create_header("Secure File Delete")
+        self.main_layout.addWidget(header)
+        
+        # Create file selection group
+        file_group = self.create_group_box("File Selection")
+        file_layout = QVBoxLayout()
+        
+        # File path display
+        self.file_label = QLabel("No file selected")
+        ThemeManager.style_label(self.file_label)
+        
+        # Buttons
+        button_layout = QHBoxLayout()
+        select_btn = self.create_button("Select File", self.select_file)
+        delete_btn = self.create_button("Secure Delete", self.start_deletion)
+        
+        button_layout.addWidget(select_btn)
+        button_layout.addWidget(delete_btn)
+        
+        file_layout.addWidget(self.file_label)
+        file_layout.addLayout(button_layout)
+        file_group.setLayout(file_layout)
+        self.main_layout.addWidget(file_group)
+        
+        # Create options group
+        options_group = self.create_group_box("Options")
+        options_layout = QVBoxLayout()
+        
+        # Passes selection
+        passes_layout = QHBoxLayout()
+        passes_label = QLabel("Overwrite Passes:")
+        ThemeManager.style_label(passes_label)
+        
+        self.passes_combo = self.create_combo_box()
+        self.passes_combo.addItems(["1", "3", "7", "35"])
+        self.passes_combo.setCurrentText("3")
+        
+        passes_layout.addWidget(passes_label)
+        passes_layout.addWidget(self.passes_combo)
+        passes_layout.addStretch()
+        
+        options_layout.addLayout(passes_layout)
+        options_group.setLayout(options_layout)
+        self.main_layout.addWidget(options_group)
+        
+        # Create progress group
+        progress_group = self.create_group_box("Progress")
+        progress_layout = QVBoxLayout()
+        
+        # Progress bars
+        self.overall_progress = self.create_progress_bar()
+        self.file_progress = self.create_progress_bar()
+        
+        self.overall_label = QLabel("Ready")
+        self.file_label = QLabel("")
+        ThemeManager.style_label(self.overall_label)
+        ThemeManager.style_label(self.file_label)
+        
+        progress_layout.addWidget(self.overall_label)
+        progress_layout.addWidget(self.overall_progress)
+        progress_layout.addWidget(self.file_label)
+        progress_layout.addWidget(self.file_progress)
+        
+        progress_group.setLayout(progress_layout)
+        self.main_layout.addWidget(progress_group)
+        
+        # Create info group
+        info_group = self.create_group_box("Information")
+        info_layout = QVBoxLayout()
+        
+        info_text = QLabel(
+            "This tool securely deletes files by overwriting them multiple times\n"
+            "with random data, making recovery impossible.\n\n"
+            "Warning: This operation is irreversible!"
         )
-        if filepath:
-            self.filePathEdit.setText(filepath)
-            self.deleteButton.setEnabled(True)
-    
-    def secure_delete(self):
+        info_text.setWordWrap(True)
+        ThemeManager.style_label(info_text)
+        
+        info_layout.addWidget(info_text)
+        info_group.setLayout(info_layout)
+        self.main_layout.addWidget(info_group)
+        
+        # Set up drag and drop
+        self.setAcceptDrops(True)
+        
+    def create_combo_box(self) -> QComboBox:
+        """Create a standardized combo box."""
+        combo = QComboBox()
+        combo.setStyleSheet(f"""
+            QComboBox {{
+                background-color: white;
+                border: 1px solid {Colors.TEXT_DISABLED};
+                border-radius: 4px;
+                padding: 8px 12px;
+                color: {Colors.TEXT_PRIMARY};
+                font-size: 12px;
+                min-height: 30px;
+            }}
+            QComboBox:focus {{
+                border: 2px solid {Colors.ACCENT};
+            }}
+        """)
+        return combo
+        
+    def select_file(self) -> None:
+        """Select file to securely delete."""
+        file_path = get_open_file_name(self, "Select File to Delete")
+        if file_path:
+            self.file_path = file_path
+            self.file_label.setText(os.path.basename(file_path))
+            self.show_status_message(f"Selected: {file_path}")
+            
+    def start_deletion(self) -> None:
         """Start the secure deletion process."""
-        filepath = self.filePathEdit.text()
-        if not filepath:
-            self.show_error("Please select a file to delete.")
+        if not hasattr(self, 'file_path') or self.file_path is None:
+            self.show_error_dialog("Error", "Please select a file first")
             return
+            
+        passes = int(self.passes_combo.currentText())
         
         # Confirm deletion
         reply = QMessageBox.question(
-            self,
-            "Confirm Secure Delete",
-            f"Are you sure you want to securely delete this file?\n{filepath}\n\n"
-            "This operation cannot be undone!",
+            self, "Confirm Deletion",
+            f"Are you sure you want to securely delete:\n{os.path.basename(self.file_path)}\n\n"
+            f"This operation will use {passes} overwrite passes and cannot be undone!",
             QMessageBox.Yes | QMessageBox.No,
-            QMessageBox.No)
+            QMessageBox.No
+        )
         
+        if reply != QMessageBox.Yes:
+            return
+            
+        # Start deletion
+        self.overall_progress.setVisible(True)
+        self.file_progress.setVisible(True)
         
-        if reply == QMessageBox.Yes:
-            # Get number of passes
-            passes = self.passesSpinBox.value()
+        self.delete_logic = SecureDeleteLogic()
+        self.delete_thread = QThread()
+        self.delete_logic.moveToThread(self.delete_thread)
+        
+        # Connect signals
+        self.delete_logic.progress_updated.connect(self.update_overall_progress)
+        self.delete_logic.file_progress.connect(self.update_file_progress)
+        self.delete_logic.operation_complete.connect(self.deletion_complete)
+        self.delete_logic.error_occurred.connect(self.handle_error)
+        self.delete_logic.finished.connect(self.delete_thread.quit)
+        self.delete_thread.started.connect(
+            lambda: self.delete_logic.shred_file(str(self.file_path), passes))
+        
+        self.delete_thread.start()
+        
+    def update_overall_progress(self, value: int, total: int, message: str) -> None:
+        """Update overall progress."""
+        self.overall_progress.setMaximum(total)
+        self.overall_progress.setValue(value)
+        self.overall_label.setText(message)
+        self.show_status_message(message)
+        
+    def update_file_progress(self, processed: int, total: int) -> None:
+        """Update file progress."""
+        self.file_progress.setMaximum(total)
+        self.file_progress.setValue(processed)
+        self.file_label.setText(f"Processing: {processed}/{total} bytes")
+        
+    def deletion_complete(self, message: str) -> None:
+        """Handle successful deletion."""
+        self.overall_progress.setVisible(False)
+        self.file_progress.setVisible(False)
+        self.file_label.setText("")
+        self.file_label.setText("No file selected")
+        self.show_info_dialog("Success", message)
+        
+    def handle_error(self, error_message: str) -> None:
+        """Handle errors during deletion."""
+        self.overall_progress.setVisible(False)
+        self.file_progress.setVisible(False)
+        self.show_error_dialog("Error", error_message)
+        
+    def dragEnterEvent(self, a0: QDragEnterEvent) -> None:
+        """Handle drag enter events."""
+        if a0.mimeData().hasUrls():
+            a0.acceptProposedAction()
             
-            # Disable UI elements
-            self.deleteButton.setEnabled(False)
-            self.browseButton.setEnabled(False)
-            self.passesSpinBox.setEnabled(False)
-            self.cancelButton.setEnabled(True)
-            
-            # Start deletion in a separate thread
-            self.delete_thread = SecureDeleteWorker(self.logic, filepath, passes)
-            self.delete_thread.start()
-    
-    def cancel_delete(self):
-        """Cancel the secure deletion process."""
-        if self.logic._is_running:
-            self.logic.stop()
-            self.statusLabel.setText("Canceling deletion...")
-            self.cancelButton.setEnabled(False)
-    
-    def update_progress(self, value, total, message):
-        """Update the overall progress and status message."""
-        progress = (value / total) * 100
-        self.progressBar.setValue(int(progress))
-        self.statusLabel.setText(message)
-    
-    def update_file_progress(self, bytes_processed, total_bytes):
-        """Update the progress for current file operation."""
-        if total_bytes > 0:
-            progress = (bytes_processed / total_bytes) * 100
-            self.progressBar.setValue(int(progress))
-    
-    def operation_complete(self, message):
-        """Handle completion of the secure deletion."""
-        self.statusLabel.setText(message)
-        show_info_dialog(self, "Operation Complete", message)
-        self.reset_ui()
-    
-    def show_error(self, message):
-        """Display error message."""
-        self.statusLabel.setText(f"Error: {message}")
-        show_error_dialog(self, "Error", message)
-        self.reset_ui()
-    
-    def operation_finished(self):
-        """Reset UI after operation completes or fails."""
-        self.reset_ui()
-    
-    def reset_ui(self):
-        """Reset UI elements to initial state."""
-        self.deleteButton.setEnabled(True)
-        self.browseButton.setEnabled(True)
-        self.passesSpinBox.setEnabled(True)
-        self.cancelButton.setEnabled(False)
-        self.progressBar.setValue(0)
+    def dropEvent(self, a0: QDropEvent) -> None:
+        """Handle drop events."""
+        files = [u.toLocalFile() for u in a0.mimeData().urls()]
+        for file_path in files:
+            if os.path.isfile(file_path):
+                self.file_path = file_path
+                self.file_label.setText(os.path.basename(file_path))
+                self.show_status_message(f"Dropped: {file_path}")
+                break
+                
+    def closeEvent(self, a0) -> None:
+        """Clean up when closing."""
+        if self.delete_thread and self.delete_thread.isRunning():
+            if self.delete_logic:
+                self.delete_logic.stop()
+            self.delete_thread.quit()
+            self.delete_thread.wait()
+        a0.accept()
 
 
-def main():
-    """main."""
+def main() -> None:
+    """Main function to run the secure delete utility."""
     app = QApplication(sys.argv)
-    window = SecureDeleteWindow()
+    window = SecureDeleteGUI()
     window.show()
     sys.exit(app.exec_())
+
 
 if __name__ == "__main__":
     main()

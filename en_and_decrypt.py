@@ -1,265 +1,256 @@
 # Import the os module
 import os
-import shutil
 import sys
 import datetime
+from typing import Optional, List
 
 # Import QT modules
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
-from PyQt5.QtWidgets import QApplication
+from PyQt5.QtWidgets import QApplication, QFileDialog
 from PyQt5 import uic
 from gui.common.base_window import BaseWindow
 from gui.common.dialogs import show_error_dialog, show_info_dialog, get_existing_directory
 
 # Import Crypt modules
-import pyAesCrypt
 from cryptography.fernet import Fernet
 
-from core.error_handler import error_handler
 
-
-# Create a GUI class, inherits from QMainWindow.
-# The menu has three options, SelectFile, SelectFolder and
-# Exit. If the menu item SelectFile is selected, a system dialog where
-# a file can be selected. When the file is selected,
-# method check_encrytion will be called. If the file
-# is encrypted, method check_encrytion will display
-# message, "File already encrypted" in message_ListView. If the
-# file is not encrypted, the message "File loaded" will be
-# displayed in message_ListView. If the menu item SelectFolder is selected, a system dialog where
-# a folder can be selected. When the folder is selected,
-# method check_encrytion will be called. If the file
-# is encrypted, method check_encrytion will display
-# message, "Folder already encrypted" in message_ListView. If the
-# folder is not encrypted, the message "Folder(s) loaded" will be
-# displayed in message_ListView.
-
-
-class en_and_decryptGUI(BaseWindow):
-    """A class that handles g u i and inherits from BaseWindow."""
-    # initialize the GUI
-    def __init__(self):
-        """init."""
+class EnAndDecryptGUI(BaseWindow):
+    """A class that handles encryption/decryption GUI."""
+    
+    ENCRYPTED_EXTENSION: str = '.encrypted'
+    KEY_EXTENSION: str = '.key'
+    
+    def __init__(self) -> None:
+        """Initialize the encryption/decryption GUI."""
         super().__init__()
         # load the GUI
-        uic.loadUi('en_and_decrypt'
-        '.ui', self)
+        uic.loadUi('en_and_decrypt.ui', self)
         self.show()
 
-        self.directory = "."
-        self.listModel = QStandardItemModel()
-        self.selectModel = QStandardItemModel()
+        self.directory: str = "."
+        self.listModel: QStandardItemModel = QStandardItemModel()
+        self.selectModel: QStandardItemModel = QStandardItemModel()
+        self.current_key: Optional[bytes] = None
 
-        self.actionselectfile.triggered.connect(self.load_directory)
+        # Connect signals
+        self.actionselectfile.triggered.connect(self.load_file)
         self.actionselectfolder.triggered.connect(self.load_directory)
         self.actionexit.triggered.connect(self.close)
         self.decrypt_PushButton.clicked.connect(self.decrypt_file)
         self.encrypt_PushButton.clicked.connect(self.encrypt_file)
         self.generate_key_PushButton.clicked.connect(self.generate_key)
         self.load_key_PushButton.clicked.connect(self.load_key)
-        # self.decrypt_folder_PushButton.clicked.connect(self.decrypt_folder)
-        # self.encrypt_folder_PushButton.clicked.connect(self.encrypt_folder)
 
-    def load_directory(self):
-        """loaddirectory."""
-        self.directory = get_existing_directory(
-            self, "Select Directory")
-        for file in os.listdir(self.directory):
-            if os.path.isfile(os.path.join(self.directory, file)):
-                self.listModel.appendRow(QStandardItem(file))
-        self.output_ListView.setModel(self.listModel)
+        # Setup UI
+        self.select_ListView.setModel(self.listModel)
+        # The same ListView is used for both file list and messages
+        # We'll use it for messages in add_message method
 
-    # Method generate_key, generates a random 12 character string to which the
-    # current date and time will be appended. This will then be used as the key        # and will be stored in a file named with the date and time with
-    # the suffix .key. Upon completion the message "Key generated" will
-    # be displayed in message_ListView.
+    def load_file(self) -> None:
+        """Load a single file for encryption/decryption."""
+        file_path: str
+        file_path, _ = QFileDialog.getOpenFileName(
+            self, "Select File", "", "All Files (*.*)"
+        )
+        if file_path:
+            self.directory = file_path
+            self.listModel.clear()
+            self.listModel.appendRow(
+                QStandardItem(os.path.basename(file_path))
+            )
+            self.add_message(f"File loaded: {os.path.basename(file_path)}")
 
-    def generate_key(self):
-        """generatekey."""
-        # generate a random 12 character string
-        key = Fernet.generate_key()
-        # append current date and time to key
-        key = key + str(datetime.datetime.now())
-        # create a file with the suffix .key
-        key_file = open(key + ".key", "wb")
-        # write key to file
-        key_file.write(key)
-        # close file
-        key_file.close()
-        # display message in message_ListView
-        self.message_ListView.append("Key generated")
+    def load_directory(self) -> None:
+        """Load a directory for batch operations."""
+        directory = get_existing_directory(self, "Select Directory")
+        if directory:
+            self.directory = str(directory)
+            self.listModel.clear()
+            
+            files: List[str] = []
+            for root, dirs, filenames in os.walk(directory):
+                for filename in filenames:
+                    if not filename.endswith(self.ENCRYPTED_EXTENSION):
+                        file_path = os.path.join(root, filename)
+                        relative_path = os.path.relpath(
+                            file_path, directory
+                        )
+                        files.append(relative_path)
+            
+            for file_path in sorted(files):
+                self.listModel.appendRow(QStandardItem(file_path))
+            
+            self.add_message(f"Directory loaded: {len(files)} files found")
 
-    # Method check_encryption will be called when
-    # the encrypt_PushButton is pressed. After the encrypt_PushButton has been
-    # pushed, another dialog will be opened in which
-    # the key_file can be searched for and selected, then
-    # the method load_key will be called. Upon completion
-    # the message "File successfully encrypted" will be displayed in
-    # message_ListView.
-
-    def check_encryption(self):
-        """checkencryption."""
-        # get the selected directory
-        directory = self.directory
-        # check if the directory exists
-        if os.path.exists(directory):
-            # check if the directory is encrypted
-            if os.path.isfile(os.path.join(directory, "encrypted")):
-                # display message in message_ListView
-                self.message_ListView.append("Folder already encrypted")
+    def generate_key(self) -> None:
+        """Generate a new encryption key."""
+        try:
+            key: bytes = Fernet.generate_key()
+            
+            # Save key to file
+            timestamp: str = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
+            key_filename: str = f"key_{timestamp}{self.KEY_EXTENSION}"
+            key_path: str
+            key_path, _ = QFileDialog.getSaveFileName(
+                self, "Save Key", key_filename, "Key Files (*.key)"
+            )
+            
+            if key_path:
+                with open(key_path, 'wb') as key_file:
+                    key_file.write(key)
+                
+                self.current_key = key
+                msg = f"Key generated and saved: {os.path.basename(key_path)}"
+                self.add_message(msg)
             else:
-                # display message in message_ListView
-                self.message_ListView.append("Folder(s) loaded")
-        else:
-            # display message in message_ListView
-            self.message_ListView.append("Folder(s) not loaded")
+                self.current_key = key
+                self.add_message("Key generated (not saved to file)")
+                
+        except Exception as e:
+            error_msg: str = f"Failed to generate key: {str(e)}"
+            show_error_dialog(self, "Error", error_msg)
 
-    # Method load_key opens a system dialog in which
-    # files with the suffix .key. Upon completion the
-    # message "Key loaded" will be displayed in the
-    # message_ListView
-
-    # Method encrypt_file will encrypt the selected file
-    # when the encrypt_PushButton is pressed,
-    # using the selected key. Upon completion the message
-    # "File successfully encrypted" will be displayed in
-    # the message_ListView.
-
-    # Method decrypt_file will be called when
-    # the decrypt_PushButton is pressed. After the decrypt_PushButton has been
-    # pushed, another dialog will be opened in which
-    # the key_file can be searched for and selected, then
-    # the method load_key will be called. Upon completion
-    # the message "File successfully decrypted" in
-    # message_ListView.
-
-    # Method encrypt_folder will encrypt the folder
-    # using the selected key. If reursive_CheckBox
-    # is triggered, the selected folder and recursive folders
-    # will be encrpted. Upon completion of operation,
-    # "Folder encrypted successfully." will be displayed in
-    # message_ListView
-
-    # Method decrypt_folder will be called when
-    # the decrypt_PushButton is pressed. After the decrypt_PushButton has been
-    # pushed, another dialog will be opened in which
-    # the key_file can be searched for and selected, then
-    # the method load_key will be called. Upon completion of operation,
-    # "Folder decrypted successfully." will be displayed in
-    # message_ListView
-
-    # Method load_key opens a system dialog in which
-    # files with the suffix .key. Upon completion the
-    # message "Key loaded" will be displayed in the
-    # message_ListView
-
-    def load_key(self):
-        """loadkey."""
-        # get the selected directory
-        directory = self.directory
-        # check if the directory exists
-        if os.path.exists(directory):
-            # check if the directory is encrypted
-            if os.path.isfile(os.path.join(directory, "encrypted")):
-                # display message in message_ListView
-                self.message_ListView.append("Folder already encrypted")
+    def load_key(self) -> None:
+        """Load an existing encryption key."""
+        try:
+            key_path: str
+            key_path, _ = QFileDialog.getOpenFileName(
+                self, "Load Key", "", "Key Files (*.key)"
+            )
+            
+            if key_path:
+                with open(key_path, 'rb') as key_file:
+                    self.current_key = key_file.read()
+                
+                self.add_message(f"Key loaded: {os.path.basename(key_path)}")
             else:
-                # display message in message_ListView
-                self.message_ListView.append("Folder(s) loaded")
+                self.add_message("No key selected")
+                
+        except Exception as e:
+            error_msg: str = f"Failed to load key: {str(e)}"
+            show_error_dialog(self, "Error", error_msg)
 
-    # Method encrypt_file will encrypt the selected file
-    # when the encrypt_PushButton is pressed,
-    # using the selected key. Upon completion the message
-    # "File successfully encrypted" will be displayed in
-    # the message_ListView.
+    def encrypt_file(self) -> None:
+        """Encrypt the selected file(s)."""
+        if not self.current_key:
+            error_msg: str = "Please generate or load a key first"
+            show_error_dialog(self, "Error", error_msg)
+            return
 
-    def encrypt_file(self):
-        """encryptfile."""
-        # get the selected directory
-        directory = self.directory
-        # check if the directory exists
-        if os.path.exists(directory):
-            # check if the directory is encrypted
-            if os.path.isfile(os.path.join(directory, "encrypted")):
-                # display message in message_ListView
-                self.message_ListView.append("Folder already encrypted")
+        try:
+            fernet: Fernet = Fernet(self.current_key)
+            
+            if os.path.isfile(self.directory):
+                # Single file
+                self._encrypt_single_file(self.directory, fernet)
             else:
-                # display message in message_ListView
-                self.message_ListView.append("Folder(s) loaded")
+                # Directory - encrypt all files
+                self._encrypt_directory(self.directory, fernet)
+                
+        except Exception as e:
+            error_msg: str = f"Encryption failed: {str(e)}"
+            show_error_dialog(self, "Error", error_msg)
 
-    # Method decrypt_file will be called when
-    # the decrypt_PushButton is pressed. After the decrypt_PushButton has been
-    # pushed, another dialog will be opened in which
-    # the key_file can be searched for and selected, then
-    # the method load_key will be called. Upon completion
-    # the message "File successfully decrypted" in
-    # message_ListView.
+    def decrypt_file(self) -> None:
+        """Decrypt the selected file(s)."""
+        if not self.current_key:
+            error_msg: str = "Please generate or load a key first"
+            show_error_dialog(self, "Error", error_msg)
+            return
 
-    def decrypt_file(self):
-        """decryptfile."""
-        # get the selected directory
-        directory = self.directory
-        # check if the directory exists
-        if os.path.exists(directory):
-            # check if the directory is encrypted
-            if os.path.isfile(os.path.join(directory, "encrypted")):
-                # display message in message_ListView
-                self.message_ListView.append("Folder already encrypted")
+        try:
+            fernet: Fernet = Fernet(self.current_key)
+            
+            if os.path.isfile(self.directory):
+                # Single file
+                self._decrypt_single_file(self.directory, fernet)
             else:
-                # display message in message_ListView
-                self.message_ListView.append("Folder(s) loaded")
+                # Directory - decrypt all .encrypted files
+                self._decrypt_directory(self.directory, fernet)
+                
+        except Exception as e:
+            error_msg: str = f"Decryption failed: {str(e)}"
+            show_error_dialog(self, "Error", error_msg)
 
-    # Method encrypt_folder will encrypt the folder
-    # using the selected key. If reursive_CheckBox
-    # is triggered, the selected folder and recursive folders
-    # will be encrpted. Upon completion of operation,
-    # "Folder encrypted successfully." will be displayed in
-    # message_ListView
+    def _encrypt_single_file(self, file_path: str, fernet: Fernet) -> None:
+        """Encrypt a single file."""
+        if file_path.endswith(self.ENCRYPTED_EXTENSION):
+            self.add_message("File already encrypted")
+            return
 
-    def encrypt_folder(self):
-        """encryptfolder."""
-        # get the selected directory
-        directory = self.directory
-        # check if the directory exists
-        if os.path.exists(directory):
-            # check if the directory is encrypted
-            if os.path.isfile(os.path.join(directory, "encrypted")):
-                # display message in message_ListView
-                self.message_ListView.append("Folder already encrypted")
-            else:
-                # display message in message_ListView
-                self.message_ListView.append("Folder(s) loaded")
+        encrypted_path: str = file_path + self.ENCRYPTED_EXTENSION
+        
+        with open(file_path, 'rb') as infile:
+            with open(encrypted_path, 'wb') as outfile:
+                data: bytes = infile.read()
+                encrypted_data: bytes = fernet.encrypt(data)
+                outfile.write(encrypted_data)
+        
+        self.add_message(f"File encrypted: {os.path.basename(file_path)}")
 
-    # Method decrypt_folder will be called when
-    # the decrypt_PushButton is pressed. After the decrypt_PushButton has been
-    # pushed, another dialog will be opened in which
-    # the key_file can be searched for and selected, then
-    # the method load_key will be called. Upon completion of operation,
-    # "Folder decrypted successfully." will be displayed in
-    # message_ListView
+    def _decrypt_single_file(self, file_path: str, fernet: Fernet) -> None:
+        """Decrypt a single file."""
+        if not file_path.endswith(self.ENCRYPTED_EXTENSION):
+            self.add_message("File is not encrypted")
+            return
 
-    def decrypt_folder(self):
-        """decryptfolder."""
-        # get the selected directory
-        directory = self.directory
-        # check if the directory exists
-        if os.path.exists(directory):
-            # check if the directory is encrypted
+        decrypted_path: str = file_path.replace(self.ENCRYPTED_EXTENSION, '')
+        
+        with open(file_path, 'rb') as infile:
+            with open(decrypted_path, 'wb') as outfile:
+                encrypted_data: bytes = infile.read()
+                decrypted_data: bytes = fernet.decrypt(encrypted_data)
+                outfile.write(decrypted_data)
+        
+        self.add_message(f"File decrypted: {os.path.basename(file_path)}")
 
-            if os.path.isfile(os.path.join(directory, "encrypted")):
-                # display message in message_ListView
-                self.message_ListView.append("Folder already encrypted")
+    def _encrypt_directory(self, directory: str, fernet: Fernet) -> None:
+        """Encrypt all files in a directory."""
+        encrypted_count: int = 0
+        
+        for root, dirs, files in os.walk(directory):
+            for filename in files:
+                if not filename.endswith(self.ENCRYPTED_EXTENSION):
+                    file_path: str = os.path.join(root, filename)
+                    try:
+                        self._encrypt_single_file(file_path, fernet)
+                        encrypted_count += 1
+                    except Exception as e:
+                        msg: str = f"Failed to encrypt {filename}: {str(e)}"
+                        self.add_message(msg)
+        
+        msg: str = f"Directory encryption complete: {encrypted_count} files"
+        self.add_message(msg)
 
-            else:
-                # display message in message_ListView
-                self.message_ListView.append("Folder(s) loaded")
+    def _decrypt_directory(self, directory: str, fernet: Fernet) -> None:
+        """Decrypt all .encrypted files in a directory."""
+        decrypted_count: int = 0
+        
+        for root, dirs, files in os.walk(directory):
+            for filename in files:
+                if filename.endswith(self.ENCRYPTED_EXTENSION):
+                    file_path: str = os.path.join(root, filename)
+                    try:
+                        self._decrypt_single_file(file_path, fernet)
+                        decrypted_count += 1
+                    except Exception as e:
+                        msg: str = f"Failed to decrypt {filename}: {str(e)}"
+                        self.add_message(msg)
+        
+        msg: str = f"Directory decryption complete: {decrypted_count} files"
+        self.add_message(msg)
+
+    def add_message(self, message: str) -> None:
+        """Add a message to the message list."""
+        self.selectModel.appendRow(QStandardItem(message))
 
 
-def main():
-    """main."""
-    app = QApplication([])
-    window = en_and_decryptGUI()
-    app.exec_()
+def main() -> None:
+    """Main function to run the encryption/decryption GUI."""
+    app: QApplication = QApplication(sys.argv)
+    _: EnAndDecryptGUI = EnAndDecryptGUI()
+    sys.exit(app.exec_())
 
 
 if __name__ == "__main__":
