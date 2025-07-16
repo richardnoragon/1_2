@@ -2,7 +2,11 @@ import os
 import math
 import json
 from typing import Dict, Any, Optional, Tuple
-from PyQt5.QtCore import QObject, pyqtSignal
+from PyQt5.QtCore import QObject, pyqtSignal, QThread
+from PyQt5.QtWidgets import (
+    QMainWindow, QFileDialog, QMessageBox, QApplication
+)
+from PyQt5 import uic
 
 # Constants
 CHUNK_RW_SIZE = 1024 * 1024  # 1MB read/write buffer
@@ -459,3 +463,266 @@ class FileOperationLogic(QObject):
                         verification_msg = (
                             f" WARNING: Final size ({final_size} bytes) does NOT "
                             f"match expected size ({expected_total_size} bytes)!"
+                        )
+
+                complete_msg = (
+                    f"File successfully joined to '{output_filepath}'. "
+                    f"Processed {chunks_processed} chunks.{verification_msg}"
+                )
+                self.operation_complete.emit(complete_msg)
+
+        except Exception as e:
+            # Catch-all for unexpected errors
+            error_msg = f"An unexpected error occurred during join: {e}"
+            self.error_occurred.emit(error_msg)
+        finally:
+            # Reset state and emit completion signal
+            self._is_running = False
+            self.finished.emit()
+
+
+class WorkerThread(QThread):
+    """Worker thread for file operations to prevent UI blocking."""
+    
+    def __init__(self, operation_logic, operation_type, *args):
+        super().__init__()
+        self.operation_logic = operation_logic
+        self.operation_type = operation_type
+        self.args = args
+    
+    def run(self):
+        """Run the operation in the thread."""
+        if self.operation_type == 'split':
+            self.operation_logic.split_file(*self.args)
+        elif self.operation_type == 'join':
+            self.operation_logic.join_files(*self.args)
+
+
+class FileSplitJoinGUI(QMainWindow):
+    """GUI class for file splitting and joining operations."""
+    
+    def __init__(self):
+        super().__init__()
+        self.operation_logic = FileOperationLogic()
+        self.worker_thread = None
+        self.init_ui()
+        self.connect_signals()
+    
+    def init_ui(self):
+        """Initialize the user interface."""
+        # Load UI file
+        ui_file = os.path.join(os.path.dirname(__file__), 'file_splitter_joiner.ui')
+        uic.loadUi(ui_file, self)
+        
+        # Set window properties
+        self.setWindowTitle("File Splitter & Joiner")
+        self.setMinimumSize(600, 400)
+        
+        # Initialize UI state
+        self.progressBar.setVisible(False)
+        self.statusLabel.setText("Ready")
+        
+        # Connect radio button signals for enabling/disabling controls
+        self.splitBySize.toggled.connect(self.on_split_mode_changed)
+        self.splitByParts.toggled.connect(self.on_split_mode_changed)
+        
+        # Set initial state
+        self.on_split_mode_changed()
+    
+    def connect_signals(self):
+        """Connect UI signals to their respective slots."""
+        # Split tab signals
+        self.splitBrowseInput.clicked.connect(self.browse_split_input)
+        self.splitBrowseOutput.clicked.connect(self.browse_split_output)
+        self.splitButton.clicked.connect(self.start_split_operation)
+        
+        # Join tab signals
+        self.joinBrowseInput.clicked.connect(self.browse_join_input)
+        self.joinBrowseOutput.clicked.connect(self.browse_join_output)
+        self.joinButton.clicked.connect(self.start_join_operation)
+        
+        # Operation logic signals
+        self.operation_logic.progress_updated.connect(self.update_progress)
+        self.operation_logic.operation_complete.connect(self.operation_completed)
+        self.operation_logic.error_occurred.connect(self.operation_error)
+        self.operation_logic.finished.connect(self.operation_finished)
+    
+    def on_split_mode_changed(self):
+        """Handle split mode radio button changes."""
+        if self.splitBySize.isChecked():
+            self.sizeValue.setEnabled(True)
+            self.sizeUnit.setEnabled(True)
+            self.partsValue.setEnabled(False)
+        else:
+            self.sizeValue.setEnabled(False)
+            self.sizeUnit.setEnabled(False)
+            self.partsValue.setEnabled(True)
+    
+    def browse_split_input(self):
+        """Browse for input file to split."""
+        file_path, _ = QFileDialog.getOpenFileName(
+            self, "Select File to Split", "", "All Files (*)"
+        )
+        if file_path:
+            self.splitInputPath.setText(file_path)
+    
+    def browse_split_output(self):
+        """Browse for output directory for split files."""
+        dir_path = QFileDialog.getExistingDirectory(
+            self, "Select Output Directory"
+        )
+        if dir_path:
+            self.splitOutputPath.setText(dir_path)
+    
+    def browse_join_input(self):
+        """Browse for first chunk file to join."""
+        file_path, _ = QFileDialog.getOpenFileName(
+            self, "Select First Chunk File", "", "Part Files (*.part*)"
+        )
+        if file_path:
+            self.joinInputPath.setText(file_path)
+    
+    def browse_join_output(self):
+        """Browse for output file for joined result."""
+        file_path, _ = QFileDialog.getSaveFileName(
+            self, "Select Output File", "", "All Files (*)"
+        )
+        if file_path:
+            self.joinOutputPath.setText(file_path)
+    
+    def start_split_operation(self):
+        """Start the file splitting operation."""
+        # Validate inputs
+        input_path = self.splitInputPath.text().strip()
+        output_path = self.splitOutputPath.text().strip()
+        
+        if not input_path or not output_path:
+            QMessageBox.warning(
+                self, "Input Error",
+                "Please select both input file and output directory."
+            )
+            return
+        
+        if not os.path.exists(input_path):
+            QMessageBox.warning(
+                self, "File Error",
+                "Input file does not exist."
+            )
+            return
+        
+        # Get split parameters
+        if self.splitBySize.isChecked():
+            split_mode = 'size'
+            value = self.sizeValue.value()
+            unit_text = self.sizeUnit.currentText()
+            unit_multiplier = {
+                'Bytes': 1,
+                'KB': 1024,
+                'MB': 1024 * 1024,
+                'GB': 1024 * 1024 * 1024
+            }.get(unit_text, 1)
+        else:
+            split_mode = 'parts'
+            value = self.partsValue.value()
+            unit_multiplier = 1
+        
+        # Start operation in worker thread
+        self.worker_thread = WorkerThread(
+            self.operation_logic, 'split',
+            input_path, output_path, split_mode, value, unit_multiplier
+        )
+        
+        # Update UI state
+        self.splitButton.setEnabled(False)
+        self.joinButton.setEnabled(False)
+        self.progressBar.setVisible(True)
+        self.progressBar.setValue(0)
+        self.statusLabel.setText("Starting split operation...")
+        
+        # Start the worker thread
+        self.worker_thread.start()
+    
+    def start_join_operation(self):
+        """Start the file joining operation."""
+        # Validate inputs
+        input_path = self.joinInputPath.text().strip()
+        output_path = self.joinOutputPath.text().strip()
+        
+        if not input_path or not output_path:
+            QMessageBox.warning(
+                self, "Input Error",
+                "Please select both input chunk file and output file."
+            )
+            return
+        
+        if not os.path.exists(input_path):
+            QMessageBox.warning(
+                self, "File Error",
+                "Input chunk file does not exist."
+            )
+            return
+        
+        # Start operation in worker thread
+        self.worker_thread = WorkerThread(
+            self.operation_logic, 'join',
+            input_path, output_path
+        )
+        
+        # Update UI state
+        self.splitButton.setEnabled(False)
+        self.joinButton.setEnabled(False)
+        self.progressBar.setVisible(True)
+        self.progressBar.setValue(0)
+        self.statusLabel.setText("Starting join operation...")
+        
+        # Start the worker thread
+        self.worker_thread.start()
+    
+    def update_progress(self, current, total, message):
+        """Update progress bar and status message."""
+        if total > 0:
+            progress = int((current / total) * 100)
+            self.progressBar.setValue(progress)
+        self.statusLabel.setText(message)
+    
+    def operation_completed(self, message):
+        """Handle successful operation completion."""
+        QMessageBox.information(self, "Operation Complete", message)
+        self.statusLabel.setText("Operation completed successfully")
+    
+    def operation_error(self, error_message):
+        """Handle operation errors."""
+        QMessageBox.critical(self, "Operation Error", error_message)
+        self.statusLabel.setText("Operation failed")
+    
+    def operation_finished(self):
+        """Handle operation thread completion."""
+        # Reset UI state
+        self.splitButton.setEnabled(True)
+        self.joinButton.setEnabled(True)
+        self.progressBar.setVisible(False)
+        self.progressBar.setValue(0)
+        
+        # Clean up worker thread
+        if self.worker_thread:
+            self.worker_thread.quit()
+            self.worker_thread.wait()
+            self.worker_thread = None
+    
+    def closeEvent(self, event):
+        """Handle window close event."""
+        # Stop any running operations
+        if self.worker_thread and self.worker_thread.isRunning():
+            self.operation_logic.stop()
+            self.worker_thread.quit()
+            self.worker_thread.wait()
+        event.accept()
+
+
+if __name__ == '__main__':
+    """Run the application standalone for testing."""
+    import sys
+    app = QApplication(sys.argv)
+    window = FileSplitJoinGUI()
+    window.show()
+    sys.exit(app.exec_())
