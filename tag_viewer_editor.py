@@ -17,7 +17,6 @@ from PyQt5.QtGui import (
     QStandardItemModel,
     QStandardItem
 )
-from PyQt5 import uic
 
 # Local imports
 from gui.common.base_window import BaseWindow
@@ -55,25 +54,24 @@ class TagViewerEditor(BaseWindow):
         - Metadata table model
         - Signal connections
         """
-        super().__init__()
-        self._setup_ui()
+        # Get the UI file path
+        ui_file = os.path.join(
+            os.path.dirname(os.path.abspath(__file__)),
+            "tag_viewer_editor.ui"
+        )
+        
+        # Pass UI file to parent constructor
+        super().__init__(ui_file)
         self._init_metadata_model()
-        self._connect_signals()
         
         # Initialize current file state
         self._current_file = None
         self._current_tags = None
         
-        self.show()
-        
-    def _setup_ui(self) -> None:
-        """Load and initialize the UI components."""
-        ui_file = os.path.join(
-            os.path.dirname(os.path.abspath(__file__)),
-            "tag_viewer_editor.ui"
-        )
-        uic.loadUi(ui_file, self)
+        # Configure the metadata table
         self.metadataTable.horizontalHeader().setStretchLastSection(True)
+        
+        self.show()
         
     def _init_metadata_model(self) -> None:
         """Initialize the metadata table model."""
@@ -90,8 +88,8 @@ class TagViewerEditor(BaseWindow):
         - Update tag button
         - Table selection changes
         """
-        self.openAction.triggered.connect(self._browse_file)
-        self.exitAction.triggered.connect(self.close)
+        self.actionOpen.triggered.connect(self._browse_file)
+        self.actionExit.triggered.connect(self.close)
         self.browseButton.clicked.connect(self._browse_file)
         self.updateButton.clicked.connect(self._update_tag)
         self.metadataTable.clicked.connect(self._on_table_click)
@@ -99,10 +97,10 @@ class TagViewerEditor(BaseWindow):
     def _browse_file(self) -> None:
         """Open file dialog and load selected audio/video file."""
         file_path: str = str(get_open_file_name(
-            parent=self,
             caption="Open Audio/Video File",
             directory="",
-            file_filter=FILE_FILTERS
+            file_filter=FILE_FILTERS,
+            parent=self
         ) or "")
 
         if not file_path:
@@ -142,8 +140,8 @@ class TagViewerEditor(BaseWindow):
         if not self._current_tags or not self._current_file:
             return
 
-        tag: str = self.tagNameEdit.text().strip()
-        value: str = self.tagValueEdit.text().strip()
+        tag: str = self.keyEdit.text().strip()
+        value: str = self.valueEdit.text().strip()
 
         if not tag or not value:
             show_error_dialog(
@@ -162,8 +160,8 @@ class TagViewerEditor(BaseWindow):
             self._display_metadata()
 
             # Clear input fields
-            self.tagNameEdit.clear()
-            self.tagValueEdit.clear()
+            self.keyEdit.clear()
+            self.valueEdit.clear()
 
         except Exception as e:
             show_error_dialog(
@@ -190,8 +188,8 @@ class TagViewerEditor(BaseWindow):
         value: str = value_item.text()
 
         # Update input fields
-        self.tagNameEdit.setText(tag)
-        self.tagValueEdit.setText(value)
+        self.keyEdit.setText(tag)
+        self.valueEdit.setText(value)
 
 
 if __name__ == "__main__":
