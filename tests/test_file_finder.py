@@ -1,6 +1,12 @@
 import unittest
 from PyQt5.QtWidgets import QDialog
-from file_finder import FileFinderGUI, FileFinder
+# MIGRATION UPDATE: Updated imports for file finder migration to file_utilities_1
+# Changed from: from file_finder import FileFinderGUI, FileFinder
+# Changed to: from file_utilities_1 import FileFinderWindow and from file_finder import FileFinder
+# Reason: FileFinderGUI has been migrated to file_utilities_1 as FileFinderWindow
+# FileFinder wrapper class remains in root for backward compatibility
+from file_utilities_1 import FileFinderWindow
+from file_finder import FileFinder
 from config_manager import ConfigManager
 from tests.test_gui_base import BaseGuiTest
 import os

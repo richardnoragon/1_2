@@ -2,7 +2,12 @@ import unittest
 import os
 import json
 from tests.test_utils import TestUtils
-from size_analyzer import SizeAnalyzerWindow
+# MIGRATION UPDATE: Import from new file_utilities_2 package location
+# Changed from: from size_analyzer import SizeAnalyzerWindow
+# Changed to: from file_utilities_2.core.size_analyzer_logic import SizeAnalyzer
+# Reason: size_analyzer has been migrated to file_utilities_2 package
+# and tests now use the core SizeAnalyzer class instead of the GUI window
+from file_utilities_2.core.size_analyzer_logic import SizeAnalyzer
 
 from core.error_handler import error_handler
 
@@ -12,6 +17,8 @@ class TestSizeAnalyzer(unittest.TestCase):
     def setUp(self):
         """setup."""
         self.test_dir = TestUtils.create_temp_dir()
+        # MIGRATION UPDATE: Use the new SizeAnalyzer class from core logic
+        # This provides the same functionality but separates core logic from GUI
         self.analyzer = SizeAnalyzer()
         
         # Create test directory structure with known sizes

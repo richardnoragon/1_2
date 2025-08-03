@@ -4,11 +4,19 @@ import time
 from PyQt5.QtWidgets import QApplication
 from tests.test_utils import TestUtils
 from rfuhub import RFUHub
-from file_finder import FileFinderGUI
+# MIGRATION UPDATE: Updated import for file finder migration to file_utilities_1
+# Changed from: from file_finder import FileFinderGUI
+# Changed to: from file_utilities_1 import FileFinderWindow
+# Reason: FileFinderGUI has been migrated to file_utilities_1 as FileFinderWindow
+from file_utilities_1 import FileFinderWindow
 from en_and_decrypt import en_and_decryptGUI
 from file_splitter_joiner import FileSplitJoinGUI
 from rfuhub import OrganizeWindow
-from size_analyzer import SizeAnalyzerWindow
+# MIGRATION UPDATE: Import from new file_utilities_2 package location
+# Changed from: from size_analyzer import SizeAnalyzerWindow
+# Changed to: from file_utilities_2.gui.size_analyzer_gui import SizeAnalyzerGUI
+# Reason: size_analyzer has been migrated to file_utilities_2 package
+from file_utilities_2.gui.size_analyzer_gui import SizeAnalyzerGUI
 
 from core.error_handler import error_handler
 

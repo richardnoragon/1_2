@@ -1,0 +1,581 @@
+#!/usr/bin/env python3
+"""
+Permissions Editor Tool for Richard's File Utilities
+
+A comprehensive file and folder permissions management utility.
+"""
+
+import os
+import sys
+import stat
+import platform
+
+try:
+    from PyQt5.QtWidgets import (
+        QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QGridLayout,
+        QPushButton, QLineEdit, QLabel, QCheckBox, QGroupBox,
+        QFileDialog, QMessageBox, QProgressBar, QApplication,
+        QTextEdit, QSplitter, QTreeWidget, QTreeWidgetItem
+    )
+    from PyQt5.QtCore import Qt, QThread, pyqtSignal
+except ImportError:
+    print("PyQt5 not available. Please install PyQt5.")
+    sys.exit(1)
+
+
+class PermissionsWorker(QThread):
+    """Worker thread for permissions operations."""
+    
+    progress_updated = pyqtSignal(int)
+    item_processed = pyqtSignal(str, str)  # path, permissions
+    finished = pyqtSignal()
+    error_occurred = pyqtSignal(str)
+    
+    def __init__(self, paths, operation, permissions=None):
+        super().__init__()
+        self.paths = paths
+        self.operation = operation
+        self.permissions = permissions
+        self.is_cancelled = False
+        
+    def run(self):
+        """Execute permissions operation."""
+        try:
+            total_items = len(self.paths)
+            
+            for i, path in enumerate(self.paths):
+                if self.is_cancelled:
+                    break
+                    
+                try:
+                    if self.operation == "read":
+                        perms = self.get_permissions(path)
+                        self.item_processed.emit(path, perms)
+                    elif self.operation == "modify":
+                        self.set_permissions(path, self.permissions)
+                        perms = self.get_permissions(path)
+                        self.item_processed.emit(path, perms)
+                        
+                except Exception as e:
+                    error_msg = f"Error processing {path}: {str(e)}"
+                    self.error_occurred.emit(error_msg)
+                
+                progress = int((i + 1) / total_items * 100)
+                self.progress_updated.emit(progress)
+                
+            self.finished.emit()
+            
+        except Exception as e:
+            self.error_occurred.emit(f"Worker error: {str(e)}")
+    
+    def get_permissions(self, path):
+        """Get permissions for a file or directory."""
+        try:
+            file_stat = os.stat(path)
+            mode = file_stat.st_mode
+            
+            # Convert to octal representation
+            octal_perms = oct(stat.S_IMODE(mode))
+            
+            # Convert to readable format
+            perms = []
+            
+            # Owner permissions
+            if mode & stat.S_IRUSR:
+                perms.append('r')
+            else:
+                perms.append('-')
+            if mode & stat.S_IWUSR:
+                perms.append('w')
+            else:
+                perms.append('-')
+            if mode & stat.S_IXUSR:
+                perms.append('x')
+            else:
+                perms.append('-')
+                
+            # Group permissions
+            if mode & stat.S_IRGRP:
+                perms.append('r')
+            else:
+                perms.append('-')
+            if mode & stat.S_IWGRP:
+                perms.append('w')
+            else:
+                perms.append('-')
+            if mode & stat.S_IXGRP:
+                perms.append('x')
+            else:
+                perms.append('-')
+                
+            # Other permissions
+            if mode & stat.S_IROTH:
+                perms.append('r')
+            else:
+                perms.append('-')
+            if mode & stat.S_IWOTH:
+                perms.append('w')
+            else:
+                perms.append('-')
+            if mode & stat.S_IXOTH:
+                perms.append('x')
+            else:
+                perms.append('-')
+            
+            readable_perms = ''.join(perms)
+            return f"{readable_perms} ({octal_perms})"
+            
+        except Exception as e:
+            return f"Error: {str(e)}"
+    
+    def set_permissions(self, path, permissions):
+        """Set permissions for a file or directory."""
+        try:
+            # Convert octal string to integer
+            if isinstance(permissions, str):
+                if permissions.startswith('0o'):
+                    mode = int(permissions, 8)
+                else:
+                    mode = int(permissions, 8)
+            else:
+                mode = permissions
+                
+            os.chmod(path, mode)
+            
+        except Exception as e:
+            raise Exception(f"Failed to set permissions: {str(e)}")
+    
+    def cancel(self):
+        """Cancel the operation."""
+        self.is_cancelled = True
+
+
+class PermissionsEditorGUI(QMainWindow):
+    """File and Folder Permissions Editor GUI."""
+    
+    def __init__(self):
+        super().__init__()
+        self.worker = None
+        self.selected_paths = []
+        self.init_ui()
+        
+    def init_ui(self):
+        """Initialize the user interface."""
+        self.setWindowTitle("Permissions Editor - Richard's File Utilities")
+        self.setGeometry(100, 100, 1000, 700)
+        
+        # Create central widget and main layout
+        central_widget = QWidget()
+        self.setCentralWidget(central_widget)
+        layout = QVBoxLayout(central_widget)
+        
+        # Create header
+        header_label = QLabel("File & Folder Permissions Editor")
+        header_label.setStyleSheet("""
+            QLabel {
+                font-size: 18px;
+                font-weight: bold;
+                color: #2c3e50;
+                padding: 10px;
+                background-color: #ecf0f1;
+                border-radius: 5px;
+                margin-bottom: 10px;
+            }
+        """)
+        layout.addWidget(header_label)
+        
+        # Create main splitter
+        splitter = QSplitter(Qt.Orientation.Horizontal)
+        layout.addWidget(splitter)
+        
+        # Left panel - File selection and controls
+        left_panel = QWidget()
+        left_layout = QVBoxLayout(left_panel)
+        
+        # File selection group
+        selection_group = QGroupBox("File & Folder Selection")
+        selection_layout = QGridLayout(selection_group)
+        
+        # Path input
+        selection_layout.addWidget(QLabel("Path:"), 0, 0)
+        self.path_edit = QLineEdit()
+        self.path_edit.setPlaceholderText("Select files or folders...")
+        self.path_edit.setReadOnly(True)
+        selection_layout.addWidget(self.path_edit, 0, 1)
+        
+        # Browse buttons
+        self.browse_files_button = QPushButton("Browse Files")
+        self.browse_files_button.clicked.connect(self.browse_files)
+        selection_layout.addWidget(self.browse_files_button, 0, 2)
+        
+        self.browse_folder_button = QPushButton("Browse Folder")
+        self.browse_folder_button.clicked.connect(self.browse_folder)
+        selection_layout.addWidget(self.browse_folder_button, 0, 3)
+        
+        # Options
+        self.recursive_check = QCheckBox("Include subdirectories")
+        self.recursive_check.setChecked(False)
+        selection_layout.addWidget(self.recursive_check, 1, 0, 1, 2)
+        
+        # Action buttons
+        self.read_button = QPushButton("Read Permissions")
+        self.read_button.clicked.connect(self.read_permissions)
+        self.read_button.setStyleSheet("""
+            QPushButton {
+                background-color: #3498db;
+                color: white;
+                border: none;
+                padding: 8px 16px;
+                border-radius: 4px;
+                font-weight: bold;
+            }
+            QPushButton:hover {
+                background-color: #2980b9;
+            }
+        """)
+        selection_layout.addWidget(self.read_button, 2, 0, 1, 2)
+        
+        self.modify_button = QPushButton("Modify Permissions")
+        self.modify_button.clicked.connect(self.modify_permissions)
+        self.modify_button.setStyleSheet("""
+            QPushButton {
+                background-color: #e74c3c;
+                color: white;
+                border: none;
+                padding: 8px 16px;
+                border-radius: 4px;
+                font-weight: bold;
+            }
+            QPushButton:hover {
+                background-color: #c0392b;
+            }
+        """)
+        self.modify_button.setEnabled(False)
+        selection_layout.addWidget(self.modify_button, 2, 2, 1, 2)
+        
+        left_layout.addWidget(selection_group)
+        
+        # Permissions modification group
+        modify_group = QGroupBox("Permissions Modification")
+        modify_layout = QGridLayout(modify_group)
+        
+        # Octal input
+        modify_layout.addWidget(QLabel("Octal Mode:"), 0, 0)
+        self.octal_edit = QLineEdit()
+        self.octal_edit.setPlaceholderText("e.g., 755, 644")
+        modify_layout.addWidget(self.octal_edit, 0, 1)
+        
+        # Common permissions presets
+        modify_layout.addWidget(QLabel("Quick Presets:"), 1, 0)
+        
+        preset_layout = QHBoxLayout()
+        
+        self.preset_755_button = QPushButton("755 (rwxr-xr-x)")
+        self.preset_755_button.clicked.connect(lambda: self.set_preset("755"))
+        preset_layout.addWidget(self.preset_755_button)
+        
+        self.preset_644_button = QPushButton("644 (rw-r--r--)")
+        self.preset_644_button.clicked.connect(lambda: self.set_preset("644"))
+        preset_layout.addWidget(self.preset_644_button)
+        
+        self.preset_600_button = QPushButton("600 (rw-------)")
+        self.preset_600_button.clicked.connect(lambda: self.set_preset("600"))
+        preset_layout.addWidget(self.preset_600_button)
+        
+        modify_layout.addLayout(preset_layout, 1, 1)
+        
+        # Platform info
+        platform_info = QLabel(f"Platform: {platform.system()}")
+        platform_info.setStyleSheet("color: #7f8c8d; font-size: 10px;")
+        modify_layout.addWidget(platform_info, 2, 0, 1, 2)
+        
+        left_layout.addWidget(modify_group)
+        
+        # Progress section
+        progress_group = QGroupBox("Progress")
+        progress_layout = QVBoxLayout(progress_group)
+        
+        self.progress_bar = QProgressBar()
+        self.progress_bar.setVisible(False)
+        progress_layout.addWidget(self.progress_bar)
+        
+        self.status_label = QLabel("Ready to manage permissions")
+        progress_layout.addWidget(self.status_label)
+        
+        left_layout.addWidget(progress_group)
+        
+        splitter.addWidget(left_panel)
+        
+        # Right panel - Results
+        right_panel = QWidget()
+        right_layout = QVBoxLayout(right_panel)
+        
+        # Results group
+        results_group = QGroupBox("Permissions Results")
+        results_layout = QVBoxLayout(results_group)
+        
+        # Results tree
+        self.results_tree = QTreeWidget()
+        self.results_tree.setHeaderLabels(["Path", "Permissions", "Type"])
+        self.results_tree.itemClicked.connect(self.show_item_details)
+        results_layout.addWidget(self.results_tree)
+        
+        # Details panel
+        details_label = QLabel("Item Details:")
+        results_layout.addWidget(details_label)
+        
+        self.details_text = QTextEdit()
+        self.details_text.setMaximumHeight(120)
+        self.details_text.setReadOnly(True)
+        results_layout.addWidget(self.details_text)
+        
+        # Action buttons
+        button_layout = QHBoxLayout()
+        
+        self.save_button = QPushButton("Save Report")
+        self.save_button.clicked.connect(self.save_report)
+        self.save_button.setEnabled(False)
+        button_layout.addWidget(self.save_button)
+        
+        self.refresh_button = QPushButton("Refresh")
+        self.refresh_button.clicked.connect(self.refresh_permissions)
+        self.refresh_button.setEnabled(False)
+        button_layout.addWidget(self.refresh_button)
+        
+        self.clear_button = QPushButton("Clear Results")
+        self.clear_button.clicked.connect(self.clear_results)
+        button_layout.addWidget(self.clear_button)
+        
+        results_layout.addLayout(button_layout)
+        right_layout.addWidget(results_group)
+        
+        splitter.addWidget(right_panel)
+        
+        # Set splitter proportions
+        splitter.setSizes([400, 600])
+        
+    def browse_files(self):
+        """Browse for individual files."""
+        files, _ = QFileDialog.getOpenFileNames(
+            self, "Select Files for Permissions Management", "",
+            "All Files (*.*)"
+        )
+        if files:
+            self.selected_paths = files
+            self.path_edit.setText(f"{len(files)} file(s) selected")
+            self.modify_button.setEnabled(True)
+            
+    def browse_folder(self):
+        """Browse for folder."""
+        folder = QFileDialog.getExistingDirectory(
+            self, "Select Folder for Permissions Management"
+        )
+        if folder:
+            paths = [folder]
+            if self.recursive_check.isChecked():
+                for root, dirs, files in os.walk(folder):
+                    for d in dirs:
+                        paths.append(os.path.join(root, d))
+                    for f in files:
+                        paths.append(os.path.join(root, f))
+            
+            self.selected_paths = paths
+            self.path_edit.setText(f"Folder: {folder} ({len(paths)} items)")
+            self.modify_button.setEnabled(True)
+            
+    def set_preset(self, preset):
+        """Set permission preset."""
+        self.octal_edit.setText(preset)
+        
+    def read_permissions(self):
+        """Read permissions for selected items."""
+        if not self.selected_paths:
+            QMessageBox.warning(self, "Warning",
+                                "Please select files or folders first.")
+            return
+            
+        self.start_operation("read")
+        
+    def modify_permissions(self):
+        """Modify permissions for selected items."""
+        if not self.selected_paths:
+            QMessageBox.warning(self, "Warning",
+                                "Please select files or folders first.")
+            return
+            
+        octal_mode = self.octal_edit.text().strip()
+        if not octal_mode:
+            QMessageBox.warning(self, "Warning",
+                                "Please enter octal permissions (e.g., 755).")
+            return
+            
+        try:
+            # Validate octal input
+            int(octal_mode, 8)
+        except ValueError:
+            QMessageBox.warning(self, "Warning",
+                                "Invalid octal permissions format.")
+            return
+            
+        # Confirm modification
+        reply = QMessageBox.question(
+            self, "Confirm Modification",
+            f"Are you sure you want to change permissions to {octal_mode} "
+            f"for {len(self.selected_paths)} item(s)?",
+            QMessageBox.Yes | QMessageBox.No
+        )
+        
+        if reply == QMessageBox.Yes:
+            self.start_operation("modify", octal_mode)
+            
+    def start_operation(self, operation, permissions=None):
+        """Start permissions operation."""
+        # Clear previous results
+        self.clear_results()
+        
+        # Setup UI for operation
+        self.read_button.setEnabled(False)
+        self.modify_button.setEnabled(False)
+        self.progress_bar.setVisible(True)
+        self.progress_bar.setValue(0)
+        
+        if operation == "read":
+            self.status_label.setText("Reading permissions...")
+        else:
+            status_msg = f"Modifying permissions to {permissions}..."
+            self.status_label.setText(status_msg)
+        
+        # Start worker thread
+        self.worker = PermissionsWorker(self.selected_paths, operation,
+                                        permissions)
+        self.worker.progress_updated.connect(self.update_progress)
+        self.worker.item_processed.connect(self.add_result)
+        self.worker.finished.connect(self.operation_finished)
+        self.worker.error_occurred.connect(self.show_error)
+        self.worker.start()
+        
+    def update_progress(self, value):
+        """Update progress bar."""
+        self.progress_bar.setValue(value)
+        
+    def add_result(self, path, permissions):
+        """Add result to the tree."""
+        item = QTreeWidgetItem()
+        item.setText(0, os.path.basename(path))
+        item.setText(1, permissions)
+        item.setText(2, "Directory" if os.path.isdir(path) else "File")
+        item.setData(0, Qt.ItemDataRole.UserRole, path)
+        self.results_tree.addTopLevelItem(item)
+        
+    def operation_finished(self):
+        """Handle operation completion."""
+        self.read_button.setEnabled(True)
+        self.modify_button.setEnabled(True)
+        self.progress_bar.setVisible(False)
+        
+        count = self.results_tree.topLevelItemCount()
+        self.status_label.setText(f"Completed - {count} items processed")
+        
+        # Enable action buttons
+        self.save_button.setEnabled(True)
+        self.refresh_button.setEnabled(True)
+        
+        if self.worker:
+            self.worker.deleteLater()
+            self.worker = None
+            
+    def show_error(self, error_message):
+        """Show error message."""
+        QMessageBox.warning(self, "Error", error_message)
+        
+    def show_item_details(self, item):
+        """Show detailed information about selected item."""
+        path = item.data(0, Qt.ItemDataRole.UserRole)
+        if path:
+            try:
+                stat_info = os.stat(path)
+                
+                import time
+                modified_time = time.ctime(stat_info.st_mtime)
+                accessed_time = time.ctime(stat_info.st_atime)
+                
+                details_text = f"""Path: {path}
+Type: {"Directory" if os.path.isdir(path) else "File"}
+Permissions: {item.text(1)}
+Size: {stat_info.st_size} bytes
+Modified: {modified_time}
+Accessed: {accessed_time}
+Owner UID: {stat_info.st_uid}
+Group GID: {stat_info.st_gid}"""
+                
+                self.details_text.setText(details_text)
+                
+            except Exception as e:
+                self.details_text.setText(f"Error reading item details: {e}")
+                
+    def save_report(self):
+        """Save permissions report to file."""
+        if self.results_tree.topLevelItemCount() == 0:
+            QMessageBox.warning(self, "Warning", "No results to save.")
+            return
+            
+        file_path, _ = QFileDialog.getSaveFileName(
+            self, "Save Permissions Report", "permissions_report.txt",
+            "Text Files (*.txt);;All Files (*.*)"
+        )
+        
+        if file_path:
+            try:
+                with open(file_path, 'w') as f:
+                    f.write("File Permissions Report\n")
+                    f.write("=" * 50 + "\n\n")
+                    
+                    for i in range(self.results_tree.topLevelItemCount()):
+                        item = self.results_tree.topLevelItem(i)
+                        if item:
+                            path = item.data(0, Qt.ItemDataRole.UserRole)
+                            f.write(f"Path: {path}\n")
+                            f.write(f"Permissions: {item.text(1)}\n")
+                            f.write(f"Type: {item.text(2)}\n")
+                            f.write("-" * 30 + "\n")
+                        
+                QMessageBox.information(self, "Success",
+                                        "Report saved successfully.")
+                
+            except Exception as e:
+                QMessageBox.warning(self, "Error",
+                                    f"Failed to save report: {e}")
+                
+    def refresh_permissions(self):
+        """Refresh permissions for current selection."""
+        if self.selected_paths:
+            self.read_permissions()
+            
+    def clear_results(self):
+        """Clear all results."""
+        self.results_tree.clear()
+        self.details_text.clear()
+        self.status_label.setText("Ready to manage permissions")
+        
+        # Disable action buttons
+        self.save_button.setEnabled(False)
+        self.refresh_button.setEnabled(False)
+        
+    def closeEvent(self, event):
+        """Handle window close event."""
+        if self.worker and self.worker.isRunning():
+            self.worker.cancel()
+            self.worker.wait()
+        super().closeEvent(event)
+
+
+def main():
+    """Main function for standalone execution."""
+    app = QApplication(sys.argv)
+    window = PermissionsEditorGUI()
+    window.show()
+    sys.exit(app.exec_())
+
+
+if __name__ == "__main__":
+    main()

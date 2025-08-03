@@ -1,10 +1,7 @@
-import unittest
 import os
 import unittest
 from tests.test_utils import TestUtils
-from catalog import CatalogWindow
-
-from core.error_handler import error_handler
+from file_utilities_1.catalog import CatalogWindow
 
 
 class TestCatalog(unittest.TestCase):
@@ -20,8 +17,8 @@ class TestCatalog(unittest.TestCase):
         
         # Create test files
         self.test_files = [
-            TestUtils.create_temp_file("content1"),
-            TestUtils.create_temp_file("content2"),
+            TestUtils.create_test_file(self.test_dir, "test1.txt", "content1"),
+            TestUtils.create_test_file(self.test_dir, "test2.txt", "content2"),
         ]
         self.test_file_subdir = os.path.join(self.subdir, "subfile.txt")
         with open(self.test_file_subdir, 'w') as f:
@@ -30,31 +27,41 @@ class TestCatalog(unittest.TestCase):
     def tearDown(self):
         """teardown."""
         TestUtils.cleanup_temp_dir(self.test_dir)
-        for file in self.test_files:
-            TestUtils.cleanup_temp_file(file)
 
-    def test_scan_directory(self):
-        """Test directory scanning functionality"""
-        file_list = self.catalog_gen.scan_directory(self.test_dir)
-        self.assertTrue(len(file_list) >= 3)  # At least 3 files
-        self.assertTrue(any(f.endswith("subfile.txt") for f in file_list))
+    def test_directory_loading(self):
+        """Test directory loading functionality"""
+        # Set the directory and update file list
+        self.catalog_gen._current_dir = self.test_dir
+        self.catalog_gen._update_file_list()
+        
+        # Check that files were loaded into the model
+        model = self.catalog_gen._list_model
+        self.assertGreater(model.rowCount(), 0)
 
     def test_generate_html(self):
         """Test HTML catalog generation"""
-        output_file = os.path.join(self.test_dir, "catalog.html")
-        self.catalog_gen.generate_catalog(self.test_dir, output_file)
+        # Set up the catalog window with test directory
+        self.catalog_gen._current_dir = self.test_dir
         
-        self.assertTrue(os.path.exists(output_file))
-        with open(output_file, 'r') as f:
+        # Generate catalog
+        self.catalog_gen._generate_catalog()
+        
+        # Check that catalog file was created
+        catalog_file = os.path.join(self.test_dir, "catalog.html")
+        self.assertTrue(os.path.exists(catalog_file))
+        
+        with open(catalog_file, 'r', encoding='utf-8') as f:
             content = f.read()
             self.assertIn("html", content.lower())
-            self.assertIn("subfile.txt", content)
+            self.assertIn("File Catalog", content)
 
-    def test_file_size_calculation(self):
-        """Test file size calculation in catalog"""
-        sizes = self.catalog_gen.get_file_sizes(self.test_files)
-        for size in sizes.values():
-            self.assertGreater(size, 0)
+    def test_file_size_formatting(self):
+        """Test file size formatting functionality"""
+        # Test the _format_size method
+        self.assertEqual(self.catalog_gen._format_size(1024), "1.0 KB")
+        self.assertEqual(self.catalog_gen._format_size(1048576), "1.0 MB")
+        self.assertEqual(self.catalog_gen._format_size(500), "500.0 B")
+
 
 if __name__ == '__main__':
     unittest.main()

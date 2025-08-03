@@ -1,98 +1,135 @@
 """
-Centralized error handling module for graceful error management across all modules.
+Error handling utilities for Richard's File Utilities.
+
+This module provides centralized error handling and logging functionality.
 """
-import logging
+
+import sys
 import traceback
-from typing import Optional, Any, Dict
-from datetime import datetime
-from pathlib import Path
-from PyQt5.QtWidgets import QMessageBox
+import logging
+from typing import Optional, Callable, Any
+from PyQt5.QtWidgets import QMessageBox, QApplication
+from PyQt5.QtCore import QObject, pyqtSignal
 
 
-class ErrorHandler:
-    """A class that handles error handler."""
-    _instance = None
+class ErrorHandler(QObject):
+    """Centralized error handler for the application."""
     
-    def __new__(cls):
-        """new.
-        Args:
-            cls (Any): Description of cls"""
-        if cls._instance is None:
-            cls._instance = super(ErrorHandler, cls).__new__(cls)
-            cls._instance._initialize()
-        return cls._instance
+    error_occurred = pyqtSignal(str, str)  # title, message
     
-    def _initialize(self):
-        """Initialize the error handler singleton."""
-        self.log_dir = Path('logs')
-        self.log_dir.mkdir(exist_ok=True)
-        self.log_file = self.log_dir / 'rfu.log'
-        
-        # Configure logging
-        logging.basicConfig(
-            filename=str(self.log_file),
-            level=logging.ERROR,
-            format='%(asctime)s [%(levelname)s] %(message)s - File: %(filename)s, Line: %(lineno)d'
-        )
+    def __init__(self):
+        super().__init__()
         self.logger = logging.getLogger(__name__)
+        self._setup_logging()
     
-    def handle_error(self, 
-                    error: Exception, 
-                    operation: str,
-                    user_message: Optional[str] = None,
-                    context: Optional[Dict[str, Any]] = None,
-                    show_dialog: bool = True) -> bool:
-        """
-        Handle an error gracefully, log it, and optionally show a user dialog.
-        
-        Args:
-            error: The exception that was caught
-            operation: Description of the operation that failed
-            user_message: Optional custom message to show to the user
-            context: Optional dictionary with additional context
-            show_dialog: Whether to show an error dialog to the user
-            
-        Returns:
-            bool: False if error occurred, True if handled successfully
-        """
-        # Build error message
-        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        error_details = f"Operation: {operation}\nError: {str(error)}\n"
-        if context:
-            error_details += f"Context: {context}\n"
-        error_details += f"Traceback:\n{traceback.format_exc()}"
-        
-        # Log the error
-        self.logger.error(error_details)
-        
-        # Show user dialog if requested
-        if show_dialog:
-            default_msg = f"An error occurred while {operation}.\nThe error has been logged."
-            msg = user_message if user_message else default_msg
-            self._show_error_dialog(msg)
-            
-        return False
+    def _setup_logging(self):
+        """Setup logging configuration."""
+        logging.basicConfig(
+            level=logging.INFO,
+            format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+            handlers=[
+                logging.FileHandler('rfu_errors.log'),
+                logging.StreamHandler(sys.stdout)
+            ]
+        )
     
-    def _show_error_dialog(self, message: str):
+    def handle_exception(self, exc_type, exc_value, exc_traceback):
+        """Handle uncaught exceptions."""
+        if issubclass(exc_type, KeyboardInterrupt):
+            sys.__excepthook__(exc_type, exc_value, exc_traceback)
+            return
+        
+        error_msg = ''.join(traceback.format_exception(exc_type, exc_value, exc_traceback))
+        self.logger.error(f"Uncaught exception: {error_msg}")
+        
+        # Show error dialog if GUI is available
+        app = QApplication.instance()
+        if app:
+            self.show_error_dialog("Unexpected Error", str(exc_value))
+    
+    def show_error_dialog(self, title: str, message: str, details: Optional[str] = None):
         """Show an error dialog to the user."""
-        dialog = QMessageBox()
-        dialog.setIcon(QMessageBox.Warning)
-        dialog.setText(message)
-        dialog.setWindowTitle("Error")
-        dialog.setStandardButtons(QMessageBox.Ok)
-        dialog.exec_()
+        try:
+            msg_box = QMessageBox()
+            msg_box.setIcon(QMessageBox.Critical)
+            msg_box.setWindowTitle(title)
+            msg_box.setText(message)
+            
+            if details:
+                msg_box.setDetailedText(details)
+            
+            msg_box.exec_()
+            self.error_occurred.emit(title, message)
+        except Exception as e:
+            # Fallback to console if GUI fails
+            print(f"Error showing dialog: {e}")
+            print(f"Original error - {title}: {message}")
+    
+    def show_warning_dialog(self, title: str, message: str):
+        """Show a warning dialog to the user."""
+        try:
+            msg_box = QMessageBox()
+            msg_box.setIcon(QMessageBox.Warning)
+            msg_box.setWindowTitle(title)
+            msg_box.setText(message)
+            msg_box.exec_()
+        except Exception as e:
+            print(f"Error showing warning: {e}")
+            print(f"Warning - {title}: {message}")
+    
+    def show_info_dialog(self, title: str, message: str):
+        """Show an info dialog to the user."""
+        try:
+            msg_box = QMessageBox()
+            msg_box.setIcon(QMessageBox.Information)
+            msg_box.setWindowTitle(title)
+            msg_box.setText(message)
+            msg_box.exec_()
+        except Exception as e:
+            print(f"Error showing info: {e}")
+            print(f"Info - {title}: {message}")
+    
+    def log_error(self, message: str, exception: Optional[Exception] = None):
+        """Log an error message."""
+        if exception:
+            self.logger.error(f"{message}: {str(exception)}")
+        else:
+            self.logger.error(message)
+    
+    def log_warning(self, message: str):
+        """Log a warning message."""
+        self.logger.warning(message)
+    
+    def log_info(self, message: str):
+        """Log an info message."""
+        self.logger.info(message)
 
-# Global instance and accessor
-_error_handler = None
+
+def safe_execute(func: Callable, *args, **kwargs) -> Any:
+    """Safely execute a function with error handling."""
+    try:
+        return func(*args, **kwargs)
+    except Exception as e:
+        error_handler.log_error(f"Error executing {func.__name__}", e)
+        return None
 
 
-def get_error_handler():
-    """Get the global error handler instance."""
-    global _error_handler
-    if _error_handler is None:
-        _error_handler = ErrorHandler()
-    return _error_handler
+def handle_gui_error(func: Callable) -> Callable:
+    """Decorator for handling GUI errors."""
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            error_handler.show_error_dialog(
+                "GUI Error",
+                f"An error occurred in {func.__name__}: {str(e)}"
+            )
+            return None
+    return wrapper
 
 
-# Create the global instance that will be imported by other modules
-error_handler = get_error_handler()
+# Global error handler instance
+error_handler = ErrorHandler()
+
+# Set up global exception handling
+sys.excepthook = error_handler.handle_exception

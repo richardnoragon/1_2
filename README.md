@@ -1,161 +1,291 @@
-# Richard's File Utilities (RFU) Hub
+# Richard's File Utilities
 
-## Overview
-A comprehensive file management suite with multiple tools for file operations, analysis, and metadata management.
+A comprehensive Python GUI application for file management, analysis, and operations built with PyQt5.
 
-## Main Components
+## Project Structure
 
-### 1. File Management Tools
-- **File Catalog Generator** (`catalog.py`)
-  - Creates HTML catalogs of directory contents
-  - Features:
-    - Recursive directory scanning
-    - File size and modification date display
-    - Duplicate file identification
-    - Sorting options by name, file type, etc.
+This project has been reorganized for better maintainability and scalability:
 
-- **File Finder** (`file_finder.py`)
-  - Advanced file search utility
-  - Features:
-    - Date-based filtering (creation/modification)
-    - File type filtering
-    - Metadata search capabilities
+```
+Richards_File_Utilities/
+├── main.py                          # Main application entry point
+├── requirements.txt                 # Python dependencies
+├── pytest.ini                      # Test configuration
+├── .gitignore                      # Git ignore rules
+├── Richards_Rile_Utilities.code-workspace  # VS Code workspace
+├── README.md                       # This file
+│
+├── src/                            # All source code
+│   ├── rfu/                        # Main application package
+│   │   ├── __init__.py
+│   │   ├── main.py                 # Application entry point
+│   │   ├── hub.py                  # Main hub functionality
+│   │   ├── core/                   # Core system components
+│   │   │   ├── __init__.py
+│   │   │   ├── config_manager.py
+│   │   │   ├── log_manager.py
+│   │   │   └── file_ops/           # File operation utilities
+│   │   ├── gui/                    # GUI components
+│   │   │   ├── __init__.py
+│   │   │   ├── common/             # Shared GUI components
+│   │   │   ├── dialogs/            # Dialog windows
+│   │   │   ├── widgets/            # Custom widgets
+│   │   │   └── windows/            # Main windows
+│   │   └── tools/                  # Individual tool modules
+│   │       ├── __init__.py
+│   │       ├── file_management/    # File management tools
+│   │       │   ├── __init__.py
+│   │       │   ├── catalog.py
+│   │       │   ├── file_finder.py
+│   │       │   ├── organize.py
+│   │       │   └── rename.py
+│   │       ├── file_operations/    # File operation tools
+│   │       │   ├── __init__.py
+│   │       │   ├── cmsd.py
+│   │       │   ├── compress_decompress.py
+│   │       │   ├── file_splitter_joiner.py
+│   │       │   └── sync.py
+│   │       ├── analysis/           # Analysis tools
+│   │       │   ├── __init__.py
+│   │       │   └── empty_folders.py
+│   │       ├── metadata/           # Metadata tools
+│   │       │   ├── __init__.py
+│   │       │   ├── edit_image_metadata.py
+│   │       │   ├── file_touch.py
+│   │       │   └── office_meta_data_editor.py
+│   │       └── pdf/                # PDF tools
+│   │           ├── __init__.py
+│   │           ├── engines/        # PDF processing engines
+│   │           │   ├── __init__.py
+│   │           │   ├── analysis_engine.py
+│   │           │   ├── conversion_engine.py
+│   │           │   ├── enhancement_engine.py
+│   │           │   ├── extraction_engine.py
+│   │           │   ├── operation_engine.py
+│   │           │   └── security_engine.py
+│   │           ├── dialogs/        # PDF parameter dialogs
+│   │           │   ├── __init__.py
+│   │           │   ├── extraction_parameter_dialogs.py
+│   │           │   ├── parameter_dialogs.py
+│   │           │   └── security_parameter_dialogs.py
+│   │           └── widgets/        # PDF widgets
+│   │               ├── __init__.py
+│   │               └── enhanced_pdf_tools_widget.py
+│   └── utilities/                  # Existing utilities (preserved structure)
+│
+├── assets/                         # Static assets
+│   ├── ui/                        # UI definition files
+│   │   ├── catalog.ui
+│   │   ├── compress_decompress.ui
+│   │   ├── empty_folders.ui
+│   │   ├── file_finder.ui
+│   │   ├── file_touch.ui
+│   │   └── organize.ui
+│   ├── images/                    # Image assets
+│   │   ├── screenshots/
+│   │   └── test_signature.png
+│   └── icons/                     # Application icons
+│
+├── config/                        # Configuration files
+│   ├── __init__.py
+│   ├── default_settings.json
+│   └── tool_configurations/
+│
+├── docs/                          # Documentation
+│   ├── README.md                  # Main documentation
+│   ├── user_guide/               # User documentation
+│   ├── developer/                # Developer documentation
+│   ├── api/                      # API documentation
+│   ├── migration/                # Migration guides
+│   ├── reports/                  # Status and progress reports
+│   └── changelog/                # Version history
+│
+├── tests/                         # Test files
+│   ├── __init__.py
+│   ├── conftest.py               # Pytest configuration
+│   ├── unit/                     # Unit tests
+│   ├── integration/              # Integration tests
+│   ├── fixtures/                 # Test fixtures and data
+│   └── test_*.py                 # All test files
+│
+├── scripts/                       # Utility and maintenance scripts
+│   ├── __init__.py
+│   ├── development/              # Development tools
+│   │   ├── analyze_deps.py
+│   │   ├── check_venv.py
+│   │   ├── comprehensive_test_suite.py
+│   │   └── verify_integration.py
+│   ├── maintenance/              # Maintenance scripts
+│   │   ├── automated_tool_corrector.py
+│   │   ├── diagnostic_repair_script.py
+│   │   ├── system_cleanup_diagnostic.py
+│   │   └── organize_src_folder.py
+│   ├── integration/              # Integration scripts
+│   │   ├── integrate_tools.py
+│   │   ├── integration_cleanup_script.py
+│   │   ├── quick_integrate.py
+│   │   └── enhanced_pdf_tools_integration.py
+│   ├── tools/                    # Tool creation scripts
+│   │   ├── create_simple_tools.py
+│   │   └── launch_system_diagnostics.py
+│   └── deployment/               # Deployment scripts
+│
+├── data/                          # Data files and logs
+│   ├── logs/                     # Log files
+│   ├── cache/                    # Cache files
+│   ├── temp/                     # Temporary files
+│   └── exports/                  # Export data
+│
+├── build/                         # Build outputs (created when needed)
+├── dist/                          # Distribution files (created when needed)
+│
+├── archive/                       # Existing archive (preserved)
+├── backups/                       # Existing backups (preserved)
+├── core/                          # Existing core (preserved)
+├── gui/                           # Existing gui (preserved)
+├── resources/                     # Existing resources (preserved)
+├── rfuvenv/                       # Python virtual environment (preserved)
+├── src_backup/                    # Existing backup (preserved)
+├── .github/                       # GitHub workflows (preserved)
+└── .roo/                          # Roo configuration (preserved)
+```
 
-### 2. Organization Tools
-- **File Organizer** (`organize.py`)
-  - Helps organize files in directories
-  - Supports recursive operations
+## Features
 
-- **File Renamer** (`rename.py`)
-  - Batch file renaming capabilities
-  - Features:
-    - Prefix/suffix addition/removal
-    - Case conversion
-    - Date-based naming
-    - Pattern-based renaming
+### File Management Tools
+- **File Finder**: Search and find files based on various criteria
+- **Catalog Files**: Create and manage file catalogs
+- **Rename Files**: Batch rename files and folders
+- **Organize Files**: Automatically organize files by type/date
 
-### 3. File Analysis
-- **Size Analyzer** (`size_analyzer.py`)
-  - Analyzes directory and file sizes
-  - Visual representation of storage usage
+### File Operations Tools
+- **Copy/Move/Sync/Delete**: Advanced file operations
+- **Compress/Decompress**: Archive and extract files
+- **Split/Join Files**: Split large files or join parts
+- **Synchronize**: Synchronize directories
 
-- **Duplicate Finder** (`find_duplicate_files.py`)
-  - Identifies duplicate files in directories
+### Analysis Tools
+- **Size Analyzer**: Analyze disk space usage
+- **Duplicate Finder**: Find and remove duplicate files
+- **File Checksum**: Calculate and verify checksums
+- **Empty Folders**: Find and clean empty folders
 
-### 4. File Operations
-- **Sync Tool** (`sync.py`)
-  - Directory synchronization utility
-  - Compare and sync file changes
+### Security Tools
+- **Encrypt/Decrypt**: Secure file encryption and decryption
+- **Secure Delete**: Permanently delete sensitive files
+- **Permissions Editor**: Manage file and folder permissions
 
-- **Compression Tools** (`compress_decompress.py`)
-  - File compression and decompression
+### Metadata Tools
+- **Edit Image Metadata**: View and edit image metadata
+- **Office Metadata Editor**: Edit document metadata
+- **File Touch**: Modify file timestamps
 
-- **Encryption** (`en_and_decrypt.py`)
-  - File encryption and decryption capabilities
+### PDF Tools
+- **Comprehensive PDF Suite**: Analysis, conversion, enhancement, extraction, operations, and security
+- **Enhanced PDF Widget**: Tabbed interface for all PDF operations
 
-### 5. Metadata Management
-- **Office Metadata Editor** (`office_meta_data_editor.py`)
-  - Edit metadata of Office documents
-  - Supports various Office file formats
+### Network Tools
+- **Network Connectivity**: Check network connectivity and diagnostics
+- **Network Scanner**: Scan network for devices and services
 
-- **Tag Viewer/Editor** (`tag_viewer_editor.py`)
-  - View and edit audio/video file tags
+### Privacy Tools
+- **Privacy Cleaner**: Clean privacy-sensitive data
+- **Data Anonymizer**: Anonymize sensitive file data
 
-### 6. System Integration
-- **Permissions Editor** (`permissions_editor.py`)
-  - Modify file permissions
-  - Access control management
+### System Tools
+- **System Diagnostics**: Run system diagnostics and monitoring
+- **System Cleanup**: Clean system temporary files
+- **Software Maintenance**: Maintain and update software
 
-## Technical Details
-- Built with Python and PyQt5
-- Uses Qt Designer UI files (.ui) for interface layouts
-- Comprehensive test suite available in tests directory
-- Modular architecture with separate modules for each tool
+## Installation
 
-## Testing
-Test files are organized in the tests directory:
-- `test_utils.py`: Utility test functions
-- `test_file_operations.py`: File operation tests
-- `test_gui_components.py`: GUI testing
-- `test_encryption.py`: Encryption feature tests
+1. **Clone the repository**:
+   ```bash
+   git clone <repository-url>
+   cd Richards_File_Utilities
+   ```
 
-RFU includes a comprehensive test suite that covers unit tests, integration tests, and GUI tests. The test suite is built using pytest and includes tools for measuring code coverage and automating test execution.
+2. **Create and activate virtual environment**:
+   ```bash
+   python -m venv rfuvenv
+   # On Windows:
+   rfuvenv\Scripts\activate
+   # On Linux/Mac:
+   source rfuvenv/bin/activate
+   ```
 
-### Quick Start
+3. **Install dependencies**:
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-Run all tests:
+## Usage
+
+### Running the Application
+
 ```bash
-python run_tests.py
+python main.py
 ```
 
-Run with coverage report:
+### Development
+
+#### Running Tests
 ```bash
-python run_tests.py --coverage
+pytest
 ```
 
-Skip GUI tests (useful for CI environments):
-```bash
-python run_tests.py --no-gui
-```
+#### Development Scripts
+- **Analyze Dependencies**: `python scripts/development/analyze_deps.py`
+- **Check Virtual Environment**: `python scripts/development/check_venv.py`
+- **Comprehensive Test Suite**: `python scripts/development/comprehensive_test_suite.py`
+- **Verify Integration**: `python scripts/development/verify_integration.py`
 
-Run tests in parallel:
-```bash
-python run_tests.py --parallel
-```
+#### Maintenance Scripts
+- **Automated Tool Corrector**: `python scripts/maintenance/automated_tool_corrector.py`
+- **Diagnostic Repair**: `python scripts/maintenance/diagnostic_repair_script.py`
+- **System Cleanup Diagnostic**: `python scripts/maintenance/system_cleanup_diagnostic.py`
 
-### Test Categories
+## Architecture
 
-- **Unit Tests**: Test individual components in isolation
-- **Integration Tests**: Test component interactions
-- **GUI Tests**: Test user interface components
-- **Functional Tests**: Test complete user workflows
+### Import Structure
+The application uses a hierarchical import structure:
+- `src.rfu.tools.file_management.*` - File management tools
+- `src.rfu.tools.file_operations.*` - File operation tools
+- `src.rfu.tools.analysis.*` - Analysis tools
+- `src.rfu.tools.metadata.*` - Metadata tools
+- `src.rfu.tools.pdf.*` - PDF tools and engines
+- `src.rfu.gui.*` - GUI components
+- `src.rfu.core.*` - Core system components
 
-### Test Markers
+### Tool Integration
+Each tool is designed as a modular component that can be:
+- Launched independently
+- Integrated into the main hub
+- Tested in isolation
+- Extended with additional functionality
 
-Use pytest markers to categorize tests:
-```python
-@pytest.mark.gui  # GUI tests
-@pytest.mark.slow  # Time-consuming tests
-@pytest.mark.integration  # Integration tests
-```
+## Contributing
 
-### Running Specific Tests
+1. Follow the established directory structure
+2. Add new tools to appropriate categories in `src/rfu/tools/`
+3. Update import paths in `main.py` for new tools
+4. Add tests in the `tests/` directory
+5. Update documentation as needed
 
-Run only unit tests:
-```bash
-pytest -v -m "not gui and not integration and not slow"
-```
+## Requirements
 
-Run only GUI tests:
-```bash
-pytest -v -m "gui"
-```
+- Python 3.7+
+- PyQt5
+- See `requirements.txt` for complete list
 
-Run only integration tests:
-```bash
-pytest -v -m "integration"
-```
+## License
 
-### Continuous Integration
+[Add your license information here]
 
-Tests are automatically run on:
-- Every push to main branch
-- Every pull request
-- Daily scheduled runs
+## Version History
 
-The CI pipeline runs on:
-- Ubuntu Linux
-- Windows
-- macOS
+See `docs/changelog/` for detailed version history and changes.
 
-### Contributing Tests
+---
 
-1. Create test files in the `tests/` directory
-2. Follow the existing test patterns
-3. Include docstrings and comments
-4. Add appropriate markers
-5. Update test documentation if needed
-
-### Code Coverage
-
-Coverage reports are generated in HTML format. Open `htmlcov/index.html` to view the report after running tests with coverage.
+**Note**: This project has been comprehensively reorganized for better maintainability, scalability, and developer experience. All functionality has been preserved while improving the overall structure and reducing root directory clutter.

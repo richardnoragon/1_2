@@ -2,7 +2,7 @@ import unittest
 import os
 import time
 from tests.test_utils import TestUtils
-from secure_delete import SecureDeleteLogic
+from file_utilities_2.core.secure_delete_logic import SecureDeleteLogic
 
 from core.error_handler import error_handler
 
@@ -12,7 +12,7 @@ class TestSecureDelete(unittest.TestCase):
     def setUp(self):
         """setup."""
         self.test_dir = TestUtils.create_temp_dir()
-        self.secure_delete = SecureDelete()
+        self.secure_delete = SecureDeleteLogic()
         
         # Create test files with known content
         self.test_files = []

@@ -3,7 +3,7 @@ import os
 import hashlib
 import unittest
 from tests.test_utils import TestUtils
-from check_sum import ChecksumLogic
+from file_utilities_2.core.check_sum import ChecksumLogic
 
 from core.error_handler import error_handler
 

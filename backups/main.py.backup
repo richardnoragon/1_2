@@ -1,0 +1,556 @@
+#!/usr/bin/env python3
+"""
+Richard's File Utilities - Main Entry Point
+
+This is the main entry point for the Richard's File Utilities application.
+It provides a comprehensive GUI interface for accessing all file utility tools.
+"""
+
+import sys
+import os
+from pathlib import Path
+
+# Add the src directory to the Python path
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
+
+try:
+    from PyQt5.QtWidgets import (
+        QApplication, QMainWindow, QLabel, QPushButton, QVBoxLayout, 
+        QWidget, QHBoxLayout, QGridLayout, QScrollArea, QFrame,
+        QTabWidget, QGroupBox, QMessageBox
+    )
+    from PyQt5.QtCore import Qt, pyqtSlot
+    from PyQt5.QtGui import QFont, QIcon
+    
+    class RFUMainWindow(QMainWindow):
+        def __init__(self):
+            super().__init__()
+            self.setWindowTitle("Richard's File Utilities")
+            self.setGeometry(200, 200, 900, 700)
+            
+            # Store references to opened windows
+            self.opened_windows = {}
+            
+            self.init_ui()
+        
+        def init_ui(self):
+            """Initialize the user interface."""
+            # Create central widget and main layout
+            central_widget = QWidget()
+            self.setCentralWidget(central_widget)
+            main_layout = QVBoxLayout(central_widget)
+            
+            # Add title
+            title_label = QLabel("Richard's File Utilities")
+            title_label.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+            title_label.setStyleSheet("""
+                font-size: 28px; 
+                font-weight: bold; 
+                padding: 20px;
+                color: #2c3e50;
+                background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+                    stop:0 #ecf0f1, stop:1 #bdc3c7);
+                border-radius: 10px;
+                margin: 10px;
+            """)
+            main_layout.addWidget(title_label)
+            
+            # Create tab widget for different tool categories
+            tab_widget = QTabWidget()
+            main_layout.addWidget(tab_widget)
+            
+            # File Management Tools
+            file_mgmt_tab = self.create_tool_category_tab([
+                ("File Finder", "Search and find files based on various criteria", self.open_file_finder),
+                ("Catalog Files", "Create and manage file catalogs", self.open_catalog),
+                ("Rename Files", "Batch rename files and folders", self.open_rename),
+                ("Organize Files", "Automatically organize files by type/date", self.open_organize),
+            ])
+            tab_widget.addTab(file_mgmt_tab, "File Management")
+            
+            # File Operations Tools
+            file_ops_tab = self.create_tool_category_tab([
+                ("Copy/Move/Sync/Delete", "Advanced file operations", self.open_cmsd),
+                ("Compress/Decompress", "Archive and extract files", self.open_compress),
+                ("Split/Join Files", "Split large files or join parts", self.open_file_splitter),
+                ("Synchronize", "Synchronize directories", self.open_sync),
+            ])
+            tab_widget.addTab(file_ops_tab, "File Operations")
+            
+            # Analysis Tools
+            analysis_tab = self.create_tool_category_tab([
+                ("Size Analyzer", "Analyze disk space usage", self.open_size_analyzer),
+                ("Duplicate Finder", "Find and remove duplicate files", self.open_duplicate_finder),
+                ("File Checksum", "Calculate and verify checksums", self.open_checksum),
+                ("Empty Folders", "Find and clean empty folders", self.open_empty_folders),
+            ])
+            tab_widget.addTab(analysis_tab, "Analysis")
+            
+            # Security Tools
+            security_tab = self.create_tool_category_tab([
+                ("Encrypt/Decrypt", "Secure file encryption and decryption", self.open_encrypt_decrypt),
+                ("Secure Delete", "Permanently delete sensitive files", self.open_secure_delete),
+                ("Permissions Editor", "Manage file and folder permissions", self.open_permissions),
+            ])
+            tab_widget.addTab(security_tab, "Security")
+            
+            # Metadata Tools
+            metadata_tab = self.create_tool_category_tab([
+                ("Edit Image Metadata", "View and edit image metadata", self.open_image_metadata),
+                ("Office Metadata Editor", "Edit document metadata", self.open_office_metadata),
+                ("File Touch", "Modify file timestamps", self.open_file_touch),
+            ])
+            tab_widget.addTab(metadata_tab, "Metadata")
+            
+            # PDF Tools
+            pdf_tab = self.create_tool_category_tab([
+                ("PDF Utilities", "Comprehensive PDF tools", self.open_pdf_tools),
+                ("Extract Links", "Extract links from PDF files", self.open_pdf_links),
+                ("Page Administration", "Manage PDF pages", self.open_pdf_pages),
+            ])
+            tab_widget.addTab(pdf_tab, "PDF Tools")
+            
+            # Add status bar
+            self.statusBar().showMessage("Ready - Select a tool to begin")
+        
+        def create_tool_category_tab(self, tools):
+            """Create a tab with tools for a specific category."""
+            tab_widget = QWidget()
+            layout = QVBoxLayout(tab_widget)
+            layout.setContentsMargins(10, 10, 10, 10)
+            layout.setSpacing(5)
+            
+            # Create scroll area for tools
+            scroll_area = QScrollArea()
+            scroll_area.setWidgetResizable(True)
+            scroll_area.setFrameStyle(QFrame.NoFrame)
+            scroll_widget = QWidget()
+            scroll_layout = QGridLayout(scroll_widget)
+            scroll_layout.setSpacing(10)
+            scroll_layout.setContentsMargins(5, 5, 5, 5)
+            
+            # Add tools in a grid layout
+            row, col = 0, 0
+            for tool_name, description, callback in tools:
+                tool_frame = self.create_tool_button(tool_name, description, callback)
+                scroll_layout.addWidget(tool_frame, row, col)
+                
+                col += 1
+                if col >= 2:  # 2 columns
+                    col = 0
+                    row += 1
+            
+            # Add stretch to push tools to the top
+            scroll_layout.setRowStretch(row + 1, 1)
+            
+            scroll_area.setWidget(scroll_widget)
+            layout.addWidget(scroll_area)
+            
+            return tab_widget
+        
+        def create_tool_button(self, name, description, callback):
+            """Create a styled button for a tool."""
+            frame = QFrame()
+            frame.setFrameStyle(QFrame.StyledPanel)
+            frame.setStyleSheet("""
+                QFrame {
+                    background-color: #f8f9fa;
+                    border: 1px solid #dee2e6;
+                    border-radius: 8px;
+                    margin: 5px;
+                }
+                QFrame:hover {
+                    background-color: #e9ecef;
+                    border-color: #3498db;
+                }
+            """)
+            
+            layout = QVBoxLayout(frame)
+            
+            # Tool name button
+            button = QPushButton(name)
+            button.setStyleSheet("""
+                QPushButton {
+                    font-size: 14px;
+                    font-weight: bold;
+                    color: #2c3e50;
+                    border: none;
+                    padding: 10px;
+                    background: transparent;
+                }
+                QPushButton:hover {
+                    color: #3498db;
+                }
+                QPushButton:pressed {
+                    color: #2980b9;
+                }
+            """)
+            button.clicked.connect(callback)
+            layout.addWidget(button)
+            
+            # Description
+            desc_label = QLabel(description)
+            desc_label.setWordWrap(True)
+            desc_label.setStyleSheet("""
+                font-size: 11px;
+                color: #6c757d;
+                padding: 0 10px 10px 10px;
+            """)
+            layout.addWidget(desc_label)
+            
+            frame.setMaximumHeight(120)
+            frame.setMinimumHeight(100)
+            
+            return frame
+            
+        
+        # Tool launcher methods
+        def open_file_finder(self):
+            """Open File Finder tool."""
+            self.launch_tool("File Finder", "file_finder", "FileFinderGUI")
+        
+        def open_catalog(self):
+            """Open Catalog tool."""
+            self.launch_tool("Catalog", "catalog", "CatalogWindow")
+        
+        def open_rename(self):
+            """Open Rename tool."""
+            self.launch_tool("Rename", "rename", "RenameWindow") 
+            
+        def open_organize(self):
+            """Open Organize tool."""
+            self.launch_tool("Organize", "organize", "OrganizeWindow")
+            
+        def open_cmsd(self):
+            """Open Copy/Move/Sync/Delete tool."""
+            self.launch_tool("CMSD", "cmsd", "CopyMoveSyncDeleteWindow")
+            
+        def open_compress(self):
+            """Open Compress/Decompress tool."""
+            self.launch_tool("Compress", "compress_decompress", "CompressDecompressApp")
+            
+        def open_file_splitter(self):
+            """Open File Splitter tool."""
+            self.launch_tool("File Splitter", "file_splitter_joiner", "FileSplitJoinGUI")
+            
+        def open_sync(self):
+            """Open Sync tool."""
+            self.launch_tool("Sync", "sync", "SyncWindow")
+            
+        def open_size_analyzer(self):
+            """Open Size Analyzer tool."""
+            self.launch_tool("Size Analyzer", "size_analyzer", "SizeAnalyzerGUI")
+            
+        def open_duplicate_finder(self):
+            """Open Duplicate Finder tool."""
+            self.launch_tool("Duplicate Finder", "find_duplicate_files", "DuplicateFinderApp")
+            
+        def open_checksum(self):
+            """Open Checksum tool."""
+            self.launch_tool("Checksum", "check_sum", "ChecksumGUI")
+            
+        def open_empty_folders(self):
+            """Open Empty Folders tool."""
+            self.launch_tool("Empty Folders", "empty_folders", "EmptyFoldersGUI")
+            
+        def open_encrypt_decrypt(self):
+            """Open Encrypt/Decrypt tool."""
+            self.launch_tool("Encrypt/Decrypt", "en_and_decrypt", "EnAndDecryptGUI")
+            
+        def open_secure_delete(self):
+            """Open Secure Delete tool."""
+            self.launch_tool("Secure Delete", "secure_delete", "SecureDeleteGUI")
+            
+        def open_permissions(self):
+            """Open Permissions Editor tool."""
+            self.launch_tool("Permissions", "permissions_editor", "PermissionsEditorGUI")
+            
+        def open_image_metadata(self):
+            """Open Image Metadata Editor tool."""
+            self.launch_tool("Image Metadata", "edit_image_metadata", "ImageMetadataEditorGUI")
+            
+        def open_office_metadata(self):
+            """Open Office Metadata Editor tool."""
+            self.launch_tool("Office Metadata", "office_meta_data_editor", "OfficeMetaDataEditorGUI")
+            
+        def open_file_touch(self):
+            """Open File Touch tool."""
+            self.launch_tool("File Touch", "file_touch", "FileTouchGUI")
+            
+        def open_pdf_tools(self):
+            """Open PDF Tools."""
+            self.launch_tool("PDF Tools", "pdf_utilities.main", "PDFUtilitiesGUI")
+            
+        def open_pdf_links(self):
+            """Open PDF Links Extractor."""
+            self.launch_tool("PDF Links", "pdf_utilities.extract_links", "ExtractLinksGUI")
+            
+        def open_pdf_pages(self):
+            """Open PDF Page Administration."""
+            self.launch_tool("PDF Pages", "pdf_utilities.page_administration", "PageAdminGUI")
+        
+        def launch_tool(self, tool_name, module_name, class_name):
+            """Generic method to launch tools with enhanced error handling."""
+            try:
+                # Check if tool is already open
+                if tool_name in self.opened_windows:
+                    window = self.opened_windows[tool_name]
+                    if window and hasattr(window, 'show'):
+                        window.show()
+                        window.raise_()
+                        window.activateWindow()
+                        self.statusBar().showMessage(f"{tool_name} window activated")
+                        return
+                
+                # Pre-launch validation
+                validation_result = self.validate_tool_before_launch(module_name, class_name)
+                if not validation_result["success"]:
+                    self.show_enhanced_error_dialog(tool_name, module_name, validation_result)
+                    return
+                
+                # Try to import and launch the tool
+                tool_class = None
+                import_error = None
+                
+                # Try different import paths
+                import_paths = [
+                    module_name,  # Root directory
+                    f"src.legacy.file_utilities_1.{module_name}",  # Legacy tools
+                    f"src.utilities.{module_name}",  # Utilities
+                ]
+                
+                for import_path in import_paths:
+                    try:
+                        if '.' in import_path:
+                            # Handle nested imports
+                            parts = import_path.split('.')
+                            module = __import__(import_path, fromlist=[parts[-1]])
+                        else:
+                            module = __import__(import_path)
+                        
+                        tool_class = getattr(module, class_name)
+                        break
+                    except (ImportError, AttributeError) as e:
+                        import_error = e
+                        continue
+                
+                if tool_class is None:
+                    # Enhanced placeholder with specific error info
+                    self.show_enhanced_placeholder_window(tool_name, module_name, import_error)
+                    return
+                
+                # Test instantiation before showing
+                try:
+                    window = tool_class()
+                    self.opened_windows[tool_name] = window
+                    window.show()
+                    self.statusBar().showMessage(f"{tool_name} opened successfully")
+                except Exception as instantiation_error:
+                    self.show_instantiation_error_dialog(tool_name, instantiation_error)
+                    return
+                
+            except Exception as e:
+                self.show_generic_error_dialog(tool_name, e)
+                
+        def validate_tool_before_launch(self, module_name, class_name):
+            """Validate tool dependencies before launch."""
+            validation_result = {
+                "success": True,
+                "errors": [],
+                "warnings": []
+            }
+            
+            try:
+                # Test import
+                try:
+                    module = __import__(module_name)
+                except ImportError as e:
+                    validation_result["success"] = False
+                    validation_result["errors"].append(f"Import failed: {str(e)}")
+                    return validation_result
+                
+                # Test class existence
+                if not hasattr(module, class_name):
+                    validation_result["success"] = False
+                    validation_result["errors"].append(f"Class '{class_name}' not found in module")
+                    return validation_result
+                
+                # Test basic instantiation (without showing)
+                try:
+                    tool_class = getattr(module, class_name)
+                    # Quick instantiation test
+                    test_instance = tool_class()
+                    if hasattr(test_instance, 'hide'):
+                        test_instance.hide()
+                    if hasattr(test_instance, 'close'):
+                        test_instance.close()
+                except Exception as e:
+                    validation_result["success"] = False
+                    validation_result["errors"].append(f"Instantiation failed: {str(e)}")
+                    return validation_result
+                    
+            except Exception as e:
+                validation_result["success"] = False
+                validation_result["errors"].append(f"Validation error: {str(e)}")
+            
+            return validation_result
+            
+        def show_enhanced_error_dialog(self, tool_name, module_name, validation_result):
+            """Show enhanced error dialog with specific guidance."""
+            from PyQt5.QtWidgets import QMessageBox
+            
+            msg = QMessageBox(self)
+            msg.setWindowTitle(f"Tool Launch Error - {tool_name}")
+            msg.setIcon(QMessageBox.Warning)
+            
+            error_text = f"Could not launch {tool_name}:\n\n"
+            for error in validation_result["errors"]:
+                error_text += f"• {error}\n"
+            
+            # Add specific guidance based on error type
+            if "Import failed" in str(validation_result["errors"]):
+                error_text += "\n🔧 Suggested Solutions:\n"
+                error_text += f"• Check if {module_name}.py exists in the current directory\n"
+                error_text += "• Verify all required dependencies are installed\n"
+                error_text += "• Run the automated tool corrector to fix missing tools\n"
+            elif "not found" in str(validation_result["errors"]):
+                error_text += "\n🔧 Suggested Solutions:\n"
+                error_text += f"• Check class name in {module_name}.py\n"
+                error_text += "• Run the comprehensive test suite for validation\n"
+            elif "Instantiation failed" in str(validation_result["errors"]):
+                error_text += "\n🔧 Suggested Solutions:\n"
+                error_text += "• Check for missing PyQt5 widget imports\n"
+                error_text += "• Verify all dependencies are properly imported\n"
+                error_text += "• Check the tool's __init__ method for errors\n"
+            
+            msg.setText(error_text)
+            msg.setInformativeText(f"Module: {module_name}\nTool Status: Needs attention")
+            msg.exec_()
+            self.statusBar().showMessage(f"Failed to open {tool_name} - See error details")
+            
+        def show_enhanced_placeholder_window(self, tool_name, module_name, import_error):
+            """Show enhanced placeholder with specific error information."""
+            from PyQt5.QtWidgets import QMessageBox
+            
+            msg = QMessageBox(self)
+            msg.setWindowTitle(f"{tool_name} - Tool Not Available")
+            msg.setIcon(QMessageBox.Information)
+            msg.setText(f"The {tool_name} tool is currently not available.")
+            
+            info_text = f"Module: {module_name}\n"
+            if import_error:
+                info_text += f"Error: {str(import_error)}\n"
+            info_text += "\n🔧 Quick Fix Options:\n"
+            info_text += "• Run: python automated_tool_corrector.py --mode=single --tool=" + module_name + "\n"
+            info_text += "• Run: python comprehensive_test_suite.py\n"
+            info_text += "• Check the tool integration documentation\n"
+            
+            msg.setInformativeText(info_text)
+            msg.exec_()
+            self.statusBar().showMessage(f"{tool_name} not available - Use automated corrector")
+            
+        def show_instantiation_error_dialog(self, tool_name, error):
+            """Show specific error dialog for instantiation failures."""
+            from PyQt5.QtWidgets import QMessageBox
+            
+            msg = QMessageBox(self)
+            msg.setWindowTitle(f"Tool Instantiation Error - {tool_name}")
+            msg.setIcon(QMessageBox.Critical)
+            
+            error_text = f"Failed to create {tool_name} window:\n\n{str(error)}\n\n"
+            
+            # Provide specific guidance based on error type
+            if "not defined" in str(error):
+                error_text += "🔧 This appears to be a missing import issue.\n"
+                error_text += "The tool is missing required PyQt5 widget imports.\n\n"
+                error_text += "Quick Fix:\n"
+                error_text += "• Run the automated tool corrector to fix imports\n"
+                error_text += "• Check the tool's import statements\n"
+            elif "QApplication" in str(error):
+                error_text += "🔧 This is a QApplication initialization issue.\n"
+                error_text += "The tool may be trying to create widgets before QApplication is ready.\n"
+            else:
+                error_text += "🔧 General instantiation error.\n"
+                error_text += "Check the tool's __init__ method for issues.\n"
+            
+            msg.setText(error_text)
+            msg.exec_()
+            self.statusBar().showMessage(f"{tool_name} instantiation failed")
+            
+        def show_generic_error_dialog(self, tool_name, error):
+            """Show generic error dialog for unexpected errors."""
+            from PyQt5.QtWidgets import QMessageBox
+            QMessageBox.critical(
+                self,
+                "Unexpected Error",
+                f"An unexpected error occurred while launching {tool_name}:\n\n{str(error)}\n\n"
+                f"Please report this issue with the error details."
+            )
+            self.statusBar().showMessage(f"Unexpected error opening {tool_name}")
+        
+        def show_placeholder_window(self, tool_name, module_name):
+            """Show a placeholder window for tools that aren't implemented yet."""
+            from PyQt5.QtWidgets import QMessageBox
+            msg = QMessageBox(self)
+            msg.setWindowTitle(f"{tool_name} - Not Available")
+            msg.setIcon(QMessageBox.Information)
+            msg.setText(f"The {tool_name} tool is currently being integrated.")
+            msg.setInformativeText(
+                f"Module: {module_name}\n\n"
+                f"This tool will be available in a future update. "
+                f"The integration is in progress."
+            )
+            msg.exec_()
+    
+    def main():
+        """Main entry point for the application."""
+        print("Starting Richard's File Utilities...")
+        
+        app = QApplication(sys.argv)
+        
+        # Set application properties
+        app.setApplicationName("Richard's File Utilities")
+        app.setApplicationVersion("3.0.0")
+        app.setOrganizationName("Richard's File Utilities")
+        
+        # Create and show main window
+        window = RFUMainWindow()
+        window.show()
+        
+        print("Application window displayed. Use the tabs to access different tools.")
+        return app.exec_()
+        
+    if __name__ == '__main__':
+        sys.exit(main())
+        
+except ImportError as e:
+    print(f"Error importing modules: {e}")
+    print("Please ensure PyQt5 is properly installed.")
+    print("To install PyQt5, run: pip install PyQt5")
+    sys.exit(1)
+except Exception as e:
+    print(f"Error starting application: {e}")
+    sys.exit(1)
+    
+    def main():
+        """Main entry point for the application."""
+        print("Starting Richard's File Utilities...")
+        
+        app = QApplication(sys.argv)
+        window = RFUMainWindow()
+        window.show()
+        
+        print("Application window displayed. Close the window to exit.")
+        return app.exec_()
+        
+    if __name__ == '__main__':
+        sys.exit(main())
+        
+except ImportError as e:
+    print(f"Error importing main application: {e}")
+    print("Please ensure PyQt5 is properly installed.")
+    print("To install PyQt5, run: pip install PyQt5")
+    sys.exit(1)
+except Exception as e:
+    print(f"Error starting application: {e}")
+    sys.exit(1)

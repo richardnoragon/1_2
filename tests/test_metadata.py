@@ -2,7 +2,7 @@ import unittest
 import os
 from tests.test_utils import TestUtils
 from office_meta_data_editor import OfficeMetaDataEditorGUI
-from tag_viewer_editor import TagViewerEditor
+from file_utilities_2.gui.tag_viewer_editor import TagViewerEditor
 
 from core.error_handler import error_handler
 

@@ -3,7 +3,8 @@ import sys
 from unittest import TestCase
 from unittest.mock import MagicMock, patch
 from PyQt5.QtWidgets import QApplication
-from rfuhub import MyGUI, RenameWindow, CatalogWindow, OrganizeWindow
+from rfuhub import MyGUI, RenameWindow, OrganizeWindow
+from file_utilities_1.catalog import CatalogWindow
 from main import main
 
 from core.error_handler import error_handler
@@ -43,7 +44,7 @@ class TestMainApplication(TestCase):
     def test_open_rename_window(self, mock_subprocess):
         """Test opening rename window"""
         self.gui.open_rename_window()
-        mock_subprocess.assert_called_once_with(["python", "rename.py"])
+        mock_subprocess.assert_called_once_with(["python", "file_utilities_2/gui/rename_gui.py"])
 
     def test_open_catalog_window(self):
         """Test opening catalog window"""

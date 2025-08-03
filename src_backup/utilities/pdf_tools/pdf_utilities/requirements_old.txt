@@ -1,0 +1,16 @@
+pyOpenSSL>=23.3.0
+PyPDF2>=3.0.0
+PyQt5>=5.15.0
+pikepdf>=8.11.2
+tabula-py>=2.9.0
+openpyxl>=3.1.2
+PyPDF4>=1.27.0
+pytesseract>=0.3.10
+opencv-python>=4.8.0
+numpy>=1.24.0
+pandas>=2.0.0
+filetype>=1.2.0
+python-dateutil>=2.8.2
+reportlab>=4.0.4
+pyAesCrypt>=6.1.0
+camelot-py>=0.11.0

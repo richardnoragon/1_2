@@ -4,7 +4,7 @@ from unittest import TestCase
 from unittest.mock import MagicMock, patch
 import mutagen
 from PyQt5.QtWidgets import QApplication
-from tag_viewer_editor import TagViewerEditor
+from file_utilities_2.gui.tag_viewer_editor import TagViewerEditor
 
 from core.error_handler import error_handler
 
