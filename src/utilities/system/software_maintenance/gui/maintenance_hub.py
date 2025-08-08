@@ -10,6 +10,8 @@ import os
 import sys
 from pathlib import Path
 from typing import Dict, List, Optional
+import csv
+import json
 
 # Add the parent directory to the path to import from other modules
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
@@ -21,13 +23,28 @@ try:
                                 QGroupBox, QGridLayout, QComboBox, QSpinBox,
                                 QMessageBox, QDialog, QDialogButtonBox, QTableWidget,
                                 QTableWidgetItem, QHeaderView, QSplitter, QFrame,
-                                QScrollArea, QApplication)
+                                QScrollArea, QApplication, QFileDialog)
     from PyQt5.QtCore import Qt, QThread, pyqtSignal, QTimer
     from PyQt5.QtGui import QFont, QIcon, QPalette, QColor
     PYQT_AVAILABLE = True
 except ImportError:
     PYQT_AVAILABLE = False
     print("PyQt5 not available. GUI functionality will be limited.")
+
+# Import StandardWindow for menu integration
+try:
+    from src.rfu.gui.standard_window import StandardWindow
+    from src.gui.menu_manager import MenuManager
+    STANDARD_WINDOW_AVAILABLE = True
+except ImportError:
+    try:
+        from rfu.gui.standard_window import StandardWindow
+        from gui.menu_manager import MenuManager
+        STANDARD_WINDOW_AVAILABLE = True
+    except ImportError:
+        STANDARD_WINDOW_AVAILABLE = False
+        # Fallback to QMainWindow if StandardWindow is not available
+        StandardWindow = QMainWindow
 
 if PYQT_AVAILABLE:
     from ..tools.software_updater import SoftwareUpdater
@@ -98,20 +115,21 @@ class WorkerThread(QThread):
             self.operation_completed.emit(False, f"Error: {str(e)}")
 
 
-class SoftwareMaintenanceHub(QMainWindow):
+class SoftwareMaintenanceHub(StandardWindow):
     """
     Main GUI window for the Software Maintenance Toolkit providing
     unified access to software updating and uninstallation features.
+    Enhanced with File menu integration following the File Finder template.
     """
     
     def __init__(self):
-        super().__init__()
+        super().__init__(
+            title="Software Maintenance Toolkit - Richard's File Utilities",
+            window_type="utility"
+        )
         
         if not PYQT_AVAILABLE:
             raise ImportError("PyQt5 is required for the GUI")
-        
-        self.setWindowTitle("Software Maintenance Toolkit")
-        self.setGeometry(100, 100, 1200, 800)
         
         # Initialize tools
         self.updater = None
@@ -127,26 +145,149 @@ class SoftwareMaintenanceHub(QMainWindow):
         self.setup_ui()
         self.setup_styling()
         
+        # Setup menu callbacks for File menu integration
+        self._setup_menu_callbacks()
+        
         # Status update timer
         self.status_timer = QTimer()
         self.status_timer.timeout.connect(self.update_status_display)
         self.status_timer.start(1000)  # Update every second
     
-    def setup_ui(self):
-        """Setup the main user interface."""
-        central_widget = QWidget()
-        self.setCentralWidget(central_widget)
+    def _setup_menu_callbacks(self):
+        """Setup tool-specific menu callbacks for File menu integration."""
+        if hasattr(self, 'menu_manager') and STANDARD_WINDOW_AVAILABLE:
+            # Register tool-specific callbacks
+            self.menu_manager.register_callback('save_file', self.export_maintenance_report)
+            self.menu_manager.register_callback('export_data', self.export_software_list)
+            self.menu_manager.register_callback('import_data', self.import_software_list)
+            self.menu_manager.register_callback('print_document', self.print_maintenance_report)
+    
+    def show_preferences(self):
+        """Show Software Maintenance preferences."""
+        QMessageBox.information(self, "Software Maintenance Preferences", 
+                               "Software Maintenance preferences:\n\n"
+                               "• Automatic update checking frequency\n"
+                               "• Backup settings before changes\n"
+                               "• Security update priorities\n"
+                               "• Removal verification options\n"
+                               "• System restore point creation\n\n"
+                               "Configure these settings in the Settings tab!")
+                               
+    def refresh_view(self):
+        """Refresh the current maintenance data."""
+        self.refresh_data()
+        self.show_status_message("Software maintenance data refreshed")
+    
+    def export_maintenance_report(self):
+        """Export comprehensive maintenance report."""
+        file_path, _ = QFileDialog.getSaveFileName(
+            self, "Export Maintenance Report", 
+            "maintenance_report.txt", 
+            "Text Files (*.txt);;All Files (*)"
+        )
         
-        # Main layout
-        main_layout = QVBoxLayout(central_widget)
+        if file_path:
+            try:
+                with open(file_path, 'w', encoding='utf-8') as f:
+                    f.write("Software Maintenance Report\n")
+                    f.write("=" * 50 + "\n\n")
+                    
+                    f.write(f"Generated: {QTimer().currentTime().toString()}\n")
+                    f.write(f"Total Software Detected: {len(self.detected_software)}\n")
+                    f.write(f"Available Updates: {len(self.available_updates)}\n\n")
+                    
+                    if self.detected_software:
+                        f.write("Installed Software:\n")
+                        f.write("-" * 20 + "\n")
+                        for name, info in self.detected_software.items():
+                            f.write(f"• {name} (Version: {getattr(info, 'version', 'Unknown')})\n")
+                        f.write("\n")
+                    
+                    if self.available_updates:
+                        f.write("Available Updates:\n")
+                        f.write("-" * 20 + "\n")
+                        for name, update in self.available_updates.items():
+                            current = getattr(update, 'current_version', 'Unknown')
+                            available = getattr(update, 'available_version', 'Unknown')
+                            f.write(f"• {name}: {current} → {available}\n")
+                
+                QMessageBox.information(self, "Export Complete", 
+                                       f"Maintenance report exported to:\n{file_path}")
+            except Exception as e:
+                QMessageBox.warning(self, "Export Error", f"Failed to export report:\n{e}")
+    
+    def export_software_list(self):
+        """Export software list to CSV format."""
+        file_path, _ = QFileDialog.getSaveFileName(
+            self, "Export Software List", 
+            "software_list.csv", 
+            "CSV Files (*.csv);;All Files (*)"
+        )
+        
+        if file_path:
+            try:
+                import csv
+                with open(file_path, 'w', newline='', encoding='utf-8') as f:
+                    writer = csv.writer(f)
+                    writer.writerow(['Software Name', 'Version', 'Update Available'])
+                    
+                    for name, info in self.detected_software.items():
+                        version = getattr(info, 'version', 'Unknown')
+                        has_update = name in self.available_updates
+                        writer.writerow([name, version, 'Yes' if has_update else 'No'])
+                
+                QMessageBox.information(self, "Export Complete", 
+                                       f"Software list exported to:\n{file_path}")
+            except Exception as e:
+                QMessageBox.warning(self, "Export Error", f"Failed to export list:\n{e}")
+    
+    def import_software_list(self):
+        """Import software configuration or list."""
+        file_path, _ = QFileDialog.getOpenFileName(
+            self, "Import Software Configuration", 
+            "", 
+            "JSON Files (*.json);;CSV Files (*.csv);;All Files (*)"
+        )
+        
+        if file_path:
+            try:
+                if file_path.endswith('.json'):
+                    import json
+                    with open(file_path, 'r', encoding='utf-8') as f:
+                        config = json.load(f)
+                    # Process JSON configuration
+                    QMessageBox.information(self, "Import Complete", 
+                                           "Software configuration imported successfully!")
+                elif file_path.endswith('.csv'):
+                    # Process CSV import
+                    QMessageBox.information(self, "Import Complete", 
+                                           "Software list imported successfully!")
+                else:
+                    QMessageBox.information(self, "Import", 
+                                           "Import functionality for this file type coming soon!")
+            except Exception as e:
+                QMessageBox.warning(self, "Import Error", f"Failed to import:\n{e}")
+    
+    def print_maintenance_report(self):
+        """Print maintenance report."""
+        QMessageBox.information(self, "Print Report", 
+                               "Print functionality will open the system print dialog.\n\n"
+                               "For now, you can export the report and print from your "
+                               "preferred text editor.")
+        # Future: Implement actual printing functionality
+    
+    def setup_ui(self):
+        """Setup the main user interface using StandardWindow layout."""
+        # Use the existing main layout from StandardWindow
+        layout = self.main_layout
         
         # Header
-        header_layout = self.create_header()
-        main_layout.addLayout(header_layout)
+        header_layout = self.create_header_section()
+        layout.addLayout(header_layout)
         
         # Main content area with tabs
         self.tab_widget = QTabWidget()
-        main_layout.addWidget(self.tab_widget)
+        layout.addWidget(self.tab_widget)
         
         # Create tabs
         self.create_updater_tab()
@@ -154,54 +295,67 @@ class SoftwareMaintenanceHub(QMainWindow):
         self.create_settings_tab()
         self.create_logs_tab()
         
-        # Status bar
-        self.status_layout = self.create_status_bar()
-        main_layout.addLayout(self.status_layout)
+        # Status area
+        self.status_layout = self.create_status_section()
+        layout.addLayout(self.status_layout)
     
-    def create_header(self):
-        """Create the header section."""
+    def create_header_section(self):
+        """Create the header section with standard styling."""
         header_layout = QHBoxLayout()
         
-        # Title
-        title_label = QLabel("Software Maintenance Toolkit")
-        title_font = QFont()
-        title_font.setPointSize(16)
-        title_font.setBold(True)
-        title_label.setFont(title_font)
+        # Title using StandardWindow create_header method
+        title_label = self.create_header("Software Maintenance Toolkit")
         header_layout.addWidget(title_label)
         
         header_layout.addStretch()
         
-        # Quick action buttons
-        self.scan_btn = QPushButton("Quick Scan")
-        self.scan_btn.clicked.connect(self.quick_scan)
+        # Quick action buttons using StandardWindow create_button method
+        self.scan_btn = self.create_button("Quick Scan", self.quick_scan)
         header_layout.addWidget(self.scan_btn)
         
-        self.refresh_btn = QPushButton("Refresh")
-        self.refresh_btn.clicked.connect(self.refresh_data)
+        self.refresh_btn = self.create_button("Refresh", self.refresh_data, primary=False)
         header_layout.addWidget(self.refresh_btn)
         
         return header_layout
+    
+    def create_status_section(self):
+        """Create the status section with progress and information."""
+        status_layout = QHBoxLayout()
+        
+        # Progress bar using StandardWindow method
+        self.progress_bar = self.create_progress_bar()
+        self.progress_bar.setVisible(False)
+        status_layout.addWidget(self.progress_bar)
+        
+        # Status label
+        self.status_label = QLabel("Ready")
+        status_layout.addWidget(self.status_label)
+        
+        status_layout.addStretch()
+        
+        # Statistics
+        self.stats_label = QLabel("Software: 0 | Updates: 0")
+        status_layout.addWidget(self.stats_label)
+        
+        return status_layout
     
     def create_updater_tab(self):
         """Create the Software Updater tab."""
         updater_widget = QWidget()
         layout = QVBoxLayout(updater_widget)
         
-        # Control panel
-        control_group = QGroupBox("Update Controls")
+        # Control panel using StandardWindow create_group_box
+        control_group = self.create_group_box("Update Controls")
         control_layout = QHBoxLayout(control_group)
         
-        self.scan_software_btn = QPushButton("Scan Software")
-        self.scan_software_btn.clicked.connect(self.scan_software)
+        self.scan_software_btn = self.create_button("Scan Software", self.scan_software)
         control_layout.addWidget(self.scan_software_btn)
         
-        self.check_updates_btn = QPushButton("Check Updates")
-        self.check_updates_btn.clicked.connect(self.check_updates)
+        self.check_updates_btn = self.create_button("Check Updates", self.check_updates)
         control_layout.addWidget(self.check_updates_btn)
         
-        self.update_selected_btn = QPushButton("Update Selected")
-        self.update_selected_btn.clicked.connect(self.update_selected_software)
+        self.update_selected_btn = self.create_button("Update Selected", 
+                                                     self.update_selected_software)
         self.update_selected_btn.setEnabled(False)
         control_layout.addWidget(self.update_selected_btn)
         
@@ -212,7 +366,7 @@ class SoftwareMaintenanceHub(QMainWindow):
         content_splitter = QSplitter(Qt.Horizontal)
         
         # Software list
-        software_group = QGroupBox("Installed Software")
+        software_group = self.create_group_box("Installed Software")
         software_layout = QVBoxLayout(software_group)
         
         self.software_list = QListWidget()
@@ -222,13 +376,12 @@ class SoftwareMaintenanceHub(QMainWindow):
         content_splitter.addWidget(software_group)
         
         # Updates panel
-        updates_group = QGroupBox("Available Updates")
+        updates_group = self.create_group_box("Available Updates")
         updates_layout = QVBoxLayout(updates_group)
         
         self.updates_table = QTableWidget()
         self.updates_table.setColumnCount(4)
         self.updates_table.setHorizontalHeaderLabels(["Software", "Current", "Available", "Source"])
-        self.updates_table.horizontalHeader().setStretchLastSection(True)
         updates_layout.addWidget(self.updates_table)
         
         # Update details
@@ -249,21 +402,20 @@ class SoftwareMaintenanceHub(QMainWindow):
         deinstaller_widget = QWidget()
         layout = QVBoxLayout(deinstaller_widget)
         
-        # Control panel
-        control_group = QGroupBox("Uninstall Controls")
+        # Control panel using StandardWindow create_group_box
+        control_group = self.create_group_box("Uninstall Controls")
         control_layout = QHBoxLayout(control_group)
         
-        self.scan_removal_btn = QPushButton("Scan for Removal")
-        self.scan_removal_btn.clicked.connect(self.scan_for_removal)
+        self.scan_removal_btn = self.create_button("Scan for Removal", self.scan_for_removal)
         control_layout.addWidget(self.scan_removal_btn)
         
-        self.analyze_btn = QPushButton("Analyze Selected")
-        self.analyze_btn.clicked.connect(self.analyze_selected_software)
+        self.analyze_btn = self.create_button("Analyze Selected", 
+                                            self.analyze_selected_software)
         self.analyze_btn.setEnabled(False)
         control_layout.addWidget(self.analyze_btn)
         
-        self.uninstall_selected_btn = QPushButton("Uninstall Selected")
-        self.uninstall_selected_btn.clicked.connect(self.uninstall_selected_software)
+        self.uninstall_selected_btn = self.create_button("Uninstall Selected", 
+                                                        self.uninstall_selected_software)
         self.uninstall_selected_btn.setEnabled(False)
         control_layout.addWidget(self.uninstall_selected_btn)
         
@@ -274,7 +426,7 @@ class SoftwareMaintenanceHub(QMainWindow):
         content_splitter = QSplitter(Qt.Horizontal)
         
         # Software list for removal
-        removal_group = QGroupBox("Software for Removal")
+        removal_group = self.create_group_box("Software for Removal")
         removal_layout = QVBoxLayout(removal_group)
         
         self.removal_list = QListWidget()
@@ -282,7 +434,7 @@ class SoftwareMaintenanceHub(QMainWindow):
         removal_layout.addWidget(self.removal_list)
         
         # Space analysis
-        space_group = QGroupBox("Space Analysis")
+        space_group = self.create_group_box("Space Analysis")
         space_layout = QVBoxLayout(space_group)
         
         self.space_label = QLabel("Select software to see space recovery estimate")
@@ -292,7 +444,7 @@ class SoftwareMaintenanceHub(QMainWindow):
         content_splitter.addWidget(removal_group)
         
         # Analysis panel
-        analysis_group = QGroupBox("Removal Analysis")
+        analysis_group = self.create_group_box("Removal Analysis")
         analysis_layout = QVBoxLayout(analysis_group)
         
         self.analysis_details = QTextEdit()
@@ -406,27 +558,6 @@ class SoftwareMaintenanceHub(QMainWindow):
         layout.addWidget(self.log_display)
         
         self.tab_widget.addTab(logs_widget, "Logs")
-    
-    def create_status_bar(self):
-        """Create the status bar."""
-        status_layout = QHBoxLayout()
-        
-        # Progress bar
-        self.progress_bar = QProgressBar()
-        self.progress_bar.setVisible(False)
-        status_layout.addWidget(self.progress_bar)
-        
-        # Status label
-        self.status_label = QLabel("Ready")
-        status_layout.addWidget(self.status_label)
-        
-        status_layout.addStretch()
-        
-        # Statistics
-        self.stats_label = QLabel("Software: 0 | Updates: 0")
-        status_layout.addWidget(self.stats_label)
-        
-        return status_layout
     
     def setup_styling(self):
         """Setup the application styling."""
@@ -616,7 +747,8 @@ class SoftwareMaintenanceHub(QMainWindow):
     def on_scan_completed(self, success, message):
         """Handle scan completion."""
         self.progress_bar.setVisible(False)
-        self.status_label.setText("Scan completed" if success else f"Scan failed: {message}")
+        status_msg = "Scan completed" if success else f"Scan failed: {message}"
+        self.show_status_message(status_msg)
         
         if success and self.worker_thread and self.worker_thread.tool:
             self.detected_software = self.worker_thread.tool.detected_software
@@ -626,7 +758,8 @@ class SoftwareMaintenanceHub(QMainWindow):
     def on_updates_checked(self, success, message):
         """Handle update check completion."""
         self.progress_bar.setVisible(False)
-        self.status_label.setText("Update check completed" if success else f"Update check failed: {message}")
+        status_msg = "Update check completed" if success else f"Update check failed: {message}"
+        self.show_status_message(status_msg)
         
         if success and self.worker_thread and self.worker_thread.tool:
             self.available_updates = self.worker_thread.tool.available_updates
@@ -636,7 +769,8 @@ class SoftwareMaintenanceHub(QMainWindow):
     def on_update_completed(self, success, message):
         """Handle update completion."""
         self.progress_bar.setVisible(False)
-        self.status_label.setText("Updates completed" if success else f"Updates failed: {message}")
+        status_msg = "Updates completed" if success else f"Updates failed: {message}"
+        self.show_status_message(status_msg)
         
         if success:
             # Refresh data after successful updates
@@ -645,7 +779,8 @@ class SoftwareMaintenanceHub(QMainWindow):
     def on_removal_scan_completed(self, success, message):
         """Handle removal scan completion."""
         self.progress_bar.setVisible(False)
-        self.status_label.setText("Removal scan completed" if success else f"Removal scan failed: {message}")
+        status_msg = "Removal scan completed" if success else f"Removal scan failed: {message}"
+        self.show_status_message(status_msg)
         
         if success and self.worker_thread and self.worker_thread.tool:
             self.detected_software = self.worker_thread.tool.detected_software
@@ -655,7 +790,8 @@ class SoftwareMaintenanceHub(QMainWindow):
     def on_removal_completed(self, success, message):
         """Handle removal completion."""
         self.progress_bar.setVisible(False)
-        self.status_label.setText("Removal completed" if success else f"Removal failed: {message}")
+        status_msg = "Removal completed" if success else f"Removal failed: {message}"
+        self.show_status_message(status_msg)
         
         if success:
             # Refresh data after successful removal

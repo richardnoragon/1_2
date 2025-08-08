@@ -3,14 +3,23 @@ Centralized logging manager for Richard's File Utilities.
 
 This module provides consistent logging functionality across all components
 with configurable levels, file rotation, and structured logging.
+Enhanced with SQLite database logging support.
 """
 
 import logging
 import logging.handlers
 import sys
+import uuid
 from pathlib import Path
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 from threading import Lock
+
+# Import database logging support
+try:
+    from rfu.core.database_logging import DatabaseLogHandler
+    DATABASE_LOGGING_AVAILABLE = True
+except ImportError:
+    DATABASE_LOGGING_AVAILABLE = False
 
 
 class LogManager:
@@ -43,6 +52,9 @@ class LogManager:
         # Main log file
         self.main_log_file = self.log_dir / 'rfu.log'
         
+        # Generate session ID for this application run
+        self.session_id = str(uuid.uuid4())
+        
         # Configure root logger
         self.root_logger = logging.getLogger('RFU')
         self.root_logger.setLevel(logging.DEBUG)
@@ -66,11 +78,32 @@ class LogManager:
         # Setup console handler
         self._setup_console_handler()
         
+        # Setup database handler if available
+        self._setup_database_handler()
+        
         # Store loggers for cleanup
         self._loggers: Dict[str, logging.Logger] = {}
         
         # Log the initialization
-        self.root_logger.info("LogManager initialized successfully")
+        self.root_logger.info(f"LogManager initialized successfully (Session: {self.session_id})")
+    
+    def _setup_database_handler(self):
+        """Setup database logging handler."""
+        try:
+            if DATABASE_LOGGING_AVAILABLE:
+                # DatabaseLogHandler already imported globally
+                handler = DatabaseLogHandler(session_id=self.session_id)
+                handler.setLevel(logging.DEBUG)
+                self.root_logger.addHandler(handler)
+                self.database_handler = handler
+                self.root_logger.info("Database logging handler enabled")
+            else:
+                self.database_handler = None
+                self.root_logger.warning("Database logging not available")
+        except Exception as e:
+            self.database_handler = None
+            msg = f"Failed to setup database logging: {e}"
+            self.root_logger.error(msg)
     
     def _setup_file_handler(self):
         """Setup rotating file handler."""

@@ -18,9 +18,54 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5 import uic
 
-# Import simple GUI modules
-from base_window_simple import BaseWindow
-from dialogs_simple import get_existing_directory, show_error_dialog
+# Import simple GUI modules with robust fallback strategy
+try:
+    # Primary absolute import strategy
+    from rfu.gui.windows.base_window_simple import BaseWindow
+    from rfu.gui.dialogs.dialogs_simple import (
+        get_existing_directory as _get_existing_directory,
+        show_error_dialog as _show_error_dialog
+    )
+    
+    # Create compatible wrapper functions
+    def get_existing_directory(parent, title):
+        """Wrapper for directory selection with compatible signature."""
+        result = _get_existing_directory(caption=title, parent=parent)
+        return str(result) if result else ""
+    
+    def show_error_dialog(parent, title, message):
+        """Wrapper for error dialog with compatible signature."""
+        _show_error_dialog(message, title=title, parent=parent)
+        
+except ImportError:
+    try:
+        # Secondary relative import fallback
+        from ...gui.windows.base_window_simple import BaseWindow
+        from ...gui.dialogs.dialogs_simple import (
+            get_existing_directory as _get_existing_directory,
+            show_error_dialog as _show_error_dialog
+        )
+        
+        # Create compatible wrapper functions
+        def get_existing_directory(parent, title):
+            """Wrapper for directory selection with compatible signature."""
+            result = _get_existing_directory(caption=title, parent=parent)
+            return str(result) if result else ""
+        
+        def show_error_dialog(parent, title, message):
+            """Wrapper for error dialog with compatible signature."""
+            _show_error_dialog(message, title=title, parent=parent)
+            
+    except ImportError:
+        # Final fallback to PyQt5 only
+        from PyQt5.QtWidgets import QMainWindow as BaseWindow
+        
+        def get_existing_directory(parent, title):
+            from PyQt5.QtWidgets import QFileDialog
+            return QFileDialog.getExistingDirectory(parent, title)
+        
+        def show_error_dialog(parent, title, message):
+            QMessageBox.critical(parent, title, message)
 
 
 @dataclass

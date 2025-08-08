@@ -34,5 +34,8 @@
   "network_connectivity": {},
   "pdf_tools": {},
   "privacy_tools": {},
-  "software_maintenance": {}
+  "software_maintenance": {},
+  "security_test": {
+    "test_enabled": true
+  }
 }

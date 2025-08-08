@@ -18,23 +18,94 @@ except ImportError:
     print("PyQt5 not available. Please install PyQt5.")
     sys.exit(1)
 
+# Import StandardWindow for menu integration
+try:
+    from src.rfu.gui.standard_window import StandardWindow
+except ImportError:
+    # Fallback for standalone execution
+    from PyQt5.QtWidgets import QMainWindow
+    StandardWindow = QMainWindow
 
-class SyncWindow(QMainWindow):
+
+class SyncWindow(StandardWindow):
     """Main window for Synchronize operations."""
     
     def __init__(self):
-        super().__init__()
+        super().__init__(
+            title="Synchronize - Richard's File Utilities",
+            window_type="utility"
+        )
         self.init_ui()
+        self._setup_menu_callbacks()
+    
+    def _setup_menu_callbacks(self):
+        """Setup tool-specific menu callbacks."""
+        if hasattr(self, 'menu_manager'):
+            # Register tool-specific callbacks
+            self.menu_manager.register_callback('new_sync', self.clear_sync)
+            self.menu_manager.register_callback('help_sync', self.show_help)
+            
+    def clear_sync(self):
+        """Clear all sync operations for a new task."""
+        # Clear any file lists or sync progress
+        pass
+        
+    def show_help(self):
+        """Show help dialog for Synchronize tool."""
+        help_text = """
+        <h2>Synchronize Tool - Help</h2>
+        
+        <h3>Directory Synchronization:</h3>
+        <ul>
+        <li><b>Source Directory:</b> The directory to sync from</li>
+        <li><b>Target Directory:</b> The directory to sync to</li>
+        <li><b>Sync Mode:</b> Choose one-way or two-way sync</li>
+        </ul>
+        
+        <h3>Sync Options:</h3>
+        <ul>
+        <li><b>Copy newer files:</b> Only update files that are newer</li>
+        <li><b>Delete extra files:</b> Remove files not in source</li>
+        <li><b>Skip system files:</b> Ignore hidden/system files</li>
+        <li><b>Preserve attributes:</b> Keep file timestamps and permissions</li>
+        </ul>
+        
+        <h3>Features:</h3>
+        <ul>
+        <li>Real-time progress tracking</li>
+        <li>Conflict resolution options</li>
+        <li>Detailed sync reports</li>
+        <li>Backup before sync option</li>
+        </ul>
+        
+        <h3>Keyboard Shortcuts:</h3>
+        <ul>
+        <li><b>Ctrl+Q:</b> Exit application</li>
+        <li><b>F1:</b> Show this help</li>
+        <li><b>F5:</b> Clear sync operations</li>
+        </ul>
+        """
+        
+        QMessageBox.information(self, "Synchronize Help", help_text)
+        
+    def show_preferences(self):
+        """Show Synchronize preferences."""
+        QMessageBox.information(self, "Synchronize Preferences", 
+                               "Synchronize preferences:\n\n"
+                               "• Default sync modes\n"
+                               "• File exclusion patterns\n"
+                               "• Backup settings\n"
+                               "• Conflict resolution rules\n\n"
+                               "Advanced preferences coming soon!")
+                               
+    def refresh_view(self):
+        """Refresh/clear the current sync operations."""
+        self.clear_sync()
         
     def init_ui(self):
         """Initialize the user interface."""
-        self.setWindowTitle("Synchronize - Richard's File Utilities")
-        self.setGeometry(100, 100, 800, 600)
-        
-        # Create central widget and layout
-        central_widget = QWidget()
-        self.setCentralWidget(central_widget)
-        layout = QVBoxLayout(central_widget)
+        # Use the existing main layout from StandardWindow
+        layout = self.main_layout
         
         # Add header
         header_label = QLabel("Synchronize")

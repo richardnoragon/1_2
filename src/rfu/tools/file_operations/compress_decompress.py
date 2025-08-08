@@ -10,7 +10,16 @@ from PyQt5.QtCore import Qt
 import zipfile
 import os
 import tarfile
+import sys
 from typing import Dict
+
+# Import StandardWindow for menu integration
+try:
+    from src.rfu.gui.standard_window import StandardWindow
+except ImportError:
+    # Fallback for standalone execution
+    from PyQt5.QtWidgets import QMainWindow
+    StandardWindow = QMainWindow
 
 
 # Archive format constants
@@ -44,19 +53,104 @@ def get_save_file_name(caption, parent, file_filter):
     return QFileDialog.getSaveFileName(parent, caption, "", file_filter)[0]
 
 
-class CompressDecompressApp(QMainWindow):
+class CompressDecompressApp(StandardWindow):
     """Handles compression and decompression with various archive formats."""
     
     def __init__(self):
         """Initialize the compression/decompression window."""
-        super().__init__()
-        self.setWindowTitle("Compress/Decompress Files")
-        self.setGeometry(100, 100, 600, 400)
+        super().__init__(
+            title="Compress/Decompress Files - Richard's File Utilities",
+            window_type="utility"
+        )
+        self.init_ui()
+        self._setup_menu_callbacks()
+    
+    def _setup_menu_callbacks(self):
+        """Setup tool-specific menu callbacks."""
+        if hasattr(self, 'menu_manager'):
+            # Register tool-specific callbacks
+            self.menu_manager.register_callback('new_compression', self.clear_fields)
+            self.menu_manager.register_callback('help_compression', self.show_help)
+            
+    def clear_fields(self):
+        """Clear all input fields for a new compression task."""
+        self.lineEditFolder.clear()
+        self.lineEditOutput.clear()
+        self.lineEditDecompress.clear()
+        self.lineEditPassword.clear()
+        self.comboFormat.setCurrentIndex(0)
+        self.sliderCompLevel.setValue(6)
         
-        # Create central widget and layout
-        central_widget = QWidget()
-        self.setCentralWidget(central_widget)
-        layout = QVBoxLayout(central_widget)
+    def show_help(self):
+        """Show help dialog for Compress/Decompress tool."""
+        help_text = """
+        <h2>Compress/Decompress Files - Help</h2>
+        
+        <h3>Compression:</h3>
+        <ul>
+        <li><b>Browse Folder:</b> Select the folder you want to compress</li>
+        <li><b>Browse Output:</b> Choose where to save the compressed archive</li>
+        <li><b>Format:</b> Select compression format (ZIP, TAR.GZ, TAR.BZ2)</li>
+        <li><b>Password:</b> Optional password protection (ZIP only)</li>
+        <li><b>Compression Level:</b> Higher levels = smaller files but slower compression</li>
+        </ul>
+        
+        <h3>Decompression:</h3>
+        <ul>
+        <li><b>Browse Archive:</b> Select the archive file to decompress</li>
+        <li>Files will be extracted to the same directory as the archive</li>
+        </ul>
+        
+        <h3>Supported Formats:</h3>
+        <ul>
+        <li>ZIP (.zip) - with password support</li>
+        <li>TAR.GZ (.tar.gz) - GNU zip compression</li>
+        <li>TAR.BZ2 (.tar.bz2) - Bzip2 compression</li>
+        </ul>
+        
+        <h3>Keyboard Shortcuts:</h3>
+        <ul>
+        <li><b>Ctrl+Q:</b> Exit application</li>
+        <li><b>F1:</b> Show this help</li>
+        <li><b>F5:</b> Clear all fields</li>
+        </ul>
+        """
+        
+        QMessageBox.information(self, "Compress/Decompress Help", help_text)
+        
+    def show_preferences(self):
+        """Show Compress/Decompress preferences."""
+        QMessageBox.information(self, "Compress/Decompress Preferences", 
+                               "Compress/Decompress preferences:\n\n"
+                               "• Default compression format\n"
+                               "• Default compression level\n"
+                               "• Output directory settings\n"
+                               "• Archive verification options\n\n"
+                               "Advanced preferences coming soon!")
+                               
+    def refresh_view(self):
+        """Refresh/clear the current operation."""
+        self.clear_fields()
+        
+    def init_ui(self):
+        """Initialize the user interface."""
+        # Use the existing main layout from StandardWindow
+        layout = self.main_layout
+        
+        # Create header
+        header_label = QLabel("Compress/Decompress Files")
+        header_label.setStyleSheet("""
+            QLabel {
+                font-size: 18px;
+                font-weight: bold;
+                color: #2c3e50;
+                padding: 10px;
+                background-color: #ecf0f1;
+                border-radius: 5px;
+                margin-bottom: 10px;
+            }
+        """)
+        layout.addWidget(header_label)
         
         # Compression section
         layout.addWidget(QLabel("Compression:"))

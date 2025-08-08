@@ -11,7 +11,7 @@ from datetime import datetime
 
 try:
     from PyQt5.QtWidgets import (
-        QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QGridLayout,
+        QWidget, QVBoxLayout, QHBoxLayout, QGridLayout,
         QPushButton, QLineEdit, QListWidget, QListWidgetItem, QLabel,
         QCheckBox, QGroupBox, QFileDialog, QMessageBox, QRadioButton,
         QApplication, QTextEdit, QButtonGroup
@@ -20,25 +20,156 @@ except ImportError:
     print("PyQt5 not available. Please install PyQt5.")
     sys.exit(1)
 
+# Import StandardWindow for menu integration
+try:
+    from src.rfu.gui.standard_window import StandardWindow
+except ImportError:
+    # Fallback for standalone execution
+    from PyQt5.QtWidgets import QMainWindow
+    StandardWindow = QMainWindow
 
-class RenameWindow(QMainWindow):
+
+class RenameWindow(StandardWindow):
     """Simplified Rename Files GUI with essential functionality."""
     
     def __init__(self):
-        super().__init__()
+        super().__init__(
+            title="Rename Files - Richard's File Utilities",
+            window_type="file_operations"
+        )
         self.current_directory = ""
         self.selected_files = []
         self.init_ui()
+        self._setup_menu_callbacks()
+    def _setup_menu_callbacks(self):
+        """Setup tool-specific menu callbacks."""
+        if hasattr(self, 'menu_manager'):
+            # Register tool-specific callbacks
+            self.menu_manager.register_callback('new_rename', self.clear_selected_files)
+            self.menu_manager.register_callback('save_operation', self.save_rename_settings)
+            self.menu_manager.register_callback('load_operation', self.load_rename_settings)
+            self.menu_manager.register_callback('export_results', self.export_rename_results)
+            
+    def save_rename_settings(self):
+        """Save current rename settings to file."""
+        file_path, _ = QFileDialog.getSaveFileName(
+            self, "Save Rename Settings", "rename_settings.json",
+            "JSON Files (*.json);;All Files (*)"
+        )
+        
+        if file_path:
+            try:
+                import json
+                settings = {
+                    'directory': self.current_directory,
+                    'rename_mode': self._get_current_rename_mode(),
+                    'prefix_text': self.prefix_edit.text(),
+                    'suffix_text': self.suffix_edit.text(),
+                    'find_text': self.find_edit.text(),
+                    'replace_text': self.replace_edit.text(),
+                    'start_number': self.start_number_edit.text(),
+                    'number_format': self.number_format_edit.text()
+                }
+                
+                with open(file_path, 'w', encoding='utf-8') as f:
+                    json.dump(settings, f, indent=2)
+                    
+                QMessageBox.information(self, "Success", f"Settings saved to {file_path}")
+            except Exception as e:
+                QMessageBox.warning(self, "Error", f"Failed to save settings: {e}")
+                
+    def load_rename_settings(self):
+        """Load rename settings from file."""
+        file_path, _ = QFileDialog.getOpenFileName(
+            self, "Load Rename Settings", "",
+            "JSON Files (*.json);;All Files (*)"
+        )
+        
+        if file_path:
+            try:
+                import json
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    settings = json.load(f)
+                
+                # Apply settings
+                if 'directory' in settings and settings['directory']:
+                    self.current_directory = settings['directory']
+                    self.directory_edit.setText(settings['directory'])
+                    self.load_available_files()
+                    
+                if 'prefix_text' in settings:
+                    self.prefix_edit.setText(settings['prefix_text'])
+                if 'suffix_text' in settings:
+                    self.suffix_edit.setText(settings['suffix_text'])
+                    
+                QMessageBox.information(self, "Success", f"Settings loaded from {file_path}")
+            except Exception as e:
+                QMessageBox.warning(self, "Error", f"Failed to load settings: {e}")
+                
+    def export_rename_results(self):
+        """Export rename preview results."""
+        if not self.selected_files:
+            QMessageBox.information(self, "No Files", "No files selected for renaming.")
+            return
+            
+        file_path, _ = QFileDialog.getSaveFileName(
+            self, "Export Rename Results", "rename_preview.txt",
+            "Text Files (*.txt);;All Files (*)"
+        )
+        
+        if file_path:
+            try:
+                with open(file_path, 'w', encoding='utf-8') as f:
+                    f.write("Rename Preview Results\n")
+                    f.write(f"Directory: {self.current_directory}\n")
+                    f.write(f"Rename Mode: {self._get_current_rename_mode()}\n")
+                    f.write(f"Total Files: {len(self.selected_files)}\n\n")
+                    
+                    for i, filename in enumerate(self.selected_files):
+                        new_filename = self.get_new_filename(filename, i)
+                        f.write(f"{filename} → {new_filename}\n")
+                        
+                QMessageBox.information(self, "Success", f"Results exported to {file_path}")
+            except Exception as e:
+                QMessageBox.warning(self, "Error", f"Failed to export results: {e}")
+                
+    def _get_current_rename_mode(self):
+        """Get the currently selected rename mode."""
+        if self.add_prefix_radio.isChecked():
+            return "add_prefix"
+        elif self.add_suffix_radio.isChecked():
+            return "add_suffix"
+        elif self.lowercase_radio.isChecked():
+            return "lowercase"
+        elif self.uppercase_radio.isChecked():
+            return "uppercase"
+        elif self.replace_radio.isChecked():
+            return "replace_text"
+        elif self.number_radio.isChecked():
+            return "add_numbers"
+        return "unknown"
+        
+    def show_preferences(self):
+        """Show Rename tool preferences."""
+        QMessageBox.information(self, "Rename Preferences", 
+                               "Rename tool preferences:\n\n"
+                               "• Default rename patterns\n"
+                               "• Backup options\n"
+                               "• Confirmation settings\n"
+                               "• Undo functionality\n\n"
+                               "Advanced preferences coming soon!")
+                               
+    def refresh_view(self):
+        """Refresh the current file lists."""
+        if self.current_directory:
+            self.load_available_files()
+        else:
+            QMessageBox.information(self, "Refresh", "Select a directory first to refresh.")
         
     def init_ui(self):
         """Initialize the user interface."""
-        self.setWindowTitle("Rename Files - Richard's File Utilities")
-        self.setGeometry(100, 100, 900, 700)
-        
-        # Create central widget and main layout
-        central_widget = QWidget()
-        self.setCentralWidget(central_widget)
-        layout = QVBoxLayout(central_widget)
+        # Use the existing main layout from StandardWindow
+        layout = self.main_layout
         
         # Create header
         header_label = QLabel("File Rename Utility")

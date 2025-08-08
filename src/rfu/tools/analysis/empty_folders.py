@@ -18,24 +18,136 @@ except ImportError:
     print("PyQt5 not available. Please install PyQt5.")
     sys.exit(1)
 
+# Import StandardWindow for menu integration
+try:
+    from src.rfu.gui.standard_window import StandardWindow
+    STANDARD_WINDOW_AVAILABLE = True
+except ImportError:
+    # Fallback for standalone execution
+    from PyQt5.QtWidgets import QMainWindow
+    StandardWindow = QMainWindow
+    STANDARD_WINDOW_AVAILABLE = False
 
-class EmptyFoldersGUI(QMainWindow):
+
+class EmptyFoldersGUI(StandardWindow):
     """Main window for Empty Folders operations."""
     
     def __init__(self):
-        super().__init__()
+        if STANDARD_WINDOW_AVAILABLE:
+            super().__init__(
+                title="Empty Folders - Richard's File Utilities",
+                window_type="utility"
+            )
+        else:
+            super().__init__()
+            self.setWindowTitle("Empty Folders - Richard's File Utilities")
+            self.setGeometry(100, 100, 800, 600)
+        
         self.empty_folders = []
         self.init_ui()
+        if STANDARD_WINDOW_AVAILABLE:
+            self._setup_menu_callbacks()
+    
+    def _setup_menu_callbacks(self):
+        """Setup tool-specific menu callbacks."""
+        if hasattr(self, 'menu_manager'):
+            # Register tool-specific callbacks
+            self.menu_manager.register_callback('new_scan', self.clear_folders)
+            self.menu_manager.register_callback('help_empty_folders', self.show_help)
+            
+    def clear_folders(self):
+        """Clear all empty folder scan results."""
+        self.empty_folders = []
+        if hasattr(self, 'results_list'):
+            self.results_list.clear()
+        
+    def show_help(self):
+        """Show help dialog for Empty Folders tool."""
+        help_text = """
+        <h2>Empty Folders Finder - Help</h2>
+        
+        <h3>How to Find Empty Folders:</h3>
+        <ul>
+        <li><b>Select Directory:</b> Choose the root folder to scan</li>
+        <li><b>Start Scan:</b> Begin searching for empty directories</li>
+        <li><b>Review Results:</b> Examine list of found empty folders</li>
+        <li><b>Clean Up:</b> Remove empty folders (with confirmation)</li>
+        </ul>
+        
+        <h3>Empty Folder Detection:</h3>
+        <ul>
+        <li><b>True Empty:</b> Folders containing no files or subfolders</li>
+        <li><b>Recursive Check:</b> Folders with only empty subfolders</li>
+        <li><b>Hidden Files:</b> Option to ignore hidden/system files</li>
+        <li><b>Size Verification:</b> Confirms zero byte directories</li>
+        </ul>
+        
+        <h3>Cleanup Options:</h3>
+        <ul>
+        <li><b>Safe Removal:</b> Only removes truly empty directories</li>
+        <li><b>Batch Operations:</b> Remove multiple folders at once</li>
+        <li><b>Confirmation Prompts:</b> Verify before any deletion</li>
+        <li><b>Undo Protection:</b> Keep list for potential restoration</li>
+        </ul>
+        
+        <h3>Use Cases:</h3>
+        <ul>
+        <li><b>System Cleanup:</b> Remove leftover empty directories</li>
+        <li><b>Storage Optimization:</b> Clean up file system structure</li>
+        <li><b>Project Maintenance:</b> Remove unused folder hierarchies</li>
+        <li><b>Archive Preparation:</b> Clean structure before archiving</li>
+        </ul>
+        
+        <h3>Best Practices:</h3>
+        <ul>
+        <li><b>Backup First:</b> Always backup before mass deletions</li>
+        <li><b>Review Results:</b> Check list before removing folders</li>
+        <li><b>Exclude System:</b> Skip system and program directories</li>
+        <li><b>Regular Maintenance:</b> Periodic scans keep system clean</li>
+        </ul>
+        
+        <h3>Safety Features:</h3>
+        <ul>
+        <li><b>Read-Only Mode:</b> Scan without deletion permissions</li>
+        <li><b>Protected Paths:</b> Automatic exclusion of critical folders</li>
+        <li><b>Confirmation Dialogs:</b> Multiple confirmations for safety</li>
+        <li><b>Error Recovery:</b> Graceful handling of permission issues</li>
+        </ul>
+        
+        <h3>Keyboard Shortcuts:</h3>
+        <ul>
+        <li><b>Ctrl+Q:</b> Exit application</li>
+        <li><b>F1:</b> Show this help</li>
+        <li><b>F5:</b> Clear results and start new scan</li>
+        </ul>
+        """
+        
+        QMessageBox.information(self, "Empty Folders Help", help_text)
+        
+    def show_preferences(self):
+        """Show Empty Folders preferences."""
+        QMessageBox.information(self, "Empty Folders Preferences", 
+                               "Empty Folders preferences:\n\n"
+                               "• Scan depth limits\n"
+                               "• Hidden file handling\n"
+                               "• Protected directory lists\n"
+                               "• Deletion confirmation settings\n\n"
+                               "Advanced preferences coming soon!")
+                               
+    def refresh_view(self):
+        """Refresh/clear the current scan results."""
+        self.clear_folders()
         
     def init_ui(self):
         """Initialize the user interface."""
-        self.setWindowTitle("Empty Folders - Richard's File Utilities")
-        self.setGeometry(100, 100, 800, 600)
-        
-        # Create central widget and layout
-        central_widget = QWidget()
-        self.setCentralWidget(central_widget)
-        layout = QVBoxLayout(central_widget)
+        # Use the existing main layout from StandardWindow or create new layout
+        if STANDARD_WINDOW_AVAILABLE and hasattr(self, 'main_layout'):
+            layout = self.main_layout
+        else:
+            # Create central widget and layout for fallback mode
+            central_widget = QWidget()
+            self.setCentralWidget(central_widget)
+            layout = QVBoxLayout(central_widget)
         
         # Add header
         header_label = QLabel("Empty Folders Finder")

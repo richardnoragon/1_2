@@ -457,6 +457,9 @@ class EnhancedPDFToolsWidget(QWidget):
     def create_tabbed_interface(self):
         """Create the main tabbed interface with PDF tools"""
         self.tab_widget = QTabWidget()
+        self.tab_widget.setTabsClosable(False)
+        self.tab_widget.setMovable(False)
+        self.tab_widget.setUsesScrollButtons(True)  # Enable scroll buttons if tabs don't fit
         self.tab_widget.setStyleSheet("""
             QTabWidget::pane {
                 border: 1px solid #dee2e6;
@@ -466,17 +469,32 @@ class EnhancedPDFToolsWidget(QWidget):
             QTabBar::tab {
                 background-color: #e9ecef;
                 border: 1px solid #dee2e6;
-                padding: 12px 20px;
-                margin-right: 2px;
-                font: bold 12pt "Segoe UI";
-                border-top-left-radius: 8px;
-                border-top-right-radius: 8px;
+                padding: 10px 16px;
+                margin-right: 1px;
+                font: normal 9pt "Segoe UI";
+                color: #495057;
+                border-top-left-radius: 6px;
+                border-top-right-radius: 6px;
+                min-width: 80px;
+                max-width: 140px;
             }
             QTabBar::tab:selected {
                 background-color: #ffffff;
                 border-bottom-color: #ffffff;
+                color: #212529;
+                font-weight: bold;
             }
             QTabBar::tab:hover {
+                background-color: #f8f9fa;
+            }
+            QTabBar::scroller {
+                width: 20px;
+            }
+            QTabBar QToolButton {
+                background-color: #e9ecef;
+                border: 1px solid #dee2e6;
+            }
+            QTabBar QToolButton:hover {
                 background-color: #f8f9fa;
             }
         """)
@@ -527,7 +545,7 @@ class EnhancedPDFToolsWidget(QWidget):
         scroll_area.setWidget(scroll_widget)
         layout.addWidget(scroll_area)
         
-        self.tab_widget.addTab(tab, "Basic Operations")
+        self.tab_widget.addTab(tab, "Operations")
         
     def create_content_extraction_tab(self):
         """Create Content Extraction tab"""
@@ -560,7 +578,7 @@ class EnhancedPDFToolsWidget(QWidget):
         scroll_area.setWidget(scroll_widget)
         layout.addWidget(scroll_area)
         
-        self.tab_widget.addTab(tab, "Content Extraction")
+        self.tab_widget.addTab(tab, "Extract")
         
     def create_security_tab(self):
         """Create Security tab"""
@@ -622,7 +640,7 @@ class EnhancedPDFToolsWidget(QWidget):
         scroll_area.setWidget(scroll_widget)
         layout.addWidget(scroll_area)
         
-        self.tab_widget.addTab(tab, "Enhancements")
+        self.tab_widget.addTab(tab, "Enhance")
         
     def create_conversion_tab(self):
         """Create Conversion tab"""
@@ -653,7 +671,7 @@ class EnhancedPDFToolsWidget(QWidget):
         scroll_area.setWidget(scroll_widget)
         layout.addWidget(scroll_area)
         
-        self.tab_widget.addTab(tab, "Conversion")
+        self.tab_widget.addTab(tab, "Convert")
         
     def create_view_analysis_tab(self):
         """Create View Analysis tab"""
@@ -683,7 +701,7 @@ class EnhancedPDFToolsWidget(QWidget):
         scroll_area.setWidget(scroll_widget)
         layout.addWidget(scroll_area)
         
-        self.tab_widget.addTab(tab, "View Analysis")
+        self.tab_widget.addTab(tab, "View & Analyze")
         
     def create_enhanced_tool_button(self, name: str, description: str, color: str, callback):
         """Create an enhanced tool button with modern styling"""

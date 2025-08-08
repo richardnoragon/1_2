@@ -12,7 +12,7 @@ from datetime import datetime
 
 try:
     from PyQt5.QtWidgets import (
-        QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QGridLayout,
+        QWidget, QVBoxLayout, QHBoxLayout, QGridLayout,
         QPushButton, QLineEdit, QListWidget, QListWidgetItem, QLabel,
         QCheckBox, QGroupBox, QFileDialog, QMessageBox,
         QApplication, QTextEdit
@@ -21,25 +21,91 @@ except ImportError:
     print("PyQt5 not available. Please install PyQt5.")
     sys.exit(1)
 
+# Import StandardWindow for menu integration
+try:
+    from src.rfu.gui.standard_window import StandardWindow
+except ImportError:
+    # Fallback for standalone execution
+    from PyQt5.QtWidgets import QMainWindow
+    StandardWindow = QMainWindow
 
-class CatalogWindow(QMainWindow):
+
+class CatalogWindow(StandardWindow):
     """Simplified Catalog Files GUI with essential functionality."""
     
     def __init__(self):
-        super().__init__()
+        super().__init__(
+            title="Catalog Files - Richard's File Utilities",
+            window_type="analysis"
+        )
         self.current_directory = ""
         self.last_catalog_path = ""
         self.init_ui()
+        self._setup_menu_callbacks()
+    def _setup_menu_callbacks(self):
+        """Setup tool-specific menu callbacks."""
+        if hasattr(self, 'menu_manager'):
+            # Register tool-specific callbacks
+            self.menu_manager.register_callback('new_catalog', self.clear_directory)
+            self.menu_manager.register_callback('save_catalog', self.generate_catalog)
+            self.menu_manager.register_callback('open_catalog', self.open_catalog)
+            self.menu_manager.register_callback('export_catalog', self.export_catalog_settings)
+            
+    def clear_directory(self):
+        """Clear the current directory selection."""
+        self.current_directory = ""
+        self.directory_edit.clear()
+        self.file_list.clear()
+        self.file_info_text.clear()
+        self.status_label.setText("Select a directory to begin")
+        self.open_catalog_button.setEnabled(False)
+        
+    def export_catalog_settings(self):
+        """Export current catalog settings to a file."""
+        file_path, _ = QFileDialog.getSaveFileName(
+            self, "Export Catalog Settings", "catalog_settings.json",
+            "JSON Files (*.json);;All Files (*)"
+        )
+        
+        if file_path:
+            try:
+                import json
+                settings = {
+                    'directory': self.current_directory,
+                    'recursive': self.recursive_check.isChecked(),
+                    'show_sizes': self.show_sizes_check.isChecked(),
+                    'show_dates': self.show_dates_check.isChecked(),
+                    'show_hidden': self.show_hidden_check.isChecked()
+                }
+                
+                with open(file_path, 'w', encoding='utf-8') as f:
+                    json.dump(settings, f, indent=2)
+                    
+                QMessageBox.information(self, "Success", f"Settings exported to {file_path}")
+            except Exception as e:
+                QMessageBox.warning(self, "Error", f"Failed to export settings: {e}")
+                
+    def show_preferences(self):
+        """Show Catalog tool preferences."""
+        QMessageBox.information(self, "Catalog Preferences", 
+                               "Catalog tool preferences:\n\n"
+                               "• Default output formats\n"
+                               "• Custom HTML templates\n"
+                               "• File type filters\n"
+                               "• Catalog metadata options\n\n"
+                               "Advanced preferences coming soon!")
+                               
+    def refresh_view(self):
+        """Refresh the current directory preview."""
+        if self.current_directory:
+            self.load_directory_preview()
+        else:
+            QMessageBox.information(self, "Refresh", "Select a directory first to refresh.")
         
     def init_ui(self):
         """Initialize the user interface."""
-        self.setWindowTitle("Catalog Files - Richard's File Utilities")
-        self.setGeometry(100, 100, 800, 600)
-        
-        # Create central widget and main layout
-        central_widget = QWidget()
-        self.setCentralWidget(central_widget)
-        layout = QVBoxLayout(central_widget)
+        # Use the existing main layout from StandardWindow
+        layout = self.main_layout
         
         # Create header
         header_label = QLabel("File Catalog Generator")

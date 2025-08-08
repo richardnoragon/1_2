@@ -130,6 +130,8 @@ class Dimensions:
     DIALOG_HEIGHT = 300
     UTILITY_WIDTH = 600
     UTILITY_HEIGHT = 500
+    UTILITY_WINDOW_MIN_WIDTH = 600
+    UTILITY_WINDOW_MIN_HEIGHT = 500
     MAIN_WIDTH = 900
     MAIN_HEIGHT = 700
     
@@ -446,6 +448,43 @@ class ThemeManager:
                     color: {Colors.TEXT_PRIMARY.name()};
                 }}
             """)
+    
+    @classmethod
+    def style_group_box(cls, group_box: QGroupBox):
+        """Style a group box."""
+        group_box.setStyleSheet(f"""
+            QGroupBox {{
+                font-weight: bold;
+                border: 1px solid {Colors.BORDER_LIGHT.name()};
+                border-radius: 4px;
+                margin-top: 1ex;
+                padding-top: 10px;
+                color: {Colors.TEXT_PRIMARY.name()};
+            }}
+            QGroupBox::title {{
+                subcontrol-origin: margin;
+                subcontrol-position: top center;
+                padding: 0 5px;
+                background-color: {Colors.BACKGROUND_LIGHT.name()};
+            }}
+        """)
+    
+    @classmethod
+    def style_progress_bar(cls, progress_bar: QProgressBar):
+        """Style a progress bar."""
+        progress_bar.setStyleSheet(f"""
+            QProgressBar {{
+                border: 1px solid {Colors.BORDER_LIGHT.name()};
+                border-radius: 4px;
+                text-align: center;
+                background-color: {Colors.BACKGROUND_SECONDARY.name()};
+                color: {Colors.TEXT_PRIMARY.name()};
+            }}
+            QProgressBar::chunk {{
+                background-color: {Colors.PRIMARY.name()};
+                border-radius: 3px;
+            }}
+        """)
     
     @classmethod
     def create_standard_layout(cls, parent: QWidget) -> QVBoxLayout:

@@ -12,23 +12,119 @@ from PyQt5.QtWidgets import (
     QApplication, QMessageBox, QGroupBox, QFileDialog
 )
 
+# Import StandardWindow for menu integration
+try:
+    from src.rfu.gui.standard_window import StandardWindow
+    STANDARD_WINDOW_AVAILABLE = True
+except ImportError:
+    # Fallback for standalone execution
+    from PyQt5.QtWidgets import QMainWindow
+    StandardWindow = QMainWindow
+    STANDARD_WINDOW_AVAILABLE = False
 
-class DuplicateFinderApp(QMainWindow):
+
+class DuplicateFinderApp(StandardWindow):
     """Simple Duplicate Finder GUI."""
     
     def __init__(self):
-        super().__init__()
+        if STANDARD_WINDOW_AVAILABLE:
+            super().__init__(
+                title="Duplicate Finder - Richard's File Utilities",
+                window_type="utility"
+            )
+        else:
+            super().__init__()
+            self.setWindowTitle("Duplicate Finder - Richard's File Utilities")
+            self.setGeometry(100, 100, 800, 600)
+        
+        self.duplicates = {}
         self.init_ui()
+        if STANDARD_WINDOW_AVAILABLE:
+            self._setup_menu_callbacks()
+    
+    def _setup_menu_callbacks(self):
+        """Setup tool-specific menu callbacks."""
+        if hasattr(self, 'menu_manager'):
+            # Register tool-specific callbacks
+            self.menu_manager.register_callback('new_scan', self.clear_results)
+            self.menu_manager.register_callback('help_duplicates', self.show_help)
+            
+    def clear_results(self):
+        """Clear all duplicate scan results."""
+        self.duplicates = {}
+        if hasattr(self, 'results_list'):
+            self.results_list.clear()
+        
+    def show_help(self):
+        """Show help dialog for Duplicate Finder tool."""
+        help_text = """
+        <h2>Duplicate Finder - Help</h2>
+        
+        <h3>How to Find Duplicates:</h3>
+        <ul>
+        <li><b>Select Directory:</b> Choose the folder to scan for duplicates</li>
+        <li><b>Start Scan:</b> Begin searching for duplicate files</li>
+        <li><b>Review Results:</b> Examine found duplicates in the results list</li>
+        </ul>
+        
+        <h3>Duplicate Detection:</h3>
+        <ul>
+        <li><b>File Comparison:</b> Uses MD5 checksums for accurate detection</li>
+        <li><b>Size Filtering:</b> Pre-filters by file size for efficiency</li>
+        <li><b>Content Verification:</b> Compares actual file content</li>
+        <li><b>Safe Detection:</b> Never modifies original files</li>
+        </ul>
+        
+        <h3>Results Management:</h3>
+        <ul>
+        <li><b>Group Display:</b> Duplicates grouped by content similarity</li>
+        <li><b>Path Information:</b> Full file paths for each duplicate</li>
+        <li><b>Size Details:</b> File sizes and modification dates</li>
+        <li><b>Export Options:</b> Save results to file for review</li>
+        </ul>
+        
+        <h3>Best Practices:</h3>
+        <ul>
+        <li><b>Backup First:</b> Always backup important files before cleanup</li>
+        <li><b>Manual Review:</b> Verify duplicates before any deletion</li>
+        <li><b>Keep Originals:</b> Preserve files in primary locations</li>
+        <li><b>Scan Regularly:</b> Periodic scans help maintain organization</li>
+        </ul>
+        
+        <h3>Keyboard Shortcuts:</h3>
+        <ul>
+        <li><b>Ctrl+Q:</b> Exit application</li>
+        <li><b>F1:</b> Show this help</li>
+        <li><b>F5:</b> Clear results and start new scan</li>
+        </ul>
+        """
+        
+        QMessageBox.information(self, "Duplicate Finder Help", help_text)
+        
+    def show_preferences(self):
+        """Show Duplicate Finder preferences."""
+        QMessageBox.information(self, "Duplicate Finder Preferences", 
+                               "Duplicate Finder preferences:\n\n"
+                               "• Scan depth limits\n"
+                               "• File type filters\n"
+                               "• Minimum file size settings\n"
+                               "• Checksum algorithm options\n\n"
+                               "Advanced preferences coming soon!")
+                               
+    def refresh_view(self):
+        """Refresh/clear the current scan results."""
+        self.clear_results()
         
     def init_ui(self):
         """Initialize the user interface."""
-        self.setWindowTitle("Duplicate Finder - Richard's File Utilities")
-        self.setGeometry(100, 100, 800, 600)
-        
-        # Create central widget and layout
-        central_widget = QWidget()
-        self.setCentralWidget(central_widget)
-        layout = QVBoxLayout(central_widget)
+        # Use the existing main layout from StandardWindow or create new layout
+        if STANDARD_WINDOW_AVAILABLE and hasattr(self, 'main_layout'):
+            layout = self.main_layout
+        else:
+            # Create central widget and layout for fallback mode
+            central_widget = QWidget()
+            self.setCentralWidget(central_widget)
+            layout = QVBoxLayout(central_widget)
         
         # Add header
         header_label = QLabel("Duplicate File Finder")

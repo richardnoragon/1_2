@@ -12,23 +12,118 @@ from PyQt5.QtWidgets import (
     QApplication, QMessageBox, QGroupBox, QFileDialog
 )
 
+# Import StandardWindow for menu integration
+try:
+    from src.rfu.gui.standard_window import StandardWindow
+    STANDARD_WINDOW_AVAILABLE = True
+except ImportError:
+    # Fallback for standalone execution
+    from PyQt5.QtWidgets import QMainWindow
+    StandardWindow = QMainWindow
+    STANDARD_WINDOW_AVAILABLE = False
 
-class ChecksumGUI(QMainWindow):
+
+class ChecksumGUI(StandardWindow):
     """Simple Checksum Calculator GUI."""
     
     def __init__(self):
-        super().__init__()
+        if STANDARD_WINDOW_AVAILABLE:
+            super().__init__(
+                title="Checksum Calculator - Richard's File Utilities",
+                window_type="utility"
+            )
+        else:
+            super().__init__()
+            self.setWindowTitle("Checksum Calculator - Richard's File Utilities")
+            self.setGeometry(100, 100, 800, 600)
+        
         self.init_ui()
+        if STANDARD_WINDOW_AVAILABLE:
+            self._setup_menu_callbacks()
+    
+    def _setup_menu_callbacks(self):
+        """Setup tool-specific menu callbacks."""
+        if hasattr(self, 'menu_manager'):
+            # Register tool-specific callbacks
+            self.menu_manager.register_callback('new_checksum', self.clear_results)
+            self.menu_manager.register_callback('help_checksum', self.show_help)
+            
+    def clear_results(self):
+        """Clear all checksum calculation results."""
+        if hasattr(self, 'results_list'):
+            self.results_list.clear()
+        
+    def show_help(self):
+        """Show help dialog for Checksum Calculator tool."""
+        help_text = """
+        <h2>File Checksum Calculator - Help</h2>
+        
+        <h3>How to Calculate Checksums:</h3>
+        <ul>
+        <li><b>Select Files:</b> Choose one or more files to calculate checksums</li>
+        <li><b>Choose Algorithm:</b> Pick MD5, SHA1, or SHA256 algorithm</li>
+        <li><b>Calculate:</b> Click to generate checksums for selected files</li>
+        <li><b>Copy Results:</b> Copy checksums to clipboard for verification</li>
+        </ul>
+        
+        <h3>Checksum Algorithms:</h3>
+        <ul>
+        <li><b>MD5:</b> Fast, 128-bit hash (legacy, less secure)</li>
+        <li><b>SHA1:</b> 160-bit hash (deprecated for security)</li>
+        <li><b>SHA256:</b> Secure 256-bit hash (recommended)</li>
+        <li><b>SHA512:</b> Most secure 512-bit hash (slower but strongest)</li>
+        </ul>
+        
+        <h3>Use Cases:</h3>
+        <ul>
+        <li><b>File Integrity:</b> Verify files haven't been corrupted</li>
+        <li><b>Download Verification:</b> Confirm downloaded files are intact</li>
+        <li><b>Change Detection:</b> Detect if files have been modified</li>
+        <li><b>Duplicate Detection:</b> Compare checksums to find duplicates</li>
+        </ul>
+        
+        <h3>Best Practices:</h3>
+        <ul>
+        <li><b>Use SHA256:</b> Most balanced option for security and speed</li>
+        <li><b>Save Results:</b> Keep checksum records for later verification</li>
+        <li><b>Batch Processing:</b> Calculate multiple files at once</li>
+        <li><b>Regular Checks:</b> Verify important files periodically</li>
+        </ul>
+        
+        <h3>Keyboard Shortcuts:</h3>
+        <ul>
+        <li><b>Ctrl+Q:</b> Exit application</li>
+        <li><b>F1:</b> Show this help</li>
+        <li><b>F5:</b> Clear results and start new calculation</li>
+        </ul>
+        """
+        
+        QMessageBox.information(self, "Checksum Calculator Help", help_text)
+        
+    def show_preferences(self):
+        """Show Checksum Calculator preferences."""
+        QMessageBox.information(self, "Checksum Calculator Preferences", 
+                               "Checksum Calculator preferences:\n\n"
+                               "• Default checksum algorithm\n"
+                               "• Output format options\n"
+                               "• Progress display settings\n"
+                               "• Auto-save results location\n\n"
+                               "Advanced preferences coming soon!")
+                               
+    def refresh_view(self):
+        """Refresh/clear the current calculation results."""
+        self.clear_results()
         
     def init_ui(self):
         """Initialize the user interface."""
-        self.setWindowTitle("Checksum Calculator - Richard's File Utilities")
-        self.setGeometry(100, 100, 800, 600)
-        
-        # Create central widget and layout
-        central_widget = QWidget()
-        self.setCentralWidget(central_widget)
-        layout = QVBoxLayout(central_widget)
+        # Use the existing main layout from StandardWindow or create new layout
+        if STANDARD_WINDOW_AVAILABLE and hasattr(self, 'main_layout'):
+            layout = self.main_layout
+        else:
+            # Create central widget and layout for fallback mode
+            central_widget = QWidget()
+            self.setCentralWidget(central_widget)
+            layout = QVBoxLayout(central_widget)
         
         # Add header
         header_label = QLabel("File Checksum Calculator")

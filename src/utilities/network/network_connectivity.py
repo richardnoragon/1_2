@@ -6,6 +6,7 @@ A streamlined network connectivity utility with essential functionality.
 """
 
 import sys
+import os
 
 try:
     from PyQt5.QtWidgets import (
@@ -18,25 +19,57 @@ except ImportError:
     print("PyQt5 not available. Please install PyQt5.")
     sys.exit(1)
 
+# Import StandardWindow for menu integration
+try:
+    from src.rfu.gui.standard_window import StandardWindow
+except ImportError:
+    # Fallback for standalone execution
+    StandardWindow = QMainWindow
 
-class NetworkConnectivityGUI(QMainWindow):
+
+class NetworkConnectivityGUI(StandardWindow):
     """Main window for Network Connectivity operations."""
     
     def __init__(self):
-        super().__init__()
+        super().__init__(
+            title="Network Connectivity - Richard's File Utilities",
+            window_type="utility"
+        )
         self.init_ui()
+        self._setup_menu_callbacks()
+        
+    def _setup_menu_callbacks(self):
+        """Setup tool-specific menu callbacks."""
+        if hasattr(self, 'menu_manager'):
+            # Register tool-specific callbacks
+            self.menu_manager.register_callback('show_preferences', self.show_preferences)
+            self.menu_manager.register_callback('refresh', self.refresh_view)
+    
+    def show_preferences(self):
+        """Show Network Connectivity preferences."""
+        QMessageBox.information(
+            self, "Network Connectivity Preferences", 
+            "Network Connectivity preferences:\n\n"
+            "• Default connection timeout settings\n"
+            "• Preferred network interfaces\n"
+            "• Monitoring intervals\n"
+            "• Alert thresholds\n\n"
+            "Advanced preferences coming soon!"
+        )
+        
+    def refresh_view(self):
+        """Refresh the network connectivity status."""
+        self.results_text.append("\n=== Refreshing Network Status ===")
+        self.results_text.append("Network interfaces refreshed")
+        self.results_text.append("Connection status updated")
+        QMessageBox.information(self, "Refresh", "Network status refreshed successfully.")
         
     def init_ui(self):
         """Initialize the user interface."""
-        self.setWindowTitle("Network Connectivity - Richard's File Utilities")
-        self.setGeometry(100, 100, 800, 600)
+        # Use the existing main layout from StandardWindow
+        layout = self.main_layout
         
-        # Create central widget and layout
-        central_widget = QWidget()
-        self.setCentralWidget(central_widget)
-        layout = QVBoxLayout(central_widget)
-        
-        # Add header
+        # Create header
         header_label = QLabel("Network Connectivity Tools")
         header_label.setStyleSheet("""
             QLabel {

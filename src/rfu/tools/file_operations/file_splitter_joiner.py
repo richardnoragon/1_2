@@ -18,23 +18,95 @@ except ImportError:
     print("PyQt5 not available. Please install PyQt5.")
     sys.exit(1)
 
+# Import StandardWindow for menu integration
+try:
+    from src.rfu.gui.standard_window import StandardWindow
+except ImportError:
+    # Fallback for standalone execution
+    from PyQt5.QtWidgets import QMainWindow
+    StandardWindow = QMainWindow
 
-class FileSplitJoinGUI(QMainWindow):
+
+class FileSplitJoinGUI(StandardWindow):
     """Main window for Split/Join Files operations."""
     
     def __init__(self):
-        super().__init__()
+        super().__init__(
+            title="Split/Join Files - Richard's File Utilities",
+            window_type="utility"
+        )
         self.init_ui()
+        self._setup_menu_callbacks()
+    
+    def _setup_menu_callbacks(self):
+        """Setup tool-specific menu callbacks."""
+        if hasattr(self, 'menu_manager'):
+            # Register tool-specific callbacks
+            self.menu_manager.register_callback('new_split_join', 
+                                               self.clear_operations)
+            self.menu_manager.register_callback('help_split_join', 
+                                               self.show_help)
+            
+    def clear_operations(self):
+        """Clear all operations for a new split/join task."""
+        # Clear any file lists or progress indicators
+        pass
+        
+    def show_help(self):
+        """Show help dialog for Split/Join Files tool."""
+        help_text = """
+        <h2>Split/Join Files - Help</h2>
+        
+        <h3>File Splitting:</h3>
+        <ul>
+        <li><b>Source File:</b> Select the large file you want to split</li>
+        <li><b>Split Size:</b> Choose the size for each split part</li>
+        <li><b>Output Directory:</b> Where to save the split files</li>
+        </ul>
+        
+        <h3>File Joining:</h3>
+        <ul>
+        <li><b>First Part:</b> Select the first part of split files (.001)</li>
+        <li><b>Auto-detect:</b> Tool will find all related parts</li>
+        <li><b>Output File:</b> Choose name for the joined file</li>
+        </ul>
+        
+        <h3>Features:</h3>
+        <ul>
+        <li>Progress tracking for large files</li>
+        <li>Integrity checking with checksums</li>
+        <li>Support for various split sizes</li>
+        <li>Automatic part numbering</li>
+        </ul>
+        
+        <h3>Keyboard Shortcuts:</h3>
+        <ul>
+        <li><b>Ctrl+Q:</b> Exit application</li>
+        <li><b>F1:</b> Show this help</li>
+        <li><b>F5:</b> Clear operations</li>
+        </ul>
+        """
+        
+        QMessageBox.information(self, "Split/Join Files Help", help_text)
+        
+    def show_preferences(self):
+        """Show Split/Join Files preferences."""
+        QMessageBox.information(self, "Split/Join Files Preferences", 
+                               "Split/Join Files preferences:\n\n"
+                               "• Default split sizes\n"
+                               "• Output naming patterns\n"
+                               "• Checksum verification settings\n"
+                               "• Progress display options\n\n"
+                               "Advanced preferences coming soon!")
+                               
+    def refresh_view(self):
+        """Refresh/clear the current operations."""
+        self.clear_operations()
         
     def init_ui(self):
         """Initialize the user interface."""
-        self.setWindowTitle("Split/Join Files - Richard's File Utilities")
-        self.setGeometry(100, 100, 800, 600)
-        
-        # Create central widget and layout
-        central_widget = QWidget()
-        self.setCentralWidget(central_widget)
-        layout = QVBoxLayout(central_widget)
+        # Use the existing main layout from StandardWindow
+        layout = self.main_layout
         
         # Add header
         header_label = QLabel("Split/Join Files")

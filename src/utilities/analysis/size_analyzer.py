@@ -18,23 +18,128 @@ except ImportError:
     print("PyQt5 not available. Please install PyQt5.")
     sys.exit(1)
 
+# Import StandardWindow for menu integration
+try:
+    from src.rfu.gui.standard_window import StandardWindow
+    STANDARD_WINDOW_AVAILABLE = True
+except ImportError:
+    # Fallback for standalone execution
+    from PyQt5.QtWidgets import QMainWindow
+    StandardWindow = QMainWindow
+    STANDARD_WINDOW_AVAILABLE = False
 
-class SizeAnalyzerGUI(QMainWindow):
+
+class SizeAnalyzerGUI(StandardWindow):
     """Main window for Size Analyzer operations."""
     
     def __init__(self):
-        super().__init__()
+        if STANDARD_WINDOW_AVAILABLE:
+            super().__init__(
+                title="Size Analyzer - Richard's File Utilities",
+                window_type="utility"
+            )
+        else:
+            super().__init__()
+            self.setWindowTitle("Size Analyzer - Richard's File Utilities")
+            self.setGeometry(100, 100, 800, 600)
+        
+        self.analysis_results = {}
         self.init_ui()
+        if STANDARD_WINDOW_AVAILABLE:
+            self._setup_menu_callbacks()
+    
+    def _setup_menu_callbacks(self):
+        """Setup tool-specific menu callbacks."""
+        if hasattr(self, 'menu_manager'):
+            # Register tool-specific callbacks
+            self.menu_manager.register_callback('new_analysis', self.clear_analysis)
+            self.menu_manager.register_callback('help_size_analyzer', self.show_help)
+            
+    def clear_analysis(self):
+        """Clear all size analysis results."""
+        self.analysis_results = {}
+        if hasattr(self, 'results_list'):
+            self.results_list.clear()
+        
+    def show_help(self):
+        """Show help dialog for Size Analyzer tool."""
+        help_text = """
+        <h2>Size Analyzer - Help</h2>
+        
+        <h3>How to Analyze Directory Sizes:</h3>
+        <ul>
+        <li><b>Select Directory:</b> Choose the folder to analyze</li>
+        <li><b>Start Analysis:</b> Begin calculating directory and file sizes</li>
+        <li><b>View Results:</b> Browse size breakdown by folders and files</li>
+        <li><b>Export Data:</b> Save analysis results to file</li>
+        </ul>
+        
+        <h3>Analysis Features:</h3>
+        <ul>
+        <li><b>Directory Tree:</b> Hierarchical view of folder sizes</li>
+        <li><b>File Breakdown:</b> Individual file size listings</li>
+        <li><b>Size Sorting:</b> Results sorted by size (largest first)</li>
+        <li><b>Progress Tracking:</b> Real-time analysis progress</li>
+        </ul>
+        
+        <h3>Size Information:</h3>
+        <ul>
+        <li><b>Bytes Display:</b> Precise file sizes in bytes</li>
+        <li><b>Human Readable:</b> Sizes shown in KB, MB, GB format</li>
+        <li><b>Percentage View:</b> Relative size percentages</li>
+        <li><b>File Count:</b> Number of files in each directory</li>
+        </ul>
+        
+        <h3>Use Cases:</h3>
+        <ul>
+        <li><b>Disk Cleanup:</b> Find largest files consuming space</li>
+        <li><b>Storage Planning:</b> Understand disk usage patterns</li>
+        <li><b>Archive Planning:</b> Identify candidates for archival</li>
+        <li><b>System Optimization:</b> Locate space-wasting files</li>
+        </ul>
+        
+        <h3>Best Practices:</h3>
+        <ul>
+        <li><b>Regular Analysis:</b> Periodic size checks prevent space issues</li>
+        <li><b>Focus on Large Files:</b> Start cleanup with biggest space users</li>
+        <li><b>Archive Old Data:</b> Move unused large files to external storage</li>
+        <li><b>Monitor Growth:</b> Track how directories grow over time</li>
+        </ul>
+        
+        <h3>Keyboard Shortcuts:</h3>
+        <ul>
+        <li><b>Ctrl+Q:</b> Exit application</li>
+        <li><b>F1:</b> Show this help</li>
+        <li><b>F5:</b> Clear analysis and start new scan</li>
+        </ul>
+        """
+        
+        QMessageBox.information(self, "Size Analyzer Help", help_text)
+        
+    def show_preferences(self):
+        """Show Size Analyzer preferences."""
+        QMessageBox.information(self, "Size Analyzer Preferences", 
+                               "Size Analyzer preferences:\n\n"
+                               "• Analysis depth limits\n"
+                               "• File type filters\n"
+                               "• Size display units\n"
+                               "• Sort and grouping options\n\n"
+                               "Advanced preferences coming soon!")
+                               
+    def refresh_view(self):
+        """Refresh/clear the current analysis results."""
+        self.clear_analysis()
         
     def init_ui(self):
         """Initialize the user interface."""
-        self.setWindowTitle("Size Analyzer - Richard's File Utilities")
-        self.setGeometry(100, 100, 800, 600)
-        
-        # Create central widget and layout
-        central_widget = QWidget()
-        self.setCentralWidget(central_widget)
-        layout = QVBoxLayout(central_widget)
+        # Use the existing main layout from StandardWindow or create new layout
+        if STANDARD_WINDOW_AVAILABLE and hasattr(self, 'main_layout'):
+            layout = self.main_layout
+        else:
+            # Create central widget and layout for fallback mode
+            central_widget = QWidget()
+            self.setCentralWidget(central_widget)
+            layout = QVBoxLayout(central_widget)
         
         # Add header
         header_label = QLabel("Size Analyzer")

@@ -11,18 +11,31 @@ from PyQt5.QtWidgets import (QMainWindow, QDialog, QWidget, QVBoxLayout, QHBoxLa
 from PyQt5.QtCore import Qt, QTimer, pyqtSignal
 from PyQt5.QtGui import QIcon, QFont
 from gui.themes import ThemeManager, Colors, Fonts, Spacing, Dimensions
+from gui.menu_manager import MenuManager
 
 
 class StandardWindow(QMainWindow):
     """Standardized main window for utilities."""
     
-    def __init__(self, title="Richard's File Utilities", icon_path=None):
+    def __init__(self, title="Richard's File Utilities", icon_path=None, 
+                 enable_menu=True, window_type="utility"):
         super().__init__()
         self.title = title
         self.icon_path = icon_path or self._get_default_icon()
+        self.enable_menu = enable_menu
+        self.window_type = window_type
+        
+        # Initialize menu manager
+        if self.enable_menu:
+            self.menu_manager = MenuManager(self)
         
         self._setup_window()
         self._create_central_widget()
+        
+        # Create menu bar if enabled
+        if self.enable_menu:
+            self._create_menu_bar()
+        
         self._create_status_bar()
         self._apply_theme()
     
@@ -30,10 +43,56 @@ class StandardWindow(QMainWindow):
         """Setup basic window properties."""
         self.setWindowTitle(self.title)
         self.setWindowIcon(QIcon(self.icon_path))
-        self.setMinimumSize(Dimensions.UTILITY_WINDOW_MIN_WIDTH, 
-                           Dimensions.UTILITY_WINDOW_MIN_HEIGHT)
-        self.resize(Dimensions.UTILITY_WINDOW_MIN_WIDTH + 200, 
-                   Dimensions.UTILITY_WINDOW_MIN_HEIGHT + 150)
+        
+        if hasattr(Dimensions, 'UTILITY_WINDOW_MIN_WIDTH'):
+            min_width = Dimensions.UTILITY_WINDOW_MIN_WIDTH
+            min_height = Dimensions.UTILITY_WINDOW_MIN_HEIGHT
+        else:
+            min_width = 600
+            min_height = 500
+        
+        self.setMinimumSize(min_width, min_height)
+        self.resize(min_width + 200, min_height + 150)
+    
+    def _create_menu_bar(self):
+        """Create the standardized menu bar."""
+        if hasattr(self, 'menu_manager'):
+            self.menu_manager.create_standard_menubar(self.window_type)
+            
+            # Register common callbacks
+            self.menu_manager.register_callback('show_preferences', 
+                                               self.show_preferences)
+            self.menu_manager.register_callback('show_options', 
+                                               self.show_options)
+            self.menu_manager.register_callback('refresh', 
+                                               self.refresh_view)
+            
+            # Register file operations if implemented
+            if hasattr(self, 'save_data'):
+                self.menu_manager.register_callback('save_file', self.save_data)
+            if hasattr(self, 'load_data'):
+                self.menu_manager.register_callback('open_file', self.load_data)
+            if hasattr(self, 'export_data'):
+                self.menu_manager.register_callback('export_data', 
+                                                   self.export_data)
+            if hasattr(self, 'import_data'):
+                self.menu_manager.register_callback('import_data', 
+                                                   self.import_data)
+    
+    def show_preferences(self):
+        """Show preferences dialog - can be overridden by subclasses."""
+        QMessageBox.information(self, "Preferences", 
+                               "Preferences dialog not implemented for this tool.")
+    
+    def show_options(self):
+        """Show options dialog - can be overridden by subclasses."""
+        QMessageBox.information(self, "Options", 
+                               "Options dialog not implemented for this tool.")
+    
+    def refresh_view(self):
+        """Refresh the current view - can be overridden by subclasses."""
+        if hasattr(self, 'statusBar'):
+            self.statusBar().showMessage("Refreshed", 2000)
     
     def _create_central_widget(self):
         """Create central widget with standard layout."""

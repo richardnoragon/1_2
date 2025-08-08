@@ -6,28 +6,61 @@ This document describes how to run tests and contribute new tests to the RFU pro
 
 Run all tests with coverage report:
 ```bash
-python run_tests.py --coverage
+pytest --cov=. --cov-report=html
 ```
 
 Run tests without GUI tests (useful for CI environments):
 ```bash
-python run_tests.py --no-gui
+pytest -m "not gui"
 ```
 
-Run tests in parallel for faster execution:
+Run specific test categories:
 ```bash
-python run_tests.py --parallel
+# Unit tests only
+pytest tests/unit/
+
+# Integration tests only  
+pytest tests/integration/
+
+# Validation tests only
+pytest tests/validation/
 ```
 
-## Test Structure
+## Test Structure (Updated Organization)
 
-- `tests/test_utils.py` - Common utilities used across tests
-- `tests/test_file_operations.py` - Tests for file organization and renaming
-- `tests/test_encryption.py` - Tests for file encryption/decryption
-- `tests/test_metadata.py` - Tests for metadata handling
-- `tests/test_gui_components.py` - Tests for GUI components
-- `tests/test_config.py` - Tests for configuration management
-- `tests/test_logging.py` - Tests for logging functionality
+### 🧪 Unit Tests (`tests/unit/`)
+- `test_bookmark_simple.py` - Basic bookmark functionality
+- `test_file_finder.py` - File finder component tests
+- `test_size_analyzer_*.py` - Size analyzer unit tests
+- Individual component isolation tests
+
+### 🔗 Integration Tests (`tests/integration/`)
+Organized by functional domain:
+- **pdf/**: PDF conversion, enhancement, restoration tests
+- **security/**: Security integration, encryption dialog tests  
+- **network/**: Network transfer integration tests
+- **database/**: Database and SQLite integration tests
+- `test_all_tools.py` - Comprehensive integration test
+
+### ✅ Validation Tests (`tests/validation/`)
+- Migration validation tests
+- Import verification tests
+- Syntax and structure validation
+- Production readiness checks
+
+### 🎯 Demo Scripts (`tests/demos/`)
+- `demo_bookmark_manager.py` - Bookmark manager demonstration
+- `demo_security_implementation.py` - Security features demo
+- `demo_sqlite_*.py` - SQLite functionality demos
+
+### Legacy Tests (Main Directory)
+- `test_utils.py` - Common utilities used across tests
+- `test_file_operations.py` - Tests for file organization and renaming
+- `test_encryption.py` - Tests for file encryption/decryption
+- `test_metadata.py` - Tests for metadata handling
+- `test_gui_components.py` - Tests for GUI components
+- `test_config.py` - Tests for configuration management
+- `test_logging.py` - Tests for logging functionality
 
 ## Writing New Tests
 

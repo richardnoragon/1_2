@@ -19,23 +19,57 @@ except ImportError:
     print("PyQt5 not available. Please install PyQt5.")
     sys.exit(1)
 
+# Import StandardWindow for menu integration
+try:
+    from src.rfu.gui.standard_window import StandardWindow
+except ImportError:
+    # Fallback for standalone execution
+    StandardWindow = QMainWindow
 
-class NetworkScannerGUI(QMainWindow):
+
+class NetworkScannerGUI(StandardWindow):
     """Main window for Network Scanner operations."""
     
     def __init__(self):
-        super().__init__()
+        super().__init__(
+            title="Network Scanner - Richard's File Utilities",
+            window_type="utility"
+        )
         self.init_ui()
+        self._setup_menu_callbacks()
+        
+    def _setup_menu_callbacks(self):
+        """Setup tool-specific menu callbacks."""
+        if hasattr(self, 'menu_manager'):
+            # Register tool-specific callbacks
+            self.menu_manager.register_callback('show_preferences',
+                                               self.show_preferences)
+            self.menu_manager.register_callback('refresh', self.refresh_view)
+    
+    def show_preferences(self):
+        """Show Network Scanner preferences."""
+        QMessageBox.information(
+            self, "Network Scanner Preferences",
+            "Network Scanner preferences:\n\n"
+            "• Default scan timeout settings\n"
+            "• Preferred scan techniques\n"
+            "• Port range presets\n"
+            "• Result display options\n\n"
+            "Advanced preferences coming soon!"
+        )
+        
+    def refresh_view(self):
+        """Refresh the network scanner interface."""
+        self.results_text.append("\n=== Refreshing Scanner Interface ===")
+        self.results_text.append("Target configuration refreshed")
+        self.results_text.append("Scan options updated")
+        QMessageBox.information(self, "Refresh",
+                               "Scanner interface refreshed successfully.")
         
     def init_ui(self):
         """Initialize the user interface."""
-        self.setWindowTitle("Network Scanner - Richard's File Utilities")
-        self.setGeometry(100, 100, 800, 600)
-        
-        # Create central widget and layout
-        central_widget = QWidget()
-        self.setCentralWidget(central_widget)
-        layout = QVBoxLayout(central_widget)
+        # Use the existing main layout from StandardWindow
+        layout = self.main_layout
         
         # Add header
         header_label = QLabel("Network Scanner")

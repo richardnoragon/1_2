@@ -11,7 +11,7 @@ import fnmatch
 
 try:
     from PyQt5.QtWidgets import (
-        QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QGridLayout,
+        QWidget, QVBoxLayout, QHBoxLayout, QGridLayout,
         QPushButton, QLineEdit, QListWidget, QListWidgetItem, QLabel,
         QCheckBox, QGroupBox, QFileDialog, QMessageBox,
         QApplication, QTextEdit
@@ -21,24 +21,121 @@ except ImportError:
     print("PyQt5 not available. Please install PyQt5.")
     sys.exit(1)
 
+# Import StandardWindow for menu integration
+try:
+    from src.rfu.gui.standard_window import StandardWindow
+except ImportError:
+    # Fallback for standalone execution
+    from PyQt5.QtWidgets import QMainWindow
+    StandardWindow = QMainWindow
 
-class FileFinderGUI(QMainWindow):
+
+class FileFinderGUI(StandardWindow):
     """Simplified File Finder GUI with essential functionality."""
     
     def __init__(self):
-        super().__init__()
+        super().__init__(
+            title="File Finder - Richard's File Utilities",
+            window_type="search"
+        )
         self.current_directory = ""
         self.init_ui()
+        self._setup_menu_callbacks()
+    
+    def _setup_menu_callbacks(self):
+        """Setup tool-specific menu callbacks."""
+        if hasattr(self, 'menu_manager'):
+            # Register tool-specific callbacks
+            self.menu_manager.register_callback('new_search', self.clear_results)
+            self.menu_manager.register_callback('save_results', self.save_search_results)
+            self.menu_manager.register_callback('export_results', self.export_search_results)
+            
+    def save_search_results(self):
+        """Save search results to file."""
+        if self.results_list.count() == 0:
+            QMessageBox.information(self, "No Results", "No search results to save.")
+            return
+            
+        file_path, _ = QFileDialog.getSaveFileName(
+            self, "Save Search Results", "search_results.txt",
+            "Text Files (*.txt);;All Files (*)"
+        )
+        
+        if file_path:
+            try:
+                with open(file_path, 'w', encoding='utf-8') as f:
+                    f.write(f"File Finder Search Results\n")
+                    f.write(f"Search Directory: {self.current_directory}\n")
+                    f.write(f"Search Pattern: {self.pattern_edit.text()}\n")
+                    f.write(f"Recursive: {self.recursive_check.isChecked()}\n")
+                    f.write(f"Total Results: {self.results_list.count()}\n\n")
+                    
+                    for i in range(self.results_list.count()):
+                        f.write(f"{self.results_list.item(i).text()}\n")
+                        
+                QMessageBox.information(self, "Success", f"Results saved to {file_path}")
+            except Exception as e:
+                QMessageBox.warning(self, "Error", f"Failed to save results: {e}")
+                
+    def export_search_results(self):
+        """Export search results to CSV format."""
+        if self.results_list.count() == 0:
+            QMessageBox.information(self, "No Results", "No search results to export.")
+            return
+            
+        file_path, _ = QFileDialog.getSaveFileName(
+            self, "Export Search Results", "search_results.csv",
+            "CSV Files (*.csv);;All Files (*)"
+        )
+        
+        if file_path:
+            try:
+                import csv
+                with open(file_path, 'w', newline='', encoding='utf-8') as f:
+                    writer = csv.writer(f)
+                    writer.writerow(['File Path', 'File Name', 'Directory', 'Size', 'Modified'])
+                    
+                    for i in range(self.results_list.count()):
+                        file_path_item = self.results_list.item(i).text()
+                        file_name = os.path.basename(file_path_item)
+                        directory = os.path.dirname(file_path_item)
+                        
+                        try:
+                            stat = os.stat(file_path_item)
+                            size = stat.st_size
+                            import time
+                            modified = time.ctime(stat.st_mtime)
+                        except:
+                            size = "Unknown"
+                            modified = "Unknown"
+                            
+                        writer.writerow([file_path_item, file_name, directory, size, modified])
+                        
+                QMessageBox.information(self, "Success", f"Results exported to {file_path}")
+            except Exception as e:
+                QMessageBox.warning(self, "Error", f"Failed to export results: {e}")
+                
+    def show_preferences(self):
+        """Show File Finder preferences."""
+        QMessageBox.information(self, "File Finder Preferences", 
+                               "File Finder preferences:\n\n"
+                               "• Default search patterns\n"
+                               "• Search depth limits\n"
+                               "• Result display options\n"
+                               "• Export formats\n\n"
+                               "Advanced preferences coming soon!")
+                               
+    def refresh_view(self):
+        """Refresh the current search."""
+        if self.current_directory:
+            self.start_search()
+        else:
+            QMessageBox.information(self, "Refresh", "Select a directory first to refresh search.")
         
     def init_ui(self):
         """Initialize the user interface."""
-        self.setWindowTitle("File Finder - Richard's File Utilities")
-        self.setGeometry(100, 100, 800, 600)
-        
-        # Create central widget and main layout
-        central_widget = QWidget()
-        self.setCentralWidget(central_widget)
-        layout = QVBoxLayout(central_widget)
+        # Use the existing main layout from StandardWindow
+        layout = self.main_layout
         
         # Create header
         header_label = QLabel("File Finder")

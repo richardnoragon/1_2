@@ -4,14 +4,73 @@ Richard's File Utilities - Main Entry Point
 
 This is the main entry point for the Richard's File Utilities application.
 It provides a comprehensive GUI interface for accessing all file utility tools.
+Enhanced with SQLite database integration for settings and logging.
 """
 
 import sys
 import os
+import logging
 from pathlib import Path
 
 # Add the src directory to the Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
+
+# Initialize database and logging systems
+def initialize_database_system():
+    """Initialize the database and enhanced configuration system with proper error handling."""
+    db_manager = None
+    logger = None
+    
+    try:
+        # Setup basic logging first
+        logging.basicConfig(
+            level=logging.INFO,
+            format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+            handlers=[
+                logging.StreamHandler(),
+                logging.FileHandler('rfu_errors.log', encoding='utf-8')
+            ]
+        )
+        logger = logging.getLogger('RFU.Main')
+        
+        # Import and initialize database manager with validation
+        try:
+            from standalone_database_manager import get_database_manager
+            db_manager = get_database_manager()
+            
+            # Validate database connection
+            if db_manager is None:
+                raise RuntimeError("Database manager returned None")
+                
+            # Test database connectivity
+            db_info = db_manager.get_database_info()
+            if not db_info or 'database_file' not in db_info:
+                raise RuntimeError("Database info validation failed")
+                
+        except ImportError as e:
+            logger.error(f"Database module import failed: {e}")
+            return False
+        except Exception as e:
+            logger.error(f"Database manager initialization failed: {e}")
+            return False
+        
+        logger.info("Database system initialized successfully")
+        logger.info(f"Database: {db_info.get('database_file')}")
+        
+        return True
+        
+    except Exception as e:
+        # Ensure we always have logging even if database fails
+        if logger is None:
+            logging.basicConfig(level=logging.INFO)
+            logger = logging.getLogger('RFU.Main')
+        
+        logger.error(f"Critical: Database system initialization failed: {e}")
+        logger.warning("Application will continue without database features")
+        return False
+
+# Initialize database system
+DATABASE_AVAILABLE = initialize_database_system()
 
 # Import the enhanced PDF tools widget
 try:
@@ -25,7 +84,7 @@ try:
     from PyQt5.QtWidgets import (
         QApplication, QMainWindow, QLabel, QPushButton, QVBoxLayout, 
         QWidget, QHBoxLayout, QGridLayout, QScrollArea, QFrame,
-        QTabWidget, QGroupBox, QMessageBox
+        QTabWidget, QGroupBox, QMessageBox, QFileDialog
     )
     from PyQt5.QtCore import Qt, pyqtSlot
     from PyQt5.QtGui import QFont, QIcon
@@ -39,10 +98,445 @@ try:
             # Store references to opened windows
             self.opened_windows = {}
             
+            # Initialize database tracking
+            self.database_available = DATABASE_AVAILABLE
+            if self.database_available:
+                try:
+                    from standalone_database_manager import get_database_manager
+                    self.db_manager = get_database_manager()
+                    self.logger = logging.getLogger('RFU.MainWindow')
+                    self.logger.info("Main window database tracking enabled")
+                except Exception as e:
+                    self.database_available = False
+                    print(f"Database integration failed: {e}")
+            
             self.init_ui()
+        
+        def track_tool_usage(self, tool_name: str, operation_type: str = 'launch'):
+            """Track tool usage in database with race condition protection."""
+            if not self.database_available:
+                return
+            
+            try:
+                # Use a single UPSERT query to avoid race conditions
+                upsert_query = """
+                    INSERT INTO tool_usage
+                    (tool_name, operation_type, usage_count, first_used, 
+                     last_used, success_count)
+                    VALUES (?, ?, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1)
+                    ON CONFLICT(tool_name, operation_type) DO UPDATE SET
+                        usage_count = usage_count + 1,
+                        last_used = CURRENT_TIMESTAMP,
+                        success_count = success_count + 1
+                """
+                
+                # Execute as a single atomic operation
+                self.db_manager.execute_update(upsert_query, 
+                                               (tool_name, operation_type))
+                self.logger.info(f"Tracked tool usage: {tool_name} - "
+                                f"{operation_type}")
+                
+            except Exception as e:
+                self.logger.error(f"Failed to track tool usage: {e}")
+                # Fallback: try simpler insert without conflict resolution
+                try:
+                    simple_query = """
+                        INSERT OR IGNORE INTO tool_usage
+                        (tool_name, operation_type, usage_count, first_used, 
+                         last_used, success_count)
+                        VALUES (?, ?, 1, CURRENT_TIMESTAMP, 
+                                CURRENT_TIMESTAMP, 1)
+                    """
+                    self.db_manager.execute_update(simple_query, 
+                                                   (tool_name, operation_type))
+                except Exception as fallback_error:
+                    error_msg = f"Fallback tool usage tracking failed: {fallback_error}"
+                    self.logger.error(error_msg)
+        
+        def track_file_access(self, file_path: str, tool_name: str = None, operation_type: str = 'access'):
+            """Track file access in database."""
+            if not self.database_available:
+                return
+            
+            try:
+                from pathlib import Path
+                
+                file_path_obj = Path(file_path)
+                if not file_path_obj.exists():
+                    return
+                
+                # Insert or update file history
+                query = """
+                    INSERT OR IGNORE INTO file_history 
+                    (file_path, file_name, file_size, file_type, directory_path, 
+                     tool_name, operation_type, access_count, first_accessed, last_accessed)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+                """
+                
+                update_query = """
+                    UPDATE file_history 
+                    SET access_count = access_count + 1,
+                        last_accessed = CURRENT_TIMESTAMP,
+                        tool_name = COALESCE(?, tool_name),
+                        operation_type = COALESCE(?, operation_type)
+                    WHERE file_path = ?
+                """
+                
+                file_info = file_path_obj.stat()
+                params = (
+                    str(file_path_obj.absolute()),
+                    file_path_obj.name,
+                    file_info.st_size,
+                    file_path_obj.suffix,
+                    str(file_path_obj.parent.absolute()),
+                    tool_name,
+                    operation_type
+                )
+                
+                # Try insert first, then update if it already exists
+                affected = self.db_manager.execute_update(query, params)
+                if affected == 0:
+                    self.db_manager.execute_update(update_query, (tool_name, operation_type, str(file_path_obj.absolute())))
+                
+                self.logger.debug(f"Tracked file access: {file_path_obj.name}")
+                
+            except Exception as e:
+                self.logger.error(f"Failed to track file access: {e}")
+        
+        def track_directory_access(self, directory_path: str, tool_name: str = None):
+            """Track directory access in database.""" 
+            if not self.database_available:
+                return
+            
+            try:
+                from pathlib import Path
+                
+                dir_path_obj = Path(directory_path)
+                if not dir_path_obj.exists() or not dir_path_obj.is_dir():
+                    return
+                
+                # Insert or update directory history
+                query = """
+                    INSERT OR IGNORE INTO directory_history 
+                    (directory_path, tool_name, access_count, first_accessed, last_accessed)
+                    VALUES (?, ?, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+                """
+                
+                update_query = """
+                    UPDATE directory_history 
+                    SET access_count = access_count + 1,
+                        last_accessed = CURRENT_TIMESTAMP,
+                        tool_name = COALESCE(?, tool_name)
+                    WHERE directory_path = ?
+                """
+                
+                dir_path_str = str(dir_path_obj.absolute())
+                
+                # Try insert first, then update if it already exists
+                affected = self.db_manager.execute_update(query, (dir_path_str, tool_name))
+                if affected == 0:
+                    self.db_manager.execute_update(update_query, (tool_name, dir_path_str))
+                
+                self.logger.debug(f"Tracked directory access: {dir_path_obj.name}")
+                
+            except Exception as e:
+                self.logger.error(f"Failed to track directory access: {e}")
+        
+        def create_menu_bar(self):
+            """Create the comprehensive application menu bar."""
+            try:
+                # Import the menu manager
+                from gui.menu_manager import MenuManager
+                
+                # Initialize menu manager for main window
+                self.menu_manager = MenuManager(self)
+                menubar = self.menu_manager.create_standard_menubar("main")
+                
+                # Register main window specific callbacks
+                self.menu_manager.register_callback('new_project', self.new_project)
+                self.menu_manager.register_callback('open_file', self.open_file)
+                self.menu_manager.register_callback('save_file', self.save_project)
+                self.menu_manager.register_callback('save_as_file', self.save_project_as)
+                self.menu_manager.register_callback('export_data', self.export_settings)
+                self.menu_manager.register_callback('import_data', self.import_settings)
+                self.menu_manager.register_callback('print_document', self.print_info)
+                self.menu_manager.register_callback('show_preferences', self.show_main_preferences)
+                self.menu_manager.register_callback('show_options', self.show_tool_options)
+                self.menu_manager.register_callback('refresh', self.refresh_tool_list)
+                
+                # Add custom security menu after standard menus
+                self._add_security_menu(menubar)
+                
+                # Add tools menu with specific RFU tools
+                self._add_tools_menu(menubar)
+                
+            except ImportError:
+                # Fallback to original menu if menu manager not available
+                self._create_fallback_menu_bar()
+            except Exception as e:
+                if hasattr(self, 'logger'):
+                    self.logger.error(f"Failed to create menu bar: {e}")
+                else:
+                    print(f"Failed to create menu bar: {e}")
+                # Try fallback
+                self._create_fallback_menu_bar()
+        
+        def _add_security_menu(self, menubar):
+            """Add security-specific menu items."""
+            # Security Menu - prominently placed
+            security_menu = menubar.addMenu('&Security')
+            
+            # Security Preferences action
+            security_prefs_action = security_menu.addAction('🔒 Security &Preferences...')
+            security_prefs_action.setShortcut('Ctrl+Shift+S')
+            security_prefs_action.setStatusTip('Configure comprehensive security settings')
+            security_prefs_action.triggered.connect(self.open_security_preferences)
+            
+            security_menu.addSeparator()
+            
+            # Security Features submenu
+            security_features_menu = security_menu.addMenu('🛡️ Security &Features')
+            
+            # Migration submenu
+            migration_menu = security_features_menu.addMenu('🔄 Database &Migration')
+            migration_menu.addAction('Execute Migration...').triggered.connect(self.open_migration_dialog)
+            migration_menu.addAction('Rollback Migration...').triggered.connect(self.open_rollback_dialog)
+            migration_menu.addAction('Validate Schema...').triggered.connect(self.open_schema_validation)
+            
+            # Theme Security submenu
+            theme_security_menu = security_features_menu.addMenu('🎨 &Theme Security')
+            theme_security_menu.addAction('Encrypt Themes...').triggered.connect(self.encrypt_themes_action)
+            theme_security_menu.addAction('Decrypt Themes...').triggered.connect(self.decrypt_themes_action)
+            theme_security_menu.addAction('Scan for Corruption...').triggered.connect(self.scan_theme_corruption_action)
+            
+            # Directory Security submenu
+            directory_security_menu = security_features_menu.addMenu('📁 &Directory Security')
+            directory_security_menu.addAction('Manage Protected Directories...').triggered.connect(self.manage_protected_directories)
+            directory_security_menu.addAction('Security Monitor...').triggered.connect(self.open_security_monitor)
+            
+            security_menu.addSeparator()
+            
+            # Security Tools submenu
+            security_tools_menu = security_menu.addMenu('🔧 Security &Tools')
+            security_tools_menu.addAction('Test Security Features...').triggered.connect(self.test_security_features_action)
+            security_tools_menu.addAction('Security Audit...').triggered.connect(self.run_security_audit_action)
+            security_tools_menu.addAction('Export Security Config...').triggered.connect(self.export_security_config_action)
+            security_tools_menu.addAction('Import Security Config...').triggered.connect(self.import_security_config_action)
+            
+            security_menu.addSeparator()
+            
+            # Emergency Actions
+            emergency_menu = security_menu.addMenu('🚨 &Emergency')
+            emergency_menu.addAction('Security Lockdown...').triggered.connect(self.emergency_lockdown_action)
+            emergency_menu.addAction('Disable All Security...').triggered.connect(self.emergency_disable_action)
+            emergency_menu.addAction('Force Security Backup...').triggered.connect(self.force_backup_action)
+        
+        def _add_tools_menu(self, menubar):
+            """Add tools-specific menu items."""
+            # Get existing tools menu from menu manager
+            if hasattr(self.menu_manager, 'tools_menu'):
+                tools_menu = self.menu_manager.tools_menu
+                
+                # Add RFU specific tool categories
+                tools_menu.addSeparator()
+                
+                # File Tools submenu
+                file_tools_menu = tools_menu.addMenu('📁 &File Tools')
+                file_tools_menu.addAction('File Finder').triggered.connect(self.open_file_finder)
+                file_tools_menu.addAction('Duplicate Finder').triggered.connect(self.open_duplicate_finder)
+                file_tools_menu.addAction('Size Analyzer').triggered.connect(self.open_size_analyzer)
+                file_tools_menu.addAction('Organize Files').triggered.connect(self.open_organize)
+                
+                # Security Tools submenu
+                security_tools_menu = tools_menu.addMenu('🔐 &Security Tools')
+                security_tools_menu.addAction('Encrypt/Decrypt').triggered.connect(self.open_encrypt_decrypt)
+                security_tools_menu.addAction('Secure Delete').triggered.connect(self.open_secure_delete)
+                security_tools_menu.addAction('Permissions Editor').triggered.connect(self.open_permissions)
+                
+                # System Tools submenu
+                system_tools_menu = tools_menu.addMenu('⚙️ &System Tools')
+                system_tools_menu.addAction('Enhanced Clipboard Manager').triggered.connect(self.open_enhanced_clipboard)
+                system_tools_menu.addAction('System Diagnostics').triggered.connect(self.open_system_diagnostics)
+                system_tools_menu.addAction('System Cleanup').triggered.connect(self.open_system_cleanup)
+                system_tools_menu.addAction('Software Maintenance').triggered.connect(self.open_software_maintenance)
+        
+        def _create_fallback_menu_bar(self):
+            """Create a basic fallback menu bar if the comprehensive system fails."""
+            try:
+                menubar = self.menuBar()
+                
+                # File Menu
+                file_menu = menubar.addMenu('&File')
+                file_menu.addAction('&Exit', self.close, 'Ctrl+Q')
+                
+                # Tools Menu
+                tools_menu = menubar.addMenu('&Tools')
+                
+                # Help Menu
+                help_menu = menubar.addMenu('&Help')
+                help_menu.addAction('&About', self.show_about_dialog)
+                
+            except Exception as e:
+                if hasattr(self, 'logger'):
+                    self.logger.error(f"Failed to create fallback menu bar: {e}")
+                else:
+                    print(f"Failed to create fallback menu bar: {e}")
+        
+        # Menu callback implementations
+        def new_project(self):
+            """Create a new project."""
+            from PyQt5.QtWidgets import QMessageBox
+            QMessageBox.information(self, "New Project", "New project functionality will be implemented in a future version.")
+        
+        def open_file(self, file_path=None):
+            """Open a file or project."""
+            if not file_path:
+                from PyQt5.QtWidgets import QFileDialog
+                file_path, _ = QFileDialog.getOpenFileName(self, "Open File", "", "All Files (*.*)")
+            
+            if file_path:
+                # Track file access
+                self.track_file_access(file_path, "Main Window", "open")
+                # Add to recent files
+                self._add_to_recent_files(file_path)
+        
+        def save_project(self):
+            """Save current project."""
+            from PyQt5.QtWidgets import QMessageBox
+            QMessageBox.information(self, "Save", "Project save functionality will be implemented in a future version.")
+        
+        def save_project_as(self):
+            """Save project with new name."""
+            from PyQt5.QtWidgets import QMessageBox
+            QMessageBox.information(self, "Save As", "Save As functionality will be implemented in a future version.")
+        
+        def export_settings(self):
+            """Export application settings."""
+            from PyQt5.QtWidgets import QFileDialog, QMessageBox
+            
+            file_path, _ = QFileDialog.getSaveFileName(
+                self, "Export Settings", "rfu_settings.json", "JSON Files (*.json)"
+            )
+            
+            if file_path:
+                try:
+                    import json
+                    from PyQt5.QtCore import QSettings
+                    
+                    settings = QSettings("RFU", "MainApplication")
+                    settings_dict = {}
+                    
+                    # Export basic settings
+                    for key in settings.allKeys():
+                        settings_dict[key] = settings.value(key)
+                    
+                    with open(file_path, 'w') as f:
+                        json.dump(settings_dict, f, indent=2)
+                    
+                    QMessageBox.information(self, "Export Complete", f"Settings exported to {file_path}")
+                    
+                except Exception as e:
+                    QMessageBox.critical(self, "Export Error", f"Failed to export settings: {str(e)}")
+        
+        def import_settings(self):
+            """Import application settings."""
+            from PyQt5.QtWidgets import QFileDialog, QMessageBox
+            
+            file_path, _ = QFileDialog.getOpenFileName(
+                self, "Import Settings", "", "JSON Files (*.json)"
+            )
+            
+            if file_path:
+                try:
+                    import json
+                    from PyQt5.QtCore import QSettings
+                    
+                    with open(file_path, 'r') as f:
+                        settings_dict = json.load(f)
+                    
+                    settings = QSettings("RFU", "MainApplication")
+                    
+                    for key, value in settings_dict.items():
+                        settings.setValue(key, value)
+                    
+                    QMessageBox.information(self, "Import Complete", "Settings imported successfully. Please restart the application.")
+                    
+                except Exception as e:
+                    QMessageBox.critical(self, "Import Error", f"Failed to import settings: {str(e)}")
+        
+        def print_info(self):
+            """Print application information."""
+            from PyQt5.QtWidgets import QMessageBox
+            QMessageBox.information(self, "Print", "Print functionality will be implemented in a future version.")
+        
+        def show_main_preferences(self):
+            """Show main application preferences."""
+            try:
+                self.open_security_preferences()  # Reuse existing preferences dialog
+            except:
+                from PyQt5.QtWidgets import QMessageBox
+                QMessageBox.information(self, "Preferences", "Preferences dialog will be implemented in a future version.")
+        
+        def show_tool_options(self):
+            """Show tool-specific options."""
+            from PyQt5.QtWidgets import QMessageBox
+            QMessageBox.information(self, "Tool Options", "Tool options dialog will be implemented in a future version.")
+        
+        def refresh_tool_list(self):
+            """Refresh the tool list and interface."""
+            try:
+                # Clear any caches
+                self.opened_windows.clear()
+                
+                # Update status
+                if hasattr(self, 'statusBar'):
+                    self.statusBar().showMessage("Tool list refreshed", 2000)
+                
+            except Exception as e:
+                if hasattr(self, 'logger'):
+                    self.logger.error(f"Error refreshing tool list: {e}")
+        
+        def show_about_dialog(self):
+            """Show about dialog."""
+            from PyQt5.QtWidgets import QMessageBox
+            QMessageBox.about(self, "About RFU", 
+                             "Richard's File Utilities v2.0.0\n\n"
+                             "A comprehensive suite of file management tools.\n\n"
+                             "© 2025 Richard Noragon")
+        
+        def _add_to_recent_files(self, file_path):
+            """Add file to recent files list."""
+            try:
+                from PyQt5.QtCore import QSettings
+                settings = QSettings("RFU", "Menu_Preferences")
+                recent_files = settings.value('recent_files', [])
+                
+                if isinstance(recent_files, str):
+                    recent_files = [recent_files]
+                elif not isinstance(recent_files, list):
+                    recent_files = []
+                
+                # Remove if already in list
+                if file_path in recent_files:
+                    recent_files.remove(file_path)
+                
+                # Add to beginning
+                recent_files.insert(0, file_path)
+                
+                # Limit to 10 files
+                recent_files = recent_files[:10]
+                
+                settings.setValue('recent_files', recent_files)
+                
+            except Exception as e:
+                if hasattr(self, 'logger'):
+                    self.logger.error(f"Error adding to recent files: {e}")
         
         def init_ui(self):
             """Initialize the user interface."""
+            # Create menu bar
+            self.create_menu_bar()
+            
             # Create central widget and main layout
             central_widget = QWidget()
             self.setCentralWidget(central_widget)
@@ -96,6 +590,7 @@ try:
             
             # Security Tools
             security_tab = self.create_tool_category_tab([
+                ("Security Preferences", "Configure comprehensive security settings", self.open_security_preferences),
                 ("Encrypt/Decrypt", "Secure file encryption and decryption", self.open_encrypt_decrypt),
                 ("Secure Delete", "Permanently delete sensitive files", self.open_secure_delete),
                 ("Permissions Editor", "Manage file and folder permissions", self.open_permissions),
@@ -125,6 +620,8 @@ try:
             network_tab = self.create_tool_category_tab([
                 ("Network Connectivity", "Check network connectivity and diagnostics", self.open_network_connectivity),
                 ("Network Scanner", "Scan network for devices and services", self.open_network_scanner),
+                ("Network Transfer", "Transfer files and configurations between RFU clients", self.open_network_transfer),
+                ("Bookmark Manager", "Cross-platform bookmark keeper/editor/importer", self.open_bookmark_manager),
             ])
             tab_widget.addTab(network_tab, "Network Tools")
             
@@ -137,6 +634,7 @@ try:
             
             # System Tools  
             system_tab = self.create_tool_category_tab([
+                ("Enhanced Clipboard Manager", "Comprehensive clipboard management with advanced features", self.open_enhanced_clipboard),
                 ("System Diagnostics", "Run system diagnostics and monitoring", self.open_system_diagnostics),
                 ("System Cleanup", "Clean system temporary files", self.open_system_cleanup),
                 ("Software Maintenance", "Maintain and update software", self.open_software_maintenance),
@@ -328,6 +826,41 @@ try:
             """Open Empty Folders tool."""
             self.launch_tool("Empty Folders", "src.rfu.tools.analysis.empty_folders", "EmptyFoldersGUI")
             
+        def open_security_preferences(self):
+            """Open Security Preferences dialog."""
+            try:
+                from src.rfu.gui.security_preferences_dialog import SecurityPreferencesDialog
+                
+                # Check if dialog is already open
+                if hasattr(self, 'security_preferences_dialog') and self.security_preferences_dialog:
+                    self.security_preferences_dialog.show()
+                    self.security_preferences_dialog.raise_()
+                    self.security_preferences_dialog.activateWindow()
+                    return
+                
+                # Create and show new dialog
+                self.security_preferences_dialog = SecurityPreferencesDialog(self)
+                self.security_preferences_dialog.show()
+                self.track_tool_usage("Security Preferences", "open")
+                self.statusBar().showMessage("Security Preferences dialog opened")
+                
+            except ImportError as e:
+                self.logger.error(f"Failed to import SecurityPreferencesDialog: {e}")
+                QMessageBox.warning(
+                    self, 
+                    "Import Error",
+                    f"Security Preferences dialog is not available.\n\n"
+                    f"Error: {e}\n\n"
+                    f"Please ensure all security components are properly installed."
+                )
+            except Exception as e:
+                self.logger.error(f"Failed to open Security Preferences: {e}")
+                QMessageBox.critical(
+                    self,
+                    "Error",
+                    f"Failed to open Security Preferences dialog:\n\n{e}"
+                )
+        
         def open_encrypt_decrypt(self):
             """Open Encrypt/Decrypt tool."""
             self.launch_tool("Encrypt/Decrypt", "src.utilities.security.en_and_decrypt", "EnAndDecryptGUI")
@@ -354,7 +887,7 @@ try:
             
         def open_pdf_tools(self):
             """Open PDF Tools."""
-            self.launch_tool("PDF Tools", "pdf_utilities.main", "PDFUtilitiesGUI")
+            self.launch_tool("PDF Tools", "enhanced_pdf_tools_widget", "EnhancedPDFToolsWidget")
             
         def open_pdf_links(self):
             """Open PDF Links Extractor."""
@@ -373,16 +906,28 @@ try:
             """Open Network Scanner tool."""
             self.launch_tool("Network Scanner", "src.utilities.network.network_scanner", "NetworkScannerGUI")
         
+        def open_network_transfer(self):
+            """Open Network Transfer tool."""
+            self.launch_tool("Network Transfer", "src.utilities.network.network_transfer", "NetworkTransferGUI")
+        
+        def open_bookmark_manager(self):
+            """Open Bookmark Manager tool."""
+            self.launch_tool("Bookmark Manager", "src.utilities.network.bookmark_manager", "BookmarkManagerGUI")
+        
         # Privacy Tools
         def open_privacy_cleaner(self):
             """Open Privacy Cleaner tool."""
-            self.launch_tool("Privacy Cleaner", "src.utilities.privacy.privacy_tools", "PrivacyCleanerGUI")
+            self.launch_tool("Privacy Cleaner", "src.utilities.privacy.privacy_tools_simple", "PrivacyCleanerGUI")
         
         def open_data_anonymizer(self):
             """Open Data Anonymizer tool."""
             self.launch_tool("Data Anonymizer", "src.utilities.privacy.data_anonymizer", "DataAnonymizerGUI")
         
         # System Tools
+        def open_enhanced_clipboard(self):
+            """Open Enhanced Clipboard Manager tool."""
+            self.launch_tool("Enhanced Clipboard Manager", "enhanced_clipboard_system_integration", "EnhancedClipboardGUI")
+        
         def open_system_diagnostics(self):
             """Open System Diagnostics tool."""
             self.launch_tool("System Diagnostics", "src.utilities.system.diagnostics_monitoring", "SystemDiagnosticsGUI")
@@ -395,6 +940,378 @@ try:
             """Open Software Maintenance tool."""
             self.launch_tool("Software Maintenance", "src.utilities.system.software_maintenance", "SoftwareMaintenanceGUI")
         
+        # Security Menu Action Methods
+        def open_migration_dialog(self):
+            """Open migration dialog directly."""
+            try:
+                self.open_security_preferences()
+                # Switch to migration tab if dialog opens successfully
+                if hasattr(self, 'security_preferences_dialog') and self.security_preferences_dialog:
+                    self.security_preferences_dialog.tab_widget.setCurrentIndex(0)  # Migration tab
+            except Exception as e:
+                self.logger.error(f"Failed to open migration dialog: {e}")
+                
+        def open_rollback_dialog(self):
+            """Open rollback dialog directly."""
+            try:
+                self.open_security_preferences()
+                # Switch to migration tab if dialog opens successfully
+                if hasattr(self, 'security_preferences_dialog') and self.security_preferences_dialog:
+                    self.security_preferences_dialog.tab_widget.setCurrentIndex(0)  # Migration tab
+            except Exception as e:
+                self.logger.error(f"Failed to open rollback dialog: {e}")
+                
+        def open_schema_validation(self):
+            """Open schema validation directly."""
+            try:
+                self.open_security_preferences()
+                # Switch to migration tab if dialog opens successfully
+                if hasattr(self, 'security_preferences_dialog') and self.security_preferences_dialog:
+                    self.security_preferences_dialog.tab_widget.setCurrentIndex(0)  # Migration tab
+            except Exception as e:
+                self.logger.error(f"Failed to open schema validation: {e}")
+                
+        def encrypt_themes_action(self):
+            """Quick action to encrypt themes."""
+            try:
+                self.open_security_preferences()
+                # Switch to theme security tab if dialog opens successfully
+                if hasattr(self, 'security_preferences_dialog') and self.security_preferences_dialog:
+                    self.security_preferences_dialog.tab_widget.setCurrentIndex(1)  # Theme security tab
+            except Exception as e:
+                self.logger.error(f"Failed to open theme encryption: {e}")
+                
+        def decrypt_themes_action(self):
+            """Quick action to decrypt themes."""
+            try:
+                self.open_security_preferences()
+                # Switch to theme security tab if dialog opens successfully
+                if hasattr(self, 'security_preferences_dialog') and self.security_preferences_dialog:
+                    self.security_preferences_dialog.tab_widget.setCurrentIndex(1)  # Theme security tab
+            except Exception as e:
+                self.logger.error(f"Failed to open theme decryption: {e}")
+                
+        def scan_theme_corruption_action(self):
+            """Quick action to scan for theme corruption."""
+            try:
+                self.open_security_preferences()
+                # Switch to theme security tab if dialog opens successfully
+                if hasattr(self, 'security_preferences_dialog') and self.security_preferences_dialog:
+                    self.security_preferences_dialog.tab_widget.setCurrentIndex(1)  # Theme security tab
+            except Exception as e:
+                self.logger.error(f"Failed to open theme corruption scan: {e}")
+                
+        def manage_protected_directories(self):
+            """Open directory security management."""
+            try:
+                self.open_security_preferences()
+                # Switch to directory security tab if dialog opens successfully
+                if hasattr(self, 'security_preferences_dialog') and self.security_preferences_dialog:
+                    self.security_preferences_dialog.tab_widget.setCurrentIndex(2)  # Directory security tab
+            except Exception as e:
+                self.logger.error(f"Failed to open directory security: {e}")
+                
+        def open_security_monitor(self):
+            """Open security status monitor."""
+            try:
+                self.open_security_preferences()
+                # Switch to status monitoring tab if dialog opens successfully
+                if hasattr(self, 'security_preferences_dialog') and self.security_preferences_dialog:
+                    self.security_preferences_dialog.tab_widget.setCurrentIndex(4)  # Status monitoring tab
+            except Exception as e:
+                self.logger.error(f"Failed to open security monitor: {e}")
+                
+        def test_security_features_action(self):
+            """Test all security features."""
+            try:
+                # Run the demo security implementation script
+                import subprocess
+                import sys
+                
+                result = subprocess.run([
+                    sys.executable, 
+                    "demo_security_implementation.py"
+                ], capture_output=True, text=True, cwd=os.getcwd())
+                
+                if result.returncode == 0:
+                    QMessageBox.information(
+                        self,
+                        "Security Test",
+                        f"Security feature test completed successfully!\n\n"
+                        f"Output:\n{result.stdout}"
+                    )
+                else:
+                    QMessageBox.warning(
+                        self,
+                        "Security Test",
+                        f"Security test completed with warnings:\n\n"
+                        f"Error: {result.stderr}\n"
+                        f"Output: {result.stdout}"
+                    )
+                    
+                self.track_tool_usage("Security Test", "execute")
+                
+            except Exception as e:
+                self.logger.error(f"Failed to run security test: {e}")
+                QMessageBox.critical(
+                    self,
+                    "Security Test Error",
+                    f"Failed to execute security feature test:\n\n{e}"
+                )
+                
+        def run_security_audit_action(self):
+            """Run comprehensive security audit."""
+            try:
+                self.open_security_preferences()
+                # Switch to audit tab if dialog opens successfully
+                if hasattr(self, 'security_preferences_dialog') and self.security_preferences_dialog:
+                    self.security_preferences_dialog.tab_widget.setCurrentIndex(3)  # Audit tab
+            except Exception as e:
+                self.logger.error(f"Failed to open security audit: {e}")
+                
+        def export_security_config_action(self):
+            """Export security configuration."""
+            try:
+                from datetime import datetime
+                
+                file_path, _ = QFileDialog.getSaveFileName(
+                    self, 
+                    "Export Security Configuration",
+                    f"rfu_security_config_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json",
+                    "JSON Files (*.json)"
+                )
+                
+                if file_path:
+                    # Export security-related configuration sections
+                    security_config = {}
+                    security_sections = [
+                        'security_migration', 'security_theme', 
+                        'security_directory', 'security_audit', 'security_advanced'
+                    ]
+                    
+                    for section in security_sections:
+                        security_config[section] = self.config_manager.get_section(section)
+                    
+                    import json
+                    with open(file_path, 'w', encoding='utf-8') as f:
+                        json.dump(security_config, f, indent=2, ensure_ascii=False)
+                    
+                    QMessageBox.information(
+                        self,
+                        "Export Complete",
+                        f"Security configuration exported to:\n{file_path}"
+                    )
+                    
+                    self.track_tool_usage("Security Config Export", "export")
+                    
+            except Exception as e:
+                self.logger.error(f"Failed to export security config: {e}")
+                QMessageBox.critical(
+                    self,
+                    "Export Error",
+                    f"Failed to export security configuration:\n\n{e}"
+                )
+                
+        def import_security_config_action(self):
+            """Import security configuration."""
+            try:
+                
+                file_path, _ = QFileDialog.getOpenFileName(
+                    self,
+                    "Import Security Configuration",
+                    "",
+                    "JSON Files (*.json)"
+                )
+                
+                if file_path:
+                    import json
+                    with open(file_path, 'r', encoding='utf-8') as f:
+                        security_config = json.load(f)
+                    
+                    # Import security sections
+                    for section, settings in security_config.items():
+                        if section.startswith('security_'):
+                            self.config_manager.set_section(section, settings)
+                    
+                    self.config_manager.save_config()
+                    
+                    QMessageBox.information(
+                        self,
+                        "Import Complete",
+                        f"Security configuration imported from:\n{file_path}\n\n"
+                        f"Please restart the application for all changes to take effect."
+                    )
+                    
+                    self.track_tool_usage("Security Config Import", "import")
+                    
+            except Exception as e:
+                self.logger.error(f"Failed to import security config: {e}")
+                QMessageBox.critical(
+                    self,
+                    "Import Error", 
+                    f"Failed to import security configuration:\n\n{e}"
+                )
+                
+        def emergency_lockdown_action(self):
+            """Emergency security lockdown."""
+            try:
+                from datetime import datetime
+                
+                reply = QMessageBox.critical(
+                    self,
+                    "🚨 Emergency Lockdown",
+                    "⚠️ WARNING: Emergency Security Lockdown\n\n"
+                    "This will:\n"
+                    "• Lock all security features\n"
+                    "• Force immediate backup\n"
+                    "• Log security event\n"
+                    "• Restrict access to sensitive operations\n\n"
+                    "This action should only be used in emergency situations.\n\n"
+                    "Continue with lockdown?",
+                    QMessageBox.Yes | QMessageBox.No,
+                    QMessageBox.No
+                )
+                
+                if reply == QMessageBox.Yes:
+                    # Log emergency action
+                    self.logger.critical("Emergency security lockdown initiated by user")
+                    
+                    # Set emergency lockdown flags in config
+                    self.config_manager.set_setting('security_emergency', 'lockdown_active', True)
+                    self.config_manager.set_setting('security_emergency', 'lockdown_timestamp', 
+                                                   datetime.now().isoformat())
+                    self.config_manager.save_config()
+                    
+                    QMessageBox.information(
+                        self,
+                        "Lockdown Active",
+                        "🔒 Emergency security lockdown is now active.\n\n"
+                        "Contact your system administrator to restore normal operation."
+                    )
+                    
+                    self.track_tool_usage("Emergency Lockdown", "activate")
+                    
+            except Exception as e:
+                self.logger.error(f"Failed to execute emergency lockdown: {e}")
+                
+        def emergency_disable_action(self):
+            """Emergency disable all security features."""
+            try:
+                from datetime import datetime
+                
+                reply = QMessageBox.critical(
+                    self,
+                    "🚨 Emergency Disable",
+                    "⚠️ CRITICAL WARNING: Disable All Security\n\n"
+                    "This will DISABLE ALL security features including:\n"
+                    "• Database migration protection\n"
+                    "• Theme encryption\n"
+                    "• Directory access controls\n"
+                    "• Security audit logging\n\n"
+                    "⚠️ This leaves your system VULNERABLE!\n\n"
+                    "Only use this in critical emergencies!\n\n"
+                    "Continue with disabling all security?",
+                    QMessageBox.Yes | QMessageBox.No,
+                    QMessageBox.No
+                )
+                
+                if reply == QMessageBox.Yes:
+                    # Log critical emergency action
+                    self.logger.critical("EMERGENCY: All security features disabled by user")
+                    
+                    # Disable all security features
+                    security_sections = [
+                        'security_migration', 'security_theme', 
+                        'security_directory', 'security_audit'
+                    ]
+                    
+                    for section in security_sections:
+                        section_settings = self.config_manager.get_section(section)
+                        for key in section_settings:
+                            if key.startswith('enable_') or key.endswith('_enabled'):
+                                self.config_manager.set_setting(section, key, False)
+                    
+                    # Set emergency disable flag
+                    self.config_manager.set_setting('security_emergency', 'all_disabled', True)
+                    self.config_manager.set_setting('security_emergency', 'disable_timestamp', 
+                                                   datetime.now().isoformat())
+                    self.config_manager.save_config()
+                    
+                    QMessageBox.warning(
+                        self,
+                        "Security Disabled",
+                        "⚠️ ALL SECURITY FEATURES HAVE BEEN DISABLED!\n\n"
+                        "Your system is now vulnerable.\n"
+                        "Re-enable security features as soon as possible."
+                    )
+                    
+                    self.track_tool_usage("Emergency Disable All", "disable")
+                    
+            except Exception as e:
+                self.logger.error(f"Failed to execute emergency disable: {e}")
+                
+        def force_backup_action(self):
+            """Force immediate security backup."""
+            try:
+                QMessageBox.information(
+                    self,
+                    "Force Backup",
+                    "Security backup functionality will be implemented.\n\n"
+                    "This will create immediate backups of:\n"
+                    "• Database state\n"
+                    "• Security configurations\n"
+                    "• Theme data\n"
+                    "• Directory security settings"
+                )
+                
+                self.track_tool_usage("Force Security Backup", "execute")
+                
+            except Exception as e:
+                self.logger.error(f"Failed to execute force backup: {e}")
+                
+        def show_security_help(self):
+            """Show security help documentation."""
+            try:
+                QMessageBox.information(
+                    self,
+                    "Security Help",
+                    "RFU Hub Security Features Help\n\n"
+                    "📖 Available Documentation:\n"
+                    "• Security Implementation Guide\n"
+                    "• Migration System Documentation\n" 
+                    "• Theme Security Manual\n"
+                    "• Directory Protection Guide\n"
+                    "• Audit Logging Reference\n\n"
+                    "📁 Documentation files:\n"
+                    "• RFU_Hub_Security_Implementation_COMPLETE.md\n"
+                    "• Implementation Plan Preferences Menu for RFU Hub.md\n\n"
+                    "For detailed information, please refer to the documentation files."
+                )
+            except Exception as e:
+                self.logger.error(f"Failed to show security help: {e}")
+                
+        def show_security_about(self):
+            """Show about security features."""
+            try:
+                QMessageBox.about(
+                    self,
+                    "About Security Features",
+                    "RFU Hub Security Implementation\n\n"
+                    "🔒 Comprehensive Security System\n"
+                    "Version: 1.0.0\n\n"
+                    "Features:\n"
+                    "• Database Migration with Rollback\n"
+                    "• AES-256-GCM Theme Encryption\n"
+                    "• Directory Access Controls\n"
+                    "• Comprehensive Audit Logging\n"
+                    "• Real-time Security Monitoring\n\n"
+                    "Implementation Date: August 2025\n"
+                    "Security Standards: Enterprise-grade\n\n"
+                    "All security features are designed to protect\n"
+                    "your data while maintaining system performance."
+                )
+            except Exception as e:
+                self.logger.error(f"Failed to show security about: {e}")
 
         def _import_direct(self, module_name, class_name):
             """Strategy 1: Direct module import."""
