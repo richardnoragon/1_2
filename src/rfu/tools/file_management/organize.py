@@ -18,54 +18,22 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5 import uic
 
-# Import simple GUI modules with robust fallback strategy
+# Import StandardWindow for menu integration
 try:
-    # Primary absolute import strategy
-    from rfu.gui.windows.base_window_simple import BaseWindow
-    from rfu.gui.dialogs.dialogs_simple import (
-        get_existing_directory as _get_existing_directory,
-        show_error_dialog as _show_error_dialog
-    )
-    
-    # Create compatible wrapper functions
-    def get_existing_directory(parent, title):
-        """Wrapper for directory selection with compatible signature."""
-        result = _get_existing_directory(caption=title, parent=parent)
-        return str(result) if result else ""
-    
-    def show_error_dialog(parent, title, message):
-        """Wrapper for error dialog with compatible signature."""
-        _show_error_dialog(message, title=title, parent=parent)
-        
+    from src.rfu.gui.standard_window import StandardWindow
 except ImportError:
-    try:
-        # Secondary relative import fallback
-        from ...gui.windows.base_window_simple import BaseWindow
-        from ...gui.dialogs.dialogs_simple import (
-            get_existing_directory as _get_existing_directory,
-            show_error_dialog as _show_error_dialog
-        )
-        
-        # Create compatible wrapper functions
-        def get_existing_directory(parent, title):
-            """Wrapper for directory selection with compatible signature."""
-            result = _get_existing_directory(caption=title, parent=parent)
-            return str(result) if result else ""
-        
-        def show_error_dialog(parent, title, message):
-            """Wrapper for error dialog with compatible signature."""
-            _show_error_dialog(message, title=title, parent=parent)
-            
-    except ImportError:
-        # Final fallback to PyQt5 only
-        from PyQt5.QtWidgets import QMainWindow as BaseWindow
-        
-        def get_existing_directory(parent, title):
-            from PyQt5.QtWidgets import QFileDialog
-            return QFileDialog.getExistingDirectory(parent, title)
-        
-        def show_error_dialog(parent, title, message):
-            QMessageBox.critical(parent, title, message)
+    # Fallback for standalone execution
+    from PyQt5.QtWidgets import QMainWindow
+    StandardWindow = QMainWindow
+
+def get_existing_directory(parent, title):
+    """Directory selection dialog."""
+    from PyQt5.QtWidgets import QFileDialog
+    return QFileDialog.getExistingDirectory(parent, title)
+
+def show_error_dialog(parent, title, message):
+    """Error dialog display."""
+    QMessageBox.critical(parent, title, message)
 
 
 @dataclass
@@ -84,7 +52,7 @@ class OrganizeRule:
     enabled: bool = True
 
 
-class OrganizeWindow(BaseWindow):
+class OrganizeWindow(StandardWindow):
     """Main window for file organization operations.
     
     This window provides a graphical interface for organizing files
@@ -117,14 +85,142 @@ class OrganizeWindow(BaseWindow):
         - Signal connections
         - Default organization rules
         """
-        super().__init__()
+        try:
+            super().__init__(
+                title="Organize Files - Richard's File Utilities",
+                window_type="file_operations"
+            )
+        except TypeError:
+            # Fallback for QMainWindow
+            super().__init__()
+            self.setWindowTitle("Organize Files - Richard's File Utilities")
         self._init_models()
         self._setup_ui()
         self._setup_icons()
         self._connect_signals()
         self._set_initial_state()
         self._load_default_rules()
-        self.show()
+        self._setup_menu_callbacks()
+
+    def _setup_menu_callbacks(self):
+        """Setup tool-specific menu callbacks."""
+        if hasattr(self, 'menu_manager'):
+            # Register tool-specific callbacks
+            self.menu_manager.register_callback('new_organize', self.clear_organization)
+            self.menu_manager.register_callback('save_operation', self.save_organize_settings)
+            self.menu_manager.register_callback('load_operation', self.load_organize_settings)
+            self.menu_manager.register_callback('export_results', self.export_organize_results)
+
+    def clear_organization(self):
+        """Clear current organization state."""
+        self._current_dir = ""
+        self._organized_files.clear()
+        self._list_model.clear()
+        if hasattr(self, 'directory_label'):
+            self.directory_label.setText("No folder selected")
+        if hasattr(self, 'status_label'):
+            self.status_label.setText("Select a folder to begin")
+        if hasattr(self, 'organizePushButton'):
+            self.organizePushButton.setEnabled(False)
+
+    def save_organize_settings(self):
+        """Save current organize settings to file."""
+        from PyQt5.QtWidgets import QFileDialog
+        file_path, _ = QFileDialog.getSaveFileName(
+            self, "Save Organize Settings", "organize_settings.json",
+            "JSON Files (*.json);;All Files (*)"
+        )
+        
+        if file_path:
+            try:
+                import json
+                settings = {
+                    'directory': self._current_dir,
+                    'rules': [
+                        {
+                            'name': rule.name,
+                            'pattern': rule.pattern,
+                            'destination': rule.destination,
+                            'enabled': rule.enabled
+                        }
+                        for rule in self._rules
+                    ]
+                }
+                
+                with open(file_path, 'w', encoding='utf-8') as f:
+                    json.dump(settings, f, indent=2)
+                    
+                QMessageBox.information(self, "Success", f"Settings saved to {file_path}")
+            except Exception as e:
+                QMessageBox.warning(self, "Error", f"Failed to save settings: {e}")
+
+    def load_organize_settings(self):
+        """Load organize settings from file."""
+        from PyQt5.QtWidgets import QFileDialog
+        file_path, _ = QFileDialog.getOpenFileName(
+            self, "Load Organize Settings", "",
+            "JSON Files (*.json);;All Files (*)"
+        )
+        
+        if file_path:
+            try:
+                import json
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    settings = json.load(f)
+                
+                # Apply settings
+                if 'directory' in settings and settings['directory']:
+                    self._current_dir = settings['directory']
+                    if hasattr(self, 'directory_label'):
+                        self.directory_label.setText(settings['directory'])
+                    self._update_file_list()
+                    
+                if 'rules' in settings:
+                    self._rules = [
+                        OrganizeRule(
+                            name=rule['name'],
+                            pattern=rule['pattern'],
+                            destination=rule['destination'],
+                            enabled=rule.get('enabled', True)
+                        )
+                        for rule in settings['rules']
+                    ]
+                    
+                QMessageBox.information(self, "Success", f"Settings loaded from {file_path}")
+            except Exception as e:
+                QMessageBox.warning(self, "Error", f"Failed to load settings: {e}")
+
+    def export_organize_results(self):
+        """Export organize preview results."""
+        if not self._current_dir:
+            QMessageBox.information(self, "No Directory", "No directory selected for organizing.")
+            return
+            
+        from PyQt5.QtWidgets import QFileDialog
+        file_path, _ = QFileDialog.getSaveFileName(
+            self, "Export Organize Results", "organize_preview.txt",
+            "Text Files (*.txt);;All Files (*)"
+        )
+        
+        if file_path:
+            try:
+                with open(file_path, 'w', encoding='utf-8') as f:
+                    f.write("Organize Preview Results\n")
+                    f.write(f"Directory: {self._current_dir}\n")
+                    f.write(f"Total Rules: {len(self._rules)}\n\n")
+                    
+                    f.write("Organization Rules:\n")
+                    for rule in self._rules:
+                        status = "✓" if rule.enabled else "✗"
+                        f.write(f"{status} {rule.name}: {rule.pattern} → {rule.destination}\n")
+                    
+                    f.write(f"\nFiles organized: {len(self._organized_files)}\n")
+                    for original, new in self._organized_files:
+                        f.write(f"{original} → {new}\n")
+                        
+                QMessageBox.information(self, "Success", f"Results exported to {file_path}")
+            except Exception as e:
+                QMessageBox.warning(self, "Error", f"Failed to export results: {e}")
 
     def _init_models(self) -> None:
         """Initialize data models and internal state."""
@@ -146,7 +242,7 @@ class OrganizeWindow(BaseWindow):
             uic.loadUi(str(ui_file), self)
             
         except (FileNotFoundError, ValueError) as e:
-            show_error_dialog(str(e), "UI Error", self)
+            show_error_dialog(self, "UI Error", str(e))
             sys.exit(1)
 
     def _connect_signals(self) -> None:
@@ -218,9 +314,9 @@ class OrganizeWindow(BaseWindow):
                 
         except OSError as e:
             show_error_dialog(
-                f"Could not read directory: {str(e)}",
-                title="Error",
-                parent=self
+                self,
+                "Error",
+                f"Could not read directory: {str(e)}"
             )
 
     def _get_file_list(self) -> List[str]:
@@ -286,9 +382,9 @@ class OrganizeWindow(BaseWindow):
                 
         except Exception as e:
             show_error_dialog(
-                f"Failed to organize files: {str(e)}",
-                title="Error",
-                parent=self
+                self,
+                "Error",
+                f"Failed to organize files: {str(e)}"
             )
 
     def _organize_single_file(self, file_path: str) -> bool:
@@ -385,9 +481,9 @@ class OrganizeWindow(BaseWindow):
             
         except Exception as e:
             show_error_dialog(
-                f"Failed to undo organization: {str(e)}",
-                title="Error",
-                parent=self
+                self,
+                "Error",
+                f"Failed to undo organization: {str(e)}"
             )
 
 

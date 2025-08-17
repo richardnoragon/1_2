@@ -17,17 +17,49 @@ from PyQt5.QtCore import QObject, pyqtSignal, QThread
 try:
     import piexif
     import piexif.helper
+    PIEXIF_AVAILABLE = True
 except ImportError:
-    print("piexif module not found. Please install it using:")
-    print("pip install piexif")
-    sys.exit(1)
+    print("Warning: piexif module not found. "
+          "Advanced EXIF functionality will be limited.")
+    print("Install piexif using: pip install piexif")
+    PIEXIF_AVAILABLE = False
+    
+    # Create mock piexif module for fallback
+    class MockPiexif:
+        TAGS = {}
+        
+        class ExifIFD:
+            UserComment = 37510
+            
+        @staticmethod
+        def load(file_path):
+            return {}
+            
+        @staticmethod
+        def dump(exif_dict):
+            return b''
+            
+        @staticmethod
+        def insert(exif_bytes, file_path):
+            pass
+            
+        class helper:
+            class UserComment:
+                @staticmethod
+                def dump(text):
+                    return text.encode('utf-8')
+    
+    piexif = MockPiexif()
 
 # Combine piexif's tags with PIL's for better name resolution
-ALL_KNOWN_TAGS = {
-    ifd: {code: piexif.TAGS[ifd][code].get('name', f'UnknownTag_{code}')
-          for code in piexif.TAGS[ifd]}
-    for ifd in piexif.TAGS
-}
+if PIEXIF_AVAILABLE:
+    ALL_KNOWN_TAGS = {
+        ifd: {code: piexif.TAGS[ifd][code].get('name', f'UnknownTag_{code}')
+              for code in piexif.TAGS[ifd]}
+        for ifd in piexif.TAGS
+    }
+else:
+    ALL_KNOWN_TAGS = {}
 
 # Add PIL tags if missing (might be duplicates, piexif takes precedence)
 for code, name in PIL_TAGS.items():

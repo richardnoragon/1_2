@@ -189,37 +189,6 @@ class CopyMoveSyncDeleteWindow(StandardUtilityWindow):
         self.show_status_message("Deleting files...")
 
 
-class OrganizeWindow(StandardUtilityWindow):
-    """Standardized organize window."""
-    
-    def __init__(self) -> None:
-        super().__init__("File Organization Utility", 600, 450)
-        self._setup_ui()
-    
-    def _setup_ui(self) -> None:
-        """Setup the user interface."""
-        # Header
-        header = self.create_header("File Organization Utility")
-        self.main_layout.addWidget(header)
-        
-        # Buttons
-        organize_btn = StyledButton("Organize Files", primary=True)
-        rules_btn = StyledButton("Manage Rules", primary=False)
-        
-        button_row = self.create_button_row([organize_btn, rules_btn])
-        self.main_layout.addLayout(button_row)
-        
-        # Connect signals
-        organize_btn.clicked.connect(self.organize_files)
-        rules_btn.clicked.connect(self.manage_rules)
-    
-    def organize_files(self) -> None:
-        """Handle file organization."""
-        self.show_status_message("Organizing files...")
-    
-    def manage_rules(self) -> None:
-        """Handle rule management."""
-        self.show_status_message("Managing organization rules...")
 
 
 class MyGUI(BaseWindow):
@@ -508,6 +477,7 @@ class MyGUI(BaseWindow):
         utilities = [
             ("Encrypt/Decrypt", self.open_encrypt_decrypt, True),
             ("Rename Files", self.open_rename_window, True),
+            ("Advanced File Catalog", self.open_advanced_catalog, True),
             ("File Catalog", self.open_catalog_window, True),
             ("Copy/Move/Sync/Delete", self.open_cmsd_window, True),
             ("Organize Files", self.open_organize_window, True),
@@ -599,6 +569,20 @@ class MyGUI(BaseWindow):
         except Exception as e:
             print(f"Error opening rename window: {e}")
     
+    def open_advanced_catalog(self) -> None:
+        """Open advanced catalog generator."""
+        try:
+            from .tools.file_management.advanced_catalog import AdvancedCatalogWindow
+            self.advanced_catalog_window = AdvancedCatalogWindow(hub_instance=self)
+            self.advanced_catalog_window.show()
+            self.register_tool("Advanced Catalog Generator", self.advanced_catalog_window)
+        except ImportError as e:
+            print(f"Error loading advanced catalog: {e}")
+            self._update_status_bar(f"Failed to load Advanced Catalog Generator: {e}")
+        except Exception as e:
+            print(f"Error opening advanced catalog: {e}")
+            self._update_status_bar(f"Error opening Advanced Catalog Generator: {e}")
+    
     def open_catalog_window(self) -> None:
         """Open catalog utility."""
         try:
@@ -618,10 +602,16 @@ class MyGUI(BaseWindow):
     def open_organize_window(self) -> None:
         """Open organize utility."""
         try:
-            organize_window = OrganizeWindow()
-            organize_window.show()
+            # Import the actual OrganizeWindow from the tools directory
+            from .tools.file_management.organize import OrganizeWindow as OrganizeToolWindow
+            self.organize_window = OrganizeToolWindow()
+            self.organize_window.show()
+        except ImportError as e:
+            print(f"Error loading organize tool: {e}")
+            self._update_status_bar(f"Failed to load Organize Files: {e}")
         except Exception as e:
             print(f"Error opening organize window: {e}")
+            self._update_status_bar(f"Error opening Organize Files: {e}")
     
     def open_file_finder(self) -> None:
         """Open file finder utility."""

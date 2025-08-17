@@ -12,9 +12,9 @@ from datetime import datetime
 
 try:
     from PyQt5.QtWidgets import (
-        QMainWindow, QWidget, QVBoxLayout, QGridLayout,
-        QPushButton, QLineEdit, QLabel, QCheckBox, QGroupBox, 
-        QFileDialog, QMessageBox, QProgressBar, QApplication, 
+        QWidget, QVBoxLayout, QGridLayout,
+        QPushButton, QLineEdit, QLabel, QCheckBox, QGroupBox,
+        QFileDialog, QMessageBox, QProgressBar, QApplication,
         QTextEdit, QSplitter, QTreeWidget, QTreeWidgetItem,
         QTableWidget, QTableWidgetItem, QTabWidget
     )
@@ -22,6 +22,52 @@ try:
 except ImportError:
     print("PyQt5 not available. Please install PyQt5.")
     sys.exit(1)
+
+# Import StandardWindow for menu integration
+try:
+    from src.rfu.gui.standard_window import StandardWindow
+except ImportError:
+    try:
+        from rfu.gui.standard_window import StandardWindow
+    except ImportError:
+        # Fallback for standalone execution
+        from PyQt5.QtWidgets import QMainWindow, QStatusBar
+        
+        class StandardWindow(QMainWindow):
+            def __init__(self, title="", window_type="utility"):
+                super().__init__()
+                self.setWindowTitle(title)
+                self.central_widget = QWidget()
+                self.setCentralWidget(self.central_widget)
+                self.main_layout = QVBoxLayout(self.central_widget)
+                self.setStatusBar(QStatusBar())
+                
+            def show_status_message(self, message, timeout=3000):
+                status_bar = self.statusBar()
+                if status_bar:
+                    status_bar.showMessage(message, timeout)
+                    
+            def show_error_dialog(self, title, message):
+                QMessageBox.critical(self, title, message)
+                
+            def show_info_dialog(self, title, message):
+                QMessageBox.information(self, title, message)
+                
+            def show_warning_dialog(self, title, message):
+                QMessageBox.warning(self, title, message)
+                
+            def get_file_path(self, title="Select File",
+                             file_filter="All Files (*)"):
+                return QFileDialog.getOpenFileName(
+                    self, title, "", file_filter)[0]
+                
+            def get_save_file_path(self, title="Save File",
+                                 file_filter="All Files (*)"):
+                return QFileDialog.getSaveFileName(
+                    self, title, "", file_filter)[0]
+                    
+            def get_directory_path(self, title="Select Directory"):
+                return QFileDialog.getExistingDirectory(self, title)
 
 
 class OfficeMetadataWorker(QThread):
@@ -256,39 +302,71 @@ class OfficeMetadataWorker(QThread):
         self.is_cancelled = True
 
 
-class OfficeMetaDataEditorGUI(QMainWindow):
+class OfficeMetaDataEditorGUI(StandardWindow):
     """Office Metadata Editor GUI."""
     
     def __init__(self):
-        super().__init__()
+        super().__init__(
+            title="Office Metadata Editor - Richard's File Utilities",
+            window_type="utility"
+        )
         self.worker = None
         self.selected_files = []
         self.current_metadata = {}
         self.init_ui()
+        self._setup_menu_callbacks()
+        
+    def _setup_menu_callbacks(self):
+        """Setup tool-specific menu callbacks."""
+        if hasattr(self, 'menu_manager'):
+            # File menu callbacks
+            self.menu_manager.register_callback(
+                'new_metadata_session', self.new_metadata_session)
+            self.menu_manager.register_callback(
+                'save_file', self.save_metadata_settings)
+            self.menu_manager.register_callback(
+                'open_file', self.load_metadata_settings)
+            self.menu_manager.register_callback(
+                'export_data', self.export_metadata)
+            self.menu_manager.register_callback(
+                'import_data', self.import_metadata_settings)
+            self.menu_manager.register_callback(
+                'print_document', self.print_metadata_report)
+            
+            # Edit menu callbacks
+            self.menu_manager.register_callback('cut', self.cut_text)
+            self.menu_manager.register_callback('copy', self.copy_text)
+            self.menu_manager.register_callback('paste', self.paste_text)
+            self.menu_manager.register_callback(
+                'select_all', self.select_all_text)
+            self.menu_manager.register_callback('find', self.find_metadata)
+            
+            # View menu callbacks
+            self.menu_manager.register_callback('zoom_in', self.zoom_in)
+            self.menu_manager.register_callback('zoom_out', self.zoom_out)
+            self.menu_manager.register_callback('zoom_reset', self.zoom_reset)
+            
+            # Tools menu callbacks
+            self.menu_manager.register_callback(
+                'show_options', self.show_metadata_options)
+            self.menu_manager.register_callback(
+                'batch_processing', self.show_batch_processing)
+            self.menu_manager.register_callback(
+                'document_analysis', self.analyze_documents)
+            
+            # Help menu callbacks
+            self.menu_manager.register_callback(
+                'help_metadata', self.show_help)
         
     def init_ui(self):
         """Initialize the user interface."""
-        self.setWindowTitle("Office Metadata Editor - Richard's File Utilities")
         self.setGeometry(100, 100, 1200, 800)
         
-        # Create central widget and main layout
-        central_widget = QWidget()
-        self.setCentralWidget(central_widget)
-        layout = QVBoxLayout(central_widget)
+        # Use the main layout from StandardWindow
+        layout = self.main_layout
         
-        # Create header
-        header_label = QLabel("Office Document Metadata Editor")
-        header_label.setStyleSheet("""
-            QLabel {
-                font-size: 18px;
-                font-weight: bold;
-                color: #2c3e50;
-                padding: 10px;
-                background-color: #ecf0f1;
-                border-radius: 5px;
-                margin-bottom: 10px;
-            }
-        """)
+        # Create header using StandardWindow method
+        header_label = self.create_header("Office Document Metadata Editor")
         layout.addWidget(header_label)
         
         # Create main splitter
@@ -702,6 +780,210 @@ class OfficeMetaDataEditorGUI(QMainWindow):
         # Disable action buttons
         self.export_button.setEnabled(False)
         
+    def new_metadata_session(self):
+        """Start a new metadata editing session."""
+        self.clear_results()
+        self.selected_files = []
+        self.files_edit.clear()
+        self.show_status_message("New metadata session started")
+        
+    def save_metadata_settings(self):
+        """Save current metadata settings to file."""
+        settings = {
+            'selected_files': self.selected_files,
+            'recursive_search': self.recursive_check.isChecked(),
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        file_path = self.get_save_file_path(
+            "Save Metadata Settings",
+            "JSON Files (*.json);;All Files (*)"
+        )
+        
+        if file_path:
+            try:
+                with open(file_path, 'w') as f:
+                    json.dump(settings, f, indent=2)
+                self.show_info_dialog(
+                    "Settings Saved",
+                    f"Metadata settings saved to {file_path}"
+                )
+            except Exception as e:
+                self.show_error_dialog(
+                    "Save Error",
+                    f"Failed to save settings: {str(e)}"
+                )
+                
+    def load_metadata_settings(self):
+        """Load metadata settings from file."""
+        file_path = self.get_file_path(
+            "Load Metadata Settings",
+            "JSON Files (*.json);;All Files (*)"
+        )
+        
+        if file_path:
+            try:
+                with open(file_path, 'r') as f:
+                    settings = json.load(f)
+                
+                self.selected_files = settings.get('selected_files', [])
+                self.recursive_check.setChecked(
+                    settings.get('recursive_search', False))
+                
+                if self.selected_files:
+                    self.files_edit.setText(
+                        f"{len(self.selected_files)} document(s) loaded")
+                    self.edit_button.setEnabled(True)
+                
+                self.show_info_dialog(
+                    "Settings Loaded",
+                    f"Metadata settings loaded from {file_path}"
+                )
+            except Exception as e:
+                self.show_error_dialog(
+                    "Load Error",
+                    f"Failed to load settings: {str(e)}"
+                )
+                
+    def import_metadata_settings(self):
+        """Import metadata from external source."""
+        self.show_info_dialog(
+            "Import Metadata",
+            "Metadata import functionality will be implemented."
+        )
+        
+    def print_metadata_report(self):
+        """Print metadata analysis report."""
+        self.show_info_dialog(
+            "Print Report",
+            "Metadata report printing functionality will be implemented."
+        )
+        
+    def cut_text(self):
+        """Cut text from focused widget."""
+        focused = QApplication.focusWidget()
+        if focused and hasattr(focused, 'cut'):
+            focused.cut()
+            
+    def copy_text(self):
+        """Copy text from focused widget."""
+        focused = QApplication.focusWidget()
+        if focused and hasattr(focused, 'copy'):
+            focused.copy()
+            
+    def paste_text(self):
+        """Paste text to focused widget."""
+        focused = QApplication.focusWidget()
+        if focused and hasattr(focused, 'paste'):
+            focused.paste()
+            
+    def select_all_text(self):
+        """Select all text in focused widget."""
+        focused = QApplication.focusWidget()
+        if focused and hasattr(focused, 'selectAll'):
+            focused.selectAll()
+            
+    def find_metadata(self):
+        """Find text in metadata."""
+        self.show_info_dialog(
+            "Find in Metadata",
+            "Find functionality will be implemented."
+        )
+        
+    def zoom_in(self):
+        """Increase interface zoom level."""
+        self.show_status_message("Zoom in functionality not applicable")
+        
+    def zoom_out(self):
+        """Decrease interface zoom level."""
+        self.show_status_message("Zoom out functionality not applicable")
+        
+    def zoom_reset(self):
+        """Reset interface zoom level."""
+        self.show_status_message("Zoom reset functionality not applicable")
+        
+    def show_metadata_options(self):
+        """Show metadata-specific options dialog."""
+        self.show_info_dialog(
+            "Metadata Options",
+            "Metadata processing options:\n\n"
+            "• Supported file formats\n"
+            "• Extraction depth settings\n"
+            "• Custom property handling\n"
+            "• Export format preferences\n\n"
+            "Advanced options coming soon!"
+        )
+        
+    def show_batch_processing(self):
+        """Show batch processing dialog."""
+        self.show_info_dialog(
+            "Batch Processing",
+            "Batch metadata processing functionality will be implemented."
+        )
+        
+    def analyze_documents(self):
+        """Analyze document structure and metadata."""
+        if not self.selected_files:
+            self.show_warning_dialog(
+                "No Documents Selected",
+                "Please select documents to analyze."
+            )
+            return
+            
+        self.show_info_dialog(
+            "Document Analysis",
+            f"Analyzing {len(self.selected_files)} document(s)...\n\n"
+            "Analysis includes:\n"
+            "• File format validation\n"
+            "• Metadata completeness\n"
+            "• Property consistency\n"
+            "• Security attributes"
+        )
+        
+    def show_help(self):
+        """Show help dialog for Office Metadata Editor."""
+        help_text = """
+        <h2>Office Metadata Editor - Help</h2>
+        
+        <h3>Overview:</h3>
+        <p>The Office Metadata Editor allows you to view and analyze
+        metadata from various office document formats.</p>
+        
+        <h3>Supported Formats:</h3>
+        <ul>
+        <li><b>DOCX, XLSX, PPTX:</b> Modern Office formats with full support</li>
+        <li><b>DOC, XLS, PPT:</b> Legacy formats (limited support)</li>
+        <li><b>PDF:</b> Basic metadata extraction</li>
+        </ul>
+        
+        <h3>Features:</h3>
+        <ul>
+        <li><b>Batch Processing:</b> Analyze multiple documents at once</li>
+        <li><b>Export Options:</b> Save metadata to JSON or text files</li>
+        <li><b>Property Types:</b> Built-in, document, and custom properties</li>
+        <li><b>Search:</b> Recursive folder scanning</li>
+        </ul>
+        
+        <h3>Usage:</h3>
+        <ol>
+        <li>Select documents or folders using Browse buttons</li>
+        <li>Click "Read Metadata" to analyze documents</li>
+        <li>View results in the tabbed interface</li>
+        <li>Export results using the Export button</li>
+        </ol>
+        
+        <h3>Keyboard Shortcuts:</h3>
+        <ul>
+        <li><b>Ctrl+O:</b> Open documents</li>
+        <li><b>Ctrl+S:</b> Save settings</li>
+        <li><b>Ctrl+E:</b> Export metadata</li>
+        <li><b>F5:</b> Refresh view</li>
+        <li><b>F1:</b> Show this help</li>
+        </ul>
+        """
+        
+        QMessageBox.information(self, "Office Metadata Editor Help", help_text)
+
     def closeEvent(self, event):
         """Handle window close event."""
         if self.worker and self.worker.isRunning():

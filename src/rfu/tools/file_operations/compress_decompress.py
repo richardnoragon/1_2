@@ -3,14 +3,15 @@ Compress/Decompress Tool for Richard's File Utilities
 Handles compression and decompression with various archive formats.
 """
 
-from PyQt5.QtWidgets import (QMainWindow, QVBoxLayout, QHBoxLayout, QWidget,
-                             QPushButton, QLineEdit, QLabel, QComboBox,
-                             QSlider, QFileDialog, QMessageBox, QApplication)
+from PyQt5.QtWidgets import (
+    QPushButton, QLineEdit, QLabel, QComboBox, QSlider,
+    QFileDialog, QMessageBox, QApplication, QHBoxLayout
+)
 from PyQt5.QtCore import Qt
 import zipfile
 import os
 import tarfile
-import sys
+import json
 from typing import Dict
 
 # Import StandardWindow for menu integration
@@ -18,8 +19,43 @@ try:
     from src.rfu.gui.standard_window import StandardWindow
 except ImportError:
     # Fallback for standalone execution
-    from PyQt5.QtWidgets import QMainWindow
-    StandardWindow = QMainWindow
+    try:
+        from rfu.gui.standard_window import StandardWindow
+    except ImportError:
+        # Final fallback - create a minimal StandardWindow substitute
+        from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QWidget
+        
+        class StandardWindow(QMainWindow):
+            def __init__(self, title="", window_type="utility"):
+                super().__init__()
+                self.setWindowTitle(title)
+                self.central_widget = QWidget()
+                self.setCentralWidget(self.central_widget)
+                self.main_layout = QVBoxLayout(self.central_widget)
+                
+            def show_status_message(self, message, timeout=3000):
+                status_bar = self.statusBar()
+                if status_bar:
+                    status_bar.showMessage(message, timeout)
+                    
+            def show_error_dialog(self, title, message):
+                QMessageBox.critical(self, title, message)
+                
+            def show_info_dialog(self, title, message):
+                QMessageBox.information(self, title, message)
+                
+            def show_warning_dialog(self, title, message):
+                QMessageBox.warning(self, title, message)
+                
+            def get_file_path(self, title="Select File",
+                             file_filter="All Files (*)"):
+                return QFileDialog.getOpenFileName(
+                    self, title, "", file_filter)[0]
+                
+            def get_save_file_path(self, title="Save File",
+                                 file_filter="All Files (*)"):
+                return QFileDialog.getSaveFileName(
+                    self, title, "", file_filter)[0]
 
 
 # Archive format constants
@@ -68,10 +104,50 @@ class CompressDecompressApp(StandardWindow):
     def _setup_menu_callbacks(self):
         """Setup tool-specific menu callbacks."""
         if hasattr(self, 'menu_manager'):
-            # Register tool-specific callbacks
-            self.menu_manager.register_callback('new_compression', self.clear_fields)
-            self.menu_manager.register_callback('help_compression', self.show_help)
+            # File menu callbacks
+            self.menu_manager.register_callback(
+                'new_compression', self.new_compression_session)
+            self.menu_manager.register_callback(
+                'save_file', self.save_compression_settings)
+            self.menu_manager.register_callback(
+                'open_file', self.load_compression_settings)
+            self.menu_manager.register_callback(
+                'export_data', self.export_archive_list)
+            self.menu_manager.register_callback(
+                'import_data', self.import_archive_list)
+            self.menu_manager.register_callback(
+                'print_document', self.print_compression_report)
             
+            # Edit menu callbacks
+            self.menu_manager.register_callback('cut', self.cut_text)
+            self.menu_manager.register_callback('copy', self.copy_text)
+            self.menu_manager.register_callback('paste', self.paste_text)
+            self.menu_manager.register_callback(
+                'select_all', self.select_all_text)
+            self.menu_manager.register_callback('find', self.find_in_paths)
+            
+            # View menu callbacks
+            self.menu_manager.register_callback('zoom_in', self.zoom_in)
+            self.menu_manager.register_callback('zoom_out', self.zoom_out)
+            self.menu_manager.register_callback('zoom_reset', self.zoom_reset)
+            
+            # Tools menu callbacks
+            self.menu_manager.register_callback(
+                'show_options', self.show_compression_options)
+            self.menu_manager.register_callback(
+                'verify_archive', self.verify_archive)
+            self.menu_manager.register_callback(
+                'batch_operations', self.show_batch_operations)
+            
+            # Help menu callbacks
+            self.menu_manager.register_callback(
+                'help_compression', self.show_help)
+            
+    def new_compression_session(self):
+        """Start a new compression session."""
+        self.clear_fields()
+        self.show_status_message("New compression session started")
+        
     def clear_fields(self):
         """Clear all input fields for a new compression task."""
         self.lineEditFolder.clear()
@@ -80,6 +156,193 @@ class CompressDecompressApp(StandardWindow):
         self.lineEditPassword.clear()
         self.comboFormat.setCurrentIndex(0)
         self.sliderCompLevel.setValue(6)
+        
+    def save_compression_settings(self):
+        """Save current compression settings to file."""
+        settings = {
+            'folder_path': self.lineEditFolder.text(),
+            'output_path': self.lineEditOutput.text(),
+            'format': self.comboFormat.currentText(),
+            'compression_level': self.sliderCompLevel.value(),
+            'has_password': bool(self.lineEditPassword.text())
+        }
+        
+        file_path = self.get_save_file_path(
+            "Save Compression Settings",
+            "JSON Files (*.json);;All Files (*)"
+        )
+        
+        if file_path:
+            try:
+                with open(file_path, 'w') as f:
+                    json.dump(settings, f, indent=2)
+                self.show_info_dialog(
+                    "Settings Saved",
+                    f"Compression settings saved to {file_path}"
+                )
+            except Exception as e:
+                self.show_error_dialog(
+                    "Save Error",
+                    f"Failed to save settings: {str(e)}"
+                )
+                
+    def load_compression_settings(self):
+        """Load compression settings from file."""
+        file_path = self.get_file_path(
+            "Load Compression Settings",
+            "JSON Files (*.json);;All Files (*)"
+        )
+        
+        if file_path:
+            try:
+                with open(file_path, 'r') as f:
+                    settings = json.load(f)
+                
+                self.lineEditFolder.setText(settings.get('folder_path', ''))
+                self.lineEditOutput.setText(settings.get('output_path', ''))
+                
+                format_text = settings.get('format', 'ZIP')
+                index = self.comboFormat.findText(format_text)
+                if index >= 0:
+                    self.comboFormat.setCurrentIndex(index)
+                    
+                self.sliderCompLevel.setValue(
+                    settings.get('compression_level', 6))
+                
+                self.show_info_dialog(
+                    "Settings Loaded",
+                    f"Compression settings loaded from {file_path}"
+                )
+            except Exception as e:
+                self.show_error_dialog(
+                    "Load Error",
+                    f"Failed to load settings: {str(e)}"
+                )
+                
+    def export_archive_list(self):
+        """Export list of processed archives."""
+        self.show_info_dialog(
+            "Export Archive List",
+            "Archive list export functionality will be implemented."
+        )
+        
+    def import_archive_list(self):
+        """Import list of archives to process."""
+        self.show_info_dialog(
+            "Import Archive List",
+            "Archive list import functionality will be implemented."
+        )
+        
+    def print_compression_report(self):
+        """Print compression operation report."""
+        self.show_info_dialog(
+            "Print Report",
+            "Compression report printing functionality will be implemented."
+        )
+        
+    def cut_text(self):
+        """Cut text from focused widget."""
+        focused = QApplication.focusWidget()
+        if focused and hasattr(focused, 'cut'):
+            focused.cut()
+            
+    def copy_text(self):
+        """Copy text from focused widget."""
+        focused = QApplication.focusWidget()
+        if focused and hasattr(focused, 'copy'):
+            focused.copy()
+            
+    def paste_text(self):
+        """Paste text to focused widget."""
+        focused = QApplication.focusWidget()
+        if focused and hasattr(focused, 'paste'):
+            focused.paste()
+            
+    def select_all_text(self):
+        """Select all text in focused widget."""
+        focused = QApplication.focusWidget()
+        if focused and hasattr(focused, 'selectAll'):
+            focused.selectAll()
+            
+    def find_in_paths(self):
+        """Find text in file paths."""
+        self.show_info_dialog(
+            "Find in Paths",
+            "Find functionality will be implemented."
+        )
+        
+    def zoom_in(self):
+        """Increase interface zoom level."""
+        self.show_status_message("Zoom in functionality not applicable")
+        
+    def zoom_out(self):
+        """Decrease interface zoom level."""
+        self.show_status_message("Zoom out functionality not applicable")
+        
+    def zoom_reset(self):
+        """Reset interface zoom level."""
+        self.show_status_message("Zoom reset functionality not applicable")
+        
+    def show_compression_options(self):
+        """Show compression-specific options dialog."""
+        self.show_preferences()
+        
+    def verify_archive(self):
+        """Verify integrity of selected archive."""
+        archive_path = self.lineEditDecompress.text().strip()
+        if not archive_path:
+            self.show_warning_dialog(
+                "No Archive Selected",
+                "Please select an archive file to verify."
+            )
+            return
+            
+        if not os.path.exists(archive_path):
+            self.show_error_dialog(
+                "File Not Found",
+                f"Archive file not found: {archive_path}"
+            )
+            return
+            
+        try:
+            if archive_path.endswith('.zip'):
+                with zipfile.ZipFile(archive_path, 'r') as zf:
+                    bad_file = zf.testzip()
+                    if bad_file:
+                        self.show_error_dialog(
+                            "Archive Corrupted",
+                            f"Corrupted file found: {bad_file}"
+                        )
+                    else:
+                        self.show_info_dialog(
+                            "Archive Verified",
+                            "Archive integrity verified successfully."
+                        )
+            elif archive_path.endswith(('.tar.gz', '.tar.bz2')):
+                with tarfile.open(archive_path, 'r') as tf:
+                    # Basic verification - try to list contents
+                    tf.getnames()
+                    self.show_info_dialog(
+                        "Archive Verified",
+                        "Archive integrity verified successfully."
+                    )
+            else:
+                self.show_warning_dialog(
+                    "Unsupported Format",
+                    "Verification not supported for this archive format."
+                )
+        except Exception as e:
+            self.show_error_dialog(
+                "Verification Failed",
+                f"Archive verification failed: {str(e)}"
+            )
+            
+    def show_batch_operations(self):
+        """Show batch operations dialog."""
+        self.show_info_dialog(
+            "Batch Operations",
+            "Batch operations functionality will be implemented."
+        )
         
     def show_help(self):
         """Show help dialog for Compress/Decompress tool."""
@@ -120,13 +383,15 @@ class CompressDecompressApp(StandardWindow):
         
     def show_preferences(self):
         """Show Compress/Decompress preferences."""
-        QMessageBox.information(self, "Compress/Decompress Preferences", 
-                               "Compress/Decompress preferences:\n\n"
-                               "• Default compression format\n"
-                               "• Default compression level\n"
-                               "• Output directory settings\n"
-                               "• Archive verification options\n\n"
-                               "Advanced preferences coming soon!")
+        QMessageBox.information(
+            self, "Compress/Decompress Preferences",
+            "Compress/Decompress preferences:\n\n"
+            "• Default compression format\n"
+            "• Default compression level\n"
+            "• Output directory settings\n"
+            "• Archive verification options\n\n"
+            "Advanced preferences coming soon!"
+        )
                                
     def refresh_view(self):
         """Refresh/clear the current operation."""
