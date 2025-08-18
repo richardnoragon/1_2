@@ -71,17 +71,16 @@ class RFUHub(QObject if PYQT5_AVAILABLE else object):
             return
         
         try:
-            # Import and show the actual GUI hub
-            from .hub import RFUHub as GUIHub
+            # Import and show the simple GUI hub (avoiding complex dependencies)
+            from .simple_hub import SimpleRFUHub as GUIHub
             self.gui_hub = GUIHub()
             self.gui_hub.show()
             self.logger.info("GUI Hub displayed successfully")
         except Exception as e:
-            error_handler.handle_error(
-                e,
-                "showing GUI hub",
-                "Failed to display the GUI hub interface"
-            )
+            self.logger.error(f"Failed to show GUI hub: {e}")
+            print(f"Error displaying GUI: {e}")
+            # Don't show error dialog that freezes the terminal
+            return
     
     def register_tool(self, tool_name: str, tool_instance) -> bool:
         """
