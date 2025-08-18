@@ -1013,13 +1013,37 @@ class SimpleRFUHub(QMainWindow):
     def open_empty_folders(self):
         """Open empty folders finder."""
         try:
-            # Try to import and launch the enhanced empty folders tool
-            # For now, show status message until tool is available
-            self.status_bar.showMessage("Empty Folders Finder - Feature coming soon...")
-            self.logger.info("Empty Folders Finder requested")
+            # Import and launch the empty folders tool
+            import sys
+            import os
+            
+            # Add src directory to path for imports
+            current_dir = os.path.dirname(os.path.abspath(__file__))
+            src_dir = os.path.join(current_dir, '..')
+            
+            if src_dir not in sys.path:
+                sys.path.insert(0, src_dir)
+            
+            from utilities.analysis.empty_folders import EmptyFoldersGUI
+            
+            # Create and show the empty folders window
+            if not hasattr(self, 'empty_folders_window') or \
+               self.empty_folders_window is None:
+                self.empty_folders_window = EmptyFoldersGUI()
+            
+            self.empty_folders_window.show()
+            self.empty_folders_window.raise_()
+            self.empty_folders_window.activateWindow()
+            
+            self.status_bar.showMessage("Empty Folders Finder opened successfully")
+            self.logger.info("Empty Folders Finder tool opened")
+            
+        except ImportError as e:
+            self.status_bar.showMessage("Empty Folders tool not available")
+            self.logger.error(f"ImportError opening Empty Folders: {e}")
         except Exception as e:
-            self.status_bar.showMessage(f"Error opening Empty Folders tool: {e}")
-            self.logger.error(f"Error opening Empty Folders tool: {e}")
+            self.status_bar.showMessage(f"Error opening Empty Folders: {e}")
+            self.logger.error(f"Error opening Empty Folders: {e}")
     
     def open_file_catalog(self):
         """Open file catalog generator."""
