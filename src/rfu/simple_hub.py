@@ -10,7 +10,8 @@ import os
 from PyQt5.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, 
     QPushButton, QLabel, QTabWidget, QTextEdit,
-    QStatusBar, QApplication, QGridLayout, QSizePolicy
+    QStatusBar, QApplication, QGridLayout, QSizePolicy,
+    QMessageBox
 )
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont, QIcon
@@ -324,8 +325,7 @@ class SimpleRFUHub(QMainWindow):
             ("🔍 Duplicate Finder", "Find and manage duplicate files", self.open_duplicate_finder),
             ("📁 Empty Folders", "Find and clean empty directories", self.open_empty_folders),
             ("✅ Checksum Verification", "Verify file integrity with checksums", self.open_checksum),
-            ("📋 Import Validator", "Validate imported data", self.open_import_validator),
-            ("🗂️ File Catalog", "Generate comprehensive file catalogs", self.open_file_catalog),
+            ("️ File Catalog", "Generate comprehensive file catalogs", self.open_file_catalog),
         ]
         
         row, col = 0, 0
@@ -485,12 +485,21 @@ class SimpleRFUHub(QMainWindow):
         
         # Network tools in organized grid (3 columns)
         tools = [
-            ("🌐 Network Scanner", "Scan and discover network devices", self.open_network_scanner),
-            ("🔌 Connectivity Test", "Test network connectivity and speed", self.open_connectivity_test),
-            ("📡 Network Transfer", "Transfer files over network", self.open_network_transfer),
-            ("🔗 Bookmark Manager", "Manage network bookmarks and links", self.open_bookmark_manager),
-            ("📊 Bandwidth Monitor", "Monitor network bandwidth usage", self.open_bandwidth_monitor),
-            ("🛡️ Network Security", "Network security analysis tools", self.open_network_security),
+            ("🌐 Network Scanner", "Scan and discover network devices", 
+             self.open_network_scanner),
+            ("🔌 Connectivity Test\nComing Soon", 
+             "Test network connectivity and speed", 
+             self.open_connectivity_test),
+            ("📡 Network Transfer", "Transfer files over network", 
+             self.open_network_transfer),
+            ("🔗 Bookmark Manager\nComing Soon", 
+             "Manage network bookmarks and links", 
+             self.open_bookmark_manager),
+            ("📊 Bandwidth Monitor", "Monitor network bandwidth usage", 
+             self.open_bandwidth_monitor),
+            ("🛡️ Network Security\nComing Soon", 
+             "Network security analysis tools", 
+             self.open_network_security),
         ]
         
         row, col = 0, 0
@@ -587,12 +596,20 @@ class SimpleRFUHub(QMainWindow):
         
         # Enhanced privacy tools with icons and descriptions (3×2 grid)
         tools = [
-            ("🧹 Privacy Cleaner", "Clean privacy traces and personal data", self.open_privacy_cleaner),
-            ("🗂️ Temp File Cleanup", "Remove temporary and cache files", self.open_temp_cleanup),
-            ("🌐 Browser Cleanup", "Clear browsing history and cookies", self.open_browser_cleanup),
-            ("⚙️ Privacy Settings", "Configure privacy and security settings", self.open_privacy_settings),
-            ("🔍 Data Scanner", "Scan for sensitive data exposure", self.open_data_scanner),
-            ("🛡️ Privacy Shield", "Advanced privacy protection tools", self.open_privacy_shield)
+            ("🧹 Privacy Cleaner", "Clean privacy traces and personal data", 
+             self.open_privacy_cleaner),
+            ("🗂️ Temp File Cleanup", "Remove temporary and cache files", 
+             self.open_temp_cleanup),
+            ("🌐 Browser Cleanup", "Clear browsing history and cookies", 
+             self.open_browser_cleanup),
+            ("⚙️ Privacy Settings\nComing Soon", 
+             "Configure privacy and security settings", 
+             self.open_privacy_settings),
+            ("🔍 Data Scanner", "Scan for sensitive data exposure", 
+             self.open_data_scanner),
+            ("🛡️ Privacy Shield\nComing Soon", 
+             "Advanced privacy protection tools", 
+             self.open_privacy_shield)
         ]
         
         # Add tools to grid (3 columns, 2 rows)
@@ -636,12 +653,19 @@ class SimpleRFUHub(QMainWindow):
         
         # Enhanced security tools with icons and descriptions (3×2 grid)
         tools = [
-            ("🔒 File Encryption", "Encrypt files and folders securely", self.open_file_encryption),
-            ("🗑️ Secure Delete", "Permanently delete sensitive files", self.open_secure_delete),
-            ("🔑 Password Generator", "Generate strong, secure passwords", self.open_password_generator),
-            ("🔍 Security Scan", "Scan for security vulnerabilities", self.open_security_scan),
-            ("🛡️ Security Monitor", "Monitor system security status", self.open_security_monitor),
-            ("⚙️ Security Settings", "Configure security preferences", self.open_security_settings)
+            ("🔒 File Encryption", "Encrypt files and folders securely", 
+             self.open_file_encryption),
+            ("🗑️ Secure Delete", "Permanently delete sensitive files", 
+             self.open_secure_delete),
+            ("🔑 Password Generator", "Generate strong, secure passwords", 
+             self.open_password_generator),
+            ("🔍 Security Scan", "Scan for security vulnerabilities", 
+             self.open_security_scan),
+            ("🛡️ Security Monitor\nComing Soon", 
+             "Monitor system security status", 
+             self.open_security_monitor),
+            ("⚙️ Security Settings", "Configure security preferences", 
+             self.open_security_settings)
         ]
         
         # Add tools to grid (3 columns, 2 rows)
@@ -686,11 +710,11 @@ class SimpleRFUHub(QMainWindow):
         # Enhanced system tools with icons and descriptions (3×2 grid)
         tools = [
             ("💻 System Information", "View detailed system specifications", self.open_system_info),
-            ("💿 Disk Usage Analyzer", "Analyze disk space usage and cleanup", self.open_disk_analyzer),
+            ("💿 Disk Usage Analyzer\nComing Soon", "Analyze disk space usage and cleanup", self.open_disk_analyzer),
             ("⚡ Process Monitor", "Monitor running processes and services", self.open_process_monitor),
-            ("🧹 System Cleanup", "Clean temporary files and system cache", self.open_system_cleanup),
-            ("📊 Performance Monitor", "Monitor system performance metrics", self.open_performance_monitor),
-            ("⚙️ System Settings", "Configure system preferences", self.open_system_settings)
+            ("🧹 System Cleanup\nComing Soon", "Clean temporary files and system cache", self.open_system_cleanup),
+            ("📊 Performance Monitor\nComing Soon", "Monitor system performance metrics", self.open_performance_monitor),
+            ("⚙️ System Settings\nComing Soon", "Configure system preferences", self.open_system_settings)
         ]
         
         # Add tools to grid (3 columns, 2 rows)
@@ -906,10 +930,9 @@ class SimpleRFUHub(QMainWindow):
             
             from utilities.analysis.check_sum import ChecksumGUI
             
-            # Create and show the checksum window
-            if not hasattr(self, 'checksum_window') or \
-               self.checksum_window is None:
-                self.checksum_window = ChecksumGUI()
+            # Ensure fresh window instance
+            self._ensure_fresh_window('checksum_window')
+            self.checksum_window = ChecksumGUI()
             
             self.checksum_window.show()
             self.checksum_window.raise_()
@@ -999,17 +1022,6 @@ class SimpleRFUHub(QMainWindow):
             self.status_bar.showMessage(f"Error opening Size Analyzer: {e}")
             self.logger.error(f"Error opening Size Analyzer: {e}")
     
-    def open_import_validator(self):
-        """Open import validator."""
-        try:
-            # Try to import and launch the enhanced import validator tool
-            # For now, show status message until tool is available
-            self.status_bar.showMessage("Import Validator - Feature coming soon...")
-            self.logger.info("Import Validator requested")
-        except Exception as e:
-            self.status_bar.showMessage(f"Error opening Import Validator: {e}")
-            self.logger.error(f"Error opening Import Validator: {e}")
-    
     def open_empty_folders(self):
         """Open empty folders finder."""
         try:
@@ -1048,22 +1060,101 @@ class SimpleRFUHub(QMainWindow):
     def open_file_catalog(self):
         """Open file catalog generator."""
         try:
-            # Try to import and launch the enhanced file catalog tool
-            # For now, show status message until tool is available
-            self.status_bar.showMessage("File Catalog Generator - Feature coming soon...")
-            self.logger.info("File Catalog Generator requested")
+            # Import and launch the catalog tool
+            import sys
+            import os
+            
+            # Add src directory to path for imports
+            current_dir = os.path.dirname(os.path.abspath(__file__))
+            src_dir = os.path.join(current_dir, '..')
+            
+            if src_dir not in sys.path:
+                sys.path.insert(0, src_dir)
+            
+            # Try advanced catalog first, fall back to simple catalog
+            try:
+                from rfu.tools.file_management.advanced_catalog.advanced_catalog_window import (
+                    AdvancedCatalogWindow
+                )
+                
+                # Create fresh advanced catalog window
+                self._ensure_fresh_window('file_catalog_window')
+                self.file_catalog_window = AdvancedCatalogWindow(
+                    hub_instance=self
+                )
+                
+                self.file_catalog_window.show()
+                self.file_catalog_window.raise_()
+                self.file_catalog_window.activateWindow()
+                
+                self.status_bar.showMessage(
+                    "Advanced File Catalog Generator opened successfully"
+                )
+                self.logger.info("Advanced File Catalog Generator tool opened")
+                
+            except ImportError:
+                # Fallback to simple catalog
+                from rfu.tools.file_management.catalog import CatalogWindow
+                
+                # Create and show the simple catalog window
+                if not hasattr(self, 'file_catalog_window') or \
+                   self.file_catalog_window is None:
+                    self.file_catalog_window = CatalogWindow()
+                
+                self.file_catalog_window.show()
+                self.file_catalog_window.raise_()
+                self.file_catalog_window.activateWindow()
+                
+                self.status_bar.showMessage(
+                    "File Catalog Generator opened successfully"
+                )
+                self.logger.info("File Catalog Generator tool opened")
+                
+        except ImportError as e:
+            self.status_bar.showMessage("File Catalog tool not available")
+            self.logger.error(f"ImportError opening File Catalog: {e}")
         except Exception as e:
-            self.status_bar.showMessage(f"Error opening File Catalog tool: {e}")
+            self.status_bar.showMessage(
+                f"Error opening File Catalog tool: {e}"
+            )
             self.logger.error(f"Error opening File Catalog tool: {e}")
     
     # File Operations Methods
     def open_file_splitter(self):
         """Open file splitter."""
         try:
-            # Try to import and launch the enhanced file splitter tool
-            # For now, show status message until tool is available
-            self.status_bar.showMessage("File Splitter - Feature coming soon...")
-            self.logger.info("File Splitter requested")
+            # Import and launch the file splitter tool
+            import sys
+            import os
+            
+            # Add src directory to path for imports
+            current_dir = os.path.dirname(os.path.abspath(__file__))
+            src_dir = os.path.join(current_dir, '..')
+            
+            if src_dir not in sys.path:
+                sys.path.insert(0, src_dir)
+            
+            from rfu.tools.file_operations.file_splitter_joiner import (
+                FileSplitJoinGUI
+            )
+            
+            # Create and show the file splitter window
+            if not hasattr(self, 'file_splitter_window') or \
+               self.file_splitter_window is None:
+                self.file_splitter_window = FileSplitJoinGUI()
+            
+            self.file_splitter_window.show()
+            self.file_splitter_window.raise_()
+            self.file_splitter_window.activateWindow()
+            
+            self.status_bar.showMessage(
+                "File Splitter/Joiner opened successfully"
+            )
+            self.logger.info("File Splitter/Joiner tool opened")
+            
+        except ImportError as e:
+            self.status_bar.showMessage("File Splitter tool not available")
+            self.logger.error(f"ImportError opening File Splitter: {e}")
         except Exception as e:
             self.status_bar.showMessage(f"Error opening File Splitter: {e}")
             self.logger.error(f"Error opening File Splitter: {e}")
@@ -1071,10 +1162,36 @@ class SimpleRFUHub(QMainWindow):
     def open_cmsd_logic(self):
         """Open CMSD logic tool."""
         try:
-            # Try to import and launch the enhanced CMSD logic tool
-            # For now, show status message until tool is available
-            self.status_bar.showMessage("CMSD Logic - Feature coming soon...")
-            self.logger.info("CMSD Logic requested")
+            # Import and launch the CMSD (Copy/Move/Sync/Delete) tool
+            import sys
+            import os
+            
+            # Add src directory to path for imports
+            current_dir = os.path.dirname(os.path.abspath(__file__))
+            src_dir = os.path.join(current_dir, '..')
+            
+            if src_dir not in sys.path:
+                sys.path.insert(0, src_dir)
+            
+            from rfu.tools.file_operations.cmsd import CopyMoveSyncDeleteWindow
+            
+            # Create and show the CMSD window
+            if not hasattr(self, 'cmsd_window') or \
+               self.cmsd_window is None:
+                self.cmsd_window = CopyMoveSyncDeleteWindow()
+            
+            self.cmsd_window.show()
+            self.cmsd_window.raise_()
+            self.cmsd_window.activateWindow()
+            
+            self.status_bar.showMessage(
+                "Copy/Move/Sync/Delete tool opened successfully"
+            )
+            self.logger.info("Copy/Move/Sync/Delete tool opened")
+            
+        except ImportError as e:
+            self.status_bar.showMessage("CMSD tool not available")
+            self.logger.error(f"ImportError opening CMSD Logic: {e}")
         except Exception as e:
             self.status_bar.showMessage(f"Error opening CMSD Logic: {e}")
             self.logger.error(f"Error opening CMSD Logic: {e}")
@@ -1082,10 +1199,46 @@ class SimpleRFUHub(QMainWindow):
     def open_sync_backup(self):
         """Open synchronization and backup."""
         try:
-            # Try to import and launch the enhanced sync/backup tool
-            # For now, show status message until tool is available
-            self.status_bar.showMessage("Synchronization & Backup - Feature coming soon...")
-            self.logger.info("Synchronization & Backup requested")
+            # Import and launch the sync/backup tool
+            import sys
+            import os
+            
+            # Add src directory to path for imports
+            current_dir = os.path.dirname(os.path.abspath(__file__))
+            src_dir = os.path.join(current_dir, '..')
+            
+            if src_dir not in sys.path:
+                sys.path.insert(0, src_dir)
+            
+            # Try to import the sync tool, fall back to placeholder
+            try:
+                from utilities.file_operations.synchronization_backup.sync import (
+                    SyncWindow
+                )
+                
+                # Create and show the sync/backup window
+                if not hasattr(self, 'sync_backup_window') or \
+                   self.sync_backup_window is None:
+                    self.sync_backup_window = SyncWindow()
+                
+                self.sync_backup_window.show()
+                self.sync_backup_window.raise_()
+                self.sync_backup_window.activateWindow()
+                
+                self.status_bar.showMessage(
+                    "Synchronization & Backup tool opened successfully"
+                )
+                self.logger.info("Synchronization & Backup tool opened")
+                
+            except ImportError:
+                # Fallback message when sync tool has dependency issues
+                self.status_bar.showMessage(
+                    "Sync & Backup tool temporarily unavailable"
+                )
+                self.logger.info(
+                    "Sync & Backup tool unavailable - dependency issues"
+                )
+            
         except Exception as e:
             self.status_bar.showMessage(f"Error opening Sync/Backup: {e}")
             self.logger.error(f"Error opening Sync/Backup: {e}")
@@ -1125,36 +1278,78 @@ class SimpleRFUHub(QMainWindow):
     def open_organize_files(self):
         """Open file organization tool."""
         try:
-            # Try to import and launch the enhanced file organization tool
-            # For now, show status message until tool is available
-            self.status_bar.showMessage("File Organization - Feature coming soon...")
-            self.logger.info("File Organization requested")
+            # Import and launch the file organization tool
+            import sys
+            import os
+            
+            # Add src directory to path for imports
+            current_dir = os.path.dirname(os.path.abspath(__file__))
+            src_dir = os.path.join(current_dir, '..')
+            
+            if src_dir not in sys.path:
+                sys.path.insert(0, src_dir)
+            
+            from rfu.tools.file_management.organize import OrganizeWindow
+            
+            # Create and show the organize files window
+            if not hasattr(self, 'organize_files_window') or \
+               self.organize_files_window is None:
+                self.organize_files_window = OrganizeWindow()
+            
+            self.organize_files_window.show()
+            self.organize_files_window.raise_()
+            self.organize_files_window.activateWindow()
+            
+            self.status_bar.showMessage(
+                "File Organization tool opened successfully"
+            )
+            self.logger.info("File Organization tool opened")
+            
+        except ImportError as e:
+            self.status_bar.showMessage("File Organization tool not available")
+            self.logger.error(f"ImportError opening File Organization: {e}")
         except Exception as e:
-            self.status_bar.showMessage(f"Error opening File Organization: {e}")
+            self.status_bar.showMessage(
+                f"Error opening File Organization: {e}"
+            )
             self.logger.error(f"Error opening File Organization: {e}")
     
     def open_batch_rename(self):
         """Open batch rename tool."""
         try:
-            # Try to import and launch the enhanced batch rename tool
-            # For now, show status message until tool is available
-            self.status_bar.showMessage("Batch Rename - Feature coming soon...")
-            self.logger.info("Batch Rename requested")
+            # Import and launch the batch rename tool
+            import sys
+            import os
+            
+            # Add src directory to path for imports
+            current_dir = os.path.dirname(os.path.abspath(__file__))
+            src_dir = os.path.join(current_dir, '..')
+            
+            if src_dir not in sys.path:
+                sys.path.insert(0, src_dir)
+            
+            from rfu.tools.file_management.rename import RenameWindow
+            
+            # Create and show the batch rename window
+            if not hasattr(self, 'batch_rename_window') or \
+               self.batch_rename_window is None:
+                self.batch_rename_window = RenameWindow()
+            
+            self.batch_rename_window.show()
+            self.batch_rename_window.raise_()
+            self.batch_rename_window.activateWindow()
+            
+            self.status_bar.showMessage(
+                "Batch Rename tool opened successfully"
+            )
+            self.logger.info("Batch Rename tool opened")
+            
+        except ImportError as e:
+            self.status_bar.showMessage("Batch Rename tool not available")
+            self.logger.error(f"ImportError opening Batch Rename: {e}")
         except Exception as e:
             self.status_bar.showMessage(f"Error opening Batch Rename: {e}")
             self.logger.error(f"Error opening Batch Rename: {e}")
-        self.status_bar.showMessage("File Touch Operations - Feature coming soon...")
-        self.logger.info("File Touch Operations requested")
-    
-    def open_organize_files(self):
-        """Open organize files tool."""
-        self.status_bar.showMessage("Organize Files - Feature coming soon...")
-        self.logger.info("Organize Files requested")
-    
-    def open_batch_rename(self):
-        """Open batch rename tool."""
-        self.status_bar.showMessage("Batch Rename - Feature coming soon...")
-        self.logger.info("Batch Rename requested")
     
     # Metadata Tools Methods
     def open_image_metadata(self):
@@ -1224,10 +1419,14 @@ class SimpleRFUHub(QMainWindow):
     def open_exif_viewer(self):
         """Open EXIF data viewer."""
         try:
-            # Try to import and launch the enhanced EXIF viewer tool
-            # For now, show status message until tool is available
-            self.status_bar.showMessage("EXIF Data Viewer - Feature coming soon...")
-            self.logger.info("EXIF Data Viewer requested")
+            from src.rfu.tools.metadata.edit_image_metadata import ImageMetadataEditorGUI
+            exif_window = ImageMetadataEditorGUI()
+            exif_window.show()
+            self.status_bar.showMessage("EXIF Data Viewer opened")
+            self.logger.info("EXIF Data Viewer (Image Metadata Editor) opened successfully")
+        except ImportError as e:
+            self.status_bar.showMessage("EXIF Data Viewer not available")
+            self.logger.error(f"ImportError opening EXIF Data Viewer: {e}")
         except Exception as e:
             self.status_bar.showMessage(f"Error opening EXIF Viewer: {e}")
             self.logger.error(f"Error opening EXIF Viewer: {e}")
@@ -1235,21 +1434,32 @@ class SimpleRFUHub(QMainWindow):
     def open_metadata_analyzer(self):
         """Open metadata analyzer."""
         try:
-            # Try to import and launch the enhanced metadata analyzer tool
-            # For now, show status message until tool is available
-            self.status_bar.showMessage("Metadata Analyzer - Feature coming soon...")
-            self.logger.info("Metadata Analyzer requested")
+            from src.rfu.tools.metadata.edit_image_metadata import \
+                ImageMetadataEditorGUI
+            analyzer_window = ImageMetadataEditorGUI()
+            analyzer_window.show()
+            self.status_bar.showMessage("Metadata Analyzer opened")
+            self.logger.info("Metadata Analyzer (Image Metadata) opened")
+        except ImportError as e:
+            self.status_bar.showMessage("Metadata Analyzer not available")
+            self.logger.error(f"ImportError opening Metadata Analyzer: {e}")
         except Exception as e:
-            self.status_bar.showMessage(f"Error opening Metadata Analyzer: {e}")
+            self.status_bar.showMessage(f"Error opening Analyzer: {e}")
             self.logger.error(f"Error opening Metadata Analyzer: {e}")
     
     def open_tag_editor(self):
         """Open tag editor."""
         try:
-            # Try to import and launch the enhanced tag editor tool
-            # For now, show status message until tool is available
-            self.status_bar.showMessage("Tag Editor - Feature coming soon...")
-            self.logger.info("Tag Editor requested")
+            # Try enhanced image metadata editor for tag editing first
+            from src.rfu.tools.metadata.edit_image_metadata import \
+                ImageMetadataEditorGUI
+            tag_window = ImageMetadataEditorGUI()
+            tag_window.show()
+            self.status_bar.showMessage("Tag Editor opened")
+            self.logger.info("Tag Editor (Image Metadata Tags) opened")
+        except ImportError as e:
+            self.status_bar.showMessage("Tag Editor not available")
+            self.logger.error(f"ImportError opening Tag Editor: {e}")
         except Exception as e:
             self.status_bar.showMessage(f"Error opening Tag Editor: {e}")
             self.logger.error(f"Error opening Tag Editor: {e}")
@@ -1257,43 +1467,89 @@ class SimpleRFUHub(QMainWindow):
     def open_property_inspector(self):
         """Open property inspector."""
         try:
-            # Try to import and launch the enhanced property inspector tool
-            # For now, show status message until tool is available
-            self.status_bar.showMessage("Property Inspector - Feature coming soon...")
-            self.logger.info("Property Inspector requested")
+            from src.rfu.tools.metadata.office_meta_data_editor import \
+                OfficeMetaDataEditorGUI
+            property_window = OfficeMetaDataEditorGUI()
+            property_window.show()
+            self.status_bar.showMessage("Property Inspector opened")
+            self.logger.info("Property Inspector (Office Metadata) opened")
+        except ImportError as e:
+            self.status_bar.showMessage("Property Inspector not available")
+            self.logger.error(f"ImportError opening Property Inspector: {e}")
         except Exception as e:
-            self.status_bar.showMessage(f"Error opening Property Inspector: {e}")
+            self.status_bar.showMessage(f"Error opening Inspector: {e}")
             self.logger.error(f"Error opening Property Inspector: {e}")
-        """Open property inspector."""
-        self.status_bar.showMessage("Property Inspector - Feature coming soon...")
-        self.logger.info("Property Inspector requested")
     
     # Network Tools Methods
     def open_network_scanner(self):
         """Open network scanner."""
-        self.status_bar.showMessage("Network Scanner - Feature coming soon...")
-        self.logger.info("Network Scanner requested")
-    
+        try:
+            from src.utilities.network.network_scanner import NetworkScannerGUI
+            scanner_window = NetworkScannerGUI()
+            scanner_window.show()
+            self.status_bar.showMessage("Network Scanner opened")
+            self.logger.info("Network Scanner opened successfully")
+        except ImportError as e:
+            self.status_bar.showMessage("Network Scanner not available")
+            self.logger.error(f"ImportError opening Network Scanner: {e}")
+        except Exception as e:
+            self.status_bar.showMessage(f"Error opening Network Scanner: {e}")
+            self.logger.error(f"Error opening Network Scanner: {e}")
+
     def open_connectivity_test(self):
         """Open connectivity test."""
         self.status_bar.showMessage("Connectivity Test - Feature coming soon...")
         self.logger.info("Connectivity Test requested")
-    
+
     def open_network_transfer(self):
         """Open network transfer."""
-        self.status_bar.showMessage("Network Transfer - Feature coming soon...")
-        self.logger.info("Network Transfer requested")
-    
+        try:
+            from src.utilities.network.network_transfer import \
+                NetworkTransferGUI
+            transfer_window = NetworkTransferGUI()
+            transfer_window.show()
+            self.status_bar.showMessage("Network Transfer opened")
+            self.logger.info("Network Transfer opened successfully")
+        except ImportError as e:
+            self.status_bar.showMessage("Network Transfer not available")
+            self.logger.error(f"ImportError opening Network Transfer: {e}")
+        except Exception as e:
+            self.status_bar.showMessage(f"Error opening Transfer: {e}")
+            self.logger.error(f"Error opening Network Transfer: {e}")
+
     def open_bookmark_manager(self):
         """Open bookmark manager."""
         self.status_bar.showMessage("Bookmark Manager - Feature coming soon...")
         self.logger.info("Bookmark Manager requested")
-    
+
     def open_bandwidth_monitor(self):
         """Open bandwidth monitor."""
-        self.status_bar.showMessage("Bandwidth Monitor - Feature coming soon...")
-        self.logger.info("Bandwidth Monitor requested")
-    
+        try:
+            from src.utilities.network.network_connectivity_complex.gui.\
+                widgets.bandwidth_monitor_widget import BandwidthMonitorWidget
+            from src.rfu.gui.standard_window import StandardWindow
+            
+            # Create a standalone window for the bandwidth monitor
+            class BandwidthMonitorWindow(StandardWindow):
+                def __init__(self):
+                    super().__init__(
+                        title="Bandwidth Monitor - Richard's File Utilities",
+                        window_type="utility"
+                    )
+                    widget = BandwidthMonitorWidget()
+                    self.setCentralWidget(widget)
+                    
+            monitor_window = BandwidthMonitorWindow()
+            monitor_window.show()
+            self.status_bar.showMessage("Bandwidth Monitor opened")
+            self.logger.info("Bandwidth Monitor opened successfully")
+        except ImportError as e:
+            self.status_bar.showMessage("Bandwidth Monitor not available")
+            self.logger.error(f"ImportError opening Bandwidth Monitor: {e}")
+        except Exception as e:
+            self.status_bar.showMessage(f"Error opening Monitor: {e}")
+            self.logger.error(f"Error opening Bandwidth Monitor: {e}")
+
     def open_network_security(self):
         """Open network security tools."""
         self.status_bar.showMessage("Network Security - Feature coming soon...")
@@ -1333,31 +1589,87 @@ class SimpleRFUHub(QMainWindow):
     # Privacy Tools Methods
     def open_privacy_cleaner(self):
         """Open privacy cleaner."""
-        self.status_bar.showMessage("Privacy Cleaner - Feature coming soon...")
-        self.logger.info("Privacy Cleaner requested")
-    
+        try:
+            from src.utilities.privacy.privacy_tools_simple import SimplePrivacyHub
+            privacy_window = SimplePrivacyHub()
+            privacy_window.show()
+            self.status_bar.showMessage("Privacy Cleaner opened")
+            self.logger.info("Privacy Cleaner opened successfully")
+        except ImportError as e:
+            self.status_bar.showMessage("Privacy Cleaner not available")
+            self.logger.error(f"ImportError opening Privacy Cleaner: {e}")
+        except Exception as e:
+            self.status_bar.showMessage(f"Error opening Privacy Cleaner: {e}")
+            self.logger.error(f"Error opening Privacy Cleaner: {e}")
+
     def open_temp_cleanup(self):
         """Open temporary file cleanup."""
-        self.status_bar.showMessage("Temporary File Cleanup - Feature coming soon...")
-        self.logger.info("Temporary File Cleanup requested")
-    
+        try:
+            from src.utilities.privacy.privacy_tools_simple import SimplePrivacyHub
+            # Use privacy cleaner for temp cleanup functionality
+            temp_window = SimplePrivacyHub()
+            temp_window.show()
+            self.status_bar.showMessage("Temp File Cleanup opened")
+            self.logger.info("Temp File Cleanup opened successfully")
+        except ImportError as e:
+            self.status_bar.showMessage("Temp File Cleanup not available")
+            self.logger.error(f"ImportError opening Temp Cleanup: {e}")
+        except Exception as e:
+            self.status_bar.showMessage(f"Error opening Temp Cleanup: {e}")
+            self.logger.error(f"Error opening Temp File Cleanup: {e}")
+
     def open_browser_cleanup(self):
         """Open browser history cleaner."""
-        self.status_bar.showMessage("Browser History Cleaner - Feature coming soon...")
-        self.logger.info("Browser History Cleaner requested")
-    
+        try:
+            from src.utilities.privacy.privacy_tools_simple import SimplePrivacyHub
+            # Use privacy cleaner for browser cleanup functionality
+            browser_window = SimplePrivacyHub()
+            browser_window.show()
+            self.status_bar.showMessage("Browser Cleanup opened")
+            self.logger.info("Browser Cleanup opened successfully")
+        except ImportError as e:
+            self.status_bar.showMessage("Browser Cleanup not available")
+            self.logger.error(f"ImportError opening Browser Cleanup: {e}")
+        except Exception as e:
+            self.status_bar.showMessage(f"Error opening Browser Cleanup: {e}")
+            self.logger.error(f"Error opening Browser Cleanup: {e}")
+
     def open_privacy_settings(self):
-        """Open privacy settings."""
+        """Open privacy settings configuration (Coming Soon)"""
+        QMessageBox.information(
+            self, 
+            "Privacy Settings", 
+            "Privacy Settings feature is being developed\n\n"
+            "This feature will allow you to configure comprehensive "
+            "privacy and security settings."
+        )
         self.status_bar.showMessage("Privacy Settings - Feature coming soon...")
         self.logger.info("Privacy Settings requested")
-    
+
     def open_data_scanner(self):
         """Open data scanner."""
-        self.status_bar.showMessage("Data Scanner - Feature coming soon...")
-        self.logger.info("Data Scanner requested")
-    
+        try:
+            from src.utilities.privacy.data_anonymizer import DataAnonymizerGUI
+            scanner_window = DataAnonymizerGUI()
+            scanner_window.show()
+            self.status_bar.showMessage("Data Scanner opened")
+            self.logger.info("Data Scanner opened successfully")
+        except ImportError as e:
+            self.status_bar.showMessage("Data Scanner not available")
+            self.logger.error(f"ImportError opening Data Scanner: {e}")
+        except Exception as e:
+            self.status_bar.showMessage(f"Error opening Data Scanner: {e}")
+            self.logger.error(f"Error opening Data Scanner: {e}")
+
     def open_privacy_shield(self):
-        """Open privacy shield."""
+        """Open privacy shield (Coming Soon)"""
+        QMessageBox.information(
+            self,
+            "Privacy Shield", 
+            "Privacy Shield feature is being developed\n\n"
+            "This feature will provide advanced privacy protection "
+            "tools and monitoring."
+        )
         self.status_bar.showMessage("Privacy Shield - Feature coming soon...")
         self.logger.info("Privacy Shield requested")
     
@@ -1427,10 +1739,14 @@ class SimpleRFUHub(QMainWindow):
     def open_password_generator(self):
         """Open password generator."""
         try:
-            # Try to import and launch the enhanced password generator tool
-            # For now, show status message until tool is available
-            self.status_bar.showMessage("Password Generator - Feature coming soon...")
-            self.logger.info("Password Generator requested")
+            from src.utilities.security.simple_password_generator import SimplePasswordGeneratorGUI
+            password_window = SimplePasswordGeneratorGUI()
+            password_window.show()
+            self.status_bar.showMessage("Password Generator opened")
+            self.logger.info("Password Generator opened successfully")
+        except ImportError as e:
+            self.status_bar.showMessage("Password Generator not available")
+            self.logger.error(f"ImportError opening Password Generator: {e}")
         except Exception as e:
             self.status_bar.showMessage(f"Error opening Password Generator: {e}")
             self.logger.error(f"Error opening Password Generator: {e}")
@@ -1438,24 +1754,29 @@ class SimpleRFUHub(QMainWindow):
     def open_security_scan(self):
         """Open security scan."""
         try:
-            # Try to import and launch the enhanced security scan tool
-            # For now, show status message until tool is available
-            self.status_bar.showMessage("Security Scan - Feature coming soon...")
-            self.logger.info("Security Scan requested")
+            from src.utilities.security.simple_security_scanner import SimpleSecurityScannerGUI
+            scan_window = SimpleSecurityScannerGUI()
+            scan_window.show()
+            self.status_bar.showMessage("Security Scan opened")
+            self.logger.info("Security Scan opened successfully")
+        except ImportError as e:
+            self.status_bar.showMessage("Security Scan not available")
+            self.logger.error(f"ImportError opening Security Scan: {e}")
         except Exception as e:
             self.status_bar.showMessage(f"Error opening Security Scan: {e}")
             self.logger.error(f"Error opening Security Scan: {e}")
     
     def open_security_monitor(self):
-        """Open security monitor."""
-        try:
-            # Try to import and launch the enhanced security monitor tool
-            # For now, show status message until tool is available
-            self.status_bar.showMessage("Security Monitor - Feature coming soon...")
-            self.logger.info("Security Monitor requested")
-        except Exception as e:
-            self.status_bar.showMessage(f"Error opening Security Monitor: {e}")
-            self.logger.error(f"Error opening Security Monitor: {e}")
+        """Open security monitor (Coming Soon)."""
+        QMessageBox.information(
+            self,
+            "Security Monitor",
+            "Security Monitor feature is being developed\n\n"
+            "This feature will provide real-time security monitoring "
+            "and threat detection capabilities."
+        )
+        self.status_bar.showMessage("Security Monitor - Feature coming soon...")
+        self.logger.info("Security Monitor requested")
     
     def open_security_settings(self):
         """Open security settings."""
@@ -1494,18 +1815,42 @@ class SimpleRFUHub(QMainWindow):
     # System Tools Methods
     def open_system_info(self):
         """Open system information."""
-        self.status_bar.showMessage("System Information - Feature coming soon...")
-        self.logger.info("System Information requested")
+        try:
+            from src.utilities.system.simple_system_info import \
+                SimpleSystemInfoGUI
+            system_window = SimpleSystemInfoGUI()
+            system_window.show()
+            self.status_bar.showMessage("System Information opened")
+            self.logger.info("System Information opened successfully")
+        except ImportError as e:
+            self.status_bar.showMessage("System Information not available")
+            self.logger.error(f"ImportError opening System Information: {e}")
+        except Exception as e:
+            self.status_bar.showMessage(
+                f"Error opening System Information: {e}")
+            self.logger.error(f"Error opening System Information: {e}")
     
     def open_disk_analyzer(self):
         """Open disk usage analyzer."""
-        self.status_bar.showMessage("Disk Usage Analyzer - Feature coming soon...")
+        self.status_bar.showMessage(
+            "Disk Usage Analyzer - Feature coming soon...")
         self.logger.info("Disk Usage Analyzer requested")
     
     def open_process_monitor(self):
         """Open process monitor."""
-        self.status_bar.showMessage("Process Monitor - Feature coming soon...")
-        self.logger.info("Process Monitor requested")
+        try:
+            from src.utilities.system.simple_process_monitor import \
+                SimpleProcessMonitorGUI
+            process_window = SimpleProcessMonitorGUI()
+            process_window.show()
+            self.status_bar.showMessage("Process Monitor opened")
+            self.logger.info("Process Monitor opened successfully")
+        except ImportError as e:
+            self.status_bar.showMessage("Process Monitor not available")
+            self.logger.error(f"ImportError opening Process Monitor: {e}")
+        except Exception as e:
+            self.status_bar.showMessage(f"Error opening Process Monitor: {e}")
+            self.logger.error(f"Error opening Process Monitor: {e}")
     
     def open_system_cleanup(self):
         """Open system cleanup."""
@@ -1514,7 +1859,8 @@ class SimpleRFUHub(QMainWindow):
     
     def open_performance_monitor(self):
         """Open performance monitor."""
-        self.status_bar.showMessage("Performance Monitor - Feature coming soon...")
+        self.status_bar.showMessage(
+            "Performance Monitor - Feature coming soon...")
         self.logger.info("Performance Monitor requested")
     
     def open_system_settings(self):
@@ -1522,9 +1868,86 @@ class SimpleRFUHub(QMainWindow):
         self.status_bar.showMessage("System Settings - Feature coming soon...")
         self.logger.info("System Settings requested")
 
+    def register_tool(self, tool_name: str, tool_instance):
+        """Register a tool instance with the hub for tracking purposes."""
+        if not hasattr(self, '_registered_tools'):
+            self._registered_tools = {}
+        self._registered_tools[tool_name] = tool_instance
+        self.logger.info(f"Tool registered: {tool_name}")
+
+    def _ensure_fresh_window(self, window_attr_name):
+        """Ensure a window attribute is properly reset for fresh initialization."""
+        if hasattr(self, window_attr_name):
+            old_window = getattr(self, window_attr_name)
+            if old_window:
+                try:
+                    if hasattr(old_window, 'close'):
+                        old_window.close()
+                except Exception as e:
+                    self.logger.error(f"Error closing old {window_attr_name}: {e}")
+            setattr(self, window_attr_name, None)
+        return True
+
+    def closeEvent(self, event):
+        """Handle application close event with proper cleanup."""
+        self.logger.info("Simple RFU Hub closing - starting cleanup...")
+        
+        try:
+            # Close all registered tools
+            if hasattr(self, '_registered_tools'):
+                for tool_name, tool_instance in self._registered_tools.items():
+                    try:
+                        if tool_instance and hasattr(tool_instance, 'close'):
+                            tool_instance.close()
+                            self.logger.info(f"Closed tool: {tool_name}")
+                    except Exception as e:
+                        self.logger.error(f"Error closing {tool_name}: {e}")
+                self._registered_tools.clear()
+            
+            # Close all window instances stored as attributes
+            window_attributes = [
+                'checksum_window', 'duplicate_finder_window', 
+                'size_analyzer_window', 'empty_folders_window', 
+                'file_catalog_window', 'file_splitter_window',
+                'cmsd_window', 'sync_backup_window', 'file_touch_window',
+                'organize_files_window', 'batch_rename_window', 
+                'image_metadata_window', 'office_metadata_window', 
+                'encryption_window', 'secure_delete_window',
+                'security_settings_window'
+            ]
+            
+            for attr_name in window_attributes:
+                if hasattr(self, attr_name):
+                    window = getattr(self, attr_name)
+                    if window and hasattr(window, 'close'):
+                        try:
+                            window.close()
+                            self.logger.info(f"Closed: {attr_name}")
+                        except Exception as e:
+                            self.logger.error(f"Error closing {attr_name}: {e}")
+                    setattr(self, attr_name, None)
+            
+            # Clean up menu system
+            if hasattr(self, 'menu_manager'):
+                try:
+                    # Just set to None since SimpleMenuManager may not have cleanup
+                    self.menu_manager = None
+                except Exception as e:
+                    self.logger.error(f"Error cleaning up menu: {e}")
+            
+            # Final cleanup
+            self.logger.info("Simple RFU Hub cleanup completed successfully")
+            
+        except Exception as e:
+            self.logger.error(f"Error during cleanup: {e}")
+        
+        # Accept the close event
+        event.accept()
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     hub = SimpleRFUHub()
     hub.show()
     sys.exit(app.exec_())
+

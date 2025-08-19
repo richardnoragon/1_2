@@ -34,7 +34,7 @@ def main():
         else:
             get_log_manager().set_level(logging_level)
             
-        # Create Qt application
+        # Create Qt application with proper cleanup
         app = QApplication(sys.argv)
         logger.info('Qt Application initialized')
         
@@ -46,6 +46,16 @@ def main():
         # Start event loop
         return_code = app.exec_()
         logger.info('Application shutting down')
+        
+        # Ensure proper cleanup
+        try:
+            if hasattr(window, 'gui_hub') and window.gui_hub:
+                window.gui_hub.close()
+            app.quit()
+            app.deleteLater()
+        except Exception as e:
+            logger.error(f"Error during final cleanup: {e}")
+            
         return return_code
         
     except Exception as e:

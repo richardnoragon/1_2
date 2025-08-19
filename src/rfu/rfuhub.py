@@ -144,6 +144,16 @@ class RFUHub(QObject if PYQT5_AVAILABLE else object):
         """List all registered tools."""
         return list(self.registered_tools.keys())
     
+    def close(self):
+        """Close the hub and associated GUI."""
+        try:
+            if hasattr(self, 'gui_hub') and self.gui_hub:
+                self.gui_hub.close()
+                self.gui_hub = None
+            self.logger.info("RFU Hub GUI closed")
+        except Exception as e:
+            self.logger.error(f"Error closing RFU Hub GUI: {e}")
+
     def shutdown(self):
         """Shutdown the hub and cleanup resources."""
         try:
