@@ -185,7 +185,7 @@ class ConnectionManager:
             state=state,
             ip_address=ip_address,
             gateway=gateway,
-            dns_servers=[],  # TODO: Implement DNS server detection
+            dns_servers=self._detect_dns_servers(interface),
             last_updated=datetime.now(),
             connection_quality=self._calculate_connection_quality(interface)
         )
@@ -361,3 +361,79 @@ class ConnectionManager:
                 default=datetime.now()
             ).isoformat()
         }
+
+    def _detect_dns_servers(self, interface) -> List[str]:
+        """Detect DNS servers for the given interface.
+        
+        Args:
+            interface: Network interface object
+            
+        Returns:
+            List of DNS server IP addresses
+        """
+        dns_servers = []
+        
+        try:
+            import subprocess
+            import sys
+            
+            if sys.platform.startswith('win'):
+                # Windows: Use nslookup to get DNS servers
+                result = subprocess.run(
+                    ['nslookup', 'google.com'],
+                    capture_output=True,
+                    text=True,
+                    timeout=5
+                )
+                
+                if result.returncode == 0:
+                    lines = result.stdout.split('\n')
+                    for line in lines:
+                        if 'Server:' in line:
+                            # Extract DNS server IP
+                            parts = line.split()
+                            if len(parts) >= 2:
+                                dns_ip = parts[1].strip()
+                                if self._is_valid_ip(dns_ip):
+                                    dns_servers.append(dns_ip)
+                
+            else:
+                # Unix-like systems: Read /etc/resolv.conf
+                try:
+                    with open('/etc/resolv.conf', 'r') as f:
+                        for line in f:
+                            line = line.strip()
+                            if line.startswith('nameserver'):
+                                parts = line.split()
+                                if len(parts) >= 2:
+                                    dns_ip = parts[1]
+                                    if self._is_valid_ip(dns_ip):
+                                        dns_servers.append(dns_ip)
+                except FileNotFoundError:
+                    pass
+            
+            # Fallback: Common public DNS servers
+            if not dns_servers:
+                dns_servers = ['8.8.8.8', '8.8.4.4']  # Google DNS
+                
+        except Exception as e:
+            self.logger.warning(f"Failed to detect DNS servers: {e}")
+            dns_servers = ['8.8.8.8', '8.8.4.4']  # Fallback to Google DNS
+        
+        return dns_servers
+
+    def _is_valid_ip(self, ip_string: str) -> bool:
+        """Check if string is a valid IP address.
+        
+        Args:
+            ip_string: String to check
+            
+        Returns:
+            True if valid IP address
+        """
+        try:
+            import ipaddress
+            ipaddress.ip_address(ip_string)
+            return True
+        except ValueError:
+            return False

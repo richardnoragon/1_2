@@ -77,8 +77,8 @@ class SchemaValidator:
                     )
                 
                 # Validate foreign key constraints
-                conn.execute("PRAGMA foreign_key_check")
-                fk_violations = conn.fetchall()
+                cursor = conn.execute("PRAGMA foreign_key_check")
+                fk_violations = cursor.fetchall()
                 
                 if fk_violations:
                     return ValidationResult(

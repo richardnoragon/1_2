@@ -17,8 +17,13 @@ def test_tool_import(module_name, class_name):
         # Try different import paths
         import_paths = [
             module_name,  # Root directory
-            f"src.legacy.file_utilities_1.{module_name}",  # Legacy tools
-            f"src.utilities.{module_name}",  # Utilities
+            f"src.utilities.file_operations.catalog.{module_name}",  # Catalog tools
+            f"src.utilities.file_operations.file_touch.{module_name}",  # File touch tools
+            f"src.utilities.file_operations.organize.{module_name}",  # Organize tools
+            f"src.utilities.file_operations.file_finder.{module_name}",  # File finder tools
+            f"src.utilities.file_operations.compression.{module_name}",  # Compression tools
+            f"src.legacy.file_utilities_1.{module_name}",  # Legacy tools (fallback)
+            f"src.utilities.{module_name}",  # Other utilities
         ]
         
         for import_path in import_paths:

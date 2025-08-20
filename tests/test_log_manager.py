@@ -1,8 +1,9 @@
 import unittest
 import os
 import logging
+from io import StringIO
 from tests.test_utils import TestUtils
-from log_manager import LogManager
+from src.rfu.log_manager import LogManager
 
 from core.error_handler import error_handler
 
@@ -139,7 +140,6 @@ class TestLogManager(unittest.TestCase):
     def test_log_handlers(self):
         """Test adding custom log handlers"""
         # Create a memory handler for testing
-        from io import StringIO
         string_io = StringIO()
         memory_handler = logging.StreamHandler(string_io)
         

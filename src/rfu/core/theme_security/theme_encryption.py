@@ -1,8 +1,17 @@
 """
-Theme Data Encryption Module
+Advanced theme encryption system using AES-256-GCM for secure protection.
 
-Provides AES-256-GCM encryption for theme data with secure key management
-and integrity validation using HMAC-SHA256.
+This module provides cryptographically secure theme data encryption using:
+- AES-256-GCM for authenticated encryption with integrity protection
+- PBKDF2-HMAC-SHA256 key derivation with 100,000 iterations and random salt
+- OS keyring integration for secure key management
+- Base64 encoding for safe storage and transmission
+
+Security Features:
+- 256-bit AES encryption in GCM mode for confidentiality and authenticity
+- PBKDF2 key stretching to prevent brute-force attacks
+- Random nonce generation for each encryption operation
+- Comprehensive error handling and validation
 """
 
 import os

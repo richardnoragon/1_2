@@ -43,26 +43,35 @@ class EnhancedConfigManager:
     
     def _setup_config(self):
         """Setup configuration management."""
+        # Initialize recursion protection
+        self._recursion_depth = 0
+        self._max_recursion_depth = 10
+        self._recursion_lock = Lock()
+        
+        # Initialize file-based config attributes (always needed for fallback)
+        self.config_dir = Path('config')
+        self.config_dir.mkdir(exist_ok=True)
+        self.config_file = self.config_dir / 'rfu_config.json'
+        self.config: Dict[str, Any] = {}
+        
+        # Initialize logger
+        self.logger = logging.getLogger('RFU.EnhancedConfigManager')
+        
         # Initialize database manager if available
         self.use_database = DATABASE_AVAILABLE
         if self.use_database:
             try:
                 self.db_manager = get_database_manager()
-                self.logger = logging.getLogger('RFU.EnhancedConfigManager')
                 self.logger.info("Enhanced ConfigManager with database support initialized")
             except Exception as e:
-                self.logger = logging.getLogger('RFU.EnhancedConfigManager')
                 self.logger.error(f"Failed to initialize database: {e}")
                 self.use_database = False
         
-        # Fallback to file-based configuration
+        # Load file-based configuration (always needed for fallback)
+        self._load_file_config()
+        
+        # If database is not available, log fallback mode
         if not self.use_database:
-            self.config_dir = Path('config')
-            self.config_dir.mkdir(exist_ok=True)
-            self.config_file = self.config_dir / 'rfu_config.json'
-            self.config: Dict[str, Any] = {}
-            self.logger = logging.getLogger('RFU.EnhancedConfigManager')
-            self._load_file_config()
             self.logger.info("Enhanced ConfigManager with file support initialized")
         
         # Migration flag
@@ -273,8 +282,53 @@ class EnhancedConfigManager:
             (section, key, value_str, value_type)
         )
     
+    def _is_recursion_safe(self) -> bool:
+        """Check if we're in a safe recursion state."""
+        with self._recursion_lock:
+            return self._recursion_depth < self._max_recursion_depth
+    
+    def _increment_recursion_depth(self) -> bool:
+        """Increment recursion depth and check if safe."""
+        with self._recursion_lock:
+            if self._recursion_depth >= self._max_recursion_depth:
+                self.logger.warning(f"Maximum recursion depth ({self._max_recursion_depth}) reached")
+                return False
+            self._recursion_depth += 1
+            return True
+    
+    def _decrement_recursion_depth(self):
+        """Decrement recursion depth."""
+        with self._recursion_lock:
+            if self._recursion_depth > 0:
+                self._recursion_depth -= 1
+    
+    def _get_auto_save_setting_safe(self) -> bool:
+        """Safely get auto_save setting without recursion."""
+        try:
+            # Check directly in config without using get_setting to avoid recursion
+            if self.use_database:
+                query = "SELECT value, value_type FROM app_settings WHERE section = ? AND key = ?"
+                result = self.db_manager.execute_query(query, ('general', 'auto_save_config'))
+                if result:
+                    value_str, value_type = result[0]
+                    return self._convert_value_from_storage(value_str, value_type)
+                return True  # Default value
+            else:
+                # Direct config access without get_setting call
+                if ('general' in self.config and 
+                        'auto_save_config' in self.config['general']):
+                    return self.config['general']['auto_save_config']
+                return True  # Default value
+        except Exception as e:
+            self.logger.warning(f"Error checking auto_save setting: {e}")
+            return True  # Safe default
+    
     def get_setting(self, section: str, key: Optional[str] = None, default: Any = None) -> Any:
-        """Get a configuration setting."""
+        """Get a configuration setting with recursion protection."""
+        if not self._increment_recursion_depth():
+            self.logger.error(f"Recursion limit exceeded getting {section}.{key}")
+            return default
+            
         try:
             if self.use_database:
                 if key is None:
@@ -309,9 +363,15 @@ class EnhancedConfigManager:
         except Exception as e:
             self.logger.error(f"Error getting setting {section}.{key}: {e}")
             return default
+        finally:
+            self._decrement_recursion_depth()
     
     def set_setting(self, section: str, key: str, value: Any) -> bool:
         """Set a configuration setting with recursion protection."""
+        if not self._increment_recursion_depth():
+            self.logger.error(f"Recursion limit exceeded setting {section}.{key}")
+            return False
+            
         try:
             if self.use_database:
                 self._store_setting_in_database(section, key, value)
@@ -324,14 +384,8 @@ class EnhancedConfigManager:
                 
                 self.config[section][key] = value
                 
-                # Auto-save if enabled - prevent recursion
-                # Don't call get_setting here to avoid infinite recursion
-                auto_save = True  # Default value
-                if ('general' in self.config and
-                        'auto_save_config' in self.config['general']):
-                    auto_save = self.config['general']['auto_save_config']
-                
-                if auto_save:
+                # Auto-save if enabled - use safe method to prevent recursion
+                if self._get_auto_save_setting_safe():
                     self.save_config()
                 
                 msg = f"Set file setting {section}.{key} = {value}"
@@ -341,9 +395,15 @@ class EnhancedConfigManager:
         except Exception as e:
             self.logger.error(f"Error setting {section}.{key}: {e}")
             return False
+        finally:
+            self._decrement_recursion_depth()
     
     def remove_setting(self, section: str, key: str) -> bool:
-        """Remove a configuration setting."""
+        """Remove a configuration setting with recursion protection."""
+        if not self._increment_recursion_depth():
+            self.logger.error(f"Recursion limit exceeded removing {section}.{key}")
+            return False
+            
         try:
             if self.use_database:
                 affected = self.db_manager.execute_update(
@@ -357,8 +417,8 @@ class EnhancedConfigManager:
                 if section in self.config and key in self.config[section]:
                     del self.config[section][key]
                     
-                    # Auto-save if enabled
-                    if self.get_setting('general', 'auto_save_config', True):
+                    # Auto-save if enabled - use safe method to prevent recursion
+                    if self._get_auto_save_setting_safe():
                         self.save_config()
                     
                     self.logger.info(f"Removed file setting {section}.{key}")
@@ -368,6 +428,8 @@ class EnhancedConfigManager:
         except Exception as e:
             self.logger.error(f"Error removing {section}.{key}: {e}")
             return False
+        finally:
+            self._decrement_recursion_depth()
     
     def get_section(self, section: str) -> Dict[str, Any]:
         """Get an entire configuration section."""

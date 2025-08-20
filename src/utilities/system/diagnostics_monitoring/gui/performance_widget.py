@@ -22,11 +22,26 @@ try:
 except ImportError:
     PYQT5_AVAILABLE = False
     # Create dummy classes for when PyQt5 is not available
-    class QWidget: pass
-    class pyqtSignal: 
-        def __init__(self, *args): pass
-        def emit(self, *args): pass
-        def connect(self, *args): pass
+    class QWidget:
+        def __init__(self, parent=None):
+            self.parent = parent
+
+    class pyqtSignal:
+        def __init__(self, *args):
+            self.connected_functions = []
+
+        def emit(self, *args):
+            """Emit signal to connected functions."""
+            for func in self.connected_functions:
+                try:
+                    func(*args)
+                except Exception as e:
+                    logging.warning(f"Signal emission failed: {e}")
+
+        def connect(self, func):
+            """Connect a function to this signal."""
+            if callable(func):
+                self.connected_functions.append(func)
 
 from core.error_handler import error_handler
 

@@ -292,10 +292,73 @@ class OfficeMetadataWorker(QThread):
     
     def write_metadata(self, file_path, updates):
         """Write metadata to office document."""
-        # This is a placeholder for metadata writing functionality
-        # Full implementation would require specialized libraries
-        raise NotImplementedError(
-            "Metadata writing requires additional libraries")
+        # Basic implementation for metadata writing
+        # Uses python-docx for DOCX files and openpyxl for XLSX files
+        try:
+            file_ext = os.path.splitext(file_path)[1].lower()
+            
+            if file_ext == '.docx':
+                try:
+                    import docx
+                    doc = docx.Document(file_path)
+                    props = doc.core_properties
+                    
+                    # Update available metadata fields
+                    if 'title' in updates:
+                        props.title = updates['title']
+                    if 'author' in updates:
+                        props.author = updates['author']
+                    if 'subject' in updates:
+                        props.subject = updates['subject']
+                    if 'comments' in updates:
+                        props.comments = updates['comments']
+                    if 'keywords' in updates:
+                        props.keywords = updates['keywords']
+                    if 'category' in updates:
+                        props.category = updates['category']
+                    
+                    doc.save(file_path)
+                    return True
+                    
+                except ImportError:
+                    self.logger.warning("python-docx not available for DOCX metadata editing")
+                    return False
+                    
+            elif file_ext == '.xlsx':
+                try:
+                    from openpyxl import load_workbook
+                    wb = load_workbook(file_path)
+                    props = wb.properties
+                    
+                    # Update available metadata fields
+                    if 'title' in updates:
+                        props.title = updates['title']
+                    if 'creator' in updates:
+                        props.creator = updates['creator']
+                    if 'subject' in updates:
+                        props.subject = updates['subject']
+                    if 'description' in updates:
+                        props.description = updates['description']
+                    if 'keywords' in updates:
+                        props.keywords = updates['keywords']
+                    if 'category' in updates:
+                        props.category = updates['category']
+                    
+                    wb.save(file_path)
+                    return True
+                    
+                except ImportError:
+                    self.logger.warning("openpyxl not available for XLSX metadata editing")
+                    return False
+                    
+            else:
+                # For other file types, log a warning
+                self.logger.warning(f"Metadata editing not implemented for {file_ext} files")
+                return False
+                
+        except Exception as e:
+            self.logger.error(f"Error writing metadata to {file_path}: {e}")
+            return False
     
     def cancel(self):
         """Cancel the operation."""

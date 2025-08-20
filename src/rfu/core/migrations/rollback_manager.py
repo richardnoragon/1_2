@@ -69,9 +69,16 @@ class MigrationBackupManager:
             backup_filename = f"pre_migration_{migration_version}_{timestamp}_{backup_id[:8]}.db"
             backup_path = self.backup_dir / backup_filename
             
-            # Create the backup
-            if not self.db_manager.backup_database(str(backup_path)):
-                raise Exception("Database backup failed")
+            # Create the backup by copying the database file
+            import shutil
+            db_file = Path(self.db_manager.db_file)
+            if not db_file.exists():
+                raise Exception("Database file does not exist")
+            
+            shutil.copy2(db_file, backup_path)
+            
+            if not backup_path.exists():
+                raise Exception("Backup file was not created successfully")
             
             # Calculate checksum
             checksum = self._calculate_file_checksum(backup_path)

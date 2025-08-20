@@ -17,10 +17,18 @@ import sqlite3
 import csv
 import html
 import re
+import logging
 from datetime import datetime
 from pathlib import Path
 from urllib.parse import urlparse
 from typing import List, Dict, Optional, Any
+
+# Import centralized logging manager
+try:
+    from src.rfu.core.log_manager import LogManager
+    LOGGING_AVAILABLE = True
+except ImportError:
+    LOGGING_AVAILABLE = False
 
 try:
     from PyQt5.QtWidgets import (
@@ -51,6 +59,20 @@ class BookmarkModel:
     
     def __init__(self, db_path: str = None):
         """Initialize bookmark model with SQLite database"""
+        # Initialize logging
+        if LOGGING_AVAILABLE:
+            log_manager = LogManager()
+            self.logger = log_manager.get_logger(self.__class__.__name__)
+        else:
+            # Fallback to standard logging
+            self.logger = logging.getLogger(self.__class__.__name__)
+            if not self.logger.handlers:
+                handler = logging.StreamHandler()
+                formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+                handler.setFormatter(formatter)
+                self.logger.addHandler(handler)
+                self.logger.setLevel(logging.INFO)
+        
         if db_path is None:
             # Use application data directory
             app_data = Path.home() / ".rfu_bookmarks"
@@ -58,6 +80,7 @@ class BookmarkModel:
             db_path = app_data / "bookmarks.db"
         
         self.db_path = str(db_path)
+        self.logger.info(f"Initializing bookmark database at: {self.db_path}")
         self.init_database()
     
     def init_database(self):
@@ -105,36 +128,74 @@ class BookmarkModel:
             
             conn.commit()
             conn.close()
+            self.logger.info("Database initialization completed successfully")
         except sqlite3.Error as e:
-            print(f"Database initialization error: {e}")
-            raise
+            error_msg = f"Database initialization error: {e}"
+            self.logger.error(error_msg)
+            self.logger.error(f"Database path: {self.db_path}")
+            raise sqlite3.Error(error_msg) from e
         except Exception as e:
-            print(f"Unexpected error during database initialization: {e}")
-            raise
+            error_msg = f"Unexpected error during database initialization: {e}"
+            self.logger.critical(error_msg)
+            self.logger.critical(f"Database path: {self.db_path}")
+            raise RuntimeError(error_msg) from e
     
-    def _validate_url(self, url: str) -> bool:
-        """Validate URL format and basic structure."""
+    def _validate_url(self, url: str) -> tuple[bool, str]:
+        """
+        Validate URL format and basic structure.
+        
+        Returns:
+            tuple: (is_valid, processed_url_or_error_message)
+        """
         try:
             # Strip whitespace
+            original_url = url
             url = url.strip()
             
             # Check for empty URL
             if not url:
-                return False
+                error_msg = "URL cannot be empty"
+                self.logger.warning(f"URL validation failed: {error_msg}")
+                return False, error_msg
             
             # Add protocol if missing
             protocols = ('http://', 'https://', 'ftp://', 'file://')
             if not url.startswith(protocols):
                 url = 'https://' + url
+                self.logger.debug(f"Added https:// protocol to URL: {original_url} -> {url}")
             
             # Parse URL
             parsed = urlparse(url)
             
             # Validate required components
-            if not parsed.scheme or not parsed.netloc:
-                return False
+            if not parsed.scheme:
+                error_msg = f"Invalid URL scheme in: {url}"
+                self.logger.warning(f"URL validation failed: {error_msg}")
+                return False, error_msg
+                
+            if not parsed.netloc:
+                error_msg = f"Invalid URL network location in: {url}"
+                self.logger.warning(f"URL validation failed: {error_msg}")
+                return False, error_msg
             
             # Check for valid characters in netloc
+            invalid_chars = ['<', '>', '"', ' ', '\t', '\n', '\r']
+            if any(char in parsed.netloc for char in invalid_chars):
+                error_msg = f"Invalid characters in URL: {url}"
+                self.logger.warning(f"URL validation failed: {error_msg}")
+                return False, error_msg
+            
+            # Additional validation for common URL patterns
+            if parsed.netloc == 'localhost' and not parsed.port:
+                self.logger.info(f"Localhost URL without port detected: {url}")
+            
+            self.logger.debug(f"URL validation successful: {url}")
+            return True, url
+            
+        except Exception as e:
+            error_msg = f"URL validation error for '{original_url}': {e}"
+            self.logger.error(error_msg)
+            return False, error_msg
             if any(char in parsed.netloc for char in [' ', '\t', '\n', '\r']):
                 return False
             
@@ -148,16 +209,29 @@ class BookmarkModel:
             return False
     
     def add_bookmark(self, title: str, url: str, description: str = "",
-                     tags: str = "", folder: str = "Default") -> bool:
-        """Add a new bookmark with URL validation"""
+                     tags: str = "", folder: str = "Default") -> tuple[bool, str]:
+        """
+        Add a new bookmark with enhanced URL validation
+        
+        Returns:
+            tuple: (success, message)
+        """
         try:
             # Validate URL format
-            if not self._validate_url(url):
-                raise ValueError(f"Invalid URL format: {url}")
+            is_valid, processed_url_or_error = self._validate_url(url)
+            if not is_valid:
+                error_msg = f"URL validation failed: {processed_url_or_error}"
+                self.logger.warning(error_msg)
+                return False, error_msg
+            
+            # Use the processed URL
+            validated_url = processed_url_or_error
             
             # Validate required fields
             if not title.strip():
-                raise ValueError("Title cannot be empty")
+                error_msg = "Title cannot be empty"
+                self.logger.warning(error_msg)
+                return False, error_msg
             
             conn = sqlite3.connect(self.db_path)
             cursor = conn.cursor()
@@ -167,15 +241,28 @@ class BookmarkModel:
                 INSERT INTO bookmarks (title, url, description, tags,
                                      folder, created_date, modified_date)
                 VALUES (?, ?, ?, ?, ?, ?, ?)
-            ''', (title.strip(), url.strip(), description, tags,
+            ''', (title.strip(), validated_url, description, tags,
                   folder, current_time, current_time))
             
             conn.commit()
             conn.close()
-            return True
+            success_msg = f"Successfully added bookmark: {title}"
+            self.logger.info(success_msg)
+            return True, success_msg
+        except ValueError as e:
+            error_msg = f"Validation error adding bookmark: {e}"
+            self.logger.error(error_msg)
+            return False, error_msg
+        except sqlite3.Error as e:
+            error_msg = f"Database error adding bookmark: {e}"
+            self.logger.error(error_msg)
+            self.logger.error(f"Bookmark details: title='{title}', url='{url}'")
+            return False, error_msg
         except Exception as e:
-            print(f"Error adding bookmark: {e}")
-            return False
+            error_msg = f"Unexpected error adding bookmark: {e}"
+            self.logger.critical(error_msg)
+            self.logger.critical(f"Bookmark details: title='{title}', url='{url}'")
+            return False, error_msg
     
     def update_bookmark(self, bookmark_id: int, title: str, url: str, 
                        description: str = "", tags: str = "", folder: str = "Default") -> bool:
@@ -193,9 +280,15 @@ class BookmarkModel:
             
             conn.commit()
             conn.close()
+            self.logger.info(f"Successfully updated bookmark ID {bookmark_id}")
             return True
+        except sqlite3.Error as e:
+            error_msg = f"Database error updating bookmark ID {bookmark_id}: {e}"
+            self.logger.error(error_msg)
+            return False
         except Exception as e:
-            print(f"Error updating bookmark: {e}")
+            error_msg = f"Unexpected error updating bookmark ID {bookmark_id}: {e}"
+            self.logger.critical(error_msg)
             return False
     
     def delete_bookmark(self, bookmark_id: int) -> bool:
@@ -208,9 +301,15 @@ class BookmarkModel:
             
             conn.commit()
             conn.close()
+            self.logger.info(f"Successfully deleted bookmark ID {bookmark_id}")
             return True
+        except sqlite3.Error as e:
+            error_msg = f"Database error deleting bookmark ID {bookmark_id}: {e}"
+            self.logger.error(error_msg)
+            return False
         except Exception as e:
-            print(f"Error deleting bookmark: {e}")
+            error_msg = f"Unexpected error deleting bookmark ID {bookmark_id}: {e}"
+            self.logger.critical(error_msg)
             return False
     
     def get_all_bookmarks(self) -> List[Dict]:
@@ -240,9 +339,15 @@ class BookmarkModel:
                 })
             
             conn.close()
+            self.logger.debug(f"Retrieved {len(bookmarks)} bookmarks")
             return bookmarks
+        except sqlite3.Error as e:
+            error_msg = f"Database error getting bookmarks: {e}"
+            self.logger.error(error_msg)
+            return []
         except Exception as e:
-            print(f"Error getting bookmarks: {e}")
+            error_msg = f"Unexpected error getting bookmarks: {e}"
+            self.logger.critical(error_msg)
             return []
     
     def search_bookmarks(self, query: str, field: str = "all") -> List[Dict]:
@@ -277,9 +382,15 @@ class BookmarkModel:
                 })
             
             conn.close()
+            self.logger.debug(f"Search returned {len(bookmarks)} bookmarks for query: {query}")
             return bookmarks
+        except sqlite3.Error as e:
+            error_msg = f"Database error searching bookmarks for '{query}': {e}"
+            self.logger.error(error_msg)
+            return []
         except Exception as e:
-            print(f"Error searching bookmarks: {e}")
+            error_msg = f"Unexpected error searching bookmarks for '{query}': {e}"
+            self.logger.critical(error_msg)
             return []
     
     def get_all_tags(self) -> List[str]:
@@ -293,7 +404,10 @@ class BookmarkModel:
                     all_tags.update(tags)
             return sorted(list(all_tags))
         except Exception as e:
-            print(f"Error getting tags: {e}")
+            error_msg = f"Error getting tags: {e}"
+            # Get logger from static context - using module-level logger
+            logger = logging.getLogger('BookmarkModel')
+            logger.error(error_msg)
             return []
     
     def get_all_folders(self) -> List[str]:
@@ -306,7 +420,8 @@ class BookmarkModel:
                     folders.add(bookmark['folder'])
             return sorted(list(folders))
         except Exception as e:
-            print(f"Error getting folders: {e}")
+            error_msg = f"Error getting folders: {e}"
+            self.logger.error(error_msg)
             return []
 
 
@@ -583,8 +698,24 @@ class BookmarkManagerGUI(StandardWindow):
             title="Bookmark Manager - Richard's File Utilities",
             window_type="utility"
         )
+        
+        # Initialize logging
+        if LOGGING_AVAILABLE:
+            log_manager = LogManager()
+            self.logger = log_manager.get_logger(self.__class__.__name__)
+        else:
+            # Fallback to standard logging
+            self.logger = logging.getLogger(self.__class__.__name__)
+            if not self.logger.handlers:
+                handler = logging.StreamHandler()
+                formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+                handler.setFormatter(formatter)
+                self.logger.addHandler(handler)
+                self.logger.setLevel(logging.INFO)
+        
         self.model = BookmarkModel()
         self.current_bookmarks = []
+        self.logger.info("BookmarkManagerGUI initialized successfully")
         self.init_ui()
         self.load_bookmarks()
         self._setup_menu_callbacks()

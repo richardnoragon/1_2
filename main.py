@@ -1362,7 +1362,24 @@ try:
         def _import_legacy(self, module_name, class_name):
             """Strategy 4: Legacy compatibility import."""
             try:
-                # Try legacy paths
+                # Try utilities paths first (new location)
+                utilities_paths = [
+                    f"src.utilities.file_operations.catalog.{module_name}",
+                    f"src.utilities.file_operations.file_touch.{module_name}",
+                    f"src.utilities.file_operations.organize.{module_name}",
+                    f"src.utilities.file_operations.file_finder.{module_name}",
+                    f"src.utilities.file_operations.compression.{module_name}",
+                ]
+                
+                for utilities_path in utilities_paths:
+                    try:
+                        module = __import__(utilities_path, fromlist=[class_name])
+                        if hasattr(module, class_name):
+                            return getattr(module, class_name)
+                    except (ImportError, AttributeError):
+                        continue
+                
+                # Try legacy paths for backward compatibility
                 legacy_paths = [
                     f"src.legacy.file_utilities_1.{module_name}",
                     f"legacy.file_utilities_1.{module_name}",

@@ -785,6 +785,15 @@ class DependencyTreeWidget(QWidget):
 ```yaml
 # Configuration schema for requirements management
 requirements_management:
+  # Security dependencies (required for network transfer)
+  dependencies:
+    cryptography:
+      version: ">=3.4.8"
+      required: true
+      description: "Required for secure network transfer encryption (AES-GCM)"
+      fallback_available: true
+      fallback_description: "Enhanced PBKDF2 encryption available for development"
+      
   # Parsing configuration
   parsing:
     encoding_detection: true

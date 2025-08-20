@@ -2,12 +2,19 @@
 """
 Network Transfer Tool for Richard's File Utilities
 
-A comprehensive file and configuration transfer system that allows users to:
-- Transfer files and folders between RFU clients
-- Sync application settings and preferences
-- Transfer predefined file collections
-- Transfer backup configurations
+A comprehensive and secure file and configuration transfer system that allows users to:
+- Transfer files and folders between RFU clients with enhanced security
+- Sync application settings and preferences using encrypted channels
+- Transfer predefined file collections with path validation
+- Transfer backup configurations securely
 - Real-time transfer monitoring with progress tracking
+
+Security Features:
+- AES-GCM encryption for message protection (with fallback for development)
+- Comprehensive path traversal protection
+- File type and size validation
+- Secure authentication tokens
+- TOCTOU (Time-of-Check Time-of-Use) vulnerability prevention
 """
 
 import sys
@@ -15,6 +22,7 @@ import os
 import json
 import socket
 import threading
+import logging
 import hashlib
 import time
 import zipfile
@@ -26,6 +34,16 @@ import base64
 from pathlib import Path
 from datetime import datetime
 from typing import Dict, List, Optional, Any, Tuple
+
+# Import cryptography for secure AES-GCM encryption
+try:
+    from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+    from cryptography.hazmat.primitives import hashes
+    from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+    CRYPTO_AVAILABLE = True
+except ImportError:
+    print("Warning: cryptography library not available. Install it for secure encryption.")
+    CRYPTO_AVAILABLE = False
 
 try:
     from PyQt5.QtWidgets import (
@@ -66,10 +84,13 @@ class SecurityManager:
     def __init__(self):
         self.session_key = None
         self.auth_token = None
+        self.aes_gcm = None
         
     def generate_session_key(self) -> bytes:
         """Generate a secure session key for encryption."""
         self.session_key = secrets.token_bytes(32)  # 256-bit key
+        if CRYPTO_AVAILABLE:
+            self.aes_gcm = AESGCM(self.session_key)
         return self.session_key
     
     def generate_auth_token(self) -> str:
@@ -84,39 +105,102 @@ class SecurityManager:
         return hmac.compare_digest(self.auth_token, token)
     
     def encrypt_message(self, message: bytes) -> bytes:
-        """Encrypt message with session key."""
+        """Encrypt message with AES-GCM or fallback to enhanced XOR."""
         if not self.session_key:
             raise ValueError("No session key available")
         
-        # Simple XOR encryption for prototype (should use proper AES in production)
-        key_cycle = (self.session_key * ((len(message) // 32) + 1))[:len(message)]
+        if CRYPTO_AVAILABLE and self.aes_gcm:
+            # Use secure AES-GCM encryption
+            nonce = secrets.token_bytes(12)  # 96-bit nonce for GCM
+            encrypted = self.aes_gcm.encrypt(nonce, message, None)
+            return nonce + encrypted
+        else:
+            # Enhanced fallback encryption (still for testing only)
+            return self._enhanced_fallback_encrypt(message)
+    
+    def decrypt_message(self, encrypted_data: bytes) -> bytes:
+        """Decrypt message with AES-GCM or fallback."""
+        if not self.session_key:
+            raise ValueError("No session key available")
+        
+        if CRYPTO_AVAILABLE and self.aes_gcm:
+            # Use secure AES-GCM decryption
+            if len(encrypted_data) < 12:  # Minimum nonce size
+                raise ValueError("Invalid encrypted data")
+            
+            nonce = encrypted_data[:12]
+            ciphertext = encrypted_data[12:]
+            
+            try:
+                return self.aes_gcm.decrypt(nonce, ciphertext, None)
+            except Exception as e:
+                raise ValueError(f"Decryption failed: {e}")
+        else:
+            # Enhanced fallback decryption
+            return self._enhanced_fallback_decrypt(encrypted_data)
+    
+    def _enhanced_fallback_encrypt(self, message: bytes) -> bytes:
+        """Enhanced fallback encryption (for development/testing only)."""
+        # Generate a random salt
+        salt = secrets.token_bytes(16)
+        
+        # Derive key using PBKDF2
+        kdf = PBKDF2HMAC(
+            algorithm=hashes.SHA256() if CRYPTO_AVAILABLE else hashlib.sha256,
+            length=32,
+            salt=salt,
+            iterations=100000,
+        ) if CRYPTO_AVAILABLE else None
+        
+        if kdf and CRYPTO_AVAILABLE:
+            derived_key = kdf.derive(self.session_key)
+        else:
+            # Fallback key derivation
+            derived_key = hashlib.pbkdf2_hmac('sha256', self.session_key, salt, 100000)
+        
+        # XOR encryption with derived key
+        key_cycle = (derived_key * ((len(message) // 32) + 1))[:len(message)]
         encrypted = bytes(a ^ b for a, b in zip(message, key_cycle))
         
         # Add HMAC for integrity
-        hmac_key = self.session_key[:16]
-        mac = hmac.new(hmac_key, encrypted, hashlib.sha256).digest()
+        hmac_key = derived_key[:16]
+        mac = hmac.new(hmac_key, salt + encrypted, hashlib.sha256).digest()
         
-        return mac + encrypted
+        return mac + salt + encrypted
     
-    def decrypt_message(self, encrypted_data: bytes) -> bytes:
-        """Decrypt message with session key."""
-        if not self.session_key:
-            raise ValueError("No session key available")
-        
-        if len(encrypted_data) < 32:  # HMAC size
+    def _enhanced_fallback_decrypt(self, encrypted_data: bytes) -> bytes:
+        """Enhanced fallback decryption (for development/testing only)."""
+        if len(encrypted_data) < 48:  # HMAC(32) + salt(16) minimum
             raise ValueError("Invalid encrypted data")
         
-        # Verify HMAC
+        # Extract components
         mac = encrypted_data[:32]
-        encrypted = encrypted_data[32:]
-        hmac_key = self.session_key[:16]
-        expected_mac = hmac.new(hmac_key, encrypted, hashlib.sha256).digest()
+        salt = encrypted_data[32:48]
+        encrypted = encrypted_data[48:]
+        
+        # Derive key using PBKDF2
+        kdf = PBKDF2HMAC(
+            algorithm=hashes.SHA256() if CRYPTO_AVAILABLE else hashlib.sha256,
+            length=32,
+            salt=salt,
+            iterations=100000,
+        ) if CRYPTO_AVAILABLE else None
+        
+        if kdf and CRYPTO_AVAILABLE:
+            derived_key = kdf.derive(self.session_key)
+        else:
+            # Fallback key derivation
+            derived_key = hashlib.pbkdf2_hmac('sha256', self.session_key, salt, 100000)
+        
+        # Verify HMAC
+        hmac_key = derived_key[:16]
+        expected_mac = hmac.new(hmac_key, salt + encrypted, hashlib.sha256).digest()
         
         if not hmac.compare_digest(mac, expected_mac):
             raise ValueError("Message integrity check failed")
         
         # Decrypt
-        key_cycle = (self.session_key * ((len(encrypted) // 32) + 1))[:len(encrypted)]
+        key_cycle = (derived_key * ((len(encrypted) // 32) + 1))[:len(encrypted)]
         decrypted = bytes(a ^ b for a, b in zip(encrypted, key_cycle))
         
         return decrypted
@@ -323,19 +407,70 @@ class TransferServer(QThread):
 
 
 class PathSecurity:
-    """Utilities for secure path handling."""
+    """Utilities for secure path handling with comprehensive validation."""
+    
+    # Define allowed file extensions for transfers
+    ALLOWED_EXTENSIONS = {
+        '.txt', '.md', '.pdf', '.doc', '.docx', '.xls', '.xlsx',
+        '.ppt', '.pptx', '.jpg', '.jpeg', '.png', '.gif', '.bmp',
+        '.mp3', '.mp4', '.avi', '.mov', '.zip', '.tar', '.gz',
+        '.json', '.xml', '.csv', '.log', '.py', '.js', '.html',
+        '.css', '.sql', '.ini', '.cfg', '.conf'
+    }
+    
+    # Maximum file size for transfers (1GB)
+    MAX_FILE_SIZE = 1024 * 1024 * 1024
+    
+    @staticmethod
+    def sanitize_path(path: str) -> str:
+        """Sanitize a path by removing dangerous characters."""
+        if not path:
+            return ""
+        
+        # Remove dangerous characters
+        dangerous_chars = ['<', '>', ':', '"', '|', '?', '*', '\0']
+        for char in dangerous_chars:
+            path = path.replace(char, '_')
+        
+        # Remove multiple consecutive path separators
+        while '//' in path:
+            path = path.replace('//', '/')
+        while '\\\\' in path:
+            path = path.replace('\\\\', '\\')
+        
+        return path.strip()
     
     @staticmethod
     def is_safe_path(base_path: str, user_path: str) -> bool:
-        """Check if a user-provided path is safe to access."""
+        """Check if a user-provided path is safe to access with enhanced validation."""
         try:
+            if not base_path or not user_path:
+                return False
+            
+            # Sanitize the user path first
+            user_path = PathSecurity.sanitize_path(user_path)
+            
+            # Check for path traversal attempts
+            if '..' in user_path or '~' in user_path:
+                return False
+            
             # Normalize and resolve paths
             base_path = Path(base_path).resolve()
-            full_path = Path(base_path / user_path).resolve()
+            
+            # Handle relative paths carefully
+            if os.path.isabs(user_path):
+                full_path = Path(user_path).resolve()
+            else:
+                full_path = Path(base_path / user_path).resolve()
             
             # Check if the full path is within the base path
-            return str(full_path).startswith(str(base_path))
-        except (ValueError, OSError):
+            try:
+                full_path.relative_to(base_path)
+                return True
+            except ValueError:
+                return False
+                
+        except (ValueError, OSError, RuntimeError):
             return False
     
     @staticmethod
@@ -346,15 +481,86 @@ class PathSecurity:
         
         try:
             base_path = Path(base_path).resolve()
+            user_path = PathSecurity.sanitize_path(user_path)
             full_path = Path(base_path / user_path).resolve()
+            
+            # Double-check the result is still safe
+            if not str(full_path).startswith(str(base_path)):
+                return None
+                
             return str(full_path)
         except (ValueError, OSError):
             return None
     
     @staticmethod
+    def validate_file_for_transfer(file_path: str) -> Dict[str, Any]:
+        """Validate a file for transfer with comprehensive security checks."""
+        result = {
+            'valid': False,
+            'reason': '',
+            'size': 0,
+            'extension': '',
+            'path': file_path
+        }
+        
+        try:
+            path = Path(file_path)
+            
+            # Check if file exists
+            if not path.exists():
+                result['reason'] = 'File does not exist'
+                return result
+            
+            # Check if it's actually a file
+            if not path.is_file():
+                result['reason'] = 'Path is not a file'
+                return result
+            
+            # Get file stats safely
+            try:
+                stat_info = path.stat()
+                file_size = stat_info.st_size
+                result['size'] = file_size
+            except (OSError, PermissionError):
+                result['reason'] = 'Cannot access file information'
+                return result
+            
+            # Check file size
+            if file_size > PathSecurity.MAX_FILE_SIZE:
+                result['reason'] = f'File too large (max {PathSecurity.MAX_FILE_SIZE} bytes)'
+                return result
+            
+            # Check file extension
+            extension = path.suffix.lower()
+            result['extension'] = extension
+            
+            if extension not in PathSecurity.ALLOWED_EXTENSIONS:
+                result['reason'] = f'File type not allowed: {extension}'
+                return result
+            
+            # Check file permissions
+            if not os.access(path, os.R_OK):
+                result['reason'] = 'File is not readable'
+                return result
+            
+            # File passed all checks
+            result['valid'] = True
+            result['reason'] = 'File is valid for transfer'
+            return result
+            
+        except Exception as e:
+            result['reason'] = f'Validation error: {str(e)}'
+            return result
+    
+    @staticmethod
     def secure_file_info(file_path: str) -> Optional[Dict[str, Any]]:
         """Safely get file information without TOCTOU vulnerabilities."""
         try:
+            # First validate the file
+            validation = PathSecurity.validate_file_for_transfer(file_path)
+            if not validation['valid']:
+                return None
+            
             # Use file descriptor to avoid TOCTOU issues
             with open(file_path, 'rb') as f:
                 fd = f.fileno()
@@ -363,7 +569,8 @@ class PathSecurity:
                     'size': stat_info.st_size,
                     'exists': True,
                     'path': file_path,
-                    'fd': fd
+                    'fd': fd,
+                    'validation': validation
                 }
         except (OSError, IOError):
             return None
@@ -492,6 +699,7 @@ class NetworkTransferGUI(StandardWindow):
             title="Network Transfer - Richard's File Utilities",
             window_type="utility"
         )
+        self.logger = logging.getLogger('RFU.NetworkTransfer')
         self.db_manager = None
         self.transfer_server = None
         self.transfer_client = None
@@ -955,46 +1163,208 @@ class NetworkTransferGUI(StandardWindow):
         self.update_send_button_state()
     
     def _is_secure_file_path(self, file_path: str) -> bool:
-        """Validate file path for security."""
+        """Validate file path for security with comprehensive checks."""
         try:
-            # Normalize the path
-            normalized_path = Path(file_path).resolve()
+            # Input validation
+            if not file_path or not isinstance(file_path, str):
+                return False
             
-            # Check against forbidden directories
-            forbidden_dirs = [
-                Path("/etc"),
-                Path("/sys"),
-                Path("/proc"),
-                Path("C:\\Windows\\System32"),
-                Path("C:\\Windows\\SysWOW64"),
+            # Check for suspicious patterns
+            suspicious_patterns = [
+                "..", "~", "//", "\\\\", "\0", 
+                "%", "$", "`", ";", "|", "&",
+                "<", ">", "?"
             ]
+            
+            for pattern in suspicious_patterns:
+                if pattern in file_path:
+                    return False
+            
+            # Normalize and resolve the path
+            try:
+                normalized_path = Path(file_path).resolve()
+            except (OSError, ValueError, RuntimeError) as e:
+                print(f"Path resolution failed: {e}")
+                return False
+            
+            # Ensure path exists and is accessible
+            if not normalized_path.exists():
+                return False
+            
+            # Check against forbidden directories (comprehensive list)
+            forbidden_dirs = [
+                # Unix/Linux system directories
+                Path("/etc"), Path("/sys"), Path("/proc"), Path("/dev"),
+                Path("/boot"), Path("/root"), Path("/usr/bin"), Path("/sbin"),
+                # Windows system directories
+                Path("C:\\Windows"), Path("C:\\Windows\\System32"), 
+                Path("C:\\Windows\\SysWOW64"), Path("C:\\Program Files"),
+                Path("C:\\Program Files (x86)"), Path("C:\\ProgramData"),
+                # User profile sensitive areas
+                Path.home() / "AppData" / "Local" / "Microsoft",
+                Path.home() / "AppData" / "Roaming" / "Microsoft",
+            ]
+            
+            # Add current working directory's sensitive subdirectories
+            cwd = Path.cwd()
+            forbidden_dirs.extend([
+                cwd / ".git", cwd / ".env", cwd / "node_modules",
+                cwd / "__pycache__", cwd / ".vscode"
+            ])
             
             for forbidden in forbidden_dirs:
                 try:
-                    if str(normalized_path).startswith(str(forbidden.resolve())):
+                    forbidden_resolved = forbidden.resolve()
+                    if (str(normalized_path).startswith(str(forbidden_resolved)) or
+                        normalized_path == forbidden_resolved):
                         return False
                 except (OSError, ValueError):
                     continue
             
-            # Path seems safe
+            # Ensure path is within allowed directories
+            allowed_base_dirs = [
+                Path.home() / "Documents",
+                Path.home() / "Downloads", 
+                Path.home() / "Desktop",
+                Path.home() / "Pictures",
+                Path.home() / "Videos",
+                Path.home() / "Music",
+                Path.cwd(),  # Current working directory
+            ]
+            
+            # Allow paths that start with any allowed base directory
+            path_is_allowed = False
+            for allowed_base in allowed_base_dirs:
+                try:
+                    allowed_resolved = allowed_base.resolve()
+                    if str(normalized_path).startswith(str(allowed_resolved)):
+                        path_is_allowed = True
+                        break
+                except (OSError, ValueError):
+                    continue
+            
+            if not path_is_allowed:
+                return False
+            
+            # Additional file-specific checks
+            if normalized_path.is_file():
+                # Check file size (prevent transferring extremely large files)
+                try:
+                    file_size = normalized_path.stat().st_size
+                    max_file_size = 1024 * 1024 * 1024  # 1GB limit
+                    if file_size > max_file_size:
+                        return False
+                except (OSError, PermissionError):
+                    return False
+                
+                # Check file extension against forbidden list
+                forbidden_extensions = [
+                    '.exe', '.bat', '.cmd', '.com', '.scr', '.pif',
+                    '.msi', '.dll', '.sys', '.drv', '.vbs', '.js'
+                ]
+                
+                if normalized_path.suffix.lower() in forbidden_extensions:
+                    return False
+            
+            # Path passes all security checks
             return True
             
-        except (ValueError, OSError):
+        except Exception as e:
+            print(f"Security validation error: {e}")
             return False
     
-    def _add_folder_files_securely(self, folder: str):
-        """Add files from folder with security checks."""
+    def _add_folder_files_securely(self, folder: str, max_depth: int = 10):
+        """
+        Add files from folder with security checks and recursion depth limit.
+        
+        Args:
+            folder: Folder path to scan
+            max_depth: Maximum recursion depth to prevent excessive nesting
+        """
         try:
             folder_path = Path(folder)
-            for file_path in folder_path.rglob("*"):
-                if (file_path.is_file() and 
-                    self._is_secure_file_path(str(file_path))):
-                    item = QListWidgetItem(str(file_path))
-                    self.selected_files_list.addItem(item)
+            self._add_folder_files_recursive(folder_path, folder_path, max_depth, 0)
         except Exception as e:
             QMessageBox.warning(
                 self, "Error", f"Failed to add folder files: {e}"
             )
+    
+    def _add_folder_files_recursive(self, current_path: Path, base_path: Path, 
+                                   max_depth: int, current_depth: int):
+        """
+        Recursively add files with depth limit and security checks.
+        
+        Args:
+            current_path: Current directory being processed
+            base_path: Base directory (for depth calculation)
+            max_depth: Maximum allowed recursion depth
+            current_depth: Current recursion level
+            
+        Raises:
+            RecursionError: If maximum depth is exceeded
+        """
+        # Check recursion depth limit
+        if current_depth > max_depth:
+            self.logger.warning(f"Maximum recursion depth ({max_depth}) exceeded at: {current_path}")
+            return
+        
+        # Check for symbolic link loops
+        if current_path.is_symlink():
+            try:
+                # Resolve symlink and check if it points back to an ancestor
+                resolved_path = current_path.resolve()
+                if self._is_symlink_loop(resolved_path, base_path):
+                    self.logger.warning(f"Symbolic link loop detected, skipping: {current_path}")
+                    return
+            except (OSError, RuntimeError) as e:
+                self.logger.warning(f"Failed to resolve symlink {current_path}: {e}")
+                return
+        
+        try:
+            # Process current directory
+            for item in current_path.iterdir():
+                if item.is_file():
+                    # Add file if it passes security validation
+                    if self._is_secure_file_path(str(item)):
+                        file_item = QListWidgetItem(str(item))
+                        self.selected_files_list.addItem(file_item)
+                    else:
+                        self.logger.debug(f"File failed security check: {item}")
+                elif item.is_dir():
+                    # Recursively process subdirectory
+                    self._add_folder_files_recursive(
+                        item, base_path, max_depth, current_depth + 1
+                    )
+                        
+        except PermissionError:
+            self.logger.warning(f"Permission denied accessing: {current_path}")
+        except OSError as e:
+            self.logger.warning(f"OS error accessing {current_path}: {e}")
+        except Exception as e:
+            self.logger.error(f"Unexpected error processing {current_path}: {e}")
+    
+    def _is_symlink_loop(self, resolved_path: Path, base_path: Path) -> bool:
+        """
+        Check if a resolved symlink creates a loop by pointing back to an ancestor.
+        
+        Args:
+            resolved_path: The resolved path of the symlink
+            base_path: The base directory being scanned
+            
+        Returns:
+            True if a loop is detected
+        """
+        try:
+            # Check if resolved path is the same as or an ancestor of base path
+            return resolved_path.is_relative_to(base_path) or base_path.is_relative_to(resolved_path)
+        except (ValueError, AttributeError):
+            # Fallback for older Python versions or invalid paths
+            try:
+                resolved_str = str(resolved_path.absolute())
+                base_str = str(base_path.absolute())
+                return resolved_str.startswith(base_str) or base_str.startswith(resolved_str)
+            except Exception:
+                return False
     
     def clear_selected_files(self):
         """Clear selected files list."""

@@ -15,7 +15,7 @@ from .log_manager import LogManager
 from .gui.common.base_window import BaseWindow
 from .gui.themes import ThemeManager, Colors, Fonts
 from .core import error_handler
-from ..legacy.file_utilities_1.catalog import CatalogWindow
+from ..utilities.file_operations.catalog import CatalogWindow
 
 
 
@@ -616,12 +616,11 @@ class MyGUI(BaseWindow):
     def open_file_finder(self) -> None:
         """Open file finder utility."""
         try:
-            # MIGRATION UPDATE: Import from new file_utilities_1 package location
-            # Changed from: from file_finder import FileFinderGUI
-            # Changed to: from file_utilities_1 import FileFinderWindow
-            # Reason: file_finder.py has been migrated to file_utilities_1 package
-            # and class renamed from FileFinderGUI to FileFinderWindow for consistency
-            from file_utilities_1 import FileFinderWindow
+            # MIGRATION UPDATE: Import from new utilities location
+            # Changed from: from file_utilities_1 import FileFinderWindow
+            # Changed to: from ..utilities.file_operations.file_finder import FileFinderWindow
+            # Reason: file_finder.py has been migrated to utilities/file_operations
+            from ..utilities.file_operations.file_finder import FileFinderWindow
             
             # MIGRATION UPDATE: Updated instantiation to use new class name
             # Changed from: FileFinderGUI() to FileFinderWindow()
@@ -696,12 +695,11 @@ class MyGUI(BaseWindow):
     def open_compress_decompress(self) -> None:
         """Open compress/decompress utility."""
         try:
-            # MIGRATION UPDATE: Import from new file_utilities_1 package location
-            # Changed from: from compress_decompress import CompressDecompressApp
-            # Changed to: from file_utilities_1 import CompressDecompressWindow
-            # Reason: compress_decompress has been migrated to file_utilities_1 package
-            # and class renamed from CompressDecompressApp to CompressDecompressWindow for consistency
-            from file_utilities_1 import CompressDecompressWindow
+            # MIGRATION UPDATE: Import from new utilities location
+            # Changed from: from file_utilities_1 import CompressDecompressWindow
+            # Changed to: from ..utilities.file_operations.compression import CompressDecompressWindow
+            # Reason: compress_decompress has been migrated to utilities/file_operations/compression
+            from ..utilities.file_operations.compression import CompressDecompressWindow
             
             # MIGRATION UPDATE: Updated instantiation to use new class name
             # Changed from: CompressDecompressApp() to CompressDecompressWindow()
@@ -756,11 +754,10 @@ class MyGUI(BaseWindow):
         """Open file touch utility."""
         try:
             # MIGRATION UPDATE: Import from new file_utilities_1 package location
-            # Changed from: from file_touch import FileTouchGUI
-            # Changed to: from file_utilities_1 import FileTouchWindow
-            # Reason: file_touch has been migrated to file_utilities_1 package
-            # and class renamed from FileTouchGUI to FileTouchWindow for consistency
-            from file_utilities_1 import FileTouchWindow
+            # Changed from: from file_utilities_1 import FileTouchWindow
+            # Changed to: from ..utilities.file_operations.file_touch import FileTouchWindow
+            # Reason: file_touch has been migrated to utilities/file_operations/file_touch
+            from ..utilities.file_operations.file_touch import FileTouchWindow
             
             # MIGRATION UPDATE: Updated instantiation to use new class name
             # Changed from: FileTouchGUI() to FileTouchWindow()

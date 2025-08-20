@@ -145,9 +145,17 @@ RFU Hub Security Architecture
 
 **Encryption Standards:**
 - **Algorithm:** AES-256-GCM (Authenticated Encryption)
-- **Key Derivation:** PBKDF2-HMAC-SHA256 (100,000 iterations)
+- **Key Derivation:** PBKDF2-HMAC-SHA256 (100,000 iterations) with planned  
+  Argon2id upgrade
 - **Key Storage:** OS Keyring with fallback to secure file storage
 - **Integrity:** SHA-256 HMAC for data integrity verification
+
+**Security Enhancement Note:**
+Current implementation uses PBKDF2-HMAC-SHA256 with 100,000 iterations, which  
+meets current security standards. For enhanced protection against GPU-based  
+attacks, migration to Argon2id is recommended for future releases. Argon2id  
+provides superior resistance against side-channel attacks and parallel  
+processing attacks.
 
 **Implementation Example:**
 ```python

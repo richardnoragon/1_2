@@ -21,6 +21,19 @@ class AppSetting:
     value_type: str = "string"
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
+    
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert to dictionary for database storage."""
+        return {
+            'section': self.section,
+            'key': self.key,
+            'value': self.value,
+            'value_type': self.value_type,
+            'created_at': (self.created_at.isoformat()
+                           if self.created_at else None),
+            'updated_at': (self.updated_at.isoformat()
+                           if self.updated_at else None)
+        }
 
 
 @dataclass

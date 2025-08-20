@@ -47,7 +47,8 @@ class ValidationRule:
         Returns:
             List of validation results
         """
-        raise NotImplementedError
+        # Default implementation - subclasses should override for specific validation
+        return []
 
 
 class TypeValidationRule(ValidationRule):
