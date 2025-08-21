@@ -519,7 +519,26 @@ class SimpleRFUHub(QMainWindow):
         self.tab_widget.addTab(tab, "Network")
     
     def create_pdf_tools_tab(self):
-        """Create the PDF Tools tab with organized grid layout."""
+        """Create the PDF Tools tab with folder-based dynamic structure."""
+        try:
+            # Import our enhanced PDF tools widget
+            from .tools.pdf.widgets.enhanced_pdf_tools_widget import EnhancedPDFToolsWidget
+            
+            # Create the enhanced PDF tools widget
+            pdf_tools_widget = EnhancedPDFToolsWidget(self)
+            
+            # Add it as a tab
+            self.tab_widget.addTab(pdf_tools_widget, "PDF Tools")
+            
+            self.logger.info("PDF Tools tab created with enhanced widget")
+            
+        except Exception as e:
+            self.logger.error(f"Failed to create enhanced PDF Tools tab: {e}")
+            # Fallback to simple tab
+            self._create_simple_pdf_tools_tab()
+    
+    def _create_simple_pdf_tools_tab(self):
+        """Create a simple PDF Tools tab as fallback."""
         tab = QWidget()
         layout = QVBoxLayout(tab)
         layout.setContentsMargins(15, 15, 15, 15)
@@ -566,6 +585,8 @@ class SimpleRFUHub(QMainWindow):
         layout.addWidget(grid_widget)
         layout.addStretch()
         self.tab_widget.addTab(tab, "PDF Tools")
+        
+        self.logger.info("Simple PDF Tools tab created as fallback")
     
     def create_privacy_tab(self):
         """Create the Privacy tab with organized grid layout."""
