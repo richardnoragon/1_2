@@ -16,12 +16,12 @@ Updated each button's corresponding method in `src/rfu/simple_hub.py` to properl
 
 ### 1. Fixed File Splitter Button
 - **Method**: `open_file_splitter()` (line ~1110)
-- **Tool**: `src.rfu.tools.file_operations.file_splitter_joiner.FileSplitJoinGUI`
+- **Tool**: `src.utilities.file_operations.file_splitter.FileSplitJoinGUI`
 - **Status**: ✅ **WORKING**
 
 ### 2. Fixed Copy/Move/Sync Button  
 - **Method**: `open_cmsd_logic()` (line ~1145)
-- **Tool**: `src.rfu.tools.file_operations.cmsd.CopyMoveSyncDeleteWindow`
+- **Tool**: `src.utilities.file_operations.cmsd.CopyMoveSyncDeleteWindow`
 - **Status**: ✅ **WORKING**
 
 ### 3. Fixed Sync & Backup Button
@@ -31,12 +31,12 @@ Updated each button's corresponding method in `src/rfu/simple_hub.py` to properl
 
 ### 4. Fixed Organize Files Button
 - **Method**: `open_organize_files()` (line ~1230)
-- **Tool**: `src.rfu.tools.file_management.organize.OrganizeWindow`
+- **Tool**: `src.utilities.file_management.organize.OrganizeWindow`
 - **Status**: ✅ **WORKING**
 
 ### 5. Fixed Batch Rename Button
 - **Method**: `open_batch_rename()` (line ~1297)
-- **Tool**: `src.rfu.tools.file_management.rename.RenameWindow`
+- **Tool**: `src.utilities.file_management.rename.RenameWindow`
 - **Status**: ✅ **WORKING**
 
 ## Key Features of the Fix

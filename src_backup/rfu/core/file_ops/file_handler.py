@@ -5,8 +5,6 @@ from pathlib import Path
 from typing import Union, List, Optional
 from ..error_handler import error_handler
 
-from core.error_handler import error_handler
-
 
 class FileHandler:
     """Handles common file operations with error handling."""

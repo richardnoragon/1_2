@@ -11,9 +11,16 @@ import sys
 import os
 import logging
 from pathlib import Path
+from typing import Optional
 
 # Add the src directory to the Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
+
+# Import constants for string literals
+from src.core.constants import (
+    APP_NAME, JSON_FILES_FILTER, IMPORT_ERROR, SECURITY_TEST,
+    SUGGESTED_SOLUTIONS_HEADER
+)
 
 # Initialize database and logging systems
 def initialize_database_system():
@@ -48,24 +55,24 @@ def initialize_database_system():
                 raise RuntimeError("Database info validation failed")
                 
         except ImportError as e:
-            logger.error(f"Database module import failed: {e}")
+            logger.error("Database module import failed: %s", e)
             return False
-        except Exception as e:
-            logger.error(f"Database manager initialization failed: {e}")
+        except (RuntimeError, OSError, AttributeError) as e:
+            logger.error("Database manager initialization failed: %s", e)
             return False
         
         logger.info("Database system initialized successfully")
-        logger.info(f"Database: {db_info.get('database_file')}")
+        logger.info("Database: %s", db_info.get('database_file'))
         
         return True
         
-    except Exception as e:
+    except (RuntimeError, OSError, ImportError, AttributeError) as e:
         # Ensure we always have logging even if database fails
         if logger is None:
             logging.basicConfig(level=logging.INFO)
             logger = logging.getLogger('RFU.Main')
         
-        logger.error(f"Critical: Database system initialization failed: {e}")
+        logger.error("Critical: Database system initialization failed: %s", e)
         logger.warning("Application will continue without database features")
         return False
 
@@ -92,7 +99,7 @@ try:
     class RFUMainWindow(QMainWindow):
         def __init__(self):
             super().__init__()
-            self.setWindowTitle("Richard's File Utilities")
+            self.setWindowTitle(APP_NAME)
             self.setGeometry(200, 200, 900, 700)
             
             # Store references to opened windows
@@ -133,11 +140,11 @@ try:
                 # Execute as a single atomic operation
                 self.db_manager.execute_update(upsert_query, 
                                                (tool_name, operation_type))
-                self.logger.info(f"Tracked tool usage: {tool_name} - "
-                                f"{operation_type}")
+                self.logger.info("Tracked tool usage: %s - %s",
+                                 tool_name, operation_type)
                 
-            except Exception as e:
-                self.logger.error(f"Failed to track tool usage: {e}")
+            except (OSError, AttributeError, RuntimeError) as e:
+                self.logger.error("Failed to track tool usage: %s", e)
                 # Fallback: try simpler insert without conflict resolution
                 try:
                     simple_query = """
@@ -149,32 +156,34 @@ try:
                     """
                     self.db_manager.execute_update(simple_query, 
                                                    (tool_name, operation_type))
-                except Exception as fallback_error:
-                    error_msg = f"Fallback tool usage tracking failed: {fallback_error}"
-                    self.logger.error(error_msg)
+                except (OSError, AttributeError,
+                        RuntimeError) as fallback_error:
+                    error_msg = "Fallback tool usage tracking failed: %s"
+                    self.logger.error(error_msg, fallback_error)
         
-        def track_file_access(self, file_path: str, tool_name: str = None, operation_type: str = 'access'):
+        def track_file_access(self, file_path: str, tool_name: str = None,
+                              operation_type: str = 'access'):
             """Track file access in database."""
             if not self.database_available:
                 return
             
             try:
-                from pathlib import Path
-                
                 file_path_obj = Path(file_path)
                 if not file_path_obj.exists():
                     return
                 
                 # Insert or update file history
                 query = """
-                    INSERT OR IGNORE INTO file_history 
-                    (file_path, file_name, file_size, file_type, directory_path, 
-                     tool_name, operation_type, access_count, first_accessed, last_accessed)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+                    INSERT OR IGNORE INTO file_history
+                    (file_path, file_name, file_size, file_type,
+                     directory_path, tool_name, operation_type, access_count,
+                     first_accessed, last_accessed)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, 1, CURRENT_TIMESTAMP,
+                            CURRENT_TIMESTAMP)
                 """
                 
                 update_query = """
-                    UPDATE file_history 
+                    UPDATE file_history
                     SET access_count = access_count + 1,
                         last_accessed = CURRENT_TIMESTAMP,
                         tool_name = COALESCE(?, tool_name),
@@ -196,34 +205,37 @@ try:
                 # Try insert first, then update if it already exists
                 affected = self.db_manager.execute_update(query, params)
                 if affected == 0:
-                    self.db_manager.execute_update(update_query, (tool_name, operation_type, str(file_path_obj.absolute())))
+                    update_params = (tool_name, operation_type,
+                                     str(file_path_obj.absolute()))
+                    self.db_manager.execute_update(update_query, update_params)
                 
-                self.logger.debug(f"Tracked file access: {file_path_obj.name}")
+                self.logger.debug("Tracked file access: %s",
+                                 file_path_obj.name)
                 
-            except Exception as e:
-                self.logger.error(f"Failed to track file access: {e}")
+            except (OSError, AttributeError) as e:
+                self.logger.error("Failed to track file access: %s", e)
         
-        def track_directory_access(self, directory_path: str, tool_name: str = None):
-            """Track directory access in database.""" 
+        def track_directory_access(self, directory_path: str,
+                                   tool_name: Optional[str] = None):
+            """Track directory access in database."""
             if not self.database_available:
                 return
             
             try:
-                from pathlib import Path
-                
                 dir_path_obj = Path(directory_path)
                 if not dir_path_obj.exists() or not dir_path_obj.is_dir():
                     return
                 
                 # Insert or update directory history
                 query = """
-                    INSERT OR IGNORE INTO directory_history 
-                    (directory_path, tool_name, access_count, first_accessed, last_accessed)
+                    INSERT OR IGNORE INTO directory_history
+                    (directory_path, tool_name, access_count, first_accessed,
+                     last_accessed)
                     VALUES (?, ?, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
                 """
                 
                 update_query = """
-                    UPDATE directory_history 
+                    UPDATE directory_history
                     SET access_count = access_count + 1,
                         last_accessed = CURRENT_TIMESTAMP,
                         tool_name = COALESCE(?, tool_name)
@@ -233,14 +245,17 @@ try:
                 dir_path_str = str(dir_path_obj.absolute())
                 
                 # Try insert first, then update if it already exists
-                affected = self.db_manager.execute_update(query, (dir_path_str, tool_name))
+                affected = self.db_manager.execute_update(
+                    query, (dir_path_str, tool_name))
                 if affected == 0:
-                    self.db_manager.execute_update(update_query, (tool_name, dir_path_str))
+                    self.db_manager.execute_update(
+                        update_query, (tool_name, dir_path_str))
                 
-                self.logger.debug(f"Tracked directory access: {dir_path_obj.name}")
+                self.logger.debug("Tracked directory access: %s",
+                                  dir_path_obj.name)
                 
-            except Exception as e:
-                self.logger.error(f"Failed to track directory access: {e}")
+            except (OSError, AttributeError) as e:
+                self.logger.error("Failed to track directory access: %s", e)
         
         def create_menu_bar(self):
             """Create the comprehensive application menu bar."""
@@ -273,9 +288,9 @@ try:
             except ImportError:
                 # Fallback to original menu if menu manager not available
                 self._create_fallback_menu_bar()
-            except Exception as e:
+            except (AttributeError, RuntimeError, KeyError) as e:
                 if hasattr(self, 'logger'):
-                    self.logger.error(f"Failed to create menu bar: {e}")
+                    self.logger.error("Failed to create menu bar: %s", e)
                 else:
                     print(f"Failed to create menu bar: {e}")
                 # Try fallback
@@ -331,7 +346,7 @@ try:
             emergency_menu.addAction('Disable All Security...').triggered.connect(self.emergency_disable_action)
             emergency_menu.addAction('Force Security Backup...').triggered.connect(self.force_backup_action)
         
-        def _add_tools_menu(self, menubar):
+        def _add_tools_menu(self, _menubar):
             """Add tools-specific menu items."""
             # Get existing tools menu from menu manager
             if hasattr(self.menu_manager, 'tools_menu'):
@@ -369,16 +384,14 @@ try:
                 file_menu = menubar.addMenu('&File')
                 file_menu.addAction('&Exit', self.close, 'Ctrl+Q')
                 
-                # Tools Menu
-                tools_menu = menubar.addMenu('&Tools')
-                
                 # Help Menu
                 help_menu = menubar.addMenu('&Help')
                 help_menu.addAction('&About', self.show_about_dialog)
                 
-            except Exception as e:
+            except (AttributeError, RuntimeError, KeyError) as e:
                 if hasattr(self, 'logger'):
-                    self.logger.error(f"Failed to create fallback menu bar: {e}")
+                    self.logger.error("Failed to create fallback menu bar: %s",
+                                     e)
                 else:
                     print(f"Failed to create fallback menu bar: {e}")
         
@@ -415,7 +428,7 @@ try:
             from PyQt5.QtWidgets import QFileDialog, QMessageBox
             
             file_path, _ = QFileDialog.getSaveFileName(
-                self, "Export Settings", "rfu_settings.json", "JSON Files (*.json)"
+                self, "Export Settings", "rfu_settings.json", JSON_FILES_FILTER
             )
             
             if file_path:
@@ -430,12 +443,12 @@ try:
                     for key in settings.allKeys():
                         settings_dict[key] = settings.value(key)
                     
-                    with open(file_path, 'w') as f:
+                    with open(file_path, 'w', encoding='utf-8') as f:
                         json.dump(settings_dict, f, indent=2)
                     
                     QMessageBox.information(self, "Export Complete", f"Settings exported to {file_path}")
                     
-                except Exception as e:
+                except (OSError, IOError, ValueError, KeyError) as e:
                     QMessageBox.critical(self, "Export Error", f"Failed to export settings: {str(e)}")
         
         def import_settings(self):
@@ -443,7 +456,7 @@ try:
             from PyQt5.QtWidgets import QFileDialog, QMessageBox
             
             file_path, _ = QFileDialog.getOpenFileName(
-                self, "Import Settings", "", "JSON Files (*.json)"
+                self, "Import Settings", "", JSON_FILES_FILTER
             )
             
             if file_path:
@@ -451,7 +464,7 @@ try:
                     import json
                     from PyQt5.QtCore import QSettings
                     
-                    with open(file_path, 'r') as f:
+                    with open(file_path, 'r', encoding='utf-8') as f:
                         settings_dict = json.load(f)
                     
                     settings = QSettings("RFU", "MainApplication")
@@ -461,8 +474,8 @@ try:
                     
                     QMessageBox.information(self, "Import Complete", "Settings imported successfully. Please restart the application.")
                     
-                except Exception as e:
-                    QMessageBox.critical(self, "Import Error", f"Failed to import settings: {str(e)}")
+                except (OSError, IOError, ValueError, KeyError) as e:
+                    QMessageBox.critical(self, IMPORT_ERROR, f"Failed to import settings: {str(e)}")
         
         def print_info(self):
             """Print application information."""
@@ -473,7 +486,7 @@ try:
             """Show main application preferences."""
             try:
                 self.open_security_preferences()  # Reuse existing preferences dialog
-            except:
+            except Exception:
                 from PyQt5.QtWidgets import QMessageBox
                 QMessageBox.information(self, "Preferences", "Preferences dialog will be implemented in a future version.")
         
@@ -492,15 +505,15 @@ try:
                 if hasattr(self, 'statusBar'):
                     self.statusBar().showMessage("Tool list refreshed", 2000)
                 
-            except Exception as e:
+            except (AttributeError, RuntimeError, OSError) as e:
                 if hasattr(self, 'logger'):
-                    self.logger.error(f"Error refreshing tool list: {e}")
+                    self.logger.error("Error refreshing tool list: %s", e)
         
         def show_about_dialog(self):
             """Show about dialog."""
             from PyQt5.QtWidgets import QMessageBox
             QMessageBox.about(self, "About RFU", 
-                             "Richard's File Utilities v2.0.0\n\n"
+                             f"{APP_NAME} v2.0.0\n\n"
                              "A comprehensive suite of file management tools.\n\n"
                              "© 2025 Richard Noragon")
         
@@ -528,9 +541,9 @@ try:
                 
                 settings.setValue('recent_files', recent_files)
                 
-            except Exception as e:
+            except (AttributeError, RuntimeError, OSError) as e:
                 if hasattr(self, 'logger'):
-                    self.logger.error(f"Error adding to recent files: {e}")
+                    self.logger.error("Error adding to recent files: %s", e)
         
         def init_ui(self):
             """Initialize the user interface."""
@@ -543,7 +556,7 @@ try:
             main_layout = QVBoxLayout(central_widget)
             
             # Add title
-            title_label = QLabel("Richard's File Utilities")
+            title_label = QLabel(APP_NAME)
             title_label.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
             title_label.setStyleSheet("""
                 font-size: 28px; 
@@ -780,35 +793,35 @@ try:
         # Tool launcher methods
         def open_file_finder(self):
             """Open File Finder tool."""
-            self.launch_tool("File Finder", "src.rfu.tools.file_management.file_finder", "FileFinderGUI")
+            self.launch_tool("File Finder", "src.utilities.file_management.file_finder", "FileFinderGUI")
         
         def open_catalog(self):
             """Open Catalog tool."""
-            self.launch_tool("Catalog", "src.rfu.tools.file_management.catalog", "CatalogWindow")
+            self.launch_tool("Catalog", "src.utilities.file_management.catalog", "CatalogWindow")
         
         def open_rename(self):
             """Open Rename tool."""
-            self.launch_tool("Rename", "src.rfu.tools.file_management.rename", "RenameWindow")
+            self.launch_tool("Rename", "src.utilities.file_management.rename", "RenameWindow")
             
         def open_organize(self):
             """Open Organize tool."""
-            self.launch_tool("Organize", "src.rfu.tools.file_management.organize", "OrganizeWindow")
+            self.launch_tool("Organize", "src.utilities.file_management.organize", "OrganizeWindow")
             
         def open_cmsd(self):
             """Open Copy/Move/Sync/Delete tool."""
-            self.launch_tool("CMSD", "src.rfu.tools.file_operations.cmsd", "CopyMoveSyncDeleteWindow")
+            self.launch_tool("CMSD", "src.utilities.file_operations.cmsd", "CopyMoveSyncDeleteWindow")
             
         def open_compress(self):
             """Open Compress/Decompress tool."""
-            self.launch_tool("Compress", "src.rfu.tools.file_operations.compress_decompress", "CompressDecompressApp")
+            self.launch_tool("Compress", "src.utilities.file_operations.compression", "CompressDecompressApp")
             
         def open_file_splitter(self):
             """Open File Splitter tool."""
-            self.launch_tool("File Splitter", "src.rfu.tools.file_operations.file_splitter_joiner", "FileSplitJoinGUI")
+            self.launch_tool("File Splitter", "src.utilities.file_operations.file_splitter", "FileSplitJoinGUI")
             
         def open_sync(self):
             """Open Sync tool."""
-            self.launch_tool("Sync", "src.rfu.tools.file_operations.sync", "SyncWindow")
+            self.launch_tool("Sync", "src.utilities.file_operations.synchronization_backup.sync", "SyncWindow")
             
         def open_size_analyzer(self):
             """Open Size Analyzer tool."""
@@ -824,7 +837,7 @@ try:
             
         def open_empty_folders(self):
             """Open Empty Folders tool."""
-            self.launch_tool("Empty Folders", "src.rfu.tools.analysis.empty_folders", "EmptyFoldersGUI")
+            self.launch_tool("Empty Folders", "src.utilities.analysis.empty_folders", "EmptyFoldersGUI")
             
         def open_security_preferences(self):
             """Open Security Preferences dialog."""
@@ -845,16 +858,17 @@ try:
                 self.statusBar().showMessage("Security Preferences dialog opened")
                 
             except ImportError as e:
-                self.logger.error(f"Failed to import SecurityPreferencesDialog: {e}")
+                self.logger.error(
+                    "Failed to import SecurityPreferencesDialog: %s", e)
                 QMessageBox.warning(
                     self, 
-                    "Import Error",
+                    IMPORT_ERROR,
                     f"Security Preferences dialog is not available.\n\n"
                     f"Error: {e}\n\n"
                     f"Please ensure all security components are properly installed."
                 )
-            except Exception as e:
-                self.logger.error(f"Failed to open Security Preferences: {e}")
+            except (AttributeError, RuntimeError, OSError) as e:
+                self.logger.error("Failed to open Security Preferences: %s", e)
                 QMessageBox.critical(
                     self,
                     "Error",
@@ -875,15 +889,19 @@ try:
             
         def open_image_metadata(self):
             """Open Image Metadata Editor tool."""
-            self.launch_tool("Image Metadata", "src.rfu.tools.metadata.edit_image_metadata", "ImageMetadataEditorGUI")
+            self.launch_tool("Image Metadata", "src.utilities.metadata.image_metadata", "ImageMetadataEditorGUI")
             
         def open_office_metadata(self):
             """Open Office Metadata Editor tool."""
-            self.launch_tool("Office Metadata", "src.rfu.tools.metadata.office_meta_data_editor", "OfficeMetaDataEditorGUI")
+            self.launch_tool("Office Metadata", 
+                           "src.utilities.metadata.office_meta_data_editor", 
+                           "OfficeMetaDataEditorGUI")
             
         def open_file_touch(self):
             """Open File Touch tool."""
-            self.launch_tool("File Touch", "src.rfu.tools.metadata.file_touch", "FileTouchGUI")
+            self.launch_tool("File Touch", 
+                           "src.utilities.file_operations.file_touch", 
+                           "FileTouchWindow")
             
         def open_pdf_tools(self):
             """Open PDF Tools."""
@@ -1036,20 +1054,20 @@ try:
                 if result.returncode == 0:
                     QMessageBox.information(
                         self,
-                        "Security Test",
+                        SECURITY_TEST,
                         f"Security feature test completed successfully!\n\n"
                         f"Output:\n{result.stdout}"
                     )
                 else:
                     QMessageBox.warning(
                         self,
-                        "Security Test",
+                        SECURITY_TEST,
                         f"Security test completed with warnings:\n\n"
                         f"Error: {result.stderr}\n"
                         f"Output: {result.stdout}"
                     )
                     
-                self.track_tool_usage("Security Test", "execute")
+                self.track_tool_usage(SECURITY_TEST, "execute")
                 
             except Exception as e:
                 self.logger.error(f"Failed to run security test: {e}")
@@ -1078,7 +1096,7 @@ try:
                     self, 
                     "Export Security Configuration",
                     f"rfu_security_config_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json",
-                    "JSON Files (*.json)"
+                    JSON_FILES_FILTER
                 )
                 
                 if file_path:
@@ -1120,7 +1138,7 @@ try:
                     self,
                     "Import Security Configuration",
                     "",
-                    "JSON Files (*.json)"
+                    JSON_FILES_FILTER
                 )
                 
                 if file_path:
@@ -1148,7 +1166,7 @@ try:
                 self.logger.error(f"Failed to import security config: {e}")
                 QMessageBox.critical(
                     self,
-                    "Import Error", 
+                    IMPORT_ERROR, 
                     f"Failed to import security configuration:\n\n{e}"
                 )
                 
@@ -1433,7 +1451,7 @@ try:
             from PyQt5.QtWidgets import QMessageBox
             
             msg = QMessageBox(self)
-            msg.setWindowTitle(f"Import Error - {tool_name}")
+            msg.setWindowTitle(f"{IMPORT_ERROR} - {tool_name}")
             msg.setIcon(QMessageBox.Critical)
             
             error_text = f"Failed to import {tool_name}:\n\n"
@@ -1455,7 +1473,7 @@ try:
             error_text += f"✓ Python path includes: {sys.path[:3]}...\n"
             
             # Add solution suggestions
-            error_text += "\n🔧 Suggested Solutions:\n"
+            error_text += SUGGESTED_SOLUTIONS_HEADER
             error_text += "• Check if all required dependencies are installed\n"
             error_text += "• Verify the module file exists and is accessible\n"
             error_text += "• Run the automated tool corrector\n"
@@ -1627,16 +1645,16 @@ try:
             
             # Add specific guidance based on error type
             if "Import failed" in str(validation_result["errors"]):
-                error_text += "\n🔧 Suggested Solutions:\n"
+                error_text += SUGGESTED_SOLUTIONS_HEADER
                 error_text += f"• Check if {module_name}.py exists in the current directory\n"
                 error_text += "• Verify all required dependencies are installed\n"
                 error_text += "• Run the automated tool corrector to fix missing tools\n"
             elif "not found" in str(validation_result["errors"]):
-                error_text += "\n🔧 Suggested Solutions:\n"
+                error_text += SUGGESTED_SOLUTIONS_HEADER
                 error_text += f"• Check class name in {module_name}.py\n"
                 error_text += "• Run the comprehensive test suite for validation\n"
             elif "Instantiation failed" in str(validation_result["errors"]):
-                error_text += "\n🔧 Suggested Solutions:\n"
+                error_text += SUGGESTED_SOLUTIONS_HEADER
                 error_text += "• Check for missing PyQt5 widget imports\n"
                 error_text += "• Verify all dependencies are properly imported\n"
                 error_text += "• Check the tool's __init__ method for errors\n"
@@ -1722,14 +1740,14 @@ try:
     
     def main():
         """Main entry point for the application."""
-        print("Starting Richard's File Utilities...")
+        print(f"Starting {APP_NAME}...")
         
         app = QApplication(sys.argv)
         
         # Set application properties
-        app.setApplicationName("Richard's File Utilities")
+        app.setApplicationName(APP_NAME)
         app.setApplicationVersion("3.0.0")
-        app.setOrganizationName("Richard's File Utilities")
+        app.setOrganizationName(APP_NAME)
         
         # Create and show main window
         window = RFUMainWindow()
@@ -1740,35 +1758,12 @@ try:
         
     if __name__ == '__main__':
         sys.exit(main())
-        
+
 except ImportError as e:
     print(f"Error importing modules: {e}")
     print("Please ensure PyQt5 is properly installed.")
     print("To install PyQt5, run: pip install PyQt5")
     sys.exit(1)
-except Exception as e:
-    print(f"Error starting application: {e}")
-    sys.exit(1)
-    
-    def main():
-        """Main entry point for the application."""
-        print("Starting Richard's File Utilities...")
-        
-        app = QApplication(sys.argv)
-        window = RFUMainWindow()
-        window.show()
-        
-        print("Application window displayed. Close the window to exit.")
-        return app.exec_()
-        
-    if __name__ == '__main__':
-        sys.exit(main())
-        
-except ImportError as e:
-    print(f"Error importing main application: {e}")
-    print("Please ensure PyQt5 is properly installed.")
-    print("To install PyQt5, run: pip install PyQt5")
-    sys.exit(1)
-except Exception as e:
+except (RuntimeError, OSError, AttributeError) as e:
     print(f"Error starting application: {e}")
     sys.exit(1)

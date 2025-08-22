@@ -215,7 +215,7 @@ Each tool can define additional shortcuts contextual to their functionality.
 python enhanced_main_with_comprehensive_menus.py
 
 # Or run individual tools (they will have integrated menus)
-python -m src.rfu.tools.file_management.file_finder
+python -m src.utilities.file_management.file_finder
 ```
 
 ### Integration Script

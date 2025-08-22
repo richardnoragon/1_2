@@ -13,7 +13,7 @@ sys.path.insert(0, os.getcwd())
 def test_file_finder():
     """Test File Finder import."""
     try:
-        from src.rfu.tools.file_management.file_finder import FileFinderGUI
+        from src.utilities.file_management.file_finder import FileFinderGUI
         print("✅ File Finder import successful")
         return True
     except Exception as e:
@@ -43,7 +43,7 @@ def test_network_connectivity():
 def test_organize():
     """Test Organize tool import."""
     try:
-        from src.rfu.tools.file_management.organize import OrganizeWindow
+        from src.utilities.file_operations.organize.organize import OrganizeWindow
         print("✅ Organize tool import successful")
         return True
     except Exception as e:
@@ -58,8 +58,8 @@ def test_basic_import():
         if src_path not in sys.path:
             sys.path.insert(0, src_path)
             
-        from rfu.tools.file_management.file_finder import FileFinderGUI
-        print("✅ Basic File Finder import (without src prefix) successful")
+        from src.utilities.file_management.file_finder import FileFinderGUI
+        print("✅ Basic File Finder import (from utilities) successful")
         return True
     except Exception as e:
         print(f"❌ Basic File Finder import failed: {e}")

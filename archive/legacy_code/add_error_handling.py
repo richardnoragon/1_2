@@ -5,13 +5,13 @@ import os
 from pathlib import Path
 import re
 
-from core.error_handler import error_handler
+from src.core.error_handler import error_handler
 
 
 def add_error_imports(content: str) -> str:
     """Add error handler import if not present."""
-    if "from core.error_handler import error_handler" not in content:
-        import_line = "from core.error_handler import error_handler\n"
+    if "from src.core.error_handler import error_handler" not in content:
+        import_line = "from src.core.error_handler import error_handler\n"
         # Add after other imports or at start of file
         if "import " in content:
             content = re.sub(r'((?:^|\n)import [^\n]+\n(?:from [^\n]+\n)*)',

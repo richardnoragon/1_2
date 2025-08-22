@@ -3,6 +3,7 @@ Richard's File Utilities - Utilities Package
 
 This package contains all the file utility tools organized by category:
 - analysis: File analysis tools (checksum, duplicates, size analysis)
+- file_management: File management tools (finder, catalog, rename, organize)
 - file_operations: File manipulation tools
 - metadata: Metadata editing tools
 - network: Network connectivity tools
@@ -40,6 +41,7 @@ def safe_import(module_name, package_name=None):
 
 # Import utility categories
 analysis = safe_import("analysis", __name__)
+file_management = safe_import("file_management", __name__)
 file_operations = safe_import("file_operations", __name__)
 metadata = safe_import("metadata", __name__)
 network = safe_import("network", __name__)
@@ -50,7 +52,8 @@ system = safe_import("system", __name__)
 
 __all__ = [
     "analysis",
-    "file_operations", 
+    "file_management",
+    "file_operations",
     "metadata",
     "network",
     "pdf_tools",

@@ -21,7 +21,7 @@ def test_tool_display():
     
     # Test File Finder
     try:
-        from rfu.tools.file_management.file_finder import FileFinderGUI
+        from src.utilities.file_management.file_finder import FileFinderGUI
         finder = FileFinderGUI()
         finder.show()
         print("✅ File Finder GUI loaded successfully")
@@ -38,7 +38,7 @@ def test_tool_display():
     
     # Test Catalog Files
     try:
-        from rfu.tools.file_management.catalog import CatalogWindow
+        from src.utilities.file_operations.catalog.catalog import CatalogWindow
         catalog = CatalogWindow()
         catalog.show()
         print("✅ Catalog Window loaded successfully")
@@ -54,7 +54,7 @@ def test_tool_display():
     
     # Test Rename Files
     try:
-        from rfu.tools.file_management.rename import RenameWindow
+        from src.utilities.file_management.rename import RenameWindow
         rename = RenameWindow()
         rename.show()
         print("✅ Rename Window loaded successfully")

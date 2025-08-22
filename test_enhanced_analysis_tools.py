@@ -73,7 +73,7 @@ def test_analysis_tools():
     
     # Test Empty Folders
     try:
-        from rfu.tools.analysis.empty_folders import EmptyFoldersGUI
+        from utilities.analysis.empty_folders import EmptyFoldersGUI
         empty_folders = EmptyFoldersGUI()
         empty_folders.show()
         print("✅ Empty Folders Tool loaded successfully")

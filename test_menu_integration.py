@@ -1,7 +1,15 @@
 #!/usr/bin/env python3
 """
 Test script for comprehensive menu bar system integration
-Tests all four tools: Compress/Decompress, Office Metadata Editor, File Touch, Image Metadata Editor
+Tests all four tools: Compress/Decompress, Office Metadata Editor, def test_image_metadata():
+    """Test Image Metadata Editor tool menu integration."""
+    print("🖼️ Testing Image Metadata Editor Tool...")
+    try:
+        from src.utilities.metadata.image_metadata import ImageMetadataEditorGUI
+        
+        app = QApplication.instance()
+        if app is None:
+            app = QApplication(sys.argv)h, Image Metadata Editor
 """
 
 import sys
@@ -13,7 +21,7 @@ def test_compress_decompress():
     """Test Compress/Decompress tool menu integration."""
     print("🔧 Testing Compress/Decompress Tool...")
     try:
-        from src.rfu.tools.file_operations.compress_decompress import CompressDecompressApp
+        from src.utilities.file_operations.compression import CompressDecompressApp
         
         app = QApplication.instance()
         if app is None:
@@ -61,7 +69,7 @@ def test_office_metadata_editor():
     """Test Office Metadata Editor menu integration."""
     print("📄 Testing Office Metadata Editor...")
     try:
-        from src.rfu.tools.metadata.office_meta_data_editor import OfficeMetaDataEditorGUI
+        from src.utilities.metadata.office_meta_data_editor import OfficeMetaDataEditorGUI
         
         app = QApplication.instance()
         if app is None:
@@ -109,13 +117,13 @@ def test_file_touch():
     """Test File Touch tool menu integration."""
     print("🕒 Testing File Touch Tool...")
     try:
-        from src.rfu.tools.metadata.file_touch import FileTouchGUI
+        from src.utilities.file_operations.file_touch import FileTouchWindow
         
         app = QApplication.instance()
         if app is None:
             app = QApplication(sys.argv)
         
-        tool = FileTouchGUI()
+        tool = FileTouchWindow()
         
         # Test menu manager existence
         assert hasattr(tool, 'menu_manager'), "Menu manager not found"
@@ -157,7 +165,7 @@ def test_image_metadata_editor():
     """Test Image Metadata Editor menu integration."""
     print("🖼️ Testing Image Metadata Editor...")
     try:
-        from src.rfu.tools.metadata.edit_image_metadata import ImageMetadataEditorGUI
+        from src.utilities.metadata.image_metadata import ImageMetadataEditorGUI
         
         app = QApplication.instance()
         if app is None:
@@ -300,7 +308,7 @@ def create_demo_launcher():
             
         def launch_compress_decompress(self):
             try:
-                from src.rfu.tools.file_operations.compress_decompress import CompressDecompressApp
+                from src.utilities.file_operations.compression import CompressDecompressApp
                 self.compress_tool = CompressDecompressApp()
                 self.compress_tool.show()
             except Exception as e:
@@ -308,7 +316,7 @@ def create_demo_launcher():
                 
         def launch_metadata_editor(self):
             try:
-                from src.rfu.tools.metadata.office_meta_data_editor import OfficeMetaDataEditorGUI
+                from src.utilities.metadata.office_meta_data_editor import OfficeMetaDataEditorGUI
                 self.metadata_tool = OfficeMetaDataEditorGUI()
                 self.metadata_tool.show()
             except Exception as e:
@@ -316,15 +324,15 @@ def create_demo_launcher():
                 
         def launch_file_touch(self):
             try:
-                from src.rfu.tools.metadata.file_touch import FileTouchGUI
-                self.touch_tool = FileTouchGUI()
+                from src.utilities.file_operations.file_touch import FileTouchWindow
+                self.touch_tool = FileTouchWindow()
                 self.touch_tool.show()
             except Exception as e:
                 print(f"Error launching File Touch: {e}")
                 
         def launch_image_metadata_editor(self):
             try:
-                from src.rfu.tools.metadata.edit_image_metadata import ImageMetadataEditorGUI
+                from src.utilities.metadata.image_metadata import ImageMetadataEditorGUI
                 self.image_tool = ImageMetadataEditorGUI()
                 self.image_tool.show()
             except Exception as e:

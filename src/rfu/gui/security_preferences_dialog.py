@@ -18,6 +18,9 @@ from typing import Dict, Any, Optional, List, Tuple
 import logging
 from datetime import datetime
 
+# Security profile constants
+STANDARD_RECOMMENDED_PROFILE = "Standard (Recommended)"
+
 # Add the src directory to the Python path for imports
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', '..'))
 
@@ -666,12 +669,12 @@ try:
             self.security_profile = QComboBox()
             self.security_profile.addItems([
                 "Minimal (Basic protection)",
-                "Standard (Recommended)",
+                STANDARD_RECOMMENDED_PROFILE,
                 "Enhanced (High security)",
                 "Maximum (Paranoid mode)",
                 "Custom (User defined)"
             ])
-            self.security_profile.setCurrentText("Standard (Recommended)")
+            self.security_profile.setCurrentText(STANDARD_RECOMMENDED_PROFILE)
             self.security_profile.currentTextChanged.connect(self.apply_security_profile)
             profiles_layout.addRow("Security Profile:", self.security_profile)
             
@@ -833,7 +836,10 @@ try:
                 
                 # Load advanced settings
                 self.security_profile.setCurrentText(
-                    self.config_manager.get_setting('security_advanced', 'security_profile', 'Standard (Recommended)')
+                    self.config_manager.get_setting(
+                        'security_advanced', 'security_profile',
+                        STANDARD_RECOMMENDED_PROFILE
+                    )
                 )
                 self.session_timeout.setValue(
                     self.config_manager.get_setting('security_advanced', 'session_timeout', 60)
@@ -1186,11 +1192,21 @@ try:
             """Apply selected security profile."""
             profile = self.security_profile.currentText()
             descriptions = {
-                "Minimal (Basic protection)": "Basic security features enabled. Suitable for low-risk environments.",
-                "Standard (Recommended)": "Balanced security configuration. Recommended for most users.",
-                "Enhanced (High security)": "Enhanced security features enabled. Suitable for sensitive environments.",
-                "Maximum (Paranoid mode)": "All security features enabled at maximum levels. High security overhead.",
-                "Custom (User defined)": "Custom security configuration defined by user preferences."
+                "Minimal (Basic protection)":
+                    "Basic security features enabled. "
+                    "Suitable for low-risk environments.",
+                STANDARD_RECOMMENDED_PROFILE:
+                    "Balanced security configuration. "
+                    "Recommended for most users.",
+                "Enhanced (High security)":
+                    "Enhanced security features enabled. "
+                    "Suitable for sensitive environments.",
+                "Maximum (Paranoid mode)":
+                    "All security features enabled at maximum levels. "
+                    "High security overhead.",
+                "Custom (User defined)":
+                    "Custom security configuration defined by "
+                    "user preferences."
             }
             self.profile_description.setText(descriptions.get(profile, "Custom security profile."))
         

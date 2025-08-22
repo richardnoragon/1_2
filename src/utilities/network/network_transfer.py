@@ -77,6 +77,10 @@ except ImportError:
     DATABASE_AVAILABLE = False
     print("Database manager not available. Transfer history will not be saved.")
 
+# Constants for repeated strings
+NETWORK_TRANSFER_TITLE = "Network Transfer"
+SELECT_COLLECTION_MSG = "Please select a collection."
+
 
 class SecurityManager:
     """Handles authentication and encryption for network transfers."""
@@ -145,8 +149,9 @@ class SecurityManager:
         salt = secrets.token_bytes(16)
         
         # Derive key using PBKDF2
+        algorithm = hashes.SHA256() if CRYPTO_AVAILABLE else hashlib.sha256
         kdf = PBKDF2HMAC(
-            algorithm=hashes.SHA256() if CRYPTO_AVAILABLE else hashlib.sha256,
+            algorithm=algorithm,
             length=32,
             salt=salt,
             iterations=100000,
@@ -156,7 +161,9 @@ class SecurityManager:
             derived_key = kdf.derive(self.session_key)
         else:
             # Fallback key derivation
-            derived_key = hashlib.pbkdf2_hmac('sha256', self.session_key, salt, 100000)
+            derived_key = hashlib.pbkdf2_hmac(
+                'sha256', self.session_key, salt, 100000
+            )
         
         # XOR encryption with derived key
         key_cycle = (derived_key * ((len(message) // 32) + 1))[:len(message)]
@@ -179,8 +186,9 @@ class SecurityManager:
         encrypted = encrypted_data[48:]
         
         # Derive key using PBKDF2
+        algorithm = hashes.SHA256() if CRYPTO_AVAILABLE else hashlib.sha256
         kdf = PBKDF2HMAC(
-            algorithm=hashes.SHA256() if CRYPTO_AVAILABLE else hashlib.sha256,
+            algorithm=algorithm,
             length=32,
             salt=salt,
             iterations=100000,
@@ -190,7 +198,9 @@ class SecurityManager:
             derived_key = kdf.derive(self.session_key)
         else:
             # Fallback key derivation
-            derived_key = hashlib.pbkdf2_hmac('sha256', self.session_key, salt, 100000)
+            derived_key = hashlib.pbkdf2_hmac(
+                'sha256', self.session_key, salt, 100000
+            )
         
         # Verify HMAC
         hmac_key = derived_key[:16]
@@ -495,52 +505,21 @@ class PathSecurity:
     @staticmethod
     def validate_file_for_transfer(file_path: str) -> Dict[str, Any]:
         """Validate a file for transfer with comprehensive security checks."""
-        result = {
-            'valid': False,
-            'reason': '',
-            'size': 0,
-            'extension': '',
-            'path': file_path
-        }
+        result = PathSecurity._initialize_validation_result(file_path)
         
         try:
             path = Path(file_path)
             
-            # Check if file exists
-            if not path.exists():
-                result['reason'] = 'File does not exist'
+            # Basic existence and type checks
+            if not PathSecurity._check_file_existence(path, result):
                 return result
             
-            # Check if it's actually a file
-            if not path.is_file():
-                result['reason'] = 'Path is not a file'
+            # Get file stats and size check
+            if not PathSecurity._check_file_stats(path, result):
                 return result
             
-            # Get file stats safely
-            try:
-                stat_info = path.stat()
-                file_size = stat_info.st_size
-                result['size'] = file_size
-            except (OSError, PermissionError):
-                result['reason'] = 'Cannot access file information'
-                return result
-            
-            # Check file size
-            if file_size > PathSecurity.MAX_FILE_SIZE:
-                result['reason'] = f'File too large (max {PathSecurity.MAX_FILE_SIZE} bytes)'
-                return result
-            
-            # Check file extension
-            extension = path.suffix.lower()
-            result['extension'] = extension
-            
-            if extension not in PathSecurity.ALLOWED_EXTENSIONS:
-                result['reason'] = f'File type not allowed: {extension}'
-                return result
-            
-            # Check file permissions
-            if not os.access(path, os.R_OK):
-                result['reason'] = 'File is not readable'
+            # Extension and permission checks
+            if not PathSecurity._check_file_permissions(path, result):
                 return result
             
             # File passed all checks
@@ -551,6 +530,63 @@ class PathSecurity:
         except Exception as e:
             result['reason'] = f'Validation error: {str(e)}'
             return result
+    
+    @staticmethod
+    def _initialize_validation_result(file_path: str) -> Dict[str, Any]:
+        """Initialize validation result dictionary"""
+        return {
+            'valid': False,
+            'reason': '',
+            'size': 0,
+            'extension': '',
+            'path': file_path
+        }
+    
+    @staticmethod
+    def _check_file_existence(path: Path, result: Dict[str, Any]) -> bool:
+        """Check if file exists and is actually a file"""
+        if not path.exists():
+            result['reason'] = 'File does not exist'
+            return False
+        
+        if not path.is_file():
+            result['reason'] = 'Path is not a file'
+            return False
+        
+        return True
+    
+    @staticmethod
+    def _check_file_stats(path: Path, result: Dict[str, Any]) -> bool:
+        """Check file stats and size constraints"""
+        try:
+            stat_info = path.stat()
+            file_size = stat_info.st_size
+            result['size'] = file_size
+        except OSError:
+            result['reason'] = 'Cannot access file information'
+            return False
+        
+        if file_size > PathSecurity.MAX_FILE_SIZE:
+            result['reason'] = f'File too large (max {PathSecurity.MAX_FILE_SIZE} bytes)'
+            return False
+        
+        return True
+    
+    @staticmethod
+    def _check_file_permissions(path: Path, result: Dict[str, Any]) -> bool:
+        """Check file extension and permissions"""
+        extension = path.suffix.lower()
+        result['extension'] = extension
+        
+        if extension not in PathSecurity.ALLOWED_EXTENSIONS:
+            result['reason'] = f'File type not allowed: {extension}'
+            return False
+        
+        if not os.access(path, os.R_OK):
+            result['reason'] = 'File is not readable'
+            return False
+        
+        return True
     
     @staticmethod
     def secure_file_info(file_path: str) -> Optional[Dict[str, Any]]:
@@ -811,6 +847,20 @@ class NetworkTransferGUI(StandardWindow):
         layout = self.main_layout
         
         # Add header
+        self._create_header(layout)
+        
+        # Create tab widget
+        self.tab_widget = QTabWidget()
+        layout.addWidget(self.tab_widget)
+        
+        # Create tabs
+        self._create_all_tabs()
+        
+        # Status bar and progress
+        self._create_status_bar(layout)
+        
+    def _create_header(self, layout: QVBoxLayout) -> None:
+        """Create and add header label to layout"""
         header_label = QLabel("Network Transfer Tool")
         header_label.setStyleSheet("""
             QLabel {
@@ -824,18 +874,16 @@ class NetworkTransferGUI(StandardWindow):
             }
         """)
         layout.addWidget(header_label)
-        
-        # Create tab widget
-        self.tab_widget = QTabWidget()
-        layout.addWidget(self.tab_widget)
-        
-        # Create tabs
+    
+    def _create_all_tabs(self) -> None:
+        """Create all tab widgets"""
         self.create_send_tab()
         self.create_receive_tab()
         self.create_collections_tab()
         self.create_history_tab()
-        
-        # Status bar and progress
+    
+    def _create_status_bar(self, layout: QVBoxLayout) -> None:
+        """Create status bar and progress indicator"""
         status_layout = QHBoxLayout()
         
         self.status_label = QLabel("Ready for transfers")
@@ -1170,108 +1218,147 @@ class NetworkTransferGUI(StandardWindow):
                 return False
             
             # Check for suspicious patterns
-            suspicious_patterns = [
-                "..", "~", "//", "\\\\", "\0", 
-                "%", "$", "`", ";", "|", "&",
-                "<", ">", "?"
-            ]
-            
-            for pattern in suspicious_patterns:
-                if pattern in file_path:
-                    return False
+            if not self._check_suspicious_patterns(file_path):
+                return False
             
             # Normalize and resolve the path
-            try:
-                normalized_path = Path(file_path).resolve()
-            except (OSError, ValueError, RuntimeError) as e:
-                print(f"Path resolution failed: {e}")
+            normalized_path = self._normalize_path(file_path)
+            if not normalized_path:
                 return False
             
-            # Ensure path exists and is accessible
-            if not normalized_path.exists():
+            # Security checks
+            if not self._check_forbidden_directories(normalized_path):
                 return False
             
-            # Check against forbidden directories (comprehensive list)
-            forbidden_dirs = [
-                # Unix/Linux system directories
-                Path("/etc"), Path("/sys"), Path("/proc"), Path("/dev"),
-                Path("/boot"), Path("/root"), Path("/usr/bin"), Path("/sbin"),
-                # Windows system directories
-                Path("C:\\Windows"), Path("C:\\Windows\\System32"), 
-                Path("C:\\Windows\\SysWOW64"), Path("C:\\Program Files"),
-                Path("C:\\Program Files (x86)"), Path("C:\\ProgramData"),
-                # User profile sensitive areas
-                Path.home() / "AppData" / "Local" / "Microsoft",
-                Path.home() / "AppData" / "Roaming" / "Microsoft",
-            ]
-            
-            # Add current working directory's sensitive subdirectories
-            cwd = Path.cwd()
-            forbidden_dirs.extend([
-                cwd / ".git", cwd / ".env", cwd / "node_modules",
-                cwd / "__pycache__", cwd / ".vscode"
-            ])
-            
-            for forbidden in forbidden_dirs:
-                try:
-                    forbidden_resolved = forbidden.resolve()
-                    if (str(normalized_path).startswith(str(forbidden_resolved)) or
-                        normalized_path == forbidden_resolved):
-                        return False
-                except (OSError, ValueError):
-                    continue
-            
-            # Ensure path is within allowed directories
-            allowed_base_dirs = [
-                Path.home() / "Documents",
-                Path.home() / "Downloads", 
-                Path.home() / "Desktop",
-                Path.home() / "Pictures",
-                Path.home() / "Videos",
-                Path.home() / "Music",
-                Path.cwd(),  # Current working directory
-            ]
-            
-            # Allow paths that start with any allowed base directory
-            path_is_allowed = False
-            for allowed_base in allowed_base_dirs:
-                try:
-                    allowed_resolved = allowed_base.resolve()
-                    if str(normalized_path).startswith(str(allowed_resolved)):
-                        path_is_allowed = True
-                        break
-                except (OSError, ValueError):
-                    continue
-            
-            if not path_is_allowed:
+            if not self._check_allowed_directories(normalized_path):
                 return False
             
-            # Additional file-specific checks
-            if normalized_path.is_file():
-                # Check file size (prevent transferring extremely large files)
-                try:
-                    file_size = normalized_path.stat().st_size
-                    max_file_size = 1024 * 1024 * 1024  # 1GB limit
-                    if file_size > max_file_size:
-                        return False
-                except (OSError, PermissionError):
-                    return False
-                
-                # Check file extension against forbidden list
-                forbidden_extensions = [
-                    '.exe', '.bat', '.cmd', '.com', '.scr', '.pif',
-                    '.msi', '.dll', '.sys', '.drv', '.vbs', '.js'
-                ]
-                
-                if normalized_path.suffix.lower() in forbidden_extensions:
-                    return False
+            if not self._check_file_security(normalized_path):
+                return False
             
-            # Path passes all security checks
             return True
             
         except Exception as e:
             print(f"Security validation error: {e}")
             return False
+    
+    def _check_suspicious_patterns(self, file_path: str) -> bool:
+        """Check for suspicious patterns in file path."""
+        suspicious_patterns = [
+            "..", "~", "//", "\\\\", "\0",
+            "%", "$", "`", ";", "|", "&",
+            "<", ">", "?"
+        ]
+        
+        for pattern in suspicious_patterns:
+            if pattern in file_path:
+                return False
+        return True
+    
+    def _normalize_path(self, file_path: str) -> Path:
+        """Normalize and resolve the path safely."""
+        try:
+            normalized_path = Path(file_path).resolve()
+            if not normalized_path.exists():
+                return None
+            return normalized_path
+        except (OSError, ValueError, RuntimeError) as e:
+            print(f"Path resolution failed: {e}")
+            return None
+    
+    def _check_forbidden_directories(self, normalized_path: Path) -> bool:
+        """Check against forbidden directories."""
+        forbidden_dirs = self._get_forbidden_directories()
+        
+        for forbidden in forbidden_dirs:
+            try:
+                forbidden_resolved = forbidden.resolve()
+                if (str(normalized_path).startswith(str(forbidden_resolved)) or
+                        normalized_path == forbidden_resolved):
+                    return False
+            except (OSError, ValueError):
+                continue
+        return True
+    
+    def _get_forbidden_directories(self) -> list:
+        """Get list of forbidden directories."""
+        forbidden_dirs = [
+            # Unix/Linux system directories
+            Path("/etc"), Path("/sys"), Path("/proc"), Path("/dev"),
+            Path("/boot"), Path("/root"), Path("/usr/bin"), Path("/sbin"),
+            # Windows system directories
+            Path("C:\\Windows"), Path("C:\\Windows\\System32"),
+            Path("C:\\Windows\\SysWOW64"), Path("C:\\Program Files"),
+            Path("C:\\Program Files (x86)"), Path("C:\\ProgramData"),
+            # User profile sensitive areas
+            Path.home() / "AppData" / "Local" / "Microsoft",
+            Path.home() / "AppData" / "Roaming" / "Microsoft",
+        ]
+        
+        # Add current working directory's sensitive subdirectories
+        cwd = Path.cwd()
+        forbidden_dirs.extend([
+            cwd / ".git", cwd / ".env", cwd / "node_modules",
+            cwd / "__pycache__", cwd / ".vscode"
+        ])
+        
+        return forbidden_dirs
+    
+    def _check_allowed_directories(self, normalized_path: Path) -> bool:
+        """Ensure path is within allowed directories."""
+        allowed_base_dirs = [
+            Path.home() / "Documents",
+            Path.home() / "Downloads",
+            Path.home() / "Desktop",
+            Path.home() / "Pictures",
+            Path.home() / "Videos",
+            Path.home() / "Music",
+            Path.cwd(),  # Current working directory
+        ]
+        
+        # Allow paths that start with any allowed base directory
+        for allowed_base in allowed_base_dirs:
+            try:
+                allowed_resolved = allowed_base.resolve()
+                if str(normalized_path).startswith(str(allowed_resolved)):
+                    return True
+            except (OSError, ValueError):
+                continue
+        
+        return False
+    
+    def _check_file_security(self, normalized_path: Path) -> bool:
+        """Additional file-specific security checks."""
+        if not normalized_path.is_file():
+            return True
+        
+        # Check file size
+        if not self._check_file_size(normalized_path):
+            return False
+        
+        # Check file extension
+        if not self._check_file_extension(normalized_path):
+            return False
+        
+        return True
+    
+    def _check_file_size(self, file_path: Path) -> bool:
+        """Check file size limits."""
+        try:
+            file_size = file_path.stat().st_size
+            max_file_size = 1024 * 1024 * 1024  # 1GB limit
+            return file_size <= max_file_size
+        except OSError:
+            return False
+    
+    def _check_file_extension(self, file_path: Path) -> bool:
+        """Check file extension against forbidden list."""
+        forbidden_extensions = [
+            '.exe', '.bat', '.cmd', '.com', '.scr', '.pif',
+            '.msi', '.dll', '.sys', '.drv', '.vbs', '.js'
+        ]
+        
+        return file_path.suffix.lower() not in forbidden_extensions
     
     def _add_folder_files_securely(self, folder: str, max_depth: int = 10):
         """
@@ -1307,45 +1394,75 @@ class NetworkTransferGUI(StandardWindow):
         if current_depth > max_depth:
             self.logger.warning(f"Maximum recursion depth ({max_depth}) exceeded at: {current_path}")
             return
-        
-        # Check for symbolic link loops
+
+        # Handle symbolic links safely
+        if not self._handle_symlink_safely(current_path, base_path):
+            return
+
+        # Process directory contents
+        self._process_directory_contents(
+            current_path, base_path, max_depth, current_depth
+        )
+
+    def _handle_symlink_safely(self, current_path: Path,
+                               base_path: Path) -> bool:
+        """Handle symbolic links safely, return False if should skip."""
         if current_path.is_symlink():
             try:
                 # Resolve symlink and check if it points back to an ancestor
                 resolved_path = current_path.resolve()
                 if self._is_symlink_loop(resolved_path, base_path):
-                    self.logger.warning(f"Symbolic link loop detected, skipping: {current_path}")
-                    return
+                    self.logger.warning(
+                        f"Symbolic link loop detected, skipping: "
+                        f"{current_path}"
+                    )
+                    return False
             except (OSError, RuntimeError) as e:
-                self.logger.warning(f"Failed to resolve symlink {current_path}: {e}")
-                return
-        
+                self.logger.warning(
+                    f"Failed to resolve symlink {current_path}: {e}"
+                )
+                return False
+        return True
+
+    def _process_directory_contents(self, current_path: Path, base_path: Path,
+                                    max_depth: int, current_depth: int):
+        """Process contents of a directory."""
         try:
             # Process current directory
             for item in current_path.iterdir():
                 if item.is_file():
-                    # Add file if it passes security validation
-                    if self._is_secure_file_path(str(item)):
-                        file_item = QListWidgetItem(str(item))
-                        self.selected_files_list.addItem(file_item)
-                    else:
-                        self.logger.debug(f"File failed security check: {item}")
+                    self._process_file_item(item)
                 elif item.is_dir():
                     # Recursively process subdirectory
                     self._add_folder_files_recursive(
                         item, base_path, max_depth, current_depth + 1
                     )
                         
-        except PermissionError:
-            self.logger.warning(f"Permission denied accessing: {current_path}")
         except OSError as e:
-            self.logger.warning(f"OS error accessing {current_path}: {e}")
+            if isinstance(e, PermissionError):
+                self.logger.warning(
+                    f"Permission denied accessing: {current_path}"
+                )
+            else:
+                self.logger.warning(f"OS error accessing {current_path}: {e}")
         except Exception as e:
-            self.logger.error(f"Unexpected error processing {current_path}: {e}")
+            self.logger.error(
+                f"Unexpected error processing {current_path}: {e}"
+            )
+
+    def _process_file_item(self, item: Path):
+        """Process a single file item."""
+        # Add file if it passes security validation
+        if self._is_secure_file_path(str(item)):
+            file_item = QListWidgetItem(str(item))
+            self.selected_files_list.addItem(file_item)
+        else:
+            self.logger.debug(f"File failed security check: {item}")
     
     def _is_symlink_loop(self, resolved_path: Path, base_path: Path) -> bool:
         """
-        Check if a resolved symlink creates a loop by pointing back to an ancestor.
+        Check if a resolved symlink creates a loop by pointing back to
+        an ancestor.
         
         Args:
             resolved_path: The resolved path of the symlink
@@ -1355,14 +1472,16 @@ class NetworkTransferGUI(StandardWindow):
             True if a loop is detected
         """
         try:
-            # Check if resolved path is the same as or an ancestor of base path
-            return resolved_path.is_relative_to(base_path) or base_path.is_relative_to(resolved_path)
+            # Check if resolved path is same as or ancestor of base path
+            return (resolved_path.is_relative_to(base_path) or
+                    base_path.is_relative_to(resolved_path))
         except (ValueError, AttributeError):
             # Fallback for older Python versions or invalid paths
             try:
                 resolved_str = str(resolved_path.absolute())
                 base_str = str(base_path.absolute())
-                return resolved_str.startswith(base_str) or base_str.startswith(resolved_str)
+                return (resolved_str.startswith(base_str) or
+                        base_str.startswith(resolved_str))
             except Exception:
                 return False
     
@@ -1380,7 +1499,9 @@ class NetworkTransferGUI(StandardWindow):
     def transfer_settings(self):
         """Transfer application settings and preferences."""
         if not self.target_host.text().strip():
-            QMessageBox.warning(self, "Network Transfer", "Please enter target host.")
+            QMessageBox.warning(
+                self, NETWORK_TRANSFER_TITLE, "Please enter target host."
+            )
             return
             
         try:
@@ -1427,46 +1548,69 @@ class NetworkTransferGUI(StandardWindow):
         # Define allowed config file patterns (whitelist approach)
         allowed_patterns = [
             "rfu_*.json",
-            "settings.json", 
+            "settings.json",
             "preferences.json",
             "config.json"
         ]
         
         # Look for common backup config locations (only safe directories)
-        config_paths = [
+        config_paths = self._get_safe_config_paths()
+        
+        for config_path in config_paths:
+            if self._should_process_config_path(config_path):
+                self._collect_configs_from_path(
+                    config_path, allowed_patterns, backup_configs
+                )
+                        
+        return backup_configs
+
+    def _get_safe_config_paths(self) -> List[Path]:
+        """Get list of safe configuration paths to search."""
+        return [
             Path.cwd() / "config",
             Path.cwd() / "backup",
             # Only include user-specific directories, not system-wide
             Path.home() / ".rfu"
         ]
-        
-        for config_path in config_paths:
-            if not config_path.exists():
-                continue
-                
-            # Verify path is safe to access
-            if not self._is_secure_file_path(str(config_path)):
-                continue
-                
-            try:
-                for pattern in allowed_patterns:
-                    for config_file in config_path.glob(pattern):
-                        # Additional security check for each file
-                        if not self._is_safe_config_file(config_file):
-                            continue
-                            
-                        try:
-                            with open(config_file, 'r') as f:
-                                content = json.load(f)
-                                # Sanitize content before adding
-                                sanitized_content = self._sanitize_config_content(content)
-                                backup_configs[config_file.name] = sanitized_content
-                        except (json.JSONDecodeError, PermissionError):
-                            continue
-            except (OSError, PermissionError):
-                continue
-                        
-        return backup_configs
+
+    def _should_process_config_path(self, config_path: Path) -> bool:
+        """Check if a config path should be processed."""
+        if not config_path.exists():
+            return False
+            
+        # Verify path is safe to access
+        if not self._is_secure_file_path(str(config_path)):
+            return False
+            
+        return True
+
+    def _collect_configs_from_path(self, config_path: Path,
+                                   allowed_patterns: List[str],
+                                   backup_configs: Dict):
+        """Collect configuration files from a specific path."""
+        try:
+            for pattern in allowed_patterns:
+                for config_file in config_path.glob(pattern):
+                    self._process_config_file(config_file, backup_configs)
+        except OSError:
+            # Continue processing other paths if one fails
+            pass
+
+    def _process_config_file(self, config_file: Path, backup_configs: Dict):
+        """Process a single configuration file."""
+        # Additional security check for each file
+        if not self._is_safe_config_file(config_file):
+            return
+            
+        try:
+            with open(config_file, 'r', encoding='utf-8') as f:
+                content = json.load(f)
+                # Sanitize content before adding
+                sanitized_content = self._sanitize_config_content(content)
+                backup_configs[config_file.name] = sanitized_content
+        except (json.JSONDecodeError, PermissionError):
+            # Skip files that can't be read or parsed
+            pass
     
     def _is_safe_config_file(self, file_path: Path) -> bool:
         """Check if a config file is safe to read."""
@@ -1480,7 +1624,7 @@ class NetworkTransferGUI(StandardWindow):
                 return False
                 
             return True
-        except (OSError, PermissionError):
+        except OSError:
             return False
     
     def _sanitize_config_content(self, content: Dict) -> Dict:
@@ -1515,7 +1659,9 @@ class NetworkTransferGUI(StandardWindow):
     def send_selected_files(self):
         """Send selected files to target."""
         if not self.target_host.text().strip():
-            QMessageBox.warning(self, "Network Transfer", "Please enter target host.")
+            QMessageBox.warning(
+                self, NETWORK_TRANSFER_TITLE, "Please enter target host."
+            )
             return
             
         files = []
@@ -1537,7 +1683,9 @@ class NetworkTransferGUI(StandardWindow):
         """Transfer selected file collection."""
         collection_name = self.collection_combo.currentText()
         if not collection_name or collection_name not in self.file_collections:
-            QMessageBox.warning(self, "Network Transfer", "Please select a collection.")
+            QMessageBox.warning(
+                self, NETWORK_TRANSFER_TITLE, SELECT_COLLECTION_MSG
+            )
             return
             
         collection = self.file_collections[collection_name]
@@ -1694,7 +1842,7 @@ class NetworkTransferGUI(StandardWindow):
         """Add files to current collection."""
         current_item = self.collections_list.currentItem()
         if not current_item:
-            QMessageBox.warning(self, "Collection", "Please select a collection.")
+            QMessageBox.warning(self, "Collection", SELECT_COLLECTION_MSG)
             return
             
         files, _ = QFileDialog.getOpenFileNames(
@@ -1735,7 +1883,7 @@ class NetworkTransferGUI(StandardWindow):
         """Edit selected collection."""
         current_item = self.collections_list.currentItem()
         if not current_item:
-            QMessageBox.warning(self, "Collection", "Please select a collection.")
+            QMessageBox.warning(self, "Collection", SELECT_COLLECTION_MSG)
             return
         
         # For now, just allow adding/removing files
@@ -1748,7 +1896,7 @@ class NetworkTransferGUI(StandardWindow):
         """Delete selected collection."""
         current_item = self.collections_list.currentItem()
         if not current_item:
-            QMessageBox.warning(self, "Collection", "Please select a collection.")
+            QMessageBox.warning(self, "Collection", SELECT_COLLECTION_MSG)
             return
             
         collection_name = current_item.text()
@@ -1759,15 +1907,14 @@ class NetworkTransferGUI(StandardWindow):
             QMessageBox.Yes | QMessageBox.No
         )
         
-        if reply == QMessageBox.Yes:
-            if self.db_manager:
-                try:
-                    self.db_manager.execute_query(
-                        "DELETE FROM file_collections WHERE name = ?",
-                        (collection_name,)
-                    )
-                except Exception as e:
-                    print(f"Failed to delete collection: {e}")
+        if reply == QMessageBox.Yes and self.db_manager:
+            try:
+                self.db_manager.execute_query(
+                    "DELETE FROM file_collections WHERE name = ?",
+                    (collection_name,)
+                )
+            except Exception as e:
+                print(f"Failed to delete collection: {e}")
             
             del self.file_collections[collection_name]
             self.load_collections()
@@ -1811,13 +1958,12 @@ class NetworkTransferGUI(StandardWindow):
             QMessageBox.Yes | QMessageBox.No
         )
         
-        if reply == QMessageBox.Yes:
-            if self.db_manager:
-                try:
-                    self.db_manager.execute_query("DELETE FROM transfer_history")
-                    self.load_transfer_history()
-                except Exception as e:
-                    print(f"Failed to clear history: {e}")
+        if reply == QMessageBox.Yes and self.db_manager:
+            try:
+                self.db_manager.execute_query("DELETE FROM transfer_history")
+                self.load_transfer_history()
+            except Exception as e:
+                print(f"Failed to clear history: {e}")
     
     def log_transfer_attempt(self, transfer_data: Dict, host: str, port: int):
         """Log transfer attempt to database."""

@@ -12,7 +12,7 @@ import uuid
 import importlib
 import pkgutil
 from datetime import datetime
-from typing import Optional, List, Dict, Any
+from typing import Optional, List, Dict, Any, Set
 from pathlib import Path
 
 from .migration_base import (
@@ -432,6 +432,104 @@ class DatabaseMigrationManager:
                 return "000"  # No migrations applied
         except Exception:
             return "000"
+
+    def _validate_target_version(self, target_version: Optional[str]) -> Optional[str]:
+        """Validate and clean target version parameter."""
+        if target_version is not None:
+            if not isinstance(target_version, str) or not target_version.strip():
+                raise MigrationValidationError("Target version must be a non-empty string")
+            return target_version.strip()
+        return None
+
+    def _get_applied_migrations_set(self) -> Set[str]:
+        """Get set of applied migration versions."""
+        try:
+            applied_migrations = self.db_manager.execute_query("""
+                SELECT version FROM migration_history 
+                WHERE status = 'applied' 
+                ORDER BY version
+            """)
+            applied_versions = {m['version'] for m in applied_migrations}
+            self.logger.debug(f"Found {len(applied_versions)} applied migrations")
+            return applied_versions
+        except Exception as e:
+            self.logger.error(f"Failed to query applied migrations: {e}")
+            raise MigrationError(f"Unable to retrieve migration history: {e}")
+
+    def _get_available_migrations_dict(self) -> Dict[str, type]:
+        """Get available migration classes."""
+        try:
+            available_migrations = self._discover_migrations()
+            if not available_migrations:
+                self.logger.warning("No available migrations found")
+                return {}
+            self.logger.debug(f"Found {len(available_migrations)} available migrations")
+            return available_migrations
+        except Exception as e:
+            self.logger.error(f"Failed to discover migrations: {e}")
+            raise MigrationError(f"Unable to discover available migrations: {e}")
+
+    def _filter_pending_migrations_list(self, available: Dict[str, type], 
+                                      applied: Set[str], target: Optional[str]) -> List[str]:
+        """Filter available migrations to get pending ones."""
+        # Validate target version exists if specified
+        if target and target not in available:
+            available_versions = sorted(available.keys())
+            raise MigrationValidationError(
+                f"Target version '{target}' not found. "
+                f"Available versions: {available_versions}"
+            )
+        
+        # Get current version for validation
+        try:
+            current_version = self._get_current_version()
+            self.logger.debug(f"Current database version: {current_version}")
+        except Exception as e:
+            self.logger.warning(f"Failed to get current version: {e}")
+            current_version = "000"
+        
+        # Find pending migrations
+        pending = []
+        all_versions = sorted(available.keys())
+        
+        for version in all_versions:
+            # Skip if already applied
+            if version in applied:
+                self.logger.debug(f"Skipping applied migration: {version}")
+                continue
+            
+            # Skip if version is older than current
+            if version < current_version:
+                self.logger.warning(
+                    f"Migration {version} is older than current version {current_version}, skipping"
+                )
+                continue
+            
+            # Add to pending list
+            pending.append(version)
+            self.logger.debug(f"Added pending migration: {version}")
+            
+            # Stop if we've reached the target version
+            if target and version == target:
+                self.logger.debug(f"Reached target version {target}, stopping")
+                break
+        
+        return pending
+
+    def _validate_pending_chain_integrity(self, pending: List[str], available: Dict[str, type]) -> None:
+        """Validate migration chain integrity."""
+        if pending:
+            try:
+                self._validate_migration_chain(pending, available)
+            except Exception as e:
+                raise MigrationValidationError(f"Migration chain validation failed: {e}")
+
+    def _log_pending_migration_results(self, pending: List[str]) -> None:
+        """Log results of pending migration discovery."""
+        if pending:
+            self.logger.info(f"Found {len(pending)} pending migrations: {pending}")
+        else:
+            self.logger.info("No pending migrations found")
     
     def _get_pending_migrations(self, target_version: Optional[str] = None) -> List[str]:
         """
@@ -442,99 +540,28 @@ class DatabaseMigrationManager:
             
         Returns:
             List of migration versions to execute in order
-            
-        Raises:
-            MigrationError: If target version is invalid or unavailable
-            MigrationValidationError: If migration dependencies are invalid
         """
         try:
             self.logger.debug(f"Getting pending migrations (target: {target_version})")
             
-            # Validate target version if specified
-            if target_version is not None:
-                if not isinstance(target_version, str) or not target_version.strip():
-                    raise MigrationValidationError("Target version must be a non-empty string")
-                target_version = target_version.strip()
+            # Validate and clean target version
+            target_version = self._validate_target_version(target_version)
             
-            # Get applied migrations with better error handling
-            try:
-                applied_migrations = self.db_manager.execute_query("""
-                    SELECT version, applied_at, status FROM migration_history 
-                    WHERE status = 'applied' 
-                    ORDER BY version
-                """)
-                applied_versions = {m['version'] for m in applied_migrations}
-                self.logger.debug(f"Found {len(applied_versions)} applied migrations")
-            except Exception as e:
-                self.logger.error(f"Failed to query applied migrations: {e}")
-                raise MigrationError(f"Unable to retrieve migration history: {e}")
+            # Get applied and available migrations
+            applied_versions = self._get_applied_migrations_set()
+            available_migrations = self._get_available_migrations_dict()
             
-            # Discover available migrations with enhanced validation
-            try:
-                available_migrations = self._discover_migrations()
-                if not available_migrations:
-                    self.logger.warning("No available migrations found")
-                    return []
-                self.logger.debug(f"Found {len(available_migrations)} available migrations")
-            except Exception as e:
-                self.logger.error(f"Failed to discover migrations: {e}")
-                raise MigrationError(f"Unable to discover available migrations: {e}")
+            # Filter pending migrations
+            pending = self._filter_pending_migrations_list(
+                available_migrations, applied_versions, target_version
+            )
             
-            # Validate target version exists if specified
-            if target_version and target_version not in available_migrations:
-                available_versions = sorted(available_migrations.keys())
-                raise MigrationValidationError(
-                    f"Target version '{target_version}' not found. "
-                    f"Available versions: {available_versions}"
-                )
-            
-            # Get current database version for validation
-            try:
-                current_version = self._get_current_version()
-                self.logger.debug(f"Current database version: {current_version}")
-            except Exception as e:
-                self.logger.warning(f"Failed to get current version: {e}")
-                current_version = "000"
-            
-            # Find pending migrations with enhanced logic
-            pending = []
-            all_versions = sorted(available_migrations.keys())
-            
-            for version in all_versions:
-                # Skip if already applied
-                if version in applied_versions:
-                    self.logger.debug(f"Skipping applied migration: {version}")
-                    continue
-                
-                # Skip if version is older than current (shouldn't happen normally)
-                if version < current_version:
-                    self.logger.warning(
-                        f"Migration {version} is older than current version {current_version}, skipping"
-                    )
-                    continue
-                
-                # Add to pending list
-                pending.append(version)
-                self.logger.debug(f"Added pending migration: {version}")
-                
-                # Stop if we've reached the target version
-                if target_version and version == target_version:
-                    self.logger.debug(f"Reached target version {target_version}, stopping")
-                    break
-            
-            # Validate migration chain integrity
+            # Validate migration chain
             if pending:
-                try:
-                    self._validate_migration_chain(pending, available_migrations)
-                except Exception as e:
-                    raise MigrationValidationError(f"Migration chain validation failed: {e}")
+                self._validate_pending_chain_integrity(pending, available_migrations)
             
-            # Log results
-            if pending:
-                self.logger.info(f"Found {len(pending)} pending migrations: {pending}")
-            else:
-                self.logger.info("No pending migrations found")
-            
+            # Log results and return
+            self._log_pending_migration_results(pending)
             return pending
             
         except (MigrationError, MigrationValidationError):
@@ -604,58 +631,87 @@ class DatabaseMigrationManager:
         self.logger.debug(f"Validating migration chain: {pending_migrations}")
         
         try:
-            # Check that all migrations in chain exist
-            for version in pending_migrations:
-                if version not in available_migrations:
-                    raise MigrationValidationError(
-                        f"Migration {version} not found in available migrations"
-                    )
-            
-            # Validate migration metadata and dependencies
-            for version in pending_migrations:
-                try:
-                    migration_class = available_migrations[version]
-                    migration_instance = migration_class()
-                    metadata = migration_instance.metadata
-                    
-                    # Validate version format (basic check)
-                    if not metadata.version or not isinstance(metadata.version, str):
-                        raise MigrationValidationError(
-                            f"Migration {version} has invalid version metadata"
-                        )
-                    
-                    # Check if migration has dependencies
-                    if hasattr(metadata, 'dependencies') and metadata.dependencies:
-                        for dep_version in metadata.dependencies:
-                            if dep_version not in available_migrations:
-                                raise MigrationValidationError(
-                                    f"Migration {version} depends on unavailable migration {dep_version}"
-                                )
-                    
-                    self.logger.debug(f"Validated migration {version}: {metadata.description}")
-                    
-                except Exception as e:
-                    raise MigrationValidationError(
-                        f"Failed to validate migration {version}: {e}"
-                    )
-            
-            # Check for version conflicts or gaps
-            sorted_versions = sorted(pending_migrations)
-            for i, version in enumerate(sorted_versions):
-                # Basic version ordering check
-                if i > 0:
-                    prev_version = sorted_versions[i-1]
-                    if version <= prev_version:
-                        raise MigrationValidationError(
-                            f"Migration version ordering error: {prev_version} -> {version}"
-                        )
-            
-            self.logger.debug("Migration chain validation completed successfully")
+            self._check_migrations_exist(
+                pending_migrations, available_migrations
+            )
+            self._validate_migration_metadata(
+                pending_migrations, available_migrations
+            )
+            self._validate_version_ordering(pending_migrations)
+            self.logger.debug(
+                "Migration chain validation completed successfully"
+            )
             
         except MigrationValidationError:
             raise
         except Exception as e:
-            raise MigrationValidationError(f"Unexpected error during chain validation: {e}")
+            raise MigrationValidationError(
+                f"Unexpected error during chain validation: {e}"
+            )
+
+    def _check_migrations_exist(self, pending_migrations: List[str],
+                                available_migrations: Dict[str, type]) -> None:
+        """Check that all migrations in chain exist."""
+        for version in pending_migrations:
+            if version not in available_migrations:
+                raise MigrationValidationError(
+                    f"Migration {version} not found in available migrations"
+                )
+
+    def _validate_migration_metadata(self, pending_migrations: List[str],
+                                     available_migrations: Dict[str, type]
+                                     ) -> None:
+        """Validate migration metadata and dependencies."""
+        for version in pending_migrations:
+            try:
+                migration_class = available_migrations[version]
+                migration_instance = migration_class()
+                metadata = migration_instance.metadata
+                
+                self._validate_metadata_format(version, metadata)
+                self._validate_dependencies(
+                    version, metadata, available_migrations
+                )
+                
+                self.logger.debug(
+                    f"Validated migration {version}: {metadata.description}"
+                )
+                
+            except Exception as e:
+                raise MigrationValidationError(
+                    f"Failed to validate migration {version}: {e}"
+                )
+
+    def _validate_metadata_format(self, version: str, metadata) -> None:
+        """Validate the format of migration metadata."""
+        if not metadata.version or not isinstance(metadata.version, str):
+            raise MigrationValidationError(
+                f"Migration {version} has invalid version metadata"
+            )
+
+    def _validate_dependencies(self, version: str, metadata,
+                               available_migrations: Dict[str, type]) -> None:
+        """Validate migration dependencies."""
+        if hasattr(metadata, 'dependencies') and metadata.dependencies:
+            for dep_version in metadata.dependencies:
+                if dep_version not in available_migrations:
+                    raise MigrationValidationError(
+                        f"Migration {version} depends on unavailable "
+                        f"migration {dep_version}"
+                    )
+
+    def _validate_version_ordering(self, pending_migrations: List[str]
+                                   ) -> None:
+        """Check for version conflicts or gaps."""
+        sorted_versions = sorted(pending_migrations)
+        for i, version in enumerate(sorted_versions):
+            if i > 0:
+                prev_version = sorted_versions[i-1]
+                if version <= prev_version:
+                    raise MigrationValidationError(
+                        f"Migration version ordering error: "
+                        f"{prev_version} -> {version}"
+                    )
 
     def _execute_single_migration(self, migration_version: str):
         """
@@ -671,7 +727,9 @@ class DatabaseMigrationManager:
             available_migrations = self._discover_migrations()
             
             if migration_version not in available_migrations:
-                raise MigrationError(f"Migration {migration_version} not found")
+                raise MigrationError(
+                    f"Migration {migration_version} not found"
+                )
             
             # Get migration class and create instance
             migration_class = available_migrations[migration_version]
@@ -682,8 +740,8 @@ class DatabaseMigrationManager:
                 precondition_result = migration.validate_preconditions(conn)
                 if not precondition_result.success:
                     raise MigrationValidationError(
-                        f"Preconditions failed for migration {migration_version}: "
-                        f"{precondition_result.message}"
+                        f"Preconditions failed for migration "
+                        f"{migration_version}: {precondition_result.message}"
                     )
                 
                 # Create backup point
@@ -699,8 +757,8 @@ class DatabaseMigrationManager:
                 postcondition_result = migration.validate_postconditions(conn)
                 if not postcondition_result.success:
                     raise MigrationValidationError(
-                        f"Postconditions failed for migration {migration_version}: "
-                        f"{postcondition_result.message}"
+                        f"Postconditions failed for migration "
+                        f"{migration_version}: {postcondition_result.message}"
                     )
                 
                 # Calculate execution time
@@ -713,8 +771,8 @@ class DatabaseMigrationManager:
                 checksum = migration.get_checksum()
                 
                 conn.execute("""
-                    INSERT INTO migration_history 
-                    (version, description, execution_time_ms, checksum, 
+                    INSERT INTO migration_history
+                    (version, description, execution_time_ms, checksum,
                      dependencies, breaking_changes, backup_id)
                     VALUES (?, ?, ?, ?, ?, ?, ?)
                 """, (

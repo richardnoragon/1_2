@@ -148,6 +148,9 @@ class SoftwareMaintenanceHub(StandardWindow):
         # Setup menu callbacks for File menu integration
         self._setup_menu_callbacks()
         
+        # Ensure menu bar exists
+        self.ensure_menu_bar()
+        
         # Status update timer
         self.status_timer = QTimer()
         self.status_timer.timeout.connect(self.update_status_display)

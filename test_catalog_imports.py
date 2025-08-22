@@ -17,7 +17,7 @@ def test_catalog_imports():
     
     try:
         # Test simple catalog
-        from src.rfu.tools.file_management.catalog import CatalogWindow
+        from src.utilities.file_operations.catalog.catalog import CatalogWindow
         print("✓ Simple catalog import successful")
         simple_ok = True
     except ImportError as e:
@@ -26,7 +26,7 @@ def test_catalog_imports():
     
     try:
         # Test advanced catalog
-        from src.rfu.tools.file_management.advanced_catalog.advanced_catalog_window import AdvancedCatalogWindow
+        from src.utilities.file_management.advanced_catalog.advanced_catalog_window import AdvancedCatalogWindow
         print("✓ Advanced catalog import successful")
         advanced_ok = True
     except ImportError as e:

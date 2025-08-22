@@ -37,7 +37,7 @@ class SecureDeleteGUI(StandardWindow):
         if STANDARD_WINDOW_AVAILABLE:
             super().__init__(
                 title="Secure Delete - Richard's File Utilities",
-                window_type="security"
+                window_type="utility"
             )
         else:
             super().__init__()

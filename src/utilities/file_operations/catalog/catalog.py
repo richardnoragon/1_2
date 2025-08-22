@@ -11,20 +11,34 @@ from datetime import datetime
 from pathlib import Path
 from typing import List, Optional, TextIO, Tuple
 
-from PyQt5.QtGui import QStandardItemModel, QStandardItem, QIcon
-from PyQt5.QtWidgets import QApplication, QMessageBox
-from PyQt5 import uic
-
-# Add parent directories to path for imports
+# Add parent directories to path for imports first
 current_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.dirname(os.path.dirname(os.path.dirname(
     os.path.dirname(current_dir))))
-sys.path.append(project_root)
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
 
-from src.rfu.gui.common.base_window import BaseWindow
-from src.rfu.gui.common.dialogs import (
-    get_existing_directory, show_error_dialog
-)
+try:
+    from PyQt5.QtGui import QIcon
+    from PyQt5.QtWidgets import QApplication, QMessageBox
+    from PyQt5 import uic
+except ImportError:
+    # Fallback if PyQt5 not available
+    QIcon = None
+    QApplication = None
+    QMessageBox = None
+    uic = None
+
+try:
+    from src.rfu.gui.common.base_window import BaseWindow
+    from src.rfu.gui.common.dialogs import (
+        get_existing_directory, show_error_dialog
+    )
+except ImportError:
+    # Fallback for testing or when modules not available
+    BaseWindow = object
+    get_existing_directory = None
+    show_error_dialog = None
 
 
 class CatalogWindow(BaseWindow):
@@ -42,7 +56,6 @@ class CatalogWindow(BaseWindow):
     Attributes:
         _current_dir (str): Path to currently selected directory
         _last_catalog (Optional[str]): Path to most recently generated catalog
-        _list_model (QStandardItemModel): Model for main file list view
     """
     # Default paths
     _ICON_PATH = os.path.join(os.path.dirname(__file__), "icons")
@@ -62,8 +75,8 @@ class CatalogWindow(BaseWindow):
         - Icons and initial UI state
         """
         super().__init__()
-        self._init_models()
         self._setup_ui()  # Load UI before connecting signals
+        self._init_models()  # Initialize models after UI is loaded
         self._setup_icons()
         self._connect_signals()  # Connect signals after UI is loaded
         self._set_initial_state()
@@ -73,8 +86,6 @@ class CatalogWindow(BaseWindow):
         """Initialize data models and internal state."""
         self._current_dir = ""
         self._last_catalog: Optional[str] = None
-        self._list_model = QStandardItemModel()
-        self.listListView.setModel(self._list_model)
     
     def _setup_ui(self) -> None:
         """Initialize and load the UI file.
@@ -97,7 +108,7 @@ class CatalogWindow(BaseWindow):
             show_error_dialog(str(e), "UI Error", self)
             sys.exit(1)
             
-        except Exception as e:
+        except (OSError, RuntimeError, ImportError) as e:
             show_error_dialog(f"Failed to initialize UI: {e}", "Error", self)
             sys.exit(1)
     
@@ -209,20 +220,10 @@ class CatalogWindow(BaseWindow):
                     
         return files
     
-    def _add_file_to_list(self, file_info: Tuple[str, str]) -> None:
-        """Add a file entry to the list model.
-        
-        Args:
-            file_info: Tuple of (display_path, full_path)
-        """
-        display_path, _ = file_info
-        item = QStandardItem(display_path)
-        self._list_model.appendRow(item)
-    
     def _check_duplicate(self, file_path: str) -> bool:
-        """Check if a file is a duplicate by comparing content with other files.
+        """Check if a file is a duplicate by comparing content with others.
         
-        Performs byte-by-byte comparison with other files in the directory tree.
+        Performs byte-by-byte comparison with other files in the tree.
         Skip unreadable files.
         
         Args:
@@ -242,8 +243,8 @@ class CatalogWindow(BaseWindow):
             # Check against all other files
             for other_path in base_path.rglob('*'):
                 if (other_path.is_file() and
-                    other_path != file_path and
-                    other_path.stat().st_size == len(content)):
+                        other_path != file_path and
+                        other_path.stat().st_size == len(content)):
                     try:
                         if other_path.read_bytes() == content:
                             return True
@@ -302,7 +303,7 @@ class CatalogWindow(BaseWindow):
             catalog_path = self._write_catalog_file()
             self._update_ui_after_catalog(catalog_path)
             
-        except Exception as e:
+        except (OSError, ValueError) as e:
             show_error_dialog(
                 f"Failed to create catalog: {str(e)}",
                 title="Error",
@@ -405,7 +406,7 @@ class CatalogWindow(BaseWindow):
                 </li>
             """)
             
-        except Exception as e:
+        except (OSError, UnicodeError) as e:
             print(f"Error processing {filename}: {e}")
 
     def _get_file_info_parts(self, stats: 'os.stat_result') -> List[str]:

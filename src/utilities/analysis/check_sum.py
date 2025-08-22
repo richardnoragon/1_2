@@ -40,13 +40,22 @@ class ChecksumGUI(StandardWindow):
         self.init_ui()
         if STANDARD_WINDOW_AVAILABLE:
             self._setup_menu_callbacks()
+            # Ensure menu bar exists
+            self.ensure_menu_bar()
     
     def _setup_menu_callbacks(self):
         """Setup tool-specific menu callbacks."""
         if hasattr(self, 'menu_manager'):
             # Register tool-specific callbacks
-            self.menu_manager.register_callback('new_checksum', self.clear_results)
-            self.menu_manager.register_callback('help_checksum', self.show_help)
+            self.menu_manager.register_callback('new_checksum',
+                                                self.clear_results)
+            # Override the standard help with our tool-specific help
+            self.menu_manager.register_callback('show_user_guide',
+                                                self.show_help)
+            self.menu_manager.register_callback('show_preferences',
+                                                self.show_preferences)
+            self.menu_manager.register_callback('refresh',
+                                                self.refresh_view)
             
     def clear_results(self):
         """Clear all checksum calculation results."""
@@ -102,13 +111,13 @@ class ChecksumGUI(StandardWindow):
         
     def show_preferences(self):
         """Show Checksum Calculator preferences."""
-        QMessageBox.information(self, "Checksum Calculator Preferences", 
-                               "Checksum Calculator preferences:\n\n"
-                               "• Default checksum algorithm\n"
-                               "• Output format options\n"
-                               "• Progress display settings\n"
-                               "• Auto-save results location\n\n"
-                               "Advanced preferences coming soon!")
+        QMessageBox.information(self, "Checksum Calculator Preferences",
+                                "Checksum Calculator preferences:\n\n"
+                                "• Default checksum algorithm\n"
+                                "• Output format options\n"
+                                "• Progress display settings\n"
+                                "• Auto-save results location\n\n"
+                                "Advanced preferences coming soon!")
                                
     def refresh_view(self):
         """Refresh/clear the current calculation results."""

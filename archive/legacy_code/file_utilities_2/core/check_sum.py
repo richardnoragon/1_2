@@ -2,7 +2,7 @@ import hashlib
 import os
 from PyQt5.QtCore import QObject, pyqtSignal
 
-from core.error_handler import error_handler
+from src.core.error_handler import error_handler
 
 
 VALID_ALGORITHMS = ['md5', 'sha1', 'sha256', 'sha512']

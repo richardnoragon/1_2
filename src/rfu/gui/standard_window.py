@@ -102,6 +102,22 @@ class StandardWindow(QMainWindow):
         self.main_layout = ThemeManager.create_standard_layout(self.central_widget)
         self.central_widget.setLayout(self.main_layout)
     
+    def ensure_menu_bar(self):
+        """Ensure menu bar exists - fallback method for tools."""
+        if not self.menuBar() or not self.menuBar().actions():
+            # Menu bar doesn't exist or is empty, create it
+            if not hasattr(self, 'menu_manager'):
+                self.menu_manager = MenuManager(self)
+            self.menu_manager.create_standard_menubar(self.window_type)
+            
+            # Register standard callbacks
+            self.menu_manager.register_callback('show_preferences', 
+                                               self.show_preferences)
+            self.menu_manager.register_callback('show_options', 
+                                               self.show_options)
+            self.menu_manager.register_callback('refresh', 
+                                               self.refresh_view)
+    
     def _create_status_bar(self):
         """Create standard status bar."""
         self.status_bar = QStatusBar()

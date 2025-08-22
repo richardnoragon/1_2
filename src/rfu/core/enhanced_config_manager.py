@@ -125,7 +125,16 @@ class EnhancedConfigManager:
     
     def _ensure_default_sections(self):
         """Ensure default configuration sections exist."""
-        defaults = {
+        defaults = self._get_default_config()
+        
+        if self.use_database:
+            self._store_defaults_in_database(defaults)
+        else:
+            self._store_defaults_in_file(defaults)
+
+    def _get_default_config(self):
+        """Get the default configuration structure."""
+        return {
             'general': {
                 'logging_level': 'INFO',
                 'enable_debug_logging': False,
@@ -159,81 +168,113 @@ class EnhancedConfigManager:
                 'track_file_history': True
             }
         }
-        
-        if self.use_database:
-            # Store defaults in database
-            for section, section_defaults in defaults.items():
-                for key, default_value in section_defaults.items():
-                    existing = self.get_setting(section, key)
-                    if existing is None:
-                        self.set_setting(section, key, default_value)
-        else:
-            # Store defaults in file
-            for section, section_defaults in defaults.items():
-                if section not in self.config:
-                    self.config[section] = {}
-                
-                for key, default_value in section_defaults.items():
-                    if key not in self.config[section]:
-                        self.config[section][key] = default_value
+
+    def _store_defaults_in_database(self, defaults):
+        """Store default settings in database."""
+        for section, section_defaults in defaults.items():
+            for key, default_value in section_defaults.items():
+                existing = self.get_setting(section, key)
+                if existing is None:
+                    self.set_setting(section, key, default_value)
+
+    def _store_defaults_in_file(self, defaults):
+        """Store default settings in file."""
+        for section, section_defaults in defaults.items():
+            if section not in self.config:
+                self.config[section] = {}
+            
+            for key, default_value in section_defaults.items():
+                if key not in self.config[section]:
+                    self.config[section][key] = default_value
     
     def _migrate_from_file_to_database(self):
         """Migrate configuration from file to database with proper validation."""
         try:
-            if not self.config_file.exists():
-                self.logger.warning("No config file found for migration")
+            if not self._validate_migration_prerequisites():
                 return
                 
-            # Create backup before migration
-            backup_path = self.config_file.with_suffix('.json.pre_migration_backup')
-            shutil.copy2(self.config_file, backup_path)
-            self.logger.info(f"Created migration backup: {backup_path}")
-            
-            # Load and validate file config
-            with open(self.config_file, 'r', encoding='utf-8') as f:
-                file_config = json.load(f)
-            
-            if not isinstance(file_config, dict):
-                raise ValueError("Invalid config file format")
-            
-            # Migrate each setting to database
-            migration_count = 0
-            for section, settings in file_config.items():
-                if isinstance(settings, dict):
-                    for key, value in settings.items():
-                        try:
-                            self._store_setting_in_database(section, key, value)
-                            migration_count += 1
-                        except Exception as e:
-                            self.logger.error(f"Failed to migrate {section}.{key}: {e}")
-            
-            # Mark migration as complete
-            migration_query = """
-                INSERT OR REPLACE INTO app_settings 
-                (section, key, value, value_type) 
-                VALUES (?, ?, ?, ?)
-            """
-            self.db_manager.execute_update(
-                migration_query,
-                ('system', 'migrated_from_file', 'true', 'boolean')
-            )
-            
-            # Archive old config file
-            archive_path = self.config_file.with_suffix('.json.migrated')
-            self.config_file.rename(archive_path)
-            
-            self._migrated_to_db = True
-            self.logger.info(f"Successfully migrated {migration_count} settings "
-                           f"from file to database")
+            self._create_migration_backup()
+            file_config = self._load_file_config_for_migration()
+            migration_count = self._migrate_settings_to_database(file_config)
+            self._finalize_migration(migration_count)
             
         except Exception as e:
             self.logger.error(f"Failed to migrate configuration: {e}")
-            # Restore backup if migration failed
-            backup_path = self.config_file.with_suffix('.json.pre_migration_backup')
-            if backup_path.exists() and not self.config_file.exists():
-                backup_path.rename(self.config_file)
-                self.logger.info("Restored config file from backup")
+            self._restore_migration_backup()
             raise
+
+    def _validate_migration_prerequisites(self):
+        """Check if migration can proceed."""
+        if not self.config_file.exists():
+            self.logger.warning("No config file found for migration")
+            return False
+        return True
+
+    def _create_migration_backup(self):
+        """Create backup before migration."""
+        backup_path = self.config_file.with_suffix('.json.pre_migration_backup')
+        shutil.copy2(self.config_file, backup_path)
+        self.logger.info(f"Created migration backup: {backup_path}")
+        return backup_path
+
+    def _load_file_config_for_migration(self):
+        """Load and validate file config for migration."""
+        with open(self.config_file, 'r', encoding='utf-8') as f:
+            file_config = json.load(f)
+        
+        if not isinstance(file_config, dict):
+            raise ValueError("Invalid config file format")
+        
+        return file_config
+
+    def _migrate_settings_to_database(self, file_config):
+        """Migrate each setting to database."""
+        migration_count = 0
+        for section, settings in file_config.items():
+            if isinstance(settings, dict):
+                migration_count += self._migrate_section_settings(
+                    section, settings
+                )
+        return migration_count
+
+    def _migrate_section_settings(self, section, settings):
+        """Migrate settings for a specific section."""
+        count = 0
+        for key, value in settings.items():
+            try:
+                self._store_setting_in_database(section, key, value)
+                count += 1
+            except Exception as e:
+                self.logger.error(f"Failed to migrate {section}.{key}: {e}")
+        return count
+
+    def _finalize_migration(self, migration_count):
+        """Complete migration and cleanup."""
+        # Mark migration as complete
+        migration_query = """
+            INSERT OR REPLACE INTO app_settings 
+            (section, key, value, value_type) 
+            VALUES (?, ?, ?, ?)
+        """
+        self.db_manager.execute_update(
+            migration_query,
+            ('system', 'migrated_from_file', 'true', 'boolean')
+        )
+        
+        # Archive old config file
+        archive_path = self.config_file.with_suffix('.json.migrated')
+        self.config_file.rename(archive_path)
+        
+        self._migrated_to_db = True
+        self.logger.info(f"Successfully migrated {migration_count} settings "
+                        f"from file to database")
+
+    def _restore_migration_backup(self):
+        """Restore backup if migration failed."""
+        backup_path = self.config_file.with_suffix('.json.pre_migration_backup')
+        if backup_path.exists() and not self.config_file.exists():
+            backup_path.rename(self.config_file)
+            self.logger.info("Restored config file from backup")
     
     def _determine_value_type(self, value: Any) -> str:
         """Determine the type of a configuration value."""
@@ -268,7 +309,7 @@ class EnhancedConfigManager:
                 return json.loads(value)
             else:
                 return value
-        except (ValueError, json.JSONDecodeError):
+        except ValueError:
             return value
     
     def _store_setting_in_database(self, section: str, key: str, value: Any):
@@ -331,40 +372,54 @@ class EnhancedConfigManager:
             
         try:
             if self.use_database:
-                if key is None:
-                    # Get entire section
-                    query = "SELECT key, value, value_type FROM app_settings WHERE section = ?"
-                    results = self.db_manager.execute_query(query, (section,))
-                    section_data = {}
-                    for row in results:
-                        section_data[row['key']] = self._convert_value_from_storage(
-                            row['value'], row['value_type']
-                        )
-                    return section_data if section_data else default
-                else:
-                    # Get specific setting
-                    query = "SELECT value, value_type FROM app_settings WHERE section = ? AND key = ?"
-                    results = self.db_manager.execute_query(query, (section, key))
-                    if results:
-                        return self._convert_value_from_storage(
-                            results[0]['value'], results[0]['value_type']
-                        )
-                    return default
+                return self._get_setting_from_database(section, key, default)
             else:
-                # Fallback to file-based config
-                if section not in self.config:
-                    return default
-                
-                if key is None:
-                    return self.config[section]
-                
-                return self.config[section].get(key, default)
+                return self._get_setting_from_file(section, key, default)
                 
         except Exception as e:
             self.logger.error(f"Error getting setting {section}.{key}: {e}")
             return default
         finally:
             self._decrement_recursion_depth()
+
+    def _get_setting_from_database(self, section: str, key: Optional[str],
+                                   default: Any) -> Any:
+        """Get setting from database storage."""
+        if key is None:
+            return self._get_section_from_database(section, default)
+        else:
+            return self._get_key_from_database(section, key, default)
+
+    def _get_section_from_database(self, section: str, default: Any) -> Any:
+        """Get entire section from database."""
+        query = "SELECT key, value, value_type FROM app_settings WHERE section = ?"
+        results = self.db_manager.execute_query(query, (section,))
+        section_data = {}
+        for row in results:
+            section_data[row['key']] = self._convert_value_from_storage(
+                row['value'], row['value_type']
+            )
+        return section_data if section_data else default
+
+    def _get_key_from_database(self, section: str, key: str, default: Any) -> Any:
+        """Get specific key from database."""
+        query = "SELECT value, value_type FROM app_settings WHERE section = ? AND key = ?"
+        results = self.db_manager.execute_query(query, (section, key))
+        if results:
+            return self._convert_value_from_storage(
+                results[0]['value'], results[0]['value_type']
+            )
+        return default
+
+    def _get_setting_from_file(self, section: str, key: Optional[str], default: Any) -> Any:
+        """Get setting from file storage."""
+        if section not in self.config:
+            return default
+        
+        if key is None:
+            return self.config[section]
+        
+        return self.config[section].get(key, default)
     
     def set_setting(self, section: str, key: str, value: Any) -> bool:
         """Set a configuration setting with recursion protection."""

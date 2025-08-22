@@ -189,7 +189,7 @@ try:
             if STANDARD_WINDOW_AVAILABLE:
                 super().__init__(
                     title="Image Metadata Editor - Richard's File Utilities",
-                    window_type="metadata"
+                    window_type="utility"
                 )
             else:
                 super().__init__()
@@ -203,6 +203,8 @@ try:
             self.init_ui()
             if STANDARD_WINDOW_AVAILABLE:
                 self._setup_menu_callbacks()
+                # Ensure menu bar exists
+                self.ensure_menu_bar()
             
         def _setup_menu_callbacks(self):
             """Setup tool-specific menu callbacks."""

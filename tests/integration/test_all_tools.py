@@ -59,10 +59,10 @@ def main():
     # List of all tools from main.py
     tools = [
         # File Management Tools
-        ("File Finder", "src.rfu.tools.file_management.file_finder", "FileFinderGUI"),
-        ("Catalog", "src.rfu.tools.file_management.catalog", "CatalogWindow"),
-        ("Rename", "src.rfu.tools.file_management.rename", "RenameWindow"),
-        ("Organize", "src.rfu.tools.file_management.organize", "OrganizeWindow"),
+        ("File Finder", "src.utilities.file_management.file_finder", "FileFinderGUI"),
+        ("Catalog", "src.utilities.file_management.catalog", "CatalogWindow"),
+        ("Rename", "src.utilities.file_management.rename", "RenameWindow"),
+        ("Organize", "src.utilities.file_management.organize", "OrganizeWindow"),
         
         # Network Tools
         ("Network Connectivity", "src.utilities.network.network_connectivity", "NetworkConnectivityGUI"),

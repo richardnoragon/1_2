@@ -414,32 +414,32 @@ class EnhancedRFUMainWindow(QMainWindow):
     # File Management Tools
     def open_file_finder(self):
         """Open File Finder with enhanced menu integration."""
-        self.launch_tool("File Finder", "src.rfu.tools.file_management.file_finder", "FileFinderGUI")
+        self.launch_tool("File Finder", "src.utilities.file_management.file_finder", "FileFinderGUI")
         
     def open_catalog(self):
         """Open Catalog tool with enhanced menu integration."""
-        self.launch_tool("Catalog", "src.rfu.tools.file_management.catalog", "CatalogWindow")
+        self.launch_tool("Catalog", "src.utilities.file_management.catalog", "CatalogWindow")
         
     def open_rename(self):
         """Open Rename tool with enhanced menu integration."""
-        self.launch_tool("Rename", "src.rfu.tools.file_management.rename", "RenameWindow")
+        self.launch_tool("Rename", "src.utilities.file_management.rename", "RenameWindow")
         
     def open_organize(self):
         """Open Organize tool with enhanced menu integration."""
-        self.launch_tool("Organize", "src.rfu.tools.file_management.organize", "OrganizeWindow")
+        self.launch_tool("Organize", "src.utilities.file_management.organize", "OrganizeWindow")
         
     # File Operations
     def open_compress(self):
         """Open Compress/Decompress tool."""
-        self.launch_tool("Compress", "src.rfu.tools.file_operations.compress_decompress", "CompressDecompressApp")
+        self.launch_tool("Compress", "src.utilities.file_operations.compression", "CompressDecompressApp")
         
     def open_file_splitter(self):
         """Open File Splitter tool."""
-        self.launch_tool("File Splitter", "src.rfu.tools.file_operations.file_splitter_joiner", "FileSplitJoinGUI")
+        self.launch_tool("File Splitter", "src.utilities.file_operations.file_splitter", "FileSplitJoinGUI")
         
     def open_cmsd(self):
         """Open Copy/Move/Sync/Delete tool."""
-        self.launch_tool("CMSD", "src.rfu.tools.file_operations.cmsd", "CopyMoveSyncDeleteWindow")
+        self.launch_tool("CMSD", "src.utilities.file_operations.cmsd", "CopyMoveSyncDeleteWindow")
         
     def open_secure_delete(self):
         """Open Enhanced Secure Delete tool."""
@@ -467,7 +467,7 @@ class EnhancedRFUMainWindow(QMainWindow):
         
     def open_empty_folders(self):
         """Open Empty Folders tool."""
-        self.launch_tool("Empty Folders", "src.rfu.tools.analysis.empty_folders", "EmptyFoldersGUI")
+        self.launch_tool("Empty Folders", "src.utilities.analysis.empty_folders", "EmptyFoldersGUI")
         
     def open_checksum(self):
         """Open Checksum tool."""

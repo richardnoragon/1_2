@@ -118,7 +118,7 @@ The comprehensive menu bar integration across **all Richard's File Utilities app
 
 2. **File Finder with Integrated Menus**:
    ```bash
-   python -m src.rfu.tools.file_management.file_finder ✅ RUNNING
+   python -m src.utilities.file_management.file_finder ✅ RUNNING
    ```
 
 3. **Menu System Demo**:
@@ -214,9 +214,9 @@ The comprehensive menu bar integration for Richard's File Utilities has been **s
 python enhanced_main_with_comprehensive_menus.py
 
 # Or launch individual tools (all have integrated menus)
-python -m src.rfu.tools.file_management.file_finder
-python -m src.rfu.tools.file_management.catalog
-python -m src.rfu.tools.file_management.rename
+python -m src.utilities.file_management.file_finder
+python -m src.utilities.file_management.catalog
+python -m src.utilities.file_management.rename
 ```
 
 ### For Developers:

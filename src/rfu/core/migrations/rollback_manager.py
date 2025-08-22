@@ -73,12 +73,12 @@ class MigrationBackupManager:
             import shutil
             db_file = Path(self.db_manager.db_file)
             if not db_file.exists():
-                raise Exception("Database file does not exist")
+                raise FileNotFoundError("Database file does not exist")
             
             shutil.copy2(db_file, backup_path)
             
             if not backup_path.exists():
-                raise Exception("Backup file was not created successfully")
+                raise IOError("Backup file was not created successfully")
             
             # Calculate checksum
             checksum = self._calculate_file_checksum(backup_path)
@@ -126,7 +126,7 @@ class MigrationBackupManager:
             
             # Create the backup
             if not self.db_manager.backup_database(str(backup_path)):
-                raise Exception("Database backup failed")
+                raise RuntimeError("Database backup failed")
             
             # Calculate checksum and file size
             checksum = self._calculate_file_checksum(backup_path)
@@ -175,22 +175,22 @@ class MigrationBackupManager:
             """, (backup_id,))
             
             if not backup_info:
-                raise Exception(f"Backup {backup_id} not found")
+                raise ValueError(f"Backup {backup_id} not found")
             
             backup_path = Path(backup_info[0]['file_path'])
             expected_checksum = backup_info[0]['checksum']
             
             # Verify backup file exists and integrity
             if not backup_path.exists():
-                raise Exception(f"Backup file not found: {backup_path}")
+                raise FileNotFoundError(f"Backup file not found: {backup_path}")
             
             actual_checksum = self._calculate_file_checksum(backup_path)
             if actual_checksum != expected_checksum:
-                raise Exception(f"Backup file integrity check failed")
+                raise ValueError("Backup file integrity check failed")
             
             # Restore the database
             if not self.db_manager.restore_database(backup_path):
-                raise Exception("Database restore failed")
+                raise RuntimeError("Database restore failed")
             
             self.logger.info(f"Successfully restored from backup: {backup_id}")
             return True
@@ -270,9 +270,6 @@ class RollbackManager:
                     f"Rollback validation failed: {validation_result.message}",
                     target_version
                 )
-            
-            # Get rollback plan
-            rollback_plan = self.get_rollback_plan(target_version)
             
             # Create backup before rollback
             backup_id = self.backup_manager.create_rollback_backup(target_version)

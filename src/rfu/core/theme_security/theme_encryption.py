@@ -130,8 +130,8 @@ class SecureKeyManager:
             True if key rotation was successful
         """
         try:
-            # Generate new key
-            new_key = self._generate_and_store_key(user_id)
+            # Generate and store new key
+            self._generate_and_store_key(user_id)
             
             # Archive old key with timestamp
             old_key_name = f"theme_key_{user_id}_archived_{int(datetime.now().timestamp())}"
@@ -222,7 +222,7 @@ class ThemeDataEncryption:
             # Verify integrity
             actual_hash = self._generate_integrity_hash(decrypted_bytes, user_id)
             if not hmac.compare_digest(expected_hash, actual_hash):
-                raise Exception("Theme data integrity check failed")
+                raise ValueError("Theme data integrity check failed")
             
             # Parse JSON data
             json_data = decrypted_bytes.decode('utf-8')

@@ -21,7 +21,7 @@ def test_enhanced_tools():
     
     # Test Compress/Decompress Tool
     try:
-        from rfu.tools.file_operations.compress_decompress import CompressDecompressApp
+        from src.utilities.file_operations.compression.compress_decompress import CompressDecompressWindow as CompressDecompressApp
         compress_tool = CompressDecompressApp()
         compress_tool.show()
         print("✅ Compress/Decompress Tool loaded successfully")
@@ -37,7 +37,7 @@ def test_enhanced_tools():
     
     # Test File Splitter/Joiner Tool  
     try:
-        from rfu.tools.file_operations.file_splitter_joiner import FileSplitJoinGUI
+        from src.utilities.file_operations.file_splitter import FileSplitJoinGUI
         splitter_tool = FileSplitJoinGUI()
         splitter_tool.show()
         print("✅ File Splitter/Joiner Tool loaded successfully")
@@ -53,7 +53,7 @@ def test_enhanced_tools():
     
     # Test Synchronize Tool
     try:
-        from rfu.tools.file_operations.sync import SyncWindow
+        from src.utilities.file_operations.synchronization_backup import SyncWindow
         sync_tool = SyncWindow()
         sync_tool.show()
         print("✅ Synchronize Tool loaded successfully")
@@ -69,7 +69,7 @@ def test_enhanced_tools():
     
     # Test Copy/Move/Sync/Delete Tool
     try:
-        from rfu.tools.file_operations.cmsd import CopyMoveSyncDeleteWindow
+        from src.utilities.file_operations.cmsd import CopyMoveSyncDeleteWindow
         cmsd_tool = CopyMoveSyncDeleteWindow()
         cmsd_tool.show()
         print("✅ Copy/Move/Sync/Delete Tool loaded successfully")

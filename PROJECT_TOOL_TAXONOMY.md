@@ -243,7 +243,7 @@ graph TD
   - Regular expression support
   - Recursive directory scanning
   - Export search results
-- **Module:** `src.rfu.tools.file_management.file_finder`
+- **Module:** `src.utilities.file_management.file_finder`
 - **Class:** `FileFinderGUI`
 
 #### 📋 **Catalog Files**
@@ -253,7 +253,7 @@ graph TD
   - Metadata extraction and storage
   - Export to multiple formats
   - Search and filter capabilities
-- **Module:** `src.rfu.tools.file_management.catalog`
+- **Module:** `src.utilities.file_management.catalog`
 - **Class:** `CatalogWindow`
 
 #### 🏷️ **Rename Files**
@@ -263,7 +263,7 @@ graph TD
   - Preview before execution
   - Undo functionality
   - Case conversion options
-- **Module:** `src.rfu.tools.file_management.rename`
+- **Module:** `src.utilities.file_management.rename`
 - **Class:** `RenameWindow`
 
 #### 📂 **Organize Files**
@@ -273,7 +273,7 @@ graph TD
   - Date-based sorting
   - File type categorization
   - Custom organization schemes
-- **Module:** `src.rfu.tools.file_management.organize`
+- **Module:** `src.utilities.file_management.organize`
 - **Class:** `OrganizeWindow`
 
 ---
@@ -287,7 +287,7 @@ graph TD
   - Progress monitoring
   - Error recovery
   - Operation logging
-- **Module:** `src.rfu.tools.file_operations.cmsd`
+- **Module:** `src.utilities.file_operations.cmsd`
 - **Class:** `CopyMoveSyncDeleteWindow`
 
 #### 🗜️ **Compress/Decompress**
@@ -297,7 +297,7 @@ graph TD
   - Compression level control
   - Password protection
   - Batch processing
-- **Module:** `src.rfu.tools.file_operations.compress_decompress`
+- **Module:** `src.utilities.file_operations.compression`
 - **Class:** `CompressDecompressApp`
 
 #### ✂️ **Split/Join Files**
@@ -307,7 +307,7 @@ graph TD
   - Checksum verification
   - Automatic rejoining
   - Progress tracking
-- **Module:** `src.rfu.tools.file_operations.file_splitter_joiner`
+- **Module:** `src.utilities.file_operations.file_splitter`
 - **Class:** `FileSplitJoinGUI`
 
 #### 🔄 **Synchronize**
@@ -317,7 +317,7 @@ graph TD
   - Conflict resolution
   - Scheduled operations
   - Sync reporting
-- **Module:** `src.rfu.tools.file_operations.sync`
+- **Module:** `src.utilities.file_operations.synchronization_backup.sync`
 - **Class:** `SyncWindow`
 
 ---
@@ -420,7 +420,7 @@ graph TD
   - GPS information editing
   - Batch metadata operations
   - Format support (JPEG, TIFF, etc.)
-- **Module:** `src.rfu.tools.metadata.edit_image_metadata`
+- **Module:** `src.utilities.metadata.image_metadata`
 - **Class:** `ImageMetadataEditorGUI`
 
 #### 📄 **Office Metadata Editor**
@@ -430,7 +430,7 @@ graph TD
   - Author and creation info
   - Custom field editing
   - Batch processing
-- **Module:** `src.rfu.tools.metadata.office_meta_data_editor`
+- **Module:** `src.utilities.metadata.office_meta_data_editor`
 - **Class:** `OfficeMetaDataEditorGUI`
 
 #### ⏰ **File Touch**
@@ -440,8 +440,8 @@ graph TD
   - Bulk operations
   - Precision control
   - Timestamp preservation
-- **Module:** `src.rfu.tools.metadata.file_touch`
-- **Class:** `FileTouchGUI`
+- **Module:** `src.utilities.file_operations.file_touch`
+- **Class:** `FileTouchWindow`
 
 ---
 

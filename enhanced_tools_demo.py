@@ -25,7 +25,7 @@ def run_demo():
     
     # Demo Compress/Decompress Tool
     try:
-        from rfu.tools.file_operations.compress_decompress import CompressDecompressApp
+        from src.utilities.file_operations.compression.compress_decompress import CompressDecompressWindow as CompressDecompressApp
         print("1. Opening Compress/Decompress Tool...")
         compress_tool = CompressDecompressApp()
         compress_tool.show()

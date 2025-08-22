@@ -1,8 +1,6 @@
-"""
-Error handling utilities for Richard's File Utilities.
-
-This module provides centralized error handling and logging functionality.
-"""
+# This file has been moved to src/core/error_handler.py
+# All functionality has been transferred to the new location.
+# Please use: from src.core.error_handler import error_handler
 
 import sys
 import traceback

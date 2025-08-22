@@ -3,7 +3,7 @@ import os
 from pathlib import Path
 from typing import Union, List, Optional
 
-from core.error_handler import error_handler
+from src.core.error_handler import error_handler
 
 
 class FileValidationError(Exception):

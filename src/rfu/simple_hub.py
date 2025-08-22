@@ -19,8 +19,87 @@ from PyQt5.QtGui import QFont, QIcon
 from .log_manager import get_log_manager
 from .config_manager import get_config_manager
 
+# CSS Color Constants
+PRIMARY_BLUE = "#3498db"
+DARK_BLUE = "#2980b9"
+DARKER_BLUE = "#1f618d"
+LIGHT_BLUE = "#5dade2"
+LIGHT_GRAY = "#ecf0f1"
+MEDIUM_GRAY = "#bdc3c7"
+DARK_GRAY = "#95a5a6"
+DARKER_GRAY = "#7f8c8d"
+TEXT_DARK = "#2c3e50"
+WHITE = "#ffffff"
+
+# CSS Style Constants
+TITLE_HEADER_STYLE = f"color: {TEXT_DARK}; margin: 10px 0px;"
+
+# Import constants for string literals
+from core.constants import (
+    PDF_TOOLS, SEGOE_UI_FONT, TITLE_STYLE_COLOR, 
+    SUBTITLE_STYLE_COLOR, SECTION_MARGIN_STYLE,
+    PRIVACY_TOOLS, ANALYSIS_TOOLS, UTILITIES_TOOLS, SETTINGS_TOOLS
+)
+
 # Import the simplified menu system
 from .simple_menu_manager import SimpleMenuManager
+
+
+class UtilityWindow(QMainWindow):
+    """Wrapper class to ensure utilities maintain the main window's menu bar."""
+    
+    def __init__(self, parent_hub, utility_widget, title="Utility"):
+        super().__init__(parent_hub)
+        self.parent_hub = parent_hub
+        self.setWindowTitle(f"Richard's File Utilities - {title}")
+        self.setGeometry(150, 150, 900, 700)
+        
+        # Use the same menu bar as the parent hub
+        if hasattr(parent_hub, 'menuBar') and parent_hub.menuBar():
+            # Clone the menu bar from parent
+            self._clone_menu_bar(parent_hub.menuBar())
+        
+        # Set the utility as central widget
+        self.setCentralWidget(utility_widget)
+        
+        # Create status bar
+        status_bar = self.statusBar()
+        status_bar.showMessage(f"{title} ready")
+        
+        # Connect utility status signals if available
+        if hasattr(utility_widget, 'status_changed'):
+            utility_widget.status_changed.connect(status_bar.showMessage)
+    
+    def _clone_menu_bar(self, source_menu_bar):
+        """Clone menu bar from source to maintain consistency."""
+        try:
+            # Use the same menu manager pattern
+            if hasattr(self.parent_hub, 'menu_manager'):
+                # Create new menu manager for this window
+                from .simple_menu_manager import SimpleMenuManager
+                self.menu_manager = SimpleMenuManager(self)
+                self.menu_manager.create_menubar()
+                
+                # Register callbacks to delegate to parent hub
+                self._register_delegated_callbacks()
+        except Exception as e:
+            print(f"Warning: Could not clone menu bar: {e}")
+    
+    def _register_delegated_callbacks(self):
+        """Register menu callbacks that delegate to parent hub."""
+        if not hasattr(self, 'menu_manager') or not hasattr(self.parent_hub, 'menu_manager'):
+            return
+        
+        # Get all callbacks from parent and delegate them
+        parent_callbacks = getattr(self.parent_hub.menu_manager, 'callbacks', {})
+        for callback_name, callback_func in parent_callbacks.items():
+            self.menu_manager.register_callback(callback_name, callback_func)
+    
+    def closeEvent(self, event):
+        """Handle close event to clean up properly."""
+        # Hide instead of closing to preserve the utility
+        self.hide()
+        event.ignore()
 
 
 class SimpleRFUHub(QMainWindow):
@@ -131,10 +210,10 @@ class SimpleRFUHub(QMainWindow):
         button.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         
         if primary:
-            button.setStyleSheet("""
-                QPushButton {
+            button.setStyleSheet(f"""
+                QPushButton {{
                     background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                        stop:0 #3498db, stop:1 #2980b9);
+                        stop:0 {PRIMARY_BLUE}, stop:1 {DARK_BLUE});
                     color: white;
                     border: none;
                     border-radius: 8px;
@@ -142,38 +221,38 @@ class SimpleRFUHub(QMainWindow):
                     font-weight: bold;
                     padding: 8px;
                     text-align: center;
-                }
-                QPushButton:hover {
+                }}
+                QPushButton:hover {{
                     background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                        stop:0 #5dade2, stop:1 #3498db);
-                }
-                QPushButton:pressed {
+                        stop:0 {LIGHT_BLUE}, stop:1 {PRIMARY_BLUE});
+                }}
+                QPushButton:pressed {{
                     background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                        stop:0 #2980b9, stop:1 #1f618d);
-                }
+                        stop:0 {DARK_BLUE}, stop:1 {DARKER_BLUE});
+                }}
             """)
         else:
-            button.setStyleSheet("""
-                QPushButton {
+            button.setStyleSheet(f"""
+                QPushButton {{
                     background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                        stop:0 #ecf0f1, stop:1 #bdc3c7);
-                    color: #2c3e50;
-                    border: 1px solid #95a5a6;
+                        stop:0 {LIGHT_GRAY}, stop:1 {MEDIUM_GRAY});
+                    color: {TEXT_DARK};
+                    border: 1px solid {DARK_GRAY};
                     border-radius: 8px;
                     font-size: 11px;
                     font-weight: bold;
                     padding: 8px;
                     text-align: center;
-                }
-                QPushButton:hover {
+                }}
+                QPushButton:hover {{
                     background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                        stop:0 #ffffff, stop:1 #ecf0f1);
-                    border: 1px solid #7f8c8d;
-                }
-                QPushButton:pressed {
+                        stop:0 {WHITE}, stop:1 {LIGHT_GRAY});
+                    border: 1px solid {DARKER_GRAY};
+                }}
+                QPushButton:pressed {{
                     background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                        stop:0 #bdc3c7, stop:1 #95a5a6);
-                }
+                        stop:0 {MEDIUM_GRAY}, stop:1 {DARK_GRAY});
+                }}
             """)
         
         return button
@@ -298,19 +377,20 @@ class SimpleRFUHub(QMainWindow):
         layout.setSpacing(15)
         
         # Title
-        title = QLabel("Analysis Tools")
+        title = QLabel(ANALYSIS_TOOLS)
         title.setAlignment(Qt.AlignCenter)
         font = QFont()
         font.setPointSize(14)
         font.setBold(True)
         title.setFont(font)
-        title.setStyleSheet("color: #2c3e50; margin: 10px 0px;")
+        title.setStyleSheet(SECTION_MARGIN_STYLE)
         layout.addWidget(title)
         
         # Description
         desc = QLabel("Tools for analyzing file properties, finding duplicates, and checking data integrity")
         desc.setAlignment(Qt.AlignCenter)
-        desc.setStyleSheet("color: #7f8c8d; margin-bottom: 15px; font-size: 10px;")
+        desc.setStyleSheet(f"color: {DARKER_GRAY}; margin-bottom: 15px; "
+                           f"font-size: 10px;")
         layout.addWidget(desc)
         
         # Create organized grid layout
@@ -358,13 +438,14 @@ class SimpleRFUHub(QMainWindow):
         font.setPointSize(14)
         font.setBold(True)
         title.setFont(font)
-        title.setStyleSheet("color: #2c3e50; margin: 10px 0px;")
+        title.setStyleSheet(TITLE_HEADER_STYLE)
         layout.addWidget(title)
         
         # Description
         desc = QLabel("Tools for file manipulation, splitting, copying, and synchronization")
         desc.setAlignment(Qt.AlignCenter)
-        desc.setStyleSheet("color: #7f8c8d; margin-bottom: 15px; font-size: 10px;")
+        desc.setStyleSheet(f"color: {DARKER_GRAY}; margin-bottom: 15px; "
+                           f"font-size: 10px;")
         layout.addWidget(desc)
         
         # Create organized grid layout
@@ -413,13 +494,15 @@ class SimpleRFUHub(QMainWindow):
         font.setPointSize(14)
         font.setBold(True)
         title.setFont(font)
-        title.setStyleSheet("color: #2c3e50; margin: 10px 0px;")
+        title.setStyleSheet(TITLE_HEADER_STYLE)
         layout.addWidget(title)
         
         # Description
-        desc = QLabel("Tools for viewing and editing file metadata, EXIF data, and document properties")
+        desc = QLabel("Tools for viewing and editing file metadata, "
+                      "EXIF data, and document properties")
         desc.setAlignment(Qt.AlignCenter)
-        desc.setStyleSheet("color: #7f8c8d; margin-bottom: 15px; font-size: 10px;")
+        desc.setStyleSheet(f"color: {DARKER_GRAY}; margin-bottom: 15px; "
+                           f"font-size: 10px;")
         layout.addWidget(desc)
         
         # Create organized grid layout
@@ -468,7 +551,7 @@ class SimpleRFUHub(QMainWindow):
         font.setPointSize(14)
         font.setBold(True)
         title.setFont(font)
-        title.setStyleSheet("color: #2c3e50; margin: 10px 0px;")
+        title.setStyleSheet(TITLE_HEADER_STYLE)
         layout.addWidget(title)
         
         # Description
@@ -522,15 +605,17 @@ class SimpleRFUHub(QMainWindow):
         """Create the PDF Tools tab with folder-based dynamic structure."""
         try:
             # Import our enhanced PDF tools widget
-            from .tools.pdf.widgets.enhanced_pdf_tools_widget import EnhancedPDFToolsWidget
+            from src.utilities.pdf_tools.widgets.enhanced_pdf_tools_widget import (
+                EnhancedPDFToolsWidget
+            )
             
             # Create the enhanced PDF tools widget
             pdf_tools_widget = EnhancedPDFToolsWidget(self)
             
             # Add it as a tab
-            self.tab_widget.addTab(pdf_tools_widget, "PDF Tools")
+            self.tab_widget.addTab(pdf_tools_widget, PDF_TOOLS)
             
-            self.logger.info("PDF Tools tab created with enhanced widget")
+            self.logger.info(f"{PDF_TOOLS} tab created with enhanced widget")
             
         except Exception as e:
             self.logger.error(f"Failed to create enhanced PDF Tools tab: {e}")
@@ -545,17 +630,17 @@ class SimpleRFUHub(QMainWindow):
         layout.setSpacing(15)
         
         # Professional header
-        title = QLabel("PDF Tools")
+        title = QLabel(PDF_TOOLS)
         title.setAlignment(Qt.AlignCenter)
-        title.setFont(QFont("Segoe UI", 16, QFont.Bold))
-        title.setStyleSheet("color: #2c3e50; margin-bottom: 5px;")
+        title.setFont(QFont(SEGOE_UI_FONT, 16, QFont.Bold))
+        title.setStyleSheet(TITLE_STYLE_COLOR)
         layout.addWidget(title)
         
         # Description
         desc = QLabel("PDF processing, conversion, security, and analysis tools")
         desc.setAlignment(Qt.AlignCenter)
-        desc.setFont(QFont("Segoe UI", 10))
-        desc.setStyleSheet("color: #7f8c8d; margin-bottom: 15px;")
+        desc.setFont(QFont(SEGOE_UI_FONT, 10))
+        desc.setStyleSheet(SUBTITLE_STYLE_COLOR)
         layout.addWidget(desc)
         
         # Create grid widget for tools
@@ -584,9 +669,9 @@ class SimpleRFUHub(QMainWindow):
         
         layout.addWidget(grid_widget)
         layout.addStretch()
-        self.tab_widget.addTab(tab, "PDF Tools")
+        self.tab_widget.addTab(tab, PDF_TOOLS)
         
-        self.logger.info("Simple PDF Tools tab created as fallback")
+        self.logger.info(f"Simple {PDF_TOOLS} tab created as fallback")
     
     def create_privacy_tab(self):
         """Create the Privacy tab with organized grid layout."""
@@ -596,17 +681,17 @@ class SimpleRFUHub(QMainWindow):
         layout.setSpacing(15)
         
         # Professional header
-        title = QLabel("Privacy Tools")
+        title = QLabel(PRIVACY_TOOLS)
         title.setAlignment(Qt.AlignCenter)
-        title.setFont(QFont("Segoe UI", 16, QFont.Bold))
-        title.setStyleSheet("color: #2c3e50; margin-bottom: 5px;")
+        title.setFont(QFont(SEGOE_UI_FONT, 16, QFont.Bold))
+        title.setStyleSheet(TITLE_STYLE_COLOR)
         layout.addWidget(title)
         
         # Description
         desc = QLabel("Privacy protection, data cleanup, and secure browsing tools")
         desc.setAlignment(Qt.AlignCenter)
-        desc.setFont(QFont("Segoe UI", 10))
-        desc.setStyleSheet("color: #7f8c8d; margin-bottom: 15px;")
+        desc.setFont(QFont(SEGOE_UI_FONT, 10))
+        desc.setStyleSheet(SUBTITLE_STYLE_COLOR)
         layout.addWidget(desc)
         
         # Create grid widget for tools
@@ -655,15 +740,15 @@ class SimpleRFUHub(QMainWindow):
         # Professional header
         title = QLabel("Security Tools")
         title.setAlignment(Qt.AlignCenter)
-        title.setFont(QFont("Segoe UI", 16, QFont.Bold))
-        title.setStyleSheet("color: #2c3e50; margin-bottom: 5px;")
+        title.setFont(QFont(SEGOE_UI_FONT, 16, QFont.Bold))
+        title.setStyleSheet(TITLE_STYLE_COLOR)
         layout.addWidget(title)
         
         # Description
         desc = QLabel("File encryption, secure deletion, and security analysis tools")
         desc.setAlignment(Qt.AlignCenter)
-        desc.setFont(QFont("Segoe UI", 10))
-        desc.setStyleSheet("color: #7f8c8d; margin-bottom: 15px;")
+        desc.setFont(QFont(SEGOE_UI_FONT, 10))
+        desc.setStyleSheet(SUBTITLE_STYLE_COLOR)
         layout.addWidget(desc)
         
         # Create grid widget for tools
@@ -711,15 +796,15 @@ class SimpleRFUHub(QMainWindow):
         # Professional header
         title = QLabel("System Tools")
         title.setAlignment(Qt.AlignCenter)
-        title.setFont(QFont("Segoe UI", 16, QFont.Bold))
-        title.setStyleSheet("color: #2c3e50; margin-bottom: 5px;")
+        title.setFont(QFont(SEGOE_UI_FONT, 16, QFont.Bold))
+        title.setStyleSheet(TITLE_STYLE_COLOR)
         layout.addWidget(title)
         
         # Description
         desc = QLabel("System monitoring, analysis, and maintenance tools")
         desc.setAlignment(Qt.AlignCenter)
-        desc.setFont(QFont("Segoe UI", 10))
-        desc.setStyleSheet("color: #7f8c8d; margin-bottom: 15px;")
+        desc.setFont(QFont(SEGOE_UI_FONT, 10))
+        desc.setStyleSheet(SUBTITLE_STYLE_COLOR)
         layout.addWidget(desc)
         
         # Create grid widget for tools
@@ -760,15 +845,15 @@ class SimpleRFUHub(QMainWindow):
         # Professional header
         title = QLabel("Application Logs")
         title.setAlignment(Qt.AlignCenter)
-        title.setFont(QFont("Segoe UI", 16, QFont.Bold))
-        title.setStyleSheet("color: #2c3e50; margin-bottom: 5px;")
+        title.setFont(QFont(SEGOE_UI_FONT, 16, QFont.Bold))
+        title.setStyleSheet(TITLE_STYLE_COLOR)
         layout.addWidget(title)
         
         # Description
         desc = QLabel("Real-time application logs and system monitoring")
         desc.setAlignment(Qt.AlignCenter)
-        desc.setFont(QFont("Segoe UI", 10))
-        desc.setStyleSheet("color: #7f8c8d; margin-bottom: 15px;")
+        desc.setFont(QFont(SEGOE_UI_FONT, 10))
+        desc.setStyleSheet(SUBTITLE_STYLE_COLOR)
         layout.addWidget(desc)
         
         # Enhanced log viewer with professional styling
@@ -951,16 +1036,20 @@ class SimpleRFUHub(QMainWindow):
             
             from utilities.analysis.check_sum import ChecksumGUI
             
-            # Ensure fresh window instance
-            self._ensure_fresh_window('checksum_window')
-            self.checksum_window = ChecksumGUI()
+            # Use the new window manager
+            utility_window = self._create_utility_window(
+                ChecksumGUI, 
+                "Checksum Verification"
+            )
             
-            self.checksum_window.show()
-            self.checksum_window.raise_()
-            self.checksum_window.activateWindow()
-            
-            self.status_bar.showMessage("Checksum Verification opened successfully")
-            self.logger.info("Checksum Verification tool opened")
+            if utility_window:
+                self.status_bar.showMessage("Checksum Verification opened successfully")
+                self.logger.info("Checksum Verification tool opened")
+                
+                # Store reference to prevent garbage collection
+                if not hasattr(self, '_utility_windows'):
+                    self._utility_windows = {}
+                self._utility_windows['checksum'] = utility_window
             
         except ImportError as e:
             self.status_bar.showMessage("Checksum tool not available")
@@ -986,18 +1075,21 @@ class SimpleRFUHub(QMainWindow):
             from utilities.analysis.find_duplicate_files import (
                 DuplicateFinderApp)
             
-            # Create and show the duplicate finder window
-            if not hasattr(self, 'duplicate_finder_window') or \
-               self.duplicate_finder_window is None:
-                self.duplicate_finder_window = DuplicateFinderApp()
+            # Use the new window manager
+            utility_window = self._create_utility_window(
+                DuplicateFinderApp,
+                "Duplicate Finder"
+            )
             
-            self.duplicate_finder_window.show()
-            self.duplicate_finder_window.raise_()
-            self.duplicate_finder_window.activateWindow()
-            
-            self.status_bar.showMessage("Duplicate Finder opened successfully")
-            self.logger.info("Duplicate File Finder tool opened")
-            
+            if utility_window:
+                self.status_bar.showMessage("Duplicate Finder opened successfully")
+                self.logger.info("Duplicate File Finder tool opened")
+                
+                # Store reference to prevent garbage collection
+                if not hasattr(self, '_utility_windows'):
+                    self._utility_windows = {}
+                self._utility_windows['duplicate_finder'] = utility_window
+                
         except ImportError as e:
             self.status_bar.showMessage("Duplicate Finder tool not available")
             self.logger.error(f"ImportError opening Duplicate Finder: {e}")
@@ -1024,17 +1116,20 @@ class SimpleRFUHub(QMainWindow):
             
             from utilities.analysis.size_analyzer import SizeAnalyzerGUI
             
-            # Create and show the size analyzer window
-            if not hasattr(self, 'size_analyzer_window') or \
-               self.size_analyzer_window is None:
-                self.size_analyzer_window = SizeAnalyzerGUI()
+            # Use the new window manager
+            utility_window = self._create_utility_window(
+                SizeAnalyzerGUI,
+                "Size Analyzer"
+            )
             
-            self.size_analyzer_window.show()
-            self.size_analyzer_window.raise_()
-            self.size_analyzer_window.activateWindow()
-            
-            self.status_bar.showMessage("Size Analyzer opened successfully")
-            self.logger.info("Size Analyzer tool opened")
+            if utility_window:
+                self.status_bar.showMessage("Size Analyzer opened successfully")
+                self.logger.info("Size Analyzer tool opened")
+                
+                # Store reference to prevent garbage collection
+                if not hasattr(self, '_utility_windows'):
+                    self._utility_windows = {}
+                self._utility_windows['size_analyzer'] = utility_window
             
         except ImportError as e:
             self.status_bar.showMessage("Size Analyzer tool not available")
@@ -1059,17 +1154,20 @@ class SimpleRFUHub(QMainWindow):
             
             from utilities.analysis.empty_folders import EmptyFoldersGUI
             
-            # Create and show the empty folders window
-            if not hasattr(self, 'empty_folders_window') or \
-               self.empty_folders_window is None:
-                self.empty_folders_window = EmptyFoldersGUI()
+            # Use the new window manager
+            utility_window = self._create_utility_window(
+                EmptyFoldersGUI,
+                "Empty Folders Finder"
+            )
             
-            self.empty_folders_window.show()
-            self.empty_folders_window.raise_()
-            self.empty_folders_window.activateWindow()
-            
-            self.status_bar.showMessage("Empty Folders Finder opened successfully")
-            self.logger.info("Empty Folders Finder tool opened")
+            if utility_window:
+                self.status_bar.showMessage("Empty Folders Finder opened successfully")
+                self.logger.info("Empty Folders Finder tool opened")
+                
+                # Store reference to prevent garbage collection
+                if not hasattr(self, '_utility_windows'):
+                    self._utility_windows = {}
+                self._utility_windows['empty_folders'] = utility_window
             
         except ImportError as e:
             self.status_bar.showMessage("Empty Folders tool not available")
@@ -1092,44 +1190,21 @@ class SimpleRFUHub(QMainWindow):
             if src_dir not in sys.path:
                 sys.path.insert(0, src_dir)
             
-            # Try advanced catalog first, fall back to simple catalog
-            try:
-                from rfu.tools.file_management.advanced_catalog.advanced_catalog_window import (
-                    AdvancedCatalogWindow
-                )
-                
-                # Create fresh advanced catalog window
-                self._ensure_fresh_window('file_catalog_window')
-                self.file_catalog_window = AdvancedCatalogWindow(
-                    hub_instance=self
-                )
-                
-                self.file_catalog_window.show()
-                self.file_catalog_window.raise_()
-                self.file_catalog_window.activateWindow()
-                
-                self.status_bar.showMessage(
-                    "Advanced File Catalog Generator opened successfully"
-                )
-                self.logger.info("Advanced File Catalog Generator tool opened")
-                
-            except ImportError:
-                # Fallback to simple catalog
-                from rfu.tools.file_management.catalog import CatalogWindow
-                
-                # Create and show the simple catalog window
-                if not hasattr(self, 'file_catalog_window') or \
-                   self.file_catalog_window is None:
-                    self.file_catalog_window = CatalogWindow()
-                
-                self.file_catalog_window.show()
-                self.file_catalog_window.raise_()
-                self.file_catalog_window.activateWindow()
-                
-                self.status_bar.showMessage(
-                    "File Catalog Generator opened successfully"
-                )
-                self.logger.info("File Catalog Generator tool opened")
+            # Use the utilities catalog implementation
+            from src.utilities.file_operations.catalog.catalog import CatalogWindow
+            
+            # Create fresh catalog window
+            self._ensure_fresh_window('file_catalog_window')
+            self.file_catalog_window = CatalogWindow()
+            
+            self.file_catalog_window.show()
+            self.file_catalog_window.raise_()
+            self.file_catalog_window.activateWindow()
+            
+            self.status_bar.showMessage(
+                "File Catalog Generator opened successfully"
+            )
+            self.logger.info("File Catalog Generator tool opened")
                 
         except ImportError as e:
             self.status_bar.showMessage("File Catalog tool not available")
@@ -1155,7 +1230,7 @@ class SimpleRFUHub(QMainWindow):
             if src_dir not in sys.path:
                 sys.path.insert(0, src_dir)
             
-            from rfu.tools.file_operations.file_splitter_joiner import (
+            from src.utilities.file_operations.file_splitter.gui import (
                 FileSplitJoinGUI
             )
             
@@ -1194,7 +1269,7 @@ class SimpleRFUHub(QMainWindow):
             if src_dir not in sys.path:
                 sys.path.insert(0, src_dir)
             
-            from rfu.tools.file_operations.cmsd import CopyMoveSyncDeleteWindow
+            from src.utilities.file_operations.cmsd import CopyMoveSyncDeleteWindow
             
             # Create and show the CMSD window
             if not hasattr(self, 'cmsd_window') or \
@@ -1310,7 +1385,7 @@ class SimpleRFUHub(QMainWindow):
             if src_dir not in sys.path:
                 sys.path.insert(0, src_dir)
             
-            from rfu.tools.file_management.organize import OrganizeWindow
+            from src.utilities.file_operations.organize.organize import OrganizeWindow
             
             # Create and show the organize files window
             if not hasattr(self, 'organize_files_window') or \
@@ -1349,7 +1424,7 @@ class SimpleRFUHub(QMainWindow):
             if src_dir not in sys.path:
                 sys.path.insert(0, src_dir)
             
-            from rfu.tools.file_management.rename import RenameWindow
+            from src.utilities.file_management.rename import RenameWindow
             
             # Create and show the batch rename window
             if not hasattr(self, 'batch_rename_window') or \
@@ -1440,7 +1515,7 @@ class SimpleRFUHub(QMainWindow):
     def open_exif_viewer(self):
         """Open EXIF data viewer."""
         try:
-            from src.rfu.tools.metadata.edit_image_metadata import ImageMetadataEditorGUI
+            from src.utilities.metadata.image_metadata import ImageMetadataEditorGUI
             exif_window = ImageMetadataEditorGUI()
             exif_window.show()
             self.status_bar.showMessage("EXIF Data Viewer opened")
@@ -1455,7 +1530,7 @@ class SimpleRFUHub(QMainWindow):
     def open_metadata_analyzer(self):
         """Open metadata analyzer."""
         try:
-            from src.rfu.tools.metadata.edit_image_metadata import \
+            from src.utilities.metadata.image_metadata import \
                 ImageMetadataEditorGUI
             analyzer_window = ImageMetadataEditorGUI()
             analyzer_window.show()
@@ -1472,7 +1547,7 @@ class SimpleRFUHub(QMainWindow):
         """Open tag editor."""
         try:
             # Try enhanced image metadata editor for tag editing first
-            from src.rfu.tools.metadata.edit_image_metadata import \
+            from src.utilities.metadata.image_metadata import \
                 ImageMetadataEditorGUI
             tag_window = ImageMetadataEditorGUI()
             tag_window.show()
@@ -1488,7 +1563,7 @@ class SimpleRFUHub(QMainWindow):
     def open_property_inspector(self):
         """Open property inspector."""
         try:
-            from src.rfu.tools.metadata.office_meta_data_editor import \
+            from src.utilities.metadata.office_meta_data_editor import \
                 OfficeMetaDataEditorGUI
             property_window = OfficeMetaDataEditorGUI()
             property_window.show()
@@ -1708,16 +1783,20 @@ class SimpleRFUHub(QMainWindow):
             
             from enhanced_encrypt_decrypt_with_menu import EnAndDecryptGUI
             
-            # Create and show the encryption window
-            if not hasattr(self, 'encryption_window') or self.encryption_window is None:
-                self.encryption_window = EnAndDecryptGUI()
+            # Use the new window manager
+            utility_window = self._create_utility_window(
+                EnAndDecryptGUI,
+                "File Encryption"
+            )
             
-            self.encryption_window.show()
-            self.encryption_window.raise_()
-            self.encryption_window.activateWindow()
-            
-            self.status_bar.showMessage("File Encryption tool opened successfully")
-            self.logger.info("File Encryption tool opened")
+            if utility_window:
+                self.status_bar.showMessage("File Encryption tool opened successfully")
+                self.logger.info("File Encryption tool opened")
+                
+                # Store reference to prevent garbage collection
+                if not hasattr(self, '_utility_windows'):
+                    self._utility_windows = {}
+                self._utility_windows['encryption'] = utility_window
             
         except ImportError as e:
             self.status_bar.showMessage("File Encryption tool not available")
@@ -1896,6 +1975,42 @@ class SimpleRFUHub(QMainWindow):
         self._registered_tools[tool_name] = tool_instance
         self.logger.info(f"Tool registered: {tool_name}")
 
+    def _create_utility_window(self, utility_class, title, *args, **kwargs):
+        """Create a utility window with proper menu bar inheritance."""
+        try:
+            # Create the utility instance
+            if issubclass(utility_class, QMainWindow):
+                # If it's a QMainWindow, convert to widget
+                utility_instance = utility_class(*args, **kwargs)
+                utility_widget = utility_instance.centralWidget()
+                if utility_widget:
+                    utility_widget.setParent(None)
+                else:
+                    # Create a simple wrapper widget
+                    utility_widget = QWidget()
+                    layout = QVBoxLayout(utility_widget)
+                    layout.addWidget(QLabel(f"{title} - Not properly configured"))
+                
+                # Clean up the temporary QMainWindow
+                utility_instance.hide()
+                utility_instance.deleteLater()
+            else:
+                # If it's already a widget, use directly
+                utility_widget = utility_class(parent=self, *args, **kwargs)
+            
+            # Create wrapper window with menu bar
+            utility_window = UtilityWindow(self, utility_widget, title)
+            utility_window.show()
+            utility_window.raise_()
+            utility_window.activateWindow()
+            
+            return utility_window
+            
+        except Exception as e:
+            self.logger.error(f"Error creating utility window for {title}: {e}")
+            self.status_bar.showMessage(f"Error opening {title}: {e}")
+            return None
+
     def _ensure_fresh_window(self, window_attr_name):
         """Ensure a window attribute is properly reset for fresh initialization."""
         if hasattr(self, window_attr_name):
@@ -1914,49 +2029,22 @@ class SimpleRFUHub(QMainWindow):
         self.logger.info("Simple RFU Hub closing - starting cleanup...")
         
         try:
-            # Close all registered tools
-            if hasattr(self, '_registered_tools'):
-                for tool_name, tool_instance in self._registered_tools.items():
+            # Close all utility windows
+            if hasattr(self, '_utility_windows'):
+                for window_name, window in self._utility_windows.items():
                     try:
-                        if tool_instance and hasattr(tool_instance, 'close'):
-                            tool_instance.close()
-                            self.logger.info(f"Closed tool: {tool_name}")
+                        if window and not window.isHidden():
+                            window.hide()
+                            window.deleteLater()
+                            self.logger.info(f"Closed utility window: {window_name}")
                     except Exception as e:
-                        self.logger.error(f"Error closing {tool_name}: {e}")
-                self._registered_tools.clear()
+                        self.logger.error(f"Error closing {window_name}: {e}")
+                self._utility_windows.clear()
             
-            # Close all window instances stored as attributes
-            window_attributes = [
-                'checksum_window', 'duplicate_finder_window', 
-                'size_analyzer_window', 'empty_folders_window', 
-                'file_catalog_window', 'file_splitter_window',
-                'cmsd_window', 'sync_backup_window', 'file_touch_window',
-                'organize_files_window', 'batch_rename_window', 
-                'image_metadata_window', 'office_metadata_window', 
-                'encryption_window', 'secure_delete_window',
-                'security_settings_window'
-            ]
-            
-            for attr_name in window_attributes:
-                if hasattr(self, attr_name):
-                    window = getattr(self, attr_name)
-                    if window and hasattr(window, 'close'):
-                        try:
-                            window.close()
-                            self.logger.info(f"Closed: {attr_name}")
-                        except Exception as e:
-                            self.logger.error(f"Error closing {attr_name}: {e}")
-                    setattr(self, attr_name, None)
-            
-            # Clean up menu system
-            if hasattr(self, 'menu_manager'):
-                try:
-                    # Just set to None since SimpleMenuManager may not have cleanup
-                    self.menu_manager = None
-                except Exception as e:
-                    self.logger.error(f"Error cleaning up menu: {e}")
-            
-            # Final cleanup
+            # Close registered tools
+            self._close_registered_tools()
+            self._close_window_attributes()
+            self._cleanup_menu_system()
             self.logger.info("Simple RFU Hub cleanup completed successfully")
             
         except Exception as e:
@@ -1964,6 +2052,51 @@ class SimpleRFUHub(QMainWindow):
         
         # Accept the close event
         event.accept()
+    
+    def _close_registered_tools(self):
+        """Close all registered tools."""
+        if hasattr(self, '_registered_tools'):
+            for tool_name, tool_instance in self._registered_tools.items():
+                try:
+                    if tool_instance and hasattr(tool_instance, 'close'):
+                        tool_instance.close()
+                        self.logger.info(f"Closed tool: {tool_name}")
+                except Exception as e:
+                    self.logger.error(f"Error closing {tool_name}: {e}")
+            self._registered_tools.clear()
+    
+    def _close_window_attributes(self):
+        """Close all window instances stored as attributes."""
+        window_attributes = [
+            'checksum_window', 'duplicate_finder_window',
+            'size_analyzer_window', 'empty_folders_window',
+            'file_catalog_window', 'file_splitter_window',
+            'cmsd_window', 'sync_backup_window', 'file_touch_window',
+            'organize_files_window', 'batch_rename_window',
+            'image_metadata_window', 'office_metadata_window',
+            'encryption_window', 'secure_delete_window',
+            'security_settings_window'
+        ]
+        
+        for attr_name in window_attributes:
+            if hasattr(self, attr_name):
+                window = getattr(self, attr_name)
+                if window and hasattr(window, 'close'):
+                    try:
+                        window.close()
+                        self.logger.info(f"Closed: {attr_name}")
+                    except Exception as e:
+                        self.logger.error(f"Error closing {attr_name}: {e}")
+                setattr(self, attr_name, None)
+    
+    def _cleanup_menu_system(self):
+        """Clean up menu system."""
+        if hasattr(self, 'menu_manager'):
+            try:
+                # Just set to None since SimpleMenuManager may not have cleanup
+                self.menu_manager = None
+            except Exception as e:
+                self.logger.error(f"Error cleaning up menu: {e}")
 
 
 if __name__ == "__main__":

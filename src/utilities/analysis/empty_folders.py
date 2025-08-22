@@ -74,7 +74,7 @@ class EmptyFolderLogic(QObject):
                         empty_folders.append(root)
                         folder_name = os.path.basename(root)
                         self.progress_updated.emit(f"Found: {folder_name}")
-                except (OSError, PermissionError):
+                except OSError:
                     continue
                     
             if self._is_running:
@@ -145,13 +145,21 @@ class EmptyFoldersGUI(StandardWindow):
         self.init_ui()
         if STANDARD_WINDOW_AVAILABLE:
             self._setup_menu_callbacks()
+            # Ensure menu bar exists
+            self.ensure_menu_bar()
     
     def _setup_menu_callbacks(self):
         """Setup tool-specific menu callbacks."""
         if hasattr(self, 'menu_manager'):
             # Register tool-specific callbacks
             self.menu_manager.register_callback('new_scan', self.clear_results)
-            self.menu_manager.register_callback('help_empty_folders', self.show_help)
+            # Override the standard help with our tool-specific help
+            self.menu_manager.register_callback('show_user_guide',
+                                                self.show_help)
+            self.menu_manager.register_callback('show_preferences',
+                                                self.show_preferences)
+            self.menu_manager.register_callback('refresh',
+                                                self.refresh_view)
             
     def clear_results(self):
         """Clear all scan results."""
@@ -216,13 +224,13 @@ class EmptyFoldersGUI(StandardWindow):
         
     def show_preferences(self):
         """Show Empty Folders preferences."""
-        QMessageBox.information(self, "Empty Folders Finder Preferences", 
-                               "Empty Folders Finder preferences:\n\n"
-                               "• Scan depth limits\n"
-                               "• Directory exclusion filters\n"
-                               "• Deletion confirmation options\n"
-                               "• Progress display settings\n\n"
-                               "Advanced preferences coming soon!")
+        QMessageBox.information(self, "Empty Folders Finder Preferences",
+                                "Empty Folders Finder preferences:\n\n"
+                                "• Scan depth limits\n"
+                                "• Directory exclusion filters\n"
+                                "• Deletion confirmation options\n"
+                                "• Progress display settings\n\n"
+                                "Advanced preferences coming soon!")
                                
     def refresh_view(self):
         """Refresh/clear the current scan results."""

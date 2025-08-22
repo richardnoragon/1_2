@@ -41,13 +41,21 @@ class DuplicateFinderApp(StandardWindow):
         self.init_ui()
         if STANDARD_WINDOW_AVAILABLE:
             self._setup_menu_callbacks()
+            # Ensure menu bar exists
+            self.ensure_menu_bar()
     
     def _setup_menu_callbacks(self):
         """Setup tool-specific menu callbacks."""
         if hasattr(self, 'menu_manager'):
             # Register tool-specific callbacks
             self.menu_manager.register_callback('new_scan', self.clear_results)
-            self.menu_manager.register_callback('help_duplicates', self.show_help)
+            # Override the standard help with our tool-specific help
+            self.menu_manager.register_callback('show_user_guide',
+                                                self.show_help)
+            self.menu_manager.register_callback('show_preferences',
+                                                self.show_preferences)
+            self.menu_manager.register_callback('refresh',
+                                                self.refresh_view)
             
     def clear_results(self):
         """Clear all duplicate scan results."""
@@ -103,13 +111,13 @@ class DuplicateFinderApp(StandardWindow):
         
     def show_preferences(self):
         """Show Duplicate Finder preferences."""
-        QMessageBox.information(self, "Duplicate Finder Preferences", 
-                               "Duplicate Finder preferences:\n\n"
-                               "• Scan depth limits\n"
-                               "• File type filters\n"
-                               "• Minimum file size settings\n"
-                               "• Checksum algorithm options\n\n"
-                               "Advanced preferences coming soon!")
+        QMessageBox.information(self, "Duplicate Finder Preferences",
+                                "Duplicate Finder preferences:\n\n"
+                                "• Scan depth limits\n"
+                                "• File type filters\n"
+                                "• Minimum file size settings\n"
+                                "• Checksum algorithm options\n\n"
+                                "Advanced preferences coming soon!")
                                
     def refresh_view(self):
         """Refresh/clear the current scan results."""
@@ -180,40 +188,59 @@ class DuplicateFinderApp(StandardWindow):
             QMessageBox.warning(self, "Warning", "Please select a directory first.")
             return
         
-        self.results_list.clear()
-        self.results_list.addItem("Scanning for duplicates...")
-        QApplication.processEvents()
+        self._prepare_scan()
         
         try:
-            file_hashes = {}
-            duplicates = []
-            
-            for root, dirs, files in os.walk(self.selected_directory):
-                for file in files:
-                    file_path = os.path.join(root, file)
-                    try:
-                        with open(file_path, 'rb') as f:
-                            file_hash = hashlib.md5(f.read()).hexdigest()
-                        
-                        if file_hash in file_hashes:
-                            duplicates.append((file_hashes[file_hash], file_path))
-                        else:
-                            file_hashes[file_hash] = file_path
-                    except Exception:
-                        continue
-            
-            self.results_list.clear()
-            if duplicates:
-                self.results_list.addItem(f"Found {len(duplicates)} duplicate pairs:")
-                for original, duplicate in duplicates:
-                    self.results_list.addItem(f"Original: {original}")
-                    self.results_list.addItem(f"Duplicate: {duplicate}")
-                    self.results_list.addItem("---")
-            else:
-                self.results_list.addItem("No duplicates found.")
+            duplicates = self._scan_for_duplicates()
+            self._display_results(duplicates)
                 
         except Exception as e:
             QMessageBox.critical(self, "Error", f"Failed to scan directory: {e}")
+
+    def _prepare_scan(self):
+        """Prepare the UI for scanning."""
+        self.results_list.clear()
+        self.results_list.addItem("Scanning for duplicates...")
+        QApplication.processEvents()
+
+    def _scan_for_duplicates(self):
+        """Scan directory and return list of duplicate file pairs."""
+        file_hashes = {}
+        duplicates = []
+        
+        for root, dirs, files in os.walk(self.selected_directory):
+            for file in files:
+                file_path = os.path.join(root, file)
+                file_hash = self._get_file_hash(file_path)
+                
+                if file_hash:
+                    if file_hash in file_hashes:
+                        duplicates.append((file_hashes[file_hash], file_path))
+                    else:
+                        file_hashes[file_hash] = file_path
+        
+        return duplicates
+
+    def _get_file_hash(self, file_path):
+        """Get MD5 hash of a file, return None if error."""
+        try:
+            with open(file_path, 'rb') as f:
+                return hashlib.md5(f.read()).hexdigest()
+        except Exception:
+            return None
+
+    def _display_results(self, duplicates):
+        """Display scan results in the list widget."""
+        self.results_list.clear()
+        
+        if duplicates:
+            self.results_list.addItem(f"Found {len(duplicates)} duplicate pairs:")
+            for original, duplicate in duplicates:
+                self.results_list.addItem(f"Original: {original}")
+                self.results_list.addItem(f"Duplicate: {duplicate}")
+                self.results_list.addItem("---")
+        else:
+            self.results_list.addItem("No duplicates found.")
 
 
 def main():

@@ -19,7 +19,7 @@ def test_file_operations_imports():
     
     # Test File Splitter
     try:
-        from src.rfu.tools.file_operations.file_splitter_joiner import FileSplitJoinGUI
+        from src.utilities.file_operations.file_splitter.gui import FileSplitJoinGUI
         print("✓ File Splitter import successful")
         results['file_splitter'] = True
     except ImportError as e:
@@ -28,7 +28,7 @@ def test_file_operations_imports():
     
     # Test CMSD (Copy/Move/Sync/Delete)
     try:
-        from src.rfu.tools.file_operations.cmsd import CopyMoveSyncDeleteWindow
+        from src.utilities.file_operations.cmsd import CopyMoveSyncDeleteWindow
         print("✓ Copy/Move/Sync/Delete import successful")
         results['cmsd'] = True
     except ImportError as e:
@@ -46,7 +46,7 @@ def test_file_operations_imports():
     
     # Test Organize Files
     try:
-        from src.rfu.tools.file_management.organize import OrganizeWindow
+        from src.utilities.file_operations.organize.organize import OrganizeWindow
         print("✓ Organize Files import successful")
         results['organize'] = True
     except ImportError as e:
@@ -55,7 +55,7 @@ def test_file_operations_imports():
     
     # Test Batch Rename
     try:
-        from src.rfu.tools.file_management.rename import RenameWindow
+        from src.utilities.file_management.rename import RenameWindow
         print("✓ Batch Rename import successful")
         results['rename'] = True
     except ImportError as e:

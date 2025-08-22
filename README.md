@@ -249,7 +249,7 @@ pytest
 
 ### Import Structure
 The application uses a hierarchical import structure:
-- `src.rfu.tools.file_management.*` - File management tools
+- `src.utilities.file_management.*` - File management tools
 - `src.rfu.tools.file_operations.*` - File operation tools
 - `src.rfu.tools.analysis.*` - Analysis tools
 - `src.rfu.tools.metadata.*` - Metadata tools

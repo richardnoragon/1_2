@@ -21,7 +21,7 @@ import logging
 from datetime import datetime
 from pathlib import Path
 from urllib.parse import urlparse
-from typing import List, Dict, Optional, Any
+from typing import List, Dict, Optional, Any, Tuple
 
 # Import centralized logging manager
 try:
@@ -196,17 +196,6 @@ class BookmarkModel:
             error_msg = f"URL validation error for '{original_url}': {e}"
             self.logger.error(error_msg)
             return False, error_msg
-            if any(char in parsed.netloc for char in [' ', '\t', '\n', '\r']):
-                return False
-            
-            # Basic length validation
-            if len(url) > 2048:  # Common URL length limit
-                return False
-            
-            return True
-            
-        except Exception:
-            return False
     
     def add_bookmark(self, title: str, url: str, description: str = "",
                      tags: str = "", folder: str = "Default") -> tuple[bool, str]:
@@ -404,10 +393,9 @@ class BookmarkModel:
                     all_tags.update(tags)
             return sorted(list(all_tags))
         except Exception as e:
-            error_msg = f"Error getting tags: {e}"
             # Get logger from static context - using module-level logger
             logger = logging.getLogger('BookmarkModel')
-            logger.error(error_msg)
+            logger.error(f"Error getting tags: {e}")
             return []
     
     def get_all_folders(self) -> List[str]:
@@ -420,9 +408,27 @@ class BookmarkModel:
                     folders.add(bookmark['folder'])
             return sorted(list(folders))
         except Exception as e:
-            error_msg = f"Error getting folders: {e}"
-            self.logger.error(error_msg)
+            self.logger.error(f"Error getting folders: {e}")
             return []
+    
+    def get_tags_and_folders(self) -> Tuple[List[str], List[str]]:
+        """Get all unique tags and folders in a single database call"""
+        try:
+            bookmarks = self.get_all_bookmarks()
+            all_tags = set()
+            folders = set()
+            
+            for bookmark in bookmarks:
+                if bookmark['tags']:
+                    tags = [tag.strip() for tag in bookmark['tags'].split(',')]
+                    all_tags.update(tags)
+                if bookmark['folder']:
+                    folders.add(bookmark['folder'])
+                    
+            return sorted(all_tags), sorted(folders)
+        except Exception as e:
+            self.logger.error(f"Error getting tags and folders: {e}")
+            return [], []
 
 
 class BookmarkImporter:
@@ -477,43 +483,59 @@ class BookmarkImporter:
             with open(file_path, 'r', encoding='utf-8') as file:
                 data = json.load(file)
             
-            # Handle different JSON structures
-            if isinstance(data, list):
-                for item in data:
-                    if 'url' in item and 'title' in item:
-                        bookmarks.append({
-                            'title': item.get('title', ''),
-                            'url': item.get('url', ''),
-                            'description': item.get('description', ''),
-                            'tags': item.get('tags', ''),
-                            'folder': item.get('folder', 'Imported')
-                        })
-            elif isinstance(data, dict):
-                # Handle nested bookmark structure
-                def extract_bookmarks(obj, folder="Imported"):
-                    if isinstance(obj, dict):
-                        if 'url' in obj and 'title' in obj:
-                            bookmarks.append({
-                                'title': obj.get('title', ''),
-                                'url': obj.get('url', ''),
-                                'description': obj.get('description', ''),
-                                'tags': obj.get('tags', ''),
-                                'folder': folder
-                            })
-                        else:
-                            for key, value in obj.items():
-                                if isinstance(value, (dict, list)):
-                                    extract_bookmarks(value, key)
-                    elif isinstance(obj, list):
-                        for item in obj:
-                            extract_bookmarks(item, folder)
-                
-                extract_bookmarks(data)
+            BookmarkImporter._process_json_data(data, bookmarks)
         
         except Exception as e:
             print(f"Error importing JSON bookmarks: {e}")
         
         return bookmarks
+    
+    @staticmethod
+    def _process_json_data(data: Any, bookmarks: List[Dict]) -> None:
+        """Process JSON data and extract bookmarks"""
+        if isinstance(data, list):
+            BookmarkImporter._process_json_list(data, bookmarks)
+        elif isinstance(data, dict):
+            BookmarkImporter._extract_bookmarks_recursive(data, bookmarks)
+    
+    @staticmethod
+    def _process_json_list(data: List[Dict], bookmarks: List[Dict]) -> None:
+        """Process JSON list format bookmarks"""
+        for item in data:
+            if BookmarkImporter._is_valid_bookmark_item(item):
+                bookmark = BookmarkImporter._create_bookmark_from_item(item, 'Imported')
+                bookmarks.append(bookmark)
+    
+    @staticmethod
+    def _extract_bookmarks_recursive(obj: Any, bookmarks: List[Dict], folder: str = "Imported") -> None:
+        """Recursively extract bookmarks from nested JSON structure"""
+        if isinstance(obj, dict):
+            if BookmarkImporter._is_valid_bookmark_item(obj):
+                bookmark = BookmarkImporter._create_bookmark_from_item(obj, folder)
+                bookmarks.append(bookmark)
+            else:
+                for key, value in obj.items():
+                    if isinstance(value, (dict, list)):
+                        BookmarkImporter._extract_bookmarks_recursive(value, bookmarks, key)
+        elif isinstance(obj, list):
+            for item in obj:
+                BookmarkImporter._extract_bookmarks_recursive(item, bookmarks, folder)
+    
+    @staticmethod
+    def _is_valid_bookmark_item(item: Dict) -> bool:
+        """Check if item contains required bookmark fields"""
+        return 'url' in item and 'title' in item
+    
+    @staticmethod
+    def _create_bookmark_from_item(item: Dict, default_folder: str) -> Dict:
+        """Create standardized bookmark dictionary from item"""
+        return {
+            'title': item.get('title', ''),
+            'url': item.get('url', ''),
+            'description': item.get('description', ''),
+            'tags': item.get('tags', ''),
+            'folder': item.get('folder', default_folder)
+        }
     
     @staticmethod
     def import_from_csv(file_path: str) -> List[Dict]:
@@ -577,7 +599,7 @@ class BookmarkExporter:
         except (IOError, OSError) as e:
             print(f"File operation error exporting to HTML: {e}")
             return False
-        except (UnicodeError, UnicodeEncodeError) as e:
+        except UnicodeError as e:
             print(f"Encoding error exporting to HTML: {e}")
             return False
         except Exception as e:
@@ -955,22 +977,41 @@ class BookmarkManagerGUI(StandardWindow):
     def edit_bookmark(self):
         """Edit selected bookmark"""
         current_row = self.bookmark_table.currentRow()
-        if current_row >= 0:
-            bookmark_id = self.bookmark_table.item(current_row, 0).data(Qt.UserRole)
-            bookmark = next((b for b in self.current_bookmarks if b['id'] == bookmark_id), None)
+        if current_row < 0:
+            return
             
-            if bookmark:
-                dialog = BookmarkDialog(self, bookmark)
-                if dialog.exec_() == QDialog.Accepted:
-                    data = dialog.get_bookmark_data()
-                    if data['title'] and data['url']:
-                        if self.model.update_bookmark(bookmark_id, **data):
-                            self.load_bookmarks()
-                            self.status_bar.showMessage("Bookmark updated successfully")
-                        else:
-                            QMessageBox.warning(self, "Error", "Failed to update bookmark")
-                    else:
-                        QMessageBox.warning(self, "Error", "Title and URL are required")
+        bookmark_id = self.bookmark_table.item(current_row, 0).data(Qt.UserRole)
+        bookmark = self._find_bookmark_by_id(bookmark_id)
+        
+        if bookmark:
+            self._show_edit_dialog(bookmark, bookmark_id)
+    
+    def _find_bookmark_by_id(self, bookmark_id: int) -> Optional[Dict]:
+        """Find bookmark in current list by ID"""
+        return next((b for b in self.current_bookmarks if b['id'] == bookmark_id), None)
+    
+    def _show_edit_dialog(self, bookmark: Dict, bookmark_id: int) -> None:
+        """Show edit dialog and handle bookmark update"""
+        dialog = BookmarkDialog(self, bookmark)
+        if dialog.exec_() == QDialog.Accepted:
+            data = dialog.get_bookmark_data()
+            self._process_bookmark_update(bookmark_id, data)
+    
+    def _process_bookmark_update(self, bookmark_id: int, data: Dict) -> None:
+        """Process bookmark update with validation"""
+        if not self._validate_bookmark_data(data):
+            QMessageBox.warning(self, "Error", "Title and URL are required")
+            return
+            
+        if self.model.update_bookmark(bookmark_id, **data):
+            self.load_bookmarks()
+            self.status_bar.showMessage("Bookmark updated successfully")
+        else:
+            QMessageBox.warning(self, "Error", "Failed to update bookmark")
+    
+    def _validate_bookmark_data(self, data: Dict) -> bool:
+        """Validate bookmark data has required fields"""
+        return bool(data.get('title') and data.get('url'))
     
     def delete_bookmark(self):
         """Delete selected bookmark"""
@@ -1033,37 +1074,60 @@ class BookmarkManagerGUI(StandardWindow):
     
     def import_bookmarks(self):
         """Import bookmarks from file"""
+        file_path = self._get_import_file_path()
+        if not file_path:
+            return
+            
+        try:
+            bookmarks = self._load_bookmarks_from_file(file_path)
+            if bookmarks is None:
+                return
+                
+            imported_count = self._add_imported_bookmarks(bookmarks)
+            self._show_import_success(imported_count)
+            
+        except Exception as e:
+            self._show_import_error(e)
+    
+    def _get_import_file_path(self) -> Optional[str]:
+        """Get file path for bookmark import"""
         file_path, _ = QFileDialog.getOpenFileName(
             self, "Import Bookmarks",
             "", "HTML Files (*.html);;JSON Files (*.json);;CSV Files (*.csv)"
         )
-        
-        if file_path:
-            try:
-                if file_path.endswith('.html'):
-                    bookmarks = BookmarkImporter.import_from_html(file_path)
-                elif file_path.endswith('.json'):
-                    bookmarks = BookmarkImporter.import_from_json(file_path)
-                elif file_path.endswith('.csv'):
-                    bookmarks = BookmarkImporter.import_from_csv(file_path)
-                else:
-                    QMessageBox.warning(self, "Error", "Unsupported file format")
-                    return
-                
-                # Add imported bookmarks
-                imported_count = 0
-                for bookmark in bookmarks:
-                    if bookmark['title'] and bookmark['url']:
-                        if self.model.add_bookmark(**bookmark):
-                            imported_count += 1
-                
-                self.load_bookmarks()
-                self.status_bar.showMessage(f"Imported {imported_count} bookmarks")
-                QMessageBox.information(self, "Import Complete", 
-                                      f"Successfully imported {imported_count} bookmarks")
-                
-            except Exception as e:
-                QMessageBox.critical(self, "Import Error", f"Failed to import bookmarks: {str(e)}")
+        return file_path if file_path else None
+    
+    def _load_bookmarks_from_file(self, file_path: str) -> Optional[List[Dict]]:
+        """Load bookmarks from file based on extension"""
+        if file_path.endswith('.html'):
+            return BookmarkImporter.import_from_html(file_path)
+        elif file_path.endswith('.json'):
+            return BookmarkImporter.import_from_json(file_path)
+        elif file_path.endswith('.csv'):
+            return BookmarkImporter.import_from_csv(file_path)
+        else:
+            QMessageBox.warning(self, "Error", "Unsupported file format")
+            return None
+    
+    def _add_imported_bookmarks(self, bookmarks: List[Dict]) -> int:
+        """Add imported bookmarks to database and return count"""
+        imported_count = 0
+        for bookmark in bookmarks:
+            if bookmark['title'] and bookmark['url']:
+                if self.model.add_bookmark(**bookmark):
+                    imported_count += 1
+        return imported_count
+    
+    def _show_import_success(self, imported_count: int) -> None:
+        """Show import success message and refresh view"""
+        self.load_bookmarks()
+        self.status_bar.showMessage(f"Imported {imported_count} bookmarks")
+        QMessageBox.information(self, "Import Complete", 
+                              f"Successfully imported {imported_count} bookmarks")
+    
+    def _show_import_error(self, error: Exception) -> None:
+        """Show import error message"""
+        QMessageBox.critical(self, "Import Error", f"Failed to import bookmarks: {str(error)}")
     
     def export_bookmarks(self):
         """Export bookmarks to file"""

@@ -40,6 +40,68 @@ class SrcOrganizer:
         shutil.copytree(self.src_path, self.backup_dir)
         print(f"✅ Created backup at: {self.backup_dir}")
     
+    def create_missing_core_structure(self):
+        """Create the missing src/core structure that main.py requires."""
+        print("\n🏗️ Creating missing src/core structure...")
+        core_dir = self.src_path / "core"
+        
+        if core_dir.exists():
+            print(f"  ✓ Directory {core_dir} already exists")
+        else:
+            core_dir.mkdir(parents=True, exist_ok=True)
+            self.log_change("CREATED", core_dir)
+        
+        # Create __init__.py
+        init_file = core_dir / "__init__.py"
+        init_content = '''"""
+Core constants and configuration for Richard's File Utilities.
+"""
+
+from .constants import (
+    APP_NAME, JSON_FILES_FILTER, IMPORT_ERROR, SECURITY_TEST,
+    SUGGESTED_SOLUTIONS_HEADER
+)
+
+__all__ = [
+    "APP_NAME", "JSON_FILES_FILTER", "IMPORT_ERROR", "SECURITY_TEST",
+    "SUGGESTED_SOLUTIONS_HEADER"
+]
+'''
+        
+        if not init_file.exists():
+            init_file.write_text(init_content, encoding='utf-8')
+            self.log_change("CREATED", init_file)
+        
+        # Create constants.py
+        constants_file = core_dir / "constants.py"
+        constants_content = '''"""
+Constants for Richard's File Utilities Main Application.
+"""
+
+# Application Identity
+APP_NAME = "Richard's File Utilities"
+
+# File Dialog Filters
+JSON_FILES_FILTER = "JSON Files (*.json);;All Files (*)"
+
+# Error Messages
+IMPORT_ERROR = "Import Error"
+SECURITY_TEST = "Security Test"
+
+# UI Headers
+SUGGESTED_SOLUTIONS_HEADER = "Suggested Solutions"
+
+# Version Information
+APP_VERSION = "3.0.0"
+APP_ORGANIZATION = "Richard's File Utilities"
+'''
+        
+        if not constants_file.exists():
+            constants_file.write_text(constants_content, encoding='utf-8')
+            self.log_change("CREATED", constants_file)
+        
+        print(f"  ✅ Core structure ready for main.py imports")
+
     def remove_pycache_folders(self):
         """Remove all __pycache__ folders recursively."""
         print("\n🧹 Removing __pycache__ folders...")
@@ -316,6 +378,9 @@ __all__ = [
         print("🚀 Starting src folder organization...")
         print("=" * 60)
         
+        # Step 0: Create missing core structure for main.py
+        self.create_missing_core_structure()
+        
         # Step 1: Create backup
         self.create_backup()
         
@@ -350,6 +415,7 @@ __all__ = [
         print(f"📁 Backup created at: {self.backup_dir}")
         print(f"📝 {len(self.changes_log)} changes made")
         print("🎯 Src folder is now systematically organized")
+        print("✅ Missing src/core/constants.py structure created")
         print("\nNext steps:")
         print("1. Test the main application: python main.py")
         print("2. Verify all tools work properly")
@@ -357,8 +423,117 @@ __all__ = [
 
 def main():
     """Main function to run src organization."""
-    organizer = SrcOrganizer()
-    organizer.run_organization()
+    
+    # JUST create the missing core structure first
+    print("🎯 Creating missing src/core constants structure only...")
+    from pathlib import Path
+    
+    # Direct creation approach
+    core_dir = Path("src/core")
+    if not core_dir.exists():
+        print("Creating missing src/core structure...")
+        core_dir.mkdir(parents=True, exist_ok=True)
+        print(f"✓ Created {core_dir}")
+        
+        # Create __init__.py
+        init_file = core_dir / "__init__.py"
+        init_content = '''"""
+Core constants and configuration for Richard's File Utilities.
+"""
+
+from .constants import (
+    APP_NAME, JSON_FILES_FILTER, IMPORT_ERROR, SECURITY_TEST,
+    SUGGESTED_SOLUTIONS_HEADER
+)
+
+__all__ = [
+    "APP_NAME", "JSON_FILES_FILTER", "IMPORT_ERROR", "SECURITY_TEST",
+    "SUGGESTED_SOLUTIONS_HEADER"
+]
+'''
+        init_file.write_text(init_content, encoding='utf-8')
+        print(f"✓ Created {init_file}")
+        
+        # Create constants.py
+        constants_file = core_dir / "constants.py"
+        constants_content = '''"""
+Constants for Richard's File Utilities Main Application.
+"""
+
+# Application Identity
+APP_NAME = "Richard's File Utilities"
+
+# File Dialog Filters
+JSON_FILES_FILTER = "JSON Files (*.json);;All Files (*)"
+
+# Error Messages
+IMPORT_ERROR = "Import Error"
+SECURITY_TEST = "Security Test"
+
+# UI Headers
+SUGGESTED_SOLUTIONS_HEADER = "Suggested Solutions"
+
+# Version Information
+APP_VERSION = "3.0.0"
+APP_ORGANIZATION = "Richard's File Utilities"
+'''
+        constants_file.write_text(constants_content, encoding='utf-8')
+        print(f"✓ Created {constants_file}")
+        
+        print("\n✅ Constants structure creation completed successfully!")
+        print("✅ main.py can now import from src.core.constants")
+        
+        # Test the import
+        try:
+            import sys
+            import os
+            # Ensure we're in the right directory
+            os.chdir(Path(__file__).parent.parent.parent)
+            sys.path.insert(0, 'src')
+            from core.constants import APP_NAME, JSON_FILES_FILTER, IMPORT_ERROR
+            print(f"✅ Import test successful: {APP_NAME}")
+            print(f"✅ JSON filter: {JSON_FILES_FILTER}")
+            print(f"✅ Error constant: {IMPORT_ERROR}")
+        except Exception as e:
+            print(f"⚠️ Import test failed: {e}")
+            print(f"Current working directory: {os.getcwd()}")
+            print(f"Available directories: {list(Path('.').iterdir())}")
+    else:
+        print(f"✓ Directory {core_dir} already exists")
+        constants_file = core_dir / "constants.py"
+        if constants_file.exists():
+            print(f"✓ File {constants_file} already exists")
+            print("✅ Constants structure already complete!")
+        else:
+            print("⚠️ Directory exists but constants.py missing - creating it...")
+            # Just create the constants file
+            constants_content = '''"""
+Constants for Richard's File Utilities Main Application.
+"""
+
+# Application Identity
+APP_NAME = "Richard's File Utilities"
+
+# File Dialog Filters
+JSON_FILES_FILTER = "JSON Files (*.json);;All Files (*)"
+
+# Error Messages
+IMPORT_ERROR = "Import Error"
+SECURITY_TEST = "Security Test"
+
+# UI Headers
+SUGGESTED_SOLUTIONS_HEADER = "Suggested Solutions"
+
+# Version Information
+APP_VERSION = "3.0.0"
+APP_ORGANIZATION = "Richard's File Utilities"
+'''
+            constants_file.write_text(constants_content, encoding='utf-8')
+            print(f"✓ Created {constants_file}")
+    
+    # Comment out the full organization for now
+    # organizer = SrcOrganizer()
+    # organizer.run_organization()
 
 if __name__ == "__main__":
     main()

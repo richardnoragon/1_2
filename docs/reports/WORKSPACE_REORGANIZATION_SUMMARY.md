@@ -126,12 +126,12 @@ self.launch_tool("File Finder", "file_finder", "FileFinderGUI")
 
 # After
 from src.rfu.tools.pdf.widgets.enhanced_pdf_tools_widget import EnhancedPDFToolsWidget
-self.launch_tool("File Finder", "src.rfu.tools.file_management.file_finder", "FileFinderGUI")
+self.launch_tool("File Finder", "src.utilities.file_management.file_finder", "FileFinderGUI")
 ```
 
 ### Tool Launch Updates
 All tool launcher methods in main.py updated to use new hierarchical import paths:
-- File management tools: `src.rfu.tools.file_management.*`
+- File management tools: `src.utilities.file_management.*`
 - File operations tools: `src.rfu.tools.file_operations.*`
 - Analysis tools: `src.rfu.tools.analysis.*`
 - Metadata tools: `src.rfu.tools.metadata.*`

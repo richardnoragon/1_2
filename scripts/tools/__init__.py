@@ -1,3 +1,3 @@
-from core.error_handler import error_handler
+from src.core.error_handler import error_handler
 
 """Tools package for RFU project."""

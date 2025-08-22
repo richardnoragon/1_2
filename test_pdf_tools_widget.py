@@ -15,7 +15,9 @@ sys.path.insert(0, str(project_root / "src"))
 from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget
 
 try:
-    from src.rfu.tools.pdf.widgets.enhanced_pdf_tools_widget import EnhancedPDFToolsWidget
+    from src.utilities.pdf_tools.widgets.enhanced_pdf_tools_widget import (
+        EnhancedPDFToolsWidget
+    )
     
     class TestWindow(QMainWindow):
         def __init__(self):

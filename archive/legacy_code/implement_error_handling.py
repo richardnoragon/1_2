@@ -20,7 +20,7 @@ from pathlib import Path
 from typing import Optional, Any, Dict
 from PyQt5.QtWidgets import QMessageBox
 
-from core.error_handler import error_handler
+from src.core.error_handler import error_handler
 
 
 
@@ -136,7 +136,7 @@ def add_error_handling(file_path: Path) -> None:
                 imports_end = i + 1
                 
         # Add error handler import after other imports
-        error_import = "from core.error_handler import error_handler\n"
+        error_import = "from src.core.error_handler import error_handler\n"
         if error_import not in content:
             new_content = (
                 content[:imports_end] +

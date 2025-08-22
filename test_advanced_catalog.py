@@ -17,18 +17,18 @@ def test_imports():
     print("Testing imports...")
     
     try:
-        from src.rfu.tools.file_management.advanced_catalog.catalog_data_model import (
+        from src.utilities.file_management.advanced_catalog.catalog_data_model import (
             FileEntry, CatalogData, SortCriteria, ColorScheme, FileType
         )
         print("✓ Data model imports successful")
         
-        from src.rfu.tools.file_management.advanced_catalog.sorting_engine import SortingEngine
+        from src.utilities.file_management.advanced_catalog.sorting_engine import SortingEngine
         print("✓ Sorting engine import successful")
         
-        from src.rfu.tools.file_management.advanced_catalog.color_coding_engine import ColorCodingEngine
+        from src.utilities.file_management.advanced_catalog.color_coding_engine import ColorCodingEngine
         print("✓ Color coding engine import successful")
         
-        from src.rfu.tools.file_management.advanced_catalog.export_engine import (
+        from src.utilities.file_management.advanced_catalog.export_engine import (
             HTMLExporter, CSVExporter, JSONExporter
         )
         print("✓ Export engine imports successful")
@@ -44,7 +44,7 @@ def test_data_model():
     print("\nTesting data model...")
     
     try:
-        from src.rfu.tools.file_management.advanced_catalog.catalog_data_model import (
+        from src.utilities.file_management.advanced_catalog.catalog_data_model import (
             FileEntry, CatalogData, SortCriteria, FileType
         )
         
@@ -77,10 +77,10 @@ def test_sorting():
     print("\nTesting sorting engine...")
     
     try:
-        from src.rfu.tools.file_management.advanced_catalog.catalog_data_model import (
+        from src.utilities.file_management.advanced_catalog.catalog_data_model import (
             FileEntry, SortCriteria, FileType
         )
-        from src.rfu.tools.file_management.advanced_catalog.sorting_engine import SortingEngine
+        from src.utilities.file_management.advanced_catalog.sorting_engine import SortingEngine
         from datetime import datetime
         
         # Create test entries
@@ -128,10 +128,10 @@ def test_color_coding():
     print("\nTesting color coding engine...")
     
     try:
-        from src.rfu.tools.file_management.advanced_catalog.catalog_data_model import (
+        from src.utilities.file_management.advanced_catalog.catalog_data_model import (
             FileEntry, SortCriteria, ColorScheme
         )
-        from src.rfu.tools.file_management.advanced_catalog.color_coding_engine import ColorCodingEngine
+        from src.utilities.file_management.advanced_catalog.color_coding_engine import ColorCodingEngine
         
         # Create test entry
         entry = FileEntry.from_path(Path(__file__))
@@ -164,8 +164,8 @@ def test_export():
     print("\nTesting export engines...")
     
     try:
-        from src.rfu.tools.file_management.advanced_catalog.catalog_data_model import CatalogData
-        from src.rfu.tools.file_management.advanced_catalog.export_engine import (
+        from src.utilities.file_management.advanced_catalog.catalog_data_model import CatalogData
+        from src.utilities.file_management.advanced_catalog.export_engine import (
             HTMLExporter, CSVExporter, JSONExporter
         )
         

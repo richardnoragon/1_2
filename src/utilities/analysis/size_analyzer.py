@@ -47,13 +47,22 @@ class SizeAnalyzerGUI(StandardWindow):
         self.init_ui()
         if STANDARD_WINDOW_AVAILABLE:
             self._setup_menu_callbacks()
+            # Ensure menu bar exists
+            self.ensure_menu_bar()
     
     def _setup_menu_callbacks(self):
         """Setup tool-specific menu callbacks."""
         if hasattr(self, 'menu_manager'):
             # Register tool-specific callbacks
-            self.menu_manager.register_callback('new_analysis', self.clear_analysis)
-            self.menu_manager.register_callback('help_size_analyzer', self.show_help)
+            self.menu_manager.register_callback('new_analysis',
+                                                self.clear_analysis)
+            # Override the standard help with our tool-specific help
+            self.menu_manager.register_callback('show_user_guide',
+                                                self.show_help)
+            self.menu_manager.register_callback('show_preferences',
+                                                self.show_preferences)
+            self.menu_manager.register_callback('refresh',
+                                                self.refresh_view)
             
     def clear_analysis(self):
         """Clear all size analysis results."""
@@ -118,13 +127,13 @@ class SizeAnalyzerGUI(StandardWindow):
         
     def show_preferences(self):
         """Show Size Analyzer preferences."""
-        QMessageBox.information(self, "Size Analyzer Preferences", 
-                               "Size Analyzer preferences:\n\n"
-                               "• Analysis depth limits\n"
-                               "• File type filters\n"
-                               "• Size display units\n"
-                               "• Sort and grouping options\n\n"
-                               "Advanced preferences coming soon!")
+        QMessageBox.information(self, "Size Analyzer Preferences",
+                                "Size Analyzer preferences:\n\n"
+                                "• Analysis depth limits\n"
+                                "• File type filters\n"
+                                "• Size display units\n"
+                                "• Sort and grouping options\n\n"
+                                "Advanced preferences coming soon!")
                                
     def refresh_view(self):
         """Refresh/clear the current analysis results."""

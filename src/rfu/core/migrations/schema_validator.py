@@ -190,64 +190,16 @@ class SchemaValidator:
         try:
             integrity_issues = []
             
-            # Check for orphaned records
-            orphan_checks = [
-                # Check for user preferences without valid users
-                """
-                SELECT COUNT(*) as count FROM user_preferences 
-                WHERE user_id NOT IN (
-                    SELECT DISTINCT user_id FROM user_preferences 
-                    WHERE preference_category = 'user_info'
-                )
-                """,
-                
-                # Check for invalid JSON in metadata fields
-                """
-                SELECT id, metadata FROM file_history 
-                WHERE metadata IS NOT NULL AND metadata != ''
-                """
-            ]
-            
             with self.db_manager.get_connection() as conn:
-                # Run orphan checks
-                for i, check_sql in enumerate(orphan_checks):
-                    cursor = conn.execute(check_sql)
-                    
-                    if i == 0:  # Orphan count check
-                        result = cursor.fetchone()
-                        if result and result[0] > 0:
-                            integrity_issues.append({
-                                'type': 'orphaned_records',
-                                'count': result[0]
-                            })
-                    
-                    elif i == 1:  # JSON validation check
-                        results = cursor.fetchall()
-                        for row in results:
-                            try:
-                                json.loads(row[1])
-                            except json.JSONDecodeError:
-                                integrity_issues.append({
-                                    'type': 'invalid_json',
-                                    'table': 'file_history',
-                                    'id': row[0]
-                                })
+                # Check for orphaned records
+                orphan_issues = self._check_orphaned_records(conn)
+                integrity_issues.extend(orphan_issues)
                 
                 # Check for data consistency
                 consistency_issues = self._check_data_consistency(conn)
                 integrity_issues.extend(consistency_issues)
             
-            if integrity_issues:
-                return ValidationResult(
-                    success=False,
-                    message=f"Data integrity issues found: {len(integrity_issues)}",
-                    details={'integrity_issues': integrity_issues}
-                )
-            
-            return ValidationResult(
-                success=True,
-                message="Data integrity validation passed"
-            )
+            return self._create_integrity_result(integrity_issues)
             
         except Exception as e:
             self.logger.error(f"Data integrity validation failed: {e}")
@@ -255,6 +207,77 @@ class SchemaValidator:
                 success=False,
                 message=f"Data integrity error: {e}"
             )
+
+    def _check_orphaned_records(self, conn) -> List[Dict]:
+        """Check for orphaned records in the database."""
+        integrity_issues = []
+        
+        orphan_checks = [
+            # Check for user preferences without valid users
+            """
+            SELECT COUNT(*) as count FROM user_preferences
+            WHERE user_id NOT IN (
+                SELECT DISTINCT user_id FROM user_preferences
+                WHERE preference_category = 'user_info'
+            )
+            """,
+            
+            # Check for invalid JSON in metadata fields
+            """
+            SELECT id, metadata FROM file_history
+            WHERE metadata IS NOT NULL AND metadata != ''
+            """
+        ]
+        
+        for i, check_sql in enumerate(orphan_checks):
+            cursor = conn.execute(check_sql)
+            
+            if i == 0:  # Orphan count check
+                result = cursor.fetchone()
+                if result and result[0] > 0:
+                    integrity_issues.append({
+                        'type': 'orphaned_records',
+                        'count': result[0]
+                    })
+            
+            elif i == 1:  # JSON validation check
+                json_issues = self._validate_json_fields(cursor)
+                integrity_issues.extend(json_issues)
+        
+        return integrity_issues
+
+    def _validate_json_fields(self, cursor) -> List[Dict]:
+        """Validate JSON fields in database records."""
+        json_issues = []
+        results = cursor.fetchall()
+        
+        for row in results:
+            try:
+                json.loads(row[1])
+            except json.JSONDecodeError:
+                json_issues.append({
+                    'type': 'invalid_json',
+                    'table': 'file_history',
+                    'id': row[0]
+                })
+        
+        return json_issues
+
+    def _create_integrity_result(self, integrity_issues: List[Dict]
+                                 ) -> ValidationResult:
+        """Create the final integrity validation result."""
+        if integrity_issues:
+            return ValidationResult(
+                success=False,
+                message=(f"Data integrity issues found: "
+                         f"{len(integrity_issues)}"),
+                details={'integrity_issues': integrity_issues}
+            )
+        
+        return ValidationResult(
+            success=True,
+            message="Data integrity validation passed"
+        )
     
     def generate_schema_checksum(self) -> str:
         """

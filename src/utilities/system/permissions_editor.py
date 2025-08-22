@@ -29,7 +29,7 @@ class PermissionsEditorGUI(StandardWindow):
         if STANDARD_WINDOW_AVAILABLE:
             super().__init__(
                 title="Permissions Editor - Richard's File Utilities",
-                window_type="system"
+                window_type="utility"
             )
         else:
             super().__init__()

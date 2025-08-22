@@ -15,7 +15,7 @@ def main():
     """Run the Advanced File Catalog Generator demo."""
     try:
         from PyQt5.QtWidgets import QApplication
-        from src.rfu.tools.file_management.advanced_catalog.advanced_catalog_window import AdvancedCatalogWindow
+        from src.utilities.file_management.advanced_catalog.advanced_catalog_window import AdvancedCatalogWindow
         
         print("Starting Advanced File Catalog Generator...")
         

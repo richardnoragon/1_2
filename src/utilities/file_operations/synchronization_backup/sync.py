@@ -15,8 +15,32 @@ from PyQt5.QtWidgets import QApplication, QMessageBox
 from PyQt5.QtCore import QThread, pyqtSignal
 from PyQt5 import uic
 
-from gui.common.base_window import BaseWindow
-from gui.common.dialogs import show_error_dialog, get_existing_directory
+# Import StandardWindow for menu integration
+try:
+    from src.rfu.gui.standard_window import StandardWindow
+    # For dialog functions, try both import paths
+    try:
+        from gui.common.dialogs import show_error_dialog, get_existing_directory
+    except ImportError:
+        # Fallback functions if imports fail
+        def show_error_dialog(parent, title, message):
+            QMessageBox.critical(parent, title, message)
+        
+        def get_existing_directory(parent, caption):
+            from PyQt5.QtWidgets import QFileDialog
+            return QFileDialog.getExistingDirectory(parent, caption)
+except ImportError:
+    # Fallback to QMainWindow if StandardWindow not available
+    from PyQt5.QtWidgets import QMainWindow
+    StandardWindow = QMainWindow
+    
+    # Fallback functions for dialogs
+    def show_error_dialog(parent, title, message):
+        QMessageBox.critical(parent, title, message)
+    
+    def get_existing_directory(parent, caption):
+        from PyQt5.QtWidgets import QFileDialog
+        return QFileDialog.getExistingDirectory(parent, caption)
 
 
 class SyncWorker(QThread):
@@ -235,14 +259,19 @@ class SyncWorker(QThread):
         self.running = False
 
 
-class SyncWindow(BaseWindow):
+class SyncWindow(StandardWindow):
     """Main window for file synchronization operations."""
     
     def __init__(self) -> None:
         """Initialize the sync window."""
-        super().__init__()
+        super().__init__(
+            title="Synchronize - Richard's File Utilities",
+            window_type="utility"
+        )
         ui_file: str = os.path.join(os.path.dirname(__file__), 'sync.ui')
         uic.loadUi(ui_file, self)
+        
+        self._setup_menu_callbacks()
 
         # Initialize models
         self.left_model: QStandardItemModel = QStandardItemModel()
@@ -276,6 +305,64 @@ class SyncWindow(BaseWindow):
         self.progress_bar.setValue(0)
         
         self.show()
+
+    def _setup_menu_callbacks(self):
+        """Setup tool-specific menu callbacks."""
+        if hasattr(self, 'menu_manager'):
+            # Register tool-specific callbacks
+            self.menu_manager.register_callback('new_sync', self.clear_sync)
+            self.menu_manager.register_callback('help_sync', self.show_help)
+            
+    def clear_sync(self):
+        """Clear all sync operations for a new task."""
+        # Clear the directory selections and file lists
+        self.left_dir = ""
+        self.right_dir = ""
+        self.left_directory_label.setText("No directory selected")
+        self.right_directory_label.setText("No directory selected")
+        self.left_model.clear()
+        self.right_model.clear()
+        self.sync_pushButton.setEnabled(False)
+        self.compare_pushButton.setEnabled(False)
+        self.progress_bar.setValue(0)
+        
+    def show_help(self):
+        """Show help dialog for Synchronize tool."""
+        help_text = """
+        <h2>Synchronize Tool - Help</h2>
+        
+        <h3>Directory Synchronization:</h3>
+        <ul>
+        <li><b>Left Directory:</b> The source directory to sync from</li>
+        <li><b>Right Directory:</b> The target directory to sync to</li>
+        <li><b>Compare:</b> Analyze differences between directories</li>
+        <li><b>Sync:</b> Execute the synchronization operation</li>
+        </ul>
+        
+        <h3>Sync Modes:</h3>
+        <ul>
+        <li><b>Mirror Sync:</b> Make target identical to source</li>
+        <li><b>Update Sync:</b> Copy newer files only</li>
+        <li><b>Two-way Sync:</b> Synchronize both directions</li>
+        </ul>
+        
+        <h3>Features:</h3>
+        <ul>
+        <li>Visual directory comparison</li>
+        <li>Real-time progress tracking</li>
+        <li>Detailed sync reports</li>
+        <li>Safe file operations with verification</li>
+        </ul>
+        
+        <h3>Keyboard Shortcuts:</h3>
+        <ul>
+        <li><b>Ctrl+Q:</b> Exit application</li>
+        <li><b>F1:</b> Show this help</li>
+        <li><b>F5:</b> Clear sync operations</li>
+        </ul>
+        """
+        
+        QMessageBox.information(self, "Synchronize Help", help_text)
 
     def select_directory(self, side: str) -> None:
         """Select a directory for synchronization.
