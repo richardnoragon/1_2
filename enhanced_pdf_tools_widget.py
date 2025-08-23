@@ -258,9 +258,28 @@ class EnhancedPDFToolsWidget(QWidget):
 
     def discover_and_create_categories(self):
         """Discover PDF tool categories from folder structure and create buttons"""
-        # Define the PDF tools base path
-        base_path = (Path(__file__).parent.parent.parent.parent.parent / 
-                    "utilities" / "pdf_tools")
+        # Define the PDF tools base path - fix the path calculation
+        script_dir = Path(__file__).parent
+        base_path = script_dir / "src" / "utilities" / "pdf_tools"
+        
+        # If running from workspace root, try direct path
+        if not base_path.exists():
+            base_path = Path("src/utilities/pdf_tools")
+        
+        # If still not found, try relative to script location
+        if not base_path.exists():
+            base_path = script_dir / "src" / "utilities" / "pdf_tools"
+            
+        # Debug: Print the path being used
+        print(f"PDF Tools base path: {base_path}")
+        print(f"Path exists: {base_path.exists()}")
+        
+        if not base_path.exists():
+            # Show error message if path not found
+            error_label = QLabel("PDF Tools directory not found. Please check installation.")
+            error_label.setStyleSheet("color: red; font-weight: bold; margin: 20px;")
+            self.categories_layout.addWidget(error_label, 0, 0)
+            return
         
         # Category mapping with colors and descriptions
         category_config = {

@@ -1,240 +1,777 @@
-"""
-Test Configuration and Fixtures for Size Analyzer Comprehensive Testing Suite
+"""""""""#!/usr/bin/env python3#!/usr/bin/env python3
 
-This module provides pytest fixtures, mock objects, and test configuration
-for comprehensive testing of the Size Analyzer migration.
+Simple conftest.py for Size Analyzer testing
+
+Created: August 22, 2025Pytest configuration and shared fixtures for Size Analyzer tests
+
 """
 
-import os
+Pytest configuration and shared fixtures for Size Analyzer tests
+
 import sys
-import tempfile
-import shutil
-import json
-import pytest
-from unittest.mock import Mock, MagicMock, patch
-from pathlib import Path
-from typing import Dict, Any, List, Optional
-from PyQt5.QtWidgets import QApplication
-from PyQt5.QtCore import QObject, pyqtSignal
 
-# Add project root to path
-project_root = Path(__file__).parent.parent.parent
+import osFile: conftest.py
+
+from pathlib import Path
+
+Target: Size Analyzer comprehensive testing""""""
+
+# Add project root to Python path
+
+project_root = Path(__file__).parent.parent.parentCreated: August 22nd 2025
+
 sys.path.insert(0, str(project_root))
 
-from file_utilities_2.core.size_analyzer_logic import SizeAnalyzer, SizeAnalyzerWorker
-from file_utilities_2.gui.size_analyzer_gui import SizeAnalyzerGUI
-from file_utilities_2.core.size_analyzer_config import SizeAnalyzerConfig
-from file_utilities_2.core.size_analyzer_logging import SizeAnalyzerLogger
-from file_utilities_2.integration.hub_connector import HubConnector
+Framework: pytestFile: conftest.py
+
+# Simple test configuration
+
+def pytest_configure(config):"""
+
+    """Configure pytest with basic settings."""
+
+    passTarget: Size Analyzer comprehensive testingPytest configuration and shared fixtures for Size Analyzer testsPytest configuration and shared fixtures for Size Analyzer tests
 
 
-class MockHubInstance:
-    """Mock hub instance for testing hub integration."""
-    
-    def __init__(self):
-        self.registered_tools = {}
-        self.messages = []
-        self.events = []
-        self.resources = {}
-        self.tool_progress = {}
-        
-    def register_tool(self, tool_name: str, connector):
-        """Register a tool with the mock hub."""
-        self.registered_tools[tool_name] = connector
-        return True
-    
-    def unregister_tool(self, tool_name: str):
-        """Unregister a tool from the mock hub."""
-        if tool_name in self.registered_tools:
-            del self.registered_tools[tool_name]
-    
-    def receive_message(self, message):
-        """Receive a message from a tool."""
-        self.messages.append(message)
-    
-    def broadcast_event(self, tool_name: str, event_type: str, data: Dict[str, Any]):
-        """Broadcast an event to all tools."""
-        self.events.append({
-            'tool_name': tool_name,
-            'event_type': event_type,
-            'data': data
-        })
-    
-    def request_resource(self, tool_name: str, resource_type: str, requirements: Dict[str, Any]) -> bool:
-        """Handle resource requests."""
-        # Always grant resources for testing
-        self.resources[f"{tool_name}_{resource_type}"] = requirements
-        return True
-    
-    def update_tool_progress(self, tool_name: str, percentage: int, message: str):
-        """Update tool progress."""
-        self.tool_progress[tool_name] = {
-            'percentage': percentage,
-            'message': message
-        }
+
+def pytest_collection_modifyitems(config, items):import os
+
+    """Modify test collection."""
+
+    passimport sysCreated: August 22, 2025
+
+import pytest
+
+import tempfileFramework: pytest
+
+import shutil
+
+from unittest.mock import MagicMock, patch"""
+
+from datetime import datetime
+
+from pathlib import PathFile: conftest.pyFile: conftest.py
 
 
-class MockFileSystem:
-    """Mock file system for controlled testing."""
-    
-    def __init__(self):
-        self.files = {}
-        self.directories = set()
-        
-    def add_file(self, path: str, size: int, content: str = None):
-        """Add a mock file."""
-        self.files[path] = {
-            'size': size,
-            'content': content or f"Mock content for {path}",
-            'modified': 1640995200  # Fixed timestamp
-        }
-        # Add parent directories
-        parent = os.path.dirname(path)
-        while parent and parent != '/':
-            self.directories.add(parent)
-            parent = os.path.dirname(parent)
-    
-    def add_directory(self, path: str):
-        """Add a mock directory."""
-        self.directories.add(path)
-    
-    def exists(self, path: str) -> bool:
-        """Check if path exists."""
-        return path in self.files or path in self.directories
-    
-    def isfile(self, path: str) -> bool:
-        """Check if path is a file."""
-        return path in self.files
-    
-    def isdir(self, path: str) -> bool:
-        """Check if path is a directory."""
-        return path in self.directories
-    
-    def getsize(self, path: str) -> int:
-        """Get file size."""
-        return self.files.get(path, {}).get('size', 0)
-    
-    def listdir(self, path: str) -> List[str]:
-        """List directory contents."""
-        contents = []
-        for file_path in self.files:
-            if os.path.dirname(file_path) == path:
-                contents.append(os.path.basename(file_path))
-        for dir_path in self.directories:
-            if os.path.dirname(dir_path) == path:
-                contents.append(os.path.basename(dir_path))
-        return contents
-    
-    def walk(self, path: str):
-        """Mock os.walk functionality."""
-        visited = set()
-        
-        def _walk(current_path):
-            if current_path in visited:
-                return
-            visited.add(current_path)
-            
-            dirs = []
-            files = []
-            
-            # Find direct children
-            for file_path in self.files:
-                if os.path.dirname(file_path) == current_path:
-                    files.append(os.path.basename(file_path))
-            
-            for dir_path in self.directories:
-                if os.path.dirname(dir_path) == current_path:
-                    dirs.append(os.path.basename(dir_path))
-            
-            yield current_path, dirs, files
-            
-            # Recurse into subdirectories
-            for dir_name in dirs:
-                subdir_path = os.path.join(current_path, dir_name)
-                yield from _walk(subdir_path)
-        
-        yield from _walk(path)
 
+# Add project root to Python pathimport os
+
+project_root = Path(__file__).parent.parent.parent
+
+sys.path.insert(0, str(project_root))import sysTarget: Size Analyzer comprehensive testingTarget: Size Analyzer comprehensive testing
+
+
+
+import pytest
 
 @pytest.fixture(scope="session")
-def qapp():
-    """Create QApplication instance for GUI testing."""
-    if not QApplication.instance():
+
+def test_session_info():import tempfileCreated: 2025-08-22Created: 2025-08-22
+
+    """Provide test session information."""
+
+    return {import shutil
+
+        'start_time': datetime.now(),
+
+        'test_date': 'August 22nd 2025',from unittest.mock import MagicMock, patchFramework: pytestFramework: pytest
+
+        'target_module': 'size_analyzer',
+
+        'framework': 'pytest',from datetime import datetime
+
+        'coverage_threshold': 85
+
+    }from pathlib import Path"""
+
+
+
+
+
+@pytest.fixture(scope="function") 
+
+def mock_pyqt5_environment():# Add project root to Python pathThis file provides shared test fixtures, setup/teardown methods,
+
+    """Mock PyQt5 environment to avoid GUI dependencies."""
+
+    mock_modules = {project_root = Path(__file__).parent.parent.parent
+
+        'PyQt5': MagicMock(),
+
+        'PyQt5.QtWidgets': MagicMock(),sys.path.insert(0, str(project_root))import osand configuration for all Size Analyzer unit tests.
+
+        'PyQt5.QtCore': MagicMock(),
+
+        'PyQt5.QtGui': MagicMock(),
+
+    }
+
+    import sys"""
+
+    with patch.dict('sys.modules', mock_modules):
+
+        yield mock_modules@pytest.fixture(scope="session")
+
+
+
+def test_session_info():import pytest
+
+@pytest.fixture(scope="session", autouse=True)
+
+def test_session_setup_teardown():    """Provide test session information."""
+
+    """Session-level setup and teardown."""
+
+    print("\n" + "="*60)    return {import tempfileimport os
+
+    print("STARTING SIZE ANALYZER COMPREHENSIVE TEST SUITE")
+
+    print("Test Date: August 22nd 2025")        'start_time': datetime.now(),
+
+    print(f"Start Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+
+    print("Target Module: src.utilities.analysis.size_analyzer")        'test_date': 'August 22, 2025',import shutilimport sys
+
+    print("="*60)
+
+            'target_module': 'size_analyzer',
+
+    yield
+
+            'framework': 'pytest',from unittest.mock import MagicMock, patchimport pytest
+
+    print("\n" + "="*60)
+
+    print("SIZE ANALYZER TEST SUITE COMPLETED")        'coverage_threshold': 85
+
+    print(f"End Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+
+    print("="*60)    }from datetime import datetimeimport tempfile
+
+
+
+from pathlib import Pathimport shutil
+
+@pytest.fixture(scope="function")
+
+def mock_pyqt5_environment():from unittest.mock import MagicMock, patch
+
+    """Mock PyQt5 environment to avoid GUI dependencies during testing."""
+
+    mock_modules = {# Add project root to Python pathfrom datetime import datetime
+
+        'PyQt5': MagicMock(),
+
+        'PyQt5.QtWidgets': MagicMock(),project_root = Path(__file__).parent.parent.parentfrom pathlib import Path
+
+        'PyQt5.QtCore': MagicMock(),
+
+        'PyQt5.QtGui': MagicMock(),sys.path.insert(0, str(project_root))
+
+    }
+
+    # Add project root to Python path
+
+    # Mock specific Qt widgets and classes
+
+    mock_qt_widgets = MagicMock()project_root = Path(__file__).parent.parent.parent
+
+    mock_qt_widgets.QMainWindow = MagicMock()
+
+    mock_qt_widgets.QWidget = MagicMock()@pytest.fixture(scope="session")sys.path.insert(0, str(project_root))
+
+    mock_qt_widgets.QVBoxLayout = MagicMock()
+
+    mock_qt_widgets.QHBoxLayout = MagicMock()def test_session_info():
+
+    mock_qt_widgets.QPushButton = MagicMock()
+
+    mock_qt_widgets.QLabel = MagicMock()    """Provide test session information."""
+
+    mock_qt_widgets.QListWidget = MagicMock()
+
+    mock_qt_widgets.QProgressBar = MagicMock()    return {class MockHubInstance:
+
+    mock_qt_widgets.QApplication = MagicMock()
+
+    mock_qt_widgets.QMessageBox = MagicMock()        'start_time': datetime.now(),    """Mock hub instance for testing hub integration."""
+
+    mock_qt_widgets.QFileDialog = MagicMock()
+
+    mock_qt_widgets.QGroupBox = MagicMock()        'test_date': '2025-08-22',    
+
+    
+
+    mock_modules['PyQt5.QtWidgets'] = mock_qt_widgets        'target_module': 'size_analyzer',    def __init__(self):
+
+    
+
+    with patch.dict('sys.modules', mock_modules):        'framework': 'pytest',        self.registered_tools = {}
+
+        yield mock_modules
+
+        'coverage_threshold': 85        self.messages = []
+
+
+
+@pytest.fixture(scope="function")    }        self.events = []
+
+def mock_standard_window():
+
+    """Mock StandardWindow for testing without GUI dependencies."""        self.resources = {}
+
+    mock_window = MagicMock()
+
+    mock_window.main_layout = MagicMock()        self.tool_progress = {}
+
+    mock_window.menu_manager = MagicMock()
+
+    mock_window.ensure_menu_bar = MagicMock()@pytest.fixture(scope="function")        
+
+    
+
+    with patch('src.utilities.analysis.size_analyzer.StandardWindow', def mock_pyqt5_environment():    def register_tool(self, tool_name: str, connector):
+
+               return_value=mock_window):
+
+        yield mock_window    """Mock PyQt5 environment to avoid GUI dependencies during testing."""        """Register a tool with the mock hub."""
+
+
+
+    mock_modules = {        self.registered_tools[tool_name] = connector
+
+@pytest.fixture(scope="function")
+
+def temp_test_directory():        'PyQt5': MagicMock(),        return True
+
+    """Create temporary directory for test file operations."""
+
+    temp_dir = tempfile.mkdtemp(prefix="size_analyzer_test_")        'PyQt5.QtWidgets': MagicMock(),    
+
+    
+
+    # Create sample directory structure for testing        'PyQt5.QtCore': MagicMock(),    def unregister_tool(self, tool_name: str):
+
+    test_structure = {
+
+        'folder1': {        'PyQt5.QtGui': MagicMock(),        """Unregister a tool from the mock hub."""
+
+            'file1.txt': 'Test content for file 1',
+
+            'file2.txt': 'Test content for file 2',    }        if tool_name in self.registered_tools:
+
+            'subfolder1': {
+
+                'file3.txt': 'Test content for file 3'                del self.registered_tools[tool_name]
+
+            }
+
+        },    # Mock specific Qt widgets and classes    
+
+        'folder2': {
+
+            'file4.txt': 'Test content for file 4',    mock_qt_widgets = MagicMock()    def receive_message(self, message):
+
+            'large_file.txt': 'X' * 10000  # Large file for testing
+
+        },    mock_qt_widgets.QMainWindow = MagicMock()        """Receive a message from a tool."""
+
+        'empty_folder': {}
+
+    }    mock_qt_widgets.QWidget = MagicMock()        self.messages.append(message)
+
+    
+
+    def create_structure(base_path, structure):    mock_qt_widgets.QVBoxLayout = MagicMock()    
+
+        for name, content in structure.items():
+
+            if isinstance(content, dict):    mock_qt_widgets.QHBoxLayout = MagicMock()    def broadcast_event(self, tool_name: str, event_type: str, data: Dict[str, Any]):
+
+                # It's a directory
+
+                dir_path = os.path.join(base_path, name)    mock_qt_widgets.QPushButton = MagicMock()        """Broadcast an event to all tools."""
+
+                os.makedirs(dir_path, exist_ok=True)
+
+                create_structure(dir_path, content)    mock_qt_widgets.QLabel = MagicMock()        self.events.append({
+
+            else:
+
+                # It's a file    mock_qt_widgets.QListWidget = MagicMock()            'tool_name': tool_name,
+
+                file_path = os.path.join(base_path, name)
+
+                with open(file_path, 'w', encoding='utf-8') as f:    mock_qt_widgets.QProgressBar = MagicMock()            'event_type': event_type,
+
+                    f.write(content)
+
+        mock_qt_widgets.QApplication = MagicMock()            'data': data
+
+    create_structure(temp_dir, test_structure)
+
+        mock_qt_widgets.QMessageBox = MagicMock()        })
+
+    yield temp_dir
+
+        mock_qt_widgets.QFileDialog = MagicMock()    
+
+    # Cleanup
+
+    shutil.rmtree(temp_dir, ignore_errors=True)    mock_qt_widgets.QGroupBox = MagicMock()    def request_resource(self, tool_name: str, resource_type: str, requirements: Dict[str, Any]) -> bool:
+
+
+
+            """Handle resource requests."""
+
+@pytest.fixture(scope="function")
+
+def sample_analysis_data():    mock_modules['PyQt5.QtWidgets'] = mock_qt_widgets        # Always grant resources for testing
+
+    """Provide sample analysis data for testing."""
+
+    return {            self.resources[f"{tool_name}_{resource_type}"] = requirements
+
+        'directories': {
+
+            '/test/folder1': {    with patch.dict('sys.modules', mock_modules):        return True
+
+                'size': 1024,
+
+                'file_count': 3,        yield mock_modules    
+
+                'subdirs': 1
+
+            },    def update_tool_progress(self, tool_name: str, percentage: int, message: str):
+
+            '/test/folder2': {
+
+                'size': 10240,        """Update tool progress."""
+
+                'file_count': 2,
+
+                'subdirs': 0@pytest.fixture(scope="function")        self.tool_progress[tool_name] = {
+
+            }
+
+        },def mock_standard_window():            'percentage': percentage,
+
+        'files': {
+
+            '/test/folder1/file1.txt': 256,    """Mock StandardWindow for testing without GUI dependencies."""            'message': message
+
+            '/test/folder1/file2.txt': 512,
+
+            '/test/folder1/subfolder1/file3.txt': 256,    mock_window = MagicMock()        }
+
+            '/test/folder2/file4.txt': 240,
+
+            '/test/folder2/large_file.txt': 10000    mock_window.main_layout = MagicMock()
+
+        },
+
+        'total_size': 11264,    mock_window.menu_manager = MagicMock()
+
+        'total_files': 5,
+
+        'total_directories': 3    mock_window.ensure_menu_bar = MagicMock()class MockFileSystem:
+
+    }
+
+        """Mock file system for controlled testing."""
+
+
+
+@pytest.fixture(scope="function")    with patch('src.utilities.analysis.size_analyzer.StandardWindow',     
+
+def test_execution_timer():
+
+    """Track test execution time."""               return_value=mock_window):    def __init__(self):
+
+    start_time = datetime.now()
+
+    yield start_time        yield mock_window        self.files = {}
+
+    end_time = datetime.now()
+
+    execution_time = end_time - start_time        self.directories = set()
+
+    msg = f"\nTest execution time: {execution_time.total_seconds():.3f} s"
+
+    print(msg)        
+
+
+
+@pytest.fixture(scope="function")    def add_file(self, path: str, size: int, content: str = None):
+
+@pytest.fixture(scope="session", autouse=True)
+
+def test_session_setup_teardown():def temp_test_directory():        """Add a mock file."""
+
+    """Session-level setup and teardown."""
+
+    print("\n" + "="*60)    """Create temporary directory for test file operations."""        self.files[path] = {
+
+    print("STARTING SIZE ANALYZER COMPREHENSIVE TEST SUITE")
+
+    print("Test Date: August 22, 2025")    temp_dir = tempfile.mkdtemp(prefix="size_analyzer_test_")            'size': size,
+
+    print(f"Start Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+
+    print("Target Module: src.utilities.analysis.size_analyzer")                'content': content or f"Mock content for {path}",
+
+    print("="*60)
+
+        # Create sample directory structure for testing            'modified': 1640995200  # Fixed timestamp
+
+    yield
+
+        test_structure = {        }
+
+    print("\n" + "="*60)
+
+    print("SIZE ANALYZER TEST SUITE COMPLETED")        'folder1': {        # Add parent directories
+
+    print(f"End Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+
+    print("="*60)            'file1.txt': 'Test content for file 1',        parent = os.path.dirname(path)
+
+
+
+            'file2.txt': 'Test content for file 2',        while parent and parent != '/':
+
+@pytest.fixture(scope="function")
+
+def mock_qapplication():            'subfolder1': {            self.directories.add(parent)
+
+    """Mock QApplication for testing main function."""
+
+    mock_app = MagicMock()                'file3.txt': 'Test content for file 3'            parent = os.path.dirname(parent)
+
+    mock_app.exec_.return_value = 0
+
+                }    
+
+    with patch('src.utilities.analysis.size_analyzer.QApplication', 
+
+               return_value=mock_app):        },    def add_directory(self, path: str):
+
+        yield mock_app
+
+        'folder2': {        """Add a mock directory."""
+
+
+
+# Test markers            'file4.txt': 'Test content for file 4',        self.directories.add(path)
+
+def pytest_configure(config):
+
+    """Configure pytest markers."""            'large_file.txt': 'X' * 10000  # Large file for testing    
+
+    config.addinivalue_line(
+
+        "markers", "unit: mark test as a unit test"        },    def exists(self, path: str) -> bool:
+
+    )
+
+    config.addinivalue_line(        'empty_folder': {}        """Check if path exists."""
+
+        "markers", "integration: mark test as an integration test"
+
+    )    }        return path in self.files or path in self.directories
+
+    config.addinivalue_line(
+
+        "markers", "gui: mark test as a GUI test"        
+
+    )
+
+    config.addinivalue_line(    def create_structure(base_path, structure):    def isfile(self, path: str) -> bool:
+
+        "markers", "mock: mark test as using mocks"
+
+    )        for name, content in structure.items():        """Check if path is a file."""
+
+    config.addinivalue_line(
+
+        "markers", "slow: mark test as slow running"            if isinstance(content, dict):        return path in self.files
+
+    )
+
+                # It's a directory    
+
+
+
+def pytest_collection_modifyitems(config, items):                dir_path = os.path.join(base_path, name)    def isdir(self, path: str) -> bool:
+
+    """Modify test collection to add markers automatically."""
+
+    for item in items:                os.makedirs(dir_path, exist_ok=True)        """Check if path is a directory."""
+
+        # Add 'unit' marker to all tests in test_size_analyzer file
+
+        if "test_size_analyzer" in str(item.fspath):                create_structure(dir_path, content)        return path in self.directories
+
+            item.add_marker(pytest.mark.unit)
+
+                    else:    
+
+        # Add 'gui' marker to GUI-related tests
+
+        if "gui" in item.name.lower() or "ui" in item.name.lower():                # It's a file    def getsize(self, path: str) -> int:
+
+            item.add_marker(pytest.mark.gui)
+
+                        file_path = os.path.join(base_path, name)        """Get file size."""
+
+        # Add 'mock' marker to tests using mocks
+
+        if "mock" in item.name.lower():                with open(file_path, 'w', encoding='utf-8') as f:        return self.files.get(path, {}).get('size', 0)
+
+            item.add_marker(pytest.mark.mock)
+                    f.write(content)    
+
+        def listdir(self, path: str) -> List[str]:
+
+    create_structure(temp_dir, test_structure)        """List directory contents."""
+
+            contents = []
+
+    yield temp_dir        for file_path in self.files:
+
+                if os.path.dirname(file_path) == path:
+
+    # Cleanup                contents.append(os.path.basename(file_path))
+
+    shutil.rmtree(temp_dir, ignore_errors=True)        for dir_path in self.directories:
+
+            if os.path.dirname(dir_path) == path:
+
+                contents.append(os.path.basename(dir_path))
+
+@pytest.fixture(scope="function")        return contents
+
+def sample_analysis_data():    
+
+    """Provide sample analysis data for testing."""    def walk(self, path: str):
+
+    return {        """Mock os.walk functionality."""
+
+        'directories': {        visited = set()
+
+            '/test/folder1': {        
+
+                'size': 1024,        def _walk(current_path):
+
+                'file_count': 3,            if current_path in visited:
+
+                'subdirs': 1                return
+
+            },            visited.add(current_path)
+
+            '/test/folder2': {            
+
+                'size': 10240,            dirs = []
+
+                'file_count': 2,            files = []
+
+                'subdirs': 0            
+
+            }            # Find direct children
+
+        },            for file_path in self.files:
+
+        'files': {                if os.path.dirname(file_path) == current_path:
+
+            '/test/folder1/file1.txt': 256,                    files.append(os.path.basename(file_path))
+
+            '/test/folder1/file2.txt': 512,            
+
+            '/test/folder1/subfolder1/file3.txt': 256,            for dir_path in self.directories:
+
+            '/test/folder2/file4.txt': 240,                if os.path.dirname(dir_path) == current_path:
+
+            '/test/folder2/large_file.txt': 10000                    dirs.append(os.path.basename(dir_path))
+
+        },            
+
+        'total_size': 11264,            yield current_path, dirs, files
+
+        'total_files': 5,            
+
+        'total_directories': 3            # Recurse into subdirectories
+
+    }            for dir_name in dirs:
+
+                subdir_path = os.path.join(current_path, dir_name)
+
+                yield from _walk(subdir_path)
+
+@pytest.fixture(scope="function")        
+
+def test_execution_timer():        yield from _walk(path)
+
+    """Track test execution time."""
+
+    start_time = datetime.now()
+
+    yield start_time@pytest.fixture(scope="session")
+
+    end_time = datetime.now()def qapp():
+
+    execution_time = end_time - start_time    """Create QApplication instance for GUI testing."""
+
+    print(f"\nTest execution time: {execution_time.total_seconds():.3f} s")    if not QApplication.instance():
+
         app = QApplication([])
+
     else:
-        app = QApplication.instance()
-    yield app
-    # Don't quit the app as it might be used by other tests
 
+@pytest.fixture(scope="session", autouse=True)        app = QApplication.instance()
 
-@pytest.fixture
-def temp_dir():
-    """Create temporary directory for testing."""
-    temp_path = tempfile.mkdtemp(prefix="size_analyzer_test_")
-    yield temp_path
-    shutil.rmtree(temp_path, ignore_errors=True)
+def test_session_setup_teardown():    yield app
 
+    """Session-level setup and teardown."""    # Don't quit the app as it might be used by other tests
 
-@pytest.fixture
-def test_files(temp_dir):
-    """Create test files with known content and sizes."""
+    print("\n" + "="*60)
+
+    print("STARTING SIZE ANALYZER COMPREHENSIVE TEST SUITE")
+
+    print(f"Test Date: 2025-08-22")@pytest.fixture
+
+    print(f"Start Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")def temp_dir():
+
+    print("Target Module: src.utilities.analysis.size_analyzer")    """Create temporary directory for testing."""
+
+    print("="*60)    temp_path = tempfile.mkdtemp(prefix="size_analyzer_test_")
+
+        yield temp_path
+
+    yield    shutil.rmtree(temp_path, ignore_errors=True)
+
+    
+
+    print("\n" + "="*60)
+
+    print("SIZE ANALYZER TEST SUITE COMPLETED")@pytest.fixture
+
+    print(f"End Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")def test_files(temp_dir):
+
+    print("="*60)    """Create test files with known content and sizes."""
+
     files = {}
+
     
-    # Create various test files
-    test_data = {
-        'empty.txt': b'',
-        'small.txt': b'Hello, World!' * 10,
-        'medium.txt': b'A' * 1024,  # 1KB
-        'large.txt': b'B' * (1024 * 1024),  # 1MB
-        'binary.bin': bytes(range(256)) * 100,  # Binary file
-        'unicode.txt': 'Hello 世界! 🌍'.encode('utf-8') * 50
-    }
+
+@pytest.fixture(scope="function")    # Create various test files
+
+def mock_qapplication():    test_data = {
+
+    """Mock QApplication for testing main function."""        'empty.txt': b'',
+
+    mock_app = MagicMock()        'small.txt': b'Hello, World!' * 10,
+
+    mock_app.exec_.return_value = 0        'medium.txt': b'A' * 1024,  # 1KB
+
+            'large.txt': b'B' * (1024 * 1024),  # 1MB
+
+    with patch('src.utilities.analysis.size_analyzer.QApplication',         'binary.bin': bytes(range(256)) * 100,  # Binary file
+
+               return_value=mock_app):        'unicode.txt': 'Hello 世界! 🌍'.encode('utf-8') * 50
+
+        yield mock_app    }
+
     
+
     for filename, content in test_data.items():
-        file_path = os.path.join(temp_dir, filename)
-        with open(file_path, 'wb') as f:
-            f.write(content)
-        
-        files[filename] = {
-            'path': file_path,
-            'size': len(content),
-            'content': content
-        }
+
+# Test markers        file_path = os.path.join(temp_dir, filename)
+
+def pytest_configure(config):        with open(file_path, 'wb') as f:
+
+    """Configure pytest markers."""            f.write(content)
+
+    config.addinivalue_line(        
+
+        "markers", "unit: mark test as a unit test"        files[filename] = {
+
+    )            'path': file_path,
+
+    config.addinivalue_line(            'size': len(content),
+
+        "markers", "integration: mark test as an integration test"            'content': content
+
+    )        }
+
+    config.addinivalue_line(    
+
+        "markers", "gui: mark test as a GUI test"    # Create subdirectory with files
+
+    )    subdir = os.path.join(temp_dir, 'subdir')
+
+    config.addinivalue_line(    os.makedirs(subdir)
+
+        "markers", "mock: mark test as using mocks"    
+
+    )    subfile_path = os.path.join(subdir, 'subfile.txt')
+
+    config.addinivalue_line(    subfile_content = b'Subdirectory file content'
+
+        "markers", "slow: mark test as slow running"    with open(subfile_path, 'wb') as f:
+
+    )        f.write(subfile_content)
+
     
-    # Create subdirectory with files
-    subdir = os.path.join(temp_dir, 'subdir')
-    os.makedirs(subdir)
-    
-    subfile_path = os.path.join(subdir, 'subfile.txt')
-    subfile_content = b'Subdirectory file content'
-    with open(subfile_path, 'wb') as f:
-        f.write(subfile_content)
-    
+
     files['subdir/subfile.txt'] = {
-        'path': subfile_path,
-        'size': len(subfile_content),
-        'content': subfile_content
-    }
-    
-    return files
 
+def pytest_collection_modifyitems(config, items):        'path': subfile_path,
+
+    """Modify test collection to add markers automatically."""        'size': len(subfile_content),
+
+    for item in items:        'content': subfile_content
+
+        # Add 'unit' marker to all tests in test_size_analyzer file    }
+
+        if "test_size_analyzer" in str(item.fspath):    
+
+            item.add_marker(pytest.mark.unit)    return files
+
+        
+
+        # Add 'gui' marker to GUI-related tests
+
+        if "gui" in item.name.lower() or "ui" in item.name.lower():@pytest.fixture
+
+            item.add_marker(pytest.mark.gui)def mock_hub():
+
+            """Create mock hub instance for testing."""
+
+        # Add 'mock' marker to tests using mocks    return MockHubInstance()
+
+        if "mock" in item.name.lower():
+
+            item.add_marker(pytest.mark.mock)
 
 @pytest.fixture
-def mock_hub():
-    """Create mock hub instance for testing."""
-    return MockHubInstance()
 
-
-@pytest.fixture
 def mock_file_system():
-    """Create mock file system for controlled testing."""
-    fs = MockFileSystem()
-    
+
+def pytest_runtest_setup(item):    """Create mock file system for controlled testing."""
+
+    """Setup before each test run."""    fs = MockFileSystem()
+
+    print(f"\nRunning test: {item.name}")    
+
     # Add some default test structure
+
     fs.add_directory('/test')
-    fs.add_directory('/test/subdir')
-    fs.add_file('/test/file1.txt', 100)
-    fs.add_file('/test/file2.txt', 200)
+
+def pytest_runtest_teardown(item, nextitem):    fs.add_directory('/test/subdir')
+
+    """Teardown after each test run."""    fs.add_file('/test/file1.txt', 100)
+
+    print(f"Completed test: {item.name}")    fs.add_file('/test/file2.txt', 200)
     fs.add_file('/test/subdir/file3.txt', 300)
     
     return fs

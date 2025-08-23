@@ -857,7 +857,7 @@ class NetworkTransferGUI(StandardWindow):
         self._create_all_tabs()
         
         # Status bar and progress
-        self._create_status_bar(layout)
+        self._create_status_bar()
         
     def _create_header(self, layout: QVBoxLayout) -> None:
         """Create and add header label to layout"""
@@ -882,9 +882,14 @@ class NetworkTransferGUI(StandardWindow):
         self.create_collections_tab()
         self.create_history_tab()
     
-    def _create_status_bar(self, layout: QVBoxLayout) -> None:
+    def _create_status_bar(self) -> None:
         """Create status bar and progress indicator"""
-        status_layout = QHBoxLayout()
+        # Create the standard status bar first
+        super()._create_status_bar()
+        
+        # Create additional status widgets for the main layout
+        status_widget = QWidget()
+        status_layout = QHBoxLayout(status_widget)
         
         self.status_label = QLabel("Ready for transfers")
         status_layout.addWidget(self.status_label)
@@ -893,7 +898,8 @@ class NetworkTransferGUI(StandardWindow):
         self.progress_bar.setVisible(False)
         status_layout.addWidget(self.progress_bar)
         
-        layout.addLayout(status_layout)
+        # Add to main layout
+        self.main_layout.addWidget(status_widget)
         
     def create_send_tab(self):
         """Create the send transfer tab."""

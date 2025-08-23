@@ -42,50 +42,17 @@ except ImportError:
     QObject = object
     pyqtSignal = None
 
-# Core application imports with fallback for direct execution
-try:
-    from .log_manager import get_log_manager
-    from .config_manager import get_config_manager
-    from .core.error_handler import error_handler
-except ImportError:
-    # Fallback for direct execution
-    try:
-        from log_manager import get_log_manager
-        from config_manager import get_config_manager
-        from core.error_handler import error_handler
-    except ImportError:
-        # Create minimal fallbacks
-        def get_log_manager():
-            import logging
-            return logging.getLogger(__name__)
-        
-        def get_config_manager():
-            class MockConfig:
-                def get(self, key, default=None):
-                    return default
-            return MockConfig()
-        
-        def error_handler(func):
-            return func
+# Core application imports
+from .log_manager import get_log_manager
+from .config_manager import get_config_manager
+from .core.error_handler import error_handler
 
-# Import constants for string literals with fallback
-try:
-    from core.constants import (
-        PDF_TOOLS, SEGOE_UI_FONT, TITLE_STYLE_COLOR, 
-        SUBTITLE_STYLE_COLOR, SECTION_MARGIN_STYLE,
-        PRIVACY_TOOLS, ANALYSIS_TOOLS, UTILITIES_TOOLS, SETTINGS_TOOLS
-    )
-except ImportError:
-    # Define fallback constants
-    PDF_TOOLS = "PDF Tools"
-    SEGOE_UI_FONT = "Segoe UI"
-    TITLE_STYLE_COLOR = "#2c3e50"
-    SUBTITLE_STYLE_COLOR = "#34495e"
-    SECTION_MARGIN_STYLE = "margin: 10px;"
-    PRIVACY_TOOLS = "Privacy Tools"
-    ANALYSIS_TOOLS = "Analysis Tools"
-    UTILITIES_TOOLS = "Utilities Tools"
-    SETTINGS_TOOLS = "Settings Tools"
+# Import constants for string literals
+from core.constants import (
+    PDF_TOOLS, SEGOE_UI_FONT, TITLE_STYLE_COLOR, 
+    SUBTITLE_STYLE_COLOR, SECTION_MARGIN_STYLE,
+    PRIVACY_TOOLS, ANALYSIS_TOOLS, UTILITIES_TOOLS, SETTINGS_TOOLS
+)
 
 # CSS Color Constants for Professional Styling
 PRIMARY_BLUE = "#3498db"
