@@ -1,0 +1,15 @@
+# Test dependencies for encrypt.py unit tests
+# Install with: pip install -r test_requirements_encrypt_2025-08-24.txt
+
+pytest>=7.0.0
+pytest-html>=3.1.0
+pytest-json-report>=1.5.0
+pytest-cov>=4.0.0
+pytest-mock>=3.10.0
+pytest-qt>=4.2.0
+PyPDF2>=3.0.0
+PyQt5>=5.15.0
+pyAesCrypt>=3.0.0
+reportlab>=3.6.0
+coverage>=7.0.0
+mock>=4.0.0

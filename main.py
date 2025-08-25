@@ -589,6 +589,7 @@ try:
                 ("Compress/Decompress", "Archive and extract files", self.open_compress),
                 ("Split/Join Files", "Split large files or join parts", self.open_file_splitter),
                 ("Synchronize", "Synchronize directories", self.open_sync),
+                ("Enhanced Editor", "Advanced text editor with syntax highlighting", self.open_enhanced_editor),
             ])
             tab_widget.addTab(file_ops_tab, "File Operations")
             
@@ -822,6 +823,10 @@ try:
         def open_sync(self):
             """Open Sync tool."""
             self.launch_tool("Sync", "src.utilities.file_operations.synchronization_backup.sync", "SyncWindow")
+            
+        def open_enhanced_editor(self):
+            """Open Enhanced Editor tool."""
+            self.launch_tool("Enhanced Editor", "src.utilities.file_operations.enhanced_editor.enhanced_editor", "EnhancedEditor")
             
         def open_size_analyzer(self):
             """Open Size Analyzer tool."""

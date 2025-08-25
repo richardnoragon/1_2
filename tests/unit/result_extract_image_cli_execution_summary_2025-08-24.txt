@@ -1,0 +1,907 @@
+
+EXTRACT_IMAGE_CLI TEST EXECUTION SUMMARY
+Generated on: 2025-08-24 16:48:55
+============================================================
+
+EXECUTION DETAILS:
+- Start Time: 2025-08-24 16:48:50
+- Duration: 5.43 seconds
+- Exit Code: 1
+- Test File: test_extract_image_cli_2025-08-24.py
+- Target Module: extract_image_cli.py
+
+COMMAND EXECUTED:
+C:\Users\HP1\AppData\Local\Programs\Python\Python313\python.exe -m pytest C:\Users\HP1\1_2\1_2\tests\unit\test_extract_image_cli_2025-08-24.py -c C:\Users\HP1\1_2\1_2\tests\unit\pytest_extract_image_cli_2025-08-24.ini --verbose --tb=long --html=C:\Users\HP1\1_2\1_2\tests\unit/result_extract_image_cli_test_report_2025-08-24.html --self-contained-html --json-report-file=C:\Users\HP1\1_2\1_2\tests\unit/result_extract_image_cli_test_results_2025-08-24.json --cov-report=html:C:\Users\HP1\1_2\1_2\tests\unit/result_extract_image_cli_coverage_2025-08-24 --cov-report=json:C:\Users\HP1\1_2\1_2\tests\unit/result_extract_image_cli_coverage_2025-08-24.json --cov-report=term-missing --durations=10 --capture=no
+
+STDOUT OUTPUT:
+----------------------------------------
+
+=== Test Session Started at 2025-08-24 16:48:53 ===
+============================= test session starts =============================
+platform win32 -- Python 3.13.5, pytest-8.3.5, pluggy-1.6.0 -- C:\Users\HP1\AppData\Local\Programs\Python\Python313\python.exe
+cachedir: .pytest_cache
+benchmark: 5.1.0 (defaults: timer=time.perf_counter disable_gc=False min_rounds=5 min_time=0.000005 max_time=1.0 calibration_precision=10 warmup=False warmup_iterations=100000)
+metadata: {'Python': '3.13.5', 'Platform': 'Windows-11-10.0.26100-SP0', 'Packages': {'pytest': '8.3.5', 'pluggy': '1.6.0'}, 'Plugins': {'Faker': '37.5.3', 'asyncio': '0.26.0', 'benchmark': '5.1.0', 'cov': '6.1.0', 'html': '4.1.1', 'json': '0.4.0', 'json-report': '1.5.0', 'metadata': '3.1.1', 'mock': '3.14.1', 'qt': '4.4.0', 'timeout': '2.3.1', 'xdist': '3.8.0', 'xvfb': '3.1.1'}}
+PyQt5 5.15.11 -- Qt runtime 5.15.2 -- Qt compiled 5.15.2
+rootdir: C:\Users\HP1\1_2\1_2\tests\unit
+configfile: pytest_extract_image_cli_2025-08-24.ini
+plugins: Faker-37.5.3, asyncio-0.26.0, benchmark-5.1.0, cov-6.1.0, html-4.1.1, json-0.4.0, json-report-1.5.0, metadata-3.1.1, mock-3.14.1, qt-4.4.0, timeout-2.3.1, xdist-3.8.0, xvfb-3.1.1
+asyncio: mode=Mode.STRICT, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... Warning: Could not import analysis: No module named 'utilities.'
+Warning: Could not import file_management: No module named 'utilities.'
+Warning: Could not import file_operations: No module named 'utilities.'
+Warning: Could not import metadata: No module named 'utilities.'
+Warning: Could not import network: No module named 'utilities.'
+Warning: Could not import pdf_tools: No module named 'utilities.'
+Warning: Could not import privacy: No module named 'utilities.'
+Warning: Could not import security: No module named 'utilities.'
+Warning: Could not import system: No module named 'utilities.'
+Warning: Could not import analysis: No module named 'src.utilities.'
+Warning: Could not import file_management: No module named 'src.utilities.'
+Warning: Could not import file_operations: No module named 'src.utilities.'
+Warning: Could not import metadata: No module named 'src.utilities.'
+Warning: Could not import network: No module named 'src.utilities.'
+Warning: Could not import pdf_tools: No module named 'src.utilities.'
+Warning: Could not import privacy: No module named 'src.utilities.'
+Warning: Could not import security: No module named 'src.utilities.'
+Warning: Could not import system: No module named 'src.utilities.'
+collected 22 items
+
+test_extract_image_cli_2025-08-24.py::TestExtractImages::test_extract_images_file_not_found 
+--- Starting test: test_extract_image_cli_2025-08-24.py::TestExtractImages::test_extract_images_file_not_found ---
+
+============================================================
+EXTRACT_IMAGE_CLI TEST EXECUTION
+Timestamp: 2025-08-24 16:48:54
+Test file: test_extract_image_cli_2025-08-24.py
+Target module: extract_image_cli.py
+============================================================
+
+PASSED
+--- Completed test: test_extract_image_cli_2025-08-24.py::TestExtractImages::test_extract_images_file_not_found ---
+
+test_extract_image_cli_2025-08-24.py::TestExtractImages::test_extract_images_success 
+--- Starting test: test_extract_image_cli_2025-08-24.py::TestExtractImages::test_extract_images_success ---
+PASSED
+--- Completed test: test_extract_image_cli_2025-08-24.py::TestExtractImages::test_extract_images_success ---
+
+test_extract_image_cli_2025-08-24.py::TestExtractImages::test_extract_images_size_filtering 
+--- Starting test: test_extract_image_cli_2025-08-24.py::TestExtractImages::test_extract_images_size_filtering ---
+PASSED
+--- Completed test: test_extract_image_cli_2025-08-24.py::TestExtractImages::test_extract_images_size_filtering ---
+
+test_extract_image_cli_2025-08-24.py::TestExtractImages::test_extract_images_pdf_open_error 
+--- Starting test: test_extract_image_cli_2025-08-24.py::TestExtractImages::test_extract_images_pdf_open_error ---
+PASSED
+--- Completed test: test_extract_image_cli_2025-08-24.py::TestExtractImages::test_extract_images_pdf_open_error ---
+
+test_extract_image_cli_2025-08-24.py::TestExtractImages::test_extract_images_creates_output_directory 
+--- Starting test: test_extract_image_cli_2025-08-24.py::TestExtractImages::test_extract_images_creates_output_directory ---
+PASSED
+--- Completed test: test_extract_image_cli_2025-08-24.py::TestExtractImages::test_extract_images_creates_output_directory ---
+
+test_extract_image_cli_2025-08-24.py::TestExtractImages::test_extract_images_different_formats 
+--- Starting test: test_extract_image_cli_2025-08-24.py::TestExtractImages::test_extract_images_different_formats ---
+PASSED
+--- Completed test: test_extract_image_cli_2025-08-24.py::TestExtractImages::test_extract_images_different_formats ---
+
+test_extract_image_cli_2025-08-24.py::TestMainWindow::test_main_window_initialization 
+--- Starting test: test_extract_image_cli_2025-08-24.py::TestMainWindow::test_main_window_initialization ---
+ERROR
+--- Completed test: test_extract_image_cli_2025-08-24.py::TestMainWindow::test_main_window_initialization ---
+
+test_extract_image_cli_2025-08-24.py::TestMainWindow::test_browse_pdf_success 
+--- Starting test: test_extract_image_cli_2025-08-24.py::TestMainWindow::test_browse_pdf_success ---
+PASSED
+--- Completed test: test_extract_image_cli_2025-08-24.py::TestMainWindow::test_browse_pdf_success ---
+
+test_extract_image_cli_2025-08-24.py::TestMainWindow::test_browse_pdf_cancelled 
+--- Starting test: test_extract_image_cli_2025-08-24.py::TestMainWindow::test_browse_pdf_cancelled ---
+PASSED
+--- Completed test: test_extract_image_cli_2025-08-24.py::TestMainWindow::test_browse_pdf_cancelled ---
+
+test_extract_image_cli_2025-08-24.py::TestMainWindow::test_browse_output_dir_success 
+--- Starting test: test_extract_image_cli_2025-08-24.py::TestMainWindow::test_browse_output_dir_success ---
+PASSED
+--- Completed test: test_extract_image_cli_2025-08-24.py::TestMainWindow::test_browse_output_dir_success ---
+
+test_extract_image_cli_2025-08-24.py::TestMainWindow::test_extract_images_no_pdf_selected 
+--- Starting test: test_extract_image_cli_2025-08-24.py::TestMainWindow::test_extract_images_no_pdf_selected ---
+FAILED
+--- Completed test: test_extract_image_cli_2025-08-24.py::TestMainWindow::test_extract_images_no_pdf_selected ---
+
+test_extract_image_cli_2025-08-24.py::TestMainWindow::test_extract_images_no_output_dir_selected 
+--- Starting test: test_extract_image_cli_2025-08-24.py::TestMainWindow::test_extract_images_no_output_dir_selected ---
+FAILED
+--- Completed test: test_extract_image_cli_2025-08-24.py::TestMainWindow::test_extract_images_no_output_dir_selected ---
+
+test_extract_image_cli_2025-08-24.py::TestMainWindow::test_extract_images_gui_success 
+--- Starting test: test_extract_image_cli_2025-08-24.py::TestMainWindow::test_extract_images_gui_success ---
+FAILED
+--- Completed test: test_extract_image_cli_2025-08-24.py::TestMainWindow::test_extract_images_gui_success ---
+
+test_extract_image_cli_2025-08-24.py::TestMainWindow::test_browse_pdf_error_handling 
+--- Starting test: test_extract_image_cli_2025-08-24.py::TestMainWindow::test_browse_pdf_error_handling ---
+PASSED
+--- Completed test: test_extract_image_cli_2025-08-24.py::TestMainWindow::test_browse_pdf_error_handling ---
+
+test_extract_image_cli_2025-08-24.py::TestMainWindow::test_browse_output_dir_error_handling 
+--- Starting test: test_extract_image_cli_2025-08-24.py::TestMainWindow::test_browse_output_dir_error_handling ---
+PASSED
+--- Completed test: test_extract_image_cli_2025-08-24.py::TestMainWindow::test_browse_output_dir_error_handling ---
+
+test_extract_image_cli_2025-08-24.py::TestMainFunction::test_main_function_success 
+--- Starting test: test_extract_image_cli_2025-08-24.py::TestMainFunction::test_main_function_success ---
+FAILED
+--- Completed test: test_extract_image_cli_2025-08-24.py::TestMainFunction::test_main_function_success ---
+
+test_extract_image_cli_2025-08-24.py::TestMainFunction::test_main_function_window_init_error 
+--- Starting test: test_extract_image_cli_2025-08-24.py::TestMainFunction::test_main_function_window_init_error ---
+FAILED
+--- Completed test: test_extract_image_cli_2025-08-24.py::TestMainFunction::test_main_function_window_init_error ---
+
+test_extract_image_cli_2025-08-24.py::TestMainFunction::test_main_function_app_creation_error 
+--- Starting test: test_extract_image_cli_2025-08-24.py::TestMainFunction::test_main_function_app_creation_error ---
+FAILED
+--- Completed test: test_extract_image_cli_2025-08-24.py::TestMainFunction::test_main_function_app_creation_error ---
+
+test_extract_image_cli_2025-08-24.py::TestEdgeCasesAndErrorHandling::test_extract_images_empty_pdf 
+--- Starting test: test_extract_image_cli_2025-08-24.py::TestEdgeCasesAndErrorHandling::test_extract_images_empty_pdf ---
+ERROR
+--- Completed test: test_extract_image_cli_2025-08-24.py::TestEdgeCasesAndErrorHandling::test_extract_images_empty_pdf ---
+
+test_extract_image_cli_2025-08-24.py::TestEdgeCasesAndErrorHandling::test_extract_images_corrupted_image_data 
+--- Starting test: test_extract_image_cli_2025-08-24.py::TestEdgeCasesAndErrorHandling::test_extract_images_corrupted_image_data ---
+ERROR
+--- Completed test: test_extract_image_cli_2025-08-24.py::TestEdgeCasesAndErrorHandling::test_extract_images_corrupted_image_data ---
+
+test_extract_image_cli_2025-08-24.py::TestEdgeCasesAndErrorHandling::test_extract_images_invalid_parameters 
+--- Starting test: test_extract_image_cli_2025-08-24.py::TestEdgeCasesAndErrorHandling::test_extract_images_invalid_parameters ---
+ERROR
+--- Completed test: test_extract_image_cli_2025-08-24.py::TestEdgeCasesAndErrorHandling::test_extract_images_invalid_parameters ---
+
+test_extract_image_cli_2025-08-24.py::TestSetupAndTeardown::test_setup_teardown_example 
+--- Starting test: test_extract_image_cli_2025-08-24.py::TestSetupAndTeardown::test_setup_teardown_example ---
+Created test data directory: C:\Users\HP1\AppData\Local\Temp\test_setup_7y0b1l0p
+Setup for test_setup_teardown_example: C:\Users\HP1\AppData\Local\Temp\test_test_setup_teardown_example_34fogquh
+PASSED
+--- Completed test: test_extract_image_cli_2025-08-24.py::TestSetupAndTeardown::test_setup_teardown_example ---
+Teardown for test_setup_teardown_example: C:\Users\HP1\AppData\Local\Temp\test_test_setup_teardown_example_34fogquh
+Cleaned up test data directory: C:\Users\HP1\AppData\Local\Temp\test_setup_7y0b1l0p
+
+============================================================
+TEST EXECUTION COMPLETED
+End time: 2025-08-24 16:48:55
+Total duration: 0:00:00.825723
+============================================================
+
+
+=== Test Session Finished at 2025-08-24 16:48:55 ===
+Exit status: 1
+
+
+=================================== ERRORS ====================================
+______ ERROR at setup of TestMainWindow.test_main_window_initialization _______
+
+self = <tests.unit.test_extract_image_cli_2025-08-24.TestMainWindow object at 0x000002198B436E90>
+
+    @pytest.fixture
+    def mock_main_window_init(self):
+        """Mock MainWindow initialization components."""
+>       with patch('src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli.uic.loadUi') as mock_load_ui, \
+             patch('src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli.QtWidgets.QProgressBar') as mock_progress, \
+             patch.object(MainWindow, 'statusBar') as mock_status_bar, \
+             patch.object(MainWindow, 'show') as mock_show:
+
+test_extract_image_cli_2025-08-24.py:221: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <unittest.mock._patch object at 0x000002198AEAF070>
+
+    def __enter__(self):
+        """Perform the patch."""
+        if self.is_started:
+            raise RuntimeError("Patch is already started")
+    
+        new, spec, spec_set = self.new, self.spec, self.spec_set
+        autospec, kwargs = self.autospec, self.kwargs
+        new_callable = self.new_callable
+>       self.target = self.getter()
+
+..\..\..\..\AppData\Local\Programs\Python\Python313\Lib\unittest\mock.py:1481: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli.uic'
+
+    def resolve_name(name):
+        """
+        Resolve a name to an object.
+    
+        It is expected that `name` will be a string in one of the following
+        formats, where W is shorthand for a valid Python identifier and dot stands
+        for a literal period in these pseudo-regexes:
+    
+        W(.W)*
+        W(.W)*:(W(.W)*)?
+    
+        The first form is intended for backward compatibility only. It assumes that
+        some part of the dotted name is a package, and the rest is an object
+        somewhere within that package, possibly nested inside other objects.
+        Because the place where the package stops and the object hierarchy starts
+        can't be inferred by inspection, repeated attempts to import must be done
+        with this form.
+    
+        In the second form, the caller makes the division point clear through the
+        provision of a single colon: the dotted name to the left of the colon is a
+        package to be imported, and the dotted name to the right is the object
+        hierarchy within that package. Only one import is needed in this form. If
+        it ends with the colon, then a module object is returned.
+    
+        The function will return an object (which might be a module), or raise one
+        of the following exceptions:
+    
+        ValueError - if `name` isn't in a recognised format
+        ImportError - if an import failed when it shouldn't have
+        AttributeError - if a failure occurred when traversing the object hierarchy
+                         within the imported package to get to the desired object.
+        """
+        global _NAME_PATTERN
+        if _NAME_PATTERN is None:
+            # Lazy import to speedup Python startup time
+            import re
+            dotted_words = r'(?!\d)(\w+)(\.(?!\d)(\w+))*'
+            _NAME_PATTERN = re.compile(f'^(?P<pkg>{dotted_words})'
+                                       f'(?P<cln>:(?P<obj>{dotted_words})?)?$',
+                                       re.UNICODE)
+    
+        m = _NAME_PATTERN.match(name)
+        if not m:
+            raise ValueError(f'invalid format: {name!r}')
+        gd = m.groupdict()
+        if gd.get('cln'):
+            # there is a colon - a one-step import is all that's needed
+            mod = importlib.import_module(gd['pkg'])
+            parts = gd.get('obj')
+            parts = parts.split('.') if parts else []
+        else:
+            # no colon - have to iterate to find the package boundary
+            parts = name.split('.')
+            modname = parts.pop(0)
+            # first part *must* be a module/package.
+            mod = importlib.import_module(modname)
+            while parts:
+                p = parts[0]
+                s = f'{modname}.{p}'
+                try:
+                    mod = importlib.import_module(s)
+                    parts.pop(0)
+                    modname = s
+                except ImportError:
+                    break
+        # if we reach this point, mod is the module, already imported, and
+        # parts is the list of parts in the object hierarchy to be traversed, or
+        # an empty list if just the module is wanted.
+        result = mod
+        for p in parts:
+>           result = getattr(result, p)
+E           AttributeError: module 'src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli' has no attribute 'uic'
+
+..\..\..\..\AppData\Local\Programs\Python\Python313\Lib\pkgutil.py:528: AttributeError
+_ ERROR at setup of TestEdgeCasesAndErrorHandling.test_extract_images_empty_pdf _
+file C:\Users\HP1\1_2\1_2\tests\unit\test_extract_image_cli_2025-08-24.py, line 444
+      @pytest.mark.unit
+      def test_extract_images_empty_pdf(self, temp_dirs):
+E       fixture 'temp_dirs' not found
+>       available fixtures: .::<event_loop>, _session_event_loop, _session_faker, benchmark, benchmark_weave, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, class_mocker, corrupted_pdf, cov, doctest_namespace, event_loop, event_loop_policy, execution_timestamp, extra, extras, faker, include_metadata_in_junit_xml, json_environment, json_metadata, json_report_path, metadata, mock_logger, mock_pikepdf, mock_qfiledialog, mock_qmessagebox, mock_splitui_components, mock_ui_file, mocker, module_mocker, monkeypatch, no_cover, nonexistent_pdf, output_directory, package_mocker, pytestconfig, qapp, qapp_args, qapp_cls, qtbot, qtlog, qtmodeltester, readonly_directory, record_property, record_testsuite_property, record_xml_attribute, recwarn, sample_pdf_10_pages, sample_pdf_1_page, sample_pdf_5_pages, session_mocker, setup_test_environment, temp_dir, test_execution_info, test_extract_image_cli_2025-08-24.py::<event_loop>, test_extract_image_cli_2025-08-24.py::TestEdgeCasesAndErrorHandling::<event_loop>, test_output_dir, testrun_uid, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory, unused_tcp_port, unused_tcp_port_factory, unused_udp_port, unused_udp_port_factory, worker_id, xvfb
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+C:\Users\HP1\1_2\1_2\tests\unit\test_extract_image_cli_2025-08-24.py:444
+_ ERROR at setup of TestEdgeCasesAndErrorHandling.test_extract_images_corrupted_image_data _
+file C:\Users\HP1\1_2\1_2\tests\unit\test_extract_image_cli_2025-08-24.py, line 466
+      @pytest.mark.unit
+      @patch('src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli.fitz.open')
+      @patch('src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli.Image.open')
+      def test_extract_images_corrupted_image_data(self, mock_image_open, mock_fitz_open, temp_dirs):
+E       fixture 'temp_dirs' not found
+>       available fixtures: .::<event_loop>, _session_event_loop, _session_faker, benchmark, benchmark_weave, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, class_mocker, corrupted_pdf, cov, doctest_namespace, event_loop, event_loop_policy, execution_timestamp, extra, extras, faker, include_metadata_in_junit_xml, json_environment, json_metadata, json_report_path, metadata, mock_logger, mock_pikepdf, mock_qfiledialog, mock_qmessagebox, mock_splitui_components, mock_ui_file, mocker, module_mocker, monkeypatch, no_cover, nonexistent_pdf, output_directory, package_mocker, pytestconfig, qapp, qapp_args, qapp_cls, qtbot, qtlog, qtmodeltester, readonly_directory, record_property, record_testsuite_property, record_xml_attribute, recwarn, sample_pdf_10_pages, sample_pdf_1_page, sample_pdf_5_pages, session_mocker, setup_test_environment, temp_dir, test_execution_info, test_extract_image_cli_2025-08-24.py::<event_loop>, test_extract_image_cli_2025-08-24.py::TestEdgeCasesAndErrorHandling::<event_loop>, test_output_dir, testrun_uid, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory, unused_tcp_port, unused_tcp_port_factory, unused_udp_port, unused_udp_port_factory, worker_id, xvfb
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+C:\Users\HP1\1_2\1_2\tests\unit\test_extract_image_cli_2025-08-24.py:466
+_ ERROR at setup of TestEdgeCasesAndErrorHandling.test_extract_images_invalid_parameters _
+file C:\Users\HP1\1_2\1_2\tests\unit\test_extract_image_cli_2025-08-24.py, line 495
+      @pytest.mark.unit
+      def test_extract_images_invalid_parameters(self, temp_dirs):
+E       fixture 'temp_dirs' not found
+>       available fixtures: .::<event_loop>, _session_event_loop, _session_faker, benchmark, benchmark_weave, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, class_mocker, corrupted_pdf, cov, doctest_namespace, event_loop, event_loop_policy, execution_timestamp, extra, extras, faker, include_metadata_in_junit_xml, json_environment, json_metadata, json_report_path, metadata, mock_logger, mock_pikepdf, mock_qfiledialog, mock_qmessagebox, mock_splitui_components, mock_ui_file, mocker, module_mocker, monkeypatch, no_cover, nonexistent_pdf, output_directory, package_mocker, pytestconfig, qapp, qapp_args, qapp_cls, qtbot, qtlog, qtmodeltester, readonly_directory, record_property, record_testsuite_property, record_xml_attribute, recwarn, sample_pdf_10_pages, sample_pdf_1_page, sample_pdf_5_pages, session_mocker, setup_test_environment, temp_dir, test_execution_info, test_extract_image_cli_2025-08-24.py::<event_loop>, test_extract_image_cli_2025-08-24.py::TestEdgeCasesAndErrorHandling::<event_loop>, test_output_dir, testrun_uid, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory, unused_tcp_port, unused_tcp_port_factory, unused_udp_port, unused_udp_port_factory, worker_id, xvfb
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+C:\Users\HP1\1_2\1_2\tests\unit\test_extract_image_cli_2025-08-24.py:495
+================================== FAILURES ===================================
+_____________ TestMainWindow.test_extract_images_no_pdf_selected ______________
+
+self = <tests.unit.test_extract_image_cli_2025-08-24.TestMainWindow object at 0x000002198B57D5B0>
+mock_message_box = <MagicMock name='warning' id='2308731979824'>
+
+    @pytest.mark.gui
+    @patch('src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli.QMessageBox.warning')
+    def test_extract_images_no_pdf_selected(self, mock_message_box):
+        """Test extract_images with no PDF file selected."""
+        with patch.object(MainWindow, '__init__', lambda x: None):
+            window = MainWindow()
+            window.pdfFileEdit = Mock()
+            window.pdfFileEdit.text.return_value = ""  # No file selected
+            window.outputDirEdit = Mock()
+            window.outputDirEdit.text.return_value = "/output"
+    
+>           window.extract_images()
+
+test_extract_image_cli_2025-08-24.py:303: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli.MainWindow object at 0x000002198B8A20F0>
+
+    def extract_images(self):
+        try:
+            # Validate inputs
+            pdf_file = self.pdfFileEdit.text()
+            output_dir = self.outputDirEdit.text()
+    
+            if not pdf_file:
+                logger.warning("No PDF file selected")
+                QMessageBox.warning(self, "Warning", "Please select a PDF file!")
+                return
+    
+            if not output_dir:
+                logger.warning("No output directory selected")
+                QMessageBox.warning(self, "Warning", "Please select an output directory!")
+                return
+    
+            self.progressBar.show()
+            self.progressBar.setValue(0)
+            self.statusBar().showMessage("Loading PDF...")
+            QtWidgets.QApplication.processEvents()
+    
+            try:
+                # Open PDF
+                self.progressBar.setValue(10)
+                QtWidgets.QApplication.processEvents()
+    
+                doc = fitz.open(pdf_file)
+                total_pages = doc.page_count
+    
+                self.progressBar.setValue(20)
+                self.statusBar().showMessage("Scanning for images...")
+                QtWidgets.QApplication.processEvents()
+    
+                # Process each page
+                images_found = 0
+                for page_num in range(total_pages):
+                    progress = 20 + int((page_num / total_pages) * 70)  # 20-90% for page processing
+                    self.progressBar.setValue(progress)
+                    self.statusBar().showMessage(f"Processing page {page_num + 1} of {total_pages}...")
+                    QtWidgets.QApplication.processEvents()
+    
+                    page = doc[page_num]
+                    image_list = page.get_images()
+    
+                    for img_idx, img in enumerate(image_list):
+                        try:
+                            xref = img[0]
+                            base_image = doc.extract_image(xref)
+    
+                            if base_image:
+                                image_bytes = base_image["image"]
+                                image_ext = base_image["ext"]
+                                image_filename = os.path.join(
+                                    output_dir,
+                                    f'image_p{page_num + 1}_{img_idx + 1}.{image_ext}'
+                                )
+    
+                                with open(image_filename, "wb") as image_file:
+                                    image_file.write(image_bytes)
+                                images_found += 1
+    
+                        except Exception as e:
+                            logger.error("Error extracting image %d from page %d: %s",
+                                       img_idx + 1, page_num + 1, str(e))
+                            continue
+    
+                self.progressBar.setValue(100)
+                if images_found > 0:
+                    logger.info("Successfully extracted %d images", images_found)
+                    QMessageBox.information(
+                        self,
+                        "Success",
+                        f"Successfully extracted {images_found} images!\nSaved to: {output_dir}"
+                    )
+                    self.statusBar().showMessage("Extraction complete", 3000)
+                else:
+                    logger.warning("No images found in document")
+                    QMessageBox.warning(self, "Warning", "No images found in document!")
+                    self.statusBar().showMessage("No images found", 3000)
+    
+                doc.close()
+    
+            except Exception as e:
+                logger.error("Error processing PDF: %s", str(e))
+                QMessageBox.critical(self, "Error", f"Error processing PDF: {str(e)}")
+                self.statusBar().showMessage("Error during extraction", 3000)
+    
+        except Exception as e:
+            logger.error("Error in extract operation: %s", str(e))
+            QMessageBox.critical(self, "Error", f"Error in extract operation: {str(e)}")
+            self.statusBar().showMessage("Error occurred", 3000)
+    
+        finally:
+>           self.progressBar.hide()
+E           RuntimeError: super-class __init__() of type MainWindow was never called
+
+..\..\src\utilities\pdf_tools\pdf_content_extraction\extract_image_cli.py:220: RuntimeError
+------------------------------ Captured log call ------------------------------
+WARNING  src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli:extract_image_cli.py:134 No PDF file selected
+__________ TestMainWindow.test_extract_images_no_output_dir_selected __________
+
+self = <tests.unit.test_extract_image_cli_2025-08-24.TestMainWindow object at 0x0000021989E62AD0>
+mock_message_box = <MagicMock name='warning' id='2308738316144'>
+
+    @pytest.mark.gui
+    @patch('src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli.QMessageBox.warning')
+    def test_extract_images_no_output_dir_selected(self, mock_message_box):
+        """Test extract_images with no output directory selected."""
+        with patch.object(MainWindow, '__init__', lambda x: None):
+            window = MainWindow()
+            window.pdfFileEdit = Mock()
+            window.pdfFileEdit.text.return_value = "/path/to/test.pdf"
+            window.outputDirEdit = Mock()
+            window.outputDirEdit.text.return_value = ""  # No directory selected
+    
+>           window.extract_images()
+
+test_extract_image_cli_2025-08-24.py:318: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli.MainWindow object at 0x00000219891F31D0>
+
+    def extract_images(self):
+        try:
+            # Validate inputs
+            pdf_file = self.pdfFileEdit.text()
+            output_dir = self.outputDirEdit.text()
+    
+            if not pdf_file:
+                logger.warning("No PDF file selected")
+                QMessageBox.warning(self, "Warning", "Please select a PDF file!")
+                return
+    
+            if not output_dir:
+                logger.warning("No output directory selected")
+                QMessageBox.warning(self, "Warning", "Please select an output directory!")
+                return
+    
+            self.progressBar.show()
+            self.progressBar.setValue(0)
+            self.statusBar().showMessage("Loading PDF...")
+            QtWidgets.QApplication.processEvents()
+    
+            try:
+                # Open PDF
+                self.progressBar.setValue(10)
+                QtWidgets.QApplication.processEvents()
+    
+                doc = fitz.open(pdf_file)
+                total_pages = doc.page_count
+    
+                self.progressBar.setValue(20)
+                self.statusBar().showMessage("Scanning for images...")
+                QtWidgets.QApplication.processEvents()
+    
+                # Process each page
+                images_found = 0
+                for page_num in range(total_pages):
+                    progress = 20 + int((page_num / total_pages) * 70)  # 20-90% for page processing
+                    self.progressBar.setValue(progress)
+                    self.statusBar().showMessage(f"Processing page {page_num + 1} of {total_pages}...")
+                    QtWidgets.QApplication.processEvents()
+    
+                    page = doc[page_num]
+                    image_list = page.get_images()
+    
+                    for img_idx, img in enumerate(image_list):
+                        try:
+                            xref = img[0]
+                            base_image = doc.extract_image(xref)
+    
+                            if base_image:
+                                image_bytes = base_image["image"]
+                                image_ext = base_image["ext"]
+                                image_filename = os.path.join(
+                                    output_dir,
+                                    f'image_p{page_num + 1}_{img_idx + 1}.{image_ext}'
+                                )
+    
+                                with open(image_filename, "wb") as image_file:
+                                    image_file.write(image_bytes)
+                                images_found += 1
+    
+                        except Exception as e:
+                            logger.error("Error extracting image %d from page %d: %s",
+                                       img_idx + 1, page_num + 1, str(e))
+                            continue
+    
+                self.progressBar.setValue(100)
+                if images_found > 0:
+                    logger.info("Successfully extracted %d images", images_found)
+                    QMessageBox.information(
+                        self,
+                        "Success",
+                        f"Successfully extracted {images_found} images!\nSaved to: {output_dir}"
+                    )
+                    self.statusBar().showMessage("Extraction complete", 3000)
+                else:
+                    logger.warning("No images found in document")
+                    QMessageBox.warning(self, "Warning", "No images found in document!")
+                    self.statusBar().showMessage("No images found", 3000)
+    
+                doc.close()
+    
+            except Exception as e:
+                logger.error("Error processing PDF: %s", str(e))
+                QMessageBox.critical(self, "Error", f"Error processing PDF: {str(e)}")
+                self.statusBar().showMessage("Error during extraction", 3000)
+    
+        except Exception as e:
+            logger.error("Error in extract operation: %s", str(e))
+            QMessageBox.critical(self, "Error", f"Error in extract operation: {str(e)}")
+            self.statusBar().showMessage("Error occurred", 3000)
+    
+        finally:
+>           self.progressBar.hide()
+E           RuntimeError: super-class __init__() of type MainWindow was never called
+
+..\..\src\utilities\pdf_tools\pdf_content_extraction\extract_image_cli.py:220: RuntimeError
+------------------------------ Captured log call ------------------------------
+WARNING  src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli:extract_image_cli.py:139 No output directory selected
+_______________ TestMainWindow.test_extract_images_gui_success ________________
+
+self = <tests.unit.test_extract_image_cli_2025-08-24.TestMainWindow object at 0x0000021989E61150>
+mock_message_box = <MagicMock name='information' id='2308737030128'>
+mock_fitz_open = <MagicMock name='open' id='2308738315472'>
+
+    @pytest.mark.gui
+    @patch('src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli.fitz.open')
+    @patch('src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli.QMessageBox.information')
+    def test_extract_images_gui_success(self, mock_message_box, mock_fitz_open):
+        """Test successful image extraction through GUI."""
+        # Setup mock PDF document
+        mock_doc = Mock()
+        mock_doc.page_count = 1
+        mock_page = Mock()
+        mock_page.get_images.return_value = [(1, 'img_data')]
+>       mock_doc.__getitem__.return_value = mock_page
+
+test_extract_image_cli_2025-08-24.py:332: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <Mock id='2308738313456'>, name = '__getitem__'
+
+    def __getattr__(self, name):
+        if name in {'_mock_methods', '_mock_unsafe'}:
+            raise AttributeError(name)
+        elif self._mock_methods is not None:
+            if name not in self._mock_methods or name in _all_magics:
+                raise AttributeError("Mock object has no attribute %r" % name)
+        elif _is_magic(name):
+>           raise AttributeError(name)
+E           AttributeError: __getitem__
+
+..\..\..\..\AppData\Local\Programs\Python\Python313\Lib\unittest\mock.py:692: AttributeError
+_________________ TestMainFunction.test_main_function_success _________________
+
+    def main():
+        try:
+>           app = QApplication(sys.argv)
+E           NameError: name 'sys' is not defined. Did you forget to import 'sys'?
+
+..\..\src\utilities\pdf_tools\pdf_content_extraction\extract_image_cli.py:224: NameError
+
+During handling of the above exception, another exception occurred:
+
+self = <tests.unit.test_extract_image_cli_2025-08-24.TestMainFunction object at 0x000002198B754CD0>
+mock_sys_exit = <MagicMock name='exit' id='2308731979488'>
+mock_main_window = <MagicMock name='MainWindow' id='2308731977808'>
+mock_qapp = <MagicMock name='QApplication' id='2308731979824'>
+
+    @pytest.mark.integration
+    @patch('src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli.QApplication')
+    @patch('src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli.MainWindow')
+    @patch('sys.exit')
+    def test_main_function_success(self, mock_sys_exit, mock_main_window, mock_qapp):
+        """Test successful main function execution."""
+        # Setup mocks
+        mock_app_instance = Mock()
+        mock_qapp.return_value = mock_app_instance
+        mock_app_instance.exec_.return_value = 0
+    
+        mock_window_instance = Mock()
+        mock_main_window.return_value = mock_window_instance
+    
+        # Test with mocked sys.argv
+        with patch('sys.argv', ['extract_image_cli.py']):
+>           main()
+
+test_extract_image_cli_2025-08-24.py:407: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def main():
+        try:
+            app = QApplication(sys.argv)
+            window = MainWindow()
+            logger.info("Application started")
+            sys.exit(app.exec_())
+        except Exception as e:
+            logger.critical("Application failed to start: %s", str(e))
+>           sys.exit(1)
+E           NameError: name 'sys' is not defined. Did you forget to import 'sys'?
+
+..\..\src\utilities\pdf_tools\pdf_content_extraction\extract_image_cli.py:230: NameError
+------------------------------ Captured log call ------------------------------
+CRITICAL src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli:extract_image_cli.py:229 Application failed to start: name 'sys' is not defined
+____________ TestMainFunction.test_main_function_window_init_error ____________
+
+    def main():
+        try:
+>           app = QApplication(sys.argv)
+E           NameError: name 'sys' is not defined. Did you forget to import 'sys'?
+
+..\..\src\utilities\pdf_tools\pdf_content_extraction\extract_image_cli.py:224: NameError
+
+During handling of the above exception, another exception occurred:
+
+self = <tests.unit.test_extract_image_cli_2025-08-24.TestMainFunction object at 0x000002198B754E10>
+mock_sys_exit = <MagicMock name='exit' id='2308738313792'>
+mock_main_window = <MagicMock name='MainWindow' id='2308738312448'>
+mock_qapp = <MagicMock name='QApplication' id='2308738313120'>
+
+    @pytest.mark.integration
+    @patch('src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli.QApplication')
+    @patch('src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli.MainWindow')
+    @patch('sys.exit')
+    def test_main_function_window_init_error(self, mock_sys_exit, mock_main_window, mock_qapp):
+        """Test main function with MainWindow initialization error."""
+        mock_qapp.return_value = Mock()
+        mock_main_window.side_effect = Exception("Window initialization failed")
+    
+        with patch('sys.argv', ['extract_image_cli.py']):
+>           main()
+
+test_extract_image_cli_2025-08-24.py:424: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def main():
+        try:
+            app = QApplication(sys.argv)
+            window = MainWindow()
+            logger.info("Application started")
+            sys.exit(app.exec_())
+        except Exception as e:
+            logger.critical("Application failed to start: %s", str(e))
+>           sys.exit(1)
+E           NameError: name 'sys' is not defined. Did you forget to import 'sys'?
+
+..\..\src\utilities\pdf_tools\pdf_content_extraction\extract_image_cli.py:230: NameError
+------------------------------ Captured log call ------------------------------
+CRITICAL src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli:extract_image_cli.py:229 Application failed to start: name 'sys' is not defined
+___________ TestMainFunction.test_main_function_app_creation_error ____________
+
+    def main():
+        try:
+>           app = QApplication(sys.argv)
+E           NameError: name 'sys' is not defined. Did you forget to import 'sys'?
+
+..\..\src\utilities\pdf_tools\pdf_content_extraction\extract_image_cli.py:224: NameError
+
+During handling of the above exception, another exception occurred:
+
+self = <tests.unit.test_extract_image_cli_2025-08-24.TestMainFunction object at 0x000002198AF2F950>
+mock_sys_exit = <MagicMock name='exit' id='2308731978480'>
+mock_qapp = <MagicMock name='QApplication' id='2308731978816'>
+
+    @pytest.mark.integration
+    @patch('src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli.QApplication')
+    @patch('sys.exit')
+    def test_main_function_app_creation_error(self, mock_sys_exit, mock_qapp):
+        """Test main function with QApplication creation error."""
+        mock_qapp.side_effect = Exception("QApplication creation failed")
+    
+        with patch('sys.argv', ['extract_image_cli.py']):
+>           main()
+
+test_extract_image_cli_2025-08-24.py:436: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def main():
+        try:
+            app = QApplication(sys.argv)
+            window = MainWindow()
+            logger.info("Application started")
+            sys.exit(app.exec_())
+        except Exception as e:
+            logger.critical("Application failed to start: %s", str(e))
+>           sys.exit(1)
+E           NameError: name 'sys' is not defined. Did you forget to import 'sys'?
+
+..\..\src\utilities\pdf_tools\pdf_content_extraction\extract_image_cli.py:230: NameError
+------------------------------ Captured log call ------------------------------
+CRITICAL src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli:extract_image_cli.py:229 Application failed to start: name 'sys' is not defined
+============================== warnings summary ===============================
+<frozen importlib._bootstrap>:488
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+<frozen importlib._bootstrap>:488
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+============================ slowest 10 durations =============================
+0.29s setup    test_extract_image_cli_2025-08-24.py::TestExtractImages::test_extract_images_file_not_found
+0.01s call     test_extract_image_cli_2025-08-24.py::TestExtractImages::test_extract_images_different_formats
+0.01s call     test_extract_image_cli_2025-08-24.py::TestSetupAndTeardown::test_setup_teardown_example
+0.01s call     test_extract_image_cli_2025-08-24.py::TestExtractImages::test_extract_images_size_filtering
+0.01s call     test_extract_image_cli_2025-08-24.py::TestExtractImages::test_extract_images_creates_output_directory
+0.01s call     test_extract_image_cli_2025-08-24.py::TestExtractImages::test_extract_images_success
+
+(4 durations < 0.005s hidden.  Use -vv to show these durations.)
+- Generated html report: file:///C:/Users/HP1/1_2/1_2/tests/unit/result_extract_image_cli_test_report_2025-08-24.html -
+=========================== short test summary info ===========================
+FAILED test_extract_image_cli_2025-08-24.py::TestMainWindow::test_extract_images_no_pdf_selected
+FAILED test_extract_image_cli_2025-08-24.py::TestMainWindow::test_extract_images_no_output_dir_selected
+FAILED test_extract_image_cli_2025-08-24.py::TestMainWindow::test_extract_images_gui_success
+FAILED test_extract_image_cli_2025-08-24.py::TestMainFunction::test_main_function_success
+FAILED test_extract_image_cli_2025-08-24.py::TestMainFunction::test_main_function_window_init_error
+FAILED test_extract_image_cli_2025-08-24.py::TestMainFunction::test_main_function_app_creation_error
+ERROR test_extract_image_cli_2025-08-24.py::TestMainWindow::test_main_window_initialization
+ERROR test_extract_image_cli_2025-08-24.py::TestEdgeCasesAndErrorHandling::test_extract_images_empty_pdf
+ERROR test_extract_image_cli_2025-08-24.py::TestEdgeCasesAndErrorHandling::test_extract_images_corrupted_image_data
+ERROR test_extract_image_cli_2025-08-24.py::TestEdgeCasesAndErrorHandling::test_extract_images_invalid_parameters
+============= 6 failed, 12 passed, 5 warnings, 4 errors in 1.93s ==============
+
+
+STDERR OUTPUT:
+----------------------------------------
+C:\Users\HP1\AppData\Local\Programs\Python\Python313\Lib\site-packages\pytest_asyncio\plugin.py:217: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+2025-08-24 16:48:54,192 - src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli - INFO - Starting image extraction from: C:\Users\HP1\AppData\Local\Temp\test_input_mlao5vkl\non_existent.pdf
+2025-08-24 16:48:54,192 - src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli - DEBUG - Parameters - Min width: 100, Min height: 100, Format: png
+2025-08-24 16:48:54,193 - src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli - ERROR - Input file not found: C:\Users\HP1\AppData\Local\Temp\test_input_mlao5vkl\non_existent.pdf
+2025-08-24 16:48:54,193 - src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli - ERROR - Error in image extraction: Input file not found: C:\Users\HP1\AppData\Local\Temp\test_input_mlao5vkl\non_existent.pdf
+2025-08-24 16:48:54,202 - src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli - INFO - Starting image extraction from: C:\Users\HP1\AppData\Local\Temp\test_input_qvoswta1\test.pdf
+2025-08-24 16:48:54,203 - src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli - DEBUG - Parameters - Min width: 100, Min height: 100, Format: png
+2025-08-24 16:48:54,203 - src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli - DEBUG - Processing page 1
+2025-08-24 16:48:54,204 - src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli - DEBUG - Extracted image: C:\Users\HP1\AppData\Local\Temp\test_output_9ympndmd\image_1_1.png
+2025-08-24 16:48:54,204 - src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli - DEBUG - Extracted image: C:\Users\HP1\AppData\Local\Temp\test_output_9ympndmd\image_1_2.png
+2025-08-24 16:48:54,204 - src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli - DEBUG - Processing page 2
+2025-08-24 16:48:54,204 - src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli - DEBUG - Extracted image: C:\Users\HP1\AppData\Local\Temp\test_output_9ympndmd\image_2_1.png
+2025-08-24 16:48:54,204 - src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli - DEBUG - Extracted image: C:\Users\HP1\AppData\Local\Temp\test_output_9ympndmd\image_2_2.png
+2025-08-24 16:48:54,205 - src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli - INFO - Extraction completed. Extracted 4 images
+2025-08-24 16:48:54,217 - src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli - INFO - Starting image extraction from: C:\Users\HP1\AppData\Local\Temp\test_input_i267tc67\test.pdf
+2025-08-24 16:48:54,217 - src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli - DEBUG - Parameters - Min width: 100, Min height: 100, Format: png
+2025-08-24 16:48:54,217 - src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli - DEBUG - Processing page 1
+2025-08-24 16:48:54,217 - src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli - DEBUG - Skipping image (size too small): 50x30
+2025-08-24 16:48:54,218 - src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli - DEBUG - Skipping image (size too small): 50x30
+2025-08-24 16:48:54,218 - src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli - DEBUG - Processing page 2
+2025-08-24 16:48:54,218 - src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli - DEBUG - Skipping image (size too small): 50x30
+2025-08-24 16:48:54,218 - src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli - DEBUG - Skipping image (size too small): 50x30
+2025-08-24 16:48:54,218 - src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli - INFO - Extraction completed. Extracted 0 images
+2025-08-24 16:48:54,231 - src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli - INFO - Starting image extraction from: C:\Users\HP1\AppData\Local\Temp\test_input_c34j6b40\corrupt.pdf
+2025-08-24 16:48:54,231 - src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli - DEBUG - Parameters - Min width: 100, Min height: 100, Format: png
+2025-08-24 16:48:54,231 - src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli - ERROR - Error in image extraction: Corrupt PDF file
+2025-08-24 16:48:54,241 - src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli - INFO - Starting image extraction from: C:\Users\HP1\AppData\Local\Temp\test_input_g_yjngo9\test.pdf
+2025-08-24 16:48:54,241 - src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli - DEBUG - Parameters - Min width: 100, Min height: 100, Format: png
+2025-08-24 16:48:54,242 - src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli - INFO - Creating output directory: C:\Users\HP1\AppData\Local\Temp\test_input_g_yjngo9\new_output_dir
+2025-08-24 16:48:54,243 - src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli - INFO - Extraction completed. Extracted 0 images
+2025-08-24 16:48:54,255 - src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli - INFO - Starting image extraction from: C:\Users\HP1\AppData\Local\Temp\test_input_bfxqrlpi\test.pdf
+2025-08-24 16:48:54,255 - src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli - DEBUG - Parameters - Min width: 100, Min height: 100, Format: png
+2025-08-24 16:48:54,256 - src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli - DEBUG - Processing page 1
+2025-08-24 16:48:54,256 - src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli - DEBUG - Extracted image: C:\Users\HP1\AppData\Local\Temp\test_output_if_1f7jd\image_1_1.png
+2025-08-24 16:48:54,256 - src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli - DEBUG - Extracted image: C:\Users\HP1\AppData\Local\Temp\test_output_if_1f7jd\image_1_2.png
+2025-08-24 16:48:54,256 - src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli - DEBUG - Processing page 2
+2025-08-24 16:48:54,257 - src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli - DEBUG - Extracted image: C:\Users\HP1\AppData\Local\Temp\test_output_if_1f7jd\image_2_1.png
+2025-08-24 16:48:54,257 - src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli - DEBUG - Extracted image: C:\Users\HP1\AppData\Local\Temp\test_output_if_1f7jd\image_2_2.png
+2025-08-24 16:48:54,257 - src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli - INFO - Extraction completed. Extracted 4 images
+2025-08-24 16:48:54,257 - src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli - INFO - Starting image extraction from: C:\Users\HP1\AppData\Local\Temp\test_input_bfxqrlpi\test.pdf
+2025-08-24 16:48:54,257 - src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli - DEBUG - Parameters - Min width: 100, Min height: 100, Format: jpg
+2025-08-24 16:48:54,259 - src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli - DEBUG - Processing page 1
+2025-08-24 16:48:54,260 - src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli - DEBUG - Extracted image: C:\Users\HP1\AppData\Local\Temp\test_output_if_1f7jd\image_1_1.jpg
+2025-08-24 16:48:54,260 - src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli - DEBUG - Extracted image: C:\Users\HP1\AppData\Local\Temp\test_output_if_1f7jd\image_1_2.jpg
+2025-08-24 16:48:54,260 - src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli - DEBUG - Processing page 2
+2025-08-24 16:48:54,261 - src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli - DEBUG - Extracted image: C:\Users\HP1\AppData\Local\Temp\test_output_if_1f7jd\image_2_1.jpg
+2025-08-24 16:48:54,261 - src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli - DEBUG - Extracted image: C:\Users\HP1\AppData\Local\Temp\test_output_if_1f7jd\image_2_2.jpg
+2025-08-24 16:48:54,262 - src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli - INFO - Extraction completed. Extracted 4 images
+2025-08-24 16:48:54,262 - src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli - INFO - Starting image extraction from: C:\Users\HP1\AppData\Local\Temp\test_input_bfxqrlpi\test.pdf
+2025-08-24 16:48:54,262 - src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli - DEBUG - Parameters - Min width: 100, Min height: 100, Format: jpeg
+2025-08-24 16:48:54,262 - src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli - DEBUG - Processing page 1
+2025-08-24 16:48:54,262 - src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli - DEBUG - Extracted image: C:\Users\HP1\AppData\Local\Temp\test_output_if_1f7jd\image_1_1.jpeg
+2025-08-24 16:48:54,263 - src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli - DEBUG - Extracted image: C:\Users\HP1\AppData\Local\Temp\test_output_if_1f7jd\image_1_2.jpeg
+2025-08-24 16:48:54,263 - src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli - DEBUG - Processing page 2
+2025-08-24 16:48:54,263 - src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli - DEBUG - Extracted image: C:\Users\HP1\AppData\Local\Temp\test_output_if_1f7jd\image_2_1.jpeg
+2025-08-24 16:48:54,263 - src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli - DEBUG - Extracted image: C:\Users\HP1\AppData\Local\Temp\test_output_if_1f7jd\image_2_2.jpeg
+2025-08-24 16:48:54,263 - src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli - INFO - Extraction completed. Extracted 4 images
+2025-08-24 16:48:54,263 - src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli - INFO - Starting image extraction from: C:\Users\HP1\AppData\Local\Temp\test_input_bfxqrlpi\test.pdf
+2025-08-24 16:48:54,263 - src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli - DEBUG - Parameters - Min width: 100, Min height: 100, Format: tiff
+2025-08-24 16:48:54,264 - src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli - DEBUG - Processing page 1
+2025-08-24 16:48:54,264 - src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli - DEBUG - Extracted image: C:\Users\HP1\AppData\Local\Temp\test_output_if_1f7jd\image_1_1.tiff
+2025-08-24 16:48:54,264 - src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli - DEBUG - Extracted image: C:\Users\HP1\AppData\Local\Temp\test_output_if_1f7jd\image_1_2.tiff
+2025-08-24 16:48:54,264 - src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli - DEBUG - Processing page 2
+2025-08-24 16:48:54,264 - src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli - DEBUG - Extracted image: C:\Users\HP1\AppData\Local\Temp\test_output_if_1f7jd\image_2_1.tiff
+2025-08-24 16:48:54,264 - src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli - DEBUG - Extracted image: C:\Users\HP1\AppData\Local\Temp\test_output_if_1f7jd\image_2_2.tiff
+2025-08-24 16:48:54,265 - src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli - INFO - Extraction completed. Extracted 4 images
+2025-08-24 16:48:54,705 - src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli - INFO - Selected input file: /path/to/test.pdf
+2025-08-24 16:48:54,712 - src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli - INFO - Selected output directory: /path/to/output
+2025-08-24 16:48:54,715 - src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli - WARNING - No PDF file selected
+2025-08-24 16:48:54,746 - src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli - WARNING - No output directory selected
+2025-08-24 16:48:54,864 - src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli - ERROR - Error browsing for PDF: File dialog error
+2025-08-24 16:48:54,866 - src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli - ERROR - Error selecting output directory: Directory dialog error
+2025-08-24 16:48:54,868 - src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli - CRITICAL - Application failed to start: name 'sys' is not defined
+2025-08-24 16:48:54,911 - src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli - CRITICAL - Application failed to start: name 'sys' is not defined
+2025-08-24 16:48:54,948 - src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli - CRITICAL - Application failed to start: name 'sys' is not defined
+<sys>:0: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+
+TEST RESULTS SUMMARY:
+----------------------------------------
+test_extract_image_cli_2025-08-24.py::TestExtractImages::test_extract_images_pdf_open_error 
+--- Starting test: test_extract_image_cli_2025-08-24.py::TestExtractImages::test_extract_images_pdf_open_error ---
+--- Completed test: test_extract_image_cli_2025-08-24.py::TestExtractImages::test_extract_images_pdf_open_error ---
+test_extract_image_cli_2025-08-24.py::TestMainWindow::test_browse_pdf_error_handling 
+--- Starting test: test_extract_image_cli_2025-08-24.py::TestMainWindow::test_browse_pdf_error_handling ---
+--- Completed test: test_extract_image_cli_2025-08-24.py::TestMainWindow::test_browse_pdf_error_handling ---
+test_extract_image_cli_2025-08-24.py::TestMainWindow::test_browse_output_dir_error_handling 
+--- Starting test: test_extract_image_cli_2025-08-24.py::TestMainWindow::test_browse_output_dir_error_handling ---
+--- Completed test: test_extract_image_cli_2025-08-24.py::TestMainWindow::test_browse_output_dir_error_handling ---
+test_extract_image_cli_2025-08-24.py::TestMainFunction::test_main_function_window_init_error 
+--- Starting test: test_extract_image_cli_2025-08-24.py::TestMainFunction::test_main_function_window_init_error ---
+--- Completed test: test_extract_image_cli_2025-08-24.py::TestMainFunction::test_main_function_window_init_error ---
+test_extract_image_cli_2025-08-24.py::TestMainFunction::test_main_function_app_creation_error 
+--- Starting test: test_extract_image_cli_2025-08-24.py::TestMainFunction::test_main_function_app_creation_error ---
+--- Completed test: test_extract_image_cli_2025-08-24.py::TestMainFunction::test_main_function_app_creation_error ---
+        ImportError - if an import failed when it shouldn't have
+                            logger.error("Error extracting image %d from page %d: %s",
+                logger.error("Error processing PDF: %s", str(e))
+            logger.error("Error in extract operation: %s", str(e))
+                            logger.error("Error extracting image %d from page %d: %s",
+                logger.error("Error processing PDF: %s", str(e))
+            logger.error("Error in extract operation: %s", str(e))
+            logger.critical("Application failed to start: %s", str(e))
+CRITICAL src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli:extract_image_cli.py:229 Application failed to start: name 'sys' is not defined
+____________ TestMainFunction.test_main_function_window_init_error ____________
+    def test_main_function_window_init_error(self, mock_sys_exit, mock_main_window, mock_qapp):
+        """Test main function with MainWindow initialization error."""
+        mock_main_window.side_effect = Exception("Window initialization failed")
+            logger.critical("Application failed to start: %s", str(e))
+CRITICAL src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli:extract_image_cli.py:229 Application failed to start: name 'sys' is not defined
+___________ TestMainFunction.test_main_function_app_creation_error ____________
+    def test_main_function_app_creation_error(self, mock_sys_exit, mock_qapp):
+        """Test main function with QApplication creation error."""
+        mock_qapp.side_effect = Exception("QApplication creation failed")
+            logger.critical("Application failed to start: %s", str(e))
+CRITICAL src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli:extract_image_cli.py:229 Application failed to start: name 'sys' is not defined
+FAILED test_extract_image_cli_2025-08-24.py::TestMainFunction::test_main_function_window_init_error
+FAILED test_extract_image_cli_2025-08-24.py::TestMainFunction::test_main_function_app_creation_error
+============= 6 failed, 12 passed, 5 warnings, 4 errors in 1.93s ==============
+
+OUTPUT FILES GENERATED:
+----------------------------------------
+- HTML Report: result_extract_image_cli_test_report_2025-08-24.html
+- JSON Results: result_extract_image_cli_test_results_2025-08-24.json
+- Coverage HTML: result_extract_image_cli_coverage_2025-08-24/
+- Coverage JSON: result_extract_image_cli_coverage_2025-08-24.json
+- Execution Summary: result_extract_image_cli_execution_summary_2025-08-24.txt
+
+EXECUTION STATUS: FAILED
+============================================================

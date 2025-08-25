@@ -34,5 +34,127 @@
   "network_connectivity": {},
   "pdf_tools": {},
   "privacy_tools": {},
-  "software_maintenance": {}
+  "software_maintenance": {},
+  "size_analyzer": {
+    "general": {
+      "module_path": "file_utilities_2.gui.size_analyzer_gui",
+      "class_name": "SizeAnalyzerGUI",
+      "last_opened_directory": "",
+      "default_output_directory": "",
+      "recent_directories": [],
+      "max_recent_directories": 10,
+      "enable_logging": true,
+      "log_level": "INFO",
+      "auto_save_results": true,
+      "results_retention_days": 30
+    },
+    "analysis": {
+      "default_top_files_count": 20,
+      "progress_update_interval": 100,
+      "max_concurrent_operations": 1,
+      "include_hidden_files": false,
+      "follow_symlinks": false,
+      "skip_system_files": true,
+      "file_size_threshold": 0,
+      "enable_file_type_analysis": true,
+      "enable_directory_tree": true,
+      "enable_performance_metrics": true
+    },
+    "export": {
+      "default_format": "json",
+      "include_metadata": true,
+      "include_performance_metrics": true,
+      "include_file_list": true,
+      "include_directory_tree": false,
+      "compress_exports": false,
+      "auto_timestamp_exports": true,
+      "export_formats": [
+        "json",
+        "csv",
+        "txt"
+      ]
+    },
+    "ui": {
+      "window_geometry": {
+        "width": 800,
+        "height": 600,
+        "remember_size": true,
+        "remember_position": true,
+        "center_on_screen": true
+      },
+      "progress_visualization": {
+        "show_progress_bar": true,
+        "show_progress_details": true,
+        "show_time_estimates": true,
+        "update_frequency": 500
+      },
+      "results_display": {
+        "show_file_types": true,
+        "show_largest_files": true,
+        "show_directory_tree": false,
+        "auto_expand_results": true,
+        "results_font_family": "Consolas",
+        "results_font_size": 10
+      }
+    },
+    "performance": {
+      "enable_performance_monitoring": true,
+      "max_memory_usage_mb": 256,
+      "max_cpu_usage_percent": 50,
+      "operation_timeout_seconds": 300,
+      "enable_background_operations": true,
+      "priority_level": "normal",
+      "thread_pool_size": 1,
+      "cache_size_mb": 32,
+      "enable_progress_caching": true
+    },
+    "resources": {
+      "icon_path": "file_utilities_2/gui/icons/size_analyzer.png",
+      "ui_file": "file_utilities_2/gui/size_analyzer.ui",
+      "help_file": "file_utilities_2/docs/size_analyzer_help.html",
+      "template_path": "file_utilities_2/templates/size_analyzer",
+      "cache_directory": "cache/size_analyzer",
+      "temp_directory": "temp/size_analyzer",
+      "log_directory": "logs/size_analyzer"
+    },
+    "hub_integration": {
+      "enable_hub_integration": true,
+      "tool_name": "Size Analyzer",
+      "tool_category": "analysis",
+      "resource_requirements": {
+        "cpu_priority": "normal",
+        "memory_limit_mb": 256,
+        "disk_io_priority": "normal"
+      },
+      "event_broadcasting": {
+        "broadcast_start": true,
+        "broadcast_progress": true,
+        "broadcast_completion": true,
+        "broadcast_errors": true
+      },
+      "coordination": {
+        "allow_resource_sharing": true,
+        "coordinate_with_tools": [
+          "tree_map",
+          "checksum"
+        ],
+        "exclusive_mode": false
+      }
+    },
+    "logging": {
+      "enable_tool_logging": true,
+      "log_level": "INFO",
+      "log_file": "logs/size_analyzer/size_analyzer.log",
+      "max_log_size_mb": 10,
+      "backup_count": 5,
+      "log_format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+      "log_categories": {
+        "core_logic": "INFO",
+        "gui_events": "INFO",
+        "hub_integration": "INFO",
+        "performance": "DEBUG",
+        "errors": "ERROR"
+      }
+    }
+  }
 }
