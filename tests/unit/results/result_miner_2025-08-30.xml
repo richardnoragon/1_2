@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest" errors="1" failures="0" skipped="0" tests="1" time="11.930" timestamp="2025-08-30T13:52:17.676484+02:00" hostname="DESKTOP-M4DIPMD"><testcase classname="" name="test_miner_2025-08-30" time="0.000"><error message="collection failure">ImportError while importing test module 'C:\Users\richardi\1_2\tests\unit\test_miner_2025-08-30.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+..\..\..\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+test_miner_2025-08-30.py:27: in &lt;module&gt;
+    import fitz  # PyMuPDF
+..\..\venv\Lib\site-packages\fitz\__init__.py:1: in &lt;module&gt;
+    from frontend import *
+E   ModuleNotFoundError: No module named 'frontend'</error></testcase></testsuite></testsuites>

@@ -1,17 +1,17 @@
 """Advanced configuration service for network connectivity tools."""
 
+import hashlib
 import json
 import logging
-import threading
-from datetime import datetime
-from pathlib import Path
-from typing import Dict, Any, List, Optional, Callable, Union
-from dataclasses import dataclass, asdict
-from enum import Enum
 import shutil
-import hashlib
+import threading
+from dataclasses import asdict, dataclass
+from datetime import datetime
+from enum import Enum
+from pathlib import Path
+from typing import Any, Callable, Dict, List, Optional, Union
 
-from core.config_manager import ConfigManager
+from .config_manager import ConfigManager
 from .logging_integration import get_network_logging_manager
 
 

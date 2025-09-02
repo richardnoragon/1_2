@@ -1,0 +1,25 @@
+{
+  "test_execution": {
+    "timestamp": "2025-08-28 01:16:39",
+    "date": "2025-08-28",
+    "target_module": "system_cleanup.py",
+    "test_file": "test_system_cleanup_2025-08-28.py",
+    "test_framework": "pytest",
+    "python_version": "3.13.2 (tags/v3.13.2:4f8bb39, Feb  4 2025, 15:23:48) [MSC v.1942 64 bit (AMD64)]",
+    "working_directory": "C:\\Users\\richardi\\1_2\\tests\\unit"
+  },
+  "test_configuration": {
+    "coverage_enabled": true,
+    "html_report": true,
+    "json_report": true,
+    "timeout": 600,
+    "verbose_output": true,
+    "strict_mode": true
+  },
+  "test_results": {
+    "exit_code": 5,
+    "execution_completed": true,
+    "completion_time": "2025-08-28 01:16:51",
+    "status": "ERROR"
+  }
+}

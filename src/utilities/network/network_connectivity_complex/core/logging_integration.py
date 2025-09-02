@@ -1,8 +1,31 @@
 """Logging integration for network connectivity tools with main RFU logging system."""
 
 import logging
-from typing import Optional, Dict, Any
-from core.logging_manager import LogManager
+from typing import Any, Dict, Optional
+
+
+# Create a simplified logging manager for network complex modules
+# to avoid dependency on the main RFU core modules
+class SimpleLogManager:
+    """Simplified log manager for network complex modules."""
+    
+    def __init__(self):
+        self.logger = logging.getLogger('NetworkConnectivity')
+        handler = logging.StreamHandler()
+        formatter = logging.Formatter(
+            '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+        )
+        handler.setFormatter(formatter)
+        self.logger.addHandler(handler)
+        self.logger.setLevel(logging.INFO)
+    
+    def get_logger(self, name: str) -> logging.Logger:
+        """Get a logger instance."""
+        return logging.getLogger(f'NetworkConnectivity.{name}')
+
+
+# Use the simplified log manager
+LogManager = SimpleLogManager()
 
 
 class NetworkLoggingManager:

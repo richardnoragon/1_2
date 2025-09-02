@@ -1,0 +1,34 @@
+{
+  "execution_info": {
+    "timestamp": "2025-08-30 17:44:35",
+    "date": "2025-08-30",
+    "target_module": "miner.py",
+    "test_type": "standalone_comprehensive",
+    "framework": "pytest"
+  },
+  "test_categories": {
+    "unit_tests": "Individual function and method testing",
+    "gui_tests": "User interface component testing",
+    "integration_tests": "Component interaction testing",
+    "performance_tests": "Performance and scalability testing",
+    "error_handling_tests": "Error condition and edge case testing"
+  },
+  "coverage_areas": {
+    "pdf_miner_class": "PDF document handling and processing",
+    "main_window_class": "GUI application main window",
+    "file_operations": "PDF file loading and manipulation",
+    "page_rendering": "PDF page display and conversion",
+    "text_extraction": "Text content extraction from PDF",
+    "metadata_handling": "PDF metadata reading and processing",
+    "error_scenarios": "Error handling and recovery"
+  },
+  "test_markers": {
+    "unit": "Unit tests for individual components",
+    "gui": "GUI-related tests",
+    "integration": "Integration tests",
+    "performance": "Performance tests",
+    "slow": "Tests taking longer than 5 seconds",
+    "fast": "Tests completing quickly",
+    "error_handling": "Error handling tests"
+  }
+}

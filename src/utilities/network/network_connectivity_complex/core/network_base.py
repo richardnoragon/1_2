@@ -3,15 +3,27 @@
 import logging
 import threading
 from abc import ABC, abstractmethod
-from datetime import datetime
-from typing import Dict, Any, Optional, List, Callable
-from enum import Enum
 from dataclasses import dataclass
+from datetime import datetime
+from enum import Enum
+from typing import Any, Callable, Dict, List, Optional
 
 from PyQt5.QtCore import QObject, pyqtSignal
 
-from core.config_manager import ConfigManager
-from core.error_handler import error_handler
+from .config_manager import ConfigManager
+
+# Note: Using a simplified error handler for network complex modules
+# to avoid dependency on the main RFU core modules
+
+
+class QObjectMeta(type(QObject)):
+    """Custom metaclass to resolve QObject and ABC metaclass conflict."""
+    pass
+
+
+class ABCQObjectMeta(QObjectMeta, type(ABC)):
+    """Metaclass that combines QObject and ABC metaclasses."""
+    pass
 
 
 class NetworkOperationStatus(Enum):
@@ -47,7 +59,7 @@ class NetworkOperationResult:
             self.timestamp = datetime.now()
 
 
-class NetworkToolBase(QObject, ABC):
+class NetworkToolBase(QObject, ABC, metaclass=ABCQObjectMeta):
     """Base class for all network connectivity tools.
     
     Provides common functionality for network operations, progress tracking,
@@ -112,7 +124,7 @@ class NetworkToolBase(QObject, ABC):
     
     def _ensure_network_config(self):
         """Ensure network_connectivity section exists in configuration."""
-        if 'network_connectivity' not in self.config_manager.config:
+        if not self.config_manager.has_setting('network_connectivity'):
             default_config = {
                 "general": {
                     "default_timeout": 5000,
@@ -212,9 +224,8 @@ class NetworkToolBase(QObject, ABC):
             except Exception as e:
                 self.status = NetworkOperationStatus.ERROR
                 error_msg = f"Failed to start {operation_type}: {e}"
-                self.logger.error(error_msg)
+                self.logger.error(error_msg, exc_info=True)
                 self.error_occurred.emit(error_msg)
-                error_handler.handle_error(e, f"{self.tool_name} start")
                 return False
     
     def stop_operation(self) -> bool:
@@ -254,9 +265,8 @@ class NetworkToolBase(QObject, ABC):
             except Exception as e:
                 self.status = NetworkOperationStatus.ERROR
                 error_msg = f"Failed to stop operation: {e}"
-                self.logger.error(error_msg)
+                self.logger.error(error_msg, exc_info=True)
                 self.error_occurred.emit(error_msg)
-                error_handler.handle_error(e, f"{self.tool_name} stop")
                 return False
     
     def _operation_wrapper(self, operation_type: str, kwargs: Dict[str, Any]):
@@ -307,7 +317,7 @@ class NetworkToolBase(QObject, ABC):
         )
         self.operation_complete.emit(result)
         
-        error_handler.handle_error(error, f"{self.tool_name} {operation_type}")
+        self.logger.error(f"{self.tool_name} {operation_type} error: {error}", exc_info=True)
     
     def get_tool_config(self, key: str, default: Any = None) -> Any:
         """Get tool-specific configuration value.

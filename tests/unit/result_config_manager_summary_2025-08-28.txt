@@ -1,0 +1,23 @@
+ConfigManager Comprehensive Test Summary
+==================================================
+Execution Date: 2025-08-28 17:56:23.996315
+Test File: test_config_manager_2025-08-28.py
+Target Module: config_manager.py
+
+Generated Reports:
+- HTML Test Report: result_config_manager_2025-08-28.html
+- JSON Test Report: result_config_manager_2025-08-28.json
+- HTML Coverage Report: result_config_manager_coverage_2025-08-28/
+- JSON Coverage Report: result_config_manager_coverage_2025-08-28.json
+
+Test Categories Covered:
+- Singleton pattern implementation
+- Configuration management (get/set/remove)
+- Section management
+- File I/O operations (save/load/export/import)
+- Error handling and edge cases
+- Thread safety
+- Data type preservation
+- Default value handling
+- Auto-save functionality
+- Configuration reset and defaults

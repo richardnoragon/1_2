@@ -1,0 +1,188 @@
+# Test requirements for disk_health_widget.py
+# Requirements file: requirements_test_disk_health_widget_2025-08-29.txt
+# Created: 2025-08-29
+# Purpose: Dependencies for comprehensive testing of disk_health_widget.py
+
+# Core testing framework
+pytest>=8.0.0
+pytest-html>=4.0.0
+pytest-cov>=4.0.0
+pytest-json-report>=1.5.0
+pytest-mock>=3.10.0
+pytest-timeout>=2.1.0
+
+# Additional testing utilities
+pytest-xdist>=3.0.0        # Parallel test execution
+pytest-benchmark>=4.0.0    # Performance benchmarking
+pytest-clarity>=1.0.0      # Better test output
+pytest-sugar>=0.9.0        # Enhanced test output formatting
+
+# Mocking and fixtures
+unittest-xml-reporting>=3.2.0
+mock>=4.0.0
+responses>=0.23.0          # HTTP request mocking
+freezegun>=1.2.0           # Time/datetime mocking
+
+# Coverage and reporting
+coverage>=7.0.0
+coverage-badge>=1.1.0      # Coverage badges
+
+# GUI testing dependencies (if testing actual PyQt5)
+pytest-qt>=4.2.0          # PyQt testing utilities
+
+# Code quality and linting (optional for test validation)
+flake8>=6.0.0
+black>=23.0.0
+isort>=5.12.0
+mypy>=1.0.0
+
+# Documentation and reporting
+sphinx>=6.0.0             # Documentation generation
+sphinx-rtd-theme>=1.2.0   # Documentation theme
+
+# Utility packages
+colorama>=0.4.6           # Colored terminal output
+tabulate>=0.9.0           # Table formatting
+jinja2>=3.1.0             # Template engine for reports
+markupsafe>=2.1.0         # Safe string handling
+
+# Data handling and validation
+jsonschema>=4.17.0        # JSON schema validation
+pyyaml>=6.0               # YAML file handling
+click>=8.1.0              # Command line interface
+
+# System and environment
+psutil>=5.9.0             # System information (for mock data)
+pathlib2>=2.3.0           # Path handling (Python 2/3 compatibility)
+
+# Performance and profiling
+memory-profiler>=0.60.0   # Memory usage profiling
+line-profiler>=4.0.0      # Line-by-line profiling
+
+# Date and time utilities
+python-dateutil>=2.8.0    # Date parsing and manipulation
+pytz>=2023.3              # Timezone handling
+
+# Development and debugging
+pdb++>=0.10.3             # Enhanced debugger
+ipython>=8.0.0            # Interactive Python shell
+ipdb>=0.13.0              # IPython debugger
+
+# Async testing support
+pytest-asyncio>=0.21.0    # Async test support
+aiohttp>=3.8.0            # Async HTTP client (if needed)
+
+# Security and validation
+safety>=2.3.0             # Security vulnerability checking
+bandit>=1.7.0             # Security linting
+
+# Compatibility and environment
+six>=1.16.0               # Python 2/3 compatibility
+setuptools>=67.0.0        # Package setup tools
+wheel>=0.40.0             # Wheel package format
+
+# Platform-specific dependencies
+# Windows
+pywin32>=306; sys_platform == "win32"
+wmi>=1.5.1; sys_platform == "win32"
+
+# Linux
+python-dbus>=1.3.0; sys_platform == "linux"
+
+# Cross-platform GUI (for mock testing)
+tkinter; python_version >= "3.0"
+
+# Optional: Real PyQt5 for integration testing
+# PyQt5>=5.15.0; extra == "gui"
+# PyQt5-Qt5>=5.15.0; extra == "gui"
+# PyQt5-sip>=12.11.0; extra == "gui"
+
+# Development tools for test maintenance
+pre-commit>=3.0.0         # Git pre-commit hooks
+tox>=4.0.0                # Multi-environment testing
+nox>=2023.4.0             # Task automation
+
+# Documentation for test results
+mistune>=2.0.0            # Markdown parsing
+pygments>=2.14.0          # Syntax highlighting
+docutils>=0.19.0          # Documentation utilities
+
+# Quality assurance
+codespell>=2.2.0          # Spell checking
+vulture>=2.7              # Dead code detection
+radon>=6.0.0              # Code complexity metrics
+
+# Test data generation
+faker>=18.0.0             # Fake data generation
+hypothesis>=6.70.0        # Property-based testing
+factory-boy>=3.2.0        # Test fixture factories
+
+# Reporting and visualization
+matplotlib>=3.7.0         # Plotting and charts
+seaborn>=0.12.0           # Statistical visualization
+plotly>=5.14.0            # Interactive plots
+
+# Network and API testing
+requests>=2.28.0          # HTTP requests
+urllib3>=1.26.0           # HTTP client
+httpx>=0.24.0             # Modern HTTP client
+
+# Configuration and settings
+configparser>=5.3.0       # Configuration file parsing
+python-dotenv>=1.0.0      # Environment variable loading
+toml>=0.10.0              # TOML file parsing
+
+# Logging and monitoring
+loguru>=0.7.0             # Enhanced logging
+structlog>=23.1.0         # Structured logging
+rich>=13.3.0              # Rich text and beautiful formatting
+
+# File and data handling
+openpyxl>=3.1.0          # Excel file handling
+pandas>=2.0.0            # Data analysis (for test data)
+numpy>=1.24.0            # Numerical computations
+
+# Compression and archiving
+zipfile36>=0.1.3         # Enhanced zip handling
+tarfile>=0.1.0           # Tar file handling
+
+# Cryptography and hashing
+hashlib>=20081119        # Hashing algorithms
+uuid>=1.30               # UUID generation
+
+# Regular expressions and text processing
+regex>=2023.3.0          # Enhanced regex
+textdistance>=4.5.0      # Text similarity metrics
+
+# Version and package management
+packaging>=23.0          # Package version handling
+importlib-metadata>=6.0.0  # Package metadata
+
+# Type checking and validation
+typeguard>=3.0.0         # Runtime type checking
+pydantic>=1.10.0         # Data validation using Python type hints
+
+# Process and thread management
+threading2>=0.1.0        # Enhanced threading
+multiprocessing-logging>=0.3.0  # Multiprocessing logging
+
+# Math and statistics
+statistics>=1.0.3.5      # Statistical functions
+decimal>=1.70            # Decimal arithmetic
+
+# File system operations
+watchdog>=3.0.0          # File system event monitoring
+send2trash>=1.8.0        # Safe file deletion
+
+# Network and system utilities
+netifaces>=0.11.0        # Network interface information
+netaddr>=0.8.0           # Network address manipulation
+
+# Development dependencies for IDE integration
+rope>=1.7.0              # Python refactoring library
+jedi>=0.18.0             # Autocompletion and static analysis
+autopep8>=2.0.0          # Automatic PEP8 formatting
+
+# Note: This is a comprehensive list for full testing capabilities.
+# For minimal testing, only the core pytest packages are required:
+# pytest, pytest-html, pytest-cov, pytest-json-report, pytest-mock

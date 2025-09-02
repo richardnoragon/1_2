@@ -1,0 +1,30 @@
+{
+  "test_execution_summary": {
+    "target_file": "src/rfu/launch_main.py",
+    "test_file": "test_launch_main_2025-08-28.py",
+    "execution_timestamp": "2025-08-28 19:37:53",
+    "execution_time_seconds": 2.11,
+    "success": false,
+    "exit_code": 4
+  },
+  "test_results": {
+    "html_report": "result_launch_main_2025-08-28.html",
+    "json_report": "result_launch_main_2025-08-28.json",
+    "coverage_html": "coverage_launch_main_2025-08-28/index.html",
+    "coverage_json": "coverage_launch_main_2025-08-28.json"
+  },
+  "test_categories": {
+    "unit_tests": "TestLaunchMainModule",
+    "integration_tests": "TestLaunchMainIntegration",
+    "edge_case_tests": "TestLaunchMainEdgeCases",
+    "performance_tests": "TestLaunchMainPerformance"
+  },
+  "pytest_summary": {
+    "total_tests": 21,
+    "passed": 20,
+    "failed": 0,
+    "skipped": 1,
+    "errors": 0,
+    "duration": 7.2716264724731445
+  }
+}

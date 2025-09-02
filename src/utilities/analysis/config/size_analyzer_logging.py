@@ -5,12 +5,14 @@ This module provides logging configuration specifically for the Size Analyzer to
 integrating with the main logging system and providing categorized logging.
 """
 
-import os
 import logging
 import logging.handlers
+import os
 from pathlib import Path
-from typing import Dict, Any, Optional
-from core.logging_manager import LogManager
+from typing import Any, Dict, Optional
+
+from src.rfu.core.logging_manager import LogManager
+
 from .size_analyzer_config import SizeAnalyzerConfig
 
 

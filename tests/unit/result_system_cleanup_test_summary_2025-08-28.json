@@ -1,0 +1,59 @@
+{
+  "session_info": {
+    "exit_status": 1,
+    "completion_time": "2025-09-01T22:28:42.905298",
+    "total_tests": 10
+  },
+  "test_details": [
+    {
+      "name": "test_boundary_enforcement",
+      "file": "test_file_splitter_comprehensive_2025-09-01.py",
+      "timestamp": "2025-09-01T22:28:37.645621"
+    },
+    {
+      "name": "test_chunk_path_validation",
+      "file": "test_file_splitter_comprehensive_2025-09-01.py",
+      "timestamp": "2025-09-01T22:28:37.860451"
+    },
+    {
+      "name": "test_enhanced_path_traversal_patterns",
+      "file": "test_file_splitter_comprehensive_2025-09-01.py",
+      "timestamp": "2025-09-01T22:28:39.938286"
+    },
+    {
+      "name": "test_file_permission_validation",
+      "file": "test_file_splitter_comprehensive_2025-09-01.py",
+      "timestamp": "2025-09-01T22:28:40.226970"
+    },
+    {
+      "name": "test_join_operation_security",
+      "file": "test_file_splitter_comprehensive_2025-09-01.py",
+      "timestamp": "2025-09-01T22:28:40.475816"
+    },
+    {
+      "name": "test_metadata_file_security",
+      "file": "test_file_splitter_comprehensive_2025-09-01.py",
+      "timestamp": "2025-09-01T22:28:40.759187"
+    },
+    {
+      "name": "test_path_traversal_prevention_input",
+      "file": "test_file_splitter_comprehensive_2025-09-01.py",
+      "timestamp": "2025-09-01T22:28:41.123568"
+    },
+    {
+      "name": "test_path_traversal_prevention_output",
+      "file": "test_file_splitter_comprehensive_2025-09-01.py",
+      "timestamp": "2025-09-01T22:28:41.469812"
+    },
+    {
+      "name": "test_secure_temporary_file_handling",
+      "file": "test_file_splitter_comprehensive_2025-09-01.py",
+      "timestamp": "2025-09-01T22:28:41.707762"
+    },
+    {
+      "name": "test_system_directory_protection",
+      "file": "test_file_splitter_comprehensive_2025-09-01.py",
+      "timestamp": "2025-09-01T22:28:42.119145"
+    }
+  ]
+}

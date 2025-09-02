@@ -1,0 +1,50 @@
+{
+  "test_execution_summary": {
+    "timestamp": "2025-08-28 14:24:59",
+    "date": "2025-08-28",
+    "target_module": "en_and_decrypt.py",
+    "test_file": "test_en_and_decrypt_2025-08-28.py",
+    "framework": "pytest",
+    "execution_time_seconds": 19.808700799942017,
+    "return_code": 1,
+    "success": false
+  },
+  "test_configuration": {
+    "coverage_threshold": 80,
+    "output_directory": "c:\\Users\\richardi\\1_2\\tests\\unit",
+    "timeout_seconds": 300,
+    "parallel_execution": false
+  },
+  "generated_reports": {
+    "html_report": "result_en_and_decrypt_2025-08-28.html",
+    "json_report": "result_en_and_decrypt_2025-08-28.json",
+    "xml_report": "result_en_and_decrypt_2025-08-28.xml",
+    "coverage_html": "coverage_en_and_decrypt_2025-08-28/index.html",
+    "coverage_json": "coverage_en_and_decrypt_2025-08-28.json"
+  },
+  "test_categories_covered": [
+    "GUI Initialization Tests",
+    "UI Component Creation Tests",
+    "File Selection Functionality Tests",
+    "Encryption/Decryption Operation Tests",
+    "Utility Method Tests",
+    "Edge Case and Error Handling Tests",
+    "Main Function Tests",
+    "Security Validation Tests"
+  ],
+  "testing_features": [
+    "Comprehensive mocking of PyQt5 components",
+    "Setup and teardown with temporary test data",
+    "Edge case testing with special characters",
+    "Security-focused password validation",
+    "Error scenario simulation",
+    "Performance testing with large datasets",
+    "Integration testing capabilities",
+    "Detailed assertion coverage"
+  ],
+  "execution_output": {
+    "stdout_length": 8674,
+    "stderr_length": 5756,
+    "has_warnings": true
+  }
+}

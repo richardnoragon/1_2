@@ -13,13 +13,16 @@ Preserves all original functionality while adding:
 - Resource usage monitoring
 """
 
-import os
-import math
 import json
 import logging
-from typing import Dict, Any, Optional, Tuple
+import math
+import os
+import tempfile
 from datetime import datetime
-from PyQt5.QtCore import QObject, pyqtSignal, QThread
+from pathlib import Path
+from typing import Any, Dict, Optional, Tuple
+
+from PyQt5.QtCore import QObject, QThread, pyqtSignal
 
 # Constants (preserved from original)
 CHUNK_RW_SIZE = 1024 * 1024  # 1MB read/write buffer
@@ -40,6 +43,171 @@ class FileSplitterValidationError(FileSplitterError):
 class FileSplitterIOError(FileSplitterError):
     """I/O error in file splitter operations."""
     pass
+
+
+class FileSplitterSecurityError(FileSplitterError):
+    """Security validation error in file splitter operations."""
+    pass
+
+
+def _validate_and_sanitize_path(path: str, base_dir: Optional[str] = None, operation_type: str = "read") -> str:
+    """
+    Validate and sanitize file paths to prevent path traversal attacks.
+    
+    This function implements defense-in-depth security measures including:
+    - Path normalization and canonicalization
+    - Directory traversal pattern detection
+    - Boundary enforcement within safe directories
+    - OWASP A03 (Injection) compliance
+    
+    Args:
+        path: The file path to validate
+        base_dir: Optional base directory for boundary checking
+        operation_type: Type of operation ('read', 'write', 'create')
+    
+    Returns:
+        Validated and sanitized absolute path
+        
+    Raises:
+        FileSplitterSecurityError: If path fails security validation
+    """
+    if not path or not isinstance(path, str):
+        raise FileSplitterSecurityError("Invalid path: path must be a non-empty string")
+    
+    # Log security-relevant path operations
+    logger = logging.getLogger('file_splitter.security')
+    logger.debug(f"Validating path for {operation_type}: {path}")
+    
+    # Phase 1: Detect obvious traversal patterns
+    dangerous_patterns = [
+        '../', '..\\',
+        '/../', '\\..\\',
+        '%2e%2e%2f', '%2e%2e%5c',  # URL encoded
+        '..%2f', '..%5c',
+        '....///', '....\\\\\\',  # Double encoding attempts
+    ]
+    
+    # Decode URL encoded patterns for detection
+    import urllib.parse
+    try:
+        decoded_path = urllib.parse.unquote(path)
+        paths_to_check = [path.lower(), decoded_path.lower()]
+    except:
+        paths_to_check = [path.lower()]
+    
+    for check_path in paths_to_check:
+        for pattern in dangerous_patterns:
+            if pattern in check_path:
+                logger.warning(f"Path traversal attempt detected: {path}")
+                raise FileSplitterSecurityError(f"Path contains suspicious traversal pattern: {pattern}")
+    
+    # Phase 2: Normalize and canonicalize path
+    try:
+        # Convert to Path object for proper handling
+        path_obj = Path(path)
+        
+        # Resolve to absolute path and follow symlinks
+        normalized_path = path_obj.resolve()
+        
+        # Convert back to string for further processing
+        canonical_path = str(normalized_path)
+        
+    except (OSError, ValueError) as e:
+        raise FileSplitterSecurityError(f"Path normalization failed: {e}")
+    
+    # Phase 3: Boundary enforcement
+    if base_dir:
+        try:
+            base_canonical = str(Path(base_dir).resolve())
+            
+            # Ensure the canonical path stays within the base directory
+            if not canonical_path.startswith(base_canonical):
+                logger.warning(f"Path outside boundary detected: {canonical_path} not in {base_canonical}")
+                raise FileSplitterSecurityError(
+                    f"Path outside allowed directory boundary: {canonical_path}"
+                )
+        except (OSError, ValueError) as e:
+            raise FileSplitterSecurityError(f"Base directory validation failed: {e}")
+    
+    # Phase 4: Additional security checks
+    if operation_type == "write":
+        # Prevent writing to absolute paths outside allowed areas
+        if os.path.isabs(path) and not base_dir:
+            # Check if absolute path points to sensitive areas
+            sensitive_roots = ["/etc", "/sys", "/proc", "/dev", "/boot", "/usr", "/var",
+                              "/System", "/Applications", "/Library"]
+            drive_roots = ["C:\\", "D:\\", "E:\\"]  # Windows drive roots
+            
+            path_upper = canonical_path.upper()
+            for root in drive_roots:
+                if path_upper.startswith(root.upper()):
+                    # Only allow in temp or user directories
+                    allowed_paths = [
+                        tempfile.gettempdir().upper(),
+                        os.path.expanduser("~").upper(),
+                        "C:\\TEMP", "C:\\TMP"
+                    ]
+                    is_allowed = any(path_upper.startswith(allowed) for allowed in allowed_paths)
+                    if not is_allowed:
+                        logger.warning(f"Absolute path write blocked: {canonical_path}")
+                        raise FileSplitterSecurityError(
+                            f"Absolute path write not allowed: {canonical_path}"
+                        )
+        
+        # Prevent writing to system directories
+        system_dirs = [
+            "/etc", "/sys", "/proc", "/dev", "/boot", "/usr/bin", "/usr/sbin",
+            "C:\\Windows", "C:\\Program Files", "C:\\Program Files (x86)",
+            "/System", "/Applications", "/Library"
+        ]
+        
+        for sys_dir in system_dirs:
+            try:
+                sys_canonical = str(Path(sys_dir).resolve()) if os.path.exists(sys_dir) else sys_dir
+                if canonical_path.startswith(sys_canonical):
+                    logger.warning(f"Attempted write to system directory: {canonical_path}")
+                    raise FileSplitterSecurityError(
+                        f"Write operation to system directory not allowed: {sys_dir}"
+                    )
+            except (OSError, ValueError):
+                continue  # Skip if system directory doesn't exist
+    
+    logger.debug(f"Path validation successful: {canonical_path}")
+    return canonical_path
+
+
+def _is_safe_path(path: str, allowed_base: str) -> bool:
+    """
+    Check if a path is safe within the allowed base directory.
+    
+    Args:
+        path: The path to check
+        allowed_base: The allowed base directory
+        
+    Returns:
+        True if path is safe, False otherwise
+    """
+    try:
+        canonical_path = str(Path(path).resolve())
+        canonical_base = str(Path(allowed_base).resolve())
+        return canonical_path.startswith(canonical_base)
+    except (OSError, ValueError):
+        return False
+
+
+def _create_secure_temp_dir() -> str:
+    """
+    Create a secure temporary directory for file operations.
+    
+    Returns:
+        Path to secure temporary directory
+    """
+    try:
+        temp_dir = tempfile.mkdtemp(prefix="file_splitter_", suffix="_secure")
+        os.chmod(temp_dir, 0o700)  # Owner read/write/execute only
+        return temp_dir
+    except OSError as e:
+        raise FileSplitterSecurityError(f"Failed to create secure temporary directory: {e}")
 
 
 class FileSplitterLogic(QObject):
@@ -169,7 +337,7 @@ class FileSplitterLogic(QObject):
                 }
             )
     
-    def _report_error_to_hub(self, error_message: str, error_details: Dict[str, Any] = None):
+    def _report_error_to_hub(self, error_message: str, error_details: Optional[Dict[str, Any]] = None):
         """
         Report error to hub.
         
@@ -268,16 +436,31 @@ class FileSplitterLogic(QObject):
         try:
             self.logger.info(f"Starting file split operation: {input_filepath}")
             
-            # Input validation
-            if not os.path.exists(input_filepath):
-                raise FileSplitterIOError(f"Input file not found: {input_filepath}")
+            # SECURITY: Validate input file path
+            try:
+                validated_input = _validate_and_sanitize_path(input_filepath, operation_type="read")
+            except FileSplitterSecurityError as e:
+                raise FileSplitterIOError(f"Input file path validation failed: {e}") from e
+            
+            if not os.path.exists(validated_input):
+                raise FileSplitterIOError(f"Input file not found: {validated_input}")
+            
+            # SECURITY: Validate and sanitize output directory
+            try:
+                validated_output_dir = _validate_and_sanitize_path(output_dir, operation_type="write")
+            except FileSplitterSecurityError as e:
+                raise FileSplitterIOError(f"Output directory path validation failed: {e}") from e
             
             # Ensure output directory exists or can be created
             try:
-                if not os.path.exists(output_dir):
-                    os.makedirs(output_dir)
+                if not os.path.exists(validated_output_dir):
+                    os.makedirs(validated_output_dir, mode=0o755)  # Secure permissions
             except OSError as e:
                 raise FileSplitterIOError(f"Cannot create output directory: {e}") from e
+            
+            # Use validated paths for the rest of the operation
+            input_filepath = validated_input
+            output_dir = validated_output_dir
             
             file_size = os.path.getsize(input_filepath)
             self.operation_stats['input_file_size'] = file_size
@@ -341,7 +524,21 @@ class FileSplitterLogic(QObject):
                     
                     chunk_num = i + 1
                     chunk_filename = chunk_pattern.format(chunk_num)
+                    
+                    # SECURITY: Validate chunk file path to prevent path traversal
                     chunk_filepath = os.path.join(output_dir, chunk_filename)
+                    try:
+                        validated_chunk_path = _validate_and_sanitize_path(
+                            chunk_filepath, base_dir=output_dir, operation_type="write"
+                        )
+                        chunk_filepath = validated_chunk_path
+                    except FileSplitterSecurityError as e:
+                        error_msg = f"Chunk file path validation failed: {e}"
+                        self._report_error_to_hub(error_msg, {
+                            'chunk_file': chunk_filepath,
+                            'security_error': str(e)
+                        })
+                        raise FileSplitterIOError(error_msg) from e
                     
                     progress_msg = (
                         f"Writing chunk {chunk_num}/{num_chunks}: "
@@ -516,17 +713,36 @@ class FileSplitterLogic(QObject):
         try:
             self.logger.info(f"Starting file join operation: {first_chunk_path}")
             
-            # Input validation
-            if not os.path.exists(first_chunk_path):
-                raise FileSplitterIOError(f"Input file not found: {first_chunk_path}")
+            # SECURITY: Validate first chunk path
+            try:
+                validated_chunk_path = _validate_and_sanitize_path(first_chunk_path, operation_type="read")
+            except FileSplitterSecurityError as e:
+                raise FileSplitterIOError(f"First chunk path validation failed: {e}") from e
+            
+            if not os.path.exists(validated_chunk_path):
+                raise FileSplitterIOError(f"Input file not found: {validated_chunk_path}")
+            
+            # SECURITY: Validate output file path
+            try:
+                validated_output_path = _validate_and_sanitize_path(output_filepath, operation_type="write")
+            except FileSplitterSecurityError as e:
+                raise FileSplitterIOError(f"Output file path validation failed: {e}") from e
             
             # Ensure output directory exists
-            output_dir = os.path.dirname(output_filepath)
+            output_dir = os.path.dirname(validated_output_path)
             if output_dir:
                 try:
-                    os.makedirs(output_dir, exist_ok=True)
+                    # SECURITY: Validate output directory path
+                    validated_output_dir = _validate_and_sanitize_path(output_dir, operation_type="write")
+                    os.makedirs(validated_output_dir, mode=0o755, exist_ok=True)
                 except OSError as e:
                     raise FileSplitterIOError(f"Cannot create output directory: {e}") from e
+                except FileSplitterSecurityError as e:
+                    raise FileSplitterIOError(f"Output directory validation failed: {e}") from e
+            
+            # Use validated paths for the rest of the operation
+            first_chunk_path = validated_chunk_path
+            output_filepath = validated_output_path
             
             chunk_dir = os.path.dirname(first_chunk_path)
             chunk_basename = os.path.basename(first_chunk_path)
@@ -657,6 +873,20 @@ class FileSplitterLogic(QObject):
                         chunk_num = i + 1
                         chunk_filename = chunk_pattern.format(chunk_num)
                         chunk_filepath = os.path.join(chunk_dir, chunk_filename)
+                        
+                        # SECURITY: Validate chunk file path to prevent path traversal
+                        try:
+                            validated_chunk_path = _validate_and_sanitize_path(
+                                chunk_filepath, base_dir=chunk_dir, operation_type="read"
+                            )
+                            chunk_filepath = validated_chunk_path
+                        except FileSplitterSecurityError as e:
+                            error_msg = f"Chunk file path validation failed: {e}"
+                            self._report_error_to_hub(error_msg, {
+                                'chunk_file': chunk_filepath,
+                                'security_error': str(e)
+                            })
+                            raise FileSplitterIOError(error_msg) from e
                         
                         if not os.path.exists(chunk_filepath):
                             raise FileSplitterIOError(

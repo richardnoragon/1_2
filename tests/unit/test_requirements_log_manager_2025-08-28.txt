@@ -1,0 +1,22 @@
+# Test dependencies for log_manager unit tests
+# Generated on: 2025-08-28
+
+# Core testing framework
+pytest>=7.0.0
+pytest-html>=3.1.0
+pytest-json-report>=1.5.0
+pytest-cov>=4.0.0
+pytest-mock>=3.10.0
+
+# Additional testing utilities
+coverage>=7.0.0
+mock>=4.0.3
+
+# For concurrent testing (if needed)
+pytest-xdist>=3.0.0
+
+# For benchmark testing (if needed)
+pytest-benchmark>=4.0.0
+
+# For timeout handling
+pytest-timeout>=2.1.0

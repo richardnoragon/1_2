@@ -1,0 +1,38 @@
+{
+  "general": {
+    "logging_level": "INFO",
+    "enable_debug_logging": false,
+    "auto_save_config": true,
+    "theme": "light",
+    "language": "en",
+    "check_for_updates": true
+  },
+  "gui": {
+    "window_width": 900,
+    "window_height": 700,
+    "remember_window_position": true,
+    "show_status_bar": true,
+    "show_toolbar": true,
+    "font_size": 12,
+    "font_family": "Segoe UI"
+  },
+  "logging": {
+    "enable_file_logging": true,
+    "enable_console_logging": true,
+    "log_file_max_size_mb": 10,
+    "log_file_backup_count": 5,
+    "enable_tool_logging": true,
+    "log_format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  },
+  "tools": {
+    "default_directory": "C:\\Users\\richardi",
+    "remember_last_directory": true,
+    "show_hidden_files": false,
+    "confirm_destructive_operations": true,
+    "auto_refresh_file_lists": true
+  },
+  "network_connectivity": {},
+  "pdf_tools": {},
+  "privacy_tools": {},
+  "software_maintenance": {}
+}
