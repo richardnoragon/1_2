@@ -1,0 +1,164 @@
+# Staging Environment Configuration
+# RFU Integration Testing - Phase 1 Foundation Setup
+# Environment: Staging (Production-Mirror with Realistic Data)
+
+environment:
+  name: "staging"
+  purpose: "Production-mirror with realistic data volumes"
+  isolation_level: "medium"
+  auto_reset: false
+  setup_date: "2025-09-03"
+
+database:
+  type: "SQLite"
+  location: "tests/integration/data/test_staging.db"
+  auto_reset: false
+  backup_enabled: true
+  backup_interval: "4h"
+  backup_retention: "7d"
+  max_connections: 25
+  timeout: 60
+  foreign_keys: true
+  wal_mode: true
+  
+  initialization:
+    create_tables: true
+    load_sample_data: true
+    enable_constraints: true
+    create_indexes: true
+  
+  backup:
+    before_tests: true
+    location: "tests/integration/backups/staging"
+    compression: true
+
+network:
+  mock_external_apis: false
+  timeout: 60
+  retry_attempts: 5
+  rate_limiting: true
+  ssl_verification: true
+  
+  external_services:
+    ocr_service:
+      mock: false
+      endpoint: "https://staging-ocr.rfu-test.com/api/v1"
+      timeout: 30
+      rate_limit: "100/hour"
+    
+    cloud_storage:
+      mock: false
+      endpoint: "https://staging-storage.rfu-test.com/api/v1"
+      timeout: 45
+      rate_limit: "500/hour"
+    
+    conversion_service:
+      mock: false
+      endpoint: "https://staging-convert.rfu-test.com/api/v1"
+      timeout: 60
+      rate_limit: "50/hour"
+
+logging:
+  level: "INFO"
+  file: "tests/integration/logs/integration_staging.log"
+  console: false
+  max_file_size: "50MB"
+  backup_count: 10
+  format: "[%(asctime)s] %(levelname)s - %(name)s - %(funcName)s:%(lineno)d - %(message)s"
+  
+  aggregation:
+    enabled: true
+    endpoint: "http://staging-logs.rfu-test.com:5000"
+    batch_size: 100
+    flush_interval: 30
+  
+  categories:
+    database: "INFO"
+    network: "INFO"
+    gui: "WARN"
+    performance: "INFO"
+    security: "INFO"
+
+performance:
+  timeout_multiplier: 1.5
+  memory_limit: "2GB"
+  cpu_limit: "75%"
+  disk_limit: "50GB"
+  
+  monitoring:
+    enabled: true
+    interval: 60
+    metrics: ["memory", "cpu", "disk", "network"]
+    apm_endpoint: "http://staging-apm.rfu-test.com:8200"
+
+security:
+  encryption_required: true
+  secure_communication: true
+  audit_logging: true
+  test_data_anonymization: true
+  
+  credentials:
+    key_management: "environment_variables"
+    rotation_enabled: false
+    encryption_key_env: "RFU_STAGING_ENCRYPTION_KEY"
+  
+  ssl:
+    verify_certificates: true
+    ca_bundle: "tests/integration/configs/staging-ca-bundle.pem"
+
+file_system:
+  test_data_root: "tests/integration/data/staging"
+  temp_directory: "tests/integration/temp/staging"
+  artifacts_directory: "tests/integration/artifacts/staging"
+  cleanup_on_exit: false
+  
+  sample_files:
+    pdf_samples: 100
+    image_samples: 150
+    office_samples: 80
+    text_samples: 200
+    large_files: 10  # Files > 100MB
+  
+  storage:
+    max_file_size: "500MB"
+    total_storage_limit: "10GB"
+
+gui_testing:
+  headless_mode: true
+  screenshot_on_failure: true
+  video_recording: true
+  interaction_delay: 0.3
+  
+  display:
+    width: 1920
+    height: 1080
+    color_depth: 32
+  
+  recording:
+    format: "mp4"
+    fps: 10
+    quality: "medium"
+
+test_execution:
+  parallel_execution: true
+  max_workers: 4
+  test_timeout: 600
+  setup_timeout: 120
+  teardown_timeout: 60
+  
+  retry_policy:
+    max_retries: 3
+    retry_delay: 2
+    exponential_backoff: true
+    max_delay: 30
+
+integration_points:
+  database_stress_testing: true
+  external_service_validation: true
+  performance_benchmarking: true
+  security_scanning: true
+  
+  load_simulation:
+    concurrent_users: 10
+    test_duration: "30m"
+    ramp_up_time: "5m"

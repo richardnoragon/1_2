@@ -1,0 +1,235 @@
+# Production-Like Environment Configuration
+# RFU Integration Testing - Phase 1 Foundation Setup
+# Environment: Production-Like (Complete System Integration)
+
+environment:
+  name: "production-like"
+  purpose: "Complete system integration with performance baselines"
+  isolation_level: "low"
+  auto_reset: false
+  setup_date: "2025-09-03"
+
+database:
+  type: "SQLite"
+  location: "tests/integration/data/test_production.db"
+  auto_reset: false
+  backup_enabled: true
+  backup_interval: "2h"
+  backup_retention: "30d"
+  max_connections: 50
+  timeout: 120
+  foreign_keys: true
+  wal_mode: true
+  encryption: true
+  
+  initialization:
+    create_tables: true
+    load_sample_data: true
+    enable_constraints: true
+    create_indexes: true
+    optimize_performance: true
+  
+  backup:
+    before_tests: true
+    location: "tests/integration/backups/production"
+    compression: true
+    encryption: true
+    retention_policy: "30d"
+    
+  performance:
+    analyze_statistics: true
+    vacuum_schedule: "weekly"
+    checkpoint_interval: "1000"
+
+network:
+  mock_external_apis: false
+  timeout: 120
+  retry_attempts: 10
+  rate_limiting: true
+  ssl_verification: true
+  certificate_pinning: true
+  
+  external_services:
+    ocr_service:
+      mock: false
+      endpoint: "https://api.ocr-service.com/v2"
+      timeout: 60
+      rate_limit: "1000/hour"
+      circuit_breaker: true
+    
+    cloud_storage:
+      mock: false
+      endpoint: "https://api.cloud-storage.com/v3"
+      timeout: 90
+      rate_limit: "5000/hour"
+      circuit_breaker: true
+    
+    conversion_service:
+      mock: false
+      endpoint: "https://api.conversion-service.com/v1"
+      timeout: 120
+      rate_limit: "500/hour"
+      circuit_breaker: true
+  
+  circuit_breaker:
+    failure_threshold: 5
+    recovery_timeout: 60
+    half_open_max_calls: 3
+
+logging:
+  level: "WARN"
+  file: "tests/integration/logs/integration_production.log"
+  console: false
+  max_file_size: "100MB"
+  backup_count: 30
+  format: "[%(asctime)s] %(levelname)s - %(name)s - %(funcName)s:%(lineno)d - %(message)s"
+  
+  aggregation:
+    enabled: true
+    endpoint: "https://logs.rfu-prod.com/api/v1/ingest"
+    batch_size: 500
+    flush_interval: 10
+    compression: true
+    encryption: true
+  
+  security_scanning:
+    enabled: true
+    sensitive_data_detection: true
+    audit_trail: true
+  
+  categories:
+    database: "WARN"
+    network: "WARN"
+    gui: "ERROR"
+    performance: "INFO"
+    security: "INFO"
+    audit: "INFO"
+
+performance:
+  timeout_multiplier: 1.0
+  memory_limit: "4GB"
+  cpu_limit: "90%"
+  disk_limit: "100GB"
+  
+  monitoring:
+    enabled: true
+    interval: 30
+    metrics: ["memory", "cpu", "disk", "network", "io"]
+    apm_endpoint: "https://apm.rfu-prod.com:8200"
+    
+  benchmarks:
+    baseline_performance: true
+    regression_detection: true
+    performance_alerts: true
+    
+  profiling:
+    memory_profiling: true
+    cpu_profiling: true
+    io_profiling: true
+
+security:
+  encryption_required: true
+  secure_communication: true
+  audit_logging: true
+  test_data_anonymization: true
+  vulnerability_scanning: true
+  
+  credentials:
+    key_management: "secure_vault"
+    rotation_enabled: true
+    rotation_interval: "90d"
+    encryption_key_env: "RFU_PROD_ENCRYPTION_KEY"
+  
+  ssl:
+    verify_certificates: true
+    ca_bundle: "tests/integration/configs/production-ca-bundle.pem"
+    tls_version: "1.3"
+    cipher_suites: "ECDHE+AESGCM:ECDHE+CHACHA20:DHE+AESGCM:DHE+CHACHA20:!aNULL:!MD5:!DSS"
+  
+  scanning:
+    dependency_scanning: true
+    code_scanning: true
+    secrets_scanning: true
+    container_scanning: true
+
+file_system:
+  test_data_root: "tests/integration/data/production"
+  temp_directory: "tests/integration/temp/production"
+  artifacts_directory: "tests/integration/artifacts/production"
+  cleanup_on_exit: false
+  
+  sample_files:
+    pdf_samples: 1000
+    image_samples: 1500
+    office_samples: 800
+    text_samples: 2000
+    large_files: 100  # Files > 100MB
+    enterprise_files: 50  # Files > 1GB
+  
+  storage:
+    max_file_size: "2GB"
+    total_storage_limit: "100GB"
+    compression: true
+    encryption: true
+
+gui_testing:
+  headless_mode: true
+  screenshot_on_failure: true
+  video_recording: true
+  interaction_delay: 0.5
+  
+  display:
+    width: 1920
+    height: 1080
+    color_depth: 32
+  
+  recording:
+    format: "mp4"
+    fps: 30
+    quality: "high"
+    duration_limit: "10m"
+
+test_execution:
+  parallel_execution: true
+  max_workers: 8
+  test_timeout: 1200
+  setup_timeout: 300
+  teardown_timeout: 120
+  
+  retry_policy:
+    max_retries: 5
+    retry_delay: 5
+    exponential_backoff: true
+    max_delay: 120
+    jitter: true
+
+integration_points:
+  database_stress_testing: true
+  external_service_validation: true
+  performance_benchmarking: true
+  security_scanning: true
+  disaster_recovery_testing: true
+  
+  load_simulation:
+    concurrent_users: 50
+    test_duration: "2h"
+    ramp_up_time: "15m"
+    peak_load_duration: "1h"
+    
+  stress_testing:
+    memory_stress: true
+    cpu_stress: true
+    io_stress: true
+    network_stress: true
+
+disaster_recovery:
+  backup_validation: true
+  restore_testing: true
+  failover_testing: true
+  data_integrity_validation: true
+  
+  scenarios:
+    - "database_corruption"
+    - "storage_failure"
+    - "network_partition"
+    - "service_unavailability"
