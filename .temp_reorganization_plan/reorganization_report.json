@@ -1,0 +1,971 @@
+{
+  "reorganization_timestamp": "2025-09-10T20:09:46.571294",
+  "total_files_moved": 192,
+  "moved_files": [
+    {
+      "source": "CMSD_GUI_WRAPPER_COMPLETION_SUMMARY.md",
+      "destination": "docs\\reports\\completion\\CMSD_GUI_WRAPPER_COMPLETION_SUMMARY.md",
+      "timestamp": "2025-09-10T20:09:44.538262"
+    },
+    {
+      "source": "CONFIG_ANALYZER_TESTING_COMPLETION_SUMMARY_2025-08-31.md",
+      "destination": "docs\\reports\\completion\\CONFIG_ANALYZER_TESTING_COMPLETION_SUMMARY_2025-08-31.md",
+      "timestamp": "2025-09-10T20:09:44.541021"
+    },
+    {
+      "source": "DATABASE_MODELS_TIMESTAMP_FIX_COMPLETION_SUMMARY.md",
+      "destination": "docs\\reports\\completion\\DATABASE_MODELS_TIMESTAMP_FIX_COMPLETION_SUMMARY.md",
+      "timestamp": "2025-09-10T20:09:44.543520"
+    },
+    {
+      "source": "EMPTY_FOLDERS_COMPREHENSIVE_TESTING_COMPLETION_REPORT.md",
+      "destination": "docs\\reports\\completion\\EMPTY_FOLDERS_COMPREHENSIVE_TESTING_COMPLETION_REPORT.md",
+      "timestamp": "2025-09-10T20:09:44.546123"
+    },
+    {
+      "source": "ENHANCED_CLIPBOARD_MANAGER_COMPLETION_REPORT.md",
+      "destination": "docs\\reports\\completion\\ENHANCED_CLIPBOARD_MANAGER_COMPLETION_REPORT.md",
+      "timestamp": "2025-09-10T20:09:44.554404"
+    },
+    {
+      "source": "ENHANCED_EDITOR_INTEGRATION_COMPLETION_SUMMARY.md",
+      "destination": "docs\\reports\\completion\\ENHANCED_EDITOR_INTEGRATION_COMPLETION_SUMMARY.md",
+      "timestamp": "2025-09-10T20:09:44.558990"
+    },
+    {
+      "source": "ENHANCED_MENU_INTEGRATION_COMPLETION_SUMMARY.md",
+      "destination": "docs\\reports\\completion\\ENHANCED_MENU_INTEGRATION_COMPLETION_SUMMARY.md",
+      "timestamp": "2025-09-10T20:09:44.561364"
+    },
+    {
+      "source": "ENHANCED_NETWORK_TOOLS_PROJECT_COMPLETION_SUMMARY.md",
+      "destination": "docs\\reports\\completion\\ENHANCED_NETWORK_TOOLS_PROJECT_COMPLETION_SUMMARY.md",
+      "timestamp": "2025-09-10T20:09:44.564011"
+    },
+    {
+      "source": "FIND_DUPLICATE_FILES_COMPREHENSIVE_TESTING_COMPLETION_REPORT.md",
+      "destination": "docs\\reports\\completion\\FIND_DUPLICATE_FILES_COMPREHENSIVE_TESTING_COMPLETION_REPORT.md",
+      "timestamp": "2025-09-10T20:09:44.567896"
+    },
+    {
+      "source": "HUB_CONSOLIDATION_COMPLETION_SUMMARY.md",
+      "destination": "docs\\reports\\completion\\HUB_CONSOLIDATION_COMPLETION_SUMMARY.md",
+      "timestamp": "2025-09-10T20:09:44.572322"
+    },
+    {
+      "source": "MENU_INTEGRATION_COMPLETION_SUMMARY.md",
+      "destination": "docs\\reports\\completion\\MENU_INTEGRATION_COMPLETION_SUMMARY.md",
+      "timestamp": "2025-09-10T20:09:44.574649"
+    },
+    {
+      "source": "METADATA_TOOLS_ENHANCEMENT_COMPLETION_REPORT.md",
+      "destination": "docs\\reports\\completion\\METADATA_TOOLS_ENHANCEMENT_COMPLETION_REPORT.md",
+      "timestamp": "2025-09-10T20:09:44.576716"
+    },
+    {
+      "source": "MIGRATION_MANAGER_ENHANCEMENT_COMPLETION_SUMMARY.md",
+      "destination": "docs\\reports\\completion\\MIGRATION_MANAGER_ENHANCEMENT_COMPLETION_SUMMARY.md",
+      "timestamp": "2025-09-10T20:09:44.578966"
+    },
+    {
+      "source": "NETWORK_TRANSFER_RECURSION_DEPTH_LIMIT_COMPLETION_SUMMARY.md",
+      "destination": "docs\\reports\\completion\\NETWORK_TRANSFER_RECURSION_DEPTH_LIMIT_COMPLETION_SUMMARY.md",
+      "timestamp": "2025-09-10T20:09:44.581716"
+    },
+    {
+      "source": "OCR_TESTING_COMPLETION_REPORT_2025-08-31.md",
+      "destination": "docs\\reports\\completion\\OCR_TESTING_COMPLETION_REPORT_2025-08-31.md",
+      "timestamp": "2025-09-10T20:09:44.585305"
+    },
+    {
+      "source": "OCR_TESTING_IMPLEMENTATION_COMPLETION_REPORT_2025-09-01.md",
+      "destination": "docs\\reports\\completion\\OCR_TESTING_IMPLEMENTATION_COMPLETION_REPORT_2025-09-01.md",
+      "timestamp": "2025-09-10T20:09:44.587733"
+    },
+    {
+      "source": "OFFICE_METADATA_TOOLS_COMPLETION_SUMMARY.md",
+      "destination": "docs\\reports\\completion\\OFFICE_METADATA_TOOLS_COMPLETION_SUMMARY.md",
+      "timestamp": "2025-09-10T20:09:44.592904"
+    },
+    {
+      "source": "PDF_OCR_TEST_IMPLEMENTATION_COMPLETION_SUMMARY.md",
+      "destination": "docs\\reports\\completion\\PDF_OCR_TEST_IMPLEMENTATION_COMPLETION_SUMMARY.md",
+      "timestamp": "2025-09-10T20:09:44.595727"
+    },
+    {
+      "source": "Phase1_Database_Migration_System_Completion_Report.md",
+      "destination": "docs\\reports\\completion\\Phase1_Database_Migration_System_Completion_Report.md",
+      "timestamp": "2025-09-10T20:09:44.598399"
+    },
+    {
+      "source": "PHASE_1A_COMPLETION_REPORT_2025-09-04.md",
+      "destination": "docs\\reports\\completion\\PHASE_1A_COMPLETION_REPORT_2025-09-04.md",
+      "timestamp": "2025-09-10T20:09:44.601697"
+    },
+    {
+      "source": "PHASE_3B_CONFIGURATION_ENVIRONMENT_TESTING_COMPLETION_REPORT_2025-09-10.md",
+      "destination": "docs\\reports\\completion\\PHASE_3B_CONFIGURATION_ENVIRONMENT_TESTING_COMPLETION_REPORT_2025-09-10.md",
+      "timestamp": "2025-09-10T20:09:44.604359"
+    },
+    {
+      "source": "PHASE_4_COMPREHENSIVE_UNIT_TESTING_COMPLETION_REPORT.md",
+      "destination": "docs\\reports\\completion\\PHASE_4_COMPREHENSIVE_UNIT_TESTING_COMPLETION_REPORT.md",
+      "timestamp": "2025-09-10T20:09:44.607888"
+    },
+    {
+      "source": "PHASE_6_ISSUE_RESOLUTION_FINAL_COMPLETION_REPORT.md",
+      "destination": "docs\\reports\\completion\\PHASE_6_ISSUE_RESOLUTION_FINAL_COMPLETION_REPORT.md",
+      "timestamp": "2025-09-10T20:09:44.610403"
+    },
+    {
+      "source": "PROJECT_COMPLETION_SUMMARY.md",
+      "destination": "docs\\reports\\completion\\PROJECT_COMPLETION_SUMMARY.md",
+      "timestamp": "2025-09-10T20:09:44.613046"
+    },
+    {
+      "source": "PROJECT_HEALTH_STATUS_PHASE2_COMPLETION_2025-09-02.md",
+      "destination": "docs\\reports\\completion\\PROJECT_HEALTH_STATUS_PHASE2_COMPLETION_2025-09-02.md",
+      "timestamp": "2025-09-10T20:09:44.615595"
+    },
+    {
+      "source": "SECURE_THEME_SETTINGS_LOGGER_FIX_COMPLETION_SUMMARY.md",
+      "destination": "docs\\reports\\completion\\SECURE_THEME_SETTINGS_LOGGER_FIX_COMPLETION_SUMMARY.md",
+      "timestamp": "2025-09-10T20:09:44.618756"
+    },
+    {
+      "source": "SRC_FOLDER_CLEANUP_COMPLETION_REPORT.md",
+      "destination": "docs\\reports\\completion\\SRC_FOLDER_CLEANUP_COMPLETION_REPORT.md",
+      "timestamp": "2025-09-10T20:09:44.621229"
+    },
+    {
+      "source": "UNDEFINED_HELPER_METHODS_COMPLETION_SUMMARY.md",
+      "destination": "docs\\reports\\completion\\UNDEFINED_HELPER_METHODS_COMPLETION_SUMMARY.md",
+      "timestamp": "2025-09-10T20:09:44.624752"
+    },
+    {
+      "source": "BUTTON_FUNCTIONALITY_RESTORATION_SUMMARY.md",
+      "destination": "docs\\reports\\completion\\BUTTON_FUNCTIONALITY_RESTORATION_SUMMARY.md",
+      "timestamp": "2025-09-10T20:09:44.629758"
+    },
+    {
+      "source": "BUTTON_LAYOUT_IMPROVEMENT_SUMMARY.md",
+      "destination": "docs\\reports\\completion\\BUTTON_LAYOUT_IMPROVEMENT_SUMMARY.md",
+      "timestamp": "2025-09-10T20:09:44.637538"
+    },
+    {
+      "source": "COMPLETE_TAB_ENHANCEMENT_SUMMARY.md",
+      "destination": "docs\\reports\\completion\\COMPLETE_TAB_ENHANCEMENT_SUMMARY.md",
+      "timestamp": "2025-09-10T20:09:44.644175"
+    },
+    {
+      "source": "COMPRESS_DECOMPRESS_MIGRATION_SUMMARY.md",
+      "destination": "docs\\reports\\completion\\COMPRESS_DECOMPRESS_MIGRATION_SUMMARY.md",
+      "timestamp": "2025-09-10T20:09:44.647716"
+    },
+    {
+      "source": "CRITICAL_BLOCKERS_RESOLUTION_EXECUTIVE_SUMMARY_2025-09-02.md",
+      "destination": "docs\\reports\\completion\\CRITICAL_BLOCKERS_RESOLUTION_EXECUTIVE_SUMMARY_2025-09-02.md",
+      "timestamp": "2025-09-10T20:09:44.651544"
+    },
+    {
+      "source": "CRITICAL_BLOCKERS_RESOLUTION_SUMMARY_2025-09-02.md",
+      "destination": "docs\\reports\\completion\\CRITICAL_BLOCKERS_RESOLUTION_SUMMARY_2025-09-02.md",
+      "timestamp": "2025-09-10T20:09:44.654599"
+    },
+    {
+      "source": "FILE_CATALOG_BUTTON_FIX_SUMMARY.md",
+      "destination": "docs\\reports\\completion\\FILE_CATALOG_BUTTON_FIX_SUMMARY.md",
+      "timestamp": "2025-09-10T20:09:44.657049"
+    },
+    {
+      "source": "FILE_OPERATIONS_BUTTONS_FIX_SUMMARY.md",
+      "destination": "docs\\reports\\completion\\FILE_OPERATIONS_BUTTONS_FIX_SUMMARY.md",
+      "timestamp": "2025-09-10T20:09:44.659459"
+    },
+    {
+      "source": "FILE_SPLITTER_MIGRATION_SUMMARY.md",
+      "destination": "docs\\reports\\completion\\FILE_SPLITTER_MIGRATION_SUMMARY.md",
+      "timestamp": "2025-09-10T20:09:44.662023"
+    },
+    {
+      "source": "IMAGE_METADATA_MIGRATION_SUMMARY.md",
+      "destination": "docs\\reports\\completion\\IMAGE_METADATA_MIGRATION_SUMMARY.md",
+      "timestamp": "2025-09-10T20:09:44.665504"
+    },
+    {
+      "source": "MENU_BAR_RESTORATION_COMPLETE_SUMMARY.md",
+      "destination": "docs\\reports\\completion\\MENU_BAR_RESTORATION_COMPLETE_SUMMARY.md",
+      "timestamp": "2025-09-10T20:09:44.667927"
+    },
+    {
+      "source": "MENU_IMPLEMENTATION_SUMMARY.md",
+      "destination": "docs\\reports\\completion\\MENU_IMPLEMENTATION_SUMMARY.md",
+      "timestamp": "2025-09-10T20:09:44.671944"
+    },
+    {
+      "source": "MENU_SYSTEM_SUMMARY.md",
+      "destination": "docs\\reports\\completion\\MENU_SYSTEM_SUMMARY.md",
+      "timestamp": "2025-09-10T20:09:44.680479"
+    },
+    {
+      "source": "METADATA_BUTTONS_FIX_SUMMARY.md",
+      "destination": "docs\\reports\\completion\\METADATA_BUTTONS_FIX_SUMMARY.md",
+      "timestamp": "2025-09-10T20:09:44.689932"
+    },
+    {
+      "source": "METADATA_TAB_GRID_LAYOUT_SUMMARY.md",
+      "destination": "docs\\reports\\completion\\METADATA_TAB_GRID_LAYOUT_SUMMARY.md",
+      "timestamp": "2025-09-10T20:09:44.693323"
+    },
+    {
+      "source": "NETWORK_BUTTONS_FIX_SUMMARY.md",
+      "destination": "docs\\reports\\completion\\NETWORK_BUTTONS_FIX_SUMMARY.md",
+      "timestamp": "2025-09-10T20:09:44.696542"
+    },
+    {
+      "source": "NETWORK_TAB_GRID_LAYOUT_SUMMARY.md",
+      "destination": "docs\\reports\\completion\\NETWORK_TAB_GRID_LAYOUT_SUMMARY.md",
+      "timestamp": "2025-09-10T20:09:44.707411"
+    },
+    {
+      "source": "PDF_TABS_FONT_CHANGES_SUMMARY.md",
+      "destination": "docs\\reports\\completion\\PDF_TABS_FONT_CHANGES_SUMMARY.md",
+      "timestamp": "2025-09-10T20:09:44.711311"
+    },
+    {
+      "source": "PDF_TAB_LAYOUT_IMPROVEMENTS_SUMMARY.md",
+      "destination": "docs\\reports\\completion\\PDF_TAB_LAYOUT_IMPROVEMENTS_SUMMARY.md",
+      "timestamp": "2025-09-10T20:09:44.713931"
+    },
+    {
+      "source": "PDF_TOOLS_TAB_GRID_LAYOUT_SUMMARY.md",
+      "destination": "docs\\reports\\completion\\PDF_TOOLS_TAB_GRID_LAYOUT_SUMMARY.md",
+      "timestamp": "2025-09-10T20:09:44.718112"
+    },
+    {
+      "source": "PDF_TOOLS_TAB_STRUCTURE_CORRECTION_SUMMARY.md",
+      "destination": "docs\\reports\\completion\\PDF_TOOLS_TAB_STRUCTURE_CORRECTION_SUMMARY.md",
+      "timestamp": "2025-09-10T20:09:44.720720"
+    },
+    {
+      "source": "PRIVACY_TAB_BUTTON_FIX_SUMMARY.md",
+      "destination": "docs\\reports\\completion\\PRIVACY_TAB_BUTTON_FIX_SUMMARY.md",
+      "timestamp": "2025-09-10T20:09:44.723158"
+    },
+    {
+      "source": "PRIVACY_TOOLS_TAB_GRID_LAYOUT_SUMMARY.md",
+      "destination": "docs\\reports\\completion\\PRIVACY_TOOLS_TAB_GRID_LAYOUT_SUMMARY.md",
+      "timestamp": "2025-09-10T20:09:44.725452"
+    },
+    {
+      "source": "REORGANIZATION_COMPLETE_SUMMARY.md",
+      "destination": "docs\\reports\\completion\\REORGANIZATION_COMPLETE_SUMMARY.md",
+      "timestamp": "2025-09-10T20:09:44.765128"
+    },
+    {
+      "source": "SECURITY_TAB_BUTTON_FIX_SUMMARY.md",
+      "destination": "docs\\reports\\completion\\SECURITY_TAB_BUTTON_FIX_SUMMARY.md",
+      "timestamp": "2025-09-10T20:09:44.780844"
+    },
+    {
+      "source": "SECURITY_TOOLS_TAB_GRID_LAYOUT_SUMMARY.md",
+      "destination": "docs\\reports\\completion\\SECURITY_TOOLS_TAB_GRID_LAYOUT_SUMMARY.md",
+      "timestamp": "2025-09-10T20:09:44.785535"
+    },
+    {
+      "source": "SYSTEM_TOOLS_TAB_GRID_LAYOUT_SUMMARY.md",
+      "destination": "docs\\reports\\completion\\SYSTEM_TOOLS_TAB_GRID_LAYOUT_SUMMARY.md",
+      "timestamp": "2025-09-10T20:09:44.790377"
+    },
+    {
+      "source": "CORE_ANALYSIS_ENGINE_COMPREHENSIVE_TEST_IMPLEMENTATION_FINAL_REPORT.md",
+      "destination": "docs\\reports\\completion\\CORE_ANALYSIS_ENGINE_COMPREHENSIVE_TEST_IMPLEMENTATION_FINAL_REPORT.md",
+      "timestamp": "2025-09-10T20:09:44.795625"
+    },
+    {
+      "source": "CRITICAL_TEST_EXECUTION_BLOCKERS_RESOLUTION_FINAL_REPORT.md",
+      "destination": "docs\\reports\\completion\\CRITICAL_TEST_EXECUTION_BLOCKERS_RESOLUTION_FINAL_REPORT.md",
+      "timestamp": "2025-09-10T20:09:44.799347"
+    },
+    {
+      "source": "MENU_INTEGRATION_SUCCESS_REPORT.md",
+      "destination": "docs\\reports\\completion\\MENU_INTEGRATION_SUCCESS_REPORT.md",
+      "timestamp": "2025-09-10T20:09:44.802354"
+    },
+    {
+      "source": "PHASE_2B_FINAL_EXECUTION_REPORT_2025-09-09.md",
+      "destination": "docs\\reports\\completion\\PHASE_2B_FINAL_EXECUTION_REPORT_2025-09-09.md",
+      "timestamp": "2025-09-10T20:09:44.805090"
+    },
+    {
+      "source": "RFU_Architecture_Validation_Report.md",
+      "destination": "docs\\reports\\completion\\RFU_Architecture_Validation_Report.md",
+      "timestamp": "2025-09-10T20:09:44.807978"
+    },
+    {
+      "source": "RFU_Architecture_Component_Details.md",
+      "destination": "docs\\architecture\\RFU_Architecture_Component_Details.md",
+      "timestamp": "2025-09-10T20:09:44.826393"
+    },
+    {
+      "source": "RFU_Architecture_Documentation_Index.md",
+      "destination": "docs\\architecture\\RFU_Architecture_Documentation_Index.md",
+      "timestamp": "2025-09-10T20:09:44.840118"
+    },
+    {
+      "source": "RFU_Complete_Architecture_Diagram.md",
+      "destination": "docs\\architecture\\RFU_Complete_Architecture_Diagram.md",
+      "timestamp": "2025-09-10T20:09:44.843093"
+    },
+    {
+      "source": "RFU_HUB_TAB_STRUCTURE_UPDATE.md",
+      "destination": "docs\\architecture\\RFU_HUB_TAB_STRUCTURE_UPDATE.md",
+      "timestamp": "2025-09-10T20:09:44.848319"
+    },
+    {
+      "source": "CodeRabbit_Security_Corrections_Status.md",
+      "destination": "docs\\security\\CodeRabbit_Security_Corrections_Status.md",
+      "timestamp": "2025-09-10T20:09:44.853816"
+    },
+    {
+      "source": "PHASE_2_THEME_SECURITY_COMPLETE_DOCUMENTATION.md",
+      "destination": "docs\\security\\PHASE_2_THEME_SECURITY_COMPLETE_DOCUMENTATION.md",
+      "timestamp": "2025-09-10T20:09:44.857638"
+    },
+    {
+      "source": "README_Phase_3_Security_Complete.md",
+      "destination": "docs\\security\\README_Phase_3_Security_Complete.md",
+      "timestamp": "2025-09-10T20:09:44.860313"
+    },
+    {
+      "source": "MENU_SYSTEM_IMPLEMENTATION.md",
+      "destination": "docs\\development\\MENU_SYSTEM_IMPLEMENTATION.md",
+      "timestamp": "2025-09-10T20:09:44.864418"
+    },
+    {
+      "source": "MENU_SYSTEM_IMPLEMENTATION_COMPLETE.md",
+      "destination": "docs\\development\\MENU_SYSTEM_IMPLEMENTATION_COMPLETE.md",
+      "timestamp": "2025-09-10T20:09:44.866502"
+    },
+    {
+      "source": "PHASE_2_IMPLEMENTATION_COMPLETE.md",
+      "destination": "docs\\development\\PHASE_2_IMPLEMENTATION_COMPLETE.md",
+      "timestamp": "2025-09-10T20:09:44.869531"
+    },
+    {
+      "source": "COMPREHENSIVE_MENU_INTEGRATION_DOCUMENTATION.md",
+      "destination": "docs\\development\\COMPREHENSIVE_MENU_INTEGRATION_DOCUMENTATION.md",
+      "timestamp": "2025-09-10T20:09:44.872887"
+    },
+    {
+      "source": "ENHANCED_NETWORK_TOOLS_FILE_MENU_INTEGRATION.md",
+      "destination": "docs\\development\\ENHANCED_NETWORK_TOOLS_FILE_MENU_INTEGRATION.md",
+      "timestamp": "2025-09-10T20:09:44.874362"
+    },
+    {
+      "source": "MENU_INTEGRATION_BLANK_CONTENT_FIX.md",
+      "destination": "docs\\development\\MENU_INTEGRATION_BLANK_CONTENT_FIX.md",
+      "timestamp": "2025-09-10T20:09:44.876168"
+    },
+    {
+      "source": "PDF_TOOLS_TAB_INTEGRATION_COMPLETE.md",
+      "destination": "docs\\development\\PDF_TOOLS_TAB_INTEGRATION_COMPLETE.md",
+      "timestamp": "2025-09-10T20:09:44.878038"
+    },
+    {
+      "source": "MENU_BAR_COMPREHENSIVE_FIX_COMPLETE.md",
+      "destination": "docs\\development\\MENU_BAR_COMPREHENSIVE_FIX_COMPLETE.md",
+      "timestamp": "2025-09-10T20:09:44.880941"
+    },
+    {
+      "source": "Migration_System_Technical_Documentation.md",
+      "destination": "docs\\deployment\\Migration_System_Technical_Documentation.md",
+      "timestamp": "2025-09-10T20:09:44.885973"
+    },
+    {
+      "source": "README.md",
+      "destination": "docs\\user-guides\\README.md",
+      "timestamp": "2025-09-10T20:09:44.890669"
+    },
+    {
+      "source": "README_file_opener.md",
+      "destination": "docs\\user-guides\\README_file_opener.md",
+      "timestamp": "2025-09-10T20:09:44.892631"
+    },
+    {
+      "source": "README_VS_Code_Insiders.md",
+      "destination": "docs\\user-guides\\README_VS_Code_Insiders.md",
+      "timestamp": "2025-09-10T20:09:44.894557"
+    },
+    {
+      "source": "demo_advanced_catalog.py",
+      "destination": "scripts\\development\\demos\\demo_advanced_catalog.py",
+      "timestamp": "2025-09-10T20:09:44.897126"
+    },
+    {
+      "source": "enhanced_metadata_tools_demo.py",
+      "destination": "scripts\\development\\demos\\enhanced_metadata_tools_demo.py",
+      "timestamp": "2025-09-10T20:09:44.899296"
+    },
+    {
+      "source": "enhanced_network_tools_demo.py",
+      "destination": "scripts\\development\\demos\\enhanced_network_tools_demo.py",
+      "timestamp": "2025-09-10T20:09:44.901916"
+    },
+    {
+      "source": "enhanced_software_maintenance_demo.py",
+      "destination": "scripts\\development\\demos\\enhanced_software_maintenance_demo.py",
+      "timestamp": "2025-09-10T20:09:44.904051"
+    },
+    {
+      "source": "enhanced_tools_comprehensive_demo.py",
+      "destination": "scripts\\development\\demos\\enhanced_tools_comprehensive_demo.py",
+      "timestamp": "2025-09-10T20:09:44.905888"
+    },
+    {
+      "source": "enhanced_tools_demo.py",
+      "destination": "scripts\\development\\demos\\enhanced_tools_demo.py",
+      "timestamp": "2025-09-10T20:09:44.908098"
+    },
+    {
+      "source": "menu_system_demo.py",
+      "destination": "scripts\\development\\demos\\menu_system_demo.py",
+      "timestamp": "2025-09-10T20:09:44.910367"
+    },
+    {
+      "source": "office_metadata_tools_demo.py",
+      "destination": "scripts\\development\\demos\\office_metadata_tools_demo.py",
+      "timestamp": "2025-09-10T20:09:44.912433"
+    },
+    {
+      "source": "organized_layout_demo.py",
+      "destination": "scripts\\development\\demos\\organized_layout_demo.py",
+      "timestamp": "2025-09-10T20:09:44.914184"
+    },
+    {
+      "source": "enhanced_clipboard_gui.py",
+      "destination": "scripts\\development\\demos\\enhanced_clipboard_gui.py",
+      "timestamp": "2025-09-10T20:09:44.917795"
+    },
+    {
+      "source": "enhanced_clipboard_main_window.py",
+      "destination": "scripts\\development\\demos\\enhanced_clipboard_main_window.py",
+      "timestamp": "2025-09-10T20:09:44.920537"
+    },
+    {
+      "source": "enhanced_clipboard_manager.py",
+      "destination": "scripts\\development\\demos\\enhanced_clipboard_manager.py",
+      "timestamp": "2025-09-10T20:09:44.923041"
+    },
+    {
+      "source": "enhanced_clipboard_system_integration.py",
+      "destination": "scripts\\development\\demos\\enhanced_clipboard_system_integration.py",
+      "timestamp": "2025-09-10T20:09:44.925014"
+    },
+    {
+      "source": "enhanced_encrypt_decrypt_with_menu.py",
+      "destination": "scripts\\development\\demos\\enhanced_encrypt_decrypt_with_menu.py",
+      "timestamp": "2025-09-10T20:09:44.926611"
+    },
+    {
+      "source": "enhanced_file_touch_with_menu.py",
+      "destination": "scripts\\development\\demos\\enhanced_file_touch_with_menu.py",
+      "timestamp": "2025-09-10T20:09:44.928190"
+    },
+    {
+      "source": "enhanced_image_metadata_editor_with_menu.py",
+      "destination": "scripts\\development\\demos\\enhanced_image_metadata_editor_with_menu.py",
+      "timestamp": "2025-09-10T20:09:44.929768"
+    },
+    {
+      "source": "enhanced_main_with_comprehensive_menus.py",
+      "destination": "scripts\\development\\demos\\enhanced_main_with_comprehensive_menus.py",
+      "timestamp": "2025-09-10T20:09:44.931407"
+    },
+    {
+      "source": "enhanced_office_metadata_editor_with_menu.py",
+      "destination": "scripts\\development\\demos\\enhanced_office_metadata_editor_with_menu.py",
+      "timestamp": "2025-09-10T20:09:44.933474"
+    },
+    {
+      "source": "enhanced_pdf_tools_widget.py",
+      "destination": "scripts\\development\\demos\\enhanced_pdf_tools_widget.py",
+      "timestamp": "2025-09-10T20:09:44.935838"
+    },
+    {
+      "source": "enhanced_secure_delete_with_menu.py",
+      "destination": "scripts\\development\\demos\\enhanced_secure_delete_with_menu.py",
+      "timestamp": "2025-09-10T20:09:44.939054"
+    },
+    {
+      "source": "enhanced_security_preferences_with_menu.py",
+      "destination": "scripts\\development\\demos\\enhanced_security_preferences_with_menu.py",
+      "timestamp": "2025-09-10T20:09:44.941738"
+    },
+    {
+      "source": "test_advanced_catalog.py",
+      "destination": "scripts\\development\\testing\\test_advanced_catalog.py",
+      "timestamp": "2025-09-10T20:09:44.944769"
+    },
+    {
+      "source": "test_analysis_tools_menu_integration.py",
+      "destination": "scripts\\development\\testing\\test_analysis_tools_menu_integration.py",
+      "timestamp": "2025-09-10T20:09:44.946347"
+    },
+    {
+      "source": "test_button_fix.py",
+      "destination": "scripts\\development\\testing\\test_button_fix.py",
+      "timestamp": "2025-09-10T20:09:44.947992"
+    },
+    {
+      "source": "test_button_functionality.py",
+      "destination": "scripts\\development\\testing\\test_button_functionality.py",
+      "timestamp": "2025-09-10T20:09:44.949757"
+    },
+    {
+      "source": "test_catalog_imports.py",
+      "destination": "scripts\\development\\testing\\test_catalog_imports.py",
+      "timestamp": "2025-09-10T20:09:44.952491"
+    },
+    {
+      "source": "test_empty_folders_implementation.py",
+      "destination": "scripts\\development\\testing\\test_empty_folders_implementation.py",
+      "timestamp": "2025-09-10T20:09:44.954722"
+    },
+    {
+      "source": "test_enhanced_analysis_tools.py",
+      "destination": "scripts\\development\\testing\\test_enhanced_analysis_tools.py",
+      "timestamp": "2025-09-10T20:09:44.956468"
+    },
+    {
+      "source": "test_enhanced_clipboard_integration.py",
+      "destination": "scripts\\development\\testing\\test_enhanced_clipboard_integration.py",
+      "timestamp": "2025-09-10T20:09:44.957888"
+    },
+    {
+      "source": "test_enhanced_editor.py",
+      "destination": "scripts\\development\\testing\\test_enhanced_editor.py",
+      "timestamp": "2025-09-10T20:09:44.959293"
+    },
+    {
+      "source": "test_enhanced_editor_simple.py",
+      "destination": "scripts\\development\\testing\\test_enhanced_editor_simple.py",
+      "timestamp": "2025-09-10T20:09:44.960912"
+    },
+    {
+      "source": "test_enhanced_file_operation_tools.py",
+      "destination": "scripts\\development\\testing\\test_enhanced_file_operation_tools.py",
+      "timestamp": "2025-09-10T20:09:44.962629"
+    },
+    {
+      "source": "test_file_catalog_fix.py",
+      "destination": "scripts\\development\\testing\\test_file_catalog_fix.py",
+      "timestamp": "2025-09-10T20:09:44.964077"
+    },
+    {
+      "source": "test_file_operations_fix.py",
+      "destination": "scripts\\development\\testing\\test_file_operations_fix.py",
+      "timestamp": "2025-09-10T20:09:44.965650"
+    },
+    {
+      "source": "test_hub.py",
+      "destination": "scripts\\development\\testing\\test_hub.py",
+      "timestamp": "2025-09-10T20:09:44.967815"
+    },
+    {
+      "source": "test_imports_only.py",
+      "destination": "scripts\\development\\testing\\test_imports_only.py",
+      "timestamp": "2025-09-10T20:09:44.970266"
+    },
+    {
+      "source": "test_menu_bar_fixes.py",
+      "destination": "scripts\\development\\testing\\test_menu_bar_fixes.py",
+      "timestamp": "2025-09-10T20:09:44.972111"
+    },
+    {
+      "source": "test_menu_fix.py",
+      "destination": "scripts\\development\\testing\\test_menu_fix.py",
+      "timestamp": "2025-09-10T20:09:44.973746"
+    },
+    {
+      "source": "test_menu_integration.py",
+      "destination": "scripts\\development\\testing\\test_menu_integration.py",
+      "timestamp": "2025-09-10T20:09:44.975356"
+    },
+    {
+      "source": "test_menu_persistence.py",
+      "destination": "scripts\\development\\testing\\test_menu_persistence.py",
+      "timestamp": "2025-09-10T20:09:44.976788"
+    },
+    {
+      "source": "test_migration_integration.py",
+      "destination": "scripts\\development\\testing\\test_migration_integration.py",
+      "timestamp": "2025-09-10T20:09:44.978235"
+    },
+    {
+      "source": "test_pdf_discovery.py",
+      "destination": "scripts\\development\\testing\\test_pdf_discovery.py",
+      "timestamp": "2025-09-10T20:09:44.979745"
+    },
+    {
+      "source": "test_pdf_improved_tabs.py",
+      "destination": "scripts\\development\\testing\\test_pdf_improved_tabs.py",
+      "timestamp": "2025-09-10T20:09:44.981369"
+    },
+    {
+      "source": "test_pdf_tabs_font.py",
+      "destination": "scripts\\development\\testing\\test_pdf_tabs_font.py",
+      "timestamp": "2025-09-10T20:09:44.983534"
+    },
+    {
+      "source": "test_pdf_tools_widget.py",
+      "destination": "scripts\\development\\testing\\test_pdf_tools_widget.py",
+      "timestamp": "2025-09-10T20:09:44.986185"
+    },
+    {
+      "source": "test_size_analyzer_menu.py",
+      "destination": "scripts\\development\\testing\\test_size_analyzer_menu.py",
+      "timestamp": "2025-09-10T20:09:44.988887"
+    },
+    {
+      "source": "phase3b_config_env_testing_execution.py",
+      "destination": "scripts\\development\\testing\\phase3b_config_env_testing_execution.py",
+      "timestamp": "2025-09-10T20:09:44.991819"
+    },
+    {
+      "source": "simple_test.py",
+      "destination": "scripts\\development\\testing\\simple_test.py",
+      "timestamp": "2025-09-10T20:09:44.993688"
+    },
+    {
+      "source": "comprehensive_final_validation.py",
+      "destination": "scripts\\development\\testing\\comprehensive_final_validation.py",
+      "timestamp": "2025-09-10T20:09:44.995884"
+    },
+    {
+      "source": "comprehensive_menu_integration.py",
+      "destination": "scripts\\development\\testing\\comprehensive_menu_integration.py",
+      "timestamp": "2025-09-10T20:09:44.997532"
+    },
+    {
+      "source": "fix_main_issues.py",
+      "destination": "scripts\\maintenance\\fix_main_issues.py",
+      "timestamp": "2025-09-10T20:09:45.003481"
+    },
+    {
+      "source": "open_all_files.py",
+      "destination": "scripts\\development\\tools\\open_all_files.py",
+      "timestamp": "2025-09-10T20:09:45.005895"
+    },
+    {
+      "source": "open_files_clean.py",
+      "destination": "scripts\\development\\tools\\open_files_clean.py",
+      "timestamp": "2025-09-10T20:09:45.007426"
+    },
+    {
+      "source": "open_files_in_vscode.py",
+      "destination": "scripts\\development\\tools\\open_files_in_vscode.py",
+      "timestamp": "2025-09-10T20:09:45.008928"
+    },
+    {
+      "source": "file_menu_integration_verification.py",
+      "destination": "scripts\\development\\tools\\file_menu_integration_verification.py",
+      "timestamp": "2025-09-10T20:09:45.012029"
+    },
+    {
+      "source": "pdf_functional_integration.py",
+      "destination": "scripts\\development\\tools\\pdf_functional_integration.py",
+      "timestamp": "2025-09-10T20:09:45.013853"
+    },
+    {
+      "source": "Screenshot 2025-08-23 193249.png",
+      "destination": "assets\\images\\screenshots\\Screenshot 2025-08-23 193249.png",
+      "timestamp": "2025-09-10T20:09:45.017444"
+    },
+    {
+      "source": "Screenshot 2025-08-23 193327.png",
+      "destination": "assets\\images\\screenshots\\Screenshot 2025-08-23 193327.png",
+      "timestamp": "2025-09-10T20:09:45.020696"
+    },
+    {
+      "source": "comprehensive_validation_results.json",
+      "destination": "config\\application\\comprehensive_validation_results.json",
+      "timestamp": "2025-09-10T20:09:45.024233"
+    },
+    {
+      "source": "PHASE_3B_CONFIGURATION_TESTING_REPORT_20250910_182000.json",
+      "destination": "config\\application\\PHASE_3B_CONFIGURATION_TESTING_REPORT_20250910_182000.json",
+      "timestamp": "2025-09-10T20:09:45.026381"
+    },
+    {
+      "source": "result_system_cleanup_test_summary_2025-08-28.json",
+      "destination": "config\\application\\result_system_cleanup_test_summary_2025-08-28.json",
+      "timestamp": "2025-09-10T20:09:45.028394"
+    },
+    {
+      "source": "test_results.json",
+      "destination": "config\\application\\test_results.json",
+      "timestamp": "2025-09-10T20:09:45.030141"
+    },
+    {
+      "source": "test_results_comprehensive_blockers_resolution_2025-09-02_17-16.json",
+      "destination": "config\\application\\test_results_comprehensive_blockers_resolution_2025-09-02_17-16.json",
+      "timestamp": "2025-09-10T20:09:45.031578"
+    },
+    {
+      "source": "pytest.ini",
+      "destination": "config\\application\\pytest.ini",
+      "timestamp": "2025-09-10T20:09:45.035773"
+    },
+    {
+      "source": "config_manager.py",
+      "destination": "config\\application\\config_manager.py",
+      "timestamp": "2025-09-10T20:09:45.038255"
+    },
+    {
+      "source": "blocker_resolution_tracker.py",
+      "destination": "scripts\\maintenance\\blocker_resolution_tracker.py",
+      "timestamp": "2025-09-10T20:09:45.042259"
+    },
+    {
+      "source": "catalog_1_2_20250808_210805.html",
+      "destination": "docs\\development\\catalog_1_2_20250808_210805.html",
+      "timestamp": "2025-09-10T20:09:45.043974"
+    },
+    {
+      "source": "CRITICAL_BLOCKERS_ACTION_TRACKER_2025-09-02.md",
+      "destination": "docs\\development\\CRITICAL_BLOCKERS_ACTION_TRACKER_2025-09-02.md",
+      "timestamp": "2025-09-10T20:09:45.045610"
+    },
+    {
+      "source": "DIRECTORY_CONSOLIDATION_PLAN.md",
+      "destination": "docs\\development\\DIRECTORY_CONSOLIDATION_PLAN.md",
+      "timestamp": "2025-09-10T20:09:45.047393"
+    },
+    {
+      "source": "ENHANCED_ANALYSIS_TOOLS_DOCUMENTATION.md",
+      "destination": "docs\\development\\ENHANCED_ANALYSIS_TOOLS_DOCUMENTATION.md",
+      "timestamp": "2025-09-10T20:09:45.049518"
+    },
+    {
+      "source": "ENHANCED_CLIPBOARD_COMPREHENSIVE_DOCUMENTATION.md",
+      "destination": "docs\\development\\ENHANCED_CLIPBOARD_COMPREHENSIVE_DOCUMENTATION.md",
+      "timestamp": "2025-09-10T20:09:45.051866"
+    },
+    {
+      "source": "ENHANCED_FILE_OPERATION_TOOLS_DOCUMENTATION.md",
+      "destination": "docs\\development\\ENHANCED_FILE_OPERATION_TOOLS_DOCUMENTATION.md",
+      "timestamp": "2025-09-10T20:09:45.054021"
+    },
+    {
+      "source": "FILE_REORGANIZATION_MAPPING.md",
+      "destination": "docs\\development\\FILE_REORGANIZATION_MAPPING.md",
+      "timestamp": "2025-09-10T20:09:45.056298"
+    },
+    {
+      "source": "final_project_verification.py",
+      "destination": "scripts\\maintenance\\final_project_verification.py",
+      "timestamp": "2025-09-10T20:09:45.059114"
+    },
+    {
+      "source": "install_vscode_path.ps1",
+      "destination": "docs\\development\\install_vscode_path.ps1",
+      "timestamp": "2025-09-10T20:09:45.061152"
+    },
+    {
+      "source": "launch_hub.py",
+      "destination": "scripts\\maintenance\\launch_hub.py",
+      "timestamp": "2025-09-10T20:09:45.063586"
+    },
+    {
+      "source": "metadata_tools_verification.py",
+      "destination": "scripts\\maintenance\\metadata_tools_verification.py",
+      "timestamp": "2025-09-10T20:09:45.066225"
+    },
+    {
+      "source": "open_files.bat",
+      "destination": "docs\\development\\open_files.bat",
+      "timestamp": "2025-09-10T20:09:45.069045"
+    },
+    {
+      "source": "open_files.ps1",
+      "destination": "docs\\development\\open_files.ps1",
+      "timestamp": "2025-09-10T20:09:45.071383"
+    },
+    {
+      "source": "pdf_analysis_engine.py",
+      "destination": "scripts\\maintenance\\pdf_analysis_engine.py",
+      "timestamp": "2025-09-10T20:09:45.075312"
+    },
+    {
+      "source": "pdf_conversion_engine.py",
+      "destination": "scripts\\maintenance\\pdf_conversion_engine.py",
+      "timestamp": "2025-09-10T20:09:45.078075"
+    },
+    {
+      "source": "pdf_enhancement_engine.py",
+      "destination": "scripts\\maintenance\\pdf_enhancement_engine.py",
+      "timestamp": "2025-09-10T20:09:45.080911"
+    },
+    {
+      "source": "pdf_extraction_engine.py",
+      "destination": "scripts\\maintenance\\pdf_extraction_engine.py",
+      "timestamp": "2025-09-10T20:09:45.084358"
+    },
+    {
+      "source": "pdf_extraction_parameter_dialogs.py",
+      "destination": "scripts\\maintenance\\pdf_extraction_parameter_dialogs.py",
+      "timestamp": "2025-09-10T20:09:45.087259"
+    },
+    {
+      "source": "pdf_operation_engine.py",
+      "destination": "scripts\\maintenance\\pdf_operation_engine.py",
+      "timestamp": "2025-09-10T20:09:45.090724"
+    },
+    {
+      "source": "pdf_parameter_dialogs.py",
+      "destination": "scripts\\maintenance\\pdf_parameter_dialogs.py",
+      "timestamp": "2025-09-10T20:09:45.093351"
+    },
+    {
+      "source": "pdf_security_engine.py",
+      "destination": "scripts\\maintenance\\pdf_security_engine.py",
+      "timestamp": "2025-09-10T20:09:45.095598"
+    },
+    {
+      "source": "pdf_security_parameter_dialogs.py",
+      "destination": "scripts\\maintenance\\pdf_security_parameter_dialogs.py",
+      "timestamp": "2025-09-10T20:09:45.098375"
+    },
+    {
+      "source": "PHASE_4_EXECUTION_PLAN_UPDATE.md",
+      "destination": "docs\\development\\PHASE_4_EXECUTION_PLAN_UPDATE.md",
+      "timestamp": "2025-09-10T20:09:45.101257"
+    },
+    {
+      "source": "PROJECT_STATUS.md",
+      "destination": "docs\\development\\PROJECT_STATUS.md",
+      "timestamp": "2025-09-10T20:09:45.103580"
+    },
+    {
+      "source": "project_tools_documentation_tracking.md",
+      "destination": "docs\\development\\project_tools_documentation_tracking.md",
+      "timestamp": "2025-09-10T20:09:45.105859"
+    },
+    {
+      "source": "PROJECT_TOOL_TAXONOMY.md",
+      "destination": "docs\\development\\PROJECT_TOOL_TAXONOMY.md",
+      "timestamp": "2025-09-10T20:09:45.108328"
+    },
+    {
+      "source": "REORGANIZATION_SUCCESS.md",
+      "destination": "docs\\development\\REORGANIZATION_SUCCESS.md",
+      "timestamp": "2025-09-10T20:09:45.112478"
+    },
+    {
+      "source": "rfu-hub-interface-diagram.md",
+      "destination": "docs\\development\\rfu-hub-interface-diagram.md",
+      "timestamp": "2025-09-10T20:09:45.115586"
+    },
+    {
+      "source": "rfu_errors.log",
+      "destination": "docs\\development\\rfu_errors.log",
+      "timestamp": "2025-09-10T20:09:45.118973"
+    },
+    {
+      "source": "Richards_Rile_Utilities.code-workspace",
+      "destination": "docs\\development\\Richards_Rile_Utilities.code-workspace",
+      "timestamp": "2025-09-10T20:09:45.121086"
+    },
+    {
+      "source": "run_rfu.py",
+      "destination": "scripts\\maintenance\\run_rfu.py",
+      "timestamp": "2025-09-10T20:09:45.123914"
+    },
+    {
+      "source": "simple_open_files.py",
+      "destination": "scripts\\maintenance\\simple_open_files.py",
+      "timestamp": "2025-09-10T20:09:45.127026"
+    },
+    {
+      "source": "simple_vscode_setup.ps1",
+      "destination": "docs\\development\\simple_vscode_setup.ps1",
+      "timestamp": "2025-09-10T20:09:45.129067"
+    },
+    {
+      "source": "software_maintenance_menu_verification.py",
+      "destination": "scripts\\maintenance\\software_maintenance_menu_verification.py",
+      "timestamp": "2025-09-10T20:09:45.132062"
+    },
+    {
+      "source": "Sonarqube_evaluation_2025.08_21_COMPLETED.md",
+      "destination": "docs\\development\\Sonarqube_evaluation_2025.08_21_COMPLETED.md",
+      "timestamp": "2025-09-10T20:09:45.135180"
+    },
+    {
+      "source": "standalone_database_manager.py",
+      "destination": "scripts\\maintenance\\standalone_database_manager.py",
+      "timestamp": "2025-09-10T20:09:45.138447"
+    },
+    {
+      "source": "unit_test_issues.md",
+      "destination": "docs\\development\\unit_test_issues.md",
+      "timestamp": "2025-09-10T20:09:45.141400"
+    },
+    {
+      "source": "validate_blocker_resolution.py",
+      "destination": "scripts\\maintenance\\validate_blocker_resolution.py",
+      "timestamp": "2025-09-10T20:09:45.144636"
+    },
+    {
+      "source": "validate_import_fix.py",
+      "destination": "scripts\\maintenance\\validate_import_fix.py",
+      "timestamp": "2025-09-10T20:09:45.147863"
+    },
+    {
+      "source": "validate_recursion_fix.py",
+      "destination": "scripts\\maintenance\\validate_recursion_fix.py",
+      "timestamp": "2025-09-10T20:09:45.152086"
+    },
+    {
+      "source": "validate_secure_theme_settings_logger_fix.py",
+      "destination": "scripts\\maintenance\\validate_secure_theme_settings_logger_fix.py",
+      "timestamp": "2025-09-10T20:09:45.155116"
+    },
+    {
+      "source": "validate_simple_logger_fix.py",
+      "destination": "scripts\\maintenance\\validate_simple_logger_fix.py",
+      "timestamp": "2025-09-10T20:09:45.158304"
+    },
+    {
+      "source": "validate_timestamp_fix.py",
+      "destination": "scripts\\maintenance\\validate_timestamp_fix.py",
+      "timestamp": "2025-09-10T20:09:45.161171"
+    },
+    {
+      "source": "validate_traversal_consolidation.py",
+      "destination": "scripts\\maintenance\\validate_traversal_consolidation.py",
+      "timestamp": "2025-09-10T20:09:45.164051"
+    },
+    {
+      "source": "verify_dependencies.py",
+      "destination": "scripts\\maintenance\\verify_dependencies.py",
+      "timestamp": "2025-09-10T20:09:45.167108"
+    },
+    {
+      "source": "verify_enhanced_pdf_restoration.py",
+      "destination": "scripts\\maintenance\\verify_enhanced_pdf_restoration.py",
+      "timestamp": "2025-09-10T20:09:45.170230"
+    },
+    {
+      "source": "verify_pdf_tools_fix.py",
+      "destination": "scripts\\maintenance\\verify_pdf_tools_fix.py",
+      "timestamp": "2025-09-10T20:09:45.175672"
+    }
+  ],
+  "enterprise_compliance": {
+    "root_directory_files": 4,
+    "max_allowed_root_files": 10,
+    "compliance_status": "PASS"
+  }
+}

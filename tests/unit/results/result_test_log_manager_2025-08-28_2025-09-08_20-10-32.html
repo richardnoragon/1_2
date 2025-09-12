@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <title id="head-title">result_test_log_manager_2025-08-28_2025-09-08_20-10-32.html</title>
+      <link href="assets\style.css" rel="stylesheet" type="text/css"/>
+  </head>
+  <body>
+    <h1 id="title">result_test_log_manager_2025-08-28_2025-09-08_20-10-32.html</h1>
+    <p>Report generated on 08-Sep-2025 at 20:10:35 by <a href="https://pypi.python.org/pypi/pytest-html">pytest-html</a>
+        v4.1.1</p>
+    <div id="environment-header">
+      <h2>Environment</h2>
+    </div>
+    <table id="environment"></table>
+    <!-- TEMPLATES -->
+      <template id="template_environment_row">
+      <tr>
+        <td></td>
+        <td></td>
+      </tr>
+    </template>
+    <template id="template_results-table__body--empty">
+      <tbody class="results-table-row">
+        <tr id="not-found-message">
+          <td colspan="4">No results found. Check the filters.</th>
+        </tr>
+    </template>
+    <template id="template_results-table__tbody">
+      <tbody class="results-table-row">
+        <tr class="collapsible">
+        </tr>
+        <tr class="extras-row">
+          <td class="extra" colspan="4">
+            <div class="extraHTML"></div>
+            <div class="media">
+              <div class="media-container">
+                  <div class="media-container__nav--left"><</div>
+                  <div class="media-container__viewport">
+                    <img src="" />
+                    <video controls>
+                      <source src="" type="video/mp4">
+                    </video>
+                  </div>
+                  <div class="media-container__nav--right">></div>
+                </div>
+                <div class="media__name"></div>
+                <div class="media__counter"></div>
+            </div>
+            <div class="logwrapper">
+              <div class="logexpander"></div>
+              <div class="log"></div>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </template>
+    <!-- END TEMPLATES -->
+    <div class="summary">
+      <div class="summary__data">
+        <h2>Summary</h2>
+        <div class="additional-summary prefix">
+        </div>
+        <p class="run-count">34 tests took 403 ms.</p>
+        <p class="filter">(Un)check the boxes to filter the results.</p>
+        <div class="summary__reload">
+          <div class="summary__reload__button hidden" onclick="location.reload()">
+            <div>There are still tests running. <br />Reload this page to get the latest results!</div>
+          </div>
+        </div>
+        <div class="summary__spacer"></div>
+        <div class="controls">
+          <div class="filters">
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="failed" />
+            <span class="failed">4 Failed,</span>
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="passed" />
+            <span class="passed">30 Passed,</span>
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="skipped" disabled/>
+            <span class="skipped">0 Skipped,</span>
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="xfailed" disabled/>
+            <span class="xfailed">0 Expected failures,</span>
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="xpassed" disabled/>
+            <span class="xpassed">0 Unexpected passes,</span>
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="error" disabled/>
+            <span class="error">0 Errors,</span>
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="rerun" disabled/>
+            <span class="rerun">0 Reruns</span>
+          </div>
+          <div class="collapse">
+            <button id="show_all_details">Show all details</button>&nbsp;/&nbsp;<button id="hide_all_details">Hide all details</button>
+          </div>
+        </div>
+      </div>
+      <div class="additional-summary summary">
+      </div>
+      <div class="additional-summary postfix">
+      </div>
+    </div>
+    <table id="results-table">
+      <thead id="results-table-head">
+        <tr>
+          <th class="sortable" data-column-type="result">Result</th>
+          <th class="sortable" data-column-type="testId">Test</th>
+          <th class="sortable" data-column-type="duration">Duration</th>
+          <th>Links</th>
+        </tr>
+      </thead>
+    </table>
+  </body>
+  <footer>
+    <div id="data-container" data-jsonblob="{&#34;environment&#34;: {&#34;Python&#34;: &#34;3.13.5&#34;, &#34;Platform&#34;: &#34;Windows-11-10.0.26100-SP0&#34;, &#34;Packages&#34;: {&#34;pytest&#34;: &#34;8.3.5&#34;, &#34;pluggy&#34;: &#34;1.6.0&#34;}, &#34;Plugins&#34;: {&#34;Faker&#34;: &#34;37.5.3&#34;, &#34;asyncio&#34;: &#34;0.26.0&#34;, &#34;benchmark&#34;: &#34;5.1.0&#34;, &#34;cov&#34;: &#34;6.1.0&#34;, &#34;html&#34;: &#34;4.1.1&#34;, &#34;json&#34;: &#34;0.4.0&#34;, &#34;json-report&#34;: &#34;1.5.0&#34;, &#34;metadata&#34;: &#34;3.1.1&#34;, &#34;mock&#34;: &#34;3.14.1&#34;, &#34;qt&#34;: &#34;4.4.0&#34;, &#34;timeout&#34;: &#34;2.3.1&#34;, &#34;xdist&#34;: &#34;3.8.0&#34;, &#34;xvfb&#34;: &#34;3.1.1&#34;}}, &#34;tests&#34;: {&#34;test_log_manager_2025-08-28.py::TestLogManager::test_singleton_pattern&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_log_manager_2025-08-28.py::TestLogManager::test_singleton_pattern&#34;, &#34;duration&#34;: &#34;149 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_log_manager_2025-08-28.py::TestLogManager::test_singleton_pattern&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;149 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;---------------------------- Captured stdout setup -----------------------------\n\nStarting test: test_singleton_pattern\n\u2705 Visualization dependencies mocked!\n\u2705 matplotlib: Available\n\u2705 numpy: Available\n\u2705 Network visualization mocks automatically enabled\n\n----------------------------- Captured stdout call -----------------------------\n2025-09-08 20:10:34,353 - INFO - LogManager initialized successfully\n\n------------------------------ Captured log call -------------------------------\nINFO     RFU:log_manager.py:73 LogManager initialized successfully\n\n--------------------------- Captured stdout teardown ---------------------------\nCompleted test: test_singleton_pattern\n&#34;}], &#34;test_log_manager_2025-08-28.py::TestLogManager::test_initialization&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_log_manager_2025-08-28.py::TestLogManager::test_initialization&#34;, &#34;duration&#34;: &#34;8 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_log_manager_2025-08-28.py::TestLogManager::test_initialization&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;8 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;---------------------------- Captured stdout setup -----------------------------\n\nStarting test: test_initialization\n\n----------------------------- Captured stdout call -----------------------------\n2025-09-08 20:10:34,361 - INFO - LogManager initialized successfully\n\n------------------------------ Captured log call -------------------------------\nINFO     RFU:log_manager.py:73 LogManager initialized successfully\n\n--------------------------- Captured stdout teardown ---------------------------\nCompleted test: test_initialization\n&#34;}], &#34;test_log_manager_2025-08-28.py::TestLogManager::test_setup_file_handler_success&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_log_manager_2025-08-28.py::TestLogManager::test_setup_file_handler_success&#34;, &#34;duration&#34;: &#34;8 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_log_manager_2025-08-28.py::TestLogManager::test_setup_file_handler_success&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;8 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;---------------------------- Captured stdout setup -----------------------------\n\nStarting test: test_setup_file_handler_success\n\n----------------------------- Captured stdout call -----------------------------\n2025-09-08 20:10:34,371 - INFO - LogManager initialized successfully\n\n------------------------------ Captured log call -------------------------------\nINFO     RFU:log_manager.py:73 LogManager initialized successfully\n\n--------------------------- Captured stdout teardown ---------------------------\nCompleted test: test_setup_file_handler_success\n&#34;}], &#34;test_log_manager_2025-08-28.py::TestLogManager::test_setup_file_handler_failure&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_log_manager_2025-08-28.py::TestLogManager::test_setup_file_handler_failure&#34;, &#34;duration&#34;: &#34;8 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_log_manager_2025-08-28.py::TestLogManager::test_setup_file_handler_failure&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;8 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;---------------------------- Captured stdout setup -----------------------------\n\nStarting test: test_setup_file_handler_failure\n\n----------------------------- Captured stdout call -----------------------------\nFailed to setup file logging: File access denied\n2025-09-08 20:10:34,380 - INFO - LogManager initialized successfully\n\n------------------------------ Captured log call -------------------------------\nINFO     RFU:log_manager.py:73 LogManager initialized successfully\n\n--------------------------- Captured stdout teardown ---------------------------\nCompleted test: test_setup_file_handler_failure\n&#34;}], &#34;test_log_manager_2025-08-28.py::TestLogManager::test_setup_console_handler_success&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Failed&#34;, &#34;testId&#34;: &#34;test_log_manager_2025-08-28.py::TestLogManager::test_setup_console_handler_success&#34;, &#34;duration&#34;: &#34;5 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Failed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_log_manager_2025-08-28.py::TestLogManager::test_setup_console_handler_success&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;5 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;C:\\Users\\HP1\\1_2\\tests\\unit\\test_log_manager_2025-08-28.py:131: in test_setup_console_handler_success\n    assert console_handler.level == logging.INFO\nE   assert 10 == 20\nE    +  where 10 = &amp;lt;RotatingFileHandler C:\\Users\\HP1\\AppData\\Local\\Temp\\tmp8dnpa8l2\\logs\\rfu.log (DEBUG)&amp;gt;.level\nE    +  and   20 = logging.INFO\n\n---------------------------- Captured stdout setup -----------------------------\n\nStarting test: test_setup_console_handler_success\n\n----------------------------- Captured stdout call -----------------------------\n2025-09-08 20:10:34,385 - INFO - LogManager initialized successfully\n\n------------------------------ Captured log call -------------------------------\nINFO     RFU:log_manager.py:73 LogManager initialized successfully\n\n--------------------------- Captured stdout teardown ---------------------------\nCompleted test: test_setup_console_handler_success\n&#34;}], &#34;test_log_manager_2025-08-28.py::TestLogManager::test_setup_console_handler_failure&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Failed&#34;, &#34;testId&#34;: &#34;test_log_manager_2025-08-28.py::TestLogManager::test_setup_console_handler_failure&#34;, &#34;duration&#34;: &#34;5 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Failed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_log_manager_2025-08-28.py::TestLogManager::test_setup_console_handler_failure&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;5 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;C:\\Users\\HP1\\1_2\\tests\\unit\\test_log_manager_2025-08-28.py:140: in test_setup_console_handler_failure\n    manager = LogManager()\nC:\\Users\\HP1\\1_2\\src\\rfu\\log_manager.py:34: in __init__\n    self._setup_logging()\nC:\\Users\\HP1\\1_2\\src\\rfu\\log_manager.py:73: in _setup_logging\n    self.root_logger.info(&amp;quot;LogManager initialized successfully&amp;quot;)\nC:\\Users\\HP1\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\logging\\__init__.py:1522: in info\n    self._log(INFO, msg, args, **kwargs)\nC:\\Users\\HP1\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\logging\\__init__.py:1667: in _log\n    self.handle(record)\nC:\\Users\\HP1\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\logging\\__init__.py:1686: in handle\n    self.callHandlers(record)\nC:\\Users\\HP1\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\logging\\__init__.py:1744: in callHandlers\n    hdlr.handle(record)\nC:\\Users\\HP1\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\logging\\__init__.py:1022: in handle\n    rv = self.filter(record)\nC:\\Users\\HP1\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\logging\\__init__.py:865: in filter\n    for f in self.filters:\nE   AttributeError: &amp;#x27;RotatingFileHandler&amp;#x27; object has no attribute &amp;#x27;filters&amp;#x27;. Did you mean: &amp;#x27;filter&amp;#x27;?\n\n---------------------------- Captured stdout setup -----------------------------\n\nStarting test: test_setup_console_handler_failure\n\n----------------------------- Captured stdout call -----------------------------\nFailed to setup console logging: not readable\n--------------------------- Captured stdout teardown ---------------------------\nCompleted test: test_setup_console_handler_failure\n&#34;}], &#34;test_log_manager_2025-08-28.py::TestLogManager::test_get_logger_new&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_log_manager_2025-08-28.py::TestLogManager::test_get_logger_new&#34;, &#34;duration&#34;: &#34;5 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_log_manager_2025-08-28.py::TestLogManager::test_get_logger_new&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;5 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;---------------------------- Captured stdout setup -----------------------------\n\nStarting test: test_get_logger_new\n\n----------------------------- Captured stdout call -----------------------------\n2025-09-08 20:10:34,622 - INFO - LogManager initialized successfully\n\n------------------------------ Captured log call -------------------------------\nINFO     RFU:log_manager.py:73 LogManager initialized successfully\n\n--------------------------- Captured stdout teardown ---------------------------\nCompleted test: test_get_logger_new\n&#34;}], &#34;test_log_manager_2025-08-28.py::TestLogManager::test_get_logger_existing&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_log_manager_2025-08-28.py::TestLogManager::test_get_logger_existing&#34;, &#34;duration&#34;: &#34;7 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_log_manager_2025-08-28.py::TestLogManager::test_get_logger_existing&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;7 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;---------------------------- Captured stdout setup -----------------------------\n\nStarting test: test_get_logger_existing\n\n----------------------------- Captured stdout call -----------------------------\n2025-09-08 20:10:34,629 - INFO - LogManager initialized successfully\n\n------------------------------ Captured log call -------------------------------\nINFO     RFU:log_manager.py:73 LogManager initialized successfully\n\n--------------------------- Captured stdout teardown ---------------------------\nCompleted test: test_get_logger_existing\n&#34;}], &#34;test_log_manager_2025-08-28.py::TestLogManager::test_get_logger_with_rfu_prefix&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_log_manager_2025-08-28.py::TestLogManager::test_get_logger_with_rfu_prefix&#34;, &#34;duration&#34;: &#34;6 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_log_manager_2025-08-28.py::TestLogManager::test_get_logger_with_rfu_prefix&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;6 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;---------------------------- Captured stdout setup -----------------------------\n\nStarting test: test_get_logger_with_rfu_prefix\n\n----------------------------- Captured stdout call -----------------------------\n2025-09-08 20:10:34,636 - INFO - LogManager initialized successfully\n\n------------------------------ Captured log call -------------------------------\nINFO     RFU:log_manager.py:73 LogManager initialized successfully\n\n--------------------------- Captured stdout teardown ---------------------------\nCompleted test: test_get_logger_with_rfu_prefix\n&#34;}], &#34;test_log_manager_2025-08-28.py::TestLogManager::test_set_level_valid&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_log_manager_2025-08-28.py::TestLogManager::test_set_level_valid&#34;, &#34;duration&#34;: &#34;7 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_log_manager_2025-08-28.py::TestLogManager::test_set_level_valid&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;7 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;---------------------------- Captured stdout setup -----------------------------\n\nStarting test: test_set_level_valid\n\n----------------------------- Captured stdout call -----------------------------\n2025-09-08 20:10:34,643 - INFO - LogManager initialized successfully\n2025-09-08 20:10:34,643 - INFO - Logging level set to DEBUG\n2025-09-08 20:10:34,644 - INFO - Logging level set to INFO\n\n------------------------------ Captured log call -------------------------------\nINFO     RFU:log_manager.py:73 LogManager initialized successfully\nINFO     RFU:log_manager.py:152 Logging level set to DEBUG\nINFO     RFU:log_manager.py:152 Logging level set to INFO\n\n--------------------------- Captured stdout teardown ---------------------------\nCompleted test: test_set_level_valid\n&#34;}], &#34;test_log_manager_2025-08-28.py::TestLogManager::test_set_level_invalid&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_log_manager_2025-08-28.py::TestLogManager::test_set_level_invalid&#34;, &#34;duration&#34;: &#34;10 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_log_manager_2025-08-28.py::TestLogManager::test_set_level_invalid&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;10 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;---------------------------- Captured stdout setup -----------------------------\n\nStarting test: test_set_level_invalid\n\n----------------------------- Captured stdout call -----------------------------\n2025-09-08 20:10:34,654 - INFO - LogManager initialized successfully\n2025-09-08 20:10:34,655 - ERROR - Invalid logging level: INVALID_LEVEL\n\n------------------------------ Captured log call -------------------------------\nINFO     RFU:log_manager.py:73 LogManager initialized successfully\nERROR    RFU:log_manager.py:155 Invalid logging level: INVALID_LEVEL\n\n--------------------------- Captured stdout teardown ---------------------------\nCompleted test: test_set_level_invalid\n&#34;}], &#34;test_log_manager_2025-08-28.py::TestLogManager::test_set_level_case_insensitive&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_log_manager_2025-08-28.py::TestLogManager::test_set_level_case_insensitive&#34;, &#34;duration&#34;: &#34;8 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_log_manager_2025-08-28.py::TestLogManager::test_set_level_case_insensitive&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;8 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;---------------------------- Captured stdout setup -----------------------------\n\nStarting test: test_set_level_case_insensitive\n\n----------------------------- Captured stdout call -----------------------------\n2025-09-08 20:10:34,662 - INFO - LogManager initialized successfully\n2025-09-08 20:10:34,663 - INFO - Logging level set to INFO\n\n------------------------------ Captured log call -------------------------------\nINFO     RFU:log_manager.py:73 LogManager initialized successfully\nINFO     RFU:log_manager.py:152 Logging level set to INFO\n\n--------------------------- Captured stdout teardown ---------------------------\nCompleted test: test_set_level_case_insensitive\n&#34;}], &#34;test_log_manager_2025-08-28.py::TestLogManager::test_set_console_level_valid&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_log_manager_2025-08-28.py::TestLogManager::test_set_console_level_valid&#34;, &#34;duration&#34;: &#34;7 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_log_manager_2025-08-28.py::TestLogManager::test_set_console_level_valid&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;7 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;---------------------------- Captured stdout setup -----------------------------\n\nStarting test: test_set_console_level_valid\n\n----------------------------- Captured stdout call -----------------------------\n2025-09-08 20:10:34,671 - INFO - LogManager initialized successfully\n\n------------------------------ Captured log call -------------------------------\nINFO     RFU:log_manager.py:73 LogManager initialized successfully\nINFO     RFU:log_manager.py:168 Console logging level set to ERROR\n\n--------------------------- Captured stdout teardown ---------------------------\nCompleted test: test_set_console_level_valid\n&#34;}], &#34;test_log_manager_2025-08-28.py::TestLogManager::test_set_console_level_invalid&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_log_manager_2025-08-28.py::TestLogManager::test_set_console_level_invalid&#34;, &#34;duration&#34;: &#34;8 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_log_manager_2025-08-28.py::TestLogManager::test_set_console_level_invalid&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;8 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;---------------------------- Captured stdout setup -----------------------------\n\nStarting test: test_set_console_level_invalid\n\n----------------------------- Captured stdout call -----------------------------\n2025-09-08 20:10:34,679 - INFO - LogManager initialized successfully\n2025-09-08 20:10:34,680 - ERROR - Invalid console logging level: INVALID_LEVEL\n\n------------------------------ Captured log call -------------------------------\nINFO     RFU:log_manager.py:73 LogManager initialized successfully\nERROR    RFU:log_manager.py:172 Invalid console logging level: INVALID_LEVEL\n\n--------------------------- Captured stdout teardown ---------------------------\nCompleted test: test_set_console_level_invalid\n&#34;}], &#34;test_log_manager_2025-08-28.py::TestLogManager::test_set_console_level_no_handler&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_log_manager_2025-08-28.py::TestLogManager::test_set_console_level_no_handler&#34;, &#34;duration&#34;: &#34;7 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_log_manager_2025-08-28.py::TestLogManager::test_set_console_level_no_handler&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;7 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;---------------------------- Captured stdout setup -----------------------------\n\nStarting test: test_set_console_level_no_handler\n\n----------------------------- Captured stdout call -----------------------------\n2025-09-08 20:10:34,687 - INFO - LogManager initialized successfully\n2025-09-08 20:10:34,688 - INFO - Console logging level set to ERROR\n\n------------------------------ Captured log call -------------------------------\nINFO     RFU:log_manager.py:73 LogManager initialized successfully\nINFO     RFU:log_manager.py:168 Console logging level set to ERROR\n\n--------------------------- Captured stdout teardown ---------------------------\nCompleted test: test_set_console_level_no_handler\n&#34;}], &#34;test_log_manager_2025-08-28.py::TestLogManager::test_add_file_handler_success&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_log_manager_2025-08-28.py::TestLogManager::test_add_file_handler_success&#34;, &#34;duration&#34;: &#34;8 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_log_manager_2025-08-28.py::TestLogManager::test_add_file_handler_success&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;8 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;---------------------------- Captured stdout setup -----------------------------\n\nStarting test: test_add_file_handler_success\n\n----------------------------- Captured stdout call -----------------------------\n2025-09-08 20:10:34,695 - INFO - LogManager initialized successfully\n2025-09-08 20:10:34,696 - INFO - Added file handler &amp;#x27;test_handler&amp;#x27; -&amp;gt; test.log\n\n------------------------------ Captured log call -------------------------------\nINFO     RFU:log_manager.py:73 LogManager initialized successfully\nINFO     RFU:log_manager.py:203 Added file handler &amp;#x27;test_handler&amp;#x27; -&amp;gt; test.log\n\n--------------------------- Captured stdout teardown ---------------------------\nCompleted test: test_add_file_handler_success\n&#34;}], &#34;test_log_manager_2025-08-28.py::TestLogManager::test_add_file_handler_failure&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Failed&#34;, &#34;testId&#34;: &#34;test_log_manager_2025-08-28.py::TestLogManager::test_add_file_handler_failure&#34;, &#34;duration&#34;: &#34;8 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Failed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_log_manager_2025-08-28.py::TestLogManager::test_add_file_handler_failure&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;8 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;C:\\Users\\HP1\\1_2\\tests\\unit\\test_log_manager_2025-08-28.py:270: in test_add_file_handler_failure\n    manager = LogManager()\nC:\\Users\\HP1\\1_2\\src\\rfu\\log_manager.py:34: in __init__\n    self._setup_logging()\nC:\\Users\\HP1\\1_2\\src\\rfu\\log_manager.py:73: in _setup_logging\n    self.root_logger.info(&amp;quot;LogManager initialized successfully&amp;quot;)\nC:\\Users\\HP1\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\logging\\__init__.py:1522: in info\n    self._log(INFO, msg, args, **kwargs)\nC:\\Users\\HP1\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\logging\\__init__.py:1667: in _log\n    self.handle(record)\nC:\\Users\\HP1\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\logging\\__init__.py:1686: in handle\n    self.callHandlers(record)\nC:\\Users\\HP1\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\logging\\__init__.py:1743: in callHandlers\n    if record.levelno &amp;gt;= hdlr.level:\nE   TypeError: &amp;#x27;&amp;gt;=&amp;#x27; not supported between instances of &amp;#x27;int&amp;#x27; and &amp;#x27;MagicMock&amp;#x27;\n\n---------------------------- Captured stdout setup -----------------------------\n\nStarting test: test_add_file_handler_failure\n--------------------------- Captured stdout teardown ---------------------------\nCompleted test: test_add_file_handler_failure\n&#34;}], &#34;test_log_manager_2025-08-28.py::TestLogManager::test_add_file_handler_default_level&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_log_manager_2025-08-28.py::TestLogManager::test_add_file_handler_default_level&#34;, &#34;duration&#34;: &#34;7 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_log_manager_2025-08-28.py::TestLogManager::test_add_file_handler_default_level&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;7 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;---------------------------- Captured stdout setup -----------------------------\n\nStarting test: test_add_file_handler_default_level\n\n----------------------------- Captured stdout call -----------------------------\n2025-09-08 20:10:34,764 - INFO - LogManager initialized successfully\n2025-09-08 20:10:34,765 - INFO - Added file handler &amp;#x27;test_handler&amp;#x27; -&amp;gt; test.log\n\n------------------------------ Captured log call -------------------------------\nINFO     RFU:log_manager.py:73 LogManager initialized successfully\nINFO     RFU:log_manager.py:203 Added file handler &amp;#x27;test_handler&amp;#x27; -&amp;gt; test.log\n\n--------------------------- Captured stdout teardown ---------------------------\nCompleted test: test_add_file_handler_default_level\n&#34;}], &#34;test_log_manager_2025-08-28.py::TestLogManager::test_log_structured_basic&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_log_manager_2025-08-28.py::TestLogManager::test_log_structured_basic&#34;, &#34;duration&#34;: &#34;9 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_log_manager_2025-08-28.py::TestLogManager::test_log_structured_basic&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;9 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;---------------------------- Captured stdout setup -----------------------------\n\nStarting test: test_log_structured_basic\n\n----------------------------- Captured stdout call -----------------------------\n2025-09-08 20:10:34,774 - INFO - LogManager initialized successfully\n2025-09-08 20:10:34,775 - INFO - Test message\n\n------------------------------ Captured log call -------------------------------\nINFO     RFU:log_manager.py:73 LogManager initialized successfully\nINFO     RFU.test_component:log_manager.py:231 Test message\n\n--------------------------- Captured stdout teardown ---------------------------\nCompleted test: test_log_structured_basic\n&#34;}], &#34;test_log_manager_2025-08-28.py::TestLogManager::test_log_structured_with_kwargs&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_log_manager_2025-08-28.py::TestLogManager::test_log_structured_with_kwargs&#34;, &#34;duration&#34;: &#34;9 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_log_manager_2025-08-28.py::TestLogManager::test_log_structured_with_kwargs&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;9 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;---------------------------- Captured stdout setup -----------------------------\n\nStarting test: test_log_structured_with_kwargs\n\n----------------------------- Captured stdout call -----------------------------\n2025-09-08 20:10:34,784 - INFO - LogManager initialized successfully\n\n------------------------------ Captured log call -------------------------------\nINFO     RFU:log_manager.py:73 LogManager initialized successfully\n\n--------------------------- Captured stdout teardown ---------------------------\nCompleted test: test_log_structured_with_kwargs\n&#34;}], &#34;test_log_manager_2025-08-28.py::TestLogManager::test_log_structured_invalid_level&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_log_manager_2025-08-28.py::TestLogManager::test_log_structured_invalid_level&#34;, &#34;duration&#34;: &#34;7 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_log_manager_2025-08-28.py::TestLogManager::test_log_structured_invalid_level&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;7 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;---------------------------- Captured stdout setup -----------------------------\n\nStarting test: test_log_structured_invalid_level\n\n----------------------------- Captured stdout call -----------------------------\n2025-09-08 20:10:34,792 - INFO - LogManager initialized successfully\n\n------------------------------ Captured log call -------------------------------\nINFO     RFU:log_manager.py:73 LogManager initialized successfully\n\n--------------------------- Captured stdout teardown ---------------------------\nCompleted test: test_log_structured_invalid_level\n&#34;}], &#34;test_log_manager_2025-08-28.py::TestLogManager::test_get_log_stats&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_log_manager_2025-08-28.py::TestLogManager::test_get_log_stats&#34;, &#34;duration&#34;: &#34;7 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_log_manager_2025-08-28.py::TestLogManager::test_get_log_stats&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;7 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;---------------------------- Captured stdout setup -----------------------------\n\nStarting test: test_get_log_stats\n\n----------------------------- Captured stdout call -----------------------------\n2025-09-08 20:10:34,800 - INFO - LogManager initialized successfully\n\n------------------------------ Captured log call -------------------------------\nINFO     RFU:log_manager.py:73 LogManager initialized successfully\n\n--------------------------- Captured stdout teardown ---------------------------\nCompleted test: test_get_log_stats\n&#34;}], &#34;test_log_manager_2025-08-28.py::TestLogManager::test_get_log_stats_with_existing_file&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_log_manager_2025-08-28.py::TestLogManager::test_get_log_stats_with_existing_file&#34;, &#34;duration&#34;: &#34;8 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_log_manager_2025-08-28.py::TestLogManager::test_get_log_stats_with_existing_file&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;8 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;---------------------------- Captured stdout setup -----------------------------\n\nStarting test: test_get_log_stats_with_existing_file\n\n----------------------------- Captured stdout call -----------------------------\n2025-09-08 20:10:34,808 - INFO - LogManager initialized successfully\n\n------------------------------ Captured log call -------------------------------\nINFO     RFU:log_manager.py:73 LogManager initialized successfully\n\n--------------------------- Captured stdout teardown ---------------------------\nCompleted test: test_get_log_stats_with_existing_file\n&#34;}], &#34;test_log_manager_2025-08-28.py::TestLogManager::test_cleanup_success&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_log_manager_2025-08-28.py::TestLogManager::test_cleanup_success&#34;, &#34;duration&#34;: &#34;7 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_log_manager_2025-08-28.py::TestLogManager::test_cleanup_success&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;7 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;---------------------------- Captured stdout setup -----------------------------\n\nStarting test: test_cleanup_success\n\n----------------------------- Captured stdout call -----------------------------\n2025-09-08 20:10:34,815 - INFO - LogManager initialized successfully\n\n------------------------------ Captured log call -------------------------------\nINFO     RFU:log_manager.py:73 LogManager initialized successfully\nINFO     RFU:log_manager.py:266 LogManager cleanup completed\n\n--------------------------- Captured stdout teardown ---------------------------\nCompleted test: test_cleanup_success\n&#34;}], &#34;test_log_manager_2025-08-28.py::TestLogManager::test_cleanup_with_handler_error&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_log_manager_2025-08-28.py::TestLogManager::test_cleanup_with_handler_error&#34;, &#34;duration&#34;: &#34;7 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_log_manager_2025-08-28.py::TestLogManager::test_cleanup_with_handler_error&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;7 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;---------------------------- Captured stdout setup -----------------------------\n\nStarting test: test_cleanup_with_handler_error\n\n----------------------------- Captured stdout call -----------------------------\n2025-09-08 20:10:34,823 - INFO - LogManager initialized successfully\nError during LogManager cleanup: Close failed\n\n------------------------------ Captured log call -------------------------------\nINFO     RFU:log_manager.py:73 LogManager initialized successfully\n\n--------------------------- Captured stdout teardown ---------------------------\nCompleted test: test_cleanup_with_handler_error\n&#34;}], &#34;test_log_manager_2025-08-28.py::TestGlobalFunctions::test_get_log_manager_first_call&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_log_manager_2025-08-28.py::TestGlobalFunctions::test_get_log_manager_first_call&#34;, &#34;duration&#34;: &#34;4 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_log_manager_2025-08-28.py::TestGlobalFunctions::test_get_log_manager_first_call&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;4 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;---------------------------- Captured stdout setup -----------------------------\n\nStarting test: test_get_log_manager_first_call\n\n----------------------------- Captured stdout call -----------------------------\n2025-09-08 20:10:34,831 - INFO - LogManager initialized successfully\n\n------------------------------ Captured log call -------------------------------\nINFO     RFU:log_manager.py:73 LogManager initialized successfully\n\n--------------------------- Captured stdout teardown ---------------------------\nCompleted test: test_get_log_manager_first_call\n&#34;}], &#34;test_log_manager_2025-08-28.py::TestGlobalFunctions::test_get_log_manager_subsequent_calls&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_log_manager_2025-08-28.py::TestGlobalFunctions::test_get_log_manager_subsequent_calls&#34;, &#34;duration&#34;: &#34;6 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_log_manager_2025-08-28.py::TestGlobalFunctions::test_get_log_manager_subsequent_calls&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;6 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;---------------------------- Captured stdout setup -----------------------------\n\nStarting test: test_get_log_manager_subsequent_calls\n\n----------------------------- Captured stdout call -----------------------------\n2025-09-08 20:10:34,838 - INFO - LogManager initialized successfully\n\n------------------------------ Captured log call -------------------------------\nINFO     RFU:log_manager.py:73 LogManager initialized successfully\n\n--------------------------- Captured stdout teardown ---------------------------\nCompleted test: test_get_log_manager_subsequent_calls\n&#34;}], &#34;test_log_manager_2025-08-28.py::TestGlobalFunctions::test_get_log_manager_instance_backward_compatibility&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_log_manager_2025-08-28.py::TestGlobalFunctions::test_get_log_manager_instance_backward_compatibility&#34;, &#34;duration&#34;: &#34;6 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_log_manager_2025-08-28.py::TestGlobalFunctions::test_get_log_manager_instance_backward_compatibility&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;6 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;---------------------------- Captured stdout setup -----------------------------\n\nStarting test: test_get_log_manager_instance_backward_compatibility\n\n----------------------------- Captured stdout call -----------------------------\n2025-09-08 20:10:34,845 - INFO - LogManager initialized successfully\n\n------------------------------ Captured log call -------------------------------\nINFO     RFU:log_manager.py:73 LogManager initialized successfully\n\n--------------------------- Captured stdout teardown ---------------------------\nCompleted test: test_get_log_manager_instance_backward_compatibility\n&#34;}], &#34;test_log_manager_2025-08-28.py::TestLogManagerIntegration::test_end_to_end_logging_workflow&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_log_manager_2025-08-28.py::TestLogManagerIntegration::test_end_to_end_logging_workflow&#34;, &#34;duration&#34;: &#34;11 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_log_manager_2025-08-28.py::TestLogManagerIntegration::test_end_to_end_logging_workflow&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;11 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;---------------------------- Captured stdout setup -----------------------------\n\nStarting test: test_end_to_end_logging_workflow\n\n----------------------------- Captured stdout call -----------------------------\n2025-09-08 20:10:34,852 - INFO - LogManager initialized successfully\n2025-09-08 20:10:34,852 - INFO - Test info message\n2025-09-08 20:10:34,852 - WARNING - Test warning message\n2025-09-08 20:10:34,853 - ERROR - Test error message\n2025-09-08 20:10:34,853 - INFO - Added file handler &amp;#x27;custom_handler&amp;#x27; -&amp;gt; custom.log\n2025-09-08 20:10:34,853 - INFO - Structured test message | Context: test_id=1, operation=end_to_end_test\n\n------------------------------ Captured log call -------------------------------\nINFO     RFU:log_manager.py:73 LogManager initialized successfully\nINFO     RFU.integration_test:test_log_manager_2025-08-28.py:495 Test info message\nWARNING  RFU.integration_test:test_log_manager_2025-08-28.py:496 Test warning message\nERROR    RFU.integration_test:test_log_manager_2025-08-28.py:497 Test error message\nINFO     RFU:log_manager.py:203 Added file handler &amp;#x27;custom_handler&amp;#x27; -&amp;gt; custom.log\nINFO     RFU.integration_test:log_manager.py:231 Structured test message | Context: test_id=1, operation=end_to_end_test\n\n--------------------------- Captured stdout teardown ---------------------------\nCompleted test: test_end_to_end_logging_workflow\n&#34;}], &#34;test_log_manager_2025-08-28.py::TestLogManagerIntegration::test_concurrent_logger_access&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_log_manager_2025-08-28.py::TestLogManagerIntegration::test_concurrent_logger_access&#34;, &#34;duration&#34;: &#34;8 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_log_manager_2025-08-28.py::TestLogManagerIntegration::test_concurrent_logger_access&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;8 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;---------------------------- Captured stdout setup -----------------------------\n\nStarting test: test_concurrent_logger_access\n\n----------------------------- Captured stdout call -----------------------------\n2025-09-08 20:10:34,861 - INFO - LogManager initialized successfully\n2025-09-08 20:10:34,861 - INFO - Message from component 0\n2025-09-08 20:10:34,862 - INFO - Message from component 1\n2025-09-08 20:10:34,862 - INFO - Message from component 2\n2025-09-08 20:10:34,862 - INFO - Message from component 3\n2025-09-08 20:10:34,862 - INFO - Message from component 4\n2025-09-08 20:10:34,862 - INFO - Message from component 5\n2025-09-08 20:10:34,863 - INFO - Message from component 6\n2025-09-08 20:10:34,863 - INFO - Message from component 7\n2025-09-08 20:10:34,863 - INFO - Message from component 8\n2025-09-08 20:10:34,864 - INFO - Message from component 9\n\n------------------------------ Captured log call -------------------------------\nINFO     RFU:log_manager.py:73 LogManager initialized successfully\nINFO     RFU.component_0:test_log_manager_2025-08-28.py:538 Message from component 0\nINFO     RFU.component_1:test_log_manager_2025-08-28.py:538 Message from component 1\nINFO     RFU.component_2:test_log_manager_2025-08-28.py:538 Message from component 2\nINFO     RFU.component_3:test_log_manager_2025-08-28.py:538 Message from component 3\nINFO     RFU.component_4:test_log_manager_2025-08-28.py:538 Message from component 4\nINFO     RFU.component_5:test_log_manager_2025-08-28.py:538 Message from component 5\nINFO     RFU.component_6:test_log_manager_2025-08-28.py:538 Message from component 6\nINFO     RFU.component_7:test_log_manager_2025-08-28.py:538 Message from component 7\nINFO     RFU.component_8:test_log_manager_2025-08-28.py:538 Message from component 8\nINFO     RFU.component_9:test_log_manager_2025-08-28.py:538 Message from component 9\n\n--------------------------- Captured stdout teardown ---------------------------\nCompleted test: test_concurrent_logger_access\n&#34;}], &#34;test_log_manager_2025-08-28.py::TestLogManagerIntegration::test_logging_with_file_rotation&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_log_manager_2025-08-28.py::TestLogManagerIntegration::test_logging_with_file_rotation&#34;, &#34;duration&#34;: &#34;20 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_log_manager_2025-08-28.py::TestLogManagerIntegration::test_logging_with_file_rotation&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;20 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;---------------------------- Captured stdout setup -----------------------------\n\nStarting test: test_logging_with_file_rotation\n\n----------------------------- Captured stdout call -----------------------------\n2025-09-08 20:10:34,872 - INFO - LogManager initialized successfully\n2025-09-08 20:10:34,873 - INFO - Log message 0 - This is a test message to generate log content\n2025-09-08 20:10:34,873 - INFO - Log message 1 - This is a test message to generate log content\n2025-09-08 20:10:34,873 - INFO - Log message 2 - This is a test message to generate log content\n2025-09-08 20:10:34,873 - INFO - Log message 3 - This is a test message to generate log content\n2025-09-08 20:10:34,873 - INFO - Log message 4 - This is a test message to generate log content\n2025-09-08 20:10:34,874 - INFO - Log message 5 - This is a test message to generate log content\n2025-09-08 20:10:34,874 - INFO - Log message 6 - This is a test message to generate log content\n2025-09-08 20:10:34,874 - INFO - Log message 7 - This is a test message to generate log content\n2025-09-08 20:10:34,874 - INFO - Log message 8 - This is a test message to generate log content\n2025-09-08 20:10:34,874 - INFO - Log message 9 - This is a test message to generate log content\n2025-09-08 20:10:34,874 - INFO - Log message 10 - This is a test message to generate log content\n2025-09-08 20:10:34,875 - INFO - Log message 11 - This is a test message to generate log content\n2025-09-08 20:10:34,875 - INFO - Log message 12 - This is a test message to generate log content\n2025-09-08 20:10:34,875 - INFO - Log message 13 - This is a test message to generate log content\n2025-09-08 20:10:34,875 - INFO - Log message 14 - This is a test message to generate log content\n2025-09-08 20:10:34,875 - INFO - Log message 15 - This is a test message to generate log content\n2025-09-08 20:10:34,875 - INFO - Log message 16 - This is a test message to generate log content\n2025-09-08 20:10:34,875 - INFO - Log message 17 - This is a test message to generate log content\n2025-09-08 20:10:34,876 - INFO - Log message 18 - This is a test message to generate log content\n2025-09-08 20:10:34,876 - INFO - Log message 19 - This is a test message to generate log content\n2025-09-08 20:10:34,876 - INFO - Log message 20 - This is a test message to generate log content\n2025-09-08 20:10:34,876 - INFO - Log message 21 - This is a test message to generate log content\n2025-09-08 20:10:34,876 - INFO - Log message 22 - This is a test message to generate log content\n2025-09-08 20:10:34,876 - INFO - Log message 23 - This is a test message to generate log content\n2025-09-08 20:10:34,876 - INFO - Log message 24 - This is a test message to generate log content\n2025-09-08 20:10:34,876 - INFO - Log message 25 - This is a test message to generate log content\n2025-09-08 20:10:34,877 - INFO - Log message 26 - This is a test message to generate log content\n2025-09-08 20:10:34,877 - INFO - Log message 27 - This is a test message to generate log content\n2025-09-08 20:10:34,877 - INFO - Log message 28 - This is a test message to generate log content\n2025-09-08 20:10:34,877 - INFO - Log message 29 - This is a test message to generate log content\n2025-09-08 20:10:34,877 - INFO - Log message 30 - This is a test message to generate log content\n2025-09-08 20:10:34,877 - INFO - Log message 31 - This is a test message to generate log content\n2025-09-08 20:10:34,877 - INFO - Log message 32 - This is a test message to generate log content\n2025-09-08 20:10:34,878 - INFO - Log message 33 - This is a test message to generate log content\n2025-09-08 20:10:34,878 - INFO - Log message 34 - This is a test message to generate log content\n2025-09-08 20:10:34,878 - INFO - Log message 35 - This is a test message to generate log content\n2025-09-08 20:10:34,878 - INFO - Log message 36 - This is a test message to generate log content\n2025-09-08 20:10:34,878 - INFO - Log message 37 - This is a test message to generate log content\n2025-09-08 20:10:34,878 - INFO - Log message 38 - This is a test message to generate log content\n2025-09-08 20:10:34,878 - INFO - Log message 39 - This is a test message to generate log content\n2025-09-08 20:10:34,878 - INFO - Log message 40 - This is a test message to generate log content\n2025-09-08 20:10:34,879 - INFO - Log message 41 - This is a test message to generate log content\n2025-09-08 20:10:34,879 - INFO - Log message 42 - This is a test message to generate log content\n2025-09-08 20:10:34,879 - INFO - Log message 43 - This is a test message to generate log content\n2025-09-08 20:10:34,879 - INFO - Log message 44 - This is a test message to generate log content\n2025-09-08 20:10:34,879 - INFO - Log message 45 - This is a test message to generate log content\n2025-09-08 20:10:34,879 - INFO - Log message 46 - This is a test message to generate log content\n2025-09-08 20:10:34,879 - INFO - Log message 47 - This is a test message to generate log content\n2025-09-08 20:10:34,879 - INFO - Log message 48 - This is a test message to generate log content\n2025-09-08 20:10:34,879 - INFO - Log message 49 - This is a test message to generate log content\n2025-09-08 20:10:34,880 - INFO - Log message 50 - This is a test message to generate log content\n2025-09-08 20:10:34,880 - INFO - Log message 51 - This is a test message to generate log content\n2025-09-08 20:10:34,880 - INFO - Log message 52 - This is a test message to generate log content\n2025-09-08 20:10:34,880 - INFO - Log message 53 - This is a test message to generate log content\n2025-09-08 20:10:34,880 - INFO - Log message 54 - This is a test message to generate log content\n2025-09-08 20:10:34,880 - INFO - Log message 55 - This is a test message to generate log content\n2025-09-08 20:10:34,880 - INFO - Log message 56 - This is a test message to generate log content\n2025-09-08 20:10:34,880 - INFO - Log message 57 - This is a test message to generate log content\n2025-09-08 20:10:34,881 - INFO - Log message 58 - This is a test message to generate log content\n2025-09-08 20:10:34,881 - INFO - Log message 59 - This is a test message to generate log content\n2025-09-08 20:10:34,881 - INFO - Log message 60 - This is a test message to generate log content\n2025-09-08 20:10:34,881 - INFO - Log message 61 - This is a test message to generate log content\n2025-09-08 20:10:34,881 - INFO - Log message 62 - This is a test message to generate log content\n2025-09-08 20:10:34,881 - INFO - Log message 63 - This is a test message to generate log content\n2025-09-08 20:10:34,881 - INFO - Log message 64 - This is a test message to generate log content\n2025-09-08 20:10:34,881 - INFO - Log message 65 - This is a test message to generate log content\n2025-09-08 20:10:34,882 - INFO - Log message 66 - This is a test message to generate log content\n2025-09-08 20:10:34,882 - INFO - Log message 67 - This is a test message to generate log content\n2025-09-08 20:10:34,882 - INFO - Log message 68 - This is a test message to generate log content\n2025-09-08 20:10:34,882 - INFO - Log message 69 - This is a test message to generate log content\n2025-09-08 20:10:34,882 - INFO - Log message 70 - This is a test message to generate log content\n2025-09-08 20:10:34,882 - INFO - Log message 71 - This is a test message to generate log content\n2025-09-08 20:10:34,882 - INFO - Log message 72 - This is a test message to generate log content\n2025-09-08 20:10:34,882 - INFO - Log message 73 - This is a test message to generate log content\n2025-09-08 20:10:34,882 - INFO - Log message 74 - This is a test message to generate log content\n2025-09-08 20:10:34,883 - INFO - Log message 75 - This is a test message to generate log content\n2025-09-08 20:10:34,883 - INFO - Log message 76 - This is a test message to generate log content\n2025-09-08 20:10:34,883 - INFO - Log message 77 - This is a test message to generate log content\n2025-09-08 20:10:34,883 - INFO - Log message 78 - This is a test message to generate log content\n2025-09-08 20:10:34,883 - INFO - Log message 79 - This is a test message to generate log content\n2025-09-08 20:10:34,883 - INFO - Log message 80 - This is a test message to generate log content\n2025-09-08 20:10:34,883 - INFO - Log message 81 - This is a test message to generate log content\n2025-09-08 20:10:34,883 - INFO - Log message 82 - This is a test message to generate log content\n2025-09-08 20:10:34,884 - INFO - Log message 83 - This is a test message to generate log content\n2025-09-08 20:10:34,884 - INFO - Log message 84 - This is a test message to generate log content\n2025-09-08 20:10:34,884 - INFO - Log message 85 - This is a test message to generate log content\n2025-09-08 20:10:34,884 - INFO - Log message 86 - This is a test message to generate log content\n2025-09-08 20:10:34,884 - INFO - Log message 87 - This is a test message to generate log content\n2025-09-08 20:10:34,884 - INFO - Log message 88 - This is a test message to generate log content\n2025-09-08 20:10:34,884 - INFO - Log message 89 - This is a test message to generate log content\n2025-09-08 20:10:34,884 - INFO - Log message 90 - This is a test message to generate log content\n2025-09-08 20:10:34,884 - INFO - Log message 91 - This is a test message to generate log content\n2025-09-08 20:10:34,885 - INFO - Log message 92 - This is a test message to generate log content\n2025-09-08 20:10:34,885 - INFO - Log message 93 - This is a test message to generate log content\n2025-09-08 20:10:34,885 - INFO - Log message 94 - This is a test message to generate log content\n2025-09-08 20:10:34,885 - INFO - Log message 95 - This is a test message to generate log content\n2025-09-08 20:10:34,885 - INFO - Log message 96 - This is a test message to generate log content\n2025-09-08 20:10:34,885 - INFO - Log message 97 - This is a test message to generate log content\n2025-09-08 20:10:34,885 - INFO - Log message 98 - This is a test message to generate log content\n2025-09-08 20:10:34,885 - INFO - Log message 99 - This is a test message to generate log content\n\n------------------------------ Captured log call -------------------------------\nINFO     RFU:log_manager.py:73 LogManager initialized successfully\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 0 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 1 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 2 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 3 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 4 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 5 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 6 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 7 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 8 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 9 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 10 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 11 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 12 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 13 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 14 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 15 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 16 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 17 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 18 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 19 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 20 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 21 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 22 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 23 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 24 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 25 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 26 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 27 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 28 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 29 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 30 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 31 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 32 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 33 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 34 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 35 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 36 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 37 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 38 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 39 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 40 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 41 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 42 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 43 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 44 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 45 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 46 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 47 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 48 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 49 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 50 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 51 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 52 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 53 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 54 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 55 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 56 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 57 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 58 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 59 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 60 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 61 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 62 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 63 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 64 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 65 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 66 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 67 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 68 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 69 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 70 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 71 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 72 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 73 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 74 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 75 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 76 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 77 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 78 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 79 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 80 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 81 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 82 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 83 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 84 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 85 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 86 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 87 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 88 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 89 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 90 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 91 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 92 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 93 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 94 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 95 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 96 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 97 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 98 - This is a test message to generate log content\nINFO     RFU.rotation_test:test_log_manager_2025-08-28.py:554 Log message 99 - This is a test message to generate log content\n\n--------------------------- Captured stdout teardown ---------------------------\nCompleted test: test_logging_with_file_rotation\n&#34;}], &#34;test_log_manager_2025-08-28.py::TestLogManagerErrorHandling::test_log_directory_creation_failure&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Failed&#34;, &#34;testId&#34;: &#34;test_log_manager_2025-08-28.py::TestLogManagerErrorHandling::test_log_directory_creation_failure&#34;, &#34;duration&#34;: &#34;4 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Failed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_log_manager_2025-08-28.py::TestLogManagerErrorHandling::test_log_directory_creation_failure&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;4 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;C:\\Users\\HP1\\1_2\\tests\\unit\\test_log_manager_2025-08-28.py:590: in test_log_directory_creation_failure\n    manager = LogManager()\nC:\\Users\\HP1\\1_2\\src\\rfu\\log_manager.py:34: in __init__\n    self._setup_logging()\nC:\\Users\\HP1\\1_2\\src\\rfu\\log_manager.py:41: in _setup_logging\n    self.log_dir.mkdir(exist_ok=True)\nC:\\Users\\HP1\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\unittest\\mock.py:1169: in __call__\n    return self._mock_call(*args, **kwargs)\nC:\\Users\\HP1\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\unittest\\mock.py:1173: in _mock_call\n    return self._execute_mock_call(*args, **kwargs)\nC:\\Users\\HP1\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\unittest\\mock.py:1228: in _execute_mock_call\n    raise effect\nE   PermissionError: Permission denied\n\n---------------------------- Captured stdout setup -----------------------------\n\nStarting test: test_log_directory_creation_failure\n--------------------------- Captured stdout teardown ---------------------------\nCompleted test: test_log_directory_creation_failure\n&#34;}], &#34;test_log_manager_2025-08-28.py::TestLogManagerErrorHandling::test_invalid_log_level_handling&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_log_manager_2025-08-28.py::TestLogManagerErrorHandling::test_invalid_log_level_handling&#34;, &#34;duration&#34;: &#34;9 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_log_manager_2025-08-28.py::TestLogManagerErrorHandling::test_invalid_log_level_handling&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;9 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;---------------------------- Captured stdout setup -----------------------------\n\nStarting test: test_invalid_log_level_handling\n\n----------------------------- Captured stdout call -----------------------------\n2025-09-08 20:10:34,970 - INFO - LogManager initialized successfully\n2025-09-08 20:10:34,971 - ERROR - Invalid logging level: \n2025-09-08 20:10:34,971 - ERROR - Invalid logging level: None\n2025-09-08 20:10:34,971 - ERROR - Invalid logging level: 123\n2025-09-08 20:10:34,971 - ERROR - Invalid logging level: INVALID\n2025-09-08 20:10:34,971 - ERROR - Invalid logging level: debug_invalid\n\n------------------------------ Captured log call -------------------------------\nINFO     RFU:log_manager.py:73 LogManager initialized successfully\nERROR    RFU:log_manager.py:155 Invalid logging level: \nERROR    RFU:log_manager.py:155 Invalid logging level: None\nERROR    RFU:log_manager.py:155 Invalid logging level: 123\nERROR    RFU:log_manager.py:155 Invalid logging level: INVALID\nERROR    RFU:log_manager.py:155 Invalid logging level: debug_invalid\n\n--------------------------- Captured stdout teardown ---------------------------\nCompleted test: test_invalid_log_level_handling\n&#34;}], &#34;test_log_manager_2025-08-28.py::TestLogManagerErrorHandling::test_structured_logging_with_complex_kwargs&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_log_manager_2025-08-28.py::TestLogManagerErrorHandling::test_structured_logging_with_complex_kwargs&#34;, &#34;duration&#34;: &#34;8 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_log_manager_2025-08-28.py::TestLogManagerErrorHandling::test_structured_logging_with_complex_kwargs&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;8 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;---------------------------- Captured stdout setup -----------------------------\n\nStarting test: test_structured_logging_with_complex_kwargs\n\n----------------------------- Captured stdout call -----------------------------\n2025-09-08 20:10:34,979 - INFO - LogManager initialized successfully\n2025-09-08 20:10:34,979 - INFO - Complex data test | Context: nested_dict={&amp;#x27;key&amp;#x27;: &amp;#x27;value&amp;#x27;, &amp;#x27;number&amp;#x27;: 42}, list_data=[1, 2, 3], none_value=None, boolean=True, unicode=Testing unicode: \u00fc\u00f1\u00ed\u00e7\u00f8d\u00e9\n\n------------------------------ Captured log call -------------------------------\nINFO     RFU:log_manager.py:73 LogManager initialized successfully\nINFO     RFU.error_test:log_manager.py:231 Complex data test | Context: nested_dict={&amp;#x27;key&amp;#x27;: &amp;#x27;value&amp;#x27;, &amp;#x27;number&amp;#x27;: 42}, list_data=[1, 2, 3], none_value=None, boolean=True, unicode=Testing unicode: \u00fc\u00f1\u00ed\u00e7\u00f8d\u00e9\n\n--------------------------- Captured stdout teardown ---------------------------\nCompleted test: test_structured_logging_with_complex_kwargs\n&#34;}]}, &#34;renderCollapsed&#34;: [&#34;passed&#34;], &#34;initialSort&#34;: &#34;result&#34;, &#34;title&#34;: &#34;result_test_log_manager_2025-08-28_2025-09-08_20-10-32.html&#34;}"></div>
+    <script>
+      (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
+const { getCollapsedCategory, setCollapsedIds } = require('./storage.js')
+
+class DataManager {
+    setManager(data) {
+        const collapsedCategories = [...getCollapsedCategory(data.renderCollapsed)]
+        const collapsedIds = []
+        const tests = Object.values(data.tests).flat().map((test, index) => {
+            const collapsed = collapsedCategories.includes(test.result.toLowerCase())
+            const id = `test_${index}`
+            if (collapsed) {
+                collapsedIds.push(id)
+            }
+            return {
+                ...test,
+                id,
+                collapsed,
+            }
+        })
+        const dataBlob = { ...data, tests }
+        this.data = { ...dataBlob }
+        this.renderData = { ...dataBlob }
+        setCollapsedIds(collapsedIds)
+    }
+
+    get allData() {
+        return { ...this.data }
+    }
+
+    resetRender() {
+        this.renderData = { ...this.data }
+    }
+
+    setRender(data) {
+        this.renderData.tests = [...data]
+    }
+
+    toggleCollapsedItem(id) {
+        this.renderData.tests = this.renderData.tests.map((test) =>
+            test.id === id ? { ...test, collapsed: !test.collapsed } : test,
+        )
+    }
+
+    set allCollapsed(collapsed) {
+        this.renderData = { ...this.renderData, tests: [...this.renderData.tests.map((test) => (
+            { ...test, collapsed }
+        ))] }
+    }
+
+    get testSubset() {
+        return [...this.renderData.tests]
+    }
+
+    get environment() {
+        return this.renderData.environment
+    }
+
+    get initialSort() {
+        return this.data.initialSort
+    }
+}
+
+module.exports = {
+    manager: new DataManager(),
+}
+
+},{"./storage.js":8}],2:[function(require,module,exports){
+const mediaViewer = require('./mediaviewer.js')
+const templateEnvRow = document.getElementById('template_environment_row')
+const templateResult = document.getElementById('template_results-table__tbody')
+
+function htmlToElements(html) {
+    const temp = document.createElement('template')
+    temp.innerHTML = html
+    return temp.content.childNodes
+}
+
+const find = (selector, elem) => {
+    if (!elem) {
+        elem = document
+    }
+    return elem.querySelector(selector)
+}
+
+const findAll = (selector, elem) => {
+    if (!elem) {
+        elem = document
+    }
+    return [...elem.querySelectorAll(selector)]
+}
+
+const dom = {
+    getStaticRow: (key, value) => {
+        const envRow = templateEnvRow.content.cloneNode(true)
+        const isObj = typeof value === 'object' && value !== null
+        const values = isObj ? Object.keys(value).map((k) => `${k}: ${value[k]}`) : null
+
+        const valuesElement = htmlToElements(
+            values ? `<ul>${values.map((val) => `<li>${val}</li>`).join('')}<ul>` : `<div>${value}</div>`)[0]
+        const td = findAll('td', envRow)
+        td[0].textContent = key
+        td[1].appendChild(valuesElement)
+
+        return envRow
+    },
+    getResultTBody: ({ testId, id, log, extras, resultsTableRow, tableHtml, result, collapsed }) => {
+        const resultBody = templateResult.content.cloneNode(true)
+        resultBody.querySelector('tbody').classList.add(result.toLowerCase())
+        resultBody.querySelector('tbody').id = testId
+        resultBody.querySelector('.collapsible').dataset.id = id
+
+        resultsTableRow.forEach((html) => {
+            const t = document.createElement('template')
+            t.innerHTML = html
+            resultBody.querySelector('.collapsible').appendChild(t.content)
+        })
+
+        if (log) {
+            // Wrap lines starting with "E" with span.error to color those lines red
+            const wrappedLog = log.replace(/^E.*$/gm, (match) => `<span class="error">${match}</span>`)
+            resultBody.querySelector('.log').innerHTML = wrappedLog
+        } else {
+            resultBody.querySelector('.log').remove()
+        }
+
+        if (collapsed) {
+            resultBody.querySelector('.collapsible > td')?.classList.add('collapsed')
+            resultBody.querySelector('.extras-row').classList.add('hidden')
+        } else {
+            resultBody.querySelector('.collapsible > td')?.classList.remove('collapsed')
+        }
+
+        const media = []
+        extras?.forEach(({ name, format_type, content }) => {
+            if (['image', 'video'].includes(format_type)) {
+                media.push({ path: content, name, format_type })
+            }
+
+            if (format_type === 'html') {
+                resultBody.querySelector('.extraHTML').insertAdjacentHTML('beforeend', `<div>${content}</div>`)
+            }
+        })
+        mediaViewer.setup(resultBody, media)
+
+        // Add custom html from the pytest_html_results_table_html hook
+        tableHtml?.forEach((item) => {
+            resultBody.querySelector('td[class="extra"]').insertAdjacentHTML('beforeend', item)
+        })
+
+        return resultBody
+    },
+}
+
+module.exports = {
+    dom,
+    htmlToElements,
+    find,
+    findAll,
+}
+
+},{"./mediaviewer.js":6}],3:[function(require,module,exports){
+const { manager } = require('./datamanager.js')
+const { doSort } = require('./sort.js')
+const storageModule = require('./storage.js')
+
+const getFilteredSubSet = (filter) =>
+    manager.allData.tests.filter(({ result }) => filter.includes(result.toLowerCase()))
+
+const doInitFilter = () => {
+    const currentFilter = storageModule.getVisible()
+    const filteredSubset = getFilteredSubSet(currentFilter)
+    manager.setRender(filteredSubset)
+}
+
+const doFilter = (type, show) => {
+    if (show) {
+        storageModule.showCategory(type)
+    } else {
+        storageModule.hideCategory(type)
+    }
+
+    const currentFilter = storageModule.getVisible()
+    const filteredSubset = getFilteredSubSet(currentFilter)
+    manager.setRender(filteredSubset)
+
+    const sortColumn = storageModule.getSort()
+    doSort(sortColumn, true)
+}
+
+module.exports = {
+    doFilter,
+    doInitFilter,
+}
+
+},{"./datamanager.js":1,"./sort.js":7,"./storage.js":8}],4:[function(require,module,exports){
+const { redraw, bindEvents, renderStatic } = require('./main.js')
+const { doInitFilter } = require('./filter.js')
+const { doInitSort } = require('./sort.js')
+const { manager } = require('./datamanager.js')
+const data = JSON.parse(document.getElementById('data-container').dataset.jsonblob)
+
+function init() {
+    manager.setManager(data)
+    doInitFilter()
+    doInitSort()
+    renderStatic()
+    redraw()
+    bindEvents()
+}
+
+init()
+
+},{"./datamanager.js":1,"./filter.js":3,"./main.js":5,"./sort.js":7}],5:[function(require,module,exports){
+const { dom, find, findAll } = require('./dom.js')
+const { manager } = require('./datamanager.js')
+const { doSort } = require('./sort.js')
+const { doFilter } = require('./filter.js')
+const {
+    getVisible,
+    getCollapsedIds,
+    setCollapsedIds,
+    getSort,
+    getSortDirection,
+    possibleFilters,
+} = require('./storage.js')
+
+const removeChildren = (node) => {
+    while (node.firstChild) {
+        node.removeChild(node.firstChild)
+    }
+}
+
+const renderStatic = () => {
+    const renderEnvironmentTable = () => {
+        const environment = manager.environment
+        const rows = Object.keys(environment).map((key) => dom.getStaticRow(key, environment[key]))
+        const table = document.getElementById('environment')
+        removeChildren(table)
+        rows.forEach((row) => table.appendChild(row))
+    }
+    renderEnvironmentTable()
+}
+
+const addItemToggleListener = (elem) => {
+    elem.addEventListener('click', ({ target }) => {
+        const id = target.parentElement.dataset.id
+        manager.toggleCollapsedItem(id)
+
+        const collapsedIds = getCollapsedIds()
+        if (collapsedIds.includes(id)) {
+            const updated = collapsedIds.filter((item) => item !== id)
+            setCollapsedIds(updated)
+        } else {
+            collapsedIds.push(id)
+            setCollapsedIds(collapsedIds)
+        }
+        redraw()
+    })
+}
+
+const renderContent = (tests) => {
+    const sortAttr = getSort(manager.initialSort)
+    const sortAsc = JSON.parse(getSortDirection())
+    const rows = tests.map(dom.getResultTBody)
+    const table = document.getElementById('results-table')
+    const tableHeader = document.getElementById('results-table-head')
+
+    const newTable = document.createElement('table')
+    newTable.id = 'results-table'
+
+    // remove all sorting classes and set the relevant
+    findAll('.sortable', tableHeader).forEach((elem) => elem.classList.remove('asc', 'desc'))
+    tableHeader.querySelector(`.sortable[data-column-type="${sortAttr}"]`)?.classList.add(sortAsc ? 'desc' : 'asc')
+    newTable.appendChild(tableHeader)
+
+    if (!rows.length) {
+        const emptyTable = document.getElementById('template_results-table__body--empty').content.cloneNode(true)
+        newTable.appendChild(emptyTable)
+    } else {
+        rows.forEach((row) => {
+            if (!!row) {
+                findAll('.collapsible td:not(.col-links', row).forEach(addItemToggleListener)
+                find('.logexpander', row).addEventListener('click',
+                    (evt) => evt.target.parentNode.classList.toggle('expanded'),
+                )
+                newTable.appendChild(row)
+            }
+        })
+    }
+
+    table.replaceWith(newTable)
+}
+
+const renderDerived = () => {
+    const currentFilter = getVisible()
+    possibleFilters.forEach((result) => {
+        const input = document.querySelector(`input[data-test-result="${result}"]`)
+        input.checked = currentFilter.includes(result)
+    })
+}
+
+const bindEvents = () => {
+    const filterColumn = (evt) => {
+        const { target: element } = evt
+        const { testResult } = element.dataset
+
+        doFilter(testResult, element.checked)
+        const collapsedIds = getCollapsedIds()
+        const updated = manager.renderData.tests.map((test) => {
+            return {
+                ...test,
+                collapsed: collapsedIds.includes(test.id),
+            }
+        })
+        manager.setRender(updated)
+        redraw()
+    }
+
+    const header = document.getElementById('environment-header')
+    header.addEventListener('click', () => {
+        const table = document.getElementById('environment')
+        table.classList.toggle('hidden')
+        header.classList.toggle('collapsed')
+    })
+
+    findAll('input[name="filter_checkbox"]').forEach((elem) => {
+        elem.addEventListener('click', filterColumn)
+    })
+
+    findAll('.sortable').forEach((elem) => {
+        elem.addEventListener('click', (evt) => {
+            const { target: element } = evt
+            const { columnType } = element.dataset
+            doSort(columnType)
+            redraw()
+        })
+    })
+
+    document.getElementById('show_all_details').addEventListener('click', () => {
+        manager.allCollapsed = false
+        setCollapsedIds([])
+        redraw()
+    })
+    document.getElementById('hide_all_details').addEventListener('click', () => {
+        manager.allCollapsed = true
+        const allIds = manager.renderData.tests.map((test) => test.id)
+        setCollapsedIds(allIds)
+        redraw()
+    })
+}
+
+const redraw = () => {
+    const { testSubset } = manager
+
+    renderContent(testSubset)
+    renderDerived()
+}
+
+module.exports = {
+    redraw,
+    bindEvents,
+    renderStatic,
+}
+
+},{"./datamanager.js":1,"./dom.js":2,"./filter.js":3,"./sort.js":7,"./storage.js":8}],6:[function(require,module,exports){
+class MediaViewer {
+    constructor(assets) {
+        this.assets = assets
+        this.index = 0
+    }
+
+    nextActive() {
+        this.index = this.index === this.assets.length - 1 ? 0 : this.index + 1
+        return [this.activeFile, this.index]
+    }
+
+    prevActive() {
+        this.index = this.index === 0 ? this.assets.length - 1 : this.index -1
+        return [this.activeFile, this.index]
+    }
+
+    get currentIndex() {
+        return this.index
+    }
+
+    get activeFile() {
+        return this.assets[this.index]
+    }
+}
+
+
+const setup = (resultBody, assets) => {
+    if (!assets.length) {
+        resultBody.querySelector('.media').classList.add('hidden')
+        return
+    }
+
+    const mediaViewer = new MediaViewer(assets)
+    const container = resultBody.querySelector('.media-container')
+    const leftArrow = resultBody.querySelector('.media-container__nav--left')
+    const rightArrow = resultBody.querySelector('.media-container__nav--right')
+    const mediaName = resultBody.querySelector('.media__name')
+    const counter = resultBody.querySelector('.media__counter')
+    const imageEl = resultBody.querySelector('img')
+    const sourceEl = resultBody.querySelector('source')
+    const videoEl = resultBody.querySelector('video')
+
+    const setImg = (media, index) => {
+        if (media?.format_type === 'image') {
+            imageEl.src = media.path
+
+            imageEl.classList.remove('hidden')
+            videoEl.classList.add('hidden')
+        } else if (media?.format_type === 'video') {
+            sourceEl.src = media.path
+
+            videoEl.classList.remove('hidden')
+            imageEl.classList.add('hidden')
+        }
+
+        mediaName.innerText = media?.name
+        counter.innerText = `${index + 1} / ${assets.length}`
+    }
+    setImg(mediaViewer.activeFile, mediaViewer.currentIndex)
+
+    const moveLeft = () => {
+        const [media, index] = mediaViewer.prevActive()
+        setImg(media, index)
+    }
+    const doRight = () => {
+        const [media, index] = mediaViewer.nextActive()
+        setImg(media, index)
+    }
+    const openImg = () => {
+        window.open(mediaViewer.activeFile.path, '_blank')
+    }
+    if (assets.length === 1) {
+        container.classList.add('media-container--fullscreen')
+    } else {
+        leftArrow.addEventListener('click', moveLeft)
+        rightArrow.addEventListener('click', doRight)
+    }
+    imageEl.addEventListener('click', openImg)
+}
+
+module.exports = {
+    setup,
+}
+
+},{}],7:[function(require,module,exports){
+const { manager } = require('./datamanager.js')
+const storageModule = require('./storage.js')
+
+const genericSort = (list, key, ascending, customOrder) => {
+    let sorted
+    if (customOrder) {
+        sorted = list.sort((a, b) => {
+            const aValue = a.result.toLowerCase()
+            const bValue = b.result.toLowerCase()
+
+            const aIndex = customOrder.findIndex((item) => item.toLowerCase() === aValue)
+            const bIndex = customOrder.findIndex((item) => item.toLowerCase() === bValue)
+
+            // Compare the indices to determine the sort order
+            return aIndex - bIndex
+        })
+    } else {
+        sorted = list.sort((a, b) => a[key] === b[key] ? 0 : a[key] > b[key] ? 1 : -1)
+    }
+
+    if (ascending) {
+        sorted.reverse()
+    }
+    return sorted
+}
+
+const durationSort = (list, ascending) => {
+    const parseDuration = (duration) => {
+        if (duration.includes(':')) {
+            // If it's in the format "HH:mm:ss"
+            const [hours, minutes, seconds] = duration.split(':').map(Number)
+            return (hours * 3600 + minutes * 60 + seconds) * 1000
+        } else {
+            // If it's in the format "nnn ms"
+            return parseInt(duration)
+        }
+    }
+    const sorted = list.sort((a, b) => parseDuration(a['duration']) - parseDuration(b['duration']))
+    if (ascending) {
+        sorted.reverse()
+    }
+    return sorted
+}
+
+const doInitSort = () => {
+    const type = storageModule.getSort(manager.initialSort)
+    const ascending = storageModule.getSortDirection()
+    const list = manager.testSubset
+    const initialOrder = ['Error', 'Failed', 'Rerun', 'XFailed', 'XPassed', 'Skipped', 'Passed']
+
+    storageModule.setSort(type)
+    storageModule.setSortDirection(ascending)
+
+    if (type?.toLowerCase() === 'original') {
+        manager.setRender(list)
+    } else {
+        let sortedList
+        switch (type) {
+        case 'duration':
+            sortedList = durationSort(list, ascending)
+            break
+        case 'result':
+            sortedList = genericSort(list, type, ascending, initialOrder)
+            break
+        default:
+            sortedList = genericSort(list, type, ascending)
+            break
+        }
+        manager.setRender(sortedList)
+    }
+}
+
+const doSort = (type, skipDirection) => {
+    const newSortType = storageModule.getSort(manager.initialSort) !== type
+    const currentAsc = storageModule.getSortDirection()
+    let ascending
+    if (skipDirection) {
+        ascending = currentAsc
+    } else {
+        ascending = newSortType ? false : !currentAsc
+    }
+    storageModule.setSort(type)
+    storageModule.setSortDirection(ascending)
+
+    const list = manager.testSubset
+    const sortedList = type === 'duration' ? durationSort(list, ascending) : genericSort(list, type, ascending)
+    manager.setRender(sortedList)
+}
+
+module.exports = {
+    doInitSort,
+    doSort,
+}
+
+},{"./datamanager.js":1,"./storage.js":8}],8:[function(require,module,exports){
+const possibleFilters = [
+    'passed',
+    'skipped',
+    'failed',
+    'error',
+    'xfailed',
+    'xpassed',
+    'rerun',
+]
+
+const getVisible = () => {
+    const url = new URL(window.location.href)
+    const settings = new URLSearchParams(url.search).get('visible')
+    const lower = (item) => {
+        const lowerItem = item.toLowerCase()
+        if (possibleFilters.includes(lowerItem)) {
+            return lowerItem
+        }
+        return null
+    }
+    return settings === null ?
+        possibleFilters :
+        [...new Set(settings?.split(',').map(lower).filter((item) => item))]
+}
+
+const hideCategory = (categoryToHide) => {
+    const url = new URL(window.location.href)
+    const visibleParams = new URLSearchParams(url.search).get('visible')
+    const currentVisible = visibleParams ? visibleParams.split(',') : [...possibleFilters]
+    const settings = [...new Set(currentVisible)].filter((f) => f !== categoryToHide).join(',')
+
+    url.searchParams.set('visible', settings)
+    window.history.pushState({}, null, unescape(url.href))
+}
+
+const showCategory = (categoryToShow) => {
+    if (typeof window === 'undefined') {
+        return
+    }
+    const url = new URL(window.location.href)
+    const currentVisible = new URLSearchParams(url.search).get('visible')?.split(',').filter(Boolean) ||
+        [...possibleFilters]
+    const settings = [...new Set([categoryToShow, ...currentVisible])]
+    const noFilter = possibleFilters.length === settings.length || !settings.length
+
+    noFilter ? url.searchParams.delete('visible') : url.searchParams.set('visible', settings.join(','))
+    window.history.pushState({}, null, unescape(url.href))
+}
+
+const getSort = (initialSort) => {
+    const url = new URL(window.location.href)
+    let sort = new URLSearchParams(url.search).get('sort')
+    if (!sort) {
+        sort = initialSort || 'result'
+    }
+    return sort
+}
+
+const setSort = (type) => {
+    const url = new URL(window.location.href)
+    url.searchParams.set('sort', type)
+    window.history.pushState({}, null, unescape(url.href))
+}
+
+const getCollapsedCategory = (renderCollapsed) => {
+    let categories
+    if (typeof window !== 'undefined') {
+        const url = new URL(window.location.href)
+        const collapsedItems = new URLSearchParams(url.search).get('collapsed')
+        switch (true) {
+        case !renderCollapsed && collapsedItems === null:
+            categories = ['passed']
+            break
+        case collapsedItems?.length === 0 || /^["']{2}$/.test(collapsedItems):
+            categories = []
+            break
+        case /^all$/.test(collapsedItems) || collapsedItems === null && /^all$/.test(renderCollapsed):
+            categories = [...possibleFilters]
+            break
+        default:
+            categories = collapsedItems?.split(',').map((item) => item.toLowerCase()) || renderCollapsed
+            break
+        }
+    } else {
+        categories = []
+    }
+    return categories
+}
+
+const getSortDirection = () => JSON.parse(sessionStorage.getItem('sortAsc')) || false
+const setSortDirection = (ascending) => sessionStorage.setItem('sortAsc', ascending)
+
+const getCollapsedIds = () => JSON.parse(sessionStorage.getItem('collapsedIds')) || []
+const setCollapsedIds = (list) => sessionStorage.setItem('collapsedIds', JSON.stringify(list))
+
+module.exports = {
+    getVisible,
+    hideCategory,
+    showCategory,
+    getCollapsedIds,
+    setCollapsedIds,
+    getSort,
+    setSort,
+    getSortDirection,
+    setSortDirection,
+    getCollapsedCategory,
+    possibleFilters,
+}
+
+},{}]},{},[4]);
+    </script>
+  </footer>
+</html>

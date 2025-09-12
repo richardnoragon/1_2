@@ -1,0 +1,131 @@
+{
+  "test_suite": "NetworkConnectivityGUI_Simple",
+  "execution_timestamp": "2025-09-08T20:09:52.572790",
+  "total_tests": 17,
+  "results": [
+    {
+      "test_name": "unknown_test",
+      "start_time": "2025-09-08T20:09:52.635004",
+      "end_time": "2025-09-08T20:09:52.638716",
+      "execution_time_ms": 3.712,
+      "status": "PASS"
+    },
+    {
+      "test_name": "unknown_test",
+      "start_time": "2025-09-08T20:09:52.641678",
+      "end_time": "2025-09-08T20:09:52.643545",
+      "execution_time_ms": 1.867,
+      "status": "PASS"
+    },
+    {
+      "test_name": "unknown_test",
+      "start_time": "2025-09-08T20:09:52.646942",
+      "end_time": "2025-09-08T20:09:52.648364",
+      "execution_time_ms": 1.4220000000000002,
+      "status": "PASS"
+    },
+    {
+      "test_name": "unknown_test",
+      "start_time": "2025-09-08T20:09:52.651023",
+      "end_time": "2025-09-08T20:09:52.652016",
+      "execution_time_ms": 0.993,
+      "status": "PASS"
+    },
+    {
+      "test_name": "unknown_test",
+      "start_time": "2025-09-08T20:09:52.653803",
+      "end_time": "2025-09-08T20:09:52.654772",
+      "execution_time_ms": 0.969,
+      "status": "PASS"
+    },
+    {
+      "test_name": "unknown_test",
+      "start_time": "2025-09-08T20:09:52.656463",
+      "end_time": "2025-09-08T20:09:52.657406",
+      "execution_time_ms": 0.9430000000000001,
+      "status": "PASS"
+    },
+    {
+      "test_name": "unknown_test",
+      "start_time": "2025-09-08T20:09:52.659177",
+      "end_time": "2025-09-08T20:09:52.660329",
+      "execution_time_ms": 1.1520000000000001,
+      "status": "PASS"
+    },
+    {
+      "test_name": "unknown_test",
+      "start_time": "2025-09-08T20:09:52.663837",
+      "end_time": "2025-09-08T20:09:52.666225",
+      "execution_time_ms": 2.388,
+      "status": "PASS"
+    },
+    {
+      "test_name": "unknown_test",
+      "start_time": "2025-09-08T20:09:52.669620",
+      "end_time": "2025-09-08T20:09:52.671096",
+      "execution_time_ms": 1.4760000000000002,
+      "status": "PASS"
+    },
+    {
+      "test_name": "unknown_test",
+      "start_time": "2025-09-08T20:09:52.673143",
+      "end_time": "2025-09-08T20:09:52.674117",
+      "execution_time_ms": 0.9740000000000001,
+      "status": "PASS"
+    },
+    {
+      "test_name": "unknown_test",
+      "start_time": "2025-09-08T20:09:52.676435",
+      "end_time": "2025-09-08T20:09:52.678205",
+      "execution_time_ms": 1.77,
+      "status": "PASS"
+    },
+    {
+      "test_name": "unknown_test",
+      "start_time": "2025-09-08T20:09:52.681130",
+      "end_time": "2025-09-08T20:09:52.682185",
+      "execution_time_ms": 1.055,
+      "status": "PASS"
+    },
+    {
+      "test_name": "unknown_test",
+      "start_time": "2025-09-08T20:09:52.684623",
+      "end_time": "2025-09-08T20:09:52.685531",
+      "execution_time_ms": 0.9079999999999999,
+      "status": "PASS"
+    },
+    {
+      "test_name": "unknown_test",
+      "start_time": "2025-09-08T20:09:52.687588",
+      "end_time": "2025-09-08T20:09:52.688448",
+      "execution_time_ms": 0.86,
+      "status": "PASS"
+    },
+    {
+      "test_name": "unknown_test",
+      "start_time": "2025-09-08T20:09:52.690092",
+      "end_time": "2025-09-08T20:09:52.691282",
+      "execution_time_ms": 1.1900000000000002,
+      "status": "PASS"
+    },
+    {
+      "test_name": "unknown_test",
+      "start_time": "2025-09-08T20:09:52.693724",
+      "end_time": "2025-09-08T20:09:52.695035",
+      "execution_time_ms": 1.3110000000000002,
+      "status": "PASS"
+    },
+    {
+      "test_name": "unknown_test",
+      "start_time": "2025-09-08T20:09:52.697583",
+      "end_time": "2025-09-08T20:09:52.699233",
+      "execution_time_ms": 1.65,
+      "status": "PASS"
+    }
+  ],
+  "summary": {
+    "passed": 17,
+    "failed": 0,
+    "skipped": 0
+  }
+}
