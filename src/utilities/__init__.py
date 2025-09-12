@@ -29,9 +29,10 @@ def safe_import(module_name, package_name=None):
     """Safely import a module with error handling."""
     try:
         if package_name:
-            module_path = f".{module_name}"
-            args = (module_path, globals(), locals(), [module_name], 1)
-            return __import__(*args)
+            # Use importlib for proper relative imports
+            import importlib
+            return importlib.import_module(f".{module_name}",
+                                           package=package_name)
         else:
             return __import__(module_name)
     except ImportError as e:

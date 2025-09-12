@@ -25,7 +25,7 @@
     "log_format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
   },
   "tools": {
-    "default_directory": "C:\\Users\\richardi",
+    "default_directory": "C:\\Users\\HP1",
     "remember_last_directory": true,
     "show_hidden_files": false,
     "confirm_destructive_operations": true,

@@ -68,10 +68,10 @@ def setup_network_visualization_mocks():
     if NETWORK_MOCKS_AVAILABLE and setup_visualization_mocks:
         try:
             mocks = setup_visualization_mocks()
-            print("✅ Network visualization mocks automatically enabled")
+            print("[SUCCESS] Network visualization mocks automatically enabled")
             return mocks
         except Exception as e:
-            print(f"⚠️ Failed to setup visualization mocks: {e}")
+            print(f"[WARNING] Failed to setup visualization mocks: {e}")
             return None
     else:
         # Fallback: Create basic matplotlib/numpy mocks
@@ -95,7 +95,7 @@ def setup_network_visualization_mocks():
         sys.modules['matplotlib.pyplot'] = pyplot_mock
         sys.modules['numpy'] = numpy_mock
         
-        print("✅ Fallback visualization mocks enabled")
+        print("[SUCCESS] Fallback visualization mocks enabled")
         return {
             'matplotlib': matplotlib_mock,
             'pyplot': pyplot_mock,

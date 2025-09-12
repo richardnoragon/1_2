@@ -107,12 +107,12 @@ def setup_network_module_dependencies() -> Dict[str, Any]:
         'utilities.network.network_connectivity.config.config_integration'
     ] = config_integration_module
     
-    print("✅ Network module dependencies successfully mocked!")
-    print("✅ core.config_manager: Available")
-    print("✅ core.error_handler: Available") 
-    print("✅ Platform dependencies: Available")
-    print("✅ Security validation: Available")
-    print("✅ Ready for real implementation testing!")
+    print("[SUCCESS] Network module dependencies successfully mocked!")
+    print("[SUCCESS] core.config_manager: Available")
+    print("[SUCCESS] core.error_handler: Available")
+    print("[SUCCESS] Platform dependencies: Available")
+    print("[SUCCESS] Security validation: Available")
+    print("[SUCCESS] Ready for real implementation testing!")
     
     return {
         'config_manager': config_manager,
@@ -219,9 +219,9 @@ def setup_visualization_mocks() -> Dict[str, Any]:
     numpy_mock.std = Mock(return_value=0.0)
     sys.modules['numpy'] = numpy_mock
     
-    print("✅ Visualization dependencies mocked!")
-    print("✅ matplotlib: Available")
-    print("✅ numpy: Available")
+    print("[SUCCESS] Visualization dependencies mocked!")
+    print("[SUCCESS] matplotlib: Available")
+    print("[SUCCESS] numpy: Available")
     
     return {
         'matplotlib': matplotlib_mock,
@@ -241,7 +241,7 @@ def setup_all_dependency_mocks() -> Dict[str, Any]:
         Dictionary containing all mock instances
     """
     
-    print("🔧 Setting up comprehensive dependency mocks...")
+    print("[SETUP] Setting up comprehensive dependency mocks...")
     
     # Setup all mock categories
     network_deps = setup_network_module_dependencies()
@@ -257,9 +257,9 @@ def setup_all_dependency_mocks() -> Dict[str, Any]:
         **viz_deps
     }
     
-    print("✅ All dependency mocks successfully installed!")
-    print(f"✅ Total mock categories: {len(all_deps)}")
-    print("🚀 Ready to resolve 42 critical test case failures!")
+    print("[SUCCESS] All dependency mocks successfully installed!")
+    print(f"[SUCCESS] Total mock categories: {len(all_deps)}")
+    print("[READY] Ready to resolve 42 critical test case failures!")
     
     return all_deps
 

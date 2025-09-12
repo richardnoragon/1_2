@@ -7,20 +7,23 @@ It provides a comprehensive GUI interface for accessing all file utility tools.
 Enhanced with SQLite database integration for settings and logging.
 """
 
-import sys
-import os
 import logging
+import os
+import sys
 from pathlib import Path
 from typing import Optional
 
 # Add the src directory to the Python path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
+# Add necessary paths for reorganized structure
+project_root = os.path.dirname(__file__)
+sys.path.insert(0, os.path.join(project_root, 'src'))
+sys.path.insert(0, os.path.join(project_root, 'scripts', 'maintenance'))
+sys.path.insert(0, os.path.join(project_root, 'scripts', 'development', 'demos'))
 
 # Import constants for string literals
-from src.core.constants import (
-    APP_NAME, JSON_FILES_FILTER, IMPORT_ERROR, SECURITY_TEST,
-    SUGGESTED_SOLUTIONS_HEADER
-)
+from src.rfu.core.constants import (APP_NAME, IMPORT_ERROR, JSON_FILES_FILTER,
+                                    SECURITY_TEST, SUGGESTED_SOLUTIONS_HEADER)
+
 
 # Initialize database and logging systems
 def initialize_database_system():
@@ -42,7 +45,8 @@ def initialize_database_system():
         
         # Import and initialize database manager with validation
         try:
-            from standalone_database_manager import get_database_manager
+            from scripts.maintenance.standalone_database_manager import \
+                get_database_manager
             db_manager = get_database_manager()
             
             # Validate database connection
@@ -81,20 +85,20 @@ DATABASE_AVAILABLE = initialize_database_system()
 
 # Import the enhanced PDF tools widget
 try:
-    from enhanced_pdf_tools_widget import EnhancedPDFToolsWidget
+    from scripts.development.demos.enhanced_pdf_tools_widget import \
+        EnhancedPDFToolsWidget
     ENHANCED_PDF_TOOLS_AVAILABLE = True
 except ImportError as e:
     print(f"Enhanced PDF Tools not available: {e}")
     ENHANCED_PDF_TOOLS_AVAILABLE = False
 
 try:
-    from PyQt5.QtWidgets import (
-        QApplication, QMainWindow, QLabel, QPushButton, QVBoxLayout, 
-        QWidget, QHBoxLayout, QGridLayout, QScrollArea, QFrame,
-        QTabWidget, QGroupBox, QMessageBox, QFileDialog
-    )
     from PyQt5.QtCore import Qt, pyqtSlot
     from PyQt5.QtGui import QFont, QIcon
+    from PyQt5.QtWidgets import (QApplication, QFileDialog, QFrame,
+                                 QGridLayout, QGroupBox, QHBoxLayout, QLabel,
+                                 QMainWindow, QMessageBox, QPushButton,
+                                 QScrollArea, QTabWidget, QVBoxLayout, QWidget)
     
     class RFUMainWindow(QMainWindow):
         def __init__(self):
@@ -109,7 +113,8 @@ try:
             self.database_available = DATABASE_AVAILABLE
             if self.database_available:
                 try:
-                    from standalone_database_manager import get_database_manager
+                    from scripts.maintenance.standalone_database_manager import \
+                        get_database_manager
                     self.db_manager = get_database_manager()
                     self.logger = logging.getLogger('RFU.MainWindow')
                     self.logger.info("Main window database tracking enabled")
@@ -261,8 +266,8 @@ try:
             """Create the comprehensive application menu bar."""
             try:
                 # Import the menu manager
-                from gui.menu_manager import MenuManager
-                
+                from src.rfu.gui.menu_manager import MenuManager
+
                 # Initialize menu manager for main window
                 self.menu_manager = MenuManager(self)
                 menubar = self.menu_manager.create_standard_menubar("main")
@@ -434,6 +439,7 @@ try:
             if file_path:
                 try:
                     import json
+
                     from PyQt5.QtCore import QSettings
                     
                     settings = QSettings("RFU", "MainApplication")
@@ -462,6 +468,7 @@ try:
             if file_path:
                 try:
                     import json
+
                     from PyQt5.QtCore import QSettings
                     
                     with open(file_path, 'r', encoding='utf-8') as f:
@@ -580,6 +587,7 @@ try:
                 ("Catalog Files", "Create and manage file catalogs", self.open_catalog),
                 ("Rename Files", "Batch rename files and folders", self.open_rename),
                 ("Organize Files", "Automatically organize files by type/date", self.open_organize),
+                ("Advanced Folders", "Configure smart folder monitoring and search", self.open_advanced_folders),
             ])
             tab_widget.addTab(file_mgmt_tab, "File Management")
             
@@ -794,61 +802,66 @@ try:
         # Tool launcher methods
         def open_file_finder(self):
             """Open File Finder tool."""
-            self.launch_tool("File Finder", "src.utilities.file_management.file_finder", "FileFinderGUI")
+            self.launch_tool("File Finder", "src.tools.file_management.file_finder", "FileFinderGUI")
         
         def open_catalog(self):
             """Open Catalog tool."""
-            self.launch_tool("Catalog", "src.utilities.file_management.catalog", "CatalogWindow")
+            self.launch_tool("Catalog", "src.tools.file_management.catalog", "CatalogWindow")
         
         def open_rename(self):
             """Open Rename tool."""
-            self.launch_tool("Rename", "src.utilities.file_management.rename", "RenameWindow")
+            self.launch_tool("Rename", "src.tools.file_management.rename", "RenameWindow")
             
         def open_organize(self):
             """Open Organize tool."""
-            self.launch_tool("Organize", "src.utilities.file_management.organize", "OrganizeWindow")
+            self.launch_tool("Organize", "src.tools.file_management.organize", "OrganizeWindow")
+            
+        def open_advanced_folders(self):
+            """Open Advanced Folders tool."""
+            self.launch_tool("Advanced Folders", "src.utilities.file_management.advanced_folders.advanced_folders_main", "AdvancedFoldersGUI")
             
         def open_cmsd(self):
             """Open Copy/Move/Sync/Delete tool."""
-            self.launch_tool("CMSD", "src.utilities.file_operations.cmsd", "CopyMoveSyncDeleteWindow")
+            self.launch_tool("CMSD", "src.tools.file_operations.cmsd", "CopyMoveSyncDeleteWindow")
             
         def open_compress(self):
             """Open Compress/Decompress tool."""
-            self.launch_tool("Compress", "src.utilities.file_operations.compression", "CompressDecompressApp")
+            self.launch_tool("Compress", "src.tools.file_operations.compression", "CompressDecompressApp")
             
         def open_file_splitter(self):
             """Open File Splitter tool."""
-            self.launch_tool("File Splitter", "src.utilities.file_operations.file_splitter", "FileSplitJoinGUI")
+            self.launch_tool("File Splitter", "src.tools.file_operations.file_splitter", "FileSplitJoinGUI")
             
         def open_sync(self):
             """Open Sync tool."""
-            self.launch_tool("Sync", "src.utilities.file_operations.synchronization_backup.sync", "SyncWindow")
+            self.launch_tool("Sync", "src.tools.file_operations.synchronization_backup.sync", "SyncWindow")
             
         def open_enhanced_editor(self):
             """Open Enhanced Editor tool."""
-            self.launch_tool("Enhanced Editor", "src.utilities.file_operations.enhanced_editor.enhanced_editor", "EnhancedEditor")
+            self.launch_tool("Enhanced Editor", "src.tools.file_operations.enhanced_editor.enhanced_editor", "EnhancedEditor")
             
         def open_size_analyzer(self):
             """Open Size Analyzer tool."""
-            self.launch_tool("Size Analyzer", "src.utilities.analysis.size_analyzer", "SizeAnalyzerGUI")
+            self.launch_tool("Size Analyzer", "src.tools.analysis.size_analyzer", "SizeAnalyzerGUI")
             
         def open_duplicate_finder(self):
             """Open Duplicate Finder tool."""
-            self.launch_tool("Duplicate Finder", "src.utilities.analysis.find_duplicate_files", "DuplicateFinderApp")
+            self.launch_tool("Duplicate Finder", "src.tools.analysis.find_duplicate_files", "DuplicateFinderApp")
             
         def open_checksum(self):
             """Open Checksum tool."""
-            self.launch_tool("Checksum", "src.utilities.analysis.check_sum", "ChecksumGUI")
+            self.launch_tool("Checksum", "src.tools.analysis.check_sum", "ChecksumGUI")
             
         def open_empty_folders(self):
             """Open Empty Folders tool."""
-            self.launch_tool("Empty Folders", "src.utilities.analysis.empty_folders", "EmptyFoldersGUI")
+            self.launch_tool("Empty Folders", "src.tools.analysis.empty_folders", "EmptyFoldersGUI")
             
         def open_security_preferences(self):
             """Open Security Preferences dialog."""
             try:
-                from src.rfu.gui.security_preferences_dialog import SecurityPreferencesDialog
-                
+                from src.rfu.gui.dialogs.security_preferences_dialog import \
+                    SecurityPreferencesDialog
+
                 # Check if dialog is already open
                 if hasattr(self, 'security_preferences_dialog') and self.security_preferences_dialog:
                     self.security_preferences_dialog.show()
@@ -882,35 +895,35 @@ try:
         
         def open_encrypt_decrypt(self):
             """Open Encrypt/Decrypt tool."""
-            self.launch_tool("Encrypt/Decrypt", "src.utilities.security.en_and_decrypt", "EnAndDecryptGUI")
+            self.launch_tool("Encrypt/Decrypt", "src.tools.security.en_and_decrypt", "EnAndDecryptGUI")
             
         def open_secure_delete(self):
             """Open Secure Delete tool."""
-            self.launch_tool("Secure Delete", "src.utilities.security.secure_delete", "SecureDeleteGUI")
+            self.launch_tool("Secure Delete", "src.tools.security.secure_delete", "SecureDeleteGUI")
             
         def open_permissions(self):
             """Open Permissions Editor tool."""
-            self.launch_tool("Permissions", "src.utilities.system.permissions_editor", "PermissionsEditorGUI")
+            self.launch_tool("Permissions", "src.tools.system.permissions_editor", "PermissionsEditorGUI")
             
         def open_image_metadata(self):
             """Open Image Metadata Editor tool."""
-            self.launch_tool("Image Metadata", "src.utilities.metadata.image_metadata", "ImageMetadataEditorGUI")
+            self.launch_tool("Image Metadata", "src.tools.metadata.image_metadata", "ImageMetadataEditorGUI")
             
         def open_office_metadata(self):
             """Open Office Metadata Editor tool."""
             self.launch_tool("Office Metadata", 
-                           "src.utilities.metadata.office_meta_data_editor", 
+                           "src.tools.metadata.office_meta_data_editor", 
                            "OfficeMetaDataEditorGUI")
             
         def open_file_touch(self):
             """Open File Touch tool."""
             self.launch_tool("File Touch", 
-                           "src.utilities.file_operations.file_touch", 
+                           "src.tools.file_operations.file_touch", 
                            "FileTouchWindow")
             
         def open_pdf_tools(self):
             """Open PDF Tools."""
-            self.launch_tool("PDF Tools", "enhanced_pdf_tools_widget", "EnhancedPDFToolsWidget")
+            self.launch_tool("PDF Tools", "scripts.development.demos.enhanced_pdf_tools_widget", "EnhancedPDFToolsWidget")
             
         def open_pdf_links(self):
             """Open PDF Links Extractor."""
@@ -923,45 +936,45 @@ try:
         # Network Tools
         def open_network_connectivity(self):
             """Open Network Connectivity tool."""
-            self.launch_tool("Network Connectivity", "src.utilities.network.network_connectivity", "NetworkConnectivityGUI")
+            self.launch_tool("Network Connectivity", "src.tools.network.network_connectivity", "NetworkConnectivityGUI")
         
         def open_network_scanner(self):
             """Open Network Scanner tool."""
-            self.launch_tool("Network Scanner", "src.utilities.network.network_scanner", "NetworkScannerGUI")
+            self.launch_tool("Network Scanner", "src.tools.network.network_scanner", "NetworkScannerGUI")
         
         def open_network_transfer(self):
             """Open Network Transfer tool."""
-            self.launch_tool("Network Transfer", "src.utilities.network.network_transfer", "NetworkTransferGUI")
+            self.launch_tool("Network Transfer", "src.tools.network.network_transfer", "NetworkTransferGUI")
         
         def open_bookmark_manager(self):
             """Open Bookmark Manager tool."""
-            self.launch_tool("Bookmark Manager", "src.utilities.network.bookmark_manager", "BookmarkManagerGUI")
+            self.launch_tool("Bookmark Manager", "src.tools.network.bookmark_manager", "BookmarkManagerGUI")
         
         # Privacy Tools
         def open_privacy_cleaner(self):
             """Open Privacy Cleaner tool."""
-            self.launch_tool("Privacy Cleaner", "src.utilities.privacy.privacy_tools_simple", "PrivacyCleanerGUI")
+            self.launch_tool("Privacy Cleaner", "src.tools.privacy.privacy_tools_simple", "PrivacyCleanerGUI")
         
         def open_data_anonymizer(self):
             """Open Data Anonymizer tool."""
-            self.launch_tool("Data Anonymizer", "src.utilities.privacy.data_anonymizer", "DataAnonymizerGUI")
+            self.launch_tool("Data Anonymizer", "src.tools.privacy.data_anonymizer", "DataAnonymizerGUI")
         
         # System Tools
         def open_enhanced_clipboard(self):
             """Open Enhanced Clipboard Manager tool."""
-            self.launch_tool("Enhanced Clipboard Manager", "enhanced_clipboard_system_integration", "EnhancedClipboardGUI")
+            self.launch_tool("Enhanced Clipboard Manager", "scripts.development.demos.enhanced_clipboard_system_integration", "EnhancedClipboardGUI")
         
         def open_system_diagnostics(self):
             """Open System Diagnostics tool."""
-            self.launch_tool("System Diagnostics", "src.utilities.system.diagnostics_monitoring", "SystemDiagnosticsGUI")
+            self.launch_tool("System Diagnostics", "src.tools.system.diagnostics_monitoring", "SystemDiagnosticsGUI")
         
         def open_system_cleanup(self):
             """Open System Cleanup tool."""
-            self.launch_tool("System Cleanup", "src.utilities.system.system_cleanup", "SystemCleanupGUI")
+            self.launch_tool("System Cleanup", "src.tools.system.system_cleanup", "SystemCleanupGUI")
         
         def open_software_maintenance(self):
             """Open Software Maintenance tool."""
-            self.launch_tool("Software Maintenance", "src.utilities.system.software_maintenance", "SoftwareMaintenanceGUI")
+            self.launch_tool("Software Maintenance", "src.tools.system.software_maintenance", "SoftwareMaintenanceGUI")
         
         # Security Menu Action Methods
         def open_migration_dialog(self):
@@ -1363,7 +1376,7 @@ try:
             """Strategy 3: Dynamic import using importlib."""
             try:
                 import importlib
-                
+
                 # Try different module path variations
                 module_variations = [
                     module_name,
@@ -1387,11 +1400,11 @@ try:
             try:
                 # Try utilities paths first (new location)
                 utilities_paths = [
-                    f"src.utilities.file_operations.catalog.{module_name}",
-                    f"src.utilities.file_operations.file_touch.{module_name}",
-                    f"src.utilities.file_operations.organize.{module_name}",
-                    f"src.utilities.file_operations.file_finder.{module_name}",
-                    f"src.utilities.file_operations.compression.{module_name}",
+                    f"src.tools.file_operations.catalog.{module_name}",
+                    f"src.tools.file_operations.file_touch.{module_name}",
+                    f"src.tools.file_operations.organize.{module_name}",
+                    f"src.tools.file_operations.file_finder.{module_name}",
+                    f"src.tools.file_operations.compression.{module_name}",
                 ]
                 
                 for utilities_path in utilities_paths:
