@@ -19,21 +19,19 @@ Consolidated from:
 - rfuhub.py (core functionality and fallback mechanisms)
 """
 
-import sys
 import os
+import sys
 from datetime import datetime
-from typing import Optional, List, Dict, Any
+from typing import Any, Dict, List, Optional
 
 # Core PyQt5 imports with graceful fallback
 try:
-    from PyQt5.QtWidgets import (
-        QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, 
-        QPushButton, QLabel, QTabWidget, QTextEdit,
-        QStatusBar, QApplication, QGridLayout, QSizePolicy,
-        QMessageBox
-    )
-    from PyQt5.QtCore import Qt, QObject, pyqtSignal
+    from PyQt5.QtCore import QObject, Qt, pyqtSignal
     from PyQt5.QtGui import QFont, QIcon
+    from PyQt5.QtWidgets import (QApplication, QGridLayout, QHBoxLayout,
+                                 QLabel, QMainWindow, QMessageBox, QPushButton,
+                                 QSizePolicy, QStatusBar, QTabWidget,
+                                 QTextEdit, QVBoxLayout, QWidget)
     PYQT5_AVAILABLE = True
 except ImportError:
     PYQT5_AVAILABLE = False
@@ -44,14 +42,15 @@ except ImportError:
 
 # Core application imports with fallback for direct execution
 try:
-    from .log_manager import get_log_manager
     from .config_manager import get_config_manager
     from .core.error_handler import error_handler
+    from .log_manager import get_log_manager
 except ImportError:
     # Fallback for direct execution
     try:
-        from log_manager import get_log_manager
         from config_manager import get_config_manager
+        from log_manager import get_log_manager
+
         from core.error_handler import error_handler
     except ImportError:
         # Create minimal fallbacks
@@ -70,11 +69,10 @@ except ImportError:
 
 # Import constants for string literals with fallback
 try:
-    from core.constants import (
-        PDF_TOOLS, SEGOE_UI_FONT, TITLE_STYLE_COLOR, 
-        SUBTITLE_STYLE_COLOR, SECTION_MARGIN_STYLE,
-        PRIVACY_TOOLS, ANALYSIS_TOOLS, UTILITIES_TOOLS, SETTINGS_TOOLS
-    )
+    from core.constants import (ANALYSIS_TOOLS, PDF_TOOLS, PRIVACY_TOOLS,
+                                SECTION_MARGIN_STYLE, SEGOE_UI_FONT,
+                                SETTINGS_TOOLS, SUBTITLE_STYLE_COLOR,
+                                TITLE_STYLE_COLOR, UTILITIES_TOOLS)
 except ImportError:
     # Define fallback constants
     PDF_TOOLS = "PDF Tools"
@@ -598,6 +596,77 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
         self._update_status_bar("Import Data - Feature coming soon...")
         self.logger.info("Import Data requested")
     
+    def launch_tool(self, tool_name: str, *args, **kwargs):
+        """
+        Generic tool launcher interface for enterprise integration testing.
+        
+        This method provides a unified interface for launching any tool in the RFU suite.
+        It maps tool names to their corresponding open_ methods.
+        
+        Args:
+            tool_name (str): Name of the tool to launch
+            *args: Additional arguments to pass to the tool
+            **kwargs: Additional keyword arguments to pass to the tool
+            
+        Returns:
+            bool: True if tool launched successfully, False otherwise
+        """
+        try:
+            # Normalize tool name to method name
+            method_name = f"open_{tool_name.lower().replace(' ', '_').replace('-', '_')}"
+            
+            # Check if method exists
+            if hasattr(self, method_name):
+                method = getattr(self, method_name)
+                if callable(method):
+                    method(*args, **kwargs)
+                    self.logger.info(f"Successfully launched tool: {tool_name}")
+                    return True
+                else:
+                    self.logger.error(f"Tool method {method_name} is not callable")
+                    return False
+            else:
+                # Try alternative naming patterns
+                alternative_names = [
+                    f"open_{tool_name.lower()}",
+                    f"start_{tool_name.lower()}",
+                    f"show_{tool_name.lower()}",
+                    tool_name.lower().replace(' ', '_')
+                ]
+                
+                for alt_name in alternative_names:
+                    if hasattr(self, alt_name):
+                        method = getattr(self, alt_name)
+                        if callable(method):
+                            method(*args, **kwargs)
+                            self.logger.info(f"Successfully launched tool: {tool_name} via {alt_name}")
+                            return True
+                
+                self.logger.error(f"Tool method not found for: {tool_name}")
+                return False
+                
+        except Exception as e:
+            self.logger.error(f"Error launching tool {tool_name}: {str(e)}")
+            return False
+    
+    def get_available_tools(self):
+        """
+        Get list of available tools for enterprise testing.
+        
+        Returns:
+            list: List of available tool names
+        """
+        import inspect
+        tools = []
+        
+        # Find all open_ methods
+        for name, method in inspect.getmembers(self, predicate=inspect.ismethod):
+            if name.startswith('open_') and name != 'open_file':
+                tool_name = name[5:].replace('_', ' ').title()
+                tools.append(tool_name)
+        
+        return sorted(tools)
+    
     def print_document(self):
         """Print current document."""
         self._update_status_bar("Print Document - Feature coming soon...")
@@ -1023,7 +1092,8 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
     def open_file_splitter(self):
         """Open file splitter tool."""
         try:
-            from ..utilities.file_operations.file_splitter import FileSplitterGUI
+            from ..utilities.file_operations.file_splitter import \
+                FileSplitterGUI
             tool = FileSplitterGUI()
             tool.show()
             self._update_status_bar("File Splitter opened")
@@ -1035,7 +1105,8 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
     def open_secure_delete(self):
         """Open secure delete tool."""
         try:
-            from ..utilities.file_operations.secure_delete import SecureDeleteGUI
+            from ..utilities.file_operations.secure_delete import \
+                SecureDeleteGUI
             tool = SecureDeleteGUI()
             tool.show()
             self._update_status_bar("Secure Delete opened")
@@ -1059,7 +1130,8 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
     def open_duplicate_finder(self):
         """Open duplicate finder tool."""
         try:
-            from ..utilities.file_operations.duplicate_finder import DuplicateFinderGUI
+            from ..utilities.file_operations.duplicate_finder import \
+                DuplicateFinderGUI
             tool = DuplicateFinderGUI()
             tool.show()
             self._update_status_bar("Duplicate Finder opened")
@@ -1220,7 +1292,8 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
     def open_password_generator(self):
         """Open password generator tool."""
         try:
-            from ..utilities.security.password_generator import PasswordGeneratorGUI
+            from ..utilities.security.password_generator import \
+                PasswordGeneratorGUI
             tool = PasswordGeneratorGUI()
             tool.show()
             self._update_status_bar("Password Generator opened")
@@ -1232,7 +1305,8 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
     def open_security_preferences(self):
         """Open security preferences tool."""
         try:
-            from ..utilities.security.security_preferences import SecurityPreferencesGUI
+            from ..utilities.security.security_preferences import \
+                SecurityPreferencesGUI
             tool = SecurityPreferencesGUI()
             tool.show()
             self._update_status_bar("Security Preferences opened")
@@ -1268,7 +1342,8 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
     def open_clipboard_manager(self):
         """Open clipboard manager tool."""
         try:
-            from ..utilities.system.clipboard_manager import ClipboardManagerGUI
+            from ..utilities.system.clipboard_manager import \
+                ClipboardManagerGUI
             tool = ClipboardManagerGUI()
             tool.show()
             self._update_status_bar("Clipboard Manager opened")
@@ -1398,7 +1473,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
 def main():
     """Main function to run the RFU Hub."""
     import sys
-    
+
     # Create QApplication if it doesn't exist
     app = QtWidgets.QApplication.instance()
     if app is None:

@@ -1,0 +1,75 @@
+{
+  "test_execution_time": 6.262529134750366,
+  "platform_info": {
+    "python_version": "3.13.5 (tags/v3.13.5:6cb20a2, Jun 11 2025, 16:15:46) [MSC v.1943 64 bit (AMD64)]",
+    "platform": "Windows-11-10.0.26100-SP0",
+    "architecture": [
+      "64bit",
+      "WindowsPE"
+    ]
+  },
+  "test_categories": {
+    "import_tests": {
+      "PyQt5.QtWidgets": "TestResult(test_name='import_PyQt5.QtWidgets', status='PASS', execution_time=0.039118289947509766, error_message=None, additional_info={'module_file': 'C:\\\\Users\\\\HP1\\\\AppData\\\\Local\\\\Programs\\\\Python\\\\Python313\\\\Lib\\\\site-packages\\\\PyQt5\\\\QtWidgets.pyd'})",
+      "PyQt5.QtCore": "TestResult(test_name='import_PyQt5.QtCore', status='PASS', execution_time=1.0013580322265625e-05, error_message=None, additional_info={'module_file': 'C:\\\\Users\\\\HP1\\\\AppData\\\\Local\\\\Programs\\\\Python\\\\Python313\\\\Lib\\\\site-packages\\\\PyQt5\\\\QtCore.pyd'})",
+      "PyQt5.QtGui": "TestResult(test_name='import_PyQt5.QtGui', status='PASS', execution_time=3.337860107421875e-06, error_message=None, additional_info={'module_file': 'C:\\\\Users\\\\HP1\\\\AppData\\\\Local\\\\Programs\\\\Python\\\\Python313\\\\Lib\\\\site-packages\\\\PyQt5\\\\QtGui.pyd'})",
+      "psutil": "TestResult(test_name='import_psutil', status='PASS', execution_time=0.016913175582885742, error_message=None, additional_info={'module_file': 'C:\\\\Users\\\\HP1\\\\AppData\\\\Local\\\\Programs\\\\Python\\\\Python313\\\\Lib\\\\site-packages\\\\psutil\\\\__init__.py'})",
+      "watchdog.observers": "TestResult(test_name='import_watchdog.observers', status='PASS', execution_time=0.013657331466674805, error_message=None, additional_info={'module_file': 'C:\\\\Users\\\\HP1\\\\AppData\\\\Local\\\\Programs\\\\Python\\\\Python313\\\\Lib\\\\site-packages\\\\watchdog\\\\observers\\\\__init__.py'})",
+      "watchdog.events": "TestResult(test_name='import_watchdog.events', status='PASS', execution_time=5.0067901611328125e-06, error_message=None, additional_info={'module_file': 'C:\\\\Users\\\\HP1\\\\AppData\\\\Local\\\\Programs\\\\Python\\\\Python313\\\\Lib\\\\site-packages\\\\watchdog\\\\events.py'})",
+      "send2trash": "TestResult(test_name='import_send2trash', status='PASS', execution_time=0.08288168907165527, error_message=None, additional_info={'module_file': 'C:\\\\Users\\\\HP1\\\\AppData\\\\Local\\\\Programs\\\\Python\\\\Python313\\\\Lib\\\\site-packages\\\\send2trash\\\\__init__.py'})",
+      "PIL": "TestResult(test_name='import_PIL_Image', status='FAIL', execution_time=0.0012104511260986328, error_message=\"module 'PIL' has no attribute 'Image'\", additional_info={'error_type': 'AttributeError'})",
+      "chardet": "TestResult(test_name='import_chardet', status='PASS', execution_time=0.021395206451416016, error_message=None, additional_info={'module_file': 'C:\\\\Users\\\\HP1\\\\AppData\\\\Local\\\\Programs\\\\Python\\\\Python313\\\\Lib\\\\site-packages\\\\chardet\\\\__init__.py'})",
+      "magic": "TestResult(test_name='import_magic', status='FAIL', execution_time=0.010955810546875, error_message='failed to find libmagic.  Check your installation', additional_info={'error_type': 'ImportError'})",
+      "win32api": "TestResult(test_name='import_win32api', status='PASS', execution_time=5.245208740234375e-06, error_message=None, additional_info={'module_file': 'C:\\\\Users\\\\HP1\\\\AppData\\\\Local\\\\Programs\\\\Python\\\\Python313\\\\Lib\\\\site-packages\\\\win32\\\\win32api.pyd'})",
+      "wmi": "TestResult(test_name='import_wmi', status='PASS', execution_time=0.05961036682128906, error_message=None, additional_info={'module_file': 'C:\\\\Users\\\\HP1\\\\AppData\\\\Local\\\\Programs\\\\Python\\\\Python313\\\\Lib\\\\site-packages\\\\wmi.py'})",
+      "natsort": "TestResult(test_name='import_natsort', status='PASS', execution_time=0.012576818466186523, error_message=None, additional_info={'module_file': 'C:\\\\Users\\\\HP1\\\\AppData\\\\Local\\\\Programs\\\\Python\\\\Python313\\\\Lib\\\\site-packages\\\\natsort\\\\__init__.py'})",
+      "humanize": "TestResult(test_name='import_humanize', status='PASS', execution_time=0.003511667251586914, error_message=None, additional_info={'module_file': 'C:\\\\Users\\\\HP1\\\\AppData\\\\Local\\\\Programs\\\\Python\\\\Python313\\\\Lib\\\\site-packages\\\\humanize\\\\__init__.py'})",
+      "rapidfuzz": "TestResult(test_name='import_rapidfuzz', status='PASS', execution_time=0.01955866813659668, error_message=None, additional_info={'module_file': 'C:\\\\Users\\\\HP1\\\\AppData\\\\Local\\\\Programs\\\\Python\\\\Python313\\\\Lib\\\\site-packages\\\\rapidfuzz\\\\__init__.py'})"
+    },
+    "version_tests": {
+      "PyQt5": "TestResult(test_name='version_PyQt5', status='PASS', execution_time=0.5232434272766113, error_message=None, additional_info={'installed_version': '5.15.11', 'required_version': '5.15.0'})",
+      "psutil": "TestResult(test_name='version_psutil', status='PASS', execution_time=0.5521554946899414, error_message=None, additional_info={'installed_version': '7.0.0', 'required_version': '5.8.0'})",
+      "watchdog": "TestResult(test_name='version_watchdog', status='PASS', execution_time=0.5314548015594482, error_message=None, additional_info={'installed_version': '6.0.0', 'required_version': '2.1.0'})",
+      "send2trash": "TestResult(test_name='version_send2trash', status='PASS', execution_time=0.5331852436065674, error_message=None, additional_info={'installed_version': '1.8.3', 'required_version': '1.8.0'})",
+      "pillow": "TestResult(test_name='version_pillow', status='PASS', execution_time=0.5190050601959229, error_message=None, additional_info={'installed_version': '11.3.0', 'required_version': '8.0.0'})",
+      "chardet": "TestResult(test_name='version_chardet', status='PASS', execution_time=0.5467479228973389, error_message=None, additional_info={'installed_version': '5.2.0', 'required_version': '4.0.0'})",
+      "python-magic": "TestResult(test_name='version_python-magic', status='PASS', execution_time=0.5169665813446045, error_message=None, additional_info={'installed_version': '0.4.27', 'required_version': '0.4.24'})",
+      "natsort": "TestResult(test_name='version_natsort', status='PASS', execution_time=0.5238189697265625, error_message=None, additional_info={'installed_version': '8.4.0', 'required_version': '7.1.0'})",
+      "humanize": "TestResult(test_name='version_humanize', status='PASS', execution_time=0.5060744285583496, error_message=None, additional_info={'installed_version': '4.13.0', 'required_version': '3.0.0'})",
+      "rapidfuzz": "TestResult(test_name='version_rapidfuzz', status='PASS', execution_time=0.5192127227783203, error_message=None, additional_info={'installed_version': '3.14.1', 'required_version': '1.6.0'})"
+    },
+    "functionality_tests": {
+      "pyqt5": "TestResult(test_name='pyqt5_functionality', status='PASS', execution_time=0.016161441802978516, error_message=None, additional_info={'qt_version': '3.13.5150.1013'})",
+      "psutil": "TestResult(test_name='psutil_functionality', status='PASS', execution_time=0.10076069831848145, error_message=None, additional_info={'cpu_percent': 14.1, 'memory_total': 33652871168, 'disk_total': 504396509184})",
+      "watchdog": "TestResult(test_name='watchdog_functionality', status='PASS', execution_time=0.10176825523376465, error_message=None, additional_info={'events_captured': 0})",
+      "send2trash": "TestResult(test_name='send2trash_functionality', status='PASS', execution_time=0.002199888229370117, error_message=None, additional_info={'function_callable': True})",
+      "pillow": "TestResult(test_name='pillow_functionality', status='PASS', execution_time=0.31462812423706055, error_message=None, additional_info={'image_size': (100, 100), 'supported_formats': 70})",
+      "chardet": "TestResult(test_name='chardet_functionality', status='PASS', execution_time=0.0006935596466064453, error_message=None, additional_info={'detection_count': 3, 'confidence_scores': [1.0, 0.7525, 1.0]})",
+      "python_magic": "TestResult(test_name='python_magic_functionality', status='FAIL', execution_time=0.0041768550872802734, error_message='failed to find libmagic.  Check your installation', additional_info={})"
+    },
+    "integration_tests": {
+      "pyqt5_watchdog": "TestResult(test_name='pyqt5_watchdog_integration', status='PASS', execution_time=0.0001533031463623047, error_message=None, additional_info={'signal_available': True})",
+      "pillow_chardet": "TestResult(test_name='pillow_chardet_integration', status='PASS', execution_time=0.02813720703125, error_message=None, additional_info={'image_size': (200, 100), 'encoding_detected': 'utf-8', 'confidence': 0.938125})"
+    },
+    "performance_tests": {
+      "pyqt5_startup": "TestResult(test_name='pyqt5_startup_performance', status='PASS', execution_time=0.0018630027770996094, error_message=None, additional_info={'startup_time': 0.0018589496612548828})",
+      "watchdog_startup": "TestResult(test_name='watchdog_startup_performance', status='PASS', execution_time=0.0010602474212646484, error_message=None, additional_info={'startup_time': 0.0006740093231201172})",
+      "pillow_processing": "TestResult(test_name='pillow_processing_performance', status='PASS', execution_time=0.013101577758789062, error_message=None, additional_info={'processing_time': 0.013098001480102539, 'images_processed': 100, 'avg_time_per_image': 0.0001309800148010254})",
+      "psutil_monitoring": "TestResult(test_name='psutil_monitoring_performance', status='PASS', execution_time=0.016690492630004883, error_message=None, additional_info={'monitoring_time': 0.01668691635131836, 'calls_made': 300, 'avg_time_per_call': 5.5623054504394534e-05})"
+    },
+    "security_tests": {
+      "send2trash_security": "TestResult(test_name='send2trash_security', status='PASS', execution_time=3.814697265625e-06, error_message=None, additional_info={'function_callable': True, 'secure_deletion': True})",
+      "path_security": "TestResult(test_name='path_security', status='PASS', execution_time=0.0013213157653808594, error_message=None, additional_info={'paths_tested': 4})"
+    }
+  },
+  "summary": {
+    "total_tests": 0,
+    "passed_tests": 0,
+    "failed_tests": 0,
+    "error_tests": 0,
+    "skipped_tests": 0,
+    "success_rate": 0,
+    "total_execution_time": 0,
+    "average_test_time": 0
+  }
+}

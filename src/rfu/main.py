@@ -1,5 +1,5 @@
-import sys
 import os
+import sys
 from pathlib import Path
 
 # Add the src directory to Python path for relative imports
@@ -11,9 +11,9 @@ from PyQt5.QtWidgets import QApplication
 
 # Import with fallback for direct execution
 try:
-    from .rfuhub import RFUHub
+    from .hub import RFUHub
 except ImportError:
-    from rfuhub import RFUHub
+    from hub import RFUHub
 
 try:
     from .core.error_handler import error_handler

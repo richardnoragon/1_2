@@ -1,0 +1,123 @@
+{
+  "integration_test_summary": {
+    "execution_timestamp": "2025-09-13T12:55:51.630937",
+    "total_tests": 4,
+    "successful_tests": 4,
+    "failed_tests": 0,
+    "success_rate": 1.0,
+    "blockers_count": 5,
+    "critical_issues_count": 5
+  },
+  "detailed_metrics": {
+    "execution_times": {
+      "tool_launcher_framework": {
+        "start": 1757760951.5302646,
+        "end": 1757760951.5340965,
+        "duration": 0.0038318634033203125,
+        "success": true
+      },
+      "file_context_passing": {
+        "start": 1757760951.534109,
+        "end": 1757760951.5448518,
+        "duration": 0.010742664337158203,
+        "success": true
+      },
+      "schema_creation": {
+        "start": 1757760951.5779154,
+        "end": 1757760951.608387,
+        "duration": 0.0304715633392334,
+        "success": true
+      },
+      "data_integrity": {
+        "start": 1757760951.6084013,
+        "end": 1757760951.6271303,
+        "duration": 0.018728971481323242,
+        "success": true
+      }
+    },
+    "memory_usage": {},
+    "performance_benchmarks": {},
+    "error_counts": {},
+    "success_rates": {},
+    "resource_utilization": {}
+  },
+  "blockers": [
+    {
+      "test_name": "tool_launcher_framework",
+      "description": "RFU imports not available - core framework missing",
+      "severity": "critical",
+      "timestamp": "2025-09-13T12:55:51.530331",
+      "requires_resolution": true
+    },
+    {
+      "test_name": "tool_integration_suite",
+      "description": "Success rate 50.0% below 90% threshold",
+      "severity": "critical",
+      "timestamp": "2025-09-13T12:55:51.546766",
+      "requires_resolution": true
+    },
+    {
+      "test_name": "data_integrity",
+      "description": "Transaction rollback failed",
+      "severity": "high",
+      "timestamp": "2025-09-13T12:55:51.626386",
+      "requires_resolution": true
+    },
+    {
+      "test_name": "database_migration_suite",
+      "description": "Success rate 50.0% below 100% threshold",
+      "severity": "critical",
+      "timestamp": "2025-09-13T12:55:51.627539",
+      "requires_resolution": true
+    },
+    {
+      "test_name": "integration_test_suite",
+      "description": "Critical failure in test suite execution: [WinError 32] Der Prozess kann nicht auf die Datei zugreifen, da sie von einem anderen Prozess verwendet wird: 'C:\\\\Users\\\\HP1\\\\AppData\\\\Local\\\\Temp\\\\tmp58_v4dne.db'",
+      "severity": "critical",
+      "timestamp": "2025-09-13T12:55:51.630543",
+      "requires_resolution": true
+    }
+  ],
+  "critical_issues": [
+    {
+      "test_name": "tool_launcher_framework",
+      "description": "RFU imports not available - core framework missing",
+      "severity": "critical",
+      "timestamp": "2025-09-13T12:55:51.530331",
+      "requires_resolution": true
+    },
+    {
+      "test_name": "tool_integration_suite",
+      "description": "Success rate 50.0% below 90% threshold",
+      "severity": "critical",
+      "timestamp": "2025-09-13T12:55:51.546766",
+      "requires_resolution": true
+    },
+    {
+      "test_name": "data_integrity",
+      "description": "Transaction rollback failed",
+      "severity": "high",
+      "timestamp": "2025-09-13T12:55:51.626386",
+      "requires_resolution": true
+    },
+    {
+      "test_name": "database_migration_suite",
+      "description": "Success rate 50.0% below 100% threshold",
+      "severity": "critical",
+      "timestamp": "2025-09-13T12:55:51.627539",
+      "requires_resolution": true
+    },
+    {
+      "test_name": "integration_test_suite",
+      "description": "Critical failure in test suite execution: [WinError 32] Der Prozess kann nicht auf die Datei zugreifen, da sie von einem anderen Prozess verwendet wird: 'C:\\\\Users\\\\HP1\\\\AppData\\\\Local\\\\Temp\\\\tmp58_v4dne.db'",
+      "severity": "critical",
+      "timestamp": "2025-09-13T12:55:51.630543",
+      "requires_resolution": true
+    }
+  ],
+  "enterprise_compliance": {
+    "no_compromise_standards_applied": true,
+    "zero_tolerance_policy_enforced": true,
+    "deployment_blocking_authority": true
+  }
+}
