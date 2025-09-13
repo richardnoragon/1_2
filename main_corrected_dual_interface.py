@@ -351,9 +351,10 @@ try:
             # Ensure interface configuration sections exist
             interface_sections = {
                 'interface_mode': {
-                    'current_mode': None,  # No default - force dialog on first run
+                    'current_mode': InterfaceMode.DIALOG_HUB.value,
                     'auto_detect_enabled': True,
-                    'remember_choice': False,  # Default to asking every time
+                    'remember_choice': True,
+                    'show_startup_dialog': True,
                     'transition_animations': True,
                     'switch_confirmation': False
                 },
@@ -384,31 +385,26 @@ try:
         def _determine_interface_mode(self):
             """Determine which interface mode to use."""
             if not self.config_manager:
-                # No config manager - show dialog and default to DIALOG_HUB
-                self._show_interface_selection_dialog()
+                self.current_interface_mode = InterfaceMode.DIALOG_HUB
                 return
             
             try:
-                # Check if user has previously made a choice
+                # Check if user has saved preference
                 saved_mode = self.config_manager.get_setting('interface_mode', 'current_mode')
-                remember_choice = self.config_manager.get_setting('interface_mode', 'remember_choice', False)
+                show_startup = self.config_manager.get_setting('interface_mode', 'show_startup_dialog', True)
                 
-                # If user has saved preference and chose to remember it, use saved mode
-                if saved_mode and remember_choice:
+                if saved_mode and not show_startup:
                     try:
                         self.current_interface_mode = InterfaceMode(saved_mode)
-                        print(f"Using remembered interface mode: {saved_mode}")
                         return
                     except ValueError:
-                        # Invalid saved mode, fall through to show dialog
                         pass
                 
-                # Show interface selection dialog (first time or user chose not to remember)
+                # Show interface selection dialog
                 self._show_interface_selection_dialog()
                 
             except (AttributeError, KeyError):
-                # Config error - show dialog with default
-                self._show_interface_selection_dialog()
+                self.current_interface_mode = InterfaceMode.DIALOG_HUB
         
         def _show_interface_selection_dialog(self):
             """Show interface selection dialog on startup."""
@@ -416,27 +412,13 @@ try:
                 dialog = InterfaceSelectionDialog(self)
                 if dialog.show_selection_dialog():
                     self.current_interface_mode = dialog.selected_mode
-                    print(f"Selected interface mode: {dialog.selected_mode.value}")
-                    
-                    if self.config_manager:
+                    if dialog.remember_choice and self.config_manager:
                         try:
-                            # Always save the current mode
                             self.config_manager.set_setting('interface_mode', 'current_mode', 
                                                            self.current_interface_mode.value)
-                            
-                            # Save the remember choice preference
-                            self.config_manager.set_setting('interface_mode', 'remember_choice', 
-                                                           dialog.remember_choice)
-                            
-                            print(f"Remember choice: {dialog.remember_choice}")
-                            
-                        except AttributeError as e:
-                            print(f"Config save error: {e}")
-                else:
-                    # User cancelled - default to DIALOG_HUB
-                    self.current_interface_mode = InterfaceMode.DIALOG_HUB
-                    print("Dialog cancelled - using default Dialog Hub interface")
-                    
+                            self.config_manager.set_setting('interface_mode', 'show_startup_dialog', False)
+                        except AttributeError:
+                            pass
             except Exception as e:
                 print(f"Error showing interface selection: {e}")
                 self.current_interface_mode = InterfaceMode.DIALOG_HUB
