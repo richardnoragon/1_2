@@ -36,9 +36,10 @@
   "privacy_tools": {},
   "software_maintenance": {},
   "interface_mode": {
+    "show_startup_dialog": false,
+    "remember_choice": true,
     "current_mode": "dialog_hub",
     "auto_detect_enabled": true,
-    "remember_choice": true,
     "transition_animations": true,
     "switch_confirmation": false
   },

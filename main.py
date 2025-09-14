@@ -115,104 +115,569 @@ except ImportError as e:
     print(f"Enhanced PDF Tools not available: {e}")
     ENHANCED_PDF_TOOLS_AVAILABLE = False
 
-# Interface selection dialog
+# Import the full-featured multi-pane file explorer
+try:
+    from src.rfu.file_explorer.multi_pane_explorer_repaired import \
+        MultiPaneFileExplorer
+    MULTI_PANE_EXPLORER_AVAILABLE = True
+except ImportError as e:
+    print(f"Full multi-pane explorer not available: {e}")
+    MULTI_PANE_EXPLORER_AVAILABLE = False
+
+# Enhanced Interface selection dialog with comprehensive startup functionality
 class InterfaceSelectionDialog:
-    """Dialog for selecting interface mode on startup."""
+    """Enhanced modal dialog for selecting interface mode on startup with comprehensive styling and error handling."""
     
     def __init__(self, parent=None):
         self.parent = parent
         self.selected_mode = InterfaceMode.DIALOG_HUB
         self.remember_choice = False
         self.workflow_detected = None
+        self.dialog = None
+        self.dialog_radio = None
+        self.pane_radio = None
+        self.remember_checkbox = None
+        
+        # Initialize logging for dialog operations
+        self.logger = logging.getLogger('RFU.InterfaceDialog')
     
     def show_selection_dialog(self):
-        """Show interface selection dialog with recommendations."""
+        """Show comprehensive modal interface selection dialog with enhanced styling and error handling."""
+        try:
+            from PyQt5.QtCore import Qt
+            from PyQt5.QtGui import QFont, QIcon, QPalette, QPixmap
+            from PyQt5.QtWidgets import (QButtonGroup, QCheckBox, QDialog,
+                                         QFrame, QGroupBox, QHBoxLayout,
+                                         QLabel, QPushButton, QRadioButton,
+                                         QSizePolicy, QSpacerItem, QTextEdit,
+                                         QVBoxLayout)
+
+            # Create modal dialog with enhanced properties
+            self.dialog = QDialog(self.parent)
+            self.dialog.setWindowTitle("Choose Your Workspace Interface - Richard's File Utilities")
+            self.dialog.setModal(True)
+            self.dialog.setWindowFlags(Qt.Dialog | Qt.WindowTitleHint | Qt.WindowSystemMenuHint)
+            
+            # Prevent closing without selection
+            self.dialog.closeEvent = self._handle_close_event
+            
+            # Apply comprehensive styling first
+            self._apply_dialog_styling()
+            
+            layout = QVBoxLayout(self.dialog)
+            layout.setSpacing(20)
+            layout.setContentsMargins(30, 30, 30, 30)
+            
+            # Enhanced title section with branding
+            title_frame = self._create_title_section()
+            layout.addWidget(title_frame)
+            
+            # Workflow detection and recommendation section
+            recommendation_frame = self._create_recommendation_section()
+            layout.addWidget(recommendation_frame)
+            
+            # Interface selection section with enhanced styling
+            selection_frame = self._create_selection_section()
+            layout.addWidget(selection_frame)
+            
+            # Settings and preferences section
+            preferences_frame = self._create_preferences_section()
+            layout.addWidget(preferences_frame)
+            
+            # Enhanced button section
+            button_frame = self._create_button_section()
+            layout.addWidget(button_frame)
+            
+            # Force proper sizing after all content is added
+            self.dialog.adjustSize()
+            self.dialog.setFixedSize(720, 600)
+            self.dialog.setMinimumSize(720, 600)
+            self.dialog.setMaximumSize(720, 600)
+            
+            # Ensure dialog appears centered
+            if self.parent:
+                self.dialog.move(
+                    self.parent.x() + (self.parent.width() - 720) // 2,
+                    self.parent.y() + (self.parent.height() - 600) // 2
+                )
+            
+            # Show dialog and handle result with comprehensive error handling
+            return self._execute_dialog()
+            
+        except Exception as e:
+            self.logger.error(f"Error creating interface selection dialog: {e}")
+            self._show_fallback_dialog()
+            return True  # Default to continuing with fallback
+    
+    def _apply_dialog_styling(self):
+        """Apply comprehensive styling to the dialog."""
+        try:
+            self.dialog.setStyleSheet("""
+                QDialog {
+                    background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+                        stop:0 #f8f9fa, stop:1 #e9ecef);
+                    border: 2px solid #dee2e6;
+                    border-radius: 12px;
+                }
+                QGroupBox {
+                    font-weight: bold;
+                    font-size: 14px;
+                    color: #2c3e50;
+                    border: 2px solid #bdc3c7;
+                    border-radius: 8px;
+                    margin-top: 1ex;
+                    padding-top: 10px;
+                    background-color: #ffffff;
+                }
+                QGroupBox::title {
+                    subcontrol-origin: margin;
+                    left: 10px;
+                    padding: 0 5px 0 5px;
+                    background-color: #ffffff;
+                }
+                QRadioButton {
+                    font-weight: bold;
+                    font-size: 14px;
+                    color: #2c3e50;
+                    spacing: 10px;
+                    padding: 5px;
+                }
+                QRadioButton::indicator {
+                    width: 16px;
+                    height: 16px;
+                    border-radius: 8px;
+                }
+                QRadioButton::indicator:unchecked {
+                    border: 2px solid #bdc3c7;
+                    border-radius: 8px;
+                    background-color: #ffffff;
+                }
+                QRadioButton::indicator:checked {
+                    border: 2px solid #3498db;
+                    border-radius: 8px;
+                    background-color: #3498db;
+                }
+                QPushButton {
+                    font-weight: bold;
+                    font-size: 12px;
+                    padding: 12px 24px;
+                    border-radius: 6px;
+                    border: none;
+                    min-width: 100px;
+                }
+                QPushButton#primary {
+                    background-color: #3498db;
+                    color: white;
+                }
+                QPushButton#primary:hover {
+                    background-color: #2980b9;
+                }
+                QPushButton#primary:pressed {
+                    background-color: #21618c;
+                }
+                QPushButton#secondary {
+                    background-color: #95a5a6;
+                    color: white;
+                }
+                QPushButton#secondary:hover {
+                    background-color: #7f8c8d;
+                }
+                QCheckBox {
+                    font-size: 12px;
+                    color: #2c3e50;
+                }
+                QTextEdit {
+                    border: 1px solid #bdc3c7;
+                    border-radius: 4px;
+                    background-color: #f8f9fa;
+                    padding: 8px;
+                    font-size: 11px;
+                    color: #495057;
+                }
+            """)
+        except Exception as e:
+            self.logger.warning(f"Failed to apply dialog styling: {e}")
+    
+    def _create_title_section(self):
+        """Create enhanced title section with branding."""
         from PyQt5.QtCore import Qt
         from PyQt5.QtGui import QFont
-        from PyQt5.QtWidgets import (QCheckBox, QDialog, QGroupBox,
-                                     QHBoxLayout, QLabel, QPushButton,
-                                     QRadioButton, QTextEdit, QVBoxLayout)
+        from PyQt5.QtWidgets import QFrame, QLabel, QVBoxLayout
         
-        dialog = QDialog(self.parent)
-        dialog.setWindowTitle("Choose Your Workspace Interface")
-        dialog.setFixedSize(600, 500)
-        dialog.setModal(True)
+        frame = QFrame()
+        frame.setStyleSheet("""
+            QFrame {
+                background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+                    stop:0 #3498db, stop:1 #2980b9);
+                border-radius: 10px;
+                padding: 20px;
+            }
+        """)
         
-        layout = QVBoxLayout(dialog)
+        layout = QVBoxLayout(frame)
         
-        # Title
+        # Main title
         title = QLabel("Welcome to Richard's File Utilities")
         title.setAlignment(Qt.AlignCenter)
         title_font = QFont()
-        title_font.setPointSize(16)
+        title_font.setPointSize(18)
         title_font.setBold(True)
         title.setFont(title_font)
+        title.setStyleSheet("color: white; margin: 10px;")
         layout.addWidget(title)
         
-        # Workflow detection section
-        workflow_group = QGroupBox("Recommended Interface")
+        # Subtitle
+        subtitle = QLabel("Choose your preferred interface mode to get started")
+        subtitle.setAlignment(Qt.AlignCenter)
+        subtitle.setStyleSheet("color: #ecf0f1; font-size: 13px; margin: 5px;")
+        layout.addWidget(subtitle)
+        
+        return frame
+    
+    def _create_recommendation_section(self):
+        """Create workflow detection and recommendation section."""
+        from PyQt5.QtWidgets import QGroupBox, QLabel, QTextEdit, QVBoxLayout
+        
+        workflow_group = QGroupBox("📊 Intelligent Interface Recommendation")
         workflow_layout = QVBoxLayout(workflow_group)
         
-        detected_workflow = self._detect_initial_workflow()
-        recommendation = self._get_interface_recommendation(detected_workflow)
+        try:
+            detected_workflow = self._detect_initial_workflow()
+            recommendation = self._get_interface_recommendation(detected_workflow)
+            
+            recommendation_label = QLabel(f"🎯 Recommended: {recommendation['name']}")
+            recommendation_label.setStyleSheet("color: #27ae60; font-weight: bold; font-size: 14px; margin: 5px;")
+            workflow_layout.addWidget(recommendation_label)
+            
+            reason_text = QTextEdit()
+            reason_text.setPlainText(recommendation['reason'])
+            reason_text.setMaximumHeight(90)
+            reason_text.setReadOnly(True)
+            workflow_layout.addWidget(reason_text)
+            
+        except Exception as e:
+            self.logger.warning(f"Error creating recommendation section: {e}")
+            fallback_label = QLabel("💡 Both interfaces are powerful - choose based on your workflow preference")
+            fallback_label.setStyleSheet("color: #f39c12; font-weight: bold; margin: 5px;")
+            workflow_layout.addWidget(fallback_label)
         
-        recommendation_label = QLabel(f"Based on your system, we recommend: {recommendation['name']}")
-        recommendation_label.setStyleSheet("color: #2c3e50; font-weight: bold;")
-        workflow_layout.addWidget(recommendation_label)
+        return workflow_group
+    
+    def _create_selection_section(self):
+        """Create enhanced interface selection section."""
+        from PyQt5.QtWidgets import (QButtonGroup, QFrame, QGroupBox,
+                                     QHBoxLayout, QLabel, QRadioButton,
+                                     QVBoxLayout)
         
-        reason_text = QTextEdit()
-        reason_text.setPlainText(recommendation['reason'])
-        reason_text.setMaximumHeight(80)
-        reason_text.setReadOnly(True)
-        workflow_layout.addWidget(reason_text)
-        
-        layout.addWidget(workflow_group)
-        
-        # Interface selection
-        selection_group = QGroupBox("Select Interface Mode")
+        selection_group = QGroupBox("🖥️ Select Your Interface Mode")
         selection_layout = QVBoxLayout(selection_group)
         
-        # Dialog Hub option
-        self.dialog_radio = QRadioButton("Dialog-Based Hub Interface")
-        self.dialog_radio.setChecked(recommendation['mode'] == InterfaceMode.DIALOG_HUB)
-        dialog_desc = QLabel("• Comprehensive tabbed interface\\n• All tools organized by category\\n• Professional workflow design\\n• Perfect for organized task management")
-        dialog_desc.setStyleSheet("margin-left: 20px; color: #555;")
-        selection_layout.addWidget(self.dialog_radio)
-        selection_layout.addWidget(dialog_desc)
+        # Create button group for mutual exclusion
+        self.button_group = QButtonGroup()
         
-        # Multi-pane option
-        self.pane_radio = QRadioButton("Multi-Pane Explorer Layout")
-        self.pane_radio.setChecked(recommendation['mode'] == InterfaceMode.MULTI_PANE)
-        pane_desc = QLabel("• Simultaneous multiple views\\n• Resizable, dockable panels\\n• File trees and property panels\\n• Perfect for complex operations")
-        pane_desc.setStyleSheet("margin-left: 20px; color: #555;")
-        selection_layout.addWidget(self.pane_radio)
-        selection_layout.addWidget(pane_desc)
+        # Dialog Hub option with enhanced styling
+        dialog_frame = self._create_interface_option(
+            "dialog_hub",
+            "📋 Dialog-Based Hub Interface",
+            "• Comprehensive tabbed interface\n• All tools organized by category\n• Professional workflow design\n• Perfect for organized task management\n• Familiar traditional interface",
+            "#3498db"
+        )
+        selection_layout.addWidget(dialog_frame)
         
-        layout.addWidget(selection_group)
+        # Multi-pane option with enhanced styling
+        pane_frame = self._create_interface_option(
+            "multi_pane",
+            "🔀 Multi-Pane Explorer Layout",
+            "• Simultaneous multiple views\n• Resizable, dockable panels\n• File trees and property panels\n• Perfect for complex operations\n• Modern multi-window experience",
+            "#e74c3c"
+        )
+        selection_layout.addWidget(pane_frame)
+        
+        return selection_group
+    
+    def _create_interface_option(self, option_id, title, description, color):
+        """Create a styled interface option frame."""
+        from PyQt5.QtCore import Qt
+        from PyQt5.QtWidgets import QFrame, QLabel, QRadioButton, QVBoxLayout
+        
+        frame = QFrame()
+        frame.setStyleSheet(f"""
+            QFrame {{
+                border: 2px solid #bdc3c7;
+                border-radius: 8px;
+                padding: 15px;
+                margin: 5px;
+                background-color: #ffffff;
+            }}
+            QFrame:hover {{
+                border-color: {color};
+                background-color: #f8f9fa;
+            }}
+        """)
+        
+        layout = QVBoxLayout(frame)
+        
+        # Radio button with enhanced styling
+        radio = QRadioButton(title)
+        # Ensure text is visible with simplified styling
+        radio.setStyleSheet(f"""
+            QRadioButton {{
+                color: {color}; 
+                font-size: 14px;
+                font-weight: bold;
+                spacing: 10px;
+                padding: 8px;
+                margin: 3px;
+            }}
+            QRadioButton::indicator {{
+                width: 18px;
+                height: 18px;
+                border-radius: 9px;
+                border: 2px solid #bdc3c7;
+                background-color: white;
+                margin-right: 8px;
+            }}
+            QRadioButton::indicator:checked {{
+                border: 2px solid {color};
+                background-color: {color};
+            }}
+            QRadioButton::indicator:hover {{
+                border: 2px solid {color};
+            }}
+        """)
+        
+        # Ensure text is set and visible
+        radio.setText(title)  # Explicitly set text again to ensure it's displayed
+        
+        if option_id == "dialog_hub":
+            self.dialog_radio = radio
+            radio.setChecked(True)  # Default selection
+        else:
+            self.pane_radio = radio
+        
+        self.button_group.addButton(radio)
+        layout.addWidget(radio)
+        
+        # Description with better spacing
+        desc_label = QLabel(description)
+        desc_label.setStyleSheet("""
+            margin-left: 25px; 
+            color: #555; 
+            font-size: 11px; 
+            line-height: 1.4;
+            padding-top: 5px;
+            padding-bottom: 10px;
+        """)
+        desc_label.setWordWrap(True)
+        layout.addWidget(desc_label)
+        
+        return frame
+    
+    def _create_preferences_section(self):
+        """Create preferences and settings section."""
+        from PyQt5.QtWidgets import QCheckBox, QFrame, QLabel, QVBoxLayout
+        
+        frame = QFrame()
+        layout = QVBoxLayout(frame)
         
         # Remember choice checkbox
-        self.remember_checkbox = QCheckBox("Remember my choice (can be changed in preferences)")
+        self.remember_checkbox = QCheckBox("🔒 Remember my choice for future sessions")
         self.remember_checkbox.setChecked(True)
+        self.remember_checkbox.setStyleSheet("font-weight: bold; color: #2c3e50;")
         layout.addWidget(self.remember_checkbox)
         
-        # Buttons
-        button_layout = QHBoxLayout()
-        ok_button = QPushButton("Continue")
+        # Additional info
+        info_label = QLabel("💡 You can always change your interface mode from the Interface menu")
+        info_label.setStyleSheet("color: #7f8c8d; font-size: 10px; margin-top: 5px;")
+        layout.addWidget(info_label)
+        
+        return frame
+    
+    def _create_button_section(self):
+        """Create enhanced button section with proper styling."""
+        from PyQt5.QtCore import Qt
+        from PyQt5.QtWidgets import (QFrame, QHBoxLayout, QPushButton,
+                                     QSizePolicy, QSpacerItem)
+        
+        frame = QFrame()
+        layout = QHBoxLayout(frame)
+        
+        # Add spacer
+        layout.addItem(QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum))
+        
+        # Cancel button
         cancel_button = QPushButton("Cancel")
+        cancel_button.setObjectName("secondary")
+        cancel_button.setText("Cancel")  # Ensure text is explicitly set
+        cancel_button.setMinimumSize(100, 35)
+        cancel_button.clicked.connect(self._handle_cancel)
+        layout.addWidget(cancel_button)
         
-        ok_button.clicked.connect(dialog.accept)
-        cancel_button.clicked.connect(dialog.reject)
+        # Continue button
+        continue_button = QPushButton("Continue")
+        continue_button.setObjectName("primary")
+        continue_button.setText("Continue")  # Ensure text is explicitly set
+        continue_button.setMinimumSize(100, 35)
+        continue_button.setDefault(True)
+        continue_button.clicked.connect(self._handle_continue)
+        layout.addWidget(continue_button)
         
-        button_layout.addWidget(cancel_button)
-        button_layout.addWidget(ok_button)
-        layout.addLayout(button_layout)
-        
-        # Show dialog and get result
-        if dialog.exec_() == QDialog.Accepted:
-            self.selected_mode = InterfaceMode.DIALOG_HUB if self.dialog_radio.isChecked() else InterfaceMode.MULTI_PANE
-            self.remember_choice = self.remember_checkbox.isChecked()
-            return True
-        return False
+        return frame
+    
+    def _execute_dialog(self):
+        """Execute the dialog with comprehensive error handling."""
+        try:
+            # Ensure proper layout before showing
+            self.dialog.updateGeometry()
+            self.dialog.update()
+            self.dialog.repaint()
+            
+            # Process events to ensure proper rendering
+            from PyQt5.QtWidgets import QApplication
+            QApplication.processEvents()
+            
+            result = self.dialog.exec_()
+            
+            if result == self.dialog.Accepted:
+                # Process user selection
+                if self.dialog_radio and self.dialog_radio.isChecked():
+                    self.selected_mode = InterfaceMode.DIALOG_HUB
+                elif self.pane_radio and self.pane_radio.isChecked():
+                    self.selected_mode = InterfaceMode.MULTI_PANE
+                else:
+                    # Fallback to default
+                    self.selected_mode = InterfaceMode.DIALOG_HUB
+                
+                if self.remember_checkbox:
+                    self.remember_choice = self.remember_checkbox.isChecked()
+                else:
+                    self.remember_choice = False
+                
+                self.logger.info(f"User selected interface mode: "
+                                f"{self.selected_mode.value}")
+                return True
+            else:
+                # User cancelled or closed dialog
+                self.logger.info("User cancelled interface selection, "
+                                "using default")
+                self.selected_mode = InterfaceMode.DIALOG_HUB
+                self.remember_choice = False
+                return True  # Continue with default
+                
+        except Exception as e:
+            self.logger.error(f"Error executing interface selection "
+                             f"dialog: {e}")
+            self._show_fallback_dialog()
+            return True  # Continue with fallback
+    
+    def _handle_continue(self):
+        """Handle continue button click with validation."""
+        try:
+            # Validate selection
+            if not (self.dialog_radio.isChecked() or self.pane_radio.isChecked()):
+                from PyQt5.QtWidgets import QMessageBox
+                QMessageBox.warning(self.dialog, "Selection Required", 
+                                  "Please select an interface mode before continuing.")
+                return
+            
+            self.dialog.accept()
+            
+        except Exception as e:
+            self.logger.error(f"Error handling continue action: {e}")
+            self.dialog.accept()  # Continue anyway
+    
+    def _handle_cancel(self):
+        """Handle cancel button click with fallback to default interface."""
+        try:
+            from PyQt5.QtWidgets import QMessageBox
+            
+            result = QMessageBox.question(
+                self.dialog, 
+                "Use Default Interface", 
+                "Would you like to use the default Dialog Hub interface instead?",
+                QMessageBox.Yes | QMessageBox.No,
+                QMessageBox.Yes
+            )
+            
+            if result == QMessageBox.Yes:
+                self.logger.info("User chose default interface mode")
+                # Set default values and accept dialog
+                self.selected_mode = InterfaceMode.DIALOG_HUB
+                self.remember_choice = False
+                if self.dialog_radio:
+                    self.dialog_radio.setChecked(True)
+                if self.remember_checkbox:
+                    self.remember_checkbox.setChecked(False)
+                self.dialog.accept()
+            else:
+                # User chose not to use default, stay in dialog
+                self.logger.info("User declined default interface, staying in dialog")
+                
+        except Exception as e:
+            self.logger.error(f"Error handling cancel action: {e}")
+            # Fallback to default interface and continue
+            self.selected_mode = InterfaceMode.DIALOG_HUB
+            self.remember_choice = False
+            self.dialog.accept()
+    
+    def _handle_close_event(self, event):
+        """Handle dialog close event to prevent accidental closure."""
+        try:
+            from PyQt5.QtWidgets import QMessageBox
+            
+            result = QMessageBox.question(
+                self.dialog,
+                "Use Default Interface",
+                "Would you like to use the default Dialog Hub interface?",
+                QMessageBox.Yes | QMessageBox.No,
+                QMessageBox.Yes
+            )
+            
+            if result == QMessageBox.Yes:
+                self.logger.info("User chose default interface from close event")
+                # Set default values and accept dialog
+                self.selected_mode = InterfaceMode.DIALOG_HUB
+                self.remember_choice = False
+                if self.dialog_radio:
+                    self.dialog_radio.setChecked(True)
+                if self.remember_checkbox:
+                    self.remember_checkbox.setChecked(False)
+                event.accept()
+                self.dialog.accept()
+            else:
+                # User chose not to use default, prevent close
+                self.logger.info("User declined default interface, "
+                               "preventing dialog close")
+                event.ignore()
+                
+        except Exception as e:
+            self.logger.error(f"Error handling close event: {e}")
+            # Fallback to default interface and continue
+            self.selected_mode = InterfaceMode.DIALOG_HUB
+            self.remember_choice = False
+            event.accept()
+            self.dialog.accept()
+    
+    def _show_fallback_dialog(self):
+        """Show simple fallback dialog if main dialog fails."""
+        try:
+            from PyQt5.QtWidgets import QMessageBox
+            
+            QMessageBox.information(
+                self.parent,
+                "Interface Selection",
+                "Starting with Dialog-Based Hub Interface.\n\n"
+                "You can switch to Multi-Pane Explorer from the Interface menu."
+            )
+            
+            self.selected_mode = InterfaceMode.DIALOG_HUB
+            self.remember_choice = False
+            
+        except Exception as e:
+            self.logger.error(f"Error showing fallback dialog: {e}")
+            # Ultimate fallback - just set defaults
+            self.selected_mode = InterfaceMode.DIALOG_HUB
+            self.remember_choice = False
     
     def _detect_initial_workflow(self):
         """Detect initial workflow pattern based on system state."""
@@ -289,59 +754,92 @@ try:
         
         def __init__(self):
             super().__init__()
+            
+            # Initialize logging system first
+            self.logger = logging.getLogger('RFU.MainWindow')
+            self.logger.info("Initializing RFU Main Window with dual interface system")
+            
+            # Set basic window properties
             self.setWindowTitle(APP_NAME)
             self.setGeometry(200, 200, 900, 700)
             
-            # Store references to opened windows
-            self.opened_windows = {}
+            # Initialize core systems
+            self._initialize_core_systems()
             
-            # Interface mode management
-            self.current_interface_mode = InterfaceMode.DIALOG_HUB
-            self.multi_pane_explorer = None
-            self.dialog_hub_widget = None
-            self.interface_switching_enabled = True
-            self.transition_in_progress = False
-            
-            # Workflow analysis and session tracking
-            self.session_start_time = datetime.now()
-            self.tool_usage_count = 0
-            self.interface_switch_count = 0
-            
-            # Data synchronization
-            self.shared_state = {
-                'recent_files': [],
-                'recent_directories': [],
-                'bookmarks': [],
-                'tool_preferences': {},
-                'window_states': {}
-            }
-            
-            # Initialize database tracking
-            self.database_available = DATABASE_AVAILABLE
-            if self.database_available:
-                try:
-                    from scripts.maintenance.standalone_database_manager import \
-                        get_database_manager
-                    self.db_manager = get_database_manager()
-                except Exception as e:
-                    print(f"Database initialization failed: {e}")
-                    self.database_available = False
-                    self.db_manager = None
-            
-            # Initialize configuration manager
-            try:
-                from src.rfu.config_manager import get_config_manager
-                self.config_manager = get_config_manager()
-                self._setup_interface_configuration()
-            except Exception as e:
-                print(f"Configuration manager initialization failed: {e}")
-                self.config_manager = None
-            
-            # Determine interface mode
+            # Show startup dialog and determine interface mode BEFORE UI initialization
+            self.logger.info("Determining interface mode through startup dialog")
             self._determine_interface_mode()
             
-            # Initialize the appropriate interface
+            # Initialize the selected interface
+            self.logger.info(f"Initializing {self.current_interface_mode.value} interface")
             self._initialize_interface()
+            
+            # Log successful initialization
+            self.logger.info(f"RFU Main Window initialized successfully with {self.current_interface_mode.value} interface")
+        
+        def _initialize_core_systems(self):
+            """Initialize core application systems and state management."""
+            try:
+                # Store references to opened windows
+                self.opened_windows = {}
+                
+                # Interface mode management
+                self.current_interface_mode = InterfaceMode.DIALOG_HUB  # Default fallback
+                self.multi_pane_explorer = None
+                self.dialog_hub_widget = None
+                self.interface_switching_enabled = True
+                self.transition_in_progress = False
+                
+                # Workflow analysis and session tracking
+                self.session_start_time = datetime.now()
+                self.tool_usage_count = 0
+                self.interface_switch_count = 0
+                
+                # Data synchronization
+                self.shared_state = {
+                    'recent_files': [],
+                    'recent_directories': [],
+                    'bookmarks': [],
+                    'tool_preferences': {},
+                    'window_states': {}
+                }
+                
+                # Initialize database tracking
+                self.database_available = DATABASE_AVAILABLE
+                if self.database_available:
+                    try:
+                        from scripts.maintenance.standalone_database_manager import \
+                            get_database_manager
+                        self.db_manager = get_database_manager()
+                        self.logger.info("Database system initialized successfully")
+                    except Exception as e:
+                        self.logger.warning(f"Database initialization failed: {e}")
+                        self.database_available = False
+                        self.db_manager = None
+                else:
+                    self.db_manager = None
+                    self.logger.info("Database system not available")
+                
+                # Initialize configuration manager
+                try:
+                    from src.rfu.config_manager import get_config_manager
+                    self.config_manager = get_config_manager()
+                    self._setup_interface_configuration()
+                    self.logger.info("Configuration manager initialized successfully")
+                except Exception as e:
+                    self.logger.warning(f"Configuration manager initialization failed: {e}")
+                    self.config_manager = None
+                
+                self.logger.info("Core systems initialized successfully")
+                
+            except Exception as e:
+                self.logger.error(f"Error initializing core systems: {e}")
+                # Set minimal fallback state
+                self.opened_windows = {}
+                self.current_interface_mode = InterfaceMode.DIALOG_HUB
+                self.database_available = False
+                self.db_manager = None
+                self.config_manager = None
         
         def _setup_interface_configuration(self):
             """Setup interface-specific configuration sections."""
@@ -351,9 +849,10 @@ try:
             # Ensure interface configuration sections exist
             interface_sections = {
                 'interface_mode': {
-                    'current_mode': None,  # No default - force dialog on first run
+                    'current_mode': InterfaceMode.DIALOG_HUB.value,
                     'auto_detect_enabled': True,
-                    'remember_choice': False,  # Default to asking every time
+                    'remember_choice': True,
+                    'show_startup_dialog': True,
                     'transition_animations': True,
                     'switch_confirmation': False
                 },
@@ -382,74 +881,283 @@ try:
                         pass
         
         def _determine_interface_mode(self):
-            """Determine which interface mode to use."""
-            if not self.config_manager:
-                # No config manager - show dialog and default to DIALOG_HUB
-                self._show_interface_selection_dialog()
-                return
-            
+            """Determine which interface mode to use with comprehensive startup dialog logic."""
             try:
-                # Check if user has previously made a choice
+                # Initialize default mode
+                self.current_interface_mode = InterfaceMode.DIALOG_HUB
+                
+                if not self.config_manager:
+                    self.logger.warning("Configuration manager not available, showing startup dialog")
+                    self._show_interface_selection_dialog()
+                    return
+                
+                # Check if user has saved preference and doesn't want to see dialog
                 saved_mode = self.config_manager.get_setting('interface_mode', 'current_mode')
+                show_startup = self.config_manager.get_setting('interface_mode', 'show_startup_dialog', True)
                 remember_choice = self.config_manager.get_setting('interface_mode', 'remember_choice', False)
                 
-                # If user has saved preference and chose to remember it, use saved mode
-                if saved_mode and remember_choice:
+                self.logger.info(f"Startup configuration - saved_mode: {saved_mode}, show_startup: {show_startup}, remember_choice: {remember_choice}")
+                
+                # If user has saved preference and doesn't want to see dialog
+                if saved_mode and remember_choice and not show_startup:
                     try:
                         self.current_interface_mode = InterfaceMode(saved_mode)
-                        print(f"Using remembered interface mode: {saved_mode}")
+                        self.logger.info(f"Using saved interface mode: {self.current_interface_mode.value}")
                         return
-                    except ValueError:
-                        # Invalid saved mode, fall through to show dialog
-                        pass
+                    except ValueError as e:
+                        self.logger.warning(f"Invalid saved interface mode '{saved_mode}': {e}")
+                        # Fall through to show dialog
                 
-                # Show interface selection dialog (first time or user chose not to remember)
+                # Show interface selection dialog for first-time users or when requested
+                self.logger.info("Showing interface selection dialog")
                 self._show_interface_selection_dialog()
                 
-            except (AttributeError, KeyError):
-                # Config error - show dialog with default
-                self._show_interface_selection_dialog()
+            except Exception as e:
+                self.logger.error(f"Error determining interface mode: {e}")
+                # Ultimate fallback
+                self.current_interface_mode = InterfaceMode.DIALOG_HUB
+                self.logger.info("Using fallback interface mode: DIALOG_HUB")
         
         def _show_interface_selection_dialog(self):
-            """Show interface selection dialog on startup."""
+            """Show enhanced interface selection dialog on startup with comprehensive error handling."""
             try:
+                self.logger.info("Initializing interface selection dialog")
+                
+                # Ensure QApplication is available for dialog creation
+                from PyQt5.QtWidgets import QApplication
+                if not QApplication.instance():
+                    self.logger.error("QApplication not available for dialog creation")
+                    self._handle_dialog_fallback()
+                    return
+                
+                # Create and show the enhanced dialog
                 dialog = InterfaceSelectionDialog(self)
-                if dialog.show_selection_dialog():
+                
+                # Show dialog with proper error handling
+                dialog_result = dialog.show_selection_dialog()
+                
+                if dialog_result:
+                    # Process user selection
                     self.current_interface_mode = dialog.selected_mode
-                    print(f"Selected interface mode: {dialog.selected_mode.value}")
+                    self.logger.info(f"User selected interface mode: {self.current_interface_mode.value}")
                     
-                    if self.config_manager:
+                    # Save preferences if requested and config manager available
+                    if dialog.remember_choice and self.config_manager:
                         try:
-                            # Always save the current mode
                             self.config_manager.set_setting('interface_mode', 'current_mode', 
                                                            self.current_interface_mode.value)
-                            
-                            # Save the remember choice preference
-                            self.config_manager.set_setting('interface_mode', 'remember_choice', 
-                                                           dialog.remember_choice)
-                            
-                            print(f"Remember choice: {dialog.remember_choice}")
-                            
-                        except AttributeError as e:
-                            print(f"Config save error: {e}")
+                            self.config_manager.set_setting('interface_mode', 'remember_choice', True)
+                            self.config_manager.set_setting('interface_mode', 'show_startup_dialog', False)
+                            self.logger.info("Saved user interface preferences")
+                        except Exception as config_error:
+                            self.logger.warning(f"Failed to save interface preferences: {config_error}")
+                    
+                    # Track dialog usage for analytics
+                    if self.database_available and self.db_manager:
+                        try:
+                            self._track_interface_selection(self.current_interface_mode.value, dialog.remember_choice)
+                        except Exception as db_error:
+                            self.logger.warning(f"Failed to track interface selection: {db_error}")
                 else:
-                    # User cancelled - default to DIALOG_HUB
+                    # Dialog cancelled or failed
+                    self.logger.warning("Interface selection dialog cancelled or failed")
+                    self._handle_dialog_fallback()
+                    
+            except ImportError as ie:
+                self.logger.error(f"PyQt5 import error during dialog creation: {ie}")
+                self._handle_dialog_fallback()
+            except Exception as e:
+                self.logger.error(f"Unexpected error showing interface selection dialog: {e}")
+                self._handle_dialog_fallback()
+        
+        def _handle_dialog_fallback(self):
+            """Handle fallback when dialog creation or interaction fails."""
+            try:
+                self.logger.info("Using fallback interface selection logic")
+                
+                # Try to detect suitable interface based on system characteristics
+                if self._detect_developer_environment():
+                    self.current_interface_mode = InterfaceMode.MULTI_PANE
+                    self.logger.info("Detected developer environment, defaulting to Multi-Pane Explorer")
+                else:
                     self.current_interface_mode = InterfaceMode.DIALOG_HUB
-                    print("Dialog cancelled - using default Dialog Hub interface")
+                    self.logger.info("Detected general use environment, defaulting to Dialog Hub")
+                
+                # Show simple notification if possible
+                try:
+                    from PyQt5.QtWidgets import QMessageBox
+                    QMessageBox.information(
+                        self,
+                        "Interface Mode Selected",
+                        f"Starting with {self.current_interface_mode.value.replace('_', ' ').title()} mode.\n\n"
+                        "You can change interface modes from the Interface menu."
+                    )
+                except Exception:
+                    # Ultimate fallback - just print message
+                    print(f"Starting with {self.current_interface_mode.value.replace('_', ' ').title()} interface mode")
                     
             except Exception as e:
-                print(f"Error showing interface selection: {e}")
+                self.logger.error(f"Error in dialog fallback handling: {e}")
+                # Ultimate fallback
                 self.current_interface_mode = InterfaceMode.DIALOG_HUB
         
+        def _detect_developer_environment(self):
+            """Detect if the current environment suggests developer usage."""
+            try:
+                import os
+                import subprocess
+                from pathlib import Path
+                
+                developer_indicators = 0
+                
+                # Check for development directories
+                home_dir = Path.home()
+                dev_dirs = ['src', 'projects', 'code', 'development', 'workspace', 'git', 'repos']
+                for dev_dir in dev_dirs:
+                    if (home_dir / dev_dir).exists():
+                        developer_indicators += 1
+                
+                # Check for development tools
+                dev_tools = ['git', 'python', 'node', 'npm', 'code', 'vim', 'code.exe']
+                for tool in dev_tools:
+                    try:
+                        subprocess.check_output(['where' if os.name == 'nt' else 'which', tool], 
+                                               stderr=subprocess.STDOUT)
+                        developer_indicators += 1
+                    except (subprocess.CalledProcessError, FileNotFoundError):
+                        pass
+                
+                # Check current directory for project files
+                current_dir = Path.cwd()
+                project_files = ['.git', 'package.json', 'requirements.txt', 'Makefile', '.gitignore', 'src']
+                for project_file in project_files:
+                    if (current_dir / project_file).exists():
+                        developer_indicators += 1
+                
+                # If we find 3 or more indicators, likely a developer environment
+                return developer_indicators >= 3
+                
+            except Exception as e:
+                self.logger.warning(f"Error detecting developer environment: {e}")
+                return False
+        
+        def _track_interface_selection(self, mode, remember_choice):
+            """Track interface selection for analytics and improvement."""
+            try:
+                if not self.database_available or not self.db_manager:
+                    return
+                
+                # Record interface selection event
+                query = """
+                    INSERT OR REPLACE INTO interface_usage 
+                    (selection_date, interface_mode, remember_choice, session_id)
+                    VALUES (datetime('now'), ?, ?, ?)
+                """
+                
+                session_id = f"{self.session_start_time.isoformat()}_{id(self)}"
+                params = (mode, remember_choice, session_id)
+                
+                self.db_manager.execute_update(query, params)
+                self.logger.debug(f"Tracked interface selection: {mode}")
+                
+            except Exception as e:
+                self.logger.warning(f"Failed to track interface selection: {e}")
+        
         def _initialize_interface(self):
-            """Initialize the selected interface mode."""
-            if self.current_interface_mode == InterfaceMode.MULTI_PANE:
-                self._initialize_multi_pane_interface()
-            else:
-                self._initialize_dialog_hub_interface()
+            """Initialize the selected interface mode with comprehensive error handling."""
+            try:
+                self.logger.info(f"Initializing interface mode: {self.current_interface_mode.value}")
+                
+                if self.current_interface_mode == InterfaceMode.MULTI_PANE:
+                    success = self._initialize_multi_pane_interface()
+                    if not success:
+                        self.logger.warning("Multi-pane interface initialization failed, falling back to dialog hub")
+                        self.current_interface_mode = InterfaceMode.DIALOG_HUB
+                        self._initialize_dialog_hub_interface()
+                else:
+                    self._initialize_dialog_hub_interface()
+                
+                # Setup interface switching menu
+                self._setup_interface_switching_menu()
+                
+                self.logger.info(f"Interface initialization completed: {self.current_interface_mode.value}")
+                
+            except Exception as e:
+                self.logger.error(f"Critical error during interface initialization: {e}")
+                self._handle_interface_initialization_failure()
+        
+        def _handle_interface_initialization_failure(self):
+            """Handle critical interface initialization failures with emergency fallback."""
+            try:
+                self.logger.warning("Attempting emergency interface fallback")
+                
+                # Create minimal emergency interface
+                from PyQt5.QtWidgets import (QLabel, QPushButton, QVBoxLayout,
+                                             QWidget)
+                
+                emergency_widget = QWidget()
+                layout = QVBoxLayout(emergency_widget)
+                
+                # Error message
+                error_label = QLabel("Interface initialization failed. Using emergency mode.")
+                error_label.setStyleSheet("color: red; font-weight: bold; padding: 20px;")
+                layout.addWidget(error_label)
+                
+                # Retry button
+                retry_button = QPushButton("Retry Interface Initialization")
+                retry_button.clicked.connect(self._retry_interface_initialization)
+                layout.addWidget(retry_button)
+                
+                # Exit button
+                exit_button = QPushButton("Exit Application")
+                exit_button.clicked.connect(self.close)
+                layout.addWidget(exit_button)
+                
+                self.setCentralWidget(emergency_widget)
+                self.setWindowTitle(f"{APP_NAME} - Emergency Mode")
+                
+                self.logger.info("Emergency interface fallback activated")
+                
+            except Exception as emergency_error:
+                self.logger.critical(f"Emergency fallback failed: {emergency_error}")
+                # Ultimate fallback - show message and exit
+                try:
+                    from PyQt5.QtWidgets import QMessageBox
+                    QMessageBox.critical(
+                        None, 
+                        "Critical Error", 
+                        f"Application failed to initialize properly.\n\nError: {emergency_error}\n\nThe application will now exit."
+                    )
+                except Exception:
+                    print(f"CRITICAL ERROR: Application failed to initialize. Error: {emergency_error}")
+                sys.exit(1)
+        
+        def _retry_interface_initialization(self):
+            """Retry interface initialization after emergency fallback."""
+            try:
+                self.logger.info("Retrying interface initialization")
+                
+                # Reset interface state
+                self.current_interface_mode = InterfaceMode.DIALOG_HUB
+                self.multi_pane_explorer = None
+                self.dialog_hub_widget = None
+                
+                # Try to initialize again
+                self._initialize_interface()
+                
+            except Exception as e:
+                self.logger.error(f"Interface retry failed: {e}")
+                self._handle_interface_initialization_failure()
         
         def _initialize_dialog_hub_interface(self):
             """Initialize the dialog-based hub interface with full tabbed functionality."""
+            # If we have a separate multi-pane explorer window, hide it
+            if hasattr(self, 'multi_pane_explorer_window'):
+                self.multi_pane_explorer_window.hide()
+            
+            # Show the main dialog hub window
+            self.show()
+            
             self.setWindowTitle(f"{APP_NAME} - Dialog Hub Interface")
             
             # Store reference to dialog hub widget for later restoration
@@ -460,32 +1168,165 @@ try:
                 self.dialog_hub_widget = self.centralWidget()
         
         def _initialize_multi_pane_interface(self):
-            """Initialize the multi-pane explorer interface."""
+            """Initialize the multi-pane explorer interface with comprehensive error handling."""
             try:
+                self.logger.info("Initializing full-featured multi-pane explorer interface")
+                
                 # Store current dialog hub widget if switching
                 current_widget = self.centralWidget()
                 if current_widget and not hasattr(self, 'dialog_hub_widget'):
                     self.dialog_hub_widget = current_widget
+                    self.logger.debug("Stored current dialog hub widget for future restoration")
                 
-                # Clear current central widget
-                if current_widget:
-                    current_widget.setParent(None)
-                
-                # Try to import the multi-pane explorer
+                # Try to create the full-featured multi-pane explorer
                 if not self.multi_pane_explorer:
-                    from src.rfu.file_explorer.multi_pane_explorer import \
-                        MultiPaneExplorer
-                    self.multi_pane_explorer = MultiPaneExplorer(self)
+                    try:
+                        if MULTI_PANE_EXPLORER_AVAILABLE:
+                            # Create the full MultiPaneFileExplorer as a separate window
+                            self.multi_pane_explorer_window = MultiPaneFileExplorer()
+                            
+                            # Hide the main dialog hub window
+                            self.hide()
+                            
+                            # Show the multi-pane explorer window
+                            self.multi_pane_explorer_window.show()
+                            
+                            # Store reference for interface switching
+                            self.multi_pane_explorer = self.multi_pane_explorer_window
+                            
+                            self.logger.info("Full multi-pane explorer window created and displayed successfully")
+                            return True
+                        else:
+                            # Fall back to simplified widget embedded in main window
+                            self.multi_pane_explorer = self._create_simple_multi_pane_widget()
+                            self.setCentralWidget(self.multi_pane_explorer)
+                            self.setWindowTitle(f"{APP_NAME} - Multi-Pane Explorer (Simplified)")
+                            self.logger.warning("Using simplified multi-pane widget (full explorer unavailable)")
+                    except Exception as ce:
+                        self.logger.error(f"Failed to create multi-pane explorer: {ce}")
+                        self._create_fallback_multi_pane()
+                        return True  # Fallback is still a success
+                else:
+                    # Explorer already exists, just show it
+                    if hasattr(self, 'multi_pane_explorer_window'):
+                        self.hide()
+                        self.multi_pane_explorer_window.show()
+                    else:
+                        self.setCentralWidget(self.multi_pane_explorer)
+                        self.setWindowTitle(f"{APP_NAME} - Multi-Pane Explorer")
                 
-                self.setCentralWidget(self.multi_pane_explorer)
-                self.setWindowTitle(f"{APP_NAME} - Multi-Pane Explorer")
+                self.logger.info("Multi-pane interface initialization completed successfully")
+                return True
                 
-                # Setup interface switching menu for multi-pane mode
-                self._setup_interface_switching_menu()
-                
-            except ImportError:
-                # Fallback to simplified multi-pane interface
+            except Exception as e:
+                self.logger.error(f"Error initializing multi-pane interface: {e}")
                 self._create_fallback_multi_pane()
+                return True  # Always return True with fallback
+
+        
+        def _create_simple_multi_pane_widget(self):
+            """Create a proper multi-pane widget that can be embedded in the main window."""
+            from PyQt5.QtCore import QDir
+            from PyQt5.QtWidgets import (QFileSystemModel, QFrame, QHBoxLayout,
+                                         QHeaderView, QSplitter, QTreeView,
+                                         QVBoxLayout)
+
+            # Create main container widget
+            main_widget = QWidget()
+            main_layout = QHBoxLayout(main_widget)
+            main_layout.setContentsMargins(5, 5, 5, 5)
+            
+            # Create horizontal splitter for multi-pane layout
+            splitter = QSplitter(Qt.Horizontal)
+            
+            # Create two file browser panes
+            for i in range(2):
+                pane = self._create_file_browser_pane(f"Pane {i+1}")
+                splitter.addWidget(pane)
+            
+            # Set equal sizes for both panes
+            splitter.setSizes([400, 400])
+            
+            main_layout.addWidget(splitter)
+            
+            # Add some basic styling
+            main_widget.setStyleSheet("""
+                QWidget {
+                    background-color: #f5f5f5;
+                }
+                QFrame {
+                    border: 1px solid #ddd;
+                    border-radius: 4px;
+                    background-color: white;
+                }
+                QTreeView {
+                    border: none;
+                    background-color: white;
+                    alternate-background-color: #f9f9f9;
+                }
+                QTreeView::item:selected {
+                    background-color: #0078d4;
+                    color: white;
+                }
+            """)
+            
+            return main_widget
+        
+        def _create_file_browser_pane(self, title):
+            """Create a single file browser pane."""
+            from PyQt5.QtCore import QDir
+            from PyQt5.QtWidgets import (QFileSystemModel, QFrame, QHBoxLayout,
+                                         QLabel, QPushButton, QTreeView,
+                                         QVBoxLayout)
+
+            # Create frame for the pane
+            pane_frame = QFrame()
+            pane_layout = QVBoxLayout(pane_frame)
+            pane_layout.setContentsMargins(5, 5, 5, 5)
+            
+            # Add title and navigation
+            header_layout = QHBoxLayout()
+            title_label = QLabel(title)
+            title_label.setStyleSheet("font-weight: bold; color: #333; padding: 5px;")
+            header_layout.addWidget(title_label)
+            
+            # Add home button
+            home_button = QPushButton("🏠 Home")
+            home_button.setMaximumWidth(80)
+            home_button.clicked.connect(lambda: self._navigate_to_home(tree_view))
+            header_layout.addWidget(home_button)
+            
+            pane_layout.addLayout(header_layout)
+            
+            # Create tree view with file system model
+            tree_view = QTreeView()
+            file_model = QFileSystemModel()
+            file_model.setRootPath(QDir.rootPath())
+            
+            tree_view.setModel(file_model)
+            tree_view.setRootIndex(file_model.index(str(Path.home())))
+            
+            # Configure tree view
+            tree_view.setAlternatingRowColors(True)
+            tree_view.setSortingEnabled(True)
+            tree_view.sortByColumn(0, Qt.AscendingOrder)
+            
+            # Adjust column widths
+            header = tree_view.header()
+            header.resizeSection(0, 250)  # Name column
+            header.resizeSection(1, 100)  # Size column
+            header.resizeSection(2, 80)   # Type column
+            header.resizeSection(3, 120)  # Date column
+            
+            pane_layout.addWidget(tree_view)
+            
+            return pane_frame
+        
+        def _navigate_to_home(self, tree_view):
+            """Navigate tree view to home directory."""
+            if hasattr(tree_view, 'model') and tree_view.model():
+                home_index = tree_view.model().index(str(Path.home()))
+                tree_view.setRootIndex(home_index)
         
         def _create_fallback_multi_pane(self):
             """Create fallback multi-pane interface when full version not available."""
@@ -501,7 +1342,7 @@ try:
             layout.addWidget(title_label)
             
             # Info message
-            info_label = QLabel("Full multi-pane explorer not available.\\nUsing simplified interface.")
+            info_label = QLabel("Full multi-pane explorer not available.\nUsing simplified interface.")
             info_label.setAlignment(Qt.AlignCenter)
             info_label.setStyleSheet("color: #666; margin: 10px;")
             layout.addWidget(info_label)
@@ -533,46 +1374,12 @@ try:
             # Track switch for analytics
             self.interface_switch_count += 1
             
-            # Perform transition
-            if animated:
-                self._animate_interface_transition(old_mode, new_mode)
-            else:
-                self._immediate_interface_transition(new_mode)
+            # Perform transition (no animation for window switching)
+            self._immediate_interface_transition(new_mode)
             
             # Emit signal
             self.interface_switched.emit(new_mode.value)
-        
-        def _animate_interface_transition(self, old_mode, new_mode):
-            """Animate transition between interface modes."""
-            # Create fade out animation
-            self.fade_effect = QGraphicsOpacityEffect()
-            self.setGraphicsEffect(self.fade_effect)
-            
-            self.fade_out = QPropertyAnimation(self.fade_effect, b"opacity")
-            self.fade_out.setDuration(300)
-            self.fade_out.setStartValue(1.0)
-            self.fade_out.setEndValue(0.0)
-            self.fade_out.setEasingCurve(QEasingCurve.OutCubic)
-            
-            def complete_transition():
-                self._immediate_interface_transition(new_mode)
-                
-                # Create fade in animation
-                self.fade_in = QPropertyAnimation(self.fade_effect, b"opacity")
-                self.fade_in.setDuration(300)
-                self.fade_in.setStartValue(0.0)
-                self.fade_in.setEndValue(1.0)
-                self.fade_in.setEasingCurve(QEasingCurve.InCubic)
-                
-                def cleanup():
-                    self.setGraphicsEffect(None)
-                    self.transition_in_progress = False
-                
-                self.fade_in.finished.connect(cleanup)
-                self.fade_in.start()
-            
-            self.fade_out.finished.connect(complete_transition)
-            self.fade_out.start()
+
         
         def _immediate_interface_transition(self, new_mode):
             """Perform immediate interface transition without animation."""
@@ -581,8 +1388,7 @@ try:
             else:
                 self._initialize_dialog_hub_interface()
             
-            if not hasattr(self, 'fade_out'):  # Not in animated transition
-                self.transition_in_progress = False
+            self.transition_in_progress = False
         
         def _setup_interface_switching_menu(self):
             """Setup menu for switching between interface modes."""
@@ -614,6 +1420,31 @@ try:
             QMessageBox.information(self, "Interface Preferences", 
                                   "Interface preferences dialog would be shown here.")
         
+        def closeEvent(self, event):
+            """Handle application close event - ensure all windows are properly closed."""
+            try:
+                # Close multi-pane explorer window if it exists
+                if hasattr(self, 'multi_pane_explorer_window'):
+                    try:
+                        self.multi_pane_explorer_window.close()
+                    except Exception as e:
+                        self.logger.warning(f"Error closing multi-pane explorer: {e}")
+                
+                # Save configuration if available
+                if self.config_manager:
+                    try:
+                        # Save current interface mode
+                        self.config_manager.set_setting('interface_mode', 'current_mode', 
+                                                       self.current_interface_mode.value)
+                    except Exception as e:
+                        self.logger.warning(f"Error saving configuration: {e}")
+                
+                # Accept the close event
+                event.accept()
+                
+            except Exception as e:
+                self.logger.error(f"Error during application close: {e}")
+                event.accept()  # Close anyway
         def launch_tool(self, tool_name, module_name=None, class_name=None):
             """Enhanced tool launch with tracking."""
             # Track tool usage
@@ -625,8 +1456,8 @@ try:
             # Show placeholder for demonstration
             QMessageBox.information(
                 self, "Tool Launch", 
-                f"Launching {tool_name}...\\n\\n"
-                f"Current Interface: {self.current_interface_mode.value}\\n"
+                f"Launching {tool_name}...\n\n"
+                f"Current Interface: {self.current_interface_mode.value}\n"
                 f"This demonstrates the integrated dual-interface system."
             )
         

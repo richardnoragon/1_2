@@ -93,13 +93,77 @@ try:
     from ..utils.directory_watcher import DirectoryWatcher, WatchEvent
     from .pane_manager import BasePaneWidget, PaneConfiguration, PaneType
 except ImportError:
-    # Fallback for development/testing
-    class BasePaneWidget:
+    # Enhanced fallback for development/testing
+    class BasePaneWidget(QFrame if QT_AVAILABLE else object):
+        """Enhanced fallback BasePaneWidget with proper initialization."""
+        
         def __init__(self, config, parent=None):
-            pass
+            if QT_AVAILABLE:
+                super().__init__(parent)
+            
+            self.config = config
+            self.logger = logging.getLogger('RFU.FileExplorer.BasePaneWidget.Fallback')
+            
+            # Pane state
+            self._is_active = False
+            self._is_modified = False
+            self._creation_time = datetime.now()
+            self._last_access_time = datetime.now()
+            
+            # CRITICAL: Create the _content_widget that FileExplorerPane expects
+            if QT_AVAILABLE:
+                self._setup_ui()
+        
+        def _setup_ui(self):
+            """Setup the pane user interface."""
+            if not QT_AVAILABLE:
+                return
+            
+            # Set basic properties
+            self.setObjectName(f"pane_{self.config.pane_id}")
+            self.setWindowTitle(self.config.title)
+            
+            # Setup layout
+            layout = QVBoxLayout(self)
+            layout.setContentsMargins(0, 0, 0, 0)
+            layout.setSpacing(0)
+            
+            # Create content area - THIS IS CRITICAL!
+            self._content_widget = self._create_content_widget()
+            if self._content_widget:
+                layout.addWidget(self._content_widget, 1)
+        
+        def _create_content_widget(self) -> QWidget:
+            """Create content widget."""
+            if not QT_AVAILABLE:
+                return None
+            
+            content = QFrame()
+            content_layout = QVBoxLayout(content)
+            content_layout.setContentsMargins(0, 0, 0, 0)
+            content_layout.setSpacing(0)
+            return content
+        
+        def set_modified(self, modified: bool = True):
+            """Set pane modified state."""
+            self._is_modified = modified
+        
+        def get_state_data(self):
+            """Get pane state data for persistence."""
+            return {
+                'pane_id': self.config.pane_id,
+                'is_modified': self._is_modified
+            }
+        
+        def restore_state_data(self, data):
+            """Restore pane state data from persistence."""
+            self._is_modified = data.get('is_modified', False)
     
     class PaneConfiguration:
-        pass
+        def __init__(self, pane_id, pane_type="file_explorer", title="File Explorer"):
+            self.pane_id = pane_id
+            self.pane_type = pane_type
+            self.title = title
     
     class PaneType:
         FILE_EXPLORER = "file_explorer"

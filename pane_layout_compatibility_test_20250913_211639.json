@@ -1,0 +1,286 @@
+{
+  "test_metadata": {
+    "test_start_time": "2025-09-13T21:16:35.113457",
+    "test_end_time": "2025-09-13T21:16:39.864817",
+    "total_combinations_tested": 16,
+    "test_matrix": {
+      "pane_variants": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "layout_variants": [
+        "horizontal",
+        "vertical",
+        "grid",
+        "mixed"
+      ]
+    }
+  },
+  "summary_statistics": {
+    "successful_combinations": 0,
+    "failed_combinations": 0,
+    "blank_combinations": 0,
+    "error_combinations": 0,
+    "success_rate": 0.0
+  },
+  "detailed_results": {
+    "1pane_horizontal": {
+      "test_id": "1pane_horizontal",
+      "pane_count": 1,
+      "layout_mode": "horizontal",
+      "success": false,
+      "has_content": false,
+      "error": "Layout mode combo box not found",
+      "error_traceback": null,
+      "widget_count": 0,
+      "visible_widgets": 0,
+      "pane_widgets": [],
+      "layout_geometry": null,
+      "test_timestamp": "2025-09-13T21:16:36.453883"
+    },
+    "1pane_vertical": {
+      "test_id": "1pane_vertical",
+      "pane_count": 1,
+      "layout_mode": "vertical",
+      "success": false,
+      "has_content": false,
+      "error": "Layout mode combo box not found",
+      "error_traceback": null,
+      "widget_count": 0,
+      "visible_widgets": 0,
+      "pane_widgets": [],
+      "layout_geometry": null,
+      "test_timestamp": "2025-09-13T21:16:36.655731"
+    },
+    "1pane_grid": {
+      "test_id": "1pane_grid",
+      "pane_count": 1,
+      "layout_mode": "grid",
+      "success": false,
+      "has_content": false,
+      "error": "Layout mode combo box not found",
+      "error_traceback": null,
+      "widget_count": 0,
+      "visible_widgets": 0,
+      "pane_widgets": [],
+      "layout_geometry": null,
+      "test_timestamp": "2025-09-13T21:16:36.876057"
+    },
+    "1pane_mixed": {
+      "test_id": "1pane_mixed",
+      "pane_count": 1,
+      "layout_mode": "mixed",
+      "success": false,
+      "has_content": false,
+      "error": "Layout mode combo box not found",
+      "error_traceback": null,
+      "widget_count": 0,
+      "visible_widgets": 0,
+      "pane_widgets": [],
+      "layout_geometry": null,
+      "test_timestamp": "2025-09-13T21:16:37.077589"
+    },
+    "2pane_horizontal": {
+      "test_id": "2pane_horizontal",
+      "pane_count": 2,
+      "layout_mode": "horizontal",
+      "success": false,
+      "has_content": false,
+      "error": "Layout mode combo box not found",
+      "error_traceback": null,
+      "widget_count": 0,
+      "visible_widgets": 0,
+      "pane_widgets": [],
+      "layout_geometry": null,
+      "test_timestamp": "2025-09-13T21:16:37.290999"
+    },
+    "2pane_vertical": {
+      "test_id": "2pane_vertical",
+      "pane_count": 2,
+      "layout_mode": "vertical",
+      "success": false,
+      "has_content": false,
+      "error": "Layout mode combo box not found",
+      "error_traceback": null,
+      "widget_count": 0,
+      "visible_widgets": 0,
+      "pane_widgets": [],
+      "layout_geometry": null,
+      "test_timestamp": "2025-09-13T21:16:37.573080"
+    },
+    "2pane_grid": {
+      "test_id": "2pane_grid",
+      "pane_count": 2,
+      "layout_mode": "grid",
+      "success": false,
+      "has_content": false,
+      "error": "Layout mode combo box not found",
+      "error_traceback": null,
+      "widget_count": 0,
+      "visible_widgets": 0,
+      "pane_widgets": [],
+      "layout_geometry": null,
+      "test_timestamp": "2025-09-13T21:16:37.774604"
+    },
+    "2pane_mixed": {
+      "test_id": "2pane_mixed",
+      "pane_count": 2,
+      "layout_mode": "mixed",
+      "success": false,
+      "has_content": false,
+      "error": "Layout mode combo box not found",
+      "error_traceback": null,
+      "widget_count": 0,
+      "visible_widgets": 0,
+      "pane_widgets": [],
+      "layout_geometry": null,
+      "test_timestamp": "2025-09-13T21:16:37.975995"
+    },
+    "3pane_horizontal": {
+      "test_id": "3pane_horizontal",
+      "pane_count": 3,
+      "layout_mode": "horizontal",
+      "success": false,
+      "has_content": false,
+      "error": "Layout mode combo box not found",
+      "error_traceback": null,
+      "widget_count": 0,
+      "visible_widgets": 0,
+      "pane_widgets": [],
+      "layout_geometry": null,
+      "test_timestamp": "2025-09-13T21:16:38.177146"
+    },
+    "3pane_vertical": {
+      "test_id": "3pane_vertical",
+      "pane_count": 3,
+      "layout_mode": "vertical",
+      "success": false,
+      "has_content": false,
+      "error": "Layout mode combo box not found",
+      "error_traceback": null,
+      "widget_count": 0,
+      "visible_widgets": 0,
+      "pane_widgets": [],
+      "layout_geometry": null,
+      "test_timestamp": "2025-09-13T21:16:38.416786"
+    },
+    "3pane_grid": {
+      "test_id": "3pane_grid",
+      "pane_count": 3,
+      "layout_mode": "grid",
+      "success": false,
+      "has_content": false,
+      "error": "Layout mode combo box not found",
+      "error_traceback": null,
+      "widget_count": 0,
+      "visible_widgets": 0,
+      "pane_widgets": [],
+      "layout_geometry": null,
+      "test_timestamp": "2025-09-13T21:16:38.618154"
+    },
+    "3pane_mixed": {
+      "test_id": "3pane_mixed",
+      "pane_count": 3,
+      "layout_mode": "mixed",
+      "success": false,
+      "has_content": false,
+      "error": "Layout mode combo box not found",
+      "error_traceback": null,
+      "widget_count": 0,
+      "visible_widgets": 0,
+      "pane_widgets": [],
+      "layout_geometry": null,
+      "test_timestamp": "2025-09-13T21:16:38.820054"
+    },
+    "4pane_horizontal": {
+      "test_id": "4pane_horizontal",
+      "pane_count": 4,
+      "layout_mode": "horizontal",
+      "success": false,
+      "has_content": false,
+      "error": "Layout mode combo box not found",
+      "error_traceback": null,
+      "widget_count": 0,
+      "visible_widgets": 0,
+      "pane_widgets": [],
+      "layout_geometry": null,
+      "test_timestamp": "2025-09-13T21:16:39.022070"
+    },
+    "4pane_vertical": {
+      "test_id": "4pane_vertical",
+      "pane_count": 4,
+      "layout_mode": "vertical",
+      "success": false,
+      "has_content": false,
+      "error": "Layout mode combo box not found",
+      "error_traceback": null,
+      "widget_count": 0,
+      "visible_widgets": 0,
+      "pane_widgets": [],
+      "layout_geometry": null,
+      "test_timestamp": "2025-09-13T21:16:39.260738"
+    },
+    "4pane_grid": {
+      "test_id": "4pane_grid",
+      "pane_count": 4,
+      "layout_mode": "grid",
+      "success": false,
+      "has_content": false,
+      "error": "Layout mode combo box not found",
+      "error_traceback": null,
+      "widget_count": 0,
+      "visible_widgets": 0,
+      "pane_widgets": [],
+      "layout_geometry": null,
+      "test_timestamp": "2025-09-13T21:16:39.462258"
+    },
+    "4pane_mixed": {
+      "test_id": "4pane_mixed",
+      "pane_count": 4,
+      "layout_mode": "mixed",
+      "success": false,
+      "has_content": false,
+      "error": "Layout mode combo box not found",
+      "error_traceback": null,
+      "widget_count": 0,
+      "visible_widgets": 0,
+      "pane_widgets": [],
+      "layout_geometry": null,
+      "test_timestamp": "2025-09-13T21:16:39.663499"
+    }
+  },
+  "problem_combinations": {
+    "blank_results": [],
+    "errors": [],
+    "failures": []
+  },
+  "compatibility_matrix": {
+    "1_pane": {
+      "horizontal": "\u2753 UNKNOWN",
+      "vertical": "\u2753 UNKNOWN",
+      "grid": "\u2753 UNKNOWN",
+      "mixed": "\u2753 UNKNOWN"
+    },
+    "2_pane": {
+      "horizontal": "\u2753 UNKNOWN",
+      "vertical": "\u2753 UNKNOWN",
+      "grid": "\u2753 UNKNOWN",
+      "mixed": "\u2753 UNKNOWN"
+    },
+    "3_pane": {
+      "horizontal": "\u2753 UNKNOWN",
+      "vertical": "\u2753 UNKNOWN",
+      "grid": "\u2753 UNKNOWN",
+      "mixed": "\u2753 UNKNOWN"
+    },
+    "4_pane": {
+      "horizontal": "\u2753 UNKNOWN",
+      "vertical": "\u2753 UNKNOWN",
+      "grid": "\u2753 UNKNOWN",
+      "mixed": "\u2753 UNKNOWN"
+    }
+  },
+  "recommendations": []
+}
