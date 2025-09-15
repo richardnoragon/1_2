@@ -38,7 +38,7 @@
   "interface_mode": {
     "show_startup_dialog": false,
     "remember_choice": true,
-    "current_mode": "dialog_hub",
+    "current_mode": "multi_pane",
     "auto_detect_enabled": true,
     "transition_animations": true,
     "switch_confirmation": false
