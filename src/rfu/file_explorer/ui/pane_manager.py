@@ -56,9 +56,10 @@ try:
                               pyqtSignal)
     from PyQt5.QtGui import QColor, QDrag, QFont, QPainter, QPixmap
     from PyQt5.QtWidgets import (QApplication, QDockWidget, QFrame,
-                                 QGridLayout, QHBoxLayout, QLabel, QMainWindow,
-                                 QScrollArea, QSizePolicy, QSplitter,
-                                 QStackedWidget, QTabWidget, QVBoxLayout,
+                                 QGridLayout, QHBoxLayout, QLabel, QLineEdit,
+                                 QMainWindow, QScrollArea, QSizePolicy,
+                                 QSplitter, QStackedWidget, QTabWidget,
+                                 QTreeWidget, QTreeWidgetItem, QVBoxLayout,
                                  QWidget)
     QT_AVAILABLE = True
 except ImportError:
@@ -66,14 +67,34 @@ except ImportError:
     # Fallback definitions
     class QObject:
         pass
+
     class QWidget:
         pass
+
     class QFrame:
         pass
+
     class QSplitter:
         pass
+
     class QTabWidget:
         pass
+
+    class QTreeWidget:
+        pass
+
+    class QTreeWidgetItem:
+        pass
+
+    class QLineEdit:
+        pass
+
+    class QFont:
+        pass
+
+    class QColor:
+        pass
+
     def pyqtSignal(*args):
         def dummy_signal(*signal_args):
             pass
@@ -87,6 +108,7 @@ class PaneType(Enum):
     TERMINAL = auto()
     PROPERTIES = auto()
     BOOKMARKS = auto()
+    TOOLS = auto()
     SEARCH_RESULTS = auto()
     CUSTOM = auto()
 
@@ -611,6 +633,434 @@ class BasePaneWidget(QFrame if QT_AVAILABLE else object):
             self._last_access_time = datetime.fromisoformat(data.get('last_access_time', datetime.now().isoformat()))
         except ValueError:
             pass
+
+
+class ToolsPaneWidget(BasePaneWidget):
+    """
+    Tools pane widget displaying all RFU tool categories and utilities.
+    
+    Provides comprehensive access to all RFU tools organized by category
+    with search functionality and keyboard navigation support.
+    """
+    
+    # Signals for tool events
+    toolLaunched = pyqtSignal(str, str) if QT_AVAILABLE else None
+    categoryExpanded = pyqtSignal(str) if QT_AVAILABLE else None
+    toolSelected = pyqtSignal(str) if QT_AVAILABLE else None
+    
+    def __init__(self, config: PaneConfiguration, parent=None):
+        """Initialize tools pane widget."""
+        super().__init__(config, parent)
+        
+        # Tool categories and definitions from RFU main.py
+        self.tool_categories = {
+            "File Management": [
+                ("File Finder", "Search and find files by criteria"),
+                ("Catalog Files", "Create and manage file catalogs"),
+                ("Rename Files", "Batch rename files and folders"),
+                ("Organize Files", "Organize files by type/date"),
+                ("Advanced Folders", "Smart folder monitoring"),
+            ],
+            "File Operations": [
+                ("Copy/Move/Sync/Delete", "Advanced file operations"),
+                ("Compress/Decompress", "Archive and extract files"),
+                ("Split/Join Files", "Split large files or join parts"),
+                ("Synchronize", "Synchronize directories"),
+                ("Enhanced Editor", "Text editor with syntax highlighting"),
+            ],
+            "Analysis": [
+                ("Size Analyzer", "Analyze disk space usage"),
+                ("Duplicate Finder", "Find and remove duplicate files"),
+                ("File Checksum", "Calculate and verify checksums"),
+                ("Empty Folders", "Find and clean empty folders"),
+            ],
+            "Security": [
+                ("Security Preferences", "Configure security settings"),
+                ("Encrypt/Decrypt", "File encryption and decryption"),
+                ("Secure Delete", "Permanently delete sensitive files"),
+                ("Permissions Editor", "Manage file permissions"),
+            ],
+            "Metadata": [
+                ("Edit Image Metadata", "View and edit image metadata"),
+                ("Office Metadata Editor", "Edit document metadata"),
+                ("File Touch", "Modify file timestamps"),
+            ],
+            "PDF Tools": [
+                ("PDF Utilities", "Comprehensive PDF tools"),
+                ("Extract Links", "Extract links from PDF files"),
+                ("Page Administration", "Manage PDF pages"),
+            ],
+            "Network Tools": [
+                ("Network Connectivity", "Check network connectivity"),
+                ("Network Scanner", "Scan network for devices"),
+                ("Network Transfer", "Transfer files between RFU clients"),
+                ("Bookmark Manager", "Cross-platform bookmark manager"),
+            ],
+            "Privacy Tools": [
+                ("Privacy Cleaner", "Clean privacy-sensitive data"),
+                ("Data Anonymizer", "Anonymize sensitive file data"),
+            ],
+            "System Tools": [
+                ("Enhanced Clipboard", "Advanced clipboard management"),
+                ("System Diagnostics", "Comprehensive system analysis"),
+                ("System Cleanup", "Clean temporary files"),
+                ("Software Maintenance", "Update installed software"),
+            ]
+        }
+        
+        # Widget references
+        self.tools_tree = None
+        self.search_widget = None
+        self.status_label = None
+        
+        self.logger.debug("ToolsPaneWidget initialized")
+    
+    def _should_show_title(self) -> bool:
+        """Tools pane should show title."""
+        return True
+    
+    def _create_content_widget(self) -> QWidget:
+        """Create tools pane content widget."""
+        if not QT_AVAILABLE:
+            return None
+        
+        content_widget = QWidget()
+        layout = QVBoxLayout(content_widget)
+        layout.setContentsMargins(5, 5, 5, 5)
+        layout.setSpacing(5)
+        
+        # Search box for tool filtering
+        self.search_widget = self._create_search_widget()
+        layout.addWidget(self.search_widget)
+        
+        # Tools tree widget
+        self.tools_tree = self._create_tools_tree()
+        layout.addWidget(self.tools_tree, 1)
+        
+        # Status label
+        self.status_label = QLabel("Tools Ready")
+        self.status_label.setStyleSheet("""
+            QLabel {
+                font-size: 10px;
+                color: #666;
+                padding: 3px;
+                background-color: #e9ecef;
+                border-radius: 2px;
+                border: 1px solid #dee2e6;
+            }
+        """)
+        layout.addWidget(self.status_label)
+        
+        return content_widget
+    
+    def _create_search_widget(self) -> QWidget:
+        """Create search widget for tool filtering."""
+        from PyQt5.QtWidgets import QHBoxLayout, QLineEdit
+        
+        search_frame = QFrame()
+        search_frame.setStyleSheet("""
+            QFrame {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                border-radius: 3px;
+                padding: 2px;
+            }
+        """)
+        
+        layout = QHBoxLayout(search_frame)
+        layout.setContentsMargins(5, 3, 5, 3)
+        layout.setSpacing(5)
+        
+        # Search label
+        search_label = QLabel("🔍")
+        search_label.setStyleSheet("color: #666; font-size: 12px;")
+        layout.addWidget(search_label)
+        
+        # Search input
+        self.search_input = QLineEdit()
+        self.search_input.setPlaceholderText("Search tools...")
+        self.search_input.setStyleSheet("""
+            QLineEdit {
+                border: none;
+                background: transparent;
+                color: #495057;
+                font-size: 11px;
+            }
+        """)
+        self.search_input.textChanged.connect(self._filter_tools)
+        layout.addWidget(self.search_input, 1)
+        
+        return search_frame
+    
+    def _create_tools_tree(self) -> QWidget:
+        """Create tools tree widget with all RFU tool categories."""
+        from PyQt5.QtWidgets import QTreeWidget
+        
+        tools_tree = QTreeWidget()
+        tools_tree.setHeaderLabels(["Tools"])
+        tools_tree.setAlternatingRowColors(True)
+        tools_tree.setRootIsDecorated(True)
+        tools_tree.setExpandsOnDoubleClick(True)
+        tools_tree.setStyleSheet("""
+            QTreeWidget {
+                background-color: white;
+                border: 1px solid #ddd;
+                font-size: 11px;
+                selection-background-color: #007ACC;
+                selection-color: white;
+            }
+            QTreeWidget::item {
+                padding: 4px;
+                border-bottom: 1px solid #f0f0f0;
+            }
+            QTreeWidget::item:selected {
+                background-color: #007ACC;
+                color: white;
+            }
+            QTreeWidget::item:hover {
+                background-color: #e3f2fd;
+            }
+            QTreeWidget::branch:has-children:!has-siblings:closed,
+            QTreeWidget::branch:closed:has-children:has-siblings {
+                border-image: none;
+                image: url(none);
+            }
+            QTreeWidget::branch:open:has-children:!has-siblings,
+            QTreeWidget::branch:open:has-children:has-siblings {
+                border-image: none;
+                image: url(none);
+            }
+        """)
+        
+        # Populate tools tree
+        self._populate_tools_tree(tools_tree)
+        
+        # Connect signals
+        tools_tree.itemDoubleClicked.connect(self._on_tool_activated)
+        tools_tree.itemClicked.connect(self._on_tool_selected)
+        tools_tree.itemExpanded.connect(self._on_category_expanded)
+        
+        # Enable keyboard navigation
+        tools_tree.setFocusPolicy(Qt.StrongFocus)
+        
+        return tools_tree
+    
+    def _populate_tools_tree(self, tree_widget):
+        """Populate tools tree with RFU tool categories."""
+        tree_widget.clear()
+        
+        total_tools = 0
+        
+        for category_name, tools in self.tool_categories.items():
+            # Create category item
+            category_item = QTreeWidgetItem([f"📁 {category_name}"])
+            category_item.setFont(0, QFont("Arial", 10, QFont.Bold))
+            category_item.setForeground(0, QColor("#2c3e50"))
+            category_item.setData(0, Qt.UserRole, {"type": "category", "name": category_name})
+            
+            # Add tools to category
+            for tool_name, tool_description in tools:
+                tool_item = QTreeWidgetItem([f"🔧 {tool_name}"])
+                tool_item.setFont(0, QFont("Arial", 9))
+                tool_item.setForeground(0, QColor("#495057"))
+                tool_item.setToolTip(0, tool_description)
+                tool_item.setData(0, Qt.UserRole, {
+                    "type": "tool",
+                    "name": tool_name,
+                    "category": category_name,
+                    "description": tool_description
+                })
+                
+                category_item.addChild(tool_item)
+                total_tools += 1
+            
+            tree_widget.addTopLevelItem(category_item)
+            
+            # Expand popular categories by default
+            if category_name in ["File Management", "File Operations", "Analysis"]:
+                category_item.setExpanded(True)
+        
+        # Update status
+        if hasattr(self, 'status_label') and self.status_label:
+            self.status_label.setText(f"{len(self.tool_categories)} categories, {total_tools} tools")
+    
+    def _filter_tools(self, search_text: str):
+        """Filter tools based on search text."""
+        if not self.tools_tree:
+            return
+        
+        search_text = search_text.lower().strip()
+        
+        if not search_text:
+            # Show all items
+            self._show_all_items()
+            return
+        
+        # Hide/show items based on search
+        visible_categories = 0
+        visible_tools = 0
+        
+        for i in range(self.tools_tree.topLevelItemCount()):
+            category_item = self.tools_tree.topLevelItem(i)
+            category_data = category_item.data(0, Qt.UserRole)
+            category_name = category_data.get("name", "").lower()
+            
+            category_visible = False
+            
+            # Check if category name matches
+            if search_text in category_name:
+                category_visible = True
+            
+            # Check tools in category
+            for j in range(category_item.childCount()):
+                tool_item = category_item.child(j)
+                tool_data = tool_item.data(0, Qt.UserRole)
+                tool_name = tool_data.get("name", "").lower()
+                tool_description = tool_data.get("description", "").lower()
+                
+                tool_matches = (search_text in tool_name or
+                               search_text in tool_description or
+                               category_visible)
+                
+                tool_item.setHidden(not tool_matches)
+                
+                if tool_matches:
+                    category_visible = True
+                    visible_tools += 1
+            
+            category_item.setHidden(not category_visible)
+            if category_visible:
+                visible_categories += 1
+                category_item.setExpanded(True)
+        
+        # Update status
+        if hasattr(self, 'status_label') and self.status_label:
+            if search_text:
+                self.status_label.setText(f"Found: {visible_categories} categories, {visible_tools} tools")
+            else:
+                total_tools = sum(len(tools) for tools in self.tool_categories.values())
+                self.status_label.setText(f"{len(self.tool_categories)} categories, {total_tools} tools")
+    
+    def _show_all_items(self):
+        """Show all tools and categories."""
+        if not self.tools_tree:
+            return
+        
+        for i in range(self.tools_tree.topLevelItemCount()):
+            category_item = self.tools_tree.topLevelItem(i)
+            category_item.setHidden(False)
+            
+            for j in range(category_item.childCount()):
+                tool_item = category_item.child(j)
+                tool_item.setHidden(False)
+    
+    def _on_tool_activated(self, item, column):
+        """Handle tool double-click activation."""
+        if not item:
+            return
+        
+        item_data = item.data(0, Qt.UserRole)
+        if not item_data:
+            return
+        
+        item_type = item_data.get("type")
+        
+        if item_type == "tool":
+            tool_name = item_data.get("name")
+            category = item_data.get("category")
+            description = item_data.get("description")
+            
+            if QT_AVAILABLE and self.toolLaunched:
+                self.toolLaunched.emit(tool_name, category)
+            
+            # Update status
+            if hasattr(self, 'status_label') and self.status_label:
+                self.status_label.setText(f"Launching: {tool_name}")
+            
+            self.logger.info(f"Tool activated: {tool_name} ({category})")
+            
+        elif item_type == "category":
+            # Toggle category expansion
+            item.setExpanded(not item.isExpanded())
+            
+            if QT_AVAILABLE and self.categoryExpanded:
+                self.categoryExpanded.emit(item_data.get("name"))
+    
+    def _on_tool_selected(self, item, column):
+        """Handle tool selection."""
+        if not item:
+            return
+        
+        item_data = item.data(0, Qt.UserRole)
+        if not item_data:
+            return
+        
+        item_type = item_data.get("type")
+        
+        if item_type == "tool":
+            tool_name = item_data.get("name")
+            description = item_data.get("description")
+            
+            if QT_AVAILABLE and self.toolSelected:
+                self.toolSelected.emit(tool_name)
+            
+            # Update status with tool description
+            if hasattr(self, 'status_label') and self.status_label:
+                self.status_label.setText(description[:80] + "..." if len(description) > 80 else description)
+            
+        elif item_type == "category":
+            category_name = item_data.get("name")
+            tool_count = len(self.tool_categories.get(category_name, []))
+            
+            if hasattr(self, 'status_label') and self.status_label:
+                self.status_label.setText(f"{category_name}: {tool_count} tools")
+    
+    def _on_category_expanded(self, item):
+        """Handle category expansion."""
+        item_data = item.data(0, Qt.UserRole)
+        if item_data and item_data.get("type") == "category":
+            category_name = item_data.get("name")
+            
+            if QT_AVAILABLE and self.categoryExpanded:
+                self.categoryExpanded.emit(category_name)
+            
+            self.logger.debug(f"Category expanded: {category_name}")
+    
+    def get_tool_count(self) -> int:
+        """Get total number of tools."""
+        return sum(len(tools) for tools in self.tool_categories.values())
+    
+    def get_category_count(self) -> int:
+        """Get total number of categories."""
+        return len(self.tool_categories)
+    
+    def expand_all_categories(self):
+        """Expand all tool categories."""
+        if not self.tools_tree:
+            return
+        
+        for i in range(self.tools_tree.topLevelItemCount()):
+            category_item = self.tools_tree.topLevelItem(i)
+            category_item.setExpanded(True)
+    
+    def collapse_all_categories(self):
+        """Collapse all tool categories."""
+        if not self.tools_tree:
+            return
+        
+        for i in range(self.tools_tree.topLevelItemCount()):
+            category_item = self.tools_tree.topLevelItem(i)
+            category_item.setExpanded(False)
+    
+    def clear_search(self):
+        """Clear search filter and show all tools."""
+        if hasattr(self, 'search_input') and self.search_input:
+            self.search_input.clear()
+        self._show_all_items()
+        
+        total_tools = sum(len(tools) for tools in self.tool_categories.values())
+        if hasattr(self, 'status_label') and self.status_label:
+            self.status_label.setText(f"{len(self.tool_categories)} categories, {total_tools} tools")
 
 
 class PaneFactory:
@@ -1258,6 +1708,11 @@ class PaneManager(QObject):
             
         except Exception as e:
             self.logger.error(f"Error during cleanup: {e}")
+
+
+# Register standard pane types with the factory
+if QT_AVAILABLE:
+    PaneFactory.register_pane_class(PaneType.TOOLS, ToolsPaneWidget)
 
 
 # For testing and development

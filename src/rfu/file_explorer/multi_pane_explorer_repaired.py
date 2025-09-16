@@ -57,7 +57,8 @@ try:
                                                              SortCriteria,
                                                              ViewMode)
     from src.rfu.file_explorer.ui.pane_manager import (PaneConfiguration,
-                                                       PaneType)
+                                                       PaneType,
+                                                       ToolsPaneWidget)
     from src.rfu.file_explorer.ui.widget_lifecycle_manager import (
         get_widget_lifecycle_manager, is_widget_valid, register_widget,
         safe_destroy_widget, safe_widget_operation)
@@ -88,6 +89,18 @@ except ImportError as e:
     KeyboardShortcutManager = None
     
     # ROBUST FALLBACK CLASSES
+    class ToolsPaneWidget(QWidget):
+        """Fallback ToolsPaneWidget for when imports fail."""
+        
+        toolLaunched = pyqtSignal(str, str)
+        
+        def __init__(self, config, parent=None):
+            super().__init__(parent)
+            layout = QVBoxLayout(self)
+            label = QLabel("Tools Pane (Fallback)")
+            label.setAlignment(Qt.AlignCenter)
+            layout.addWidget(label)
+    
     class FileExplorerPane(QWidget):
         """Enhanced fallback FileExplorerPane with complete functionality."""
         
@@ -436,6 +449,8 @@ except ImportError as e:
     
     class PaneType:
         FILE_EXPLORER = "file_explorer"
+        TOOLS = "tools"
+        BOOKMARKS = "bookmarks"
     
     class ViewMode:
         DETAILS = "details"
@@ -639,13 +654,44 @@ class MultiPaneFileExplorer(QMainWindow):
                 return container
     
     def create_left_panel(self):
-        """Create left side panel with bookmarks."""
+        """Create left side panel with bookmarks and tools."""
         left_panel = QTabWidget()
-        left_panel.setMaximumWidth(250)
+        left_panel.setMaximumWidth(280)
+        left_panel.setStyleSheet("""
+            QTabWidget::pane {
+                border: 1px solid #dee2e6;
+                background-color: white;
+            }
+            QTabWidget::tab-bar {
+                alignment: center;
+            }
+            QTabBar::tab {
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                padding: 8px 12px;
+                margin-right: 2px;
+                font-weight: bold;
+                font-size: 11px;
+            }
+            QTabBar::tab:selected {
+                background-color: #007ACC;
+                color: white;
+            }
+            QTabBar::tab:hover {
+                background-color: #e9ecef;
+            }
+        """)
+        
+        # Tools tab - PRIMARY TAB
+        tools_widget = self.create_tools_widget()
+        left_panel.addTab(tools_widget, "🔧 Tools")
         
         # Bookmarks tab
         bookmark_widget = self.create_simple_bookmark_widget()
-        left_panel.addTab(bookmark_widget, "Bookmarks")
+        left_panel.addTab(bookmark_widget, "🔖 Bookmarks")
+        
+        # Set tools tab as default active tab
+        left_panel.setCurrentIndex(0)
         
         return left_panel
     
@@ -669,6 +715,110 @@ class MultiPaneFileExplorer(QMainWindow):
         
         bookmark_tree.itemDoubleClicked.connect(self._on_bookmark_activated)
         return bookmark_tree
+    
+    def create_tools_widget(self):
+        """Create tools widget with all RFU tool categories."""
+        try:
+            # Create tools pane configuration
+            tools_config = PaneConfiguration(
+                pane_id="main_tools_pane",
+                pane_type=PaneType.TOOLS,
+                title="RFU Tools"
+            )
+            
+            # Create tools pane widget
+            tools_pane = ToolsPaneWidget(tools_config, self)
+            
+            # Connect tool launch signals
+            if hasattr(tools_pane, 'toolLaunched'):
+                tools_pane.toolLaunched.connect(self._on_tool_launched)
+            
+            if hasattr(tools_pane, 'toolSelected'):
+                tools_pane.toolSelected.connect(self._on_tool_selected)
+            
+            self.logger.info("Tools widget created successfully")
+            return tools_pane
+            
+        except Exception as e:
+            self.logger.error(f"Error creating tools widget: {e}")
+            return self._create_fallback_tools_widget()
+    
+    def _create_fallback_tools_widget(self):
+        """Create fallback tools widget when ToolsPaneWidget fails."""
+        fallback_tree = QTreeWidget()
+        fallback_tree.setHeaderLabels(["Tools"])
+        
+        # Add basic tool categories
+        categories = {
+            "File Management": ["File Finder", "Catalog Files", "Rename Files"],
+            "File Operations": ["Copy/Move/Sync/Delete", "Compress/Decompress"],
+            "Analysis": ["Size Analyzer", "Duplicate Finder"],
+            "Security": ["Encrypt/Decrypt", "Secure Delete"]
+        }
+        
+        for category_name, tools in categories.items():
+            category_item = QTreeWidgetItem([f"[FOLDER] {category_name}"])
+            category_item.setData(0, Qt.UserRole, {"type": "category"})
+            
+            for tool_name in tools:
+                tool_item = QTreeWidgetItem([f"[TOOL] {tool_name}"])
+                tool_item.setData(0, Qt.UserRole, {"type": "tool", "name": tool_name})
+                category_item.addChild(tool_item)
+            
+            fallback_tree.addTopLevelItem(category_item)
+            category_item.setExpanded(True)
+        
+        fallback_tree.itemDoubleClicked.connect(self._on_fallback_tool_activated)
+        return fallback_tree
+    
+    def _on_tool_launched(self, tool_name: str, category: str):
+        """Handle tool launch from tools pane."""
+        try:
+            self.logger.info(f"Tool launch requested: {tool_name} ({category})")
+            
+            # Show placeholder for now - this would launch the actual tool
+            QMessageBox.information(
+                self,
+                "Tool Launch",
+                f"Launching {tool_name} from {category} category...\n\n"
+                f"This would normally open the {tool_name} tool window."
+            )
+            
+            # Update status
+            if hasattr(self, 'file_count_label'):
+                self.file_count_label.setText(f"Launched: {tool_name}")
+            
+            # Track in database if available
+            if self.db_manager:
+                try:
+                    self.logger.debug(f"Would track tool usage: {tool_name}")
+                except Exception as e:
+                    self.logger.warning(f"Database tracking failed: {e}")
+                    
+        except Exception as e:
+            self.logger.error(f"Error handling tool launch: {e}")
+    
+    def _on_tool_selected(self, tool_name: str):
+        """Handle tool selection from tools pane."""
+        try:
+            if hasattr(self, 'file_count_label'):
+                self.file_count_label.setText(f"Selected: {tool_name}")
+                
+        except Exception as e:
+            self.logger.error(f"Error handling tool selection: {e}")
+    
+    def _on_fallback_tool_activated(self, item, column):
+        """Handle tool activation in fallback tools widget."""
+        if not item:
+            return
+        
+        item_data = item.data(0, Qt.UserRole)
+        if not item_data:
+            return
+        
+        if item_data.get("type") == "tool":
+            tool_name = item_data.get("name", "Unknown Tool")
+            self._on_tool_launched(tool_name, "Fallback")
     
     def setup_simple_status_bar(self):
         """Setup status bar."""

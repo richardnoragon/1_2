@@ -1,61 +1,61 @@
 #!/usr/bin/env python3
 """
-Direct test of the MultiPaneFileExplorer to verify it works properly.
+Direct test of the multi-pane explorer with tools pane restoration.
 """
 
 import os
 import sys
 
-# Add the src directory to the Python path
+# Set up encoding for Windows
+if os.name == 'nt':
+    import codecs
+    sys.stdout = codecs.getwriter('utf-8')(sys.stdout.buffer, 'strict')
+    sys.stderr = codecs.getwriter('utf-8')(sys.stderr.buffer, 'strict')
+
+# Add src to path
 project_root = os.path.dirname(__file__)
 sys.path.insert(0, os.path.join(project_root, 'src'))
 
 try:
+    from PyQt5.QtCore import QTimer
     from PyQt5.QtWidgets import QApplication
-
-    from src.rfu.file_explorer.multi_pane_explorer import MultiPaneFileExplorer
     
-    def main():
-        print("Testing MultiPaneFileExplorer directly...")
-        
-        app = QApplication(sys.argv)
-        
-        try:
-            # Create the multi-pane explorer
-            window = MultiPaneFileExplorer()
-            window.show()
-            
-            print("✅ Multi-pane explorer launched successfully!")
-            print(f"   Window title: {window.windowTitle()}")
-            print(f"   Window size: {window.size().width()}x{window.size().height()}")
-            print(f"   Number of panes: {len(window.panes) if hasattr(window, 'panes') else 'Unknown'}")
-            
-            # Check if panes are created
-            if hasattr(window, 'panes') and window.panes:
-                print(f"   Panes created: {len(window.panes)}")
-                for i, pane in enumerate(window.panes):
-                    if pane:
-                        print(f"   - Pane {i+1}: {type(pane).__name__}")
-                    else:
-                        print(f"   - Pane {i+1}: None")
-            else:
-                print("   ⚠️  No panes found or panes list empty")
-            
-            print("\n🎯 Multi-pane explorer is running with full features!")
-            print("   Close the window to exit the test.")
-            
-            return app.exec_()
-            
-        except Exception as e:
-            print(f"❌ Error creating multi-pane explorer: {e}")
-            import traceback
-            traceback.print_exc()
-            return 1
+    print("Testing Multi-Pane Explorer Tools Pane...")
     
-    if __name__ == '__main__':
-        sys.exit(main())
-
+    app = QApplication(sys.argv)
+    
+    # Import and test the multi-pane explorer directly
+    from src.rfu.file_explorer.multi_pane_explorer_repaired import \
+        MultiPaneFileExplorer
+    
+    explorer = MultiPaneFileExplorer()
+    
+    print("Multi-pane explorer created successfully")
+    
+    # Test the left panel creation
+    try:
+        left_panel = explorer.create_left_panel()
+        print(f"Left panel created with {left_panel.count()} tabs")
+        
+        for i in range(left_panel.count()):
+            tab_text = left_panel.tabText(i)
+            print(f"  Tab {i}: {tab_text}")
+            
+    except Exception as e:
+        print(f"Error testing left panel: {e}")
+    
+    explorer.show()
+    print("Explorer window shown - verify tools pane is visible")
+    
+    # Auto-close after 5 seconds for testing
+    QTimer.singleShot(5000, app.quit)
+    
+    app.exec_()
+    print("Test completed")
+    
 except ImportError as e:
-    print(f"❌ Import error: {e}")
-    print("Make sure PyQt5 is installed and the project structure is correct.")
+    print(f"Import error: {e}")
+    sys.exit(1)
+except Exception as e:
+    print(f"Test error: {e}")
     sys.exit(1)
