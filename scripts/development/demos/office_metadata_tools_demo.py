@@ -5,8 +5,8 @@ This demo script showcases the Office Metadata Tools GUI functionality,
 demonstrating metadata extraction, security analysis, and export capabilities.
 """
 
-import sys
 import os
+import sys
 from datetime import datetime
 
 # Add the src directory to the Python path
@@ -14,6 +14,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
 
 try:
     from PyQt5.QtWidgets import QApplication, QMessageBox
+
     from src.tools.metadata.office_metadata import OfficeMetadataGUI
     
     def main():

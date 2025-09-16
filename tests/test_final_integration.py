@@ -3,33 +3,34 @@
 Simple test script to verify all tools are properly integrated after organization
 """
 
-import sys
 import os
+import sys
+
 
 def test_imports():
     """Test that all main utilities can be imported"""
     print("Testing imports...")
     
     try:
-        from src.utilities import analysis
+        from src.tools import analysis
         print("✓ Analysis tools imported successfully")
     except ImportError as e:
         print(f"✗ Analysis import failed: {e}")
     
     try:
-        from src.utilities import security
+        from src.tools import security
         print("✓ Security tools imported successfully")  
     except ImportError as e:
         print(f"✗ Security import failed: {e}")
     
     try:
-        from src.utilities import system
+        from src.tools import system
         print("✓ System tools imported successfully")
     except ImportError as e:
         print(f"✗ System import failed: {e}")
     
     try:
-        from src.utilities import file_operations
+        from src.tools import file_operations
         print("✓ File operations imported successfully")
     except ImportError as e:
         print(f"✗ File operations import failed: {e}")

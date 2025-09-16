@@ -19,10 +19,11 @@ Options:
     --help          Show this help message
 """
 
-import sys
-import os
 import argparse
+import os
+import sys
 from typing import Optional
+
 
 def check_dependencies():
     """Check and report system dependencies."""
@@ -71,10 +72,8 @@ def launch_gui_mode(hub_integration: bool = False):
             return False
         
         # Import diagnostics components
-        from src.utilities.system.diagnostics_monitoring import (
-            create_system_diagnostics_gui,
-            MAIN_GUI_AVAILABLE
-        )
+        from src.tools.system.diagnostics_monitoring import (
+            MAIN_GUI_AVAILABLE, create_system_diagnostics_gui)
         
         if not MAIN_GUI_AVAILABLE:
             print("Error: System Diagnostics GUI is not available.")
@@ -123,10 +122,8 @@ def launch_cli_mode():
     
     try:
         # Import core components
-        from src.utilities.system.diagnostics_monitoring import (
-            PlatformDetector,
-            CORE_AVAILABLE
-        )
+        from src.tools.system.diagnostics_monitoring import (CORE_AVAILABLE,
+                                                             PlatformDetector)
         
         if not CORE_AVAILABLE:
             print("Warning: Core components not fully available.")
@@ -148,7 +145,7 @@ def launch_cli_mode():
         
         try:
             import psutil
-            
+
             # CPU information
             cpu_percent = psutil.cpu_percent(interval=1)
             cpu_count = psutil.cpu_count()
