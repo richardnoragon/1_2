@@ -28,7 +28,7 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
 sys.path.insert(0, project_root)
 
 try:
-    from src.tools.file_management.catalog import CatalogWindow
+    from src.tools.file_management.catalog_tool import CatalogWindow
     from src.tools.file_management.file_finder import FileFinderGUI
     from src.tools.file_management.organize import OrganizeWindow
     from src.tools.file_management.rename import RenameWindow

@@ -88,7 +88,7 @@ richard-file-utilities/
 │   └── tools/                  # Individual utility tools
 │       ├── analysis/           # Analysis and reporting tools
 │       ├── file-management/    # File discovery and organization
-│       ├── file-operations/    # File manipulation operations
+│       ├── file_operations/    # File manipulation operations
 │       ├── metadata/           # Metadata editing tools
 │       ├── network/            # Network connectivity tools
 │       ├── privacy/            # Privacy and data protection

@@ -28,7 +28,7 @@ This document outlines a comprehensive migration strategy for relocating all con
 - **Key Dependencies**: 48+ import statements requiring updates
 
 ### Target Structure (`src\tools`)
-- **Existing Categories**: analysis, file-management, file-operations, metadata, network, privacy, security, system
+- **Existing Categories**: analysis, file-management, file_operations, metadata, network, privacy, security, system
 - **Naming Conflicts**: Hyphen vs underscore conventions
 - **Directory Overlaps**: file_management, metadata structures
 
@@ -102,7 +102,7 @@ def validate_environment():
 #### Naming Convention Standardization
 Based on analysis, we'll standardize on **underscore convention**:
 - `file-management` → `file_management`
-- `file-operations` → `file_operations`
+- `file-operations` → `file_operations` ✅ COMPLETED
 
 #### Directory Mapping Table
 ```json

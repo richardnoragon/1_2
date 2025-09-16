@@ -7,12 +7,12 @@ This script executes the comprehensive reorganization plan to achieve
 enterprise beta-release standards.
 """
 
+import json
+import logging
 import os
 import shutil
-from pathlib import Path
-import json
 from datetime import datetime
-import logging
+from pathlib import Path
 
 # Configure logging
 logging.basicConfig(
@@ -80,7 +80,7 @@ class EnterpriseReorganizer:
             "tests/unit/rfu/database",
             "tests/unit/tools/analysis",
             "tests/unit/tools/file-management",
-            "tests/unit/tools/file-operations",
+            "tests/unit/tools/file_operations",
             "tests/unit/tools/metadata",
             "tests/unit/tools/network",
             "tests/unit/tools/privacy",
@@ -265,7 +265,7 @@ class EnterpriseReorganizer:
             "src/rfu/utils",
             "src/tools/analysis",
             "src/tools/file-management",
-            "src/tools/file-operations",
+            "src/tools/file_operations",
             "src/tools/metadata",
             "src/tools/network",
             "src/tools/privacy",
@@ -285,7 +285,7 @@ class EnterpriseReorganizer:
             category_mappings = {
                 "analysis": "analysis",
                 "file_management": "file-management", 
-                "file_operations": "file-operations",
+                "file_operations": "file_operations",
                 "metadata": "metadata",
                 "network": "network",
                 "privacy": "privacy",

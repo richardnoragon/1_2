@@ -1804,7 +1804,7 @@ try:
         
         def open_catalog(self):
             """Open Catalog tool."""
-            self.launch_tool("Catalog", "src.tools.file_management.catalog", "CatalogWindow")
+            self.launch_tool("Catalog", "src.tools.file_management.catalog_tool", "CatalogWindow")
         
         def open_rename(self):
             """Open Rename tool."""

@@ -50,7 +50,7 @@ The target directory already contains several organized categories:
 2. **file-management/**: File management (hyphenated)
    - Subdirectories: advanced_catalog/
 
-3. **file-operations/**: File operations (hyphenated)
+3. **file_operations/**: File operations (underscore)
    - Subdirectories: catalog/, cmsd/, compression/, enhanced_editor/, file_finder/, file_splitter/, file_touch/, organize/, rename/, secure_delete/, synchronization_backup/
 
 4. **file_management/**: File management (underscored)
@@ -78,7 +78,7 @@ The target directory already contains several organized categories:
 
 ### Naming Convention Conflicts
 The target `src\tools` directory shows inconsistent naming conventions:
-- Some use hyphens: `file-management/`, `file-operations/`
+- Some use hyphens: `file-management/`, converted to underscores: `file_operations/`
 - Some use underscores: `file_management/`, `file_operations/`
 
 ### Potential Directory Conflicts
