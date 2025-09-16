@@ -42,7 +42,7 @@ except ImportError:
 
 # Core application imports
 try:
-    from src.utilities.analysis.core.size_analyzer_logic import SizeAnalyzer
+    from src.tools.analysis.core.size_analyzer_logic import SizeAnalyzer
     IMPORTS_SUCCESSFUL = True
 except ImportError as e:
     print(f"Import error: {e}")

@@ -1,0 +1,262 @@
+
+NETWORK TRANSFER MODULE - UNIT TEST EXECUTION SUMMARY
+=====================================================
+
+Test Execution Details:
+----------------------
+Target Module: src.utilities.network.network_transfer
+Test File: test_network_transfer_2025-08-24.py
+Execution Date: 2025-08-24
+Start Time: 2025-08-24 15:25:21
+End Time: 2025-08-24 15:25:25
+Duration: 0:00:04.419394
+Exit Code: 1
+
+Test Results:
+------------
+Total Tests: 72
+Passed: 67
+Failed: 5
+Skipped: 0
+Errors: 0
+Success Rate: 93.1%
+
+Coverage Information:
+-------------------
+Total Coverage: 63.2%
+
+Output Files Generated:
+----------------------
+- HTML Report: result_network_transfer_2025-08-24.html
+- JSON Report: result_network_transfer_2025-08-24.json
+- Coverage HTML: result_network_transfer_coverage_2025-08-24/index.html
+- Coverage JSON: result_network_transfer_coverage_2025-08-24.json
+- JUnit XML: result_network_transfer_2025-08-24_junit.xml
+- Execution Summary: result_network_transfer_execution_summary_2025-08-24.txt
+
+Standard Output:
+---------------
+============================= test session starts =============================
+platform win32 -- Python 3.13.5, pytest-8.3.5, pluggy-1.6.0 -- C:\Users\HP1\AppData\Local\Programs\Python\Python313\python.exe
+cachedir: .pytest_cache
+benchmark: 5.1.0 (defaults: timer=time.perf_counter disable_gc=False min_rounds=5 min_time=0.000005 max_time=1.0 calibration_precision=10 warmup=False warmup_iterations=100000)
+metadata: {'Python': '3.13.5', 'Platform': 'Windows-11-10.0.26100-SP0', 'Packages': {'pytest': '8.3.5', 'pluggy': '1.6.0'}, 'Plugins': {'Faker': '37.5.3', 'asyncio': '0.26.0', 'benchmark': '5.1.0', 'cov': '6.1.0', 'html': '4.1.1', 'json': '0.4.0', 'json-report': '1.5.0', 'metadata': '3.1.1', 'mock': '3.14.1', 'qt': '4.4.0', 'timeout': '2.3.1', 'xdist': '3.8.0'}}
+PyQt5 5.15.11 -- Qt runtime 5.15.2 -- Qt compiled 5.15.2
+rootdir: C:\Users\HP1\1_2\1_2\tests\unit
+configfile: pytest.ini
+plugins: Faker-37.5.3, asyncio-0.26.0, benchmark-5.1.0, cov-6.1.0, html-4.1.1, json-0.4.0, json-report-1.5.0, metadata-3.1.1, mock-3.14.1, qt-4.4.0, timeout-2.3.1, xdist-3.8.0
+asyncio: mode=Mode.STRICT, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 87 items
+
+tests\unit\test_network_transfer_2025-08-24.py::TestSecurityManager::test_security_manager_initialization PASSED [  1%]
+tests\unit\test_network_transfer_2025-08-24.py::TestSecurityManager::test_generate_session_key PASSED [  2%]
+tests\unit\test_network_transfer_2025-08-24.py::TestSecurityManager::test_generate_auth_token PASSED [  3%]
+tests\unit\test_network_transfer_2025-08-24.py::TestSecurityManager::test_verify_auth_token_valid PASSED [  4%]
+tests\unit\test_network_transfer_2025-08-24.py::TestSecurityManager::test_verify_auth_token_invalid PASSED [  5%]
+tests\unit\test_network_transfer_2025-08-24.py::TestSecurityManager::test_verify_auth_token_none PASSED [  6%]
+tests\unit\test_network_transfer_2025-08-24.py::TestSecurityManager::test_encrypt_decrypt_message_with_crypto PASSED [  8%]
+tests\unit\test_network_transfer_2025-08-24.py::TestSecurityManager::test_encrypt_decrypt_message_fallback PASSED [  9%]
+tests\unit\test_network_transfer_2025-08-24.py::TestSecurityManager::test_encrypt_without_session_key PASSED [ 10%]
+tests\unit\test_network_transfer_2025-08-24.py::TestSecurityManager::test_decrypt_without_session_key PASSED [ 11%]
+tests\unit\test_network_transfer_2025-08-24.py::TestSecurityManager::test_decrypt_invalid_data PASSED [ 12%]
+tests\unit\test_network_transfer_2025-08-24.py::TestSecurityManager::test_fallback_encrypt_decrypt_edge_cases PASSED [ 13%]
+tests\unit\test_network_transfer_2025-08-24.py::TestSecurityManager::test_fallback_decrypt_corrupted_mac PASSED [ 14%]
+tests\unit\test_network_transfer_2025-08-24.py::TestTransferProtocol::test_protocol_constants PASSED [ 16%]
+tests\unit\test_network_transfer_2025-08-24.py::TestTransferProtocol::test_create_message_valid PASSED [ 17%]
+tests\unit\test_network_transfer_2025-08-24.py::TestTransferProtocol::test_create_message_with_timestamp PASSED [ 18%]
+tests\unit\test_network_transfer_2025-08-24.py::TestTransferProtocol::test_create_message_too_large PASSED [ 19%]
+tests\unit\test_network_transfer_2025-08-24.py::TestTransferProtocol::test_parse_message_valid PASSED [ 20%]
+tests\unit\test_network_transfer_2025-08-24.py::TestTransferProtocol::test_parse_message_invalid_length FAILED [ 21%]
+tests\unit\test_network_transfer_2025-08-24.py::TestTransferProtocol::test_parse_message_incomplete PASSED [ 22%]
+tests\unit\test_network_transfer_2025-08-24.py::TestTransferProtocol::test_parse_message_invalid_json PASSED [ 24%]
+tests\unit\test_network_transfer_2025-08-24.py::TestTransferProtocol::test_message_roundtrip PASSED [ 25%]
+tests\unit\test_network_transfer_2025-08-24.py::TestTransferProtocol::test_message_unicode_support PASSED [ 26%]
+tests\unit\test_network_transfer_2025-08-24.py::TestPathSecurity::test_allowed_extensions PASSED [ 27%]
+tests\unit\test_network_transfer_2025-08-24.py::TestPathSecurity::test_max_file_size_constant PASSED [ 28%]
+tests\unit\test_network_transfer_2025-08-24.py::TestPathSecurity::test_sanitize_path_normal PASSED [ 29%]
+tests\unit\test_network_transfer_2025-08-24.py::TestPathSecurity::test_sanitize_path_dangerous_chars FAILED [ 31%]
+tests\unit\test_network_transfer_2025-08-24.py::TestPathSecurity::test_sanitize_path_null_byte PASSED [ 32%]
+tests\unit\test_network_transfer_2025-08-24.py::TestPathSecurity::test_sanitize_path_multiple_separators PASSED [ 33%]
+tests\unit\test_network_transfer_2025-08-24.py::TestPathSecurity::test_sanitize_path_empty PASSED [ 34%]
+tests\unit\test_network_transfer_2025-08-24.py::TestPathSecurity::test_is_safe_path_valid PASSED [ 35%]
+tests\unit\test_network_transfer_2025-08-24.py::TestPathSecurity::test_is_safe_path_traversal_attempts PASSED [ 36%]
+tests\unit\test_network_transfer_2025-08-24.py::TestPathSecurity::test_is_safe_path_absolute_paths PASSED [ 37%]
+tests\unit\test_network_transfer_2025-08-24.py::TestPathSecurity::test_is_safe_path_empty_inputs PASSED [ 39%]
+tests\unit\test_network_transfer_2025-08-24.py::TestPathSecurity::test_secure_join_valid PASSED [ 40%]
+tests\unit\test_network_transfer_2025-08-24.py::TestPathSecurity::test_secure_join_invalid PASSED [ 41%]
+tests\unit\test_network_transfer_2025-08-24.py::TestPathSecurity::test_validate_file_for_transfer_valid PASSED [ 42%]
+tests\unit\test_network_transfer_2025-08-24.py::TestPathSecurity::test_validate_file_for_transfer_nonexistent PASSED [ 43%]
+tests\unit\test_network_transfer_2025-08-24.py::TestPathSecurity::test_validate_file_for_transfer_directory PASSED [ 44%]
+tests\unit\test_network_transfer_2025-08-24.py::TestPathSecurity::test_validate_file_for_transfer_forbidden_extension PASSED [ 45%]
+tests\unit\test_network_transfer_2025-08-24.py::TestPathSecurity::test_validate_file_for_transfer_too_large FAILED [ 47%]
+tests\unit\test_network_transfer_2025-08-24.py::TestPathSecurity::test_validate_file_for_transfer_no_read_permission PASSED [ 48%]
+tests\unit\test_network_transfer_2025-08-24.py::TestPathSecurity::test_secure_file_info_valid PASSED [ 49%]
+tests\unit\test_network_transfer_2025-08-24.py::TestPathSecurity::test_secure_file_info_invalid PASSED [ 50%]
+tests\unit\test_network_transfer_2025-08-24.py::TestPathSecurity::test_path_security_edge_cases PASSED [ 51%]
+tests\unit\test_network_transfer_2025-08-24.py::TestTransferServer::test_transfer_server_initialization PASSED [ 52%]
+tests\unit\test_network_transfer_2025-08-24.py::TestTransferServer::test_transfer_server_signals PASSED [ 54%]
+tests\unit\test_network_transfer_2025-08-24.py::TestTransferServer::test_server_socket_creation PASSED [ 55%]
+tests\unit\test_network_transfer_2025-08-24.py::TestTransferServer::test_process_message_hello PASSED [ 56%]
+tests\unit\test_network_transfer_2025-08-24.py::TestTransferServer::test_process_message_file_info PASSED [ 57%]
+tests\unit\test_network_transfer_2025-08-24.py::TestTransferServer::test_process_message_config_data PASSED [ 58%]
+tests\unit\test_network_transfer_2025-08-24.py::TestTransferServer::test_process_message_collection_data PASSED [ 59%]
+tests\unit\test_network_transfer_2025-08-24.py::TestTransferServer::test_save_received_config PASSED [ 60%]
+tests\unit\test_network_transfer_2025-08-24.py::TestTransferServer::test_stop_server PASSED [ 62%]
+tests\unit\test_network_transfer_2025-08-24.py::TestTransferClient::test_transfer_client_initialization PASSED [ 63%]
+tests\unit\test_network_transfer_2025-08-24.py::TestTransferClient::test_transfer_client_signals PASSED [ 64%]
+tests\unit\test_network_transfer_2025-08-24.py::TestTransferClient::test_client_connection PASSED [ 65%]
+tests\unit\test_network_transfer_2025-08-24.py::TestTransferClient::test_send_files PASSED [ 66%]
+tests\unit\test_network_transfer_2025-08-24.py::TestTransferClient::test_send_config PASSED [ 67%]
+tests\unit\test_network_transfer_2025-08-24.py::TestTransferClient::test_send_collection PASSED [ 68%]
+tests\unit\test_network_transfer_2025-08-24.py::TestTransferClient::test_send_files_with_invalid_file PASSED [ 70%]
+tests\unit\test_network_transfer_2025-08-24.py::TestTransferClient::test_send_files_io_error PASSED [ 71%]
+tests\unit\test_network_transfer_2025-08-24.py::TestNetworkTransferGUI::test_gui_initialization PASSED [ 72%]
+tests\unit\test_network_transfer_2025-08-24.py::TestNetworkTransferGUI::test_database_initialization PASSED [ 73%]
+tests\unit\test_network_transfer_2025-08-24.py::TestNetworkTransferGUI::test_file_security_validation FAILED [ 74%]
+tests\unit\test_network_transfer_2025-08-24.py::TestNetworkTransferGUI::test_forbidden_directories_check PASSED [ 75%]
+tests\unit\test_network_transfer_2025-08-24.py::TestNetworkTransferGUI::test_allowed_directories_check PASSED [ 77%]
+tests\unit\test_network_transfer_2025-08-24.py::TestNetworkTransferGUI::test_file_extension_validation PASSED [ 78%]
+tests\unit\test_network_transfer_2025-08-24.py::TestNetworkTransferGUI::test_file_size_validation PASSED [ 79%]
+tests\unit\test_network_transfer_2025-08-24.py::TestNetworkTransferGUI::test_collect_application_config PASSED [ 80%]
+tests\unit\test_network_transfer_2025-08-24.py::TestNetworkTransferGUI::test_sanitize_config_content PASSED [ 81%]
+tests\unit\test_network_transfer_2025-08-24.py::TestNetworkTransferGUI::test_symlink_loop_detection FAILED [ 82%]
+ERROR: Coverage failure: total of 63 is less than fail-under=80
+
+
+================================== FAILURES ===================================
+___________ TestTransferProtocol.test_parse_message_invalid_length ____________
+tests\unit\test_network_transfer_2025-08-24.py:288: in test_parse_message_invalid_length
+    with pytest.raises(ValueError, match="Message too large"):
+E   Failed: DID NOT RAISE <class 'ValueError'>
+_____________ TestPathSecurity.test_sanitize_path_dangerous_chars _____________
+tests\unit\test_network_transfer_2025-08-24.py:388: in test_sanitize_path_dangerous_chars
+    assert sanitized == "folder________file.txt"
+E   AssertionError: assert 'folder_______file.txt' == 'folder________file.txt'
+E     
+E     - folder________file.txt
+E     ?       -
+E     + folder_______file.txt
+_________ TestPathSecurity.test_validate_file_for_transfer_too_large __________
+tests\unit\test_network_transfer_2025-08-24.py:521: in test_validate_file_for_transfer_too_large
+    assert 'File too large' in result['reason']
+E   AssertionError: assert 'File too large' in 'Validation error: an integer is required'
+____________ TestNetworkTransferGUI.test_file_security_validation _____________
+tests\unit\test_network_transfer_2025-08-24.py:908: in test_file_security_validation
+    assert gui._is_secure_file_path(valid_path) is True
+E   AssertionError: assert False is True
+E    +  where False = _is_secure_file_path('C:\\Users\\HP1\\AppData\\Local\\Temp\\tmprigdprz5\\test_file.txt')
+E    +    where _is_secure_file_path = <src.utilities.network.network_transfer.NetworkTransferGUI object at 0x000001D7F985C680>._is_secure_file_path
+_____________ TestNetworkTransferGUI.test_symlink_loop_detection ______________
+tests\unit\test_network_transfer_2025-08-24.py:1051: in test_symlink_loop_detection
+    assert result is False
+E   assert True is False
+- generated xml file: C:\Users\HP1\1_2\1_2\tests\unit\result_network_transfer_2025-08-24_junit.xml -
+--------------------------------- JSON report ---------------------------------
+report saved to: C:\Users\HP1\1_2\1_2\tests\unit\result_network_transfer_2025-08-24.json
+=============================== tests coverage ================================
+_______________ coverage: platform win32, python 3.13.5-final-0 _______________
+
+Name                                        Stmts   Miss  Cover   Missing
+-------------------------------------------------------------------------
+src\utilities\network\network_transfer.py    1104    406    63%   44-46, 61-63, 68-70, 76-78, 140-141, 161, 181, 198, 271, 316-328, 331-333, 340-365, 409-410, 472, 483-484, 499, 502-503, 519, 565-567, 570-571, 611-612, 648, 651-652, 656-657, 762, 774-778, 783, 788, 797-798, 803, 841-842, 1174-1195, 1199-1217, 1224, 1228, 1233, 1237, 1242-1249, 1261, 1269, 1271-1273, 1285-1286, 1331-1332, 1338-1349, 1357-1358, 1377-1381, 1400-1409, 1416-1431, 1436-1455, 1462-1466, 1484-1492, 1496-1497, 1501-1503, 1507-1525, 1541-1542, 1546, 1552-1571, 1575, 1584-1591, 1597-1603, 1608-1619, 1623-1634, 1639, 1656, 1659-1660, 1667-1686, 1690-1704, 1708-1722, 1726-1740, 1744-1754, 1758-1762, 1766-1788, 1802-1803, 1814-1815, 1819-1835, 1839-1845, 1849-1867, 1871-1886, 1890-1896, 1903-1927, 1932, 1948-1954, 1961-1972, 1976-2009, 2014, 2018-2021, 2025-2027, 2031, 2035, 2039-2040, 2044, 2049, 2055-2058, 2062
+-------------------------------------------------------------------------
+TOTAL                                        1104    406    63%
+Coverage HTML written to dir C:\Users\HP1\1_2\1_2\tests\unit\result_network_transfer_coverage_2025-08-24
+Coverage JSON written to file C:\Users\HP1\1_2\1_2\tests\unit\result_network_transfer_coverage_2025-08-24.json
+FAIL Required test coverage of 80% not reached. Total coverage: 63.22%
+============================ slowest 10 durations =============================
+0.38s call     test_network_transfer_2025-08-24.py::TestNetworkTransferGUI::test_gui_initialization
+0.16s call     test_network_transfer_2025-08-24.py::TestSecurityManager::test_fallback_encrypt_decrypt_edge_cases
+0.15s setup    test_network_transfer_2025-08-24.py::TestSecurityManager::test_security_manager_initialization
+0.08s call     test_network_transfer_2025-08-24.py::TestSecurityManager::test_encrypt_decrypt_message_fallback
+0.08s call     test_network_transfer_2025-08-24.py::TestSecurityManager::test_fallback_decrypt_corrupted_mac
+0.02s call     test_network_transfer_2025-08-24.py::TestTransferProtocol::test_create_message_too_large
+0.02s setup    test_network_transfer_2025-08-24.py::TestTransferServer::test_transfer_server_initialization
+0.02s call     test_network_transfer_2025-08-24.py::TestNetworkTransferGUI::test_forbidden_directories_check
+0.02s call     test_network_transfer_2025-08-24.py::TestNetworkTransferGUI::test_file_security_validation
+0.02s call     test_network_transfer_2025-08-24.py::TestNetworkTransferGUI::test_allowed_directories_check
+- Generated html report: file:///C:/Users/HP1/1_2/1_2/tests/unit/result_network_transfer_2025-08-24.html -
+=========================== short test summary info ===========================
+FAILED tests\unit\test_network_transfer_2025-08-24.py::TestTransferProtocol::test_parse_message_invalid_length
+FAILED tests\unit\test_network_transfer_2025-08-24.py::TestPathSecurity::test_sanitize_path_dangerous_chars
+FAILED tests\unit\test_network_transfer_2025-08-24.py::TestPathSecurity::test_validate_file_for_transfer_too_large
+FAILED tests\unit\test_network_transfer_2025-08-24.py::TestNetworkTransferGUI::test_file_security_validation
+FAILED tests\unit\test_network_transfer_2025-08-24.py::TestNetworkTransferGUI::test_symlink_loop_detection
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 5 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
+======================== 5 failed, 67 passed in 2.57s =========================
+
+
+Standard Error:
+--------------
+C:\Users\HP1\AppData\Local\Programs\Python\Python313\Lib\site-packages\pytest_asyncio\plugin.py:217: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+
+
+Test Categories Covered:
+----------------------
+✓ SecurityManager Class Tests
+  - Key generation and management
+  - Encryption/decryption (AES-GCM and fallback)
+  - Authentication token verification
+  - Error handling and edge cases
+
+✓ TransferProtocol Class Tests
+  - Message creation and parsing
+  - Size validation and limits
+  - Protocol constants verification
+  - Unicode support and edge cases
+
+✓ PathSecurity Class Tests
+  - Path sanitization and validation
+  - Security checks against traversal attacks
+  - File validation and size limits
+  - Extension filtering and permissions
+
+✓ TransferServer Class Tests
+  - Server initialization and configuration
+  - Client connection handling
+  - Message processing for all types
+  - Signal emission and error handling
+
+✓ TransferClient Class Tests
+  - Connection establishment
+  - File transfer operations
+  - Configuration transfer
+  - Collection transfer and progress tracking
+
+✓ NetworkTransferGUI Class Tests
+  - GUI initialization and components
+  - File selection and validation
+  - Security checks and validation
+  - Transfer management and history
+
+✓ Integration Tests
+  - End-to-end transfer scenarios
+  - Security validation workflows
+  - Protocol message handling
+  - Error recovery and edge cases
+
+Security Focus Areas:
+-------------------
+✓ Path traversal prevention
+✓ Input validation and sanitization
+✓ Encryption security (AES-GCM preferred)
+✓ Network security (localhost binding)
+✓ File system security and permissions
+✓ Configuration data sanitization
+
+Summary:
+--------
+✗ Tests failed: 5 failures, 0 errors
+
+Next Steps:
+----------
+1. Review any failed tests in HTML report
+2. Check coverage gaps in coverage report
+3. Address any security vulnerabilities found
+4. Update documentation if needed
+5. Integrate tests into CI/CD pipeline
+
+Generated: 2025-08-24 15:25:25

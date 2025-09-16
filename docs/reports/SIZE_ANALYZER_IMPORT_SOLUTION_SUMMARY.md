@@ -15,7 +15,7 @@ This document summarizes the comprehensive solution implemented to fix import an
 - `src/utilities/analysis/__init__.py`: Properly exports `SizeAnalyzerGUI`, `SizeAnalyzer`, and related classes
 
 ### 2. Import Path Resolution ✅
-**Problem**: The module path `"src.utilities.analysis.size_analyzer"` in main.py failed to resolve correctly.
+**Problem**: The module path `"src.tools.analysis.size_analyzer"` in main.py failed to resolve correctly.
 
 **Solution**: Implemented multiple import strategies in `main.py`:
 - **Strategy 1**: Direct module import

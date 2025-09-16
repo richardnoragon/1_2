@@ -58,7 +58,7 @@ def test_network_transfer_security():
     
     try:
         # Import the SecurityManager class
-        from src.utilities.network.network_transfer import SecurityManager
+        from src.tools.network.network_transfer import SecurityManager
         print("✅ SecurityManager imported successfully")
         
         # Create SecurityManager instance
@@ -125,7 +125,7 @@ def test_path_security():
     print("\n🔍 Testing path security implementation...")
     
     try:
-        from src.utilities.network.network_transfer import PathSecurity
+        from src.tools.network.network_transfer import PathSecurity
         print("✅ PathSecurity class imported successfully")
         
         # Test safe path validation

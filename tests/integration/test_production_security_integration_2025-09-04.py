@@ -41,7 +41,7 @@ sys.path.insert(0, project_root)
 
 # Core application imports
 try:
-    from src.utilities.security.core.encryption_logic import EncryptionManager
+    from src.tools.security.core.encryption_logic import EncryptionManager
     IMPORTS_SUCCESSFUL = True
 except ImportError as e:
     print(f"Import error: {e}")

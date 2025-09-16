@@ -1,0 +1,119 @@
+# Development Environment Configuration
+# RFU Integration Testing - Phase 1 Foundation Setup
+# Environment: Development (Rapid Iteration Testing)
+
+environment:
+  name: "development"
+  purpose: "Rapid iteration testing with mock services"
+  isolation_level: "high"
+  auto_reset: true
+  setup_date: "2025-09-03"
+
+database:
+  type: "SQLite"
+  location: "tests/integration/data/test_dev.db"
+  auto_reset: true
+  backup_enabled: false
+  max_connections: 10
+  timeout: 30
+  foreign_keys: true
+  wal_mode: false
+  
+  initialization:
+    create_tables: true
+    load_sample_data: true
+    enable_constraints: true
+
+network:
+  mock_external_apis: true
+  timeout: 30
+  retry_attempts: 3
+  rate_limiting: false
+  ssl_verification: false
+  
+  external_services:
+    ocr_service:
+      mock: true
+      endpoint: "http://localhost:8001/mock-ocr"
+      timeout: 10
+    
+    cloud_storage:
+      mock: true
+      endpoint: "http://localhost:8002/mock-storage"
+      timeout: 15
+    
+    conversion_service:
+      mock: true
+      endpoint: "http://localhost:8003/mock-convert"
+      timeout: 20
+
+logging:
+  level: "DEBUG"
+  file: "tests/integration/logs/integration_dev.log"
+  console: true
+  max_file_size: "10MB"
+  backup_count: 3
+  format: "[%(asctime)s] %(levelname)s - %(name)s - %(message)s"
+  
+  categories:
+    database: "DEBUG"
+    network: "DEBUG"
+    gui: "INFO"
+    performance: "INFO"
+
+performance:
+  timeout_multiplier: 2.0
+  memory_limit: "1GB"
+  cpu_limit: "50%"
+  disk_limit: "10GB"
+  
+  monitoring:
+    enabled: false
+    interval: 30
+    metrics: ["memory", "cpu", "disk"]
+
+security:
+  encryption_required: false
+  secure_communication: false
+  audit_logging: false
+  test_data_anonymization: true
+  
+  mock_credentials:
+    test_user: "dev_test_user"
+    test_password: "dev_test_pass"
+    api_key: "dev_api_key_12345"
+
+file_system:
+  test_data_root: "tests/integration/data/dev"
+  temp_directory: "tests/integration/temp/dev"
+  artifacts_directory: "tests/integration/artifacts/dev"
+  cleanup_on_exit: true
+  
+  sample_files:
+    pdf_samples: 10
+    image_samples: 15
+    office_samples: 8
+    text_samples: 20
+
+gui_testing:
+  headless_mode: false
+  screenshot_on_failure: true
+  video_recording: false
+  interaction_delay: 0.1
+  
+  display:
+    width: 1024
+    height: 768
+    color_depth: 24
+
+test_execution:
+  parallel_execution: false
+  max_workers: 1
+  test_timeout: 300
+  setup_timeout: 60
+  teardown_timeout: 30
+  
+  retry_policy:
+    max_retries: 2
+    retry_delay: 1
+    exponential_backoff: false

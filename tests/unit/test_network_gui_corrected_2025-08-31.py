@@ -76,16 +76,16 @@ sys.modules['src'] = MagicMock()
 sys.modules['src.gui'] = MagicMock()
 sys.modules['src.gui.standard_window'] = MagicMock()
 sys.modules['src.utilities'] = MagicMock()
-sys.modules['src.utilities.network'] = MagicMock()
+sys.modules['src.tools.network'] = MagicMock()
 
 # Mock network dependencies
 network_modules = [
-    'src.utilities.network.network_connectivity_complex',
-    'src.utilities.network.network_connectivity_complex.tools',
-    'src.utilities.network.network_connectivity_complex.tools.port_scanner',
-    'src.utilities.network.network_connectivity_complex.tools.bandwidth_monitor',
-    'src.utilities.network.network_connectivity_complex.tools.wifi_analyzer',
-    'src.utilities.network.network_connectivity_complex.tools.lan_file_transfer'
+    'src.tools.network.network_connectivity_complex',
+    'src.tools.network.network_connectivity_complex.tools',
+    'src.tools.network.network_connectivity_complex.tools.port_scanner',
+    'src.tools.network.network_connectivity_complex.tools.bandwidth_monitor',
+    'src.tools.network.network_connectivity_complex.tools.wifi_analyzer',
+    'src.tools.network.network_connectivity_complex.tools.lan_file_transfer'
 ]
 
 for module in network_modules:

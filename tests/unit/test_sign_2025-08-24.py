@@ -31,7 +31,7 @@ try:
     import pikepdf
     from PIL import Image
 
-    from src.utilities.pdf_tools.pdf_basic_operations.sign import (
+    from src.tools.pdf_tools.pdf_basic_operations.sign import (
         SignUI, apply_signature, create_self_signed_cert, createKeyPair,
         is_valid_path, load, parse_args, sign_file, sign_folder)
     IMPORTS_AVAILABLE = True
@@ -209,10 +209,10 @@ class TestCreateSelfSignedCert:
 class TestLoad:
     """Test cases for load function"""
     
-    @patch('src.utilities.pdf_tools.pdf_basic_operations.sign.os.makedirs')
-    @patch('src.utilities.pdf_tools.pdf_basic_operations.sign.os.path.join')
-    @patch('src.utilities.pdf_tools.pdf_basic_operations.sign.os.path.dirname')
-    @patch('src.utilities.pdf_tools.pdf_basic_operations.sign.os.path.abspath')
+    @patch('src.tools.pdf_tools.pdf_basic_operations.sign.os.makedirs')
+    @patch('src.tools.pdf_tools.pdf_basic_operations.sign.os.path.join')
+    @patch('src.tools.pdf_tools.pdf_basic_operations.sign.os.path.dirname')
+    @patch('src.tools.pdf_tools.pdf_basic_operations.sign.os.path.abspath')
     @patch('builtins.open', new_callable=MagicMock)
     def test_load_creates_files(self, mock_open, mock_abspath, mock_dirname, mock_join, mock_makedirs):
         """Test that load function creates all required files"""
@@ -231,8 +231,8 @@ class TestLoad:
         mock_makedirs.assert_called_once()
         assert mock_open.call_count >= 4  # private_key, certificate, public_key, container
     
-    @patch('src.utilities.pdf_tools.pdf_basic_operations.sign.createKeyPair')
-    @patch('src.utilities.pdf_tools.pdf_basic_operations.sign.create_self_signed_cert')
+    @patch('src.tools.pdf_tools.pdf_basic_operations.sign.createKeyPair')
+    @patch('src.tools.pdf_tools.pdf_basic_operations.sign.create_self_signed_cert')
     def test_load_key_generation_flow(self, mock_create_cert, mock_create_key):
         """Test the key generation flow in load function"""
         # Setup mocks
@@ -242,10 +242,10 @@ class TestLoad:
         mock_create_cert.return_value = mock_cert
         
         with patch('builtins.open', new_callable=MagicMock), \
-             patch('src.utilities.pdf_tools.pdf_basic_operations.sign.os.makedirs'), \
-             patch('src.utilities.pdf_tools.pdf_basic_operations.sign.os.path.join'), \
-             patch('src.utilities.pdf_tools.pdf_basic_operations.sign.os.path.dirname'), \
-             patch('src.utilities.pdf_tools.pdf_basic_operations.sign.os.path.abspath'):
+             patch('src.tools.pdf_tools.pdf_basic_operations.sign.os.makedirs'), \
+             patch('src.tools.pdf_tools.pdf_basic_operations.sign.os.path.join'), \
+             patch('src.tools.pdf_tools.pdf_basic_operations.sign.os.path.dirname'), \
+             patch('src.tools.pdf_tools.pdf_basic_operations.sign.os.path.abspath'):
             
             result = load()
             
@@ -255,8 +255,8 @@ class TestLoad:
     
     def test_load_with_real_temp_directory(self, temp_dir):
         """Test load function with a real temporary directory"""
-        with patch('src.utilities.pdf_tools.pdf_basic_operations.sign.os.path.dirname') as mock_dirname, \
-             patch('src.utilities.pdf_tools.pdf_basic_operations.sign.os.path.abspath') as mock_abspath:
+        with patch('src.tools.pdf_tools.pdf_basic_operations.sign.os.path.dirname') as mock_dirname, \
+             patch('src.tools.pdf_tools.pdf_basic_operations.sign.os.path.abspath') as mock_abspath:
             
             mock_abspath.return_value = os.path.join(temp_dir, "sign.py")
             mock_dirname.return_value = temp_dir
@@ -282,8 +282,8 @@ class TestSignFile:
     
     def test_sign_file_basic(self, mock_pdf_file, mock_static_dir):
         """Test basic PDF file signing"""
-        with patch('src.utilities.pdf_tools.pdf_basic_operations.sign.os.path.dirname') as mock_dirname, \
-             patch('src.utilities.pdf_tools.pdf_basic_operations.sign.os.path.abspath') as mock_abspath:
+        with patch('src.tools.pdf_tools.pdf_basic_operations.sign.os.path.dirname') as mock_dirname, \
+             patch('src.tools.pdf_tools.pdf_basic_operations.sign.os.path.abspath') as mock_abspath:
             
             mock_abspath.return_value = os.path.join(os.path.dirname(mock_static_dir), "sign.py")
             mock_dirname.return_value = os.path.dirname(mock_static_dir)
@@ -305,8 +305,8 @@ class TestSignFile:
         """Test PDF signing with custom output file"""
         custom_output = os.path.join(temp_dir, "custom_signed.pdf")
         
-        with patch('src.utilities.pdf_tools.pdf_basic_operations.sign.os.path.dirname') as mock_dirname, \
-             patch('src.utilities.pdf_tools.pdf_basic_operations.sign.os.path.abspath') as mock_abspath:
+        with patch('src.tools.pdf_tools.pdf_basic_operations.sign.os.path.dirname') as mock_dirname, \
+             patch('src.tools.pdf_tools.pdf_basic_operations.sign.os.path.abspath') as mock_abspath:
             
             mock_abspath.return_value = os.path.join(os.path.dirname(mock_static_dir), "sign.py")
             mock_dirname.return_value = os.path.dirname(mock_static_dir)
@@ -324,8 +324,8 @@ class TestSignFile:
     
     def test_sign_file_with_specific_pages(self, mock_pdf_file, mock_static_dir):
         """Test PDF signing with specific pages"""
-        with patch('src.utilities.pdf_tools.pdf_basic_operations.sign.os.path.dirname') as mock_dirname, \
-             patch('src.utilities.pdf_tools.pdf_basic_operations.sign.os.path.abspath') as mock_abspath:
+        with patch('src.tools.pdf_tools.pdf_basic_operations.sign.os.path.dirname') as mock_dirname, \
+             patch('src.tools.pdf_tools.pdf_basic_operations.sign.os.path.abspath') as mock_abspath:
             
             mock_abspath.return_value = os.path.join(os.path.dirname(mock_static_dir), "sign.py")
             mock_dirname.return_value = os.path.dirname(mock_static_dir)
@@ -344,8 +344,8 @@ class TestSignFile:
         """Test signing non-existent PDF file"""
         nonexistent_file = "/path/to/nonexistent.pdf"
         
-        with patch('src.utilities.pdf_tools.pdf_basic_operations.sign.os.path.dirname') as mock_dirname, \
-             patch('src.utilities.pdf_tools.pdf_basic_operations.sign.os.path.abspath') as mock_abspath:
+        with patch('src.tools.pdf_tools.pdf_basic_operations.sign.os.path.dirname') as mock_dirname, \
+             patch('src.tools.pdf_tools.pdf_basic_operations.sign.os.path.abspath') as mock_abspath:
             
             mock_abspath.return_value = os.path.join(os.path.dirname(mock_static_dir), "sign.py")
             mock_dirname.return_value = os.path.dirname(mock_static_dir)
@@ -382,7 +382,7 @@ class TestSignFolder:
         with open(txt_path, 'w') as f:
             f.write("This should be ignored")
         
-        with patch('src.utilities.pdf_tools.pdf_basic_operations.sign.sign_file') as mock_sign_file:
+        with patch('src.tools.pdf_tools.pdf_basic_operations.sign.sign_file') as mock_sign_file:
             mock_sign_file.return_value = True
             
             sign_folder(
@@ -412,7 +412,7 @@ class TestSignFolder:
             with open(pdf_path, 'wb') as f:
                 f.write(b'%PDF-1.4\n%dummy PDF content\n')
         
-        with patch('src.utilities.pdf_tools.pdf_basic_operations.sign.sign_file') as mock_sign_file:
+        with patch('src.tools.pdf_tools.pdf_basic_operations.sign.sign_file') as mock_sign_file:
             mock_sign_file.return_value = True
             
             sign_folder(
@@ -442,7 +442,7 @@ class TestSignFolder:
             with open(pdf_path, 'wb') as f:
                 f.write(b'%PDF-1.4\n%dummy PDF content\n')
         
-        with patch('src.utilities.pdf_tools.pdf_basic_operations.sign.sign_file') as mock_sign_file:
+        with patch('src.tools.pdf_tools.pdf_basic_operations.sign.sign_file') as mock_sign_file:
             mock_sign_file.return_value = True
             
             sign_folder(
@@ -530,10 +530,10 @@ class TestParseArgs:
 class TestApplySignature:
     """Test cases for apply_signature function"""
     
-    @patch('src.utilities.pdf_tools.pdf_basic_operations.sign.logger')
+    @patch('src.tools.pdf_tools.pdf_basic_operations.sign.logger')
     def test_apply_signature_basic(self, mock_logger, mock_pdf_file, mock_image_file):
         """Test basic signature application"""
-        with patch('src.utilities.pdf_tools.pdf_basic_operations.sign.fitz.open') as mock_fitz_open:
+        with patch('src.tools.pdf_tools.pdf_basic_operations.sign.fitz.open') as mock_fitz_open:
             # Mock PDF document
             mock_doc = Mock()
             mock_page = Mock()
@@ -555,10 +555,10 @@ class TestApplySignature:
             mock_doc.save.assert_called_once()
             mock_doc.close.assert_called_once()
     
-    @patch('src.utilities.pdf_tools.pdf_basic_operations.sign.logger')
+    @patch('src.tools.pdf_tools.pdf_basic_operations.sign.logger')
     def test_apply_signature_specific_pages(self, mock_logger, mock_pdf_file, mock_image_file):
         """Test signature application to specific pages"""
-        with patch('src.utilities.pdf_tools.pdf_basic_operations.sign.fitz.open') as mock_fitz_open:
+        with patch('src.tools.pdf_tools.pdf_basic_operations.sign.fitz.open') as mock_fitz_open:
             # Mock PDF document with multiple pages
             mock_doc = Mock()
             mock_page1 = Mock()
@@ -584,10 +584,10 @@ class TestApplySignature:
             assert mock_page1.insert_image.call_count == 1
             assert mock_page2.insert_image.call_count == 1
     
-    @patch('src.utilities.pdf_tools.pdf_basic_operations.sign.logger')
+    @patch('src.tools.pdf_tools.pdf_basic_operations.sign.logger')
     def test_apply_signature_custom_position(self, mock_logger, mock_pdf_file, mock_image_file):
         """Test signature application with custom position"""
-        with patch('src.utilities.pdf_tools.pdf_basic_operations.sign.fitz.open') as mock_fitz_open:
+        with patch('src.tools.pdf_tools.pdf_basic_operations.sign.fitz.open') as mock_fitz_open:
             mock_doc = Mock()
             mock_page = Mock()
             mock_doc.__len__.return_value = 1
@@ -607,7 +607,7 @@ class TestApplySignature:
             call_args = mock_page.insert_image.call_args[0]
             assert call_args[0] == (50, 75, 150, 125)  # position + 100x50 size
     
-    @patch('src.utilities.pdf_tools.pdf_basic_operations.sign.logger')
+    @patch('src.tools.pdf_tools.pdf_basic_operations.sign.logger')
     def test_apply_signature_file_not_found(self, mock_logger):
         """Test signature application with non-existent files"""
         with pytest.raises(FileNotFoundError):
@@ -616,7 +616,7 @@ class TestApplySignature:
                 signature_file="/nonexistent/signature.jpg"
             )
     
-    @patch('src.utilities.pdf_tools.pdf_basic_operations.sign.logger')
+    @patch('src.tools.pdf_tools.pdf_basic_operations.sign.logger')
     def test_apply_signature_signature_file_not_found(self, mock_logger, mock_pdf_file):
         """Test signature application with non-existent signature file"""
         with pytest.raises(FileNotFoundError):
@@ -632,8 +632,8 @@ class TestSignUI:
     @pytest.fixture
     def mock_qtwidgets(self):
         """Mock PyQt5 QtWidgets for testing"""
-        with patch('src.utilities.pdf_tools.pdf_basic_operations.sign.QtWidgets') as mock_qt, \
-             patch('src.utilities.pdf_tools.pdf_basic_operations.sign.uic') as mock_uic:
+        with patch('src.tools.pdf_tools.pdf_basic_operations.sign.QtWidgets') as mock_qt, \
+             patch('src.tools.pdf_tools.pdf_basic_operations.sign.uic') as mock_uic:
             
             # Mock main window
             mock_main_window = Mock()
@@ -653,18 +653,18 @@ class TestSignUI:
             
             yield mock_qt, mock_uic, mock_main_window
     
-    @patch('src.utilities.pdf_tools.pdf_basic_operations.sign.logger')
+    @patch('src.tools.pdf_tools.pdf_basic_operations.sign.logger')
     def test_signui_initialization(self, mock_logger, mock_qtwidgets):
         """Test SignUI initialization"""
         mock_qt, mock_uic, mock_main_window = mock_qtwidgets
         
-        with patch('src.utilities.pdf_tools.pdf_basic_operations.sign.SignUI.__init__', 
+        with patch('src.tools.pdf_tools.pdf_basic_operations.sign.SignUI.__init__', 
                    lambda self: super(SignUI, self).__init__()):
             ui = SignUI()
             assert ui is not None
     
-    @patch('src.utilities.pdf_tools.pdf_basic_operations.sign.logger')
-    @patch('src.utilities.pdf_tools.pdf_basic_operations.sign.QFileDialog')
+    @patch('src.tools.pdf_tools.pdf_basic_operations.sign.logger')
+    @patch('src.tools.pdf_tools.pdf_basic_operations.sign.QFileDialog')
     def test_browse_pdf(self, mock_file_dialog, mock_logger, mock_qtwidgets):
         """Test PDF file browsing"""
         mock_qt, mock_uic, mock_main_window = mock_qtwidgets
@@ -673,14 +673,14 @@ class TestSignUI:
         test_file_path = "/path/to/test.pdf"
         mock_file_dialog.getOpenFileName.return_value = (test_file_path, "PDF Files (*.pdf)")
         
-        with patch('src.utilities.pdf_tools.pdf_basic_operations.sign.SignUI.__init__', 
+        with patch('src.tools.pdf_tools.pdf_basic_operations.sign.SignUI.__init__', 
                    lambda self: setattr(self, 'pdfFileEdit', Mock())):
             ui = SignUI()
             ui.browse_pdf()
             ui.pdfFileEdit.setText.assert_called_once_with(test_file_path)
     
-    @patch('src.utilities.pdf_tools.pdf_basic_operations.sign.logger')
-    @patch('src.utilities.pdf_tools.pdf_basic_operations.sign.QFileDialog')
+    @patch('src.tools.pdf_tools.pdf_basic_operations.sign.logger')
+    @patch('src.tools.pdf_tools.pdf_basic_operations.sign.QFileDialog')
     def test_browse_signature(self, mock_file_dialog, mock_logger, mock_qtwidgets):
         """Test signature file browsing"""
         mock_qt, mock_uic, mock_main_window = mock_qtwidgets
@@ -689,15 +689,15 @@ class TestSignUI:
         test_file_path = "/path/to/signature.jpg"
         mock_file_dialog.getOpenFileName.return_value = (test_file_path, "Image Files (*.png *.jpg *.jpeg *.bmp)")
         
-        with patch('src.utilities.pdf_tools.pdf_basic_operations.sign.SignUI.__init__', 
+        with patch('src.tools.pdf_tools.pdf_basic_operations.sign.SignUI.__init__', 
                    lambda self: setattr(self, 'signatureFileEdit', Mock())):
             ui = SignUI()
             ui.browse_signature()
             ui.signatureFileEdit.setText.assert_called_once_with(test_file_path)
     
-    @patch('src.utilities.pdf_tools.pdf_basic_operations.sign.logger')
-    @patch('src.utilities.pdf_tools.pdf_basic_operations.sign.apply_signature')
-    @patch('src.utilities.pdf_tools.pdf_basic_operations.sign.QMessageBox')
+    @patch('src.tools.pdf_tools.pdf_basic_operations.sign.logger')
+    @patch('src.tools.pdf_tools.pdf_basic_operations.sign.apply_signature')
+    @patch('src.tools.pdf_tools.pdf_basic_operations.sign.QMessageBox')
     def test_sign_document_success(self, mock_message_box, mock_apply_signature, mock_logger, mock_qtwidgets):
         """Test successful document signing"""
         mock_qt, mock_uic, mock_main_window = mock_qtwidgets
@@ -705,7 +705,7 @@ class TestSignUI:
         # Mock successful signature application
         mock_apply_signature.return_value = True
         
-        with patch('src.utilities.pdf_tools.pdf_basic_operations.sign.SignUI.__init__', 
+        with patch('src.tools.pdf_tools.pdf_basic_operations.sign.SignUI.__init__', 
                    lambda self: None):
             ui = SignUI()
             ui.pdfFileEdit = Mock()
@@ -721,13 +721,13 @@ class TestSignUI:
             mock_apply_signature.assert_called_once()
             mock_message_box.information.assert_called_once()
     
-    @patch('src.utilities.pdf_tools.pdf_basic_operations.sign.logger')
-    @patch('src.utilities.pdf_tools.pdf_basic_operations.sign.QMessageBox')
+    @patch('src.tools.pdf_tools.pdf_basic_operations.sign.logger')
+    @patch('src.tools.pdf_tools.pdf_basic_operations.sign.QMessageBox')
     def test_sign_document_no_pdf(self, mock_message_box, mock_logger, mock_qtwidgets):
         """Test signing without PDF file selected"""
         mock_qt, mock_uic, mock_main_window = mock_qtwidgets
         
-        with patch('src.utilities.pdf_tools.pdf_basic_operations.sign.SignUI.__init__', 
+        with patch('src.tools.pdf_tools.pdf_basic_operations.sign.SignUI.__init__', 
                    lambda self: None):
             ui = SignUI()
             ui.pdfFileEdit = Mock()
@@ -742,13 +742,13 @@ class TestSignUI:
             
             mock_message_box.warning.assert_called_once()
     
-    @patch('src.utilities.pdf_tools.pdf_basic_operations.sign.logger')
-    @patch('src.utilities.pdf_tools.pdf_basic_operations.sign.QMessageBox')
+    @patch('src.tools.pdf_tools.pdf_basic_operations.sign.logger')
+    @patch('src.tools.pdf_tools.pdf_basic_operations.sign.QMessageBox')
     def test_sign_document_no_signature(self, mock_message_box, mock_logger, mock_qtwidgets):
         """Test signing without signature file selected"""
         mock_qt, mock_uic, mock_main_window = mock_qtwidgets
         
-        with patch('src.utilities.pdf_tools.pdf_basic_operations.sign.SignUI.__init__', 
+        with patch('src.tools.pdf_tools.pdf_basic_operations.sign.SignUI.__init__', 
                    lambda self: None):
             ui = SignUI()
             ui.pdfFileEdit = Mock()
@@ -781,8 +781,8 @@ class TestIntegration:
             with open(test_pdf_path, 'wb') as f:
                 f.write(b'%PDF-1.4\n%dummy PDF content\n')
         
-        with patch('src.utilities.pdf_tools.pdf_basic_operations.sign.os.path.dirname') as mock_dirname, \
-             patch('src.utilities.pdf_tools.pdf_basic_operations.sign.os.path.abspath') as mock_abspath:
+        with patch('src.tools.pdf_tools.pdf_basic_operations.sign.os.path.dirname') as mock_dirname, \
+             patch('src.tools.pdf_tools.pdf_basic_operations.sign.os.path.abspath') as mock_abspath:
             
             mock_abspath.return_value = os.path.join(temp_dir, "sign.py")
             mock_dirname.return_value = temp_dir
@@ -810,8 +810,8 @@ class TestEdgeCases:
     
     def test_large_coordinates(self, mock_pdf_file, mock_static_dir):
         """Test signing with very large coordinates"""
-        with patch('src.utilities.pdf_tools.pdf_basic_operations.sign.os.path.dirname') as mock_dirname, \
-             patch('src.utilities.pdf_tools.pdf_basic_operations.sign.os.path.abspath') as mock_abspath:
+        with patch('src.tools.pdf_tools.pdf_basic_operations.sign.os.path.dirname') as mock_dirname, \
+             patch('src.tools.pdf_tools.pdf_basic_operations.sign.os.path.abspath') as mock_abspath:
             
             mock_abspath.return_value = os.path.join(os.path.dirname(mock_static_dir), "sign.py")
             mock_dirname.return_value = os.path.dirname(mock_static_dir)
@@ -827,8 +827,8 @@ class TestEdgeCases:
     
     def test_negative_coordinates(self, mock_pdf_file, mock_static_dir):
         """Test signing with negative coordinates"""
-        with patch('src.utilities.pdf_tools.pdf_basic_operations.sign.os.path.dirname') as mock_dirname, \
-             patch('src.utilities.pdf_tools.pdf_basic_operations.sign.os.path.abspath') as mock_abspath:
+        with patch('src.tools.pdf_tools.pdf_basic_operations.sign.os.path.dirname') as mock_dirname, \
+             patch('src.tools.pdf_tools.pdf_basic_operations.sign.os.path.abspath') as mock_abspath:
             
             mock_abspath.return_value = os.path.join(os.path.dirname(mock_static_dir), "sign.py")
             mock_dirname.return_value = os.path.dirname(mock_static_dir)
@@ -844,8 +844,8 @@ class TestEdgeCases:
     
     def test_empty_signature_id(self, mock_pdf_file, mock_static_dir):
         """Test signing with empty signature ID"""
-        with patch('src.utilities.pdf_tools.pdf_basic_operations.sign.os.path.dirname') as mock_dirname, \
-             patch('src.utilities.pdf_tools.pdf_basic_operations.sign.os.path.abspath') as mock_abspath:
+        with patch('src.tools.pdf_tools.pdf_basic_operations.sign.os.path.dirname') as mock_dirname, \
+             patch('src.tools.pdf_tools.pdf_basic_operations.sign.os.path.abspath') as mock_abspath:
             
             mock_abspath.return_value = os.path.join(os.path.dirname(mock_static_dir), "sign.py")
             mock_dirname.return_value = os.path.dirname(mock_static_dir)
@@ -861,8 +861,8 @@ class TestEdgeCases:
     
     def test_unicode_signature_id(self, mock_pdf_file, mock_static_dir):
         """Test signing with Unicode signature ID"""
-        with patch('src.utilities.pdf_tools.pdf_basic_operations.sign.os.path.dirname') as mock_dirname, \
-             patch('src.utilities.pdf_tools.pdf_basic_operations.sign.os.path.abspath') as mock_abspath:
+        with patch('src.tools.pdf_tools.pdf_basic_operations.sign.os.path.dirname') as mock_dirname, \
+             patch('src.tools.pdf_tools.pdf_basic_operations.sign.os.path.abspath') as mock_abspath:
             
             mock_abspath.return_value = os.path.join(os.path.dirname(mock_static_dir), "sign.py")
             mock_dirname.return_value = os.path.dirname(mock_static_dir)

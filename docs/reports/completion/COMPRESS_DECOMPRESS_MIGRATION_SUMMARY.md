@@ -38,20 +38,20 @@ Updated all import references from old to new location:
 from src.rfu.tools.file_operations.compress_decompress import CompressDecompressApp
 
 # New Import (ACTIVE):
-from src.utilities.file_operations.compression import CompressDecompressApp
+from src.tools.file_operations.compression import CompressDecompressApp
 ```
 
 ### 5. **Testing and Verification** ✅
 
 #### **Import Test:**
 ```bash
-python -c "from src.utilities.file_operations.compression import CompressDecompressApp; print('✅ Import successful')"
+python -c "from src.tools.file_operations.compression import CompressDecompressApp; print('✅ Import successful')"
 Result: ✅ PASSED
 ```
 
 #### **GUI Instantiation Test:**
 ```bash
-python -c "from PyQt5.QtWidgets import QApplication; from src.utilities.file_operations.compression import CompressDecompressApp; app = QApplication([]); tool = CompressDecompressApp(); print('✅ GUI successful')"
+python -c "from PyQt5.QtWidgets import QApplication; from src.tools.file_operations.compression import CompressDecompressApp; app = QApplication([]); tool = CompressDecompressApp(); print('✅ GUI successful')"
 Result: ✅ PASSED
 ```
 

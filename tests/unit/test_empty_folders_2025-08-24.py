@@ -26,13 +26,13 @@ from PyQt5.QtWidgets import QApplication, QMessageBox
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
 
 try:
-    from src.utilities.analysis.empty_folders import (
+    from src.tools.analysis.empty_folders import (
         EmptyFolderLogic, EmptyFoldersGUI, main
     )
 except ImportError:
     # Alternative import path
     sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
-    from src.utilities.analysis.empty_folders import (
+    from src.tools.analysis.empty_folders import (
         EmptyFolderLogic, EmptyFoldersGUI, main
     )
 
@@ -564,7 +564,7 @@ class TestEmptyFoldersGUI:
         assert empty_folders_gui.thread is None
         assert empty_folders_gui.logic is None
     
-    @patch('src.utilities.analysis.empty_folders.STANDARD_WINDOW_AVAILABLE',
+    @patch('src.tools.analysis.empty_folders.STANDARD_WINDOW_AVAILABLE',
            False)
     def test_fallback_mode_initialization(self, app):
         """Test initialization in fallback mode (without StandardWindow)."""

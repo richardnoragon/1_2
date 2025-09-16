@@ -12,7 +12,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
 def test_import():
     """Test importing bookmark manager components"""
     try:
-        from src.utilities.network.bookmark_manager import (
+        from src.tools.network.bookmark_manager import (
             BookmarkModel, BookmarkImporter, BookmarkExporter, BookmarkDialog
         )
         print("✅ Successfully imported all bookmark manager components")
@@ -24,7 +24,7 @@ def test_import():
 def test_basic_functionality():
     """Test basic bookmark model operations"""
     try:
-        from src.utilities.network.bookmark_manager import BookmarkModel
+        from src.tools.network.bookmark_manager import BookmarkModel
         
         # Create test database
         model = BookmarkModel("test_bookmarks.db")
@@ -74,7 +74,7 @@ def test_basic_functionality():
 def test_import_export():
     """Test import/export functionality"""
     try:
-        from src.utilities.network.bookmark_manager import BookmarkImporter, BookmarkExporter
+        from src.tools.network.bookmark_manager import BookmarkImporter, BookmarkExporter
         
         # Sample data
         bookmarks = [

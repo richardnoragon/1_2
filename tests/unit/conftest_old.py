@@ -230,7 +230,7 @@ def mock_standard_window():
 
     
 
-    with patch('src.utilities.analysis.size_analyzer.StandardWindow', def mock_pyqt5_environment():    def register_tool(self, tool_name: str, connector):
+    with patch('src.tools.analysis.size_analyzer.StandardWindow', def mock_pyqt5_environment():    def register_tool(self, tool_name: str, connector):
 
                return_value=mock_window):
 
@@ -382,7 +382,7 @@ def sample_analysis_data():    mock_modules['PyQt5.QtWidgets'] = mock_qt_widgets
 
 
 
-@pytest.fixture(scope="function")    with patch('src.utilities.analysis.size_analyzer.StandardWindow',     
+@pytest.fixture(scope="function")    with patch('src.tools.analysis.size_analyzer.StandardWindow',     
 
 def test_execution_timer():
 
@@ -452,7 +452,7 @@ def mock_qapplication():            'subfolder1': {            self.directories.
 
                 }    
 
-    with patch('src.utilities.analysis.size_analyzer.QApplication', 
+    with patch('src.tools.analysis.size_analyzer.QApplication', 
 
                return_value=mock_app):        },    def add_directory(self, path: str):
 
@@ -675,7 +675,7 @@ def mock_qapplication():    test_data = {
 
             'large.txt': b'B' * (1024 * 1024),  # 1MB
 
-    with patch('src.utilities.analysis.size_analyzer.QApplication',         'binary.bin': bytes(range(256)) * 100,  # Binary file
+    with patch('src.tools.analysis.size_analyzer.QApplication',         'binary.bin': bytes(range(256)) * 100,  # Binary file
 
                return_value=mock_app):        'unicode.txt': 'Hello 世界! 🌍'.encode('utf-8') * 50
 

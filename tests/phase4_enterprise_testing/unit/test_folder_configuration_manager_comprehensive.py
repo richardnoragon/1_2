@@ -21,7 +21,7 @@ from uuid import uuid4
 
 import pytest
 
-from src.utilities.advanced_folders.core.folder_models import (
+from src.tools.advanced_folders.core.folder_models import (
     ConfigurationManager, FolderConfiguration, FolderType, LogLevel,
     ValidationResult)
 

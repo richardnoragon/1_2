@@ -34,7 +34,7 @@ def mock_get_network_logging_manager():
 
 
 # Apply the mock before importing metrics_service
-module_path = 'src.utilities.network.network_connectivity_complex.core.logging_integration'
+module_path = 'src.tools.network.network_connectivity_complex.core.logging_integration'
 sys.modules[module_path] = Mock()
 logging_integration_mock = sys.modules[module_path]
 logging_integration_mock.get_network_logging_manager = mock_get_network_logging_manager

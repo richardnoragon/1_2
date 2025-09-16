@@ -33,9 +33,9 @@ class ImportValidator:
         
         # Define modules to validate
         modules_to_check = [
-            ('src.utilities.analysis.size_analyzer', 'SizeAnalyzerGUI'),
-            ('src.utilities.analysis.core.size_analyzer_logic', 'SizeAnalyzer'),
-            ('src.utilities.analysis.config.size_analyzer_config', 
+            ('src.tools.analysis.size_analyzer', 'SizeAnalyzerGUI'),
+            ('src.tools.analysis.core.size_analyzer_logic', 'SizeAnalyzer'),
+            ('src.tools.analysis.config.size_analyzer_config', 
              'SizeAnalyzerConfig'),
             ('utilities.analysis.size_analyzer', 'SizeAnalyzerGUI'),
             ('utilities.analysis', 'SizeAnalyzerGUI')
@@ -189,7 +189,7 @@ class ImportValidator:
         try:
             # Check if config module imports from core modules that might 
             # import back
-            config_module_path = 'src.utilities.analysis.config.size_analyzer_config'
+            config_module_path = 'src.tools.analysis.config.size_analyzer_config'
             
             # Try to detect if there are circular dependencies
             # This is a basic implementation - could be enhanced

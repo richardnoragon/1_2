@@ -13,7 +13,7 @@ print(f"Project root: {project_root}")
 print(f"Python path: {sys.path[:3]}")
 
 try:
-    from src.utilities.network.gui import NetworkWorkerThread, NetworkToolsWindow
+    from src.tools.network.gui import NetworkWorkerThread, NetworkToolsWindow
     print("✓ Target module imported successfully")
     print("✓ NetworkWorkerThread available")
     print("✓ NetworkToolsWindow available")

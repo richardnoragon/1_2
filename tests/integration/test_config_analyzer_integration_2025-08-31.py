@@ -20,7 +20,7 @@ import yaml
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../..'))
 
-from src.utilities.analysis.config.config_analyzer import (
+from src.tools.analysis.config.config_analyzer import (
     ConfigAnalysisResult, ConfigType, ConfigurationAnalyzer, SecurityLevel,
     analyze_config_directory, analyze_config_file)
 

@@ -44,7 +44,7 @@ except ImportError:
 
 # Import test target
 try:
-    from src.utilities.system.permissions_editor import PermissionsEditorGUI
+    from src.tools.system.permissions_editor import PermissionsEditorGUI
     TARGET_MODULE_AVAILABLE = True
 except ImportError as e:
     TARGET_MODULE_AVAILABLE = False
@@ -126,7 +126,7 @@ class TestPermissionsEditorInitialization(TestPermissionsEditorSetup):
     
     def test_basic_initialization(self):
         """Test basic widget initialization."""
-        with patch('src.utilities.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
+        with patch('src.tools.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
             self.widget = PermissionsEditorGUI()
             
             assert self.widget is not None
@@ -139,8 +139,8 @@ class TestPermissionsEditorInitialization(TestPermissionsEditorSetup):
     
     def test_standard_window_initialization(self):
         """Test initialization with StandardWindow available."""
-        with patch('src.utilities.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', True):
-            with patch('src.utilities.system.permissions_editor.StandardWindow') as mock_window:
+        with patch('src.tools.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', True):
+            with patch('src.tools.system.permissions_editor.StandardWindow') as mock_window:
                 mock_instance = Mock()
                 mock_window.return_value = mock_instance
                 mock_instance.main_layout = Mock()
@@ -153,7 +153,7 @@ class TestPermissionsEditorInitialization(TestPermissionsEditorSetup):
     
     def test_initial_state(self):
         """Test initial widget state."""
-        with patch('src.utilities.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
+        with patch('src.tools.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
             self.widget = PermissionsEditorGUI()
             
             assert self.widget.selected_path is None
@@ -164,7 +164,7 @@ class TestPermissionsEditorInitialization(TestPermissionsEditorSetup):
     
     def test_ui_components_exist(self):
         """Test that all required UI components are created."""
-        with patch('src.utilities.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
+        with patch('src.tools.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
             self.widget = PermissionsEditorGUI()
             
             # Check required components
@@ -188,7 +188,7 @@ class TestFileSelection(TestPermissionsEditorSetup):
     
     def test_select_file_success(self):
         """Test successful file selection."""
-        with patch('src.utilities.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
+        with patch('src.tools.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
             self.widget = PermissionsEditorGUI()
             
             with patch.object(QFileDialog, 'getOpenFileName', return_value=(self.test_file, None)):
@@ -200,7 +200,7 @@ class TestFileSelection(TestPermissionsEditorSetup):
     
     def test_select_file_cancel(self):
         """Test file selection cancellation."""
-        with patch('src.utilities.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
+        with patch('src.tools.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
             self.widget = PermissionsEditorGUI()
             original_path = self.widget.selected_path
             
@@ -211,7 +211,7 @@ class TestFileSelection(TestPermissionsEditorSetup):
     
     def test_select_directory_success(self):
         """Test successful directory selection."""
-        with patch('src.utilities.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
+        with patch('src.tools.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
             self.widget = PermissionsEditorGUI()
             
             with patch.object(QFileDialog, 'getExistingDirectory', return_value=self.test_dir):
@@ -223,7 +223,7 @@ class TestFileSelection(TestPermissionsEditorSetup):
     
     def test_select_directory_cancel(self):
         """Test directory selection cancellation."""
-        with patch('src.utilities.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
+        with patch('src.tools.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
             self.widget = PermissionsEditorGUI()
             original_path = self.widget.selected_path
             
@@ -238,7 +238,7 @@ class TestPermissionLoading(TestPermissionsEditorSetup):
     
     def test_load_permissions_no_selection(self):
         """Test loading permissions with no file selected."""
-        with patch('src.utilities.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
+        with patch('src.tools.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
             self.widget = PermissionsEditorGUI()
             
             with patch.object(QMessageBox, 'warning') as mock_warning:
@@ -247,7 +247,7 @@ class TestPermissionLoading(TestPermissionsEditorSetup):
     
     def test_load_permissions_readable_file(self):
         """Test loading permissions from readable file."""
-        with patch('src.utilities.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
+        with patch('src.tools.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
             self.widget = PermissionsEditorGUI()
             self.widget.selected_path = self.test_file
             
@@ -263,7 +263,7 @@ class TestPermissionLoading(TestPermissionsEditorSetup):
     
     def test_load_permissions_executable_file(self):
         """Test loading permissions from executable file."""
-        with patch('src.utilities.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
+        with patch('src.tools.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
             self.widget = PermissionsEditorGUI()
             self.widget.selected_path = self.test_file
             
@@ -278,7 +278,7 @@ class TestPermissionLoading(TestPermissionsEditorSetup):
     
     def test_load_permissions_readonly_file(self):
         """Test loading permissions from read-only file."""
-        with patch('src.utilities.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
+        with patch('src.tools.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
             self.widget = PermissionsEditorGUI()
             self.widget.selected_path = self.protected_file
             
@@ -290,7 +290,7 @@ class TestPermissionLoading(TestPermissionsEditorSetup):
     
     def test_load_permissions_nonexistent_file(self):
         """Test loading permissions from nonexistent file."""
-        with patch('src.utilities.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
+        with patch('src.tools.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
             self.widget = PermissionsEditorGUI()
             self.widget.selected_path = '/nonexistent/file.txt'
             
@@ -305,7 +305,7 @@ class TestPermissionApplication(TestPermissionsEditorSetup):
     
     def test_apply_permissions_no_selection(self):
         """Test applying permissions with no file selected."""
-        with patch('src.utilities.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
+        with patch('src.tools.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
             self.widget = PermissionsEditorGUI()
             
             with patch.object(QMessageBox, 'warning') as mock_warning:
@@ -314,7 +314,7 @@ class TestPermissionApplication(TestPermissionsEditorSetup):
     
     def test_apply_permissions_user_accepts(self):
         """Test applying permissions when user accepts confirmation."""
-        with patch('src.utilities.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
+        with patch('src.tools.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
             self.widget = PermissionsEditorGUI()
             self.widget.selected_path = self.test_file
             
@@ -331,7 +331,7 @@ class TestPermissionApplication(TestPermissionsEditorSetup):
     
     def test_apply_permissions_user_rejects(self):
         """Test applying permissions when user rejects confirmation."""
-        with patch('src.utilities.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
+        with patch('src.tools.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
             self.widget = PermissionsEditorGUI()
             self.widget.selected_path = self.test_file
             
@@ -347,7 +347,7 @@ class TestPermissionApplication(TestPermissionsEditorSetup):
     
     def test_apply_permissions_chmod_error(self):
         """Test applying permissions with chmod error."""
-        with patch('src.utilities.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
+        with patch('src.tools.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
             self.widget = PermissionsEditorGUI()
             self.widget.selected_path = self.test_file
             
@@ -363,7 +363,7 @@ class TestPermissionApplication(TestPermissionsEditorSetup):
     
     def test_apply_permissions_all_combinations(self):
         """Test applying all permission combinations."""
-        with patch('src.utilities.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
+        with patch('src.tools.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
             self.widget = PermissionsEditorGUI()
             self.widget.selected_path = self.test_file
             
@@ -407,7 +407,7 @@ class TestUIOperations(TestPermissionsEditorSetup):
     
     def test_clear_selection(self):
         """Test clearing selection."""
-        with patch('src.utilities.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
+        with patch('src.tools.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
             self.widget = PermissionsEditorGUI()
             
             # Set some state
@@ -430,7 +430,7 @@ class TestUIOperations(TestPermissionsEditorSetup):
     
     def test_refresh_view_with_selection(self):
         """Test refreshing view with file selected."""
-        with patch('src.utilities.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
+        with patch('src.tools.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
             self.widget = PermissionsEditorGUI()
             self.widget.selected_path = self.test_file
             
@@ -440,7 +440,7 @@ class TestUIOperations(TestPermissionsEditorSetup):
     
     def test_refresh_view_without_selection(self):
         """Test refreshing view without file selected."""
-        with patch('src.utilities.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
+        with patch('src.tools.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
             self.widget = PermissionsEditorGUI()
             self.widget.selected_path = None
             
@@ -454,19 +454,19 @@ class TestHelpAndPreferences(TestPermissionsEditorSetup):
     
     def test_show_help(self):
         """Test showing help dialog."""
-        with patch('src.utilities.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
+        with patch('src.tools.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
             self.widget = PermissionsEditorGUI()
             
             with patch.object(QMessageBox, 'exec_') as mock_exec:
                 mock_box = Mock()
-                with patch('src.utilities.system.permissions_editor.QMessageBox', return_value=mock_box):
+                with patch('src.tools.system.permissions_editor.QMessageBox', return_value=mock_box):
                     self.widget.show_help()
                     # Verify help dialog was created and shown
                     assert True  # Help method executed without error
     
     def test_show_preferences(self):
         """Test showing preferences dialog."""
-        with patch('src.utilities.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
+        with patch('src.tools.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
             self.widget = PermissionsEditorGUI()
             
             with patch.object(QMessageBox, 'information') as mock_info:
@@ -479,8 +479,8 @@ class TestMenuIntegration(TestPermissionsEditorSetup):
     
     def test_setup_menu_callbacks_with_standard_window(self):
         """Test menu callback setup with StandardWindow."""
-        with patch('src.utilities.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', True):
-            with patch('src.utilities.system.permissions_editor.StandardWindow'):
+        with patch('src.tools.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', True):
+            with patch('src.tools.system.permissions_editor.StandardWindow'):
                 # Create mock widget with menu manager
                 widget = Mock()
                 widget.menu_manager = Mock()
@@ -496,7 +496,7 @@ class TestMenuIntegration(TestPermissionsEditorSetup):
     
     def test_setup_menu_callbacks_without_menu_manager(self):
         """Test menu callback setup without menu manager."""
-        with patch('src.utilities.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
+        with patch('src.tools.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
             self.widget = PermissionsEditorGUI()
             
             # Should not raise an error
@@ -509,7 +509,7 @@ class TestEdgeCases(TestPermissionsEditorSetup):
     
     def test_long_file_paths(self):
         """Test handling of very long file paths."""
-        with patch('src.utilities.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
+        with patch('src.tools.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
             self.widget = PermissionsEditorGUI()
             
             # Create a very long path
@@ -533,7 +533,7 @@ class TestEdgeCases(TestPermissionsEditorSetup):
     
     def test_special_characters_in_path(self):
         """Test handling of special characters in file paths."""
-        with patch('src.utilities.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
+        with patch('src.tools.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
             self.widget = PermissionsEditorGUI()
             
             # Create file with special characters
@@ -556,7 +556,7 @@ class TestEdgeCases(TestPermissionsEditorSetup):
     
     def test_permission_edge_cases(self):
         """Test edge cases in permission handling."""
-        with patch('src.utilities.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
+        with patch('src.tools.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
             self.widget = PermissionsEditorGUI()
             self.widget.selected_path = self.test_file
             
@@ -573,7 +573,7 @@ class TestEdgeCases(TestPermissionsEditorSetup):
     
     def test_rapid_operations(self):
         """Test rapid successive operations."""
-        with patch('src.utilities.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
+        with patch('src.tools.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
             self.widget = PermissionsEditorGUI()
             
             # Rapidly select and load permissions
@@ -593,7 +593,7 @@ class TestPerformanceAndMemory(TestPermissionsEditorSetup):
     
     def test_memory_usage(self):
         """Test memory usage doesn't grow excessively."""
-        with patch('src.utilities.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
+        with patch('src.tools.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
             import gc
 
             # Create and destroy multiple widgets
@@ -614,7 +614,7 @@ class TestPerformanceAndMemory(TestPermissionsEditorSetup):
     
     def test_large_status_list(self):
         """Test performance with large status list."""
-        with patch('src.utilities.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
+        with patch('src.tools.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
             self.widget = PermissionsEditorGUI()
             
             # Add many items to status list
@@ -634,20 +634,20 @@ class TestMainFunction:
     
     def test_main_function_exists(self):
         """Test that main function exists and is callable."""
-        from src.utilities.system.permissions_editor import main
+        from src.tools.system.permissions_editor import main
         assert callable(main)
     
     def test_main_function_execution(self):
         """Test main function execution (mocked)."""
-        with patch('src.utilities.system.permissions_editor.QApplication') as mock_app:
-            with patch('src.utilities.system.permissions_editor.PermissionsEditorGUI') as mock_widget:
+        with patch('src.tools.system.permissions_editor.QApplication') as mock_app:
+            with patch('src.tools.system.permissions_editor.PermissionsEditorGUI') as mock_widget:
                 with patch('sys.exit') as mock_exit:
                     mock_app_instance = Mock()
                     mock_app.return_value = mock_app_instance
                     mock_widget_instance = Mock()
                     mock_widget.return_value = mock_widget_instance
                     
-                    from src.utilities.system.permissions_editor import main
+                    from src.tools.system.permissions_editor import main
                     
                     try:
                         main()

@@ -159,7 +159,7 @@ class TestEnvironmentSetup:
         # Try to import the module
         try:
             sys.path.insert(0, str(self.project_root))
-            import src.utilities.privacy.data_anonymizer
+            import src.tools.privacy.data_anonymizer
             print("✓ Target module can be imported")
             return True
         except ImportError as e:

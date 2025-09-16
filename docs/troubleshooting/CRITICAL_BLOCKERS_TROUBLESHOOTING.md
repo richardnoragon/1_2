@@ -97,13 +97,13 @@ except Exception as e:
 ```python
 # Test network module integration
 try:
-    from src.utilities.network.network_connectivity_complex.integration.rfu_integration import RFUIntegration
+    from src.tools.network.network_connectivity_complex.integration.rfu_integration import RFUIntegration
     print("✅ SUCCESS: Network RFU integration import successful")
 except ImportError as e:
     print(f"❌ NETWORK IMPORT ERROR: {e}")
 
 try:
-    from src.utilities.network.network_connectivity_complex.config.config_profiles import ConfigProfiles  
+    from src.tools.network.network_connectivity_complex.config.config_profiles import ConfigProfiles  
     print("✅ SUCCESS: Network config profiles import successful")
 except ImportError as e:
     print(f"❌ CONFIG PROFILES ERROR: {e}")
@@ -226,7 +226,7 @@ system_profiler SPApplicationsDataType | grep -i browser || echo "Browser detect
 
 # Test Python browser detection
 python3 -c "
-from src.utilities.privacy.privacy_tools.core.browser_detector import BrowserDetector
+from src.tools.privacy.privacy_tools.core.browser_detector import BrowserDetector
 detector = BrowserDetector()
 browsers = detector.detect_browsers()
 print(f'✅ Detected {len(browsers)} browsers')
@@ -536,9 +536,9 @@ def check_core_module():
 def check_network_modules():
     """Check network module imports."""
     modules_to_test = [
-        "src.utilities.network.network_connectivity_complex.integration.rfu_integration",
-        "src.utilities.network.network_connectivity_complex.config.config_profiles",
-        "src.utilities.network.network_connectivity_complex.config.config_integration"
+        "src.tools.network.network_connectivity_complex.integration.rfu_integration",
+        "src.tools.network.network_connectivity_complex.config.config_profiles",
+        "src.tools.network.network_connectivity_complex.config.config_integration"
     ]
     
     results = {}

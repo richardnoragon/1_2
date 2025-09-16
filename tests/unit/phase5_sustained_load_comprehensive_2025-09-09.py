@@ -29,7 +29,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
 
 # Import SizeAnalyzer
 try:
-    from src.utilities.analysis.core.size_analyzer_logic import SizeAnalyzer
+    from src.tools.analysis.core.size_analyzer_logic import SizeAnalyzer
     ANALYZER_AVAILABLE = True
 except ImportError as e:
     print(f"Error: Could not import SizeAnalyzer: {e}")

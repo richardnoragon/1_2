@@ -66,7 +66,7 @@ Add to appropriate category tab:
 Implement launcher method:
 ```python
 def open_tool_function(self):
-    self.launch_tool("Tool Name", "src.utilities.category.module", "ToolNameGUI")
+    self.launch_tool("Tool Name", "src.tools.category.module", "ToolNameGUI")
 ```
 
 ## PDF Tools Architecture

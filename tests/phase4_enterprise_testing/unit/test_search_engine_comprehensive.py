@@ -21,11 +21,11 @@ from unittest.mock import MagicMock, Mock, patch
 
 import pytest
 
-from src.utilities.advanced_folders.core.folder_models import (DateTimeRange,
+from src.tools.advanced_folders.core.folder_models import (DateTimeRange,
                                                                FileMetadata,
                                                                SearchParameter,
                                                                SizeRange)
-from src.utilities.advanced_folders.engine.search_engine import (SearchEngine,
+from src.tools.advanced_folders.engine.search_engine import (SearchEngine,
                                                                  SearchIndex,
                                                                  SearchQuery,
                                                                  SearchResult)

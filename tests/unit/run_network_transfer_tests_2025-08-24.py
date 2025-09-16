@@ -29,7 +29,7 @@ from pathlib import Path
 TEST_TARGET = "network_transfer"
 TEST_DATE = "2025-08-24"
 TEST_FILE = f"test_{TEST_TARGET}_{TEST_DATE}.py"
-COVERAGE_TARGET = "src.utilities.network.network_transfer"
+COVERAGE_TARGET = "src.tools.network.network_transfer"
 
 # Paths
 SCRIPT_DIR = Path(__file__).parent

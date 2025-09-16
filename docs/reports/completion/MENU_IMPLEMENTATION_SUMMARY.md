@@ -184,22 +184,22 @@ python test_menu_integration.py
 ### **Launching Individual Tools**
 ```python
 # Compress/Decompress Tool
-from src.utilities.file_operations.compression import CompressDecompressApp
+from src.tools.file_operations.compression import CompressDecompressApp
 tool = CompressDecompressApp()
 tool.show()
 
 # Office Metadata Editor
-from src.utilities.metadata.office_meta_data_editor import OfficeMetaDataEditorGUI
+from src.tools.metadata.office_meta_data_editor import OfficeMetaDataEditorGUI
 tool = OfficeMetaDataEditorGUI()
 tool.show()
 
 # File Touch Tool
-from src.utilities.file_operations.file_touch import FileTouchWindow
+from src.tools.file_operations.file_touch import FileTouchWindow
 tool = FileTouchWindow()
 tool.show()
 
 # Image Metadata Editor
-from src.utilities.metadata.image_metadata import ImageMetadataEditorGUI
+from src.tools.metadata.image_metadata import ImageMetadataEditorGUI
 tool = ImageMetadataEditorGUI()
 tool.show()
 ```

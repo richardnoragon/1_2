@@ -23,7 +23,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
 
 # Import the modules under test
 try:
-    from utilities.network.network_connectivity_complex.core.network_base import (
+    from tools.network.network_connectivity_complex.core.network_base import (
         NetworkOperationStatus,
         NetworkAlertLevel,
         NetworkOperationResult,

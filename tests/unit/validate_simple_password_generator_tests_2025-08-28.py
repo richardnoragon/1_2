@@ -25,7 +25,7 @@ def test_basic_functionality():
         'PyQt5.QtCore': MagicMock(),
         'PyQt5.QtGui': MagicMock()
     }):
-        from utilities.security.simple_password_generator import \
+        from tools.security.simple_password_generator import \
             SimplePasswordGeneratorGUI
 
         # Test instantiation
@@ -85,7 +85,7 @@ def test_password_generation():
         'PyQt5.QtCore': MagicMock(),
         'PyQt5.QtGui': MagicMock()
     }):
-        from utilities.security.simple_password_generator import \
+        from tools.security.simple_password_generator import \
             SimplePasswordGeneratorGUI
         
         gui = SimplePasswordGeneratorGUI()
@@ -125,7 +125,7 @@ def test_multiple_password_generation():
         'PyQt5.QtCore': MagicMock(),
         'PyQt5.QtGui': MagicMock()
     }):
-        from utilities.security.simple_password_generator import \
+        from tools.security.simple_password_generator import \
             SimplePasswordGeneratorGUI
         
         gui = SimplePasswordGeneratorGUI()
@@ -159,7 +159,7 @@ def test_clipboard_operations():
         'PyQt5.QtCore': MagicMock(),
         'PyQt5.QtGui': MagicMock()
     }):
-        from utilities.security.simple_password_generator import \
+        from tools.security.simple_password_generator import \
             SimplePasswordGeneratorGUI
         
         gui = SimplePasswordGeneratorGUI()
@@ -197,7 +197,7 @@ def test_security_aspects():
         'PyQt5.QtCore': MagicMock(),
         'PyQt5.QtGui': MagicMock()
     }):
-        from utilities.security.simple_password_generator import \
+        from tools.security.simple_password_generator import \
             SimplePasswordGeneratorGUI
         
         gui = SimplePasswordGeneratorGUI()
@@ -225,7 +225,7 @@ def test_edge_cases():
         'PyQt5.QtCore': MagicMock(),
         'PyQt5.QtGui': MagicMock()
     }):
-        from utilities.security.simple_password_generator import \
+        from tools.security.simple_password_generator import \
             SimplePasswordGeneratorGUI
         
         gui = SimplePasswordGeneratorGUI()

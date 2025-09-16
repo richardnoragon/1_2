@@ -15,7 +15,7 @@ def test_imports():
     
     # Test 1: Import from diagnostics_monitoring subdirectory
     try:
-        from src.utilities.system.diagnostics_monitoring import (
+        from src.tools.system.diagnostics_monitoring import (
             SystemDiagnosticsGUI,
             create_system_diagnostics_gui,
             MAIN_GUI_AVAILABLE
@@ -34,7 +34,7 @@ def test_imports():
     
     # Test 2: Import individual widgets
     try:
-        from src.utilities.system.diagnostics_monitoring import (
+        from src.tools.system.diagnostics_monitoring import (
             DiskHealthWidget,
             PerformanceWidget,
             BatteryHealthWidget,
@@ -48,7 +48,7 @@ def test_imports():
     
     # Test 3: Import core components
     try:
-        from src.utilities.system.diagnostics_monitoring import (
+        from src.tools.system.diagnostics_monitoring import (
             PlatformDetector,
             DataCollector,
             AlertManager,
@@ -67,7 +67,7 @@ def test_gui_creation():
     print("\nTesting GUI creation...")
     
     try:
-        from src.utilities.system.diagnostics_monitoring import (
+        from src.tools.system.diagnostics_monitoring import (
             create_system_diagnostics_gui,
             MAIN_GUI_AVAILABLE
         )
@@ -121,7 +121,7 @@ def test_hub_integration():
                 print(f"  Hub registered tool: {tool_name}")
                 return True
         
-        from src.utilities.system.diagnostics_monitoring import (
+        from src.tools.system.diagnostics_monitoring import (
             create_system_diagnostics_gui,
             MAIN_GUI_AVAILABLE
         )
@@ -162,7 +162,7 @@ def test_fallback_behavior():
     try:
         # Test import behavior when PyQt5 is not available
         # This is simulated by checking the availability flags
-        from src.utilities.system.diagnostics_monitoring import (
+        from src.tools.system.diagnostics_monitoring import (
             MAIN_GUI_AVAILABLE,
             GUI_WIDGETS_AVAILABLE,
             CORE_AVAILABLE

@@ -71,7 +71,7 @@ def test_network_module_import_attempt():
     import_results = {}
     
     try:
-        from utilities.network.network_connectivity.core.network_base import \
+        from tools.network.network_connectivity.core.network_base import \
             NetworkOperationStatus
         import_results['network_base'] = True
     except ImportError as e:
@@ -79,7 +79,7 @@ def test_network_module_import_attempt():
         import_results['network_base_error'] = str(e)
     
     try:
-        from utilities.network.network_connectivity.tools.wifi_analyzer import \
+        from tools.network.network_connectivity.tools.wifi_analyzer import \
             OUIDatabase
         import_results['wifi_analyzer'] = True
     except ImportError as e:
@@ -87,7 +87,7 @@ def test_network_module_import_attempt():
         import_results['wifi_analyzer_error'] = str(e)
     
     try:
-        from utilities.network.network_connectivity.tools.port_scanner import \
+        from tools.network.network_connectivity.tools.port_scanner import \
             ServiceDetector
         import_results['port_scanner'] = True
     except ImportError as e:

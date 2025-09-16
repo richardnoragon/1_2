@@ -37,7 +37,7 @@ class TestWiFiAnalyzerWorking:
     
     def test_oui_database_real_functionality(self):
         """Test OUI database real implementation - UNTESTED ADVANCED FEATURE."""
-        from src.utilities.network.network_connectivity_complex.tools.wifi_analyzer import \
+        from src.tools.network.network_connectivity_complex.tools.wifi_analyzer import \
             OUIDatabase
 
         # Test OUI database initialization and real vendor mappings
@@ -61,7 +61,7 @@ class TestWiFiAnalyzerWorking:
     
     def test_wifi_channel_map_real_functionality(self):
         """Test WiFi channel mapping real implementation - UNTESTED ADVANCED FEATURE."""
-        from src.utilities.network.network_connectivity_complex.tools.wifi_analyzer import (
+        from src.tools.network.network_connectivity_complex.tools.wifi_analyzer import (
             ChannelBand, WiFiChannelMap)
 
         # Test 2.4GHz frequency mapping
@@ -95,7 +95,7 @@ class TestWiFiAnalyzerWorking:
     
     def test_access_point_dataclass_real(self):
         """Test AccessPoint dataclass real implementation - UNTESTED ADVANCED FEATURE."""
-        from src.utilities.network.network_connectivity_complex.tools.wifi_analyzer import (
+        from src.tools.network.network_connectivity_complex.tools.wifi_analyzer import (
             AccessPoint, ChannelBand, WiFiSecurityType, WiFiStandard)
 
         # Test AccessPoint creation with all real fields
@@ -137,11 +137,11 @@ class TestWiFiAnalyzerWorking:
         assert isinstance(ap2.capabilities, list)
         assert isinstance(ap2.last_seen, datetime)
     
-    @patch('src.utilities.network.network_connectivity_complex.core.platform_network.PlatformNetworkDetector')
-    @patch('src.utilities.network.network_connectivity_complex.core.security_validator.SecurityValidator')
+    @patch('src.tools.network.network_connectivity_complex.core.platform_network.PlatformNetworkDetector')
+    @patch('src.tools.network.network_connectivity_complex.core.security_validator.SecurityValidator')
     def test_wifi_analyzer_initialization_real(self, mock_security, mock_platform):
         """Test WiFi analyzer real initialization - UNTESTED IMPLEMENTATION."""
-        from src.utilities.network.network_connectivity_complex.tools.wifi_analyzer import \
+        from src.tools.network.network_connectivity_complex.tools.wifi_analyzer import \
             WiFiAnalyzer
 
         # Mock platform detector
@@ -172,7 +172,7 @@ class TestPortScannerWorking:
     
     def test_service_detector_real_initialization(self):
         """Test ServiceDetector real initialization - UNTESTED ADVANCED FEATURE."""
-        from src.utilities.network.network_connectivity_complex.tools.port_scanner import \
+        from src.tools.network.network_connectivity_complex.tools.port_scanner import \
             ServiceDetector
 
         # Test real ServiceDetector initialization
@@ -196,7 +196,7 @@ class TestPortScannerWorking:
     @patch('socket.socket')
     def test_service_detector_banner_grabbing_real(self, mock_socket):
         """Test service detector banner grabbing real implementation - UNTESTED FEATURE."""
-        from src.utilities.network.network_connectivity_complex.tools.port_scanner import (
+        from src.tools.network.network_connectivity_complex.tools.port_scanner import (
             PortState, ServiceDetector)
 
         # Mock socket for banner grabbing
@@ -218,7 +218,7 @@ class TestPortScannerWorking:
     
     def test_vulnerability_assessment_real(self):
         """Test vulnerability assessment real implementation - UNTESTED FEATURE."""
-        from src.utilities.network.network_connectivity_complex.tools.port_scanner import \
+        from src.tools.network.network_connectivity_complex.tools.port_scanner import \
             VulnerabilityAssessment
 
         # Test real VulnerabilityAssessment initialization
@@ -245,10 +245,10 @@ class TestPortScannerWorking:
         assert telnet_config["port"] == 23
         assert telnet_config["severity"] == "high"
     
-    @patch('src.utilities.network.network_connectivity_complex.core.security_validator.SecurityValidator')
+    @patch('src.tools.network.network_connectivity_complex.core.security_validator.SecurityValidator')
     def test_port_scanner_real_initialization(self, mock_validator):
         """Test port scanner real initialization - UNTESTED IMPLEMENTATION."""
-        from src.utilities.network.network_connectivity_complex.tools.port_scanner import \
+        from src.tools.network.network_connectivity_complex.tools.port_scanner import \
             PortScanner
 
         # Test real PortScanner initialization
@@ -281,7 +281,7 @@ class TestLANFileTransferWorking:
         """Test DeviceDiscovery real initialization - UNTESTED ADVANCED FEATURE."""
         import socket
 
-        from src.utilities.network.network_connectivity_complex.tools.lan_file_transfer import \
+        from src.tools.network.network_connectivity_complex.tools.lan_file_transfer import \
             DeviceDiscovery
 
         # Test real DeviceDiscovery initialization
@@ -302,7 +302,7 @@ class TestLANFileTransferWorking:
     
     def test_encryption_handler_real_functionality(self):
         """Test EncryptionHandler real functionality - UNTESTED ADVANCED FEATURE."""
-        from src.utilities.network.network_connectivity_complex.tools.lan_file_transfer import \
+        from src.tools.network.network_connectivity_complex.tools.lan_file_transfer import \
             EncryptionHandler
 
         # Test real EncryptionHandler initialization
@@ -334,11 +334,11 @@ class TestLANFileTransferWorking:
             assert decrypted == test_data
             assert encrypted != test_data  # Should be different
     
-    @patch('src.utilities.network.network_connectivity_complex.core.platform_network.PlatformNetworkDetector')
-    @patch('src.utilities.network.network_connectivity_complex.core.security_validator.SecurityValidator')
+    @patch('src.tools.network.network_connectivity_complex.core.platform_network.PlatformNetworkDetector')
+    @patch('src.tools.network.network_connectivity_complex.core.security_validator.SecurityValidator')
     def test_lan_file_transfer_real_initialization(self, mock_security, mock_platform):
         """Test LAN file transfer real initialization - UNTESTED IMPLEMENTATION."""
-        from src.utilities.network.network_connectivity_complex.tools.lan_file_transfer import \
+        from src.tools.network.network_connectivity_complex.tools.lan_file_transfer import \
             LANFileTransfer
 
         # Test real LANFileTransfer initialization
@@ -356,7 +356,7 @@ class TestLANFileTransferWorking:
     
     def test_network_device_dataclass_real(self):
         """Test NetworkDevice dataclass real implementation - UNTESTED FEATURE."""
-        from src.utilities.network.network_connectivity_complex.tools.lan_file_transfer import (
+        from src.tools.network.network_connectivity_complex.tools.lan_file_transfer import (
             DeviceStatus, NetworkDevice)
 
         # Test real NetworkDevice creation
@@ -386,12 +386,12 @@ class TestLANFileTransferWorking:
 class TestBandwidthMonitorWorking:
     """Test Bandwidth Monitor real implementation - targeting actual coverage."""
     
-    @patch('src.utilities.network.network_connectivity_complex.core.platform_network.PlatformNetworkDetector')
+    @patch('src.tools.network.network_connectivity_complex.core.platform_network.PlatformNetworkDetector')
     def test_speed_calculator_real_functionality(self, mock_platform):
         """Test SpeedCalculator real functionality - UNTESTED ADVANCED FEATURE."""
-        from src.utilities.network.network_connectivity_complex.core.platform_network import \
+        from src.tools.network.network_connectivity_complex.core.platform_network import \
             NetworkStats
-        from src.utilities.network.network_connectivity_complex.tools.bandwidth_monitor import \
+        from src.tools.network.network_connectivity_complex.tools.bandwidth_monitor import \
             SpeedCalculator
 
         # Mock network stats for testing
@@ -432,10 +432,10 @@ class TestBandwidthMonitorWorking:
             assert measurement2.total_bytes_sent == 1100000
             assert isinstance(measurement2.timestamp, datetime)
     
-    @patch('src.utilities.network.network_connectivity_complex.core.platform_network.PlatformNetworkDetector')
+    @patch('src.tools.network.network_connectivity_complex.core.platform_network.PlatformNetworkDetector')
     def test_bandwidth_monitor_real_initialization(self, mock_platform):
         """Test bandwidth monitor real initialization - UNTESTED IMPLEMENTATION."""
-        from src.utilities.network.network_connectivity_complex.tools.bandwidth_monitor import \
+        from src.tools.network.network_connectivity_complex.tools.bandwidth_monitor import \
             BandwidthMonitor
 
         # Mock available interfaces
@@ -460,7 +460,7 @@ class TestBandwidthMonitorWorking:
     
     def test_speed_measurement_dataclass_real(self):
         """Test SpeedMeasurement dataclass real implementation - UNTESTED FEATURE."""
-        from src.utilities.network.network_connectivity_complex.tools.bandwidth_monitor import \
+        from src.tools.network.network_connectivity_complex.tools.bandwidth_monitor import \
             SpeedMeasurement
 
         # Test real SpeedMeasurement creation
@@ -489,11 +489,11 @@ class TestNetworkComplexIntegrationWorking:
     
     def test_enum_consistency_real_across_modules(self):
         """Test enum consistency across all real modules - INTEGRATION TEST."""
-        from src.utilities.network.network_connectivity_complex.tools.lan_file_transfer import (
+        from src.tools.network.network_connectivity_complex.tools.lan_file_transfer import (
             DeviceStatus, TransferDirection, TransferStatus)
-        from src.utilities.network.network_connectivity_complex.tools.port_scanner import (
+        from src.tools.network.network_connectivity_complex.tools.port_scanner import (
             PortState, ScanPolicy, ScanType)
-        from src.utilities.network.network_connectivity_complex.tools.wifi_analyzer import (
+        from src.tools.network.network_connectivity_complex.tools.wifi_analyzer import (
             ChannelBand, WiFiSecurityType, WiFiStandard)
 
         # Test WiFi enums have expected values
@@ -511,19 +511,19 @@ class TestNetworkComplexIntegrationWorking:
         assert len(list(DeviceStatus)) >= 5
         assert len(list(TransferDirection)) >= 2
     
-    @patch('src.utilities.network.network_connectivity_complex.core.platform_network.PlatformNetworkDetector')
-    @patch('src.utilities.network.network_connectivity_complex.core.security_validator.SecurityValidator')
+    @patch('src.tools.network.network_connectivity_complex.core.platform_network.PlatformNetworkDetector')
+    @patch('src.tools.network.network_connectivity_complex.core.security_validator.SecurityValidator')
     def test_network_tool_base_inheritance_real(self, mock_security, mock_platform):
         """Test NetworkToolBase inheritance in all real implementations."""
-        from src.utilities.network.network_connectivity_complex.core.network_base import \
+        from src.tools.network.network_connectivity_complex.core.network_base import \
             NetworkToolBase
-        from src.utilities.network.network_connectivity_complex.tools.bandwidth_monitor import \
+        from src.tools.network.network_connectivity_complex.tools.bandwidth_monitor import \
             BandwidthMonitor
-        from src.utilities.network.network_connectivity_complex.tools.lan_file_transfer import \
+        from src.tools.network.network_connectivity_complex.tools.lan_file_transfer import \
             LANFileTransfer
-        from src.utilities.network.network_connectivity_complex.tools.port_scanner import \
+        from src.tools.network.network_connectivity_complex.tools.port_scanner import \
             PortScanner
-        from src.utilities.network.network_connectivity_complex.tools.wifi_analyzer import \
+        from src.tools.network.network_connectivity_complex.tools.wifi_analyzer import \
             WiFiAnalyzer
 
         # Mock common dependencies

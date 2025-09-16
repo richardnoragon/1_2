@@ -117,7 +117,7 @@ def temp_directory():
 def mock_cleanup_result():
     """Create a mock CleanupOperationResult for testing."""
     try:
-        from utilities.system.system_cleanup.core.cleanup_base import \
+        from tools.system.system_cleanup.core.cleanup_base import \
             CleanupOperationResult
         
         def create_result(success=True, message="Test operation", 
@@ -700,7 +700,7 @@ def reset_metrics_global_service():
 def error_recovery_instance():
     """Create a fresh instance of PrivacyToolsErrorRecovery for each test."""
     try:
-        from utilities.privacy.error_recovery import PrivacyToolsErrorRecovery
+        from tools.privacy.error_recovery import PrivacyToolsErrorRecovery
         return PrivacyToolsErrorRecovery()
     except ImportError:
         pytest.skip("error_recovery module not available")

@@ -7,10 +7,10 @@ import pytest
 from conftest import (assert_file_metadata_equal, assert_folder_config_equal,
                       assert_search_param_equal)
 
-from src.utilities.advanced_folders.core import (FileMetadata,
+from src.tools.advanced_folders.core import (FileMetadata,
                                                  FolderConfiguration,
                                                  FolderType, SearchParameter)
-from src.utilities.advanced_folders.database import (AdvancedFoldersDBManager,
+from src.tools.advanced_folders.database import (AdvancedFoldersDBManager,
                                                      AdvancedFoldersSchema)
 
 

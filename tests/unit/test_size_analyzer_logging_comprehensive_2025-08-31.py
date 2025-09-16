@@ -26,9 +26,9 @@ import pytest
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
 try:
-    from src.utilities.analysis.config.size_analyzer_config import \
+    from src.tools.analysis.config.size_analyzer_config import \
         SizeAnalyzerConfig
-    from src.utilities.analysis.config.size_analyzer_logging import \
+    from src.tools.analysis.config.size_analyzer_logging import \
         SizeAnalyzerLogger
     IMPORTS_SUCCESSFUL = True
 except ImportError as e:
@@ -78,7 +78,7 @@ class TestSizeAnalyzerLoggerInitialization:
                 # Method might not exist yet, skip
                 pass
     
-    @patch('src.utilities.analysis.config.size_analyzer_logging.LogManager')
+    @patch('src.tools.analysis.config.size_analyzer_logging.LogManager')
     def test_logger_integration_with_main_logging(self, mock_log_manager):
         """Test integration with main logging system."""
         mock_main_logger = Mock()
@@ -473,7 +473,7 @@ class TestLoggingIntegration:
     
     def test_main_logger_integration(self):
         """Test integration with main logging system."""
-        with patch('src.utilities.analysis.config.size_analyzer_logging.LogManager') as mock_log_manager:
+        with patch('src.tools.analysis.config.size_analyzer_logging.LogManager') as mock_log_manager:
             mock_main_logger = Mock()
             mock_log_manager.get_logger.return_value = mock_main_logger
             
@@ -488,7 +488,7 @@ class TestLoggingIntegration:
         
         # Test that logger can be used by analysis engine
         try:
-            from src.utilities.analysis.core.size_analyzer_logic import \
+            from src.tools.analysis.core.size_analyzer_logic import \
                 SizeAnalyzer
             analyzer = SizeAnalyzer()
             

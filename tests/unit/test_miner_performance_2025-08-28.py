@@ -17,7 +17,7 @@ import gc
 # Add src directory to path for imports
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
 
-from src.utilities.pdf_tools.pdf_view_analysis.miner import PDFMiner, MainWindow
+from src.tools.pdf_tools.pdf_view_analysis.miner import PDFMiner, MainWindow
 
 
 class TestPDFMinerPerformance:
@@ -39,7 +39,7 @@ class TestPDFMinerPerformance:
         mock_pdf_doc.load_page.return_value = mock_first_page
         mock_pdf_doc.page_count = self.large_pdf_pages
         
-        with patch('src.utilities.pdf_tools.pdf_view_analysis.miner.fitz.open') as mock_fitz:
+        with patch('src.tools.pdf_tools.pdf_view_analysis.miner.fitz.open') as mock_fitz:
             mock_fitz.return_value = mock_pdf_doc
             
             start_time = time.time()
@@ -64,7 +64,7 @@ class TestPDFMinerPerformance:
         mock_first_page.rect.height = 600
         mock_pdf_doc.load_page.return_value = mock_first_page
         
-        with patch('src.utilities.pdf_tools.pdf_view_analysis.miner.fitz.open') as mock_fitz:
+        with patch('src.tools.pdf_tools.pdf_view_analysis.miner.fitz.open') as mock_fitz:
             mock_fitz.return_value = mock_pdf_doc
             miner = PDFMiner("test.pdf")
             
@@ -96,8 +96,8 @@ class TestPDFMinerPerformance:
         
         mock_pdf_doc.load_page.side_effect = lambda page_num: mock_first_page if page_num == 0 else mock_page
         
-        with patch('src.utilities.pdf_tools.pdf_view_analysis.miner.fitz.open') as mock_fitz, \\
-             patch('src.utilities.pdf_tools.pdf_view_analysis.miner.QImage') as mock_qimage:
+        with patch('src.tools.pdf_tools.pdf_view_analysis.miner.fitz.open') as mock_fitz, \\
+             patch('src.tools.pdf_tools.pdf_view_analysis.miner.QImage') as mock_qimage:
             
             mock_fitz.return_value = mock_pdf_doc
             mock_qimage.return_value = Mock()
@@ -129,7 +129,7 @@ class TestPDFMinerPerformance:
         
         mock_pdf_doc.load_page.side_effect = lambda page_num: mock_first_page if page_num == 0 else mock_page
         
-        with patch('src.utilities.pdf_tools.pdf_view_analysis.miner.fitz.open') as mock_fitz:
+        with patch('src.tools.pdf_tools.pdf_view_analysis.miner.fitz.open') as mock_fitz:
             mock_fitz.return_value = mock_pdf_doc
             miner = PDFMiner("test.pdf")
             
@@ -164,7 +164,7 @@ class TestPDFMinerStress:
         
         def create_and_use_miner(thread_id):
             try:
-                with patch('src.utilities.pdf_tools.pdf_view_analysis.miner.fitz.open') as mock_fitz:
+                with patch('src.tools.pdf_tools.pdf_view_analysis.miner.fitz.open') as mock_fitz:
                     mock_fitz.return_value = mock_pdf_doc
                     miner = PDFMiner(f"test_{thread_id}.pdf")
                     
@@ -208,7 +208,7 @@ class TestPDFMinerStress:
         mock_pdf_doc.page_count = 100
         
         try:
-            with patch('src.utilities.pdf_tools.pdf_view_analysis.miner.fitz.open') as mock_fitz:
+            with patch('src.tools.pdf_tools.pdf_view_analysis.miner.fitz.open') as mock_fitz:
                 mock_fitz.return_value = mock_pdf_doc
                 
                 # Create multiple PDFMiner instances
@@ -256,8 +256,8 @@ class TestPDFMinerStress:
         mock_pdf_doc.metadata = {"title": "Stress Test"}
         mock_pdf_doc.page_count = 10
         
-        with patch('src.utilities.pdf_tools.pdf_view_analysis.miner.fitz.open') as mock_fitz, \\
-             patch('src.utilities.pdf_tools.pdf_view_analysis.miner.QImage') as mock_qimage:
+        with patch('src.tools.pdf_tools.pdf_view_analysis.miner.fitz.open') as mock_fitz, \\
+             patch('src.tools.pdf_tools.pdf_view_analysis.miner.QImage') as mock_qimage:
             
             mock_fitz.return_value = mock_pdf_doc
             mock_qimage.return_value = Mock()
@@ -306,7 +306,7 @@ class TestMainWindowPerformance:
         creation_times = []
         
         for i in range(10):
-            with patch('src.utilities.pdf_tools.pdf_view_analysis.miner.uic.loadUi'), \\
+            with patch('src.tools.pdf_tools.pdf_view_analysis.miner.uic.loadUi'), \\
                  patch.object(MainWindow, 'actionExit') as mock_exit, \\
                  patch.object(MainWindow, 'actionOpen') as mock_open:
                 
@@ -347,7 +347,7 @@ class TestPerformanceBenchmarks:
         mock_pdf_doc.load_page.return_value = mock_first_page
         
         def initialize_miner():
-            with patch('src.utilities.pdf_tools.pdf_view_analysis.miner.fitz.open') as mock_fitz:
+            with patch('src.tools.pdf_tools.pdf_view_analysis.miner.fitz.open') as mock_fitz:
                 mock_fitz.return_value = mock_pdf_doc
                 return PDFMiner("benchmark_test.pdf")
         
@@ -366,7 +366,7 @@ class TestPerformanceBenchmarks:
         mock_pdf_doc.metadata = {"title": "Benchmark Test", "author": "Test Author"}
         mock_pdf_doc.page_count = 100
         
-        with patch('src.utilities.pdf_tools.pdf_view_analysis.miner.fitz.open') as mock_fitz:
+        with patch('src.tools.pdf_tools.pdf_view_analysis.miner.fitz.open') as mock_fitz:
             mock_fitz.return_value = mock_pdf_doc
             miner = PDFMiner("benchmark_test.pdf")
             
@@ -392,8 +392,8 @@ class TestPerformanceBenchmarks:
         
         mock_pdf_doc.load_page.side_effect = lambda page_num: mock_first_page if page_num == 0 else mock_page
         
-        with patch('src.utilities.pdf_tools.pdf_view_analysis.miner.fitz.open') as mock_fitz, \\
-             patch('src.utilities.pdf_tools.pdf_view_analysis.miner.QImage') as mock_qimage:
+        with patch('src.tools.pdf_tools.pdf_view_analysis.miner.fitz.open') as mock_fitz, \\
+             patch('src.tools.pdf_tools.pdf_view_analysis.miner.QImage') as mock_qimage:
             
             mock_fitz.return_value = mock_pdf_doc
             mock_qimage.return_value = Mock()

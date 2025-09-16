@@ -20,8 +20,8 @@ import pytest
 # Add the source directory to the Python path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "src"))
 
-from utilities.privacy.privacy_tools.core.data_locations import DataLocations
-from utilities.privacy.privacy_tools.core.platform_utils import PlatformUtils
+from tools.privacy.privacy_tools.core.data_locations import DataLocations
+from tools.privacy.privacy_tools.core.platform_utils import PlatformUtils
 
 
 class TestDataLocations:

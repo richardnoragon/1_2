@@ -23,7 +23,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
 
 # Import the target module
 try:
-    from src.utilities.analysis.size_analyzer import SizeAnalyzerGUI, main
+    from src.tools.analysis.size_analyzer import SizeAnalyzerGUI, main
 except ImportError:
     pytest.skip("size_analyzer module not found", allow_module_level=True)
 
@@ -51,16 +51,16 @@ class TestSizeAnalyzerGUI:
         self.test_end_time = datetime.now()
         self.test_duration = self.test_end_time - self.test_start_time
     
-    @patch('src.utilities.analysis.size_analyzer.QApplication')
-    @patch('src.utilities.analysis.size_analyzer.QMainWindow')
-    @patch('src.utilities.analysis.size_analyzer.StandardWindow')
+    @patch('src.tools.analysis.size_analyzer.QApplication')
+    @patch('src.tools.analysis.size_analyzer.QMainWindow')
+    @patch('src.tools.analysis.size_analyzer.StandardWindow')
     def test_init_with_standard_window_available(self, mock_standard_window, 
                                                  mock_qmain_window, mock_qapp):
         """Test SizeAnalyzerGUI initialization with StandardWindow available."""
         # Setup
         mock_standard_window.return_value = MagicMock()
         
-        with patch('src.utilities.analysis.size_analyzer.STANDARD_WINDOW_AVAILABLE', True):
+        with patch('src.tools.analysis.size_analyzer.STANDARD_WINDOW_AVAILABLE', True):
             # Execute
             gui = SizeAnalyzerGUI()
             
@@ -72,11 +72,11 @@ class TestSizeAnalyzerGUI:
                 window_type="utility"
             )
     
-    @patch('src.utilities.analysis.size_analyzer.QApplication')
-    @patch('src.utilities.analysis.size_analyzer.QMainWindow')
+    @patch('src.tools.analysis.size_analyzer.QApplication')
+    @patch('src.tools.analysis.size_analyzer.QMainWindow')
     def test_init_without_standard_window(self, mock_qmain_window, mock_qapp):
         """Test SizeAnalyzerGUI initialization without StandardWindow."""
-        with patch('src.utilities.analysis.size_analyzer.STANDARD_WINDOW_AVAILABLE', False):
+        with patch('src.tools.analysis.size_analyzer.STANDARD_WINDOW_AVAILABLE', False):
             # Execute
             gui = SizeAnalyzerGUI()
             
@@ -84,8 +84,8 @@ class TestSizeAnalyzerGUI:
             assert hasattr(gui, 'analysis_results')
             assert gui.analysis_results == {}
     
-    @patch('src.utilities.analysis.size_analyzer.QApplication')
-    @patch('src.utilities.analysis.size_analyzer.StandardWindow')
+    @patch('src.tools.analysis.size_analyzer.QApplication')
+    @patch('src.tools.analysis.size_analyzer.StandardWindow')
     def test_setup_menu_callbacks(self, mock_standard_window, mock_qapp):
         """Test menu callback setup functionality."""
         # Setup
@@ -94,7 +94,7 @@ class TestSizeAnalyzerGUI:
         mock_instance.menu_manager = mock_menu_manager
         mock_standard_window.return_value = mock_instance
         
-        with patch('src.utilities.analysis.size_analyzer.STANDARD_WINDOW_AVAILABLE', True):
+        with patch('src.tools.analysis.size_analyzer.STANDARD_WINDOW_AVAILABLE', True):
             gui = SizeAnalyzerGUI()
             gui.menu_manager = mock_menu_manager
             
@@ -112,12 +112,12 @@ class TestSizeAnalyzerGUI:
                 expected_calls, any_order=True
             )
     
-    @patch('src.utilities.analysis.size_analyzer.QApplication')
-    @patch('src.utilities.analysis.size_analyzer.StandardWindow')
+    @patch('src.tools.analysis.size_analyzer.QApplication')
+    @patch('src.tools.analysis.size_analyzer.StandardWindow')
     def test_clear_analysis(self, mock_standard_window, mock_qapp):
         """Test clearing analysis results."""
         # Setup
-        with patch('src.utilities.analysis.size_analyzer.STANDARD_WINDOW_AVAILABLE', True):
+        with patch('src.tools.analysis.size_analyzer.STANDARD_WINDOW_AVAILABLE', True):
             gui = SizeAnalyzerGUI()
             gui.analysis_results = {'test': 'data'}
             gui.results_list = MagicMock()
@@ -129,12 +129,12 @@ class TestSizeAnalyzerGUI:
             assert gui.analysis_results == {}
             gui.results_list.clear.assert_called_once()
     
-    @patch('src.utilities.analysis.size_analyzer.QApplication')
-    @patch('src.utilities.analysis.size_analyzer.StandardWindow')
+    @patch('src.tools.analysis.size_analyzer.QApplication')
+    @patch('src.tools.analysis.size_analyzer.StandardWindow')
     def test_clear_analysis_without_results_list(self, mock_standard_window, mock_qapp):
         """Test clearing analysis when results_list doesn't exist."""
         # Setup
-        with patch('src.utilities.analysis.size_analyzer.STANDARD_WINDOW_AVAILABLE', True):
+        with patch('src.tools.analysis.size_analyzer.STANDARD_WINDOW_AVAILABLE', True):
             gui = SizeAnalyzerGUI()
             gui.analysis_results = {'test': 'data'}
             
@@ -144,13 +144,13 @@ class TestSizeAnalyzerGUI:
             # Assert
             assert gui.analysis_results == {}
     
-    @patch('src.utilities.analysis.size_analyzer.QMessageBox')
-    @patch('src.utilities.analysis.size_analyzer.QApplication')
-    @patch('src.utilities.analysis.size_analyzer.StandardWindow')
+    @patch('src.tools.analysis.size_analyzer.QMessageBox')
+    @patch('src.tools.analysis.size_analyzer.QApplication')
+    @patch('src.tools.analysis.size_analyzer.StandardWindow')
     def test_show_help(self, mock_standard_window, mock_qapp, mock_message_box):
         """Test show help dialog functionality."""
         # Setup
-        with patch('src.utilities.analysis.size_analyzer.STANDARD_WINDOW_AVAILABLE', True):
+        with patch('src.tools.analysis.size_analyzer.STANDARD_WINDOW_AVAILABLE', True):
             gui = SizeAnalyzerGUI()
             
             # Execute
@@ -163,13 +163,13 @@ class TestSizeAnalyzerGUI:
             assert "How to Analyze Directory Sizes" in call_args[0][2]
             assert "Keyboard Shortcuts" in call_args[0][2]
     
-    @patch('src.utilities.analysis.size_analyzer.QMessageBox')
-    @patch('src.utilities.analysis.size_analyzer.QApplication')
-    @patch('src.utilities.analysis.size_analyzer.StandardWindow')
+    @patch('src.tools.analysis.size_analyzer.QMessageBox')
+    @patch('src.tools.analysis.size_analyzer.QApplication')
+    @patch('src.tools.analysis.size_analyzer.StandardWindow')
     def test_show_preferences(self, mock_standard_window, mock_qapp, mock_message_box):
         """Test show preferences dialog functionality."""
         # Setup
-        with patch('src.utilities.analysis.size_analyzer.STANDARD_WINDOW_AVAILABLE', True):
+        with patch('src.tools.analysis.size_analyzer.STANDARD_WINDOW_AVAILABLE', True):
             gui = SizeAnalyzerGUI()
             
             # Execute
@@ -181,12 +181,12 @@ class TestSizeAnalyzerGUI:
             assert call_args[0][1] == "Size Analyzer Preferences"
             assert "Analysis depth limits" in call_args[0][2]
     
-    @patch('src.utilities.analysis.size_analyzer.QApplication')
-    @patch('src.utilities.analysis.size_analyzer.StandardWindow')
+    @patch('src.tools.analysis.size_analyzer.QApplication')
+    @patch('src.tools.analysis.size_analyzer.StandardWindow')
     def test_refresh_view(self, mock_standard_window, mock_qapp):
         """Test refresh view functionality."""
         # Setup
-        with patch('src.utilities.analysis.size_analyzer.STANDARD_WINDOW_AVAILABLE', True):
+        with patch('src.tools.analysis.size_analyzer.STANDARD_WINDOW_AVAILABLE', True):
             gui = SizeAnalyzerGUI()
             gui.analysis_results = {'test': 'data'}
             gui.results_list = MagicMock()
@@ -198,14 +198,14 @@ class TestSizeAnalyzerGUI:
             assert gui.analysis_results == {}
             gui.results_list.clear.assert_called_once()
     
-    @patch('src.utilities.analysis.size_analyzer.QApplication')
-    @patch('src.utilities.analysis.size_analyzer.StandardWindow')
-    @patch('src.utilities.analysis.size_analyzer.QWidget')
-    @patch('src.utilities.analysis.size_analyzer.QVBoxLayout')
-    @patch('src.utilities.analysis.size_analyzer.QLabel')
-    @patch('src.utilities.analysis.size_analyzer.QGroupBox')
-    @patch('src.utilities.analysis.size_analyzer.QListWidget')
-    @patch('src.utilities.analysis.size_analyzer.QPushButton')
+    @patch('src.tools.analysis.size_analyzer.QApplication')
+    @patch('src.tools.analysis.size_analyzer.StandardWindow')
+    @patch('src.tools.analysis.size_analyzer.QWidget')
+    @patch('src.tools.analysis.size_analyzer.QVBoxLayout')
+    @patch('src.tools.analysis.size_analyzer.QLabel')
+    @patch('src.tools.analysis.size_analyzer.QGroupBox')
+    @patch('src.tools.analysis.size_analyzer.QListWidget')
+    @patch('src.tools.analysis.size_analyzer.QPushButton')
     def test_init_ui_with_standard_window(self, mock_button, mock_list, mock_group,
                                           mock_label, mock_layout, mock_widget,
                                           mock_standard_window, mock_qapp):
@@ -215,7 +215,7 @@ class TestSizeAnalyzerGUI:
         mock_instance.main_layout = MagicMock()
         mock_standard_window.return_value = mock_instance
         
-        with patch('src.utilities.analysis.size_analyzer.STANDARD_WINDOW_AVAILABLE', True):
+        with patch('src.tools.analysis.size_analyzer.STANDARD_WINDOW_AVAILABLE', True):
             gui = SizeAnalyzerGUI()
             gui.main_layout = MagicMock()
             
@@ -228,15 +228,15 @@ class TestSizeAnalyzerGUI:
             mock_list.assert_called()
             mock_button.assert_called()
     
-    @patch('src.utilities.analysis.size_analyzer.QApplication')
-    @patch('src.utilities.analysis.size_analyzer.StandardWindow')
-    @patch('src.utilities.analysis.size_analyzer.QWidget')
-    @patch('src.utilities.analysis.size_analyzer.QVBoxLayout')
+    @patch('src.tools.analysis.size_analyzer.QApplication')
+    @patch('src.tools.analysis.size_analyzer.StandardWindow')
+    @patch('src.tools.analysis.size_analyzer.QWidget')
+    @patch('src.tools.analysis.size_analyzer.QVBoxLayout')
     def test_init_ui_without_standard_window(self, mock_layout, mock_widget,
                                              mock_standard_window, mock_qapp):
         """Test UI initialization without StandardWindow."""
         # Setup
-        with patch('src.utilities.analysis.size_analyzer.STANDARD_WINDOW_AVAILABLE', False):
+        with patch('src.tools.analysis.size_analyzer.STANDARD_WINDOW_AVAILABLE', False):
             gui = SizeAnalyzerGUI()
             gui.setCentralWidget = MagicMock()
             
@@ -246,12 +246,12 @@ class TestSizeAnalyzerGUI:
             # Assert central widget is created
             gui.setCentralWidget.assert_called_once()
     
-    @patch('src.utilities.analysis.size_analyzer.QApplication')
-    @patch('src.utilities.analysis.size_analyzer.StandardWindow')
+    @patch('src.tools.analysis.size_analyzer.QApplication')
+    @patch('src.tools.analysis.size_analyzer.StandardWindow')
     def test_start_analysis(self, mock_standard_window, mock_qapp):
         """Test start analysis functionality."""
         # Setup
-        with patch('src.utilities.analysis.size_analyzer.STANDARD_WINDOW_AVAILABLE', True):
+        with patch('src.tools.analysis.size_analyzer.STANDARD_WINDOW_AVAILABLE', True):
             gui = SizeAnalyzerGUI()
             gui.results_list = MagicMock()
             
@@ -264,13 +264,13 @@ class TestSizeAnalyzerGUI:
                 "Analysis functionality ready for implementation"
             )
     
-    @patch('src.utilities.analysis.size_analyzer.QMessageBox')
-    @patch('src.utilities.analysis.size_analyzer.QApplication')
-    @patch('src.utilities.analysis.size_analyzer.StandardWindow')
+    @patch('src.tools.analysis.size_analyzer.QMessageBox')
+    @patch('src.tools.analysis.size_analyzer.QApplication')
+    @patch('src.tools.analysis.size_analyzer.StandardWindow')
     def test_execute_action(self, mock_standard_window, mock_qapp, mock_message_box):
         """Test execute action functionality."""
         # Setup
-        with patch('src.utilities.analysis.size_analyzer.STANDARD_WINDOW_AVAILABLE', True):
+        with patch('src.tools.analysis.size_analyzer.STANDARD_WINDOW_AVAILABLE', True):
             gui = SizeAnalyzerGUI()
             
             # Execute
@@ -286,12 +286,12 @@ class TestSizeAnalyzerGUI:
 class TestSizeAnalyzerGUIEdgeCases:
     """Test edge cases and error conditions for SizeAnalyzerGUI."""
     
-    @patch('src.utilities.analysis.size_analyzer.QApplication')
-    @patch('src.utilities.analysis.size_analyzer.StandardWindow')
+    @patch('src.tools.analysis.size_analyzer.QApplication')
+    @patch('src.tools.analysis.size_analyzer.StandardWindow')
     def test_menu_callbacks_without_menu_manager(self, mock_standard_window, mock_qapp):
         """Test menu callback setup when menu_manager is not available."""
         # Setup
-        with patch('src.utilities.analysis.size_analyzer.STANDARD_WINDOW_AVAILABLE', True):
+        with patch('src.tools.analysis.size_analyzer.STANDARD_WINDOW_AVAILABLE', True):
             gui = SizeAnalyzerGUI()
             # Ensure no menu_manager attribute
             if hasattr(gui, 'menu_manager'):
@@ -303,12 +303,12 @@ class TestSizeAnalyzerGUIEdgeCases:
             # Assert - no errors should occur
             assert True  # Test passes if no exception is raised
     
-    @patch('src.utilities.analysis.size_analyzer.QApplication')
-    @patch('src.utilities.analysis.size_analyzer.StandardWindow')
+    @patch('src.tools.analysis.size_analyzer.QApplication')
+    @patch('src.tools.analysis.size_analyzer.StandardWindow')
     def test_analysis_results_immutability(self, mock_standard_window, mock_qapp):
         """Test that analysis_results can be safely modified."""
         # Setup
-        with patch('src.utilities.analysis.size_analyzer.STANDARD_WINDOW_AVAILABLE', True):
+        with patch('src.tools.analysis.size_analyzer.STANDARD_WINDOW_AVAILABLE', True):
             gui = SizeAnalyzerGUI()
             
             # Execute
@@ -319,12 +319,12 @@ class TestSizeAnalyzerGUIEdgeCases:
             assert gui.analysis_results != original_results
             assert gui.analysis_results['test_key'] == 'test_value'
     
-    @patch('src.utilities.analysis.size_analyzer.QApplication')
-    @patch('src.utilities.analysis.size_analyzer.StandardWindow')
+    @patch('src.tools.analysis.size_analyzer.QApplication')
+    @patch('src.tools.analysis.size_analyzer.StandardWindow')
     def test_multiple_clear_analysis_calls(self, mock_standard_window, mock_qapp):
         """Test multiple consecutive calls to clear_analysis."""
         # Setup
-        with patch('src.utilities.analysis.size_analyzer.STANDARD_WINDOW_AVAILABLE', True):
+        with patch('src.tools.analysis.size_analyzer.STANDARD_WINDOW_AVAILABLE', True):
             gui = SizeAnalyzerGUI()
             gui.analysis_results = {'data': 'test'}
             gui.results_list = MagicMock()
@@ -342,8 +342,8 @@ class TestSizeAnalyzerGUIEdgeCases:
 class TestMainFunction:
     """Test the main function for standalone execution."""
     
-    @patch('src.utilities.analysis.size_analyzer.sys.exit')
-    @patch('src.utilities.analysis.size_analyzer.QApplication')
+    @patch('src.tools.analysis.size_analyzer.sys.exit')
+    @patch('src.tools.analysis.size_analyzer.QApplication')
     def test_main_function_execution(self, mock_qapp, mock_sys_exit):
         """Test main function creates app and window correctly."""
         # Setup
@@ -351,7 +351,7 @@ class TestMainFunction:
         mock_app_instance.exec_.return_value = 0
         mock_qapp.return_value = mock_app_instance
         
-        with patch('src.utilities.analysis.size_analyzer.SizeAnalyzerGUI') as mock_gui:
+        with patch('src.tools.analysis.size_analyzer.SizeAnalyzerGUI') as mock_gui:
             mock_window = MagicMock()
             mock_gui.return_value = mock_window
             
@@ -365,8 +365,8 @@ class TestMainFunction:
             mock_app_instance.exec_.assert_called_once()
             mock_sys_exit.assert_called_once_with(0)
     
-    @patch('src.utilities.analysis.size_analyzer.sys.exit')
-    @patch('src.utilities.analysis.size_analyzer.QApplication')
+    @patch('src.tools.analysis.size_analyzer.sys.exit')
+    @patch('src.tools.analysis.size_analyzer.QApplication')
     def test_main_function_with_exception(self, mock_qapp, mock_sys_exit):
         """Test main function handles exceptions gracefully."""
         # Setup
@@ -403,12 +403,12 @@ class TestModuleImports:
 class TestPerformanceAndResource:
     """Test performance characteristics and resource usage."""
     
-    @patch('src.utilities.analysis.size_analyzer.QApplication')
-    @patch('src.utilities.analysis.size_analyzer.StandardWindow')
+    @patch('src.tools.analysis.size_analyzer.QApplication')
+    @patch('src.tools.analysis.size_analyzer.StandardWindow')
     def test_memory_usage_basic(self, mock_standard_window, mock_qapp):
         """Test basic memory usage characteristics."""
         # Setup
-        with patch('src.utilities.analysis.size_analyzer.STANDARD_WINDOW_AVAILABLE', True):
+        with patch('src.tools.analysis.size_analyzer.STANDARD_WINDOW_AVAILABLE', True):
             gui = SizeAnalyzerGUI()
             
             # Execute - perform multiple operations
@@ -419,12 +419,12 @@ class TestPerformanceAndResource:
             # Assert - should not accumulate data
             assert len(gui.analysis_results) == 0
     
-    @patch('src.utilities.analysis.size_analyzer.QApplication')
-    @patch('src.utilities.analysis.size_analyzer.StandardWindow')
+    @patch('src.tools.analysis.size_analyzer.QApplication')
+    @patch('src.tools.analysis.size_analyzer.StandardWindow')
     def test_repeated_ui_operations(self, mock_standard_window, mock_qapp):
         """Test repeated UI operations for stability."""
         # Setup
-        with patch('src.utilities.analysis.size_analyzer.STANDARD_WINDOW_AVAILABLE', True):
+        with patch('src.tools.analysis.size_analyzer.STANDARD_WINDOW_AVAILABLE', True):
             gui = SizeAnalyzerGUI()
             gui.results_list = MagicMock()
             
@@ -450,7 +450,7 @@ class TestExecutionMetadata:
     
     def test_module_attributes(self):
         """Verify module has expected attributes."""
-        from src.utilities.analysis import size_analyzer
+        from src.tools.analysis import size_analyzer
         
         # Check module-level attributes
         assert hasattr(size_analyzer, 'SizeAnalyzerGUI')

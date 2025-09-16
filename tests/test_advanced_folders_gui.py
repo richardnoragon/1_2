@@ -22,20 +22,20 @@ from PyQt5.QtGui import QKeySequence
 from PyQt5.QtTest import QTest
 from PyQt5.QtWidgets import QApplication
 
-from src.utilities.advanced_folders.core import (ConfigurationManager,
+from src.tools.advanced_folders.core import (ConfigurationManager,
                                                  FolderConfiguration,
                                                  SearchFilter,
                                                  ValidationResult)
-from src.utilities.advanced_folders.gui.folder_tree_view import FolderTreeView
-from src.utilities.advanced_folders.gui.main_widget import \
+from src.tools.advanced_folders.gui.folder_tree_view import FolderTreeView
+from src.tools.advanced_folders.gui.main_widget import \
     AdvancedFoldersMainWidget
-from src.utilities.advanced_folders.gui.menu_manager import \
+from src.tools.advanced_folders.gui.menu_manager import \
     AdvancedFoldersMenuManager
-from src.utilities.advanced_folders.gui.search_results_table import \
+from src.tools.advanced_folders.gui.search_results_table import \
     SearchResultsTable
-from src.utilities.advanced_folders.gui.toolbar_manager import \
+from src.tools.advanced_folders.gui.toolbar_manager import \
     AdvancedFoldersToolbar
-from src.utilities.advanced_folders.models import FileMetadata, SearchParameter
+from src.tools.advanced_folders.models import FileMetadata, SearchParameter
 
 
 class TestAdvancedFoldersMainWidget:
@@ -53,7 +53,7 @@ class TestAdvancedFoldersMainWidget:
     @pytest.fixture
     def main_widget(self, app):
         """Create main widget instance for testing."""
-        with patch('src.utilities.advanced_folders.database.AdvancedFoldersDBManager'):
+        with patch('src.tools.advanced_folders.database.AdvancedFoldersDBManager'):
             widget = AdvancedFoldersMainWidget()
             yield widget
             widget.close()
@@ -326,7 +326,7 @@ class TestFolderTreeView:
     @pytest.fixture
     def tree_view(self, app):
         """Create tree view for testing."""
-        with patch('src.utilities.advanced_folders.repositories.FolderConfigurationRepository'):
+        with patch('src.tools.advanced_folders.repositories.FolderConfigurationRepository'):
             return FolderTreeView()
     
     def test_tree_view_initialization(self, tree_view):
@@ -377,7 +377,7 @@ class TestSearchResultsTable:
     @pytest.fixture
     def results_table(self, app):
         """Create results table for testing."""
-        with patch('src.utilities.advanced_folders.repositories.FileMetadataRepository'):
+        with patch('src.tools.advanced_folders.repositories.FileMetadataRepository'):
             return SearchResultsTable()
     
     def test_table_initialization(self, results_table):
@@ -435,7 +435,7 @@ class TestIntegrationScenarios:
     @pytest.fixture
     def integrated_widget(self, app):
         """Create fully integrated widget for testing."""
-        with patch('src.utilities.advanced_folders.database.AdvancedFoldersDBManager'):
+        with patch('src.tools.advanced_folders.database.AdvancedFoldersDBManager'):
             widget = AdvancedFoldersMainWidget()
             widget.show()
             app.processEvents()
@@ -534,7 +534,7 @@ class TestPerformanceValidation:
         
         start_time = time.time()
         
-        with patch('src.utilities.advanced_folders.database.AdvancedFoldersDBManager'):
+        with patch('src.tools.advanced_folders.database.AdvancedFoldersDBManager'):
             widget = AdvancedFoldersMainWidget()
             widget.show()
             app.processEvents()
@@ -549,7 +549,7 @@ class TestPerformanceValidation:
     
     def test_large_dataset_handling(self, app):
         """Test handling of large datasets."""
-        with patch('src.utilities.advanced_folders.repositories.FileMetadataRepository'):
+        with patch('src.tools.advanced_folders.repositories.FileMetadataRepository'):
             table = SearchResultsTable()
             
             # Simulate adding large number of items
@@ -575,7 +575,7 @@ class TestAccessibilityValidation:
     
     def test_keyboard_navigation(self, app):
         """Test keyboard navigation support."""
-        with patch('src.utilities.advanced_folders.database.AdvancedFoldersDBManager'):
+        with patch('src.tools.advanced_folders.database.AdvancedFoldersDBManager'):
             widget = AdvancedFoldersMainWidget()
             widget.show()
             app.processEvents()
@@ -595,7 +595,7 @@ class TestAccessibilityValidation:
     
     def test_screen_reader_support(self, app):
         """Test screen reader support."""
-        with patch('src.utilities.advanced_folders.database.AdvancedFoldersDBManager'):
+        with patch('src.tools.advanced_folders.database.AdvancedFoldersDBManager'):
             widget = AdvancedFoldersMainWidget()
             
             # Check accessibility properties are set

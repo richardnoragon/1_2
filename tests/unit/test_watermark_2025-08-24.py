@@ -25,7 +25,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
 
 # Import target module with error handling
 try:
-    from utilities.pdf_tools.pdf_enhancements.watermark import (WatermarkUI,
+    from tools.pdf_tools.pdf_enhancements.watermark import (WatermarkUI,
                                                                 add_watermark,
                                                                 main)
     WATERMARK_MODULE_AVAILABLE = True

@@ -44,7 +44,7 @@ def test_original_analyzer():
     print("Testing original SizeAnalyzer...")
     
     try:
-        from src.utilities.analysis.core.size_analyzer_logic import \
+        from src.tools.analysis.core.size_analyzer_logic import \
             SizeAnalyzer
         analyzer = SizeAnalyzer()
     except ImportError as e:

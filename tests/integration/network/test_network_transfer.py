@@ -23,7 +23,7 @@ def test_network_transfer_import():
     print("🔍 Testing Network Transfer Import...")
     
     try:
-        from src.utilities.network.network_transfer import NetworkTransferGUI, TransferProtocol
+        from src.tools.network.network_transfer import NetworkTransferGUI, TransferProtocol
         print("✅ Network Transfer module imported successfully")
         return True
     except ImportError as e:
@@ -35,7 +35,7 @@ def test_transfer_protocol():
     print("\n🔍 Testing Transfer Protocol...")
     
     try:
-        from src.utilities.network.network_transfer import TransferProtocol
+        from src.tools.network.network_transfer import TransferProtocol
         
         # Test message creation and parsing
         test_data = {"filename": "test.txt", "size": 1024}
@@ -188,7 +188,7 @@ def test_gui_creation():
     
     try:
         from PyQt5.QtWidgets import QApplication
-        from src.utilities.network.network_transfer import NetworkTransferGUI
+        from src.tools.network.network_transfer import NetworkTransferGUI
         
         # Create QApplication if it doesn't exist
         app = QApplication.instance()

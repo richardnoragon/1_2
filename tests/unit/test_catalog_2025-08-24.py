@@ -22,7 +22,7 @@ from PyQt5.QtWidgets import QApplication
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / 'src'))
 
 try:
-    from src.utilities.file_management.catalog import CatalogWindow
+    from src.tools.file_management.catalog import CatalogWindow
 except ImportError as e:
     pytest.skip(f"Cannot import catalog module: {e}", allow_module_level=True)
 
@@ -40,7 +40,7 @@ def qapp():
 @pytest.fixture
 def catalog_window(qapp):
     """Create CatalogWindow instance for testing."""
-    with patch('src.utilities.file_management.catalog.StandardWindow'):
+    with patch('src.tools.file_management.catalog.StandardWindow'):
         window = CatalogWindow()
         yield window
         if hasattr(window, 'close'):
@@ -92,21 +92,21 @@ def temp_directory():
 @pytest.fixture
 def mock_file_dialog():
     """Mock file dialog responses."""
-    with patch('src.utilities.file_management.catalog.QFileDialog') as mock:
+    with patch('src.tools.file_management.catalog.QFileDialog') as mock:
         yield mock
 
 
 @pytest.fixture
 def mock_message_box():
     """Mock message box responses."""
-    with patch('src.utilities.file_management.catalog.QMessageBox') as mock:
+    with patch('src.tools.file_management.catalog.QMessageBox') as mock:
         yield mock
 
 
 @pytest.fixture
 def mock_webbrowser():
     """Mock webbrowser module."""
-    with patch('src.utilities.file_management.catalog.webbrowser') as mock:
+    with patch('src.tools.file_management.catalog.webbrowser') as mock:
         yield mock
 
 
@@ -340,7 +340,7 @@ class TestCatalogWindow:
         catalog_window._load_recursive_files.assert_not_called()
         catalog_window._load_single_directory_files.assert_called_once()
 
-    @patch('src.utilities.file_management.catalog.QListWidgetItem')
+    @patch('src.tools.file_management.catalog.QListWidgetItem')
     def test_load_recursive_files(self, mock_list_item, catalog_window, 
                                 temp_directory):
         """Test recursive files loading."""
@@ -353,7 +353,7 @@ class TestCatalogWindow:
         assert file_count > 0
         assert catalog_window.file_list.addItem.call_count == file_count
 
-    @patch('src.utilities.file_management.catalog.QListWidgetItem')
+    @patch('src.tools.file_management.catalog.QListWidgetItem')
     def test_load_single_directory_files(self, mock_list_item, catalog_window,
                                        temp_directory):
         """Test single directory files loading."""
@@ -466,7 +466,7 @@ class TestCatalogWindow:
         call_args = mock_message_box.warning.call_args[0]
         assert "does not exist" in call_args[2].lower()
 
-    @patch('src.utilities.file_management.catalog.datetime')
+    @patch('src.tools.file_management.catalog.datetime')
     def test_generate_catalog_success(self, mock_datetime, catalog_window,
                                     temp_directory, mock_message_box):
         """Test successful catalog generation."""
@@ -505,7 +505,7 @@ class TestCatalogWindow:
         
         catalog_window.open_catalog.assert_called_once()
 
-    @patch('src.utilities.file_management.catalog.datetime')
+    @patch('src.tools.file_management.catalog.datetime')
     def test_create_html_catalog(self, mock_datetime, catalog_window):
         """Test HTML catalog creation."""
         # Setup datetime mock
@@ -767,13 +767,13 @@ class TestCatalogWindow:
 class TestMainFunction:
     """Test cases for main function and standalone execution."""
 
-    @patch('src.utilities.file_management.catalog.QApplication')
-    @patch('src.utilities.file_management.catalog.CatalogWindow')
-    @patch('src.utilities.file_management.catalog.sys.exit')
+    @patch('src.tools.file_management.catalog.QApplication')
+    @patch('src.tools.file_management.catalog.CatalogWindow')
+    @patch('src.tools.file_management.catalog.sys.exit')
     def test_main_function_execution(self, mock_exit, mock_window_class, 
                                    mock_app_class):
         """Test main function execution flow."""
-        from src.utilities.file_management.catalog import main
+        from src.tools.file_management.catalog import main
         
         mock_app = Mock()
         mock_app.exec_.return_value = 0

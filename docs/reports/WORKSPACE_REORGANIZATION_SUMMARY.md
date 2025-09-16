@@ -126,7 +126,7 @@ self.launch_tool("File Finder", "file_finder", "FileFinderGUI")
 
 # After
 from src.rfu.tools.pdf.widgets.enhanced_pdf_tools_widget import EnhancedPDFToolsWidget
-self.launch_tool("File Finder", "src.utilities.file_management.file_finder", "FileFinderGUI")
+self.launch_tool("File Finder", "src.tools.file_management.file_finder", "FileFinderGUI")
 ```
 
 ### Tool Launch Updates

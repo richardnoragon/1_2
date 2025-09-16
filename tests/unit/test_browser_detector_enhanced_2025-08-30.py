@@ -22,11 +22,11 @@ import pytest
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "src"))
 
 try:
-    from utilities.privacy.privacy_tools.core.browser_detector import \
+    from tools.privacy.privacy_tools.core.browser_detector import \
         BrowserDetector
-    from utilities.privacy.privacy_tools.core.data_locations import \
+    from tools.privacy.privacy_tools.core.data_locations import \
         DataLocations
-    from utilities.privacy.privacy_tools.core.platform_utils import \
+    from tools.privacy.privacy_tools.core.platform_utils import \
         PlatformUtils
     IMPORTS_AVAILABLE = True
 except ImportError as e:
@@ -425,9 +425,9 @@ class TestBrowserDetectorEnhanced:
     def test_module_imports_availability(self):
         """Test that all required modules can be imported successfully."""
         if IMPORTS_AVAILABLE:
-            import utilities.privacy.privacy_tools.core.browser_detector
-            import utilities.privacy.privacy_tools.core.data_locations
-            import utilities.privacy.privacy_tools.core.platform_utils
+            import tools.privacy.privacy_tools.core.browser_detector
+            import tools.privacy.privacy_tools.core.data_locations
+            import tools.privacy.privacy_tools.core.platform_utils
             
             assert hasattr(utilities.privacy.privacy_tools.core.browser_detector, 'BrowserDetector')
             assert hasattr(utilities.privacy.privacy_tools.core.platform_utils, 'PlatformUtils')

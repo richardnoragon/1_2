@@ -19,10 +19,10 @@ from PyQt5.QtCore import QCoreApplication
 # Add src directory to path for imports
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
 
-from utilities.file_operations.file_splitter_config import FileSplitterConfig
-from utilities.file_operations.file_splitter_logging import \
+from tools.file_operations.file_splitter_config import FileSplitterConfig
+from tools.file_operations.file_splitter_logging import \
     get_file_splitter_logger
-from utilities.file_operations.file_splitter_logic import (
+from tools.file_operations.file_splitter_logic import (
     FileSplitterError, FileSplitterIOError, FileSplitterLogic,
     FileSplitterValidationError, FileSplitterWorkerThread)
 

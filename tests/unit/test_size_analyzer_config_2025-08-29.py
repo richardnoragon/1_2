@@ -22,12 +22,12 @@ import pytest
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
 
 try:
-    from src.utilities.analysis.config.size_analyzer_config import (
+    from src.tools.analysis.config.size_analyzer_config import (
         SizeAnalyzerConfig, get_config_manager, get_log_manager)
 except ImportError:
     # Fallback import path
     try:
-        from utilities.analysis.config.size_analyzer_config import (
+        from tools.analysis.config.size_analyzer_config import (
             SizeAnalyzerConfig, get_config_manager, get_log_manager)
     except ImportError:
         # Direct import for testing
@@ -117,8 +117,8 @@ class TestSizeAnalyzerConfig:
     @pytest.fixture
     def size_analyzer_config(self, mock_config_manager, mock_logger):
         """Create a SizeAnalyzerConfig instance for testing."""
-        with patch('src.utilities.analysis.config.size_analyzer_config.get_config_manager', return_value=lambda: mock_config_manager):
-            with patch('src.utilities.analysis.config.size_analyzer_config.get_log_manager') as mock_log_manager:
+        with patch('src.tools.analysis.config.size_analyzer_config.get_config_manager', return_value=lambda: mock_config_manager):
+            with patch('src.tools.analysis.config.size_analyzer_config.get_log_manager') as mock_log_manager:
                 mock_log_manager.return_value.get_logger.return_value = mock_logger
                 config = SizeAnalyzerConfig(config_manager=mock_config_manager)
                 config.logger = mock_logger
@@ -139,7 +139,7 @@ class TestSizeAnalyzerConfig:
     
     def test_initialization_without_config_manager(self):
         """Test initialization without config manager (fallback)."""
-        with patch('src.utilities.analysis.config.size_analyzer_config.get_config_manager', return_value=None):
+        with patch('src.tools.analysis.config.size_analyzer_config.get_config_manager', return_value=None):
             config = SizeAnalyzerConfig()
             assert config.config_manager is not None
             assert hasattr(config.config_manager, 'config')
@@ -681,7 +681,7 @@ class TestEdgeCases:
         mock_cm.config = {'size_analyzer': 'not_a_dict'}  # Invalid structure
         mock_cm.save_config = Mock()
         
-        with patch('src.utilities.analysis.config.size_analyzer_config.get_config_manager', return_value=lambda: mock_cm):
+        with patch('src.tools.analysis.config.size_analyzer_config.get_config_manager', return_value=lambda: mock_cm):
             config = SizeAnalyzerConfig(config_manager=mock_cm)
             
             # Should handle gracefully

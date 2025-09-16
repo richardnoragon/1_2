@@ -220,7 +220,7 @@ if __name__ == "__main__":                log_file.write(f"Test Execution Log - 
             'test_execution': {
                 'timestamp': self.timestamp,
                 'date': self.date_str,
-                'target_module': 'src.utilities.privacy.error_recovery',
+                'target_module': 'src.tools.privacy.error_recovery',
                 'test_file': 'test_error_recovery_2025-08-30.py'
             },
             'results': {},

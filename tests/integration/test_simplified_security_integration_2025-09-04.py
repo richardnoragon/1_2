@@ -41,19 +41,19 @@ sys.path.insert(0, project_root)
 # Try to import available security modules
 available_modules = {}
 try:
-    from src.utilities.security.core.encryption_logic import EncryptionLogic
+    from src.tools.security.core.encryption_logic import EncryptionLogic
     available_modules['encryption_logic'] = EncryptionLogic
 except ImportError as e:
     print(f"EncryptionLogic import failed: {e}")
 
 try:
-    from src.utilities.security.en_and_decrypt import EncryptionUtils
+    from src.tools.security.en_and_decrypt import EncryptionUtils
     available_modules['encryption_utils'] = EncryptionUtils
 except ImportError as e:
     print(f"EncryptionUtils import failed: {e}")
 
 try:
-    from src.utilities.security.secure_delete import SecureDeleteUtils
+    from src.tools.security.secure_delete import SecureDeleteUtils
     available_modules['secure_delete'] = SecureDeleteUtils
 except ImportError as e:
     print(f"SecureDeleteUtils import failed: {e}")

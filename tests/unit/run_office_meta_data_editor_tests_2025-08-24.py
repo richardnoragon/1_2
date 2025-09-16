@@ -27,7 +27,7 @@ from pathlib import Path
 # Test configuration
 TEST_CONFIG = {
     'test_file': 'test_office_meta_data_editor_2025-08-24.py',
-    'target_module': 'src.utilities.metadata.office_meta_data_editor',
+    'target_module': 'src.tools.metadata.office_meta_data_editor',
     'output_dir': 'tests/unit',
     'coverage_threshold': 85,
     'timeout': 300,  # 5 minutes

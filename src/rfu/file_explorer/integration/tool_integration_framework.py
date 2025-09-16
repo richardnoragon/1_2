@@ -358,7 +358,7 @@ class ToolDiscovery:
         
         # Known tool module patterns
         module_patterns = [
-            "src.utilities.*.*.*.py",
+            "src.tools.*.*.*.py",
             "src.tools.*.*"
         ]
         

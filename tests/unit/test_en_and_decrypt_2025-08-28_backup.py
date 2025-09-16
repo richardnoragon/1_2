@@ -146,8 +146,8 @@ def test_timestamped_output():
     import datetime
     now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     assert isinstance(now, str)
-            with patch('src.utilities.security.en_and_decrypt.StandardWindow') as mock_std_window:
-                from src.utilities.security.en_and_decrypt import EnAndDecryptGUI
+            with patch('src.tools.security.en_and_decrypt.StandardWindow') as mock_std_window:
+                from src.tools.security.en_and_decrypt import EnAndDecryptGUI
                 
                 gui = EnAndDecryptGUI()
                 
@@ -158,8 +158,8 @@ def test_timestamped_output():
                 
     def test_initialization_without_standard_window(self):
         """Test GUI initialization without StandardWindow (fallback mode)."""
-        with patch('src.utilities.security.en_and_decrypt.STANDARD_WINDOW_AVAILABLE', False):
-            from src.utilities.security.en_and_decrypt import EnAndDecryptGUI
+        with patch('src.tools.security.en_and_decrypt.STANDARD_WINDOW_AVAILABLE', False):
+            from src.tools.security.en_and_decrypt import EnAndDecryptGUI
             
             gui = EnAndDecryptGUI()
             
@@ -170,8 +170,8 @@ def test_timestamped_output():
             
     def test_menu_callbacks_setup(self):
         """Test menu callbacks setup when StandardWindow is available."""
-        with patch('src.utilities.security.en_and_decrypt.STANDARD_WINDOW_AVAILABLE', True):
-            from src.utilities.security.en_and_decrypt import EnAndDecryptGUI
+        with patch('src.tools.security.en_and_decrypt.STANDARD_WINDOW_AVAILABLE', True):
+            from src.tools.security.en_and_decrypt import EnAndDecryptGUI
             
             gui = EnAndDecryptGUI()
             gui.menu_manager = Mock()
@@ -190,8 +190,8 @@ class TestUIComponents(TestSetup):
     
     def test_init_ui_components_creation(self):
         """Test that all UI components are created properly."""
-        with patch('src.utilities.security.en_and_decrypt.STANDARD_WINDOW_AVAILABLE', False):
-            from src.utilities.security.en_and_decrypt import EnAndDecryptGUI
+        with patch('src.tools.security.en_and_decrypt.STANDARD_WINDOW_AVAILABLE', False):
+            from src.tools.security.en_and_decrypt import EnAndDecryptGUI
             
             gui = EnAndDecryptGUI()
             
@@ -208,8 +208,8 @@ class TestUIComponents(TestSetup):
             
     def test_password_field_configuration(self):
         """Test password field is configured for secure input."""
-        with patch('src.utilities.security.en_and_decrypt.STANDARD_WINDOW_AVAILABLE', False):
-            from src.utilities.security.en_and_decrypt import EnAndDecryptGUI
+        with patch('src.tools.security.en_and_decrypt.STANDARD_WINDOW_AVAILABLE', False):
+            from src.tools.security.en_and_decrypt import EnAndDecryptGUI
             
             gui = EnAndDecryptGUI()
             
@@ -219,8 +219,8 @@ class TestUIComponents(TestSetup):
             
     def test_progress_bar_initial_state(self):
         """Test progress bar initial visibility state."""
-        with patch('src.utilities.security.en_and_decrypt.STANDARD_WINDOW_AVAILABLE', False):
-            from src.utilities.security.en_and_decrypt import EnAndDecryptGUI
+        with patch('src.tools.security.en_and_decrypt.STANDARD_WINDOW_AVAILABLE', False):
+            from src.tools.security.en_and_decrypt import EnAndDecryptGUI
             
             gui = EnAndDecryptGUI()
             
@@ -231,13 +231,13 @@ class TestUIComponents(TestSetup):
 class TestFileSelection(TestSetup):
     """Test file selection functionality."""
     
-    @patch('src.utilities.security.en_and_decrypt.QFileDialog.getOpenFileNames')
+    @patch('src.tools.security.en_and_decrypt.QFileDialog.getOpenFileNames')
     def test_select_encrypt_files_success(self, mock_file_dialog):
         """Test successful file selection for encryption."""
         mock_file_dialog.return_value = (['/path/file1.txt', '/path/file2.txt'], "")
         
-        with patch('src.utilities.security.en_and_decrypt.STANDARD_WINDOW_AVAILABLE', False):
-            from src.utilities.security.en_and_decrypt import EnAndDecryptGUI
+        with patch('src.tools.security.en_and_decrypt.STANDARD_WINDOW_AVAILABLE', False):
+            from src.tools.security.en_and_decrypt import EnAndDecryptGUI
             
             gui = EnAndDecryptGUI()
             gui.select_encrypt_files()
@@ -246,13 +246,13 @@ class TestFileSelection(TestSetup):
             assert gui.operation_mode == "encrypt"
             assert "2 file(s) for encryption" in gui.status_label.text
             
-    @patch('src.utilities.security.en_and_decrypt.QFileDialog.getOpenFileNames')
+    @patch('src.tools.security.en_and_decrypt.QFileDialog.getOpenFileNames')
     def test_select_encrypt_files_cancelled(self, mock_file_dialog):
         """Test file selection cancellation for encryption."""
         mock_file_dialog.return_value = ([], "")
         
-        with patch('src.utilities.security.en_and_decrypt.STANDARD_WINDOW_AVAILABLE', False):
-            from src.utilities.security.en_and_decrypt import EnAndDecryptGUI
+        with patch('src.tools.security.en_and_decrypt.STANDARD_WINDOW_AVAILABLE', False):
+            from src.tools.security.en_and_decrypt import EnAndDecryptGUI
             
             gui = EnAndDecryptGUI()
             original_files = gui.selected_files.copy()
@@ -260,13 +260,13 @@ class TestFileSelection(TestSetup):
             
             assert gui.selected_files == original_files
             
-    @patch('src.utilities.security.en_and_decrypt.QFileDialog.getOpenFileNames')
+    @patch('src.tools.security.en_and_decrypt.QFileDialog.getOpenFileNames')
     def test_select_decrypt_files_success(self, mock_file_dialog):
         """Test successful file selection for decryption."""
         mock_file_dialog.return_value = (['/path/file1.enc', '/path/file2.enc'], "")
         
-        with patch('src.utilities.security.en_and_decrypt.STANDARD_WINDOW_AVAILABLE', False):
-            from src.utilities.security.en_and_decrypt import EnAndDecryptGUI
+        with patch('src.tools.security.en_and_decrypt.STANDARD_WINDOW_AVAILABLE', False):
+            from src.tools.security.en_and_decrypt import EnAndDecryptGUI
             
             gui = EnAndDecryptGUI()
             gui.select_decrypt_files()
@@ -275,13 +275,13 @@ class TestFileSelection(TestSetup):
             assert gui.operation_mode == "decrypt"
             assert "2 file(s) for decryption" in gui.status_label.text
             
-    @patch('src.utilities.security.en_and_decrypt.QFileDialog.getOpenFileNames')
+    @patch('src.tools.security.en_and_decrypt.QFileDialog.getOpenFileNames')
     def test_select_decrypt_files_cancelled(self, mock_file_dialog):
         """Test file selection cancellation for decryption."""
         mock_file_dialog.return_value = ([], "")
         
-        with patch('src.utilities.security.en_and_decrypt.STANDARD_WINDOW_AVAILABLE', False):
-            from src.utilities.security.en_and_decrypt import EnAndDecryptGUI
+        with patch('src.tools.security.en_and_decrypt.STANDARD_WINDOW_AVAILABLE', False):
+            from src.tools.security.en_and_decrypt import EnAndDecryptGUI
             
             gui = EnAndDecryptGUI()
             original_files = gui.selected_files.copy()
@@ -293,11 +293,11 @@ class TestFileSelection(TestSetup):
 class TestEncryptionDecryption(TestSetup):
     """Test encryption and decryption operations."""
     
-    @patch('src.utilities.security.en_and_decrypt.QMessageBox.information')
+    @patch('src.tools.security.en_and_decrypt.QMessageBox.information')
     def test_encrypt_files_with_valid_input(self, mock_msg_box):
         """Test encryption with valid files and password."""
-        with patch('src.utilities.security.en_and_decrypt.STANDARD_WINDOW_AVAILABLE', False):
-            from src.utilities.security.en_and_decrypt import EnAndDecryptGUI
+        with patch('src.tools.security.en_and_decrypt.STANDARD_WINDOW_AVAILABLE', False):
+            from src.tools.security.en_and_decrypt import EnAndDecryptGUI
             
             gui = EnAndDecryptGUI()
             gui.selected_files = ['/path/file1.txt', '/path/file2.txt']
@@ -310,11 +310,11 @@ class TestEncryptionDecryption(TestSetup):
             assert "Encryption functionality" in args[2]
             assert "Files to encrypt: 2" in args[2]
             
-    @patch('src.utilities.security.en_and_decrypt.QMessageBox.warning')
+    @patch('src.tools.security.en_and_decrypt.QMessageBox.warning')
     def test_encrypt_files_no_files_selected(self, mock_warning):
         """Test encryption warning when no files are selected."""
-        with patch('src.utilities.security.en_and_decrypt.STANDARD_WINDOW_AVAILABLE', False):
-            from src.utilities.security.en_and_decrypt import EnAndDecryptGUI
+        with patch('src.tools.security.en_and_decrypt.STANDARD_WINDOW_AVAILABLE', False):
+            from src.tools.security.en_and_decrypt import EnAndDecryptGUI
             
             gui = EnAndDecryptGUI()
             gui.selected_files = []
@@ -325,11 +325,11 @@ class TestEncryptionDecryption(TestSetup):
             args = mock_warning.call_args[0]
             assert "Please select files to encrypt first" in args[2]
             
-    @patch('src.utilities.security.en_and_decrypt.QMessageBox.warning')
+    @patch('src.tools.security.en_and_decrypt.QMessageBox.warning')
     def test_encrypt_files_no_password(self, mock_warning):
         """Test encryption warning when no password is provided."""
-        with patch('src.utilities.security.en_and_decrypt.STANDARD_WINDOW_AVAILABLE', False):
-            from src.utilities.security.en_and_decrypt import EnAndDecryptGUI
+        with patch('src.tools.security.en_and_decrypt.STANDARD_WINDOW_AVAILABLE', False):
+            from src.tools.security.en_and_decrypt import EnAndDecryptGUI
             
             gui = EnAndDecryptGUI()
             gui.selected_files = ['/path/file1.txt']
@@ -341,11 +341,11 @@ class TestEncryptionDecryption(TestSetup):
             args = mock_warning.call_args[0]
             assert "Please enter a password for encryption" in args[2]
             
-    @patch('src.utilities.security.en_and_decrypt.QMessageBox.information')
+    @patch('src.tools.security.en_and_decrypt.QMessageBox.information')
     def test_decrypt_files_with_valid_input(self, mock_msg_box):
         """Test decryption with valid files and password."""
-        with patch('src.utilities.security.en_and_decrypt.STANDARD_WINDOW_AVAILABLE', False):
-            from src.utilities.security.en_and_decrypt import EnAndDecryptGUI
+        with patch('src.tools.security.en_and_decrypt.STANDARD_WINDOW_AVAILABLE', False):
+            from src.tools.security.en_and_decrypt import EnAndDecryptGUI
             
             gui = EnAndDecryptGUI()
             gui.selected_files = ['/path/file1.enc', '/path/file2.enc']
@@ -358,11 +358,11 @@ class TestEncryptionDecryption(TestSetup):
             assert "Decryption functionality" in args[2]
             assert "Files to decrypt: 2" in args[2]
             
-    @patch('src.utilities.security.en_and_decrypt.QMessageBox.warning')
+    @patch('src.tools.security.en_and_decrypt.QMessageBox.warning')
     def test_decrypt_files_no_files_selected(self, mock_warning):
         """Test decryption warning when no files are selected."""
-        with patch('src.utilities.security.en_and_decrypt.STANDARD_WINDOW_AVAILABLE', False):
-            from src.utilities.security.en_and_decrypt import EnAndDecryptGUI
+        with patch('src.tools.security.en_and_decrypt.STANDARD_WINDOW_AVAILABLE', False):
+            from src.tools.security.en_and_decrypt import EnAndDecryptGUI
             
             gui = EnAndDecryptGUI()
             gui.selected_files = []
@@ -373,11 +373,11 @@ class TestEncryptionDecryption(TestSetup):
             args = mock_warning.call_args[0]
             assert "Please select files to decrypt first" in args[2]
             
-    @patch('src.utilities.security.en_and_decrypt.QMessageBox.warning')
+    @patch('src.tools.security.en_and_decrypt.QMessageBox.warning')
     def test_decrypt_files_no_password(self, mock_warning):
         """Test decryption warning when no password is provided."""
-        with patch('src.utilities.security.en_and_decrypt.STANDARD_WINDOW_AVAILABLE', False):
-            from src.utilities.security.en_and_decrypt import EnAndDecryptGUI
+        with patch('src.tools.security.en_and_decrypt.STANDARD_WINDOW_AVAILABLE', False):
+            from src.tools.security.en_and_decrypt import EnAndDecryptGUI
             
             gui = EnAndDecryptGUI()
             gui.selected_files = ['/path/file1.enc']
@@ -395,8 +395,8 @@ class TestUtilityMethods(TestSetup):
     
     def test_clear_operation(self):
         """Test clearing operation state."""
-        with patch('src.utilities.security.en_and_decrypt.STANDARD_WINDOW_AVAILABLE', False):
-            from src.utilities.security.en_and_decrypt import EnAndDecryptGUI
+        with patch('src.tools.security.en_and_decrypt.STANDARD_WINDOW_AVAILABLE', False):
+            from src.tools.security.en_and_decrypt import EnAndDecryptGUI
             
             gui = EnAndDecryptGUI()
             
@@ -416,8 +416,8 @@ class TestUtilityMethods(TestSetup):
             
     def test_refresh_view(self):
         """Test refresh view functionality."""
-        with patch('src.utilities.security.en_and_decrypt.STANDARD_WINDOW_AVAILABLE', False):
-            from src.utilities.security.en_and_decrypt import EnAndDecryptGUI
+        with patch('src.tools.security.en_and_decrypt.STANDARD_WINDOW_AVAILABLE', False):
+            from src.tools.security.en_and_decrypt import EnAndDecryptGUI
             
             gui = EnAndDecryptGUI()
             
@@ -428,11 +428,11 @@ class TestUtilityMethods(TestSetup):
             
             gui.clear_operation.assert_called_once()
             
-    @patch('src.utilities.security.en_and_decrypt.QMessageBox')
+    @patch('src.tools.security.en_and_decrypt.QMessageBox')
     def test_show_help(self, mock_msg_box):
         """Test help dialog functionality."""
-        with patch('src.utilities.security.en_and_decrypt.STANDARD_WINDOW_AVAILABLE', False):
-            from src.utilities.security.en_and_decrypt import EnAndDecryptGUI
+        with patch('src.tools.security.en_and_decrypt.STANDARD_WINDOW_AVAILABLE', False):
+            from src.tools.security.en_and_decrypt import EnAndDecryptGUI
             
             gui = EnAndDecryptGUI()
             
@@ -446,11 +446,11 @@ class TestUtilityMethods(TestSetup):
             mock_box_instance.setTextFormat.assert_called_with(1)
             mock_box_instance.exec_.assert_called_once()
             
-    @patch('src.utilities.security.en_and_decrypt.QMessageBox.information')
+    @patch('src.tools.security.en_and_decrypt.QMessageBox.information')
     def test_show_preferences(self, mock_info):
         """Test preferences dialog functionality."""
-        with patch('src.utilities.security.en_and_decrypt.STANDARD_WINDOW_AVAILABLE', False):
-            from src.utilities.security.en_and_decrypt import EnAndDecryptGUI
+        with patch('src.tools.security.en_and_decrypt.STANDARD_WINDOW_AVAILABLE', False):
+            from src.tools.security.en_and_decrypt import EnAndDecryptGUI
             
             gui = EnAndDecryptGUI()
             
@@ -466,8 +466,8 @@ class TestEdgeCases(TestSetup):
     
     def test_missing_attributes_handling(self):
         """Test handling of missing UI attributes during operations."""
-        with patch('src.utilities.security.en_and_decrypt.STANDARD_WINDOW_AVAILABLE', False):
-            from src.utilities.security.en_and_decrypt import EnAndDecryptGUI
+        with patch('src.tools.security.en_and_decrypt.STANDARD_WINDOW_AVAILABLE', False):
+            from src.tools.security.en_and_decrypt import EnAndDecryptGUI
             
             gui = EnAndDecryptGUI()
             
@@ -487,8 +487,8 @@ class TestEdgeCases(TestSetup):
                 
     def test_large_file_list_handling(self):
         """Test handling of large file lists."""
-        with patch('src.utilities.security.en_and_decrypt.STANDARD_WINDOW_AVAILABLE', False):
-            from src.utilities.security.en_and_decrypt import EnAndDecryptGUI
+        with patch('src.tools.security.en_and_decrypt.STANDARD_WINDOW_AVAILABLE', False):
+            from src.tools.security.en_and_decrypt import EnAndDecryptGUI
             
             gui = EnAndDecryptGUI()
             
@@ -499,15 +499,15 @@ class TestEdgeCases(TestSetup):
             # This should handle large lists gracefully
             gui.password_edit.setText("password")
             
-            with patch('src.utilities.security.en_and_decrypt.QMessageBox.information'):
+            with patch('src.tools.security.en_and_decrypt.QMessageBox.information'):
                 gui.encrypt_files()
                 
             assert len(gui.selected_files) == 1000
             
     def test_special_characters_in_file_paths(self):
         """Test handling of file paths with special characters."""
-        with patch('src.utilities.security.en_and_decrypt.STANDARD_WINDOW_AVAILABLE', False):
-            from src.utilities.security.en_and_decrypt import EnAndDecryptGUI
+        with patch('src.tools.security.en_and_decrypt.STANDARD_WINDOW_AVAILABLE', False):
+            from src.tools.security.en_and_decrypt import EnAndDecryptGUI
             
             gui = EnAndDecryptGUI()
             
@@ -520,7 +520,7 @@ class TestEdgeCases(TestSetup):
             gui.selected_files = special_files
             gui.password_edit.setText("password")
             
-            with patch('src.utilities.security.en_and_decrypt.QMessageBox.information'):
+            with patch('src.tools.security.en_and_decrypt.QMessageBox.information'):
                 gui.encrypt_files()
                 
             # Should handle special characters without issues
@@ -528,8 +528,8 @@ class TestEdgeCases(TestSetup):
             
     def test_empty_password_edge_cases(self):
         """Test various empty password scenarios."""
-        with patch('src.utilities.security.en_and_decrypt.STANDARD_WINDOW_AVAILABLE', False):
-            from src.utilities.security.en_and_decrypt import EnAndDecryptGUI
+        with patch('src.tools.security.en_and_decrypt.STANDARD_WINDOW_AVAILABLE', False):
+            from src.tools.security.en_and_decrypt import EnAndDecryptGUI
             
             gui = EnAndDecryptGUI()
             gui.selected_files = ['/path/file.txt']
@@ -539,7 +539,7 @@ class TestEdgeCases(TestSetup):
             for password in test_passwords:
                 gui.password_edit.setText(password if password is not None else "")
                 
-                with patch('src.utilities.security.en_and_decrypt.QMessageBox.warning') as mock_warning:
+                with patch('src.tools.security.en_and_decrypt.QMessageBox.warning') as mock_warning:
                     gui.encrypt_files()
                     
                     if not password or not password.strip():
@@ -549,18 +549,18 @@ class TestEdgeCases(TestSetup):
 class TestMainFunction(TestSetup):
     """Test main function and standalone execution."""
     
-    @patch('src.utilities.security.en_and_decrypt.QApplication')
-    @patch('src.utilities.security.en_and_decrypt.sys.exit')
+    @patch('src.tools.security.en_and_decrypt.QApplication')
+    @patch('src.tools.security.en_and_decrypt.sys.exit')
     def test_main_function(self, mock_exit, mock_app):
         """Test main function execution."""
         mock_app_instance = Mock()
         mock_app_instance.exec_.return_value = 0
         mock_app.return_value = mock_app_instance
         
-        from src.utilities.security.en_and_decrypt import main
+        from src.tools.security.en_and_decrypt import main
         
         # Mock sys.argv
-        with patch('src.utilities.security.en_and_decrypt.sys.argv', ['test_script.py']):
+        with patch('src.tools.security.en_and_decrypt.sys.argv', ['test_script.py']):
             main()
             
         mock_app.assert_called_once_with(['test_script.py'])
@@ -573,14 +573,14 @@ class TestSecurityValidation(TestSetup):
     
     def test_password_masking(self):
         """Test that passwords are properly masked in displays."""
-        with patch('src.utilities.security.en_and_decrypt.STANDARD_WINDOW_AVAILABLE', False):
-            from src.utilities.security.en_and_decrypt import EnAndDecryptGUI
+        with patch('src.tools.security.en_and_decrypt.STANDARD_WINDOW_AVAILABLE', False):
+            from src.tools.security.en_and_decrypt import EnAndDecryptGUI
             
             gui = EnAndDecryptGUI()
             gui.selected_files = ['/path/file.txt']
             gui.password_edit.setText("secret_password_123")
             
-            with patch('src.utilities.security.en_and_decrypt.QMessageBox.information') as mock_info:
+            with patch('src.tools.security.en_and_decrypt.QMessageBox.information') as mock_info:
                 gui.encrypt_files()
                 
                 # Check that password is masked in display
@@ -590,8 +590,8 @@ class TestSecurityValidation(TestSetup):
                 
     def test_file_extension_validation(self):
         """Test validation of file extensions for operations."""
-        with patch('src.utilities.security.en_and_decrypt.STANDARD_WINDOW_AVAILABLE', False):
-            from src.utilities.security.en_and_decrypt import EnAndDecryptGUI
+        with patch('src.tools.security.en_and_decrypt.STANDARD_WINDOW_AVAILABLE', False):
+            from src.tools.security.en_and_decrypt import EnAndDecryptGUI
             
             gui = EnAndDecryptGUI()
             
@@ -607,7 +607,7 @@ class TestSecurityValidation(TestSetup):
             gui.selected_files = test_files
             gui.password_edit.setText("password")
             
-            with patch('src.utilities.security.en_and_decrypt.QMessageBox.information'):
+            with patch('src.tools.security.en_and_decrypt.QMessageBox.information'):
                 gui.encrypt_files()
                 
             # All file types should be accepted for encryption

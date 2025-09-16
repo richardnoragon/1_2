@@ -346,7 +346,7 @@ def generate_test_execution_summary():
     summary = {
         "test_execution_summary": {
             "timestamp": timestamp,
-            "target_module": "src.utilities.pdf_tools.pdf_basic_operations.merg",
+            "target_module": "src.tools.pdf_tools.pdf_basic_operations.merg",
             "test_file": "test_merg_standalone_2025-08-24.py",
             "test_approach": "Standalone unit testing with mocked dependencies",
             "test_categories": [

@@ -26,7 +26,7 @@ import shutil
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 try:
-    from src.utilities.analysis.import_validator import (
+    from src.tools.analysis.import_validator import (
         ImportValidator, main
     )
 except ImportError as e:
@@ -186,7 +186,7 @@ class TestImportValidator:
         with patch('pathlib.Path.cwd',
                    return_value=Path(mock_module_structure['temp_dir'])):
             file_path = import_validator._resolve_module_file_path(
-                'src.utilities.analysis.size_analyzer'
+                'src.tools.analysis.size_analyzer'
             )
         
         assert file_path is not None
@@ -409,7 +409,7 @@ class TestImportValidator:
         with patch('pathlib.Path.cwd',
                    return_value=Path(mock_module_structure['temp_dir'])):
             file_path = import_validator._resolve_module_file_path(
-                'src.utilities.analysis.size_analyzer'
+                'src.tools.analysis.size_analyzer'
             )
         
         assert file_path is not None

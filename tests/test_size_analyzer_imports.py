@@ -19,19 +19,19 @@ def test_basic_imports():
     
     try:
         # Test importing the main size analyzer module
-        from src.utilities.analysis.size_analyzer import SizeAnalyzerGUI
-        print("✓ Successfully imported SizeAnalyzerGUI from src.utilities.analysis.size_analyzer")
+        from src.tools.analysis.size_analyzer import SizeAnalyzerGUI
+        print("✓ Successfully imported SizeAnalyzerGUI from src.tools.analysis.size_analyzer")
         
         # Test importing through the package structure
-        from src.utilities.analysis import SizeAnalyzerGUI as SizeAnalyzerGUI2
+        from src.tools.analysis import SizeAnalyzerGUI as SizeAnalyzerGUI2
         print("✓ Successfully imported SizeAnalyzerGUI through package structure")
         
         # Test importing core logic
-        from src.utilities.analysis.core.size_analyzer_logic import SizeAnalyzer
+        from src.tools.analysis.core.size_analyzer_logic import SizeAnalyzer
         print("✓ Successfully imported SizeAnalyzer from core logic")
         
         # Test importing configuration
-        from src.utilities.analysis.config.size_analyzer_config import SizeAnalyzerConfig
+        from src.tools.analysis.config.size_analyzer_config import SizeAnalyzerConfig
         print("✓ Successfully imported SizeAnalyzerConfig")
         
         return True
@@ -57,17 +57,17 @@ def test_class_instantiation():
             app = QApplication(sys.argv)
         
         # Test SizeAnalyzerGUI instantiation
-        from src.utilities.analysis.size_analyzer import SizeAnalyzerGUI
+        from src.tools.analysis.size_analyzer import SizeAnalyzerGUI
         gui_instance = SizeAnalyzerGUI()
         print("✓ Successfully instantiated SizeAnalyzerGUI")
         
         # Test SizeAnalyzer core logic instantiation
-        from src.utilities.analysis.core.size_analyzer_logic import SizeAnalyzer
+        from src.tools.analysis.core.size_analyzer_logic import SizeAnalyzer
         analyzer_instance = SizeAnalyzer()
         print("✓ Successfully instantiated SizeAnalyzer")
         
         # Test SizeAnalyzerConfig instantiation
-        from src.utilities.analysis.config.size_analyzer_config import SizeAnalyzerConfig
+        from src.tools.analysis.config.size_analyzer_config import SizeAnalyzerConfig
         config_instance = SizeAnalyzerConfig()
         print("✓ Successfully instantiated SizeAnalyzerConfig")
         
@@ -89,7 +89,7 @@ def test_main_py_import_strategies():
     print("\nTesting main.py import strategies...")
     
     # Simulate the import strategies from main.py
-    module_name = "src.utilities.analysis.size_analyzer"
+    module_name = "src.tools.analysis.size_analyzer"
     class_name = "SizeAnalyzerGUI"
     
     strategies_tested = 0
@@ -160,16 +160,16 @@ def test_package_structure():
         import src.utilities
         print("✓ src.utilities package imports correctly")
         
-        import src.utilities.analysis
+        import src.tools.analysis
         print("✓ src.utilities.analysis package imports correctly")
         
         # Test that classes are exposed through __init__.py
-        from src.utilities.analysis import get_available_classes
+        from src.tools.analysis import get_available_classes
         available = get_available_classes()
         print(f"✓ Available classes: {available}")
         
         # Test validation function
-        from src.utilities.analysis import validate_imports
+        from src.tools.analysis import validate_imports
         validation_result = validate_imports()
         print(f"✓ Import validation result: {validation_result}")
         
@@ -184,7 +184,7 @@ def test_import_validator():
     print("\nTesting import validator utility...")
     
     try:
-        from src.utilities.analysis.import_validator import ImportValidator
+        from src.tools.analysis.import_validator import ImportValidator
         
         validator = ImportValidator()
         results = validator.validate_size_analyzer_imports()
@@ -213,12 +213,12 @@ def test_circular_import_resolution():
     
     try:
         # Test importing config without circular dependencies
-        from src.utilities.analysis.config.size_analyzer_config import SizeAnalyzerConfig
+        from src.tools.analysis.config.size_analyzer_config import SizeAnalyzerConfig
         config = SizeAnalyzerConfig()
         print("✓ SizeAnalyzerConfig imports without circular dependency issues")
         
         # Test that the dynamic import functions work
-        from src.utilities.analysis.config.size_analyzer_config import get_config_manager, get_log_manager
+        from src.tools.analysis.config.size_analyzer_config import get_config_manager, get_log_manager
         
         config_manager_class = get_config_manager()
         log_manager_class = get_log_manager()

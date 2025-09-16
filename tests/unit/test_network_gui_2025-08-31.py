@@ -78,13 +78,13 @@ sys.modules['src.gui.standard_window'] = MagicMock()
 
 # Mock network tool imports
 sys.modules['src.utilities'] = MagicMock()
-sys.modules['src.utilities.network'] = MagicMock()
-sys.modules['src.utilities.network.network_connectivity_complex'] = MagicMock()
-sys.modules['src.utilities.network.network_connectivity_complex.tools'] = MagicMock()
-sys.modules['src.utilities.network.network_connectivity_complex.tools.port_scanner'] = MagicMock()
-sys.modules['src.utilities.network.network_connectivity_complex.tools.bandwidth_monitor'] = MagicMock()
-sys.modules['src.utilities.network.network_connectivity_complex.tools.wifi_analyzer'] = MagicMock()
-sys.modules['src.utilities.network.network_connectivity_complex.tools.lan_file_transfer'] = MagicMock()
+sys.modules['src.tools.network'] = MagicMock()
+sys.modules['src.tools.network.network_connectivity_complex'] = MagicMock()
+sys.modules['src.tools.network.network_connectivity_complex.tools'] = MagicMock()
+sys.modules['src.tools.network.network_connectivity_complex.tools.port_scanner'] = MagicMock()
+sys.modules['src.tools.network.network_connectivity_complex.tools.bandwidth_monitor'] = MagicMock()
+sys.modules['src.tools.network.network_connectivity_complex.tools.wifi_analyzer'] = MagicMock()
+sys.modules['src.tools.network.network_connectivity_complex.tools.lan_file_transfer'] = MagicMock()
 
 # Import the module to test
 try:

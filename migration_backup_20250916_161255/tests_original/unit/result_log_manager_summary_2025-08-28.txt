@@ -1,0 +1,18 @@
+LOG MANAGER UNIT TEST EXECUTION SUMMARY
+==================================================
+
+Execution Timestamp: 2025-08-28T19:49:49.454123
+Target Module: log_manager.py
+Test File: test_log_manager_2025-08-28.py
+Exit Code: 1
+
+TEST RESULTS SUMMARY:
+-------------------------
+Total Tests: 1
+Passed: 1
+Failed: N/A
+Skipped: N/A
+Duration: 2.1868369579315186 seconds
+
+GENERATED FILES:
+---------------

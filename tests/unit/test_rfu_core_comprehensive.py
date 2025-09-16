@@ -40,7 +40,7 @@ try:
     import rfu
     import utilities
     from rfu import dev_hub, log_manager
-    from utilities.file_management import file_finder
+    from tools.file_management import file_finder
     RFU_AVAILABLE = True
 except ImportError as e:
     print(f"[IMPORT_ISSUE] {e}")

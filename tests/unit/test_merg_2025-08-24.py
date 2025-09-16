@@ -30,7 +30,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src', 'u
 
 # Import the module under test
 try:
-    from src.utilities.pdf_tools.pdf_basic_operations.merg import (MergeUI,
+    from src.tools.pdf_tools.pdf_basic_operations.merg import (MergeUI,
                                                                    main,
                                                                    merge_pdfs)
 except ImportError:
@@ -87,8 +87,8 @@ class TestMergePdfs:
         if self.app:
             self.app.quit()
     
-    @patch('src.utilities.pdf_tools.pdf_basic_operations.merg.logger')
-    @patch('src.utilities.pdf_tools.pdf_basic_operations.merg.QMessageBox')
+    @patch('src.tools.pdf_tools.pdf_basic_operations.merg.logger')
+    @patch('src.tools.pdf_tools.pdf_basic_operations.merg.QMessageBox')
     @patch('pikepdf.Pdf')
     def test_merge_pdfs_success(self, mock_pdf_class, mock_messagebox, mock_logger):
         """Test successful PDF merging"""
@@ -116,8 +116,8 @@ class TestMergePdfs:
         mock_pdf_instance.save.assert_called_once_with(output_file)
         mock_logger.info.assert_called()
     
-    @patch('src.utilities.pdf_tools.pdf_basic_operations.merg.logger')
-    @patch('src.utilities.pdf_tools.pdf_basic_operations.merg.QMessageBox')
+    @patch('src.tools.pdf_tools.pdf_basic_operations.merg.logger')
+    @patch('src.tools.pdf_tools.pdf_basic_operations.merg.QMessageBox')
     def test_merge_pdfs_empty_input_list(self, mock_messagebox, mock_logger):
         """Test merge_pdfs with empty input list"""
         result = merge_pdfs([], 'output.pdf')
@@ -126,8 +126,8 @@ class TestMergePdfs:
         mock_logger.error.assert_called_with("No input files provided")
         mock_messagebox.critical.assert_called_once()
     
-    @patch('src.utilities.pdf_tools.pdf_basic_operations.merg.logger')
-    @patch('src.utilities.pdf_tools.pdf_basic_operations.merg.QMessageBox')
+    @patch('src.tools.pdf_tools.pdf_basic_operations.merg.logger')
+    @patch('src.tools.pdf_tools.pdf_basic_operations.merg.QMessageBox')
     @patch('pikepdf.Pdf')
     def test_merge_pdfs_file_not_found(self, mock_pdf_class, mock_messagebox, mock_logger):
         """Test merge_pdfs with non-existent file"""
@@ -140,8 +140,8 @@ class TestMergePdfs:
         mock_logger.error.assert_called()
         mock_messagebox.critical.assert_called()
     
-    @patch('src.utilities.pdf_tools.pdf_basic_operations.merg.logger')
-    @patch('src.utilities.pdf_tools.pdf_basic_operations.merg.QMessageBox')
+    @patch('src.tools.pdf_tools.pdf_basic_operations.merg.logger')
+    @patch('src.tools.pdf_tools.pdf_basic_operations.merg.QMessageBox')
     @patch('pikepdf.Pdf')
     def test_merge_pdfs_pdf_error(self, mock_pdf_class, mock_messagebox, mock_logger):
         """Test merge_pdfs with PDF processing error"""
@@ -154,8 +154,8 @@ class TestMergePdfs:
         mock_logger.error.assert_called()
         mock_messagebox.critical.assert_called()
     
-    @patch('src.utilities.pdf_tools.pdf_basic_operations.merg.logger')
-    @patch('src.utilities.pdf_tools.pdf_basic_operations.merg.QMessageBox')
+    @patch('src.tools.pdf_tools.pdf_basic_operations.merg.logger')
+    @patch('src.tools.pdf_tools.pdf_basic_operations.merg.QMessageBox')
     @patch('pikepdf.Pdf')
     def test_merge_pdfs_save_permission_error(self, mock_pdf_class, mock_messagebox, mock_logger):
         """Test merge_pdfs with permission error during save"""
@@ -173,8 +173,8 @@ class TestMergePdfs:
         mock_logger.error.assert_called()
         mock_messagebox.critical.assert_called()
     
-    @patch('src.utilities.pdf_tools.pdf_basic_operations.merg.logger')
-    @patch('src.utilities.pdf_tools.pdf_basic_operations.merg.QMessageBox')
+    @patch('src.tools.pdf_tools.pdf_basic_operations.merg.logger')
+    @patch('src.tools.pdf_tools.pdf_basic_operations.merg.QMessageBox')
     @patch('pikepdf.Pdf')
     def test_merge_pdfs_unexpected_error(self, mock_pdf_class, mock_messagebox, mock_logger):
         """Test merge_pdfs with unexpected error"""
@@ -202,8 +202,8 @@ class TestMergeUI:
         if self.app:
             self.app.quit()
     
-    @patch('src.utilities.pdf_tools.pdf_basic_operations.merg.uic.loadUi')
-    @patch('src.utilities.pdf_tools.pdf_basic_operations.merg.logger')
+    @patch('src.tools.pdf_tools.pdf_basic_operations.merg.uic.loadUi')
+    @patch('src.tools.pdf_tools.pdf_basic_operations.merg.logger')
     def test_merge_ui_initialization_success(self, mock_logger, mock_loadui):
         """Test successful MergeUI initialization"""
         # Mock UI components
@@ -238,9 +238,9 @@ class TestMergeUI:
             assert hasattr(ui, 'files')
             assert ui.files == []
     
-    @patch('src.utilities.pdf_tools.pdf_basic_operations.merg.uic.loadUi')
-    @patch('src.utilities.pdf_tools.pdf_basic_operations.merg.logger')
-    @patch('src.utilities.pdf_tools.pdf_basic_operations.merg.QMessageBox')
+    @patch('src.tools.pdf_tools.pdf_basic_operations.merg.uic.loadUi')
+    @patch('src.tools.pdf_tools.pdf_basic_operations.merg.logger')
+    @patch('src.tools.pdf_tools.pdf_basic_operations.merg.QMessageBox')
     def test_merge_ui_initialization_failure(self, mock_messagebox, mock_logger, mock_loadui):
         """Test MergeUI initialization failure"""
         mock_loadui.side_effect = Exception("UI load failed")
@@ -265,7 +265,7 @@ class TestMergeUI:
         ui.downButton = Mock()
         
         # Import and call the method
-        from src.utilities.pdf_tools.pdf_basic_operations.merg import MergeUI
+        from src.tools.pdf_tools.pdf_basic_operations.merg import MergeUI
         MergeUI.update_button_states(ui)
         
         # Verify button states
@@ -285,15 +285,15 @@ class TestMergeUI:
         ui.upButton = Mock()
         ui.downButton = Mock()
         
-        from src.utilities.pdf_tools.pdf_basic_operations.merg import MergeUI
+        from src.tools.pdf_tools.pdf_basic_operations.merg import MergeUI
         MergeUI.update_button_states(ui)
         
         ui.mergeButton.setEnabled.assert_called_with(True)
         ui.clearButton.setEnabled.assert_called_with(True)
         ui.removeButton.setEnabled.assert_called_with(True)
     
-    @patch('src.utilities.pdf_tools.pdf_basic_operations.merg.QFileDialog')
-    @patch('src.utilities.pdf_tools.pdf_basic_operations.merg.logger')
+    @patch('src.tools.pdf_tools.pdf_basic_operations.merg.QFileDialog')
+    @patch('src.tools.pdf_tools.pdf_basic_operations.merg.logger')
     def test_add_files_success(self, mock_logger, mock_file_dialog):
         """Test successful file addition"""
         mock_file_dialog.getOpenFileNames.return_value = (['file1.pdf', 'file2.pdf'], '')
@@ -303,7 +303,7 @@ class TestMergeUI:
         ui.fileList = Mock()
         ui.update_button_states = Mock()
         
-        from src.utilities.pdf_tools.pdf_basic_operations.merg import MergeUI
+        from src.tools.pdf_tools.pdf_basic_operations.merg import MergeUI
         MergeUI.add_files(ui)
         
         assert ui.files == ['file1.pdf', 'file2.pdf']
@@ -311,7 +311,7 @@ class TestMergeUI:
         ui.fileList.addItems.assert_called_once()
         ui.update_button_states.assert_called_once()
     
-    @patch('src.utilities.pdf_tools.pdf_basic_operations.merg.QFileDialog')
+    @patch('src.tools.pdf_tools.pdf_basic_operations.merg.QFileDialog')
     def test_add_files_no_selection(self, mock_file_dialog):
         """Test file addition with no files selected"""
         mock_file_dialog.getOpenFileNames.return_value = ([], '')
@@ -321,13 +321,13 @@ class TestMergeUI:
         ui.fileList = Mock()
         ui.update_button_states = Mock()
         
-        from src.utilities.pdf_tools.pdf_basic_operations.merg import MergeUI
+        from src.tools.pdf_tools.pdf_basic_operations.merg import MergeUI
         MergeUI.add_files(ui)
         
         assert ui.files == []
         ui.fileList.clear.assert_not_called()
     
-    @patch('src.utilities.pdf_tools.pdf_basic_operations.merg.logger')
+    @patch('src.tools.pdf_tools.pdf_basic_operations.merg.logger')
     def test_remove_file_success(self, mock_logger):
         """Test successful file removal"""
         ui = Mock()
@@ -337,7 +337,7 @@ class TestMergeUI:
         ui.fileList.takeItem.return_value = Mock()
         ui.update_button_states = Mock()
         
-        from src.utilities.pdf_tools.pdf_basic_operations.merg import MergeUI
+        from src.tools.pdf_tools.pdf_basic_operations.merg import MergeUI
         MergeUI.remove_file(ui)
         
         assert ui.files == ['file2.pdf']
@@ -352,13 +352,13 @@ class TestMergeUI:
         ui.fileList.currentRow.return_value = -1
         ui.update_button_states = Mock()
         
-        from src.utilities.pdf_tools.pdf_basic_operations.merg import MergeUI
+        from src.tools.pdf_tools.pdf_basic_operations.merg import MergeUI
         MergeUI.remove_file(ui)
         
         assert ui.files == ['file1.pdf']  # No change
         ui.fileList.takeItem.assert_not_called()
     
-    @patch('src.utilities.pdf_tools.pdf_basic_operations.merg.logger')
+    @patch('src.tools.pdf_tools.pdf_basic_operations.merg.logger')
     def test_clear_files(self, mock_logger):
         """Test clearing all files"""
         ui = Mock()
@@ -366,14 +366,14 @@ class TestMergeUI:
         ui.fileList = Mock()
         ui.update_button_states = Mock()
         
-        from src.utilities.pdf_tools.pdf_basic_operations.merg import MergeUI
+        from src.tools.pdf_tools.pdf_basic_operations.merg import MergeUI
         MergeUI.clear_files(ui)
         
         assert len(ui.files) == 0
         ui.fileList.clear.assert_called_once()
         ui.update_button_states.assert_called_once()
     
-    @patch('src.utilities.pdf_tools.pdf_basic_operations.merg.logger')
+    @patch('src.tools.pdf_tools.pdf_basic_operations.merg.logger')
     def test_move_up_success(self, mock_logger):
         """Test successful file move up"""
         ui = Mock()
@@ -385,7 +385,7 @@ class TestMergeUI:
         ui.fileList.setCurrentRow = Mock()
         ui.update_button_states = Mock()
         
-        from src.utilities.pdf_tools.pdf_basic_operations.merg import MergeUI
+        from src.tools.pdf_tools.pdf_basic_operations.merg import MergeUI
         MergeUI.move_up(ui)
         
         assert ui.files == ['file2.pdf', 'file1.pdf', 'file3.pdf']
@@ -400,13 +400,13 @@ class TestMergeUI:
         ui.fileList.currentRow.return_value = 0
         ui.update_button_states = Mock()
         
-        from src.utilities.pdf_tools.pdf_basic_operations.merg import MergeUI
+        from src.tools.pdf_tools.pdf_basic_operations.merg import MergeUI
         MergeUI.move_up(ui)
         
         assert ui.files == ['file1.pdf', 'file2.pdf']  # No change
         ui.fileList.takeItem.assert_not_called()
     
-    @patch('src.utilities.pdf_tools.pdf_basic_operations.merg.logger')
+    @patch('src.tools.pdf_tools.pdf_basic_operations.merg.logger')
     def test_move_down_success(self, mock_logger):
         """Test successful file move down"""
         ui = Mock()
@@ -418,7 +418,7 @@ class TestMergeUI:
         ui.fileList.setCurrentRow = Mock()
         ui.update_button_states = Mock()
         
-        from src.utilities.pdf_tools.pdf_basic_operations.merg import MergeUI
+        from src.tools.pdf_tools.pdf_basic_operations.merg import MergeUI
         MergeUI.move_down(ui)
         
         assert ui.files == ['file1.pdf', 'file3.pdf', 'file2.pdf']
@@ -433,29 +433,29 @@ class TestMergeUI:
         ui.fileList.currentRow.return_value = 1
         ui.update_button_states = Mock()
         
-        from src.utilities.pdf_tools.pdf_basic_operations.merg import MergeUI
+        from src.tools.pdf_tools.pdf_basic_operations.merg import MergeUI
         MergeUI.move_down(ui)
         
         assert ui.files == ['file1.pdf', 'file2.pdf']  # No change
         ui.fileList.takeItem.assert_not_called()
     
-    @patch('src.utilities.pdf_tools.pdf_basic_operations.merg.QMessageBox')
-    @patch('src.utilities.pdf_tools.pdf_basic_operations.merg.logger')
+    @patch('src.tools.pdf_tools.pdf_basic_operations.merg.QMessageBox')
+    @patch('src.tools.pdf_tools.pdf_basic_operations.merg.logger')
     def test_merge_files_no_files(self, mock_logger, mock_messagebox):
         """Test merge operation with no files"""
         ui = Mock()
         ui.files = []
         
-        from src.utilities.pdf_tools.pdf_basic_operations.merg import MergeUI
+        from src.tools.pdf_tools.pdf_basic_operations.merg import MergeUI
         MergeUI.merge_files(ui)
         
         mock_messagebox.warning.assert_called_once()
         mock_logger.warning.assert_called()
     
-    @patch('src.utilities.pdf_tools.pdf_basic_operations.merg.QFileDialog')
-    @patch('src.utilities.pdf_tools.pdf_basic_operations.merg.merge_pdfs')
-    @patch('src.utilities.pdf_tools.pdf_basic_operations.merg.QMessageBox')
-    @patch('src.utilities.pdf_tools.pdf_basic_operations.merg.QtWidgets.QApplication.processEvents')
+    @patch('src.tools.pdf_tools.pdf_basic_operations.merg.QFileDialog')
+    @patch('src.tools.pdf_tools.pdf_basic_operations.merg.merge_pdfs')
+    @patch('src.tools.pdf_tools.pdf_basic_operations.merg.QMessageBox')
+    @patch('src.tools.pdf_tools.pdf_basic_operations.merg.QtWidgets.QApplication.processEvents')
     def test_merge_files_success(self, mock_process_events, mock_messagebox, mock_merge_pdfs, mock_file_dialog):
         """Test successful merge operation"""
         mock_file_dialog.getSaveFileName.return_value = ('output.pdf', '')
@@ -467,7 +467,7 @@ class TestMergeUI:
         ui.statusBar = Mock()
         ui.statusBar.return_value = Mock()
         
-        from src.utilities.pdf_tools.pdf_basic_operations.merg import MergeUI
+        from src.tools.pdf_tools.pdf_basic_operations.merg import MergeUI
         MergeUI.merge_files(ui)
         
         mock_merge_pdfs.assert_called_once_with(['file1.pdf', 'file2.pdf'], 'output.pdf')
@@ -477,9 +477,9 @@ class TestMergeUI:
 class TestMainFunction:
     """Test cases for the main function"""
     
-    @patch('src.utilities.pdf_tools.pdf_basic_operations.merg.QApplication')
-    @patch('src.utilities.pdf_tools.pdf_basic_operations.merg.MergeUI')
-    @patch('src.utilities.pdf_tools.pdf_basic_operations.merg.logger')
+    @patch('src.tools.pdf_tools.pdf_basic_operations.merg.QApplication')
+    @patch('src.tools.pdf_tools.pdf_basic_operations.merg.MergeUI')
+    @patch('src.tools.pdf_tools.pdf_basic_operations.merg.logger')
     def test_main_success(self, mock_logger, mock_merge_ui, mock_qapp):
         """Test successful application startup"""
         mock_app_instance = Mock()
@@ -494,10 +494,10 @@ class TestMainFunction:
         mock_app_instance.exec_.assert_called_once()
         mock_exit.assert_called_with(0)
     
-    @patch('src.utilities.pdf_tools.pdf_basic_operations.merg.QApplication')
-    @patch('src.utilities.pdf_tools.pdf_basic_operations.merg.MergeUI')
-    @patch('src.utilities.pdf_tools.pdf_basic_operations.merg.QMessageBox')
-    @patch('src.utilities.pdf_tools.pdf_basic_operations.merg.logger')
+    @patch('src.tools.pdf_tools.pdf_basic_operations.merg.QApplication')
+    @patch('src.tools.pdf_tools.pdf_basic_operations.merg.MergeUI')
+    @patch('src.tools.pdf_tools.pdf_basic_operations.merg.QMessageBox')
+    @patch('src.tools.pdf_tools.pdf_basic_operations.merg.logger')
     def test_main_failure(self, mock_logger, mock_messagebox, mock_merge_ui, mock_qapp):
         """Test application startup failure"""
         mock_qapp.side_effect = Exception("App creation failed")
@@ -523,8 +523,8 @@ class TestEdgeCases:
         if self.app:
             self.app.quit()
     
-    @patch('src.utilities.pdf_tools.pdf_basic_operations.merg.logger')
-    @patch('src.utilities.pdf_tools.pdf_basic_operations.merg.QMessageBox')
+    @patch('src.tools.pdf_tools.pdf_basic_operations.merg.logger')
+    @patch('src.tools.pdf_tools.pdf_basic_operations.merg.QMessageBox')
     @patch('pikepdf.Pdf')
     def test_merge_large_number_of_files(self, mock_pdf_class, mock_messagebox, mock_logger):
         """Test merging a large number of files"""
@@ -544,8 +544,8 @@ class TestEdgeCases:
         assert result is True
         assert mock_pdf_class.open.call_count == 100
     
-    @patch('src.utilities.pdf_tools.pdf_basic_operations.merg.logger')
-    @patch('src.utilities.pdf_tools.pdf_basic_operations.merg.QMessageBox')
+    @patch('src.tools.pdf_tools.pdf_basic_operations.merg.logger')
+    @patch('src.tools.pdf_tools.pdf_basic_operations.merg.QMessageBox')
     def test_merge_pdfs_with_none_input(self, mock_messagebox, mock_logger):
         """Test merge_pdfs with None input"""
         result = merge_pdfs(None, 'output.pdf')
@@ -553,8 +553,8 @@ class TestEdgeCases:
         # Should handle gracefully without crashing
         assert result is False
     
-    @patch('src.utilities.pdf_tools.pdf_basic_operations.merg.logger')
-    @patch('src.utilities.pdf_tools.pdf_basic_operations.merg.QMessageBox')
+    @patch('src.tools.pdf_tools.pdf_basic_operations.merg.logger')
+    @patch('src.tools.pdf_tools.pdf_basic_operations.merg.QMessageBox')
     @patch('pikepdf.Pdf')
     def test_merge_mixed_file_types(self, mock_pdf_class, mock_messagebox, mock_logger):
         """Test merging with mixed file types (should fail gracefully)"""
@@ -573,7 +573,7 @@ def generate_test_execution_summary():
     summary = {
         "test_execution_summary": {
             "timestamp": timestamp,
-            "target_module": "src.utilities.pdf_tools.pdf_basic_operations.merg",
+            "target_module": "src.tools.pdf_tools.pdf_basic_operations.merg",
             "test_file": "test_merg_2025-08-24.py",
             "test_categories": [
                 "merge_pdfs function tests",

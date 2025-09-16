@@ -39,7 +39,7 @@ import pytest
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
 
 try:
-    from utilities.network.network_connectivity_complex.core.security_validator import (
+    from tools.network.network_connectivity_complex.core.security_validator import (
         SecurityLevel, SecurityRule, SecurityValidator, ValidationResponse,
         ValidationResult)
 except ImportError as e:

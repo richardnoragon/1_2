@@ -15,7 +15,7 @@ try:
     
     # Test importing SystemCleanupGUI directly
     try:
-        from utilities.system.system_cleanup import SystemCleanupGUI
+        from tools.system.system_cleanup import SystemCleanupGUI
         print("✅ SystemCleanupGUI imported successfully")
     except Exception as e:
         print(f"❌ Failed to import SystemCleanupGUI: {e}")
@@ -73,7 +73,7 @@ try:
         print(f"✅ Window title: '{window_title}'")
         
         # Test that it's properly inheriting from SystemDiagnosticsGUI
-        from utilities.system.diagnostics_monitoring.system_diagnostics_gui import SystemDiagnosticsGUI
+        from tools.system.diagnostics_monitoring.system_diagnostics_gui import SystemDiagnosticsGUI
         if isinstance(cleanup_gui, SystemDiagnosticsGUI):
             print("✅ Correctly inherits from SystemDiagnosticsGUI")
         else:

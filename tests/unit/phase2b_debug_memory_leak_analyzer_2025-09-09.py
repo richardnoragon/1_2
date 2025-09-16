@@ -49,7 +49,7 @@ import pytest
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
 
 try:
-    from src.utilities.analysis.core.size_analyzer_logic import SizeAnalyzer
+    from src.tools.analysis.core.size_analyzer_logic import SizeAnalyzer
     SizeAnalyzer_available = True
 except ImportError as e:
     print(f"CRITICAL: Cannot import SizeAnalyzer for debugging: {e}")

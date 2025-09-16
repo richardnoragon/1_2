@@ -35,22 +35,22 @@ from PyQt5.QtWidgets import QApplication, QWidget
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 # Core imports for testing
-from src.utilities.advanced_folders.core import (FolderConfiguration,
+from src.tools.advanced_folders.core import (FolderConfiguration,
                                                  SearchFilter)
-from src.utilities.advanced_folders.gui.accessibility_manager import \
+from src.tools.advanced_folders.gui.accessibility_manager import \
     AccessibilityManager
-from src.utilities.advanced_folders.gui.keyboard_shortcuts import (
+from src.tools.advanced_folders.gui.keyboard_shortcuts import (
     KeyboardShortcutsManager, ShortcutAction)
-from src.utilities.advanced_folders.gui.preview_pane import (
+from src.tools.advanced_folders.gui.preview_pane import (
     PreviewContentLoader, PreviewPaneWidget)
 # Week 6 deliverable imports
-from src.utilities.advanced_folders.integration.backend_integration import \
+from src.tools.advanced_folders.integration.backend_integration import \
     BackendIntegrationManager
-from src.utilities.advanced_folders.integration.realtime_search import \
+from src.tools.advanced_folders.integration.realtime_search import \
     RealtimeSearchManager
-from src.utilities.advanced_folders.integration.ui_data_bridge import \
+from src.tools.advanced_folders.integration.ui_data_bridge import \
     UIDataBridge
-from src.utilities.advanced_folders.models import FileMetadata, SearchParameter
+from src.tools.advanced_folders.models import FileMetadata, SearchParameter
 
 
 class TestBackendIntegrationManager:
@@ -87,8 +87,8 @@ class TestBackendIntegrationManager:
     @pytest.fixture
     def backend_manager(self, app, mock_db_manager, mock_repository_manager):
         """Create backend integration manager for testing."""
-        with patch('src.utilities.advanced_folders.database.AdvancedFoldersDBManager', return_value=mock_db_manager), \
-             patch('src.utilities.advanced_folders.repositories.RepositoryManager', return_value=mock_repository_manager):
+        with patch('src.tools.advanced_folders.database.AdvancedFoldersDBManager', return_value=mock_db_manager), \
+             patch('src.tools.advanced_folders.repositories.RepositoryManager', return_value=mock_repository_manager):
             manager = BackendIntegrationManager()
             yield manager
             manager.shutdown()
@@ -1136,8 +1136,8 @@ class TestIntegrationScenarios:
         mock_db = Mock()
         mock_repo = Mock()
         
-        with patch('src.utilities.advanced_folders.database.AdvancedFoldersDBManager', return_value=mock_db), \
-             patch('src.utilities.advanced_folders.repositories.RepositoryManager', return_value=mock_repo):
+        with patch('src.tools.advanced_folders.database.AdvancedFoldersDBManager', return_value=mock_db), \
+             patch('src.tools.advanced_folders.repositories.RepositoryManager', return_value=mock_repo):
             
             # Create integrated components
             backend_manager = BackendIntegrationManager()

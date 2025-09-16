@@ -52,7 +52,7 @@ class CleanupToolBase(QObject):  # Removed ABC inheritance
 ```python
 try:
     # Try absolute import first
-    from src.utilities.system.diagnostics_monitoring.system_diagnostics_gui import SystemDiagnosticsGUI
+    from src.tools.system.diagnostics_monitoring.system_diagnostics_gui import SystemDiagnosticsGUI
     DIAGNOSTICS_GUI_AVAILABLE = True
 except ImportError:
     try:
@@ -226,7 +226,7 @@ SystemCleanupGUI → SystemDiagnosticsGUI → QMainWindow → QWidget → QObjec
 
 ### Standalone Usage
 ```python
-from utilities.system.system_cleanup import SystemCleanupGUI
+from tools.system.system_cleanup import SystemCleanupGUI
 from PyQt5.QtWidgets import QApplication
 
 app = QApplication([])

@@ -9,7 +9,7 @@ This document provides a complete solution to fix import and execution issues fo
 ### Primary Issues Identified
 
 1. **Missing Module Exports**: The `src/utilities/analysis/__init__.py` file doesn't properly expose the `SizeAnalyzerGUI` class
-2. **Import Path Resolution**: The module path `"src.utilities.analysis.size_analyzer"` in main.py fails to resolve correctly
+2. **Import Path Resolution**: The module path `"src.tools.analysis.size_analyzer"` in main.py fails to resolve correctly
 3. **Circular Import Dependencies**: Config files import from core modules that may not be properly accessible
 4. **Inadequate Error Handling**: Current error handling doesn't provide actionable guidance for import failures
 5. **Missing Class Exposure**: Classes are defined but not properly exposed through the module hierarchy
@@ -636,9 +636,9 @@ class ImportValidator:
         
         # Define modules to validate
         modules_to_check = [
-            ('src.utilities.analysis.size_analyzer', 'SizeAnalyzerGUI'),
-            ('src.utilities.analysis.core.size_analyzer_logic', 'SizeAnalyzer'),
-            ('src.utilities.analysis.config.size_analyzer_config', 'SizeAnalyzerConfig'),
+            ('src.tools.analysis.size_analyzer', 'SizeAnalyzerGUI'),
+            ('src.tools.analysis.core.size_analyzer_logic', 'SizeAnalyzer'),
+            ('src.tools.analysis.config.size_analyzer_config', 'SizeAnalyzerConfig'),
             ('utilities.analysis.size_analyzer', 'SizeAnalyzerGUI'),
             ('utilities.analysis', 'SizeAnalyzerGUI')
         ]
@@ -784,7 +784,7 @@ class ImportValidator:
         # This is a simplified check - a full circular import detector would be more complex
         try:
             # Check if config module imports from core modules that might import back
-            config_module_path = 'src.utilities.analysis.config.size_analyzer_config'
+            config_module_path = 'src.tools.analysis.config.size_analyzer_config'
             
             # Try to detect if there are circular dependencies
             # This is a basic implementation - could be enhanced

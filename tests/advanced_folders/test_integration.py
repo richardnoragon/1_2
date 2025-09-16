@@ -7,12 +7,12 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from src.utilities.advanced_folders.core import (ConfigurationManager,
+from src.tools.advanced_folders.core import (ConfigurationManager,
                                                  FileMetadata,
                                                  FolderConfiguration,
                                                  FolderType, LogLevel,
                                                  SearchParameter)
-from src.utilities.advanced_folders.database import AdvancedFoldersDBManager
+from src.tools.advanced_folders.database import AdvancedFoldersDBManager
 
 
 class TestAdvancedFoldersIntegration:

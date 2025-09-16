@@ -19,7 +19,7 @@ def test_basic_imports():
     try:
         # Try multiple import paths
         import_paths = [
-            'src.utilities.analysis.config.size_analyzer_config',
+            'src.tools.analysis.config.size_analyzer_config',
             'utilities.analysis.config.size_analyzer_config'
         ]
         

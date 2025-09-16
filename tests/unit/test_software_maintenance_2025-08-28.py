@@ -33,15 +33,15 @@ except ImportError:
     PYQT_AVAILABLE = False
 
 # Import modules under test
-from src.utilities.system.software_maintenance import (SoftwareMaintenanceGUI,
+from src.tools.system.software_maintenance import (SoftwareMaintenanceGUI,
                                                        main)
 
 if PYQT_AVAILABLE:
-    from src.utilities.system.software_maintenance.gui.maintenance_hub import (
+    from src.tools.system.software_maintenance.gui.maintenance_hub import (
         SoftwareMaintenanceHub, WorkerThread)
-    from src.utilities.system.software_maintenance.tools.software_deinstaller import (
+    from src.tools.system.software_maintenance.tools.software_deinstaller import (
         LeftoverItem, SoftwareDeinstaller, UninstallAnalysis, UninstallSession)
-    from src.utilities.system.software_maintenance.tools.software_updater import (
+    from src.tools.system.software_maintenance.tools.software_updater import (
         SoftwareUpdater, UpdateSchedule, UpdateSession)
 
 
@@ -107,8 +107,8 @@ class TestSoftwareMaintenanceEntry:
         assert callable(main)
     
     @pytest.mark.skipif(not PYQT_AVAILABLE, reason="PyQt5 not available")
-    @patch('src.utilities.system.software_maintenance.QApplication')
-    @patch('src.utilities.system.software_maintenance.SoftwareMaintenanceGUI')
+    @patch('src.tools.system.software_maintenance.QApplication')
+    @patch('src.tools.system.software_maintenance.SoftwareMaintenanceGUI')
     def test_main_function_execution(self, mock_gui, mock_app):
         """Test main function execution."""
         mock_app_instance = Mock()
@@ -127,7 +127,7 @@ class TestSoftwareMaintenanceEntry:
     def test_software_maintenance_gui_placeholder(self):
         """Test SoftwareMaintenanceGUI placeholder functionality."""
         # Test when PyQt5 is not available or imports fail
-        with patch('src.utilities.system.software_maintenance.PYQT_AVAILABLE', False):
+        with patch('src.tools.system.software_maintenance.PYQT_AVAILABLE', False):
             gui = SoftwareMaintenanceGUI()
             assert gui is not None
     
@@ -162,7 +162,7 @@ class TestWorkerThread:
         assert worker.args == args
         assert worker.kwargs == kwargs
     
-    @patch('src.utilities.system.software_maintenance.gui.maintenance_hub.SoftwareUpdater')
+    @patch('src.tools.system.software_maintenance.gui.maintenance_hub.SoftwareUpdater')
     def test_worker_thread_scan_software(self, mock_updater, qapp):
         """Test WorkerThread scan_software operation."""
         mock_tool = Mock()
@@ -182,7 +182,7 @@ class TestWorkerThread:
         mock_updater.assert_called_once()
         mock_tool.scan_installed_software.assert_called_once_with(False)
     
-    @patch('src.utilities.system.software_maintenance.gui.maintenance_hub.SoftwareDeinstaller')
+    @patch('src.tools.system.software_maintenance.gui.maintenance_hub.SoftwareDeinstaller')
     def test_worker_thread_uninstall_software(self, mock_deinstaller, qapp):
         """Test WorkerThread uninstall_software operation."""
         mock_tool = Mock()
@@ -226,7 +226,7 @@ class TestSoftwareMaintenanceHub:
     @pytest.fixture
     def maintenance_hub(self, qapp):
         """Create SoftwareMaintenanceHub instance for testing."""
-        with patch('src.utilities.system.software_maintenance.gui.maintenance_hub.StandardWindow'):
+        with patch('src.tools.system.software_maintenance.gui.maintenance_hub.StandardWindow'):
             hub = SoftwareMaintenanceHub()
             yield hub
             hub.close()
@@ -261,7 +261,7 @@ class TestSoftwareMaintenanceHub:
         test_file = os.path.join(temp_dir, "test_report.txt")
         
         # Mock the file dialog
-        with patch('src.utilities.system.software_maintenance.gui.maintenance_hub.QFileDialog.getSaveFileName') as mock_dialog:
+        with patch('src.tools.system.software_maintenance.gui.maintenance_hub.QFileDialog.getSaveFileName') as mock_dialog:
             mock_dialog.return_value = (test_file, "")
             
             # Add some test data
@@ -286,7 +286,7 @@ class TestSoftwareMaintenanceHub:
         test_file = os.path.join(temp_dir, "test_list.csv")
         
         # Mock the file dialog
-        with patch('src.utilities.system.software_maintenance.gui.maintenance_hub.QFileDialog.getSaveFileName') as mock_dialog:
+        with patch('src.tools.system.software_maintenance.gui.maintenance_hub.QFileDialog.getSaveFileName') as mock_dialog:
             mock_dialog.return_value = (test_file, "")
             
             # Add some test data
@@ -308,17 +308,17 @@ class TestSoftwareMaintenanceHub:
             json.dump(test_config, f)
         
         # Mock the file dialog
-        with patch('src.utilities.system.software_maintenance.gui.maintenance_hub.QFileDialog.getOpenFileName') as mock_dialog:
+        with patch('src.tools.system.software_maintenance.gui.maintenance_hub.QFileDialog.getOpenFileName') as mock_dialog:
             mock_dialog.return_value = (test_file, "")
             
-            with patch('src.utilities.system.software_maintenance.gui.maintenance_hub.QMessageBox.information') as mock_msg:
+            with patch('src.tools.system.software_maintenance.gui.maintenance_hub.QMessageBox.information') as mock_msg:
                 maintenance_hub.import_software_list()
                 mock_msg.assert_called()
     
     def test_quick_scan(self, maintenance_hub):
         """Test quick scan functionality."""
         with patch.object(maintenance_hub, 'scan_software') as mock_scan:
-            with patch('src.utilities.system.software_maintenance.gui.maintenance_hub.QTimer.singleShot') as mock_timer:
+            with patch('src.tools.system.software_maintenance.gui.maintenance_hub.QTimer.singleShot') as mock_timer:
                 maintenance_hub.quick_scan()
                 mock_scan.assert_called_once()
                 mock_timer.assert_called_once()
@@ -335,7 +335,7 @@ class TestSoftwareMaintenanceHub:
                         mock_removal.assert_called_once()
                         mock_stats.assert_called_once()
     
-    @patch('src.utilities.system.software_maintenance.gui.maintenance_hub.WorkerThread')
+    @patch('src.tools.system.software_maintenance.gui.maintenance_hub.WorkerThread')
     def test_scan_software(self, mock_worker_class, maintenance_hub):
         """Test scan software functionality."""
         mock_worker = Mock()
@@ -346,7 +346,7 @@ class TestSoftwareMaintenanceHub:
         mock_worker_class.assert_called_once_with("scan_software", False)
         mock_worker.start.assert_called_once()
     
-    @patch('src.utilities.system.software_maintenance.gui.maintenance_hub.WorkerThread')
+    @patch('src.tools.system.software_maintenance.gui.maintenance_hub.WorkerThread')
     def test_check_updates(self, mock_worker_class, maintenance_hub):
         """Test check updates functionality."""
         mock_worker = Mock()
@@ -361,12 +361,12 @@ class TestSoftwareMaintenanceHub:
         """Test update selected software with no selection."""
         maintenance_hub.selected_software = set()
         
-        with patch('src.utilities.system.software_maintenance.gui.maintenance_hub.QMessageBox.warning') as mock_warning:
+        with patch('src.tools.system.software_maintenance.gui.maintenance_hub.QMessageBox.warning') as mock_warning:
             maintenance_hub.update_selected_software()
             mock_warning.assert_called_once()
     
-    @patch('src.utilities.system.software_maintenance.gui.maintenance_hub.QMessageBox.question')
-    @patch('src.utilities.system.software_maintenance.gui.maintenance_hub.WorkerThread')
+    @patch('src.tools.system.software_maintenance.gui.maintenance_hub.QMessageBox.question')
+    @patch('src.tools.system.software_maintenance.gui.maintenance_hub.WorkerThread')
     def test_update_selected_software_confirmed(self, mock_worker_class, mock_question, maintenance_hub):
         """Test update selected software with confirmation."""
         from PyQt5.QtWidgets import QMessageBox
@@ -414,7 +414,7 @@ class TestSoftwareMaintenanceHub:
     
     def test_add_log_message(self, maintenance_hub):
         """Test log message addition."""
-        with patch('src.utilities.system.software_maintenance.gui.maintenance_hub.QTimer') as mock_timer:
+        with patch('src.tools.system.software_maintenance.gui.maintenance_hub.QTimer') as mock_timer:
             mock_timer.return_value.currentTime.return_value.toString.return_value = "12:00:00"
             
             maintenance_hub.add_log_message("INFO", "Test message")
@@ -430,7 +430,7 @@ class TestSoftwareMaintenanceHub:
     
     def test_save_settings(self, maintenance_hub):
         """Test save settings functionality."""
-        with patch('src.utilities.system.software_maintenance.gui.maintenance_hub.QMessageBox.information') as mock_info:
+        with patch('src.tools.system.software_maintenance.gui.maintenance_hub.QMessageBox.information') as mock_info:
             maintenance_hub.save_settings()
             mock_info.assert_called_once()
 
@@ -566,7 +566,7 @@ class TestSoftwareMaintenanceIntegration:
     @pytest.fixture
     def integration_hub(self, qapp):
         """Create hub for integration testing."""
-        with patch('src.utilities.system.software_maintenance.gui.maintenance_hub.StandardWindow'):
+        with patch('src.tools.system.software_maintenance.gui.maintenance_hub.StandardWindow'):
             hub = SoftwareMaintenanceHub()
             yield hub
             if hasattr(hub, 'worker_thread') and hub.worker_thread:
@@ -577,7 +577,7 @@ class TestSoftwareMaintenanceIntegration:
     def test_full_scan_and_update_workflow(self, integration_hub):
         """Test complete scan and update workflow."""
         # Mock the worker thread behavior
-        with patch('src.utilities.system.software_maintenance.gui.maintenance_hub.WorkerThread') as mock_worker_class:
+        with patch('src.tools.system.software_maintenance.gui.maintenance_hub.WorkerThread') as mock_worker_class:
             mock_worker = Mock()
             mock_worker_class.return_value = mock_worker
             
@@ -630,7 +630,7 @@ class TestPerformance:
     
     def test_large_software_list_performance(self, qapp):
         """Test performance with large software lists."""
-        with patch('src.utilities.system.software_maintenance.gui.maintenance_hub.StandardWindow'):
+        with patch('src.tools.system.software_maintenance.gui.maintenance_hub.StandardWindow'):
             hub = SoftwareMaintenanceHub()
             
             # Create large dataset
@@ -658,7 +658,7 @@ class TestGUIInteraction:
     
     def test_button_states(self, qapp):
         """Test button state management."""
-        with patch('src.utilities.system.software_maintenance.gui.maintenance_hub.StandardWindow'):
+        with patch('src.tools.system.software_maintenance.gui.maintenance_hub.StandardWindow'):
             hub = SoftwareMaintenanceHub()
             
             # Initially, update button should be disabled
@@ -676,7 +676,7 @@ class TestGUIInteraction:
     
     def test_progress_bar_visibility(self, qapp):
         """Test progress bar visibility management."""
-        with patch('src.utilities.system.software_maintenance.gui.maintenance_hub.StandardWindow'):
+        with patch('src.tools.system.software_maintenance.gui.maintenance_hub.StandardWindow'):
             hub = SoftwareMaintenanceHub()
             
             # Progress bar should be hidden initially
@@ -684,7 +684,7 @@ class TestGUIInteraction:
                 assert not hub.progress_bar.isVisible()
             
             # Start an operation
-            with patch('src.utilities.system.software_maintenance.gui.maintenance_hub.WorkerThread'):
+            with patch('src.tools.system.software_maintenance.gui.maintenance_hub.WorkerThread'):
                 hub.scan_software()
                 
                 # Progress bar should be visible during operation
@@ -695,7 +695,7 @@ class TestGUIInteraction:
     
     def test_status_message_updates(self, qapp):
         """Test status message updates."""
-        with patch('src.utilities.system.software_maintenance.gui.maintenance_hub.StandardWindow'):
+        with patch('src.tools.system.software_maintenance.gui.maintenance_hub.StandardWindow'):
             hub = SoftwareMaintenanceHub()
             
             # Test status updates

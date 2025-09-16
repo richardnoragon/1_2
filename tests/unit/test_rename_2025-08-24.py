@@ -25,7 +25,7 @@ project_root = os.path.dirname(os.path.dirname(current_dir))
 sys.path.append(project_root)
 
 # Import the modules under test
-from src.utilities.file_management.rename import RenameWindow, main
+from src.tools.file_management.rename import RenameWindow, main
 
 
 class TestRenameWindow:
@@ -72,7 +72,7 @@ class TestRenameWindow:
     @pytest.fixture
     def rename_window(self, qapp):
         """Fixture to provide a RenameWindow instance."""
-        with patch('src.utilities.file_management.rename.StandardWindow.__init__'), \
+        with patch('src.tools.file_management.rename.StandardWindow.__init__'), \
              patch.object(RenameWindow, 'init_ui'), \
              patch.object(RenameWindow, '_setup_menu_callbacks'):
             window = RenameWindow()
@@ -101,7 +101,7 @@ class TestRenameWindow:
 
     def test_rename_window_initialization(self, qapp):
         """Test RenameWindow initialization."""
-        with patch('src.utilities.file_management.rename.StandardWindow.__init__'), \
+        with patch('src.tools.file_management.rename.StandardWindow.__init__'), \
              patch.object(RenameWindow, 'init_ui'), \
              patch.object(RenameWindow, '_setup_menu_callbacks'):
             
@@ -147,9 +147,9 @@ class TestRenameWindow:
         rename_window.number_format_edit.text.return_value = "_{:03d}"
         rename_window.current_directory = "/test/dir"
         
-        with patch('src.utilities.file_management.rename.QFileDialog.getSaveFileName') as mock_dialog, \
+        with patch('src.tools.file_management.rename.QFileDialog.getSaveFileName') as mock_dialog, \
              patch('builtins.open', mock_open()) as mock_file, \
-             patch('src.utilities.file_management.rename.QMessageBox.information') as mock_info, \
+             patch('src.tools.file_management.rename.QMessageBox.information') as mock_info, \
              patch.object(rename_window, '_get_current_rename_mode', return_value='add_prefix'):
             
             mock_dialog.return_value = ("/test/settings.json", "JSON Files (*.json)")
@@ -161,7 +161,7 @@ class TestRenameWindow:
 
     def test_save_rename_settings_cancelled(self, rename_window):
         """Test cancelled save operation."""
-        with patch('src.utilities.file_management.rename.QFileDialog.getSaveFileName') as mock_dialog:
+        with patch('src.tools.file_management.rename.QFileDialog.getSaveFileName') as mock_dialog:
             mock_dialog.return_value = ("", "")
             
             rename_window.save_rename_settings()
@@ -171,9 +171,9 @@ class TestRenameWindow:
 
     def test_save_rename_settings_error(self, rename_window):
         """Test error handling during save operation."""
-        with patch('src.utilities.file_management.rename.QFileDialog.getSaveFileName') as mock_dialog, \
+        with patch('src.tools.file_management.rename.QFileDialog.getSaveFileName') as mock_dialog, \
              patch('builtins.open', side_effect=IOError("Permission denied")) as mock_file, \
-             patch('src.utilities.file_management.rename.QMessageBox.warning') as mock_warning:
+             patch('src.tools.file_management.rename.QMessageBox.warning') as mock_warning:
             
             mock_dialog.return_value = ("/test/settings.json", "JSON Files (*.json)")
             
@@ -189,9 +189,9 @@ class TestRenameWindow:
             'suffix_text': 'test_suffix'
         }
         
-        with patch('src.utilities.file_management.rename.QFileDialog.getOpenFileName') as mock_dialog, \
+        with patch('src.tools.file_management.rename.QFileDialog.getOpenFileName') as mock_dialog, \
              patch('builtins.open', mock_open(read_data=json.dumps(test_settings))), \
-             patch('src.utilities.file_management.rename.QMessageBox.information') as mock_info, \
+             patch('src.tools.file_management.rename.QMessageBox.information') as mock_info, \
              patch.object(rename_window, 'load_available_files'):
             
             mock_dialog.return_value = ("/test/settings.json", "JSON Files (*.json)")
@@ -205,7 +205,7 @@ class TestRenameWindow:
 
     def test_load_rename_settings_cancelled(self, rename_window):
         """Test cancelled load operation."""
-        with patch('src.utilities.file_management.rename.QFileDialog.getOpenFileName') as mock_dialog:
+        with patch('src.tools.file_management.rename.QFileDialog.getOpenFileName') as mock_dialog:
             mock_dialog.return_value = ("", "")
             
             rename_window.load_rename_settings()
@@ -217,9 +217,9 @@ class TestRenameWindow:
         rename_window.selected_files = ['file1.txt', 'file2.txt']
         rename_window.current_directory = temp_directory
         
-        with patch('src.utilities.file_management.rename.QFileDialog.getSaveFileName') as mock_dialog, \
+        with patch('src.tools.file_management.rename.QFileDialog.getSaveFileName') as mock_dialog, \
              patch('builtins.open', mock_open()) as mock_file, \
-             patch('src.utilities.file_management.rename.QMessageBox.information') as mock_info, \
+             patch('src.tools.file_management.rename.QMessageBox.information') as mock_info, \
              patch.object(rename_window, 'get_new_filename', side_effect=['new_file1.txt', 'new_file2.txt']), \
              patch.object(rename_window, '_get_current_rename_mode', return_value='add_prefix'):
             
@@ -234,7 +234,7 @@ class TestRenameWindow:
         """Test export with no files selected."""
         rename_window.selected_files = []
         
-        with patch('src.utilities.file_management.rename.QMessageBox.information') as mock_info:
+        with patch('src.tools.file_management.rename.QMessageBox.information') as mock_info:
             rename_window.export_rename_results()
             
             mock_info.assert_called_once()
@@ -261,7 +261,7 @@ class TestRenameWindow:
 
     def test_browse_directory_success(self, rename_window, temp_directory):
         """Test successful directory browsing."""
-        with patch('src.utilities.file_management.rename.QFileDialog.getExistingDirectory') as mock_dialog, \
+        with patch('src.tools.file_management.rename.QFileDialog.getExistingDirectory') as mock_dialog, \
              patch.object(rename_window, 'load_available_files'):
             
             mock_dialog.return_value = temp_directory
@@ -275,7 +275,7 @@ class TestRenameWindow:
         """Test cancelled directory browsing."""
         original_dir = rename_window.current_directory
         
-        with patch('src.utilities.file_management.rename.QFileDialog.getExistingDirectory') as mock_dialog:
+        with patch('src.tools.file_management.rename.QFileDialog.getExistingDirectory') as mock_dialog:
             mock_dialog.return_value = ""
             
             rename_window.browse_directory()
@@ -312,7 +312,7 @@ class TestRenameWindow:
         rename_window.current_directory = temp_directory
         
         with patch('os.listdir', side_effect=PermissionError("Access denied")), \
-             patch('src.utilities.file_management.rename.QMessageBox.warning') as mock_warning:
+             patch('src.tools.file_management.rename.QMessageBox.warning') as mock_warning:
             
             rename_window.load_available_files()
             
@@ -533,7 +533,7 @@ class TestRenameWindow:
         """Test preview with no files selected."""
         rename_window.selected_files = []
         
-        with patch('src.utilities.file_management.rename.QMessageBox.warning') as mock_warning:
+        with patch('src.tools.file_management.rename.QMessageBox.warning') as mock_warning:
             rename_window.preview_changes()
             
             mock_warning.assert_called_once()
@@ -544,17 +544,17 @@ class TestRenameWindow:
         rename_window.current_directory = temp_directory
         rename_window.selected_files = sample_files[:2]  # Use first 2 files
         
-        with patch('src.utilities.file_management.rename.QMessageBox.question', return_value=Mock()), \
+        with patch('src.tools.file_management.rename.QMessageBox.question', return_value=Mock()), \
              patch.object(rename_window, 'get_new_filename', side_effect=["new_file1.txt", "new_file2.jpg"]), \
              patch('os.path.exists', return_value=False), \
              patch('os.rename') as mock_rename, \
-             patch('src.utilities.file_management.rename.QMessageBox.information') as mock_info, \
+             patch('src.tools.file_management.rename.QMessageBox.information') as mock_info, \
              patch.object(rename_window, 'load_available_files'):
             
             # Mock the question dialog to return Yes
-            with patch('src.utilities.file_management.rename.QMessageBox.Yes', 2), \
-                 patch('src.utilities.file_management.rename.QMessageBox.No', 4):
-                with patch('src.utilities.file_management.rename.QMessageBox.question', return_value=2):
+            with patch('src.tools.file_management.rename.QMessageBox.Yes', 2), \
+                 patch('src.tools.file_management.rename.QMessageBox.No', 4):
+                with patch('src.tools.file_management.rename.QMessageBox.question', return_value=2):
                     rename_window.apply_rename()
             
             # Verify rename operations were called
@@ -565,7 +565,7 @@ class TestRenameWindow:
         """Test rename operation with no files."""
         rename_window.selected_files = []
         
-        with patch('src.utilities.file_management.rename.QMessageBox.warning') as mock_warning:
+        with patch('src.tools.file_management.rename.QMessageBox.warning') as mock_warning:
             rename_window.apply_rename()
             
             mock_warning.assert_called_once()
@@ -574,10 +574,10 @@ class TestRenameWindow:
         """Test cancelled rename operation."""
         rename_window.selected_files = ["file1.txt"]
         
-        with patch('src.utilities.file_management.rename.QMessageBox.question') as mock_question:
+        with patch('src.tools.file_management.rename.QMessageBox.question') as mock_question:
             # Mock No response
-            with patch('src.utilities.file_management.rename.QMessageBox.Yes', 2), \
-                 patch('src.utilities.file_management.rename.QMessageBox.No', 4):
+            with patch('src.tools.file_management.rename.QMessageBox.Yes', 2), \
+                 patch('src.tools.file_management.rename.QMessageBox.No', 4):
                 mock_question.return_value = 4  # No
                 
                 rename_window.apply_rename()
@@ -589,16 +589,16 @@ class TestRenameWindow:
         rename_window.current_directory = temp_directory
         rename_window.selected_files = ["file1.txt"]
         
-        with patch('src.utilities.file_management.rename.QMessageBox.question', return_value=Mock()), \
+        with patch('src.tools.file_management.rename.QMessageBox.question', return_value=Mock()), \
              patch.object(rename_window, 'get_new_filename', return_value="existing_file.txt"), \
              patch('os.path.exists', return_value=True), \
-             patch('src.utilities.file_management.rename.QMessageBox.warning') as mock_warning, \
+             patch('src.tools.file_management.rename.QMessageBox.warning') as mock_warning, \
              patch.object(rename_window, 'load_available_files'):
             
             # Mock the question dialog to return Yes
-            with patch('src.utilities.file_management.rename.QMessageBox.Yes', 2), \
-                 patch('src.utilities.file_management.rename.QMessageBox.No', 4):
-                with patch('src.utilities.file_management.rename.QMessageBox.question', return_value=2):
+            with patch('src.tools.file_management.rename.QMessageBox.Yes', 2), \
+                 patch('src.tools.file_management.rename.QMessageBox.No', 4):
+                with patch('src.tools.file_management.rename.QMessageBox.question', return_value=2):
                     rename_window.apply_rename()
             
             mock_warning.assert_called_once()
@@ -608,17 +608,17 @@ class TestRenameWindow:
         rename_window.current_directory = temp_directory
         rename_window.selected_files = ["file1.txt"]
         
-        with patch('src.utilities.file_management.rename.QMessageBox.question', return_value=Mock()), \
+        with patch('src.tools.file_management.rename.QMessageBox.question', return_value=Mock()), \
              patch.object(rename_window, 'get_new_filename', return_value="new_file.txt"), \
              patch('os.path.exists', return_value=False), \
              patch('os.rename', side_effect=OSError("Permission denied")), \
-             patch('src.utilities.file_management.rename.QMessageBox.warning') as mock_warning, \
+             patch('src.tools.file_management.rename.QMessageBox.warning') as mock_warning, \
              patch.object(rename_window, 'load_available_files'):
             
             # Mock the question dialog to return Yes
-            with patch('src.utilities.file_management.rename.QMessageBox.Yes', 2), \
-                 patch('src.utilities.file_management.rename.QMessageBox.No', 4):
-                with patch('src.utilities.file_management.rename.QMessageBox.question', return_value=2):
+            with patch('src.tools.file_management.rename.QMessageBox.Yes', 2), \
+                 patch('src.tools.file_management.rename.QMessageBox.No', 4):
+                with patch('src.tools.file_management.rename.QMessageBox.question', return_value=2):
                     rename_window.apply_rename()
             
             mock_warning.assert_called_once()
@@ -636,14 +636,14 @@ class TestRenameWindow:
         """Test refreshing view with no directory set."""
         rename_window.current_directory = ""
         
-        with patch('src.utilities.file_management.rename.QMessageBox.information') as mock_info:
+        with patch('src.tools.file_management.rename.QMessageBox.information') as mock_info:
             rename_window.refresh_view()
             
             mock_info.assert_called_once()
 
     def test_show_preferences(self, rename_window):
         """Test showing preferences dialog."""
-        with patch('src.utilities.file_management.rename.QMessageBox.information') as mock_info:
+        with patch('src.tools.file_management.rename.QMessageBox.information') as mock_info:
             rename_window.show_preferences()
             
             mock_info.assert_called_once()
@@ -652,8 +652,8 @@ class TestRenameWindow:
 class TestMainFunction:
     """Test cases for main function."""
 
-    @patch('src.utilities.file_management.rename.QApplication')
-    @patch('src.utilities.file_management.rename.RenameWindow')
+    @patch('src.tools.file_management.rename.QApplication')
+    @patch('src.tools.file_management.rename.RenameWindow')
     @patch('sys.exit')
     def test_main_function(self, mock_exit, mock_window, mock_app):
         """Test main function execution."""
@@ -693,7 +693,7 @@ class TestEdgeCasesAndErrorHandling:
     @pytest.fixture
     def rename_window(self, qapp):
         """Fixture to provide a RenameWindow instance."""
-        with patch('src.utilities.file_management.rename.StandardWindow.__init__'), \
+        with patch('src.tools.file_management.rename.StandardWindow.__init__'), \
              patch.object(RenameWindow, 'init_ui'), \
              patch.object(RenameWindow, '_setup_menu_callbacks'):
             window = RenameWindow()
@@ -777,15 +777,15 @@ class TestEdgeCasesAndErrorHandling:
         rename_window.current_directory = temp_directory
         rename_window.selected_files = ["file1.txt"]
         
-        with patch('src.utilities.file_management.rename.QMessageBox.question', return_value=Mock()), \
+        with patch('src.tools.file_management.rename.QMessageBox.question', return_value=Mock()), \
              patch.object(rename_window, 'get_new_filename', return_value="file1.txt"), \
-             patch('src.utilities.file_management.rename.QMessageBox.information') as mock_info, \
+             patch('src.tools.file_management.rename.QMessageBox.information') as mock_info, \
              patch.object(rename_window, 'load_available_files'):
             
             # Mock the question dialog to return Yes
-            with patch('src.utilities.file_management.rename.QMessageBox.Yes', 2), \
-                 patch('src.utilities.file_management.rename.QMessageBox.No', 4):
-                with patch('src.utilities.file_management.rename.QMessageBox.question', return_value=2):
+            with patch('src.tools.file_management.rename.QMessageBox.Yes', 2), \
+                 patch('src.tools.file_management.rename.QMessageBox.No', 4):
+                with patch('src.tools.file_management.rename.QMessageBox.question', return_value=2):
                     rename_window.apply_rename()
             
             # Should still complete successfully even though no actual rename occurred
@@ -836,7 +836,7 @@ class TestPerformanceAndMemory:
     @pytest.fixture
     def rename_window(self, qapp):
         """Fixture to provide a RenameWindow instance."""
-        with patch('src.utilities.file_management.rename.StandardWindow.__init__'), \
+        with patch('src.tools.file_management.rename.StandardWindow.__init__'), \
              patch.object(RenameWindow, 'init_ui'), \
              patch.object(RenameWindow, '_setup_menu_callbacks'):
             window = RenameWindow()

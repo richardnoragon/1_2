@@ -47,13 +47,13 @@ except ImportError as e:
     print(f"CoreAnalysisEngine import failed: {e}")
 
 try:
-    from src.utilities.database.database_manager import DatabaseManager
+    from src.tools.database.database_manager import DatabaseManager
     available_components['database_manager'] = DatabaseManager
 except ImportError as e:
     print(f"DatabaseManager import failed: {e}")
 
 try:
-    from src.utilities.security.core.encryption_logic import EncryptionLogic
+    from src.tools.security.core.encryption_logic import EncryptionLogic
     available_components['encryption_logic'] = EncryptionLogic
 except ImportError as e:
     print(f"EncryptionLogic import failed: {e}")

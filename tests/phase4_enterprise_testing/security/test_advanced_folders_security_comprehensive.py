@@ -21,12 +21,12 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from src.utilities.advanced_folders.core.folder_models import (
+from src.tools.advanced_folders.core.folder_models import (
     FileMetadata, FolderConfiguration, FolderType, SearchParameter)
-from src.utilities.advanced_folders.database.db_manager import \
+from src.tools.advanced_folders.database.db_manager import \
     AdvancedFoldersDBManager
-from src.utilities.advanced_folders.engine.search_engine import SearchEngine
-from src.utilities.advanced_folders.services.folder_service import \
+from src.tools.advanced_folders.engine.search_engine import SearchEngine
+from src.tools.advanced_folders.services.folder_service import \
     FolderService
 
 

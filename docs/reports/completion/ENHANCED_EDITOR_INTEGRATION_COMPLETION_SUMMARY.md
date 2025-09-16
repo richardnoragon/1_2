@@ -106,7 +106,7 @@ Enhanced Editor Architecture
 def open_enhanced_editor(self):
     """Open Enhanced Editor tool."""
     self.launch_tool("Enhanced Editor", 
-                     "src.utilities.file_operations.enhanced_editor.enhanced_editor", 
+                     "src.tools.file_operations.enhanced_editor.enhanced_editor", 
                      "EnhancedEditor")
 ```
 

@@ -50,7 +50,7 @@ def mock_pyqt5():
 def mock_standard_window():
     """Mock StandardWindow to avoid GUI dependencies."""
     mock_window = MagicMock()
-    with patch('src.utilities.security.secure_delete.StandardWindow', mock_window):
+    with patch('src.tools.security.secure_delete.StandardWindow', mock_window):
         yield mock_window
 
 
@@ -83,8 +83,8 @@ class TestSecureDeleteGUI:
     def secure_delete_gui(self, mock_pyqt5, mock_standard_window):
         """Create a SecureDeleteGUI instance for testing."""
         # Mock the availability check
-        with patch('src.utilities.security.secure_delete.STANDARD_WINDOW_AVAILABLE', True):
-            from src.utilities.security.secure_delete import SecureDeleteGUI
+        with patch('src.tools.security.secure_delete.STANDARD_WINDOW_AVAILABLE', True):
+            from src.tools.security.secure_delete import SecureDeleteGUI
             gui = SecureDeleteGUI()
             # Mock the UI components that might not be created during testing
             gui.delete_button = MagicMock()
@@ -97,8 +97,8 @@ class TestSecureDeleteGUI:
     
     def test_init_with_standard_window_available(self, mock_pyqt5, mock_standard_window):
         """Test initialization when StandardWindow is available."""
-        with patch('src.utilities.security.secure_delete.STANDARD_WINDOW_AVAILABLE', True):
-            from src.utilities.security.secure_delete import SecureDeleteGUI
+        with patch('src.tools.security.secure_delete.STANDARD_WINDOW_AVAILABLE', True):
+            from src.tools.security.secure_delete import SecureDeleteGUI
             gui = SecureDeleteGUI()
             
             # Verify initialization
@@ -107,8 +107,8 @@ class TestSecureDeleteGUI:
     
     def test_init_without_standard_window(self, mock_pyqt5):
         """Test initialization when StandardWindow is not available."""
-        with patch('src.utilities.security.secure_delete.STANDARD_WINDOW_AVAILABLE', False):
-            from src.utilities.security.secure_delete import SecureDeleteGUI
+        with patch('src.tools.security.secure_delete.STANDARD_WINDOW_AVAILABLE', False):
+            from src.tools.security.secure_delete import SecureDeleteGUI
             gui = SecureDeleteGUI()
             
             # Verify fallback initialization
@@ -184,7 +184,7 @@ class TestSecureDeleteGUI:
         secure_delete_gui.clear_selection()
         assert secure_delete_gui.selected_files == []
     
-    @patch('src.utilities.security.secure_delete.QFileDialog')
+    @patch('src.tools.security.secure_delete.QFileDialog')
     def test_select_files_success(self, mock_file_dialog, secure_delete_gui, temp_test_files):
         """Test successful file selection."""
         # Setup mocks
@@ -202,7 +202,7 @@ class TestSecureDeleteGUI:
             f"Selected {len(temp_test_files)} file(s) for secure deletion"
         )
     
-    @patch('src.utilities.security.secure_delete.QFileDialog')
+    @patch('src.tools.security.secure_delete.QFileDialog')
     def test_select_files_cancelled(self, mock_file_dialog, secure_delete_gui):
         """Test file selection when cancelled."""
         # Setup mocks
@@ -217,7 +217,7 @@ class TestSecureDeleteGUI:
         secure_delete_gui.files_list.clear.assert_not_called()
         assert secure_delete_gui.selected_files == []
     
-    @patch('src.utilities.security.secure_delete.QFileDialog')
+    @patch('src.tools.security.secure_delete.QFileDialog')
     def test_select_folder_success(self, mock_file_dialog, secure_delete_gui, temp_test_dir):
         """Test successful folder selection."""
         # Setup mocks
@@ -235,7 +235,7 @@ class TestSecureDeleteGUI:
             "Selected folder for secure deletion"
         )
     
-    @patch('src.utilities.security.secure_delete.QFileDialog')
+    @patch('src.tools.security.secure_delete.QFileDialog')
     def test_select_folder_cancelled(self, mock_file_dialog, secure_delete_gui):
         """Test folder selection when cancelled."""
         # Setup mocks
@@ -250,7 +250,7 @@ class TestSecureDeleteGUI:
         secure_delete_gui.files_list.clear.assert_not_called()
         assert secure_delete_gui.selected_files == []
     
-    @patch('src.utilities.security.secure_delete.QMessageBox')
+    @patch('src.tools.security.secure_delete.QMessageBox')
     def test_secure_delete_no_files_selected(self, mock_message_box, secure_delete_gui):
         """Test secure delete with no files selected."""
         secure_delete_gui.selected_files = []
@@ -262,7 +262,7 @@ class TestSecureDeleteGUI:
             secure_delete_gui, "Warning", "Please select files or folders first."
         )
     
-    @patch('src.utilities.security.secure_delete.QMessageBox')
+    @patch('src.tools.security.secure_delete.QMessageBox')
     def test_secure_delete_confirmation_cancelled(self, mock_message_box, secure_delete_gui):
         """Test secure delete when confirmation is cancelled."""
         # Setup
@@ -281,8 +281,8 @@ class TestSecureDeleteGUI:
         mock_message_box.critical.assert_called_once()
         mock_message_box.information.assert_not_called()
     
-    @patch('src.utilities.security.secure_delete.threading.Thread')
-    @patch('src.utilities.security.secure_delete.QMessageBox')
+    @patch('src.tools.security.secure_delete.threading.Thread')
+    @patch('src.tools.security.secure_delete.QMessageBox')
     def test_secure_delete_confirmation_accepted(self, mock_message_box, mock_thread, secure_delete_gui):
         """Test secure delete when confirmation is accepted."""
         # Setup
@@ -310,8 +310,8 @@ class TestSecureDeleteGUI:
         secure_delete_gui.delete_button.setEnabled.assert_called_with(False)
         secure_delete_gui.progress_bar.setVisible.assert_called_with(True)
     
-    @patch('src.utilities.security.secure_delete.threading.Thread')
-    @patch('src.utilities.security.secure_delete.QMessageBox')
+    @patch('src.tools.security.secure_delete.threading.Thread')
+    @patch('src.tools.security.secure_delete.QMessageBox')
     def test_secure_delete_various_methods(self, mock_message_box, mock_thread, secure_delete_gui):
         """Test secure delete with different deletion methods."""
         methods = [
@@ -354,8 +354,8 @@ class TestSecureDeleteGUI:
     
     def test_init_ui_without_standard_window(self, mock_pyqt5):
         """Test UI initialization without StandardWindow."""
-        with patch('src.utilities.security.secure_delete.STANDARD_WINDOW_AVAILABLE', False):
-            from src.utilities.security.secure_delete import SecureDeleteGUI
+        with patch('src.tools.security.secure_delete.STANDARD_WINDOW_AVAILABLE', False):
+            from src.tools.security.secure_delete import SecureDeleteGUI
             gui = SecureDeleteGUI()
             gui.init_ui()
             
@@ -376,13 +376,13 @@ class TestSecureDeleteFunctions:
                         import importlib
 
                         # Force reload to trigger import error
-                        if 'src.utilities.security.secure_delete' in sys.modules:
-                            importlib.reload(sys.modules['src.utilities.security.secure_delete'])
+                        if 'src.tools.security.secure_delete' in sys.modules:
+                            importlib.reload(sys.modules['src.tools.security.secure_delete'])
                     except SystemExit:
                         pass
     
-    @patch('src.utilities.security.secure_delete.QApplication')
-    @patch('src.utilities.security.secure_delete.SecureDeleteGUI')
+    @patch('src.tools.security.secure_delete.QApplication')
+    @patch('src.tools.security.secure_delete.SecureDeleteGUI')
     def test_main_function(self, mock_gui_class, mock_qapp_class):
         """Test the main function."""
         mock_app = MagicMock()
@@ -393,7 +393,7 @@ class TestSecureDeleteFunctions:
         # Mock sys.argv
         with patch('sys.argv', ['secure_delete.py']):
             with patch('sys.exit') as mock_exit:
-                from src.utilities.security.secure_delete import main
+                from src.tools.security.secure_delete import main
                 main()
                 
                 # Verify application creation and execution
@@ -409,9 +409,9 @@ class TestSecureDeleteIntegration:
     
     def test_full_workflow_file_selection_to_deletion(self, mock_pyqt5, temp_test_files):
         """Test complete workflow from file selection to deletion."""
-        with patch('src.utilities.security.secure_delete.STANDARD_WINDOW_AVAILABLE', True):
-            with patch('src.utilities.security.secure_delete.StandardWindow', MagicMock()):
-                from src.utilities.security.secure_delete import \
+        with patch('src.tools.security.secure_delete.STANDARD_WINDOW_AVAILABLE', True):
+            with patch('src.tools.security.secure_delete.StandardWindow', MagicMock()):
+                from src.tools.security.secure_delete import \
                     SecureDeleteGUI
                 
                 gui = SecureDeleteGUI()
@@ -423,7 +423,7 @@ class TestSecureDeleteIntegration:
                 gui.verify_deletion = MagicMock()
                 
                 # Mock file dialog
-                with patch('src.utilities.security.secure_delete.QFileDialog') as mock_dialog:
+                with patch('src.tools.security.secure_delete.QFileDialog') as mock_dialog:
                     mock_dialog.getOpenFileNames.return_value = (temp_test_files, "")
                     
                     # Select files
@@ -437,7 +437,7 @@ class TestSecureDeleteIntegration:
                     gui.verify_deletion.isChecked.return_value = True
                     
                     # Mock confirmation dialog
-                    with patch('src.utilities.security.secure_delete.QMessageBox') as mock_msg:
+                    with patch('src.tools.security.secure_delete.QMessageBox') as mock_msg:
                         mock_msg.critical.return_value = mock_msg.Yes
                         
                         # Attempt deletion
@@ -465,7 +465,7 @@ class TestSecureDeleteIntegration:
         secure_delete_gui.verify_deletion = MagicMock()
         secure_delete_gui.verify_deletion.isChecked.return_value = False
         
-        with patch('src.utilities.security.secure_delete.QMessageBox') as mock_msg:
+        with patch('src.tools.security.secure_delete.QMessageBox') as mock_msg:
             mock_msg.critical.return_value = mock_msg.Yes
             
             # Should not crash with invalid paths

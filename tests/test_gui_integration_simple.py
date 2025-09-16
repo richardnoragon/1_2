@@ -34,7 +34,7 @@ class TestBasicGUIComponents:
     def test_toolbar_manager_import(self):
         """Test that toolbar manager can be imported."""
         try:
-            from src.utilities.advanced_folders.gui.toolbar_manager import (
+            from src.tools.advanced_folders.gui.toolbar_manager import (
                 AdvancedFoldersToolbar, ToolbarAction, ToolbarSection)
             assert True  # Import successful
         except ImportError as e:
@@ -43,7 +43,7 @@ class TestBasicGUIComponents:
     def test_menu_manager_import(self):
         """Test that menu manager can be imported."""
         try:
-            from src.utilities.advanced_folders.gui.menu_manager import (
+            from src.tools.advanced_folders.gui.menu_manager import (
                 AdvancedFoldersMenuManager, MenuDefinition, MenuItemDefinition)
             assert True  # Import successful
         except ImportError as e:
@@ -52,7 +52,7 @@ class TestBasicGUIComponents:
     def test_toolbar_manager_basic_functionality(self, app):
         """Test basic toolbar manager functionality."""
         try:
-            from src.utilities.advanced_folders.gui.toolbar_manager import (
+            from src.tools.advanced_folders.gui.toolbar_manager import (
                 AdvancedFoldersToolbar, ToolbarAction, ToolbarSection)
 
             # Create toolbar manager
@@ -88,7 +88,7 @@ class TestBasicGUIComponents:
     def test_menu_manager_basic_functionality(self, app):
         """Test basic menu manager functionality."""
         try:
-            from src.utilities.advanced_folders.gui.menu_manager import (
+            from src.tools.advanced_folders.gui.menu_manager import (
                 AdvancedFoldersMenuManager, MenuDefinition, MenuItemDefinition)
 
             # Create menu manager
@@ -130,7 +130,7 @@ class TestBasicGUIComponents:
     def test_toolbar_creation_with_mock_parent(self, app):
         """Test toolbar creation with mock parent."""
         try:
-            from src.utilities.advanced_folders.gui.toolbar_manager import \
+            from src.tools.advanced_folders.gui.toolbar_manager import \
                 AdvancedFoldersToolbar
 
             # Create mock parent
@@ -161,7 +161,7 @@ class TestBasicGUIComponents:
     def test_menu_creation_with_mock_parent(self, app):
         """Test menu creation with mock parent."""
         try:
-            from src.utilities.advanced_folders.gui.menu_manager import \
+            from src.tools.advanced_folders.gui.menu_manager import \
                 AdvancedFoldersMenuManager
 
             # Create mock parent
@@ -187,9 +187,9 @@ class TestBasicGUIComponents:
     def test_signal_connections(self, app):
         """Test that signals can be connected properly."""
         try:
-            from src.utilities.advanced_folders.gui.menu_manager import \
+            from src.tools.advanced_folders.gui.menu_manager import \
                 AdvancedFoldersMenuManager
-            from src.utilities.advanced_folders.gui.toolbar_manager import \
+            from src.tools.advanced_folders.gui.toolbar_manager import \
                 AdvancedFoldersToolbar
 
             # Create managers
@@ -232,9 +232,9 @@ class TestBasicGUIComponents:
         import time
         
         try:
-            from src.utilities.advanced_folders.gui.menu_manager import \
+            from src.tools.advanced_folders.gui.menu_manager import \
                 AdvancedFoldersMenuManager
-            from src.utilities.advanced_folders.gui.toolbar_manager import \
+            from src.tools.advanced_folders.gui.toolbar_manager import \
                 AdvancedFoldersToolbar
 
             # Test toolbar manager creation performance
@@ -261,9 +261,9 @@ class TestBasicGUIComponents:
     def test_configuration_persistence(self, app):
         """Test configuration save/load functionality."""
         try:
-            from src.utilities.advanced_folders.gui.menu_manager import \
+            from src.tools.advanced_folders.gui.menu_manager import \
                 AdvancedFoldersMenuManager
-            from src.utilities.advanced_folders.gui.toolbar_manager import \
+            from src.tools.advanced_folders.gui.toolbar_manager import \
                 AdvancedFoldersToolbar
 
             # Create managers

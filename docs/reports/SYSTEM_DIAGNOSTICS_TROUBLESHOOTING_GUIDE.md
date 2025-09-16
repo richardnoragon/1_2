@@ -44,7 +44,7 @@ System Diagnostics Tool Structure:
 
 **Verification**:
 ```python
-from src.utilities.system.diagnostics_monitoring import SystemDiagnosticsGUI
+from src.tools.system.diagnostics_monitoring import SystemDiagnosticsGUI
 print("Import successful!")
 ```
 
@@ -76,7 +76,7 @@ python -m src.utilities.system.diagnostics_monitoring.system_diagnostics_gui
 
 **Diagnosis**:
 ```python
-from src.utilities.system.diagnostics_monitoring import (
+from src.tools.system.diagnostics_monitoring import (
     GUI_WIDGETS_AVAILABLE,
     CORE_AVAILABLE,
     MAIN_GUI_AVAILABLE
@@ -140,7 +140,7 @@ python src/utilities/system/diagnostics_monitoring/system_diagnostics_gui.py
 ```bash
 # Basic system check
 python -c "
-from src.utilities.system.diagnostics_monitoring import PlatformDetector
+from src.tools.system.diagnostics_monitoring import PlatformDetector
 detector = PlatformDetector()
 print(detector.get_platform_info())
 "
@@ -149,7 +149,7 @@ print(detector.get_platform_info())
 ### 3. Programmatic Access
 
 ```python
-from src.utilities.system.diagnostics_monitoring import create_system_diagnostics_gui
+from src.tools.system.diagnostics_monitoring import create_system_diagnostics_gui
 
 # Create GUI instance
 gui = create_system_diagnostics_gui()
@@ -309,7 +309,7 @@ gui.update_timer.setInterval(10000)  # 10 seconds
 ### Platform-Specific Settings
 
 ```python
-from src.utilities.system.diagnostics_monitoring import PlatformDetector
+from src.tools.system.diagnostics_monitoring import PlatformDetector
 
 detector = PlatformDetector()
 platform = detector.get_platform_info()

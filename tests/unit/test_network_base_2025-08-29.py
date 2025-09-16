@@ -50,7 +50,7 @@ sys.modules['core.config_manager'].ConfigManager = MockConfigManager
 sys.modules['core.error_handler'].error_handler = mock_error_handler
 
 try:
-    from utilities.network.network_connectivity_complex.core.network_base import (
+    from tools.network.network_connectivity_complex.core.network_base import (
         NetworkAlertLevel, NetworkOperationResult, NetworkOperationStatus,
         NetworkToolBase)
 except ImportError:

@@ -86,7 +86,7 @@ class TestAdvancedFoldersIntegration(unittest.TestCase):
     def test_folder_configuration_model(self):
         """Test FolderConfiguration data model functionality."""
         try:
-            from src.utilities.file_management.advanced_folders.core.folder_configuration import (
+            from src.tools.file_management.advanced_folders.core.folder_configuration import (
                 FolderConfiguration, FolderStatistics, SearchParameters)
 
             # Test FolderConfiguration creation
@@ -121,7 +121,7 @@ class TestAdvancedFoldersIntegration(unittest.TestCase):
     def test_folder_configuration_manager(self):
         """Test FolderConfigurationManager persistence functionality."""
         try:
-            from src.utilities.file_management.advanced_folders.core.folder_configuration import (
+            from src.tools.file_management.advanced_folders.core.folder_configuration import (
                 FolderConfiguration, FolderConfigurationManager)
 
             # Create test configuration
@@ -165,7 +165,7 @@ class TestAdvancedFoldersIntegration(unittest.TestCase):
     def test_search_engine_functionality(self):
         """Test SearchEngine core functionality."""
         try:
-            from src.utilities.file_management.advanced_folders.core.search_engine import (
+            from src.tools.file_management.advanced_folders.core.search_engine import (
                 FileResult, SearchEngine, SearchParameters)
 
             # Create test files
@@ -211,7 +211,7 @@ class TestAdvancedFoldersIntegration(unittest.TestCase):
                 mock_config_manager.set_setting = Mock()
                 mock_get_config.return_value = mock_config_manager
                 
-                from src.utilities.file_management.advanced_folders.core.folder_configuration import \
+                from src.tools.file_management.advanced_folders.core.folder_configuration import \
                     FolderConfigurationManager
                 
                 manager = FolderConfigurationManager()
@@ -243,7 +243,7 @@ class TestAdvancedFoldersIntegration(unittest.TestCase):
                 mock_import.return_value = mock_module
                 
                 # Test that the module can be imported and instantiated
-                module = __import__('src.utilities.file_management.advanced_folders.advanced_folders_main')
+                module = __import__('src.tools.file_management.advanced_folders.advanced_folders_main')
                 self.assertIsNotNone(module)
                 
             print("✓ RFU Hub integration tests passed")
@@ -254,17 +254,17 @@ class TestAdvancedFoldersIntegration(unittest.TestCase):
     def test_main_integration_entry_point(self):
         """Test main.py integration entry point."""
         try:
-            from src.utilities.file_management.advanced_folders.advanced_folders_main import \
+            from src.tools.file_management.advanced_folders.advanced_folders_main import \
                 main
 
             # Mock QApplication to prevent GUI startup
-            with patch('src.utilities.file_management.advanced_folders.advanced_folders_main.QApplication') as mock_app:
+            with patch('src.tools.file_management.advanced_folders.advanced_folders_main.QApplication') as mock_app:
                 mock_app_instance = Mock()
                 mock_app.return_value = mock_app_instance
                 mock_app_instance.exec_ = Mock(return_value=0)
                 
                 # Test main function executes without error
-                with patch('src.utilities.file_management.advanced_folders.advanced_folders_main.AdvancedFoldersGUI'):
+                with patch('src.tools.file_management.advanced_folders.advanced_folders_main.AdvancedFoldersGUI'):
                     result = main()
                     self.assertEqual(result, 0)
                     
@@ -277,8 +277,8 @@ class TestAdvancedFoldersIntegration(unittest.TestCase):
         """Test that the Advanced Folders package structure is correct."""
         try:
             # Test package imports
-            import src.utilities.file_management.advanced_folders
-            from src.utilities.file_management.advanced_folders import (
+            import src.tools.file_management.advanced_folders
+            from src.tools.file_management.advanced_folders import (
                 AdvancedFoldersWidget, FolderConfiguration, SearchEngine)
 
             # Verify classes are available
@@ -309,7 +309,7 @@ class TestAdvancedFoldersSettingsPersistence(unittest.TestCase):
     def test_json_persistence_format(self):
         """Test JSON persistence format compatibility."""
         try:
-            from src.utilities.file_management.advanced_folders.core.folder_configuration import \
+            from src.tools.file_management.advanced_folders.core.folder_configuration import \
                 FolderConfiguration
 
             # Create test configuration
@@ -359,7 +359,7 @@ class TestAdvancedFoldersSettingsPersistence(unittest.TestCase):
                 mock_config_manager.set_setting = Mock()
                 mock_get_config.return_value = mock_config_manager
                 
-                from src.utilities.file_management.advanced_folders.core.folder_configuration import \
+                from src.tools.file_management.advanced_folders.core.folder_configuration import \
                     FolderConfigurationManager
                 
                 manager = FolderConfigurationManager()

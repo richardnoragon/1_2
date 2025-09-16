@@ -1,0 +1,12 @@
+{
+  "backup_timestamp": "2025-09-16T16:12:58.802700",
+  "backup_directory": "C:\\Users\\HP1\\1_2\\migration_backup_20250916_161255",
+  "items_backed_up": [
+    "src",
+    "tests",
+    "config",
+    "main.py",
+    "requirements.txt"
+  ],
+  "dry_run": false
+}

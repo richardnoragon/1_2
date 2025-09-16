@@ -25,7 +25,7 @@ import pytest
 # Add the src directory to the Python path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "src"))
 
-from utilities.privacy.privacy_tools.core.platform_utils import PlatformUtils
+from tools.privacy.privacy_tools.core.platform_utils import PlatformUtils
 
 # Configure logging for tests
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')

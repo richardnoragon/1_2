@@ -17,7 +17,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
 
 # Import the module under test
 try:
-    from src.utilities.pdf_tools.pdf_content_extraction import \
+    from src.tools.pdf_tools.pdf_content_extraction import \
         extract_image_cli
     extract_images = extract_image_cli.extract_images
     MainWindow = extract_image_cli.MainWindow
@@ -26,7 +26,7 @@ except ImportError as e:
     print(f"Import error: {e}")
     # Fallback import path
     sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
-    from src.utilities.pdf_tools.pdf_content_extraction import \
+    from src.tools.pdf_tools.pdf_content_extraction import \
         extract_image_cli
     extract_images = extract_image_cli.extract_images
     MainWindow = extract_image_cli.MainWindow
@@ -94,8 +94,8 @@ class TestExtractImages:
         assert "Input file not found" in str(exc_info.value)
     
     @pytest.mark.unit
-    @patch('src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli.fitz.open')
-    @patch('src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli.Image.open')
+    @patch('src.tools.pdf_tools.pdf_content_extraction.extract_image_cli.fitz.open')
+    @patch('src.tools.pdf_tools.pdf_content_extraction.extract_image_cli.Image.open')
     def test_extract_images_success(self, mock_image_open, mock_fitz_open, 
                                    temp_dirs, mock_pdf_document, mock_pil_image):
         """Test successful image extraction."""
@@ -119,8 +119,8 @@ class TestExtractImages:
         mock_pdf_document.close.assert_called_once()
     
     @pytest.mark.unit
-    @patch('src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli.fitz.open')
-    @patch('src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli.Image.open')
+    @patch('src.tools.pdf_tools.pdf_content_extraction.extract_image_cli.fitz.open')
+    @patch('src.tools.pdf_tools.pdf_content_extraction.extract_image_cli.Image.open')
     def test_extract_images_size_filtering(self, mock_image_open, mock_fitz_open, 
                                           temp_dirs, mock_pdf_document):
         """Test image size filtering functionality."""
@@ -145,7 +145,7 @@ class TestExtractImages:
         assert result == []
     
     @pytest.mark.unit
-    @patch('src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli.fitz.open')
+    @patch('src.tools.pdf_tools.pdf_content_extraction.extract_image_cli.fitz.open')
     def test_extract_images_pdf_open_error(self, mock_fitz_open, temp_dirs):
         """Test handling of PDF opening errors."""
         temp_input, temp_output = temp_dirs
@@ -171,7 +171,7 @@ class TestExtractImages:
         with open(pdf_path, 'w') as f:
             f.write("dummy pdf content")
         
-        with patch('src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli.fitz.open') as mock_fitz:
+        with patch('src.tools.pdf_tools.pdf_content_extraction.extract_image_cli.fitz.open') as mock_fitz:
             mock_doc = Mock()
             mock_doc.__len__ = Mock(return_value=0)  # No pages
             mock_doc.close = Mock()
@@ -182,8 +182,8 @@ class TestExtractImages:
             assert os.path.exists(non_existent_output)
     
     @pytest.mark.pdf
-    @patch('src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli.fitz.open')
-    @patch('src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli.Image.open')
+    @patch('src.tools.pdf_tools.pdf_content_extraction.extract_image_cli.fitz.open')
+    @patch('src.tools.pdf_tools.pdf_content_extraction.extract_image_cli.Image.open')
     def test_extract_images_different_formats(self, mock_image_open, mock_fitz_open, 
                                              temp_dirs, mock_pdf_document, mock_pil_image):
         """Test image extraction with different output formats."""
@@ -213,7 +213,7 @@ class TestMainWindow:
     @pytest.fixture
     def mock_qt_app(self):
         """Mock PyQt5 application for testing."""
-        with patch('src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli.QApplication') as mock_app:
+        with patch('src.tools.pdf_tools.pdf_content_extraction.extract_image_cli.QApplication') as mock_app:
             mock_app_instance = Mock()
             mock_app.return_value = mock_app_instance
             yield mock_app_instance
@@ -221,8 +221,8 @@ class TestMainWindow:
     @pytest.fixture
     def mock_main_window_init(self):
         """Mock MainWindow initialization components."""
-        with patch('src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli.uic.loadUi') as mock_load_ui, \
-             patch('src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli.QtWidgets.QProgressBar') as mock_progress, \
+        with patch('src.tools.pdf_tools.pdf_content_extraction.extract_image_cli.uic.loadUi') as mock_load_ui, \
+             patch('src.tools.pdf_tools.pdf_content_extraction.extract_image_cli.QtWidgets.QProgressBar') as mock_progress, \
              patch.object(MainWindow, 'statusBar') as mock_status_bar, \
              patch.object(MainWindow, 'show') as mock_show:
             
@@ -250,7 +250,7 @@ class TestMainWindow:
             assert window is not None
     
     @pytest.mark.gui
-    @patch('src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli.QFileDialog.getOpenFileName')
+    @patch('src.tools.pdf_tools.pdf_content_extraction.extract_image_cli.QFileDialog.getOpenFileName')
     def test_browse_pdf_success(self, mock_file_dialog):
         """Test successful PDF file browsing."""
         mock_file_dialog.return_value = ("/path/to/test.pdf", "")
@@ -264,7 +264,7 @@ class TestMainWindow:
             window.pdfFileEdit.setText.assert_called_once_with("/path/to/test.pdf")
     
     @pytest.mark.gui
-    @patch('src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli.QFileDialog.getOpenFileName')
+    @patch('src.tools.pdf_tools.pdf_content_extraction.extract_image_cli.QFileDialog.getOpenFileName')
     def test_browse_pdf_cancelled(self, mock_file_dialog):
         """Test cancelled PDF file browsing."""
         mock_file_dialog.return_value = ("", "")  # User cancelled
@@ -279,7 +279,7 @@ class TestMainWindow:
             window.pdfFileEdit.setText.assert_not_called()
     
     @pytest.mark.gui
-    @patch('src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli.QFileDialog.getExistingDirectory')
+    @patch('src.tools.pdf_tools.pdf_content_extraction.extract_image_cli.QFileDialog.getExistingDirectory')
     def test_browse_output_dir_success(self, mock_dir_dialog):
         """Test successful output directory browsing."""
         mock_dir_dialog.return_value = "/path/to/output"
@@ -293,7 +293,7 @@ class TestMainWindow:
             window.outputDirEdit.setText.assert_called_once_with("/path/to/output")
     
     @pytest.mark.gui
-    @patch('src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli.QMessageBox.warning')
+    @patch('src.tools.pdf_tools.pdf_content_extraction.extract_image_cli.QMessageBox.warning')
     def test_extract_images_no_pdf_selected(self, mock_message_box):
         """Test extract_images with no PDF file selected."""
         with patch.object(MainWindow, '__init__', lambda x: None):
@@ -308,7 +308,7 @@ class TestMainWindow:
             mock_message_box.assert_called_once()
     
     @pytest.mark.gui
-    @patch('src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli.QMessageBox.warning')
+    @patch('src.tools.pdf_tools.pdf_content_extraction.extract_image_cli.QMessageBox.warning')
     def test_extract_images_no_output_dir_selected(self, mock_message_box):
         """Test extract_images with no output directory selected."""
         with patch.object(MainWindow, '__init__', lambda x: None):
@@ -323,8 +323,8 @@ class TestMainWindow:
             mock_message_box.assert_called_once()
     
     @pytest.mark.gui
-    @patch('src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli.fitz.open')
-    @patch('src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli.QMessageBox.information')
+    @patch('src.tools.pdf_tools.pdf_content_extraction.extract_image_cli.fitz.open')
+    @patch('src.tools.pdf_tools.pdf_content_extraction.extract_image_cli.QMessageBox.information')
     def test_extract_images_gui_success(self, mock_message_box, mock_fitz_open):
         """Test successful image extraction through GUI."""
         # Setup mock PDF document
@@ -351,7 +351,7 @@ class TestMainWindow:
             window.progressBar = Mock()
             window.statusBar = Mock(return_value=Mock())
             
-            with patch('src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli.QtWidgets.QApplication.processEvents'):
+            with patch('src.tools.pdf_tools.pdf_content_extraction.extract_image_cli.QtWidgets.QApplication.processEvents'):
                 window.extract_images()
             
             mock_message_box.assert_called_once()
@@ -359,8 +359,8 @@ class TestMainWindow:
             assert "Successfully extracted" in args[1]
     
     @pytest.mark.gui
-    @patch('src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli.QFileDialog.getOpenFileName')
-    @patch('src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli.QMessageBox.critical')
+    @patch('src.tools.pdf_tools.pdf_content_extraction.extract_image_cli.QFileDialog.getOpenFileName')
+    @patch('src.tools.pdf_tools.pdf_content_extraction.extract_image_cli.QMessageBox.critical')
     def test_browse_pdf_error_handling(self, mock_message_box, mock_file_dialog):
         """Test error handling in browse_pdf method."""
         mock_file_dialog.side_effect = Exception("File dialog error")
@@ -373,8 +373,8 @@ class TestMainWindow:
             mock_message_box.assert_called_once()
     
     @pytest.mark.gui
-    @patch('src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli.QFileDialog.getExistingDirectory')
-    @patch('src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli.QMessageBox.critical')
+    @patch('src.tools.pdf_tools.pdf_content_extraction.extract_image_cli.QFileDialog.getExistingDirectory')
+    @patch('src.tools.pdf_tools.pdf_content_extraction.extract_image_cli.QMessageBox.critical')
     def test_browse_output_dir_error_handling(self, mock_message_box, mock_dir_dialog):
         """Test error handling in browse_output_dir method."""
         mock_dir_dialog.side_effect = Exception("Directory dialog error")
@@ -392,8 +392,8 @@ class TestMainFunction:
     """Test class for the main function and application startup."""
     
     @pytest.mark.integration
-    @patch('src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli.QApplication')
-    @patch('src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli.MainWindow')
+    @patch('src.tools.pdf_tools.pdf_content_extraction.extract_image_cli.QApplication')
+    @patch('src.tools.pdf_tools.pdf_content_extraction.extract_image_cli.MainWindow')
     @patch('sys.exit')
     def test_main_function_success(self, mock_sys_exit, mock_main_window, mock_qapp):
         """Test successful main function execution."""
@@ -415,8 +415,8 @@ class TestMainFunction:
         mock_sys_exit.assert_called_once_with(0)
     
     @pytest.mark.integration
-    @patch('src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli.QApplication')
-    @patch('src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli.MainWindow')
+    @patch('src.tools.pdf_tools.pdf_content_extraction.extract_image_cli.QApplication')
+    @patch('src.tools.pdf_tools.pdf_content_extraction.extract_image_cli.MainWindow')
     @patch('sys.exit')
     def test_main_function_window_init_error(self, mock_sys_exit, mock_main_window, mock_qapp):
         """Test main function with MainWindow initialization error."""
@@ -429,7 +429,7 @@ class TestMainFunction:
         mock_sys_exit.assert_called_once_with(1)
     
     @pytest.mark.integration
-    @patch('src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli.QApplication')
+    @patch('src.tools.pdf_tools.pdf_content_extraction.extract_image_cli.QApplication')
     @patch('sys.exit')
     def test_main_function_app_creation_error(self, mock_sys_exit, mock_qapp):
         """Test main function with QApplication creation error."""
@@ -453,7 +453,7 @@ class TestEdgeCasesAndErrorHandling:
         with open(pdf_path, 'w') as f:
             f.write("dummy pdf content")
         
-        with patch('src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli.fitz.open') as mock_fitz:
+        with patch('src.tools.pdf_tools.pdf_content_extraction.extract_image_cli.fitz.open') as mock_fitz:
             mock_doc = Mock()
             mock_doc.__len__ = Mock(return_value=1)  # 1 page
             mock_page = Mock()
@@ -467,8 +467,8 @@ class TestEdgeCasesAndErrorHandling:
             assert result == []
     
     @pytest.mark.unit
-    @patch('src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli.fitz.open')
-    @patch('src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli.Image.open')
+    @patch('src.tools.pdf_tools.pdf_content_extraction.extract_image_cli.fitz.open')
+    @patch('src.tools.pdf_tools.pdf_content_extraction.extract_image_cli.Image.open')
     def test_extract_images_corrupted_image_data(self, mock_image_open, mock_fitz_open, temp_dirs):
         """Test extract_images with corrupted image data in PDF."""
         temp_input, temp_output = temp_dirs
@@ -504,7 +504,7 @@ class TestEdgeCasesAndErrorHandling:
         with open(pdf_path, 'w') as f:
             f.write("dummy pdf content")
         
-        with patch('src.utilities.pdf_tools.pdf_content_extraction.extract_image_cli.fitz.open') as mock_fitz:
+        with patch('src.tools.pdf_tools.pdf_content_extraction.extract_image_cli.fitz.open') as mock_fitz:
             mock_doc = Mock()
             mock_doc.__len__ = Mock(return_value=0)
             mock_doc.close = Mock()

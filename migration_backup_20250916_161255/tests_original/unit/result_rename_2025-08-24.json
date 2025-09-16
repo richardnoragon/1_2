@@ -1,0 +1,23 @@
+{
+  "test_execution": {
+    "timestamp": "2025-08-24T14:03:06.695727",
+    "exit_code": 1,
+    "test_file": "test_rename_2025-08-24.py",
+    "target_module": "src.utilities.file_management.rename",
+    "framework": "pytest",
+    "success": false
+  },
+  "coverage": {
+    "covered_lines": 185,
+    "num_statements": 312,
+    "percent_covered": 59.294871794871796,
+    "missing_lines": 127
+  },
+  "reports": {
+    "html_coverage": "htmlcov_rename_2025-08-24/index.html",
+    "json_coverage": "coverage_rename_2025-08-24.json",
+    "junit_xml": "junit_rename_2025-08-24.xml",
+    "summary": "result_rename_2025-08-24.json"
+  },
+  "command": "C:\\Users\\HP1\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -m pytest tests/unit/test_rename_2025-08-24.py -v --tb=short --cov=src.utilities.file_management.rename --cov-report=html:tests/unit/htmlcov_rename_2025-08-24 --cov-report=json:tests/unit/coverage_rename_2025-08-24.json --cov-report=term-missing --junitxml=tests/unit/junit_rename_2025-08-24.xml -c tests/unit/pytest_rename_2025-08-24.ini"
+}

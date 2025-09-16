@@ -44,8 +44,8 @@ except ImportError as e:
     CONFIG_MANAGER_AVAILABLE = False
 
 try:
-    import utilities.file_management
-    import utilities.security
+    import tools.file_management
+    import tools.security
     UTILITIES_AVAILABLE = True
 except ImportError as e:
     print(f"[IMPORT_ISSUE] Utilities: {e}")

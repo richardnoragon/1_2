@@ -53,7 +53,7 @@ from PyQt5.QtWidgets import QApplication, QWidget
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
 
 try:
-    from src.utilities.network.network_transfer import (CRYPTO_AVAILABLE,
+    from src.tools.network.network_transfer import (CRYPTO_AVAILABLE,
                                                         NetworkTransferGUI,
                                                         PathSecurity,
                                                         SecurityManager,
@@ -144,7 +144,7 @@ class TestSecurityManager:
         self.security_manager.generate_session_key()
         
         # Mock CRYPTO_AVAILABLE to False to force fallback
-        with patch('src.utilities.network.network_transfer.CRYPTO_AVAILABLE', False):
+        with patch('src.tools.network.network_transfer.CRYPTO_AVAILABLE', False):
             self.security_manager.aes_gcm = None  # Reset AES-GCM
             
             original_message = b"Test message for fallback encryption"
@@ -180,7 +180,7 @@ class TestSecurityManager:
     
     def test_fallback_encrypt_decrypt_edge_cases(self):
         """Test fallback encryption/decryption edge cases."""
-        with patch('src.utilities.network.network_transfer.CRYPTO_AVAILABLE', False):
+        with patch('src.tools.network.network_transfer.CRYPTO_AVAILABLE', False):
             self.security_manager.generate_session_key()
             self.security_manager.aes_gcm = None
             
@@ -198,7 +198,7 @@ class TestSecurityManager:
     
     def test_fallback_decrypt_corrupted_mac(self):
         """Test fallback decryption with corrupted MAC."""
-        with patch('src.utilities.network.network_transfer.CRYPTO_AVAILABLE', False):
+        with patch('src.tools.network.network_transfer.CRYPTO_AVAILABLE', False):
             self.security_manager.generate_session_key()
             self.security_manager.aes_gcm = None
             
@@ -780,7 +780,7 @@ class TestTransferClient:
         mock_socket = Mock()
         
         with patch.object(client, 'progress_updated') as mock_progress:
-            with patch('src.utilities.network.network_transfer.PathSecurity.secure_file_info') as mock_info:
+            with patch('src.tools.network.network_transfer.PathSecurity.secure_file_info') as mock_info:
                 mock_info.return_value = {
                     'size': 100,
                     'exists': True,
@@ -828,7 +828,7 @@ class TestTransferClient:
         
         mock_socket = Mock()
         
-        with patch('src.utilities.network.network_transfer.PathSecurity.secure_file_info', return_value=None):
+        with patch('src.tools.network.network_transfer.PathSecurity.secure_file_info', return_value=None):
             client.send_files(mock_socket)
             
             # Should not attempt to send invalid files
@@ -842,7 +842,7 @@ class TestTransferClient:
         mock_socket = Mock()
         
         with patch.object(client, 'error_occurred') as mock_error:
-            with patch('src.utilities.network.network_transfer.PathSecurity.secure_file_info') as mock_info:
+            with patch('src.tools.network.network_transfer.PathSecurity.secure_file_info') as mock_info:
                 mock_info.return_value = {'size': 100, 'exists': True, 'path': str(self.test_file)}
                 
                 with patch('builtins.open', side_effect=IOError("File access error")):
@@ -873,7 +873,7 @@ class TestNetworkTransferGUI:
     
     def test_gui_initialization(self):
         """Test NetworkTransferGUI initialization."""
-        with patch('src.utilities.network.network_transfer.DatabaseManager'):
+        with patch('src.tools.network.network_transfer.DatabaseManager'):
             gui = NetworkTransferGUI()
             
             # Check basic attributes
@@ -891,7 +891,7 @@ class TestNetworkTransferGUI:
     
     def test_database_initialization(self):
         """Test database initialization."""
-        with patch('src.utilities.network.network_transfer.DatabaseManager') as mock_db:
+        with patch('src.tools.network.network_transfer.DatabaseManager') as mock_db:
             mock_db_instance = Mock()
             mock_db.return_value = mock_db_instance
             
@@ -902,7 +902,7 @@ class TestNetworkTransferGUI:
     
     def test_file_security_validation(self):
         """Test file security validation."""
-        with patch('src.utilities.network.network_transfer.DatabaseManager'):
+        with patch('src.tools.network.network_transfer.DatabaseManager'):
             gui = NetworkTransferGUI()
             
             # Test valid file path
@@ -926,7 +926,7 @@ class TestNetworkTransferGUI:
     
     def test_forbidden_directories_check(self):
         """Test forbidden directories checking."""
-        with patch('src.utilities.network.network_transfer.DatabaseManager'):
+        with patch('src.tools.network.network_transfer.DatabaseManager'):
             gui = NetworkTransferGUI()
             
             # Create mock forbidden directories
@@ -946,7 +946,7 @@ class TestNetworkTransferGUI:
     
     def test_allowed_directories_check(self):
         """Test allowed directories checking."""
-        with patch('src.utilities.network.network_transfer.DatabaseManager'):
+        with patch('src.tools.network.network_transfer.DatabaseManager'):
             gui = NetworkTransferGUI()
             
             # Test with user Documents directory
@@ -964,7 +964,7 @@ class TestNetworkTransferGUI:
     
     def test_file_extension_validation(self):
         """Test file extension validation."""
-        with patch('src.utilities.network.network_transfer.DatabaseManager'):
+        with patch('src.tools.network.network_transfer.DatabaseManager'):
             gui = NetworkTransferGUI()
             
             # Test allowed extensions
@@ -981,7 +981,7 @@ class TestNetworkTransferGUI:
     
     def test_file_size_validation(self):
         """Test file size validation."""
-        with patch('src.utilities.network.network_transfer.DatabaseManager'):
+        with patch('src.tools.network.network_transfer.DatabaseManager'):
             gui = NetworkTransferGUI()
             
             # Test normal file size
@@ -998,7 +998,7 @@ class TestNetworkTransferGUI:
     
     def test_collect_application_config(self):
         """Test collecting application configuration."""
-        with patch('src.utilities.network.network_transfer.DatabaseManager'):
+        with patch('src.tools.network.network_transfer.DatabaseManager'):
             gui = NetworkTransferGUI()
             
             config = gui.collect_application_config()
@@ -1013,7 +1013,7 @@ class TestNetworkTransferGUI:
     
     def test_sanitize_config_content(self):
         """Test configuration content sanitization."""
-        with patch('src.utilities.network.network_transfer.DatabaseManager'):
+        with patch('src.tools.network.network_transfer.DatabaseManager'):
             gui = NetworkTransferGUI()
             
             # Test with sensitive content
@@ -1040,7 +1040,7 @@ class TestNetworkTransferGUI:
     
     def test_symlink_loop_detection(self):
         """Test symbolic link loop detection."""
-        with patch('src.utilities.network.network_transfer.DatabaseManager'):
+        with patch('src.tools.network.network_transfer.DatabaseManager'):
             gui = NetworkTransferGUI()
             
             # Test with normal directories
@@ -1060,7 +1060,7 @@ class TestNetworkTransferGUI:
     
     def test_transfer_history_logging(self):
         """Test transfer history logging."""
-        with patch('src.utilities.network.network_transfer.DatabaseManager') as mock_db:
+        with patch('src.tools.network.network_transfer.DatabaseManager') as mock_db:
             mock_db_instance = Mock()
             mock_db.return_value = mock_db_instance
             
@@ -1080,7 +1080,7 @@ class TestNetworkTransferGUI:
     
     def test_collection_management(self):
         """Test file collection management."""
-        with patch('src.utilities.network.network_transfer.DatabaseManager') as mock_db:
+        with patch('src.tools.network.network_transfer.DatabaseManager') as mock_db:
             mock_db_instance = Mock()
             mock_db.return_value = mock_db_instance
             
@@ -1104,7 +1104,7 @@ class TestNetworkTransferGUI:
     
     def test_secure_config_file_validation(self):
         """Test secure configuration file validation."""
-        with patch('src.utilities.network.network_transfer.DatabaseManager'):
+        with patch('src.tools.network.network_transfer.DatabaseManager'):
             gui = NetworkTransferGUI()
             
             # Test valid config file
@@ -1121,7 +1121,7 @@ class TestNetworkTransferGUI:
     
     def test_menu_callbacks(self):
         """Test menu callback registration and execution."""
-        with patch('src.utilities.network.network_transfer.DatabaseManager'):
+        with patch('src.tools.network.network_transfer.DatabaseManager'):
             with patch.object(NetworkTransferGUI, '_setup_menu_callbacks'):
                 gui = NetworkTransferGUI()
                 
@@ -1139,11 +1139,11 @@ class TestNetworkTransferGUI:
     
     def test_transfer_server_management(self):
         """Test transfer server start/stop management."""
-        with patch('src.utilities.network.network_transfer.DatabaseManager'):
+        with patch('src.tools.network.network_transfer.DatabaseManager'):
             gui = NetworkTransferGUI()
             
             # Mock the server
-            with patch('src.utilities.network.network_transfer.TransferServer') as mock_server:
+            with patch('src.tools.network.network_transfer.TransferServer') as mock_server:
                 mock_server_instance = Mock()
                 mock_server.return_value = mock_server_instance
                 
@@ -1383,7 +1383,7 @@ class TestErrorHandlingAndEdgeCases:
         if app is None:
             app = QApplication([])
         
-        with patch('src.utilities.network.network_transfer.DatabaseManager'):
+        with patch('src.tools.network.network_transfer.DatabaseManager'):
             gui = NetworkTransferGUI()
             
             # Test with invalid file selections

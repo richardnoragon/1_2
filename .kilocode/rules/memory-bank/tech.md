@@ -421,7 +421,7 @@ markers =
     ],
     "hidden_imports": [
         "src.rfu.core",
-        "src.utilities.file_management", 
+        "src.tools.file_management", 
         "PyQt5.sip"
     ],
     "exclude_modules": ["matplotlib", "numpy.testing"]

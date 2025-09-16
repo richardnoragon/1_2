@@ -27,7 +27,7 @@ except ImportError:
     PYQT_AVAILABLE = False
     pytest.skip("PyQt5 not available", allow_module_level=True)
 
-from src.utilities.network.network_scanner import NetworkScannerGUI
+from src.tools.network.network_scanner import NetworkScannerGUI
 
 
 class TestNetworkScannerGUI:
@@ -337,11 +337,11 @@ class TestNetworkScannerGUI:
             assert self.scanner.udp_scan.isChecked() == config['udp']
             assert self.scanner.service_detection.isChecked() == config['service']
 
-    @patch('src.utilities.network.network_scanner.StandardWindow')
+    @patch('src.tools.network.network_scanner.StandardWindow')
     def test_inheritance_from_standard_window(self, mock_standard_window):
         """Test that NetworkScannerGUI properly inherits from StandardWindow."""
         # This test ensures proper inheritance structure
-        from src.utilities.network.network_scanner import NetworkScannerGUI
+        from src.tools.network.network_scanner import NetworkScannerGUI
         assert hasattr(NetworkScannerGUI, '__init__')
         assert hasattr(NetworkScannerGUI, 'init_ui')
 
@@ -564,7 +564,7 @@ def test_main_function_execution():
                 mock_app.return_value = mock_app_instance
                 mock_app_instance.exec_.return_value = 0
                 
-                from src.utilities.network.network_scanner import main
+                from src.tools.network.network_scanner import main
 
                 # Should not raise exceptions
                 main()

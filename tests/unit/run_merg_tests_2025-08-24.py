@@ -70,7 +70,7 @@ class MergTestRunner:
             "test_execution_info": {
                 "timestamp": self.timestamp,
                 "date": self.date_stamp,
-                "target_module": "src.utilities.pdf_tools.pdf_basic_operations.merg",
+                "target_module": "src.tools.pdf_tools.pdf_basic_operations.merg",
                 "test_file": f"test_merg_{self.date_stamp}.py",
                 "config_file": f"pytest_merg_{self.date_stamp}.ini",
                 "python_version": platform.python_version(),
@@ -166,7 +166,7 @@ class MergTestRunner:
             "test_execution_summary": {
                 "start_time": self.timestamp,
                 "end_time": end_timestamp,
-                "target_module": "src.utilities.pdf_tools.pdf_basic_operations.merg",
+                "target_module": "src.tools.pdf_tools.pdf_basic_operations.merg",
                 "test_file": f"test_merg_{self.date_stamp}.py",
                 "exit_code": return_code,
                 "success": return_code == 0,

@@ -24,7 +24,7 @@ sys.path.insert(0, str(src_dir))
 
 # Import target modules with error handling
 try:
-    from utilities.network.network_connectivity_complex.core.network_base import (
+    from tools.network.network_connectivity_complex.core.network_base import (
         NetworkOperationStatus,
         NetworkAlertLevel,
         NetworkOperationResult,

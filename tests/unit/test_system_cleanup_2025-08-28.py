@@ -26,7 +26,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
 
 # Import the module under test
 try:
-    from src.utilities.system.system_cleanup import (CLEANUP_TOOLS_AVAILABLE,
+    from src.tools.system.system_cleanup import (CLEANUP_TOOLS_AVAILABLE,
                                                      DIAGNOSTICS_GUI_AVAILABLE,
                                                      PYQT5_AVAILABLE,
                                                      SystemCleanupGUI, main)
@@ -35,7 +35,7 @@ except ImportError:
     try:
         # Try alternative import path
         sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
-        from src.utilities.system.system_cleanup import (
+        from src.tools.system.system_cleanup import (
             CLEANUP_TOOLS_AVAILABLE, DIAGNOSTICS_GUI_AVAILABLE,
             PYQT5_AVAILABLE, SystemCleanupGUI, main)
         IMPORT_SUCCESS = True
@@ -281,7 +281,7 @@ class TestSystemCleanupGUITempCleanup:
     def test_run_temp_cleanup_successful_operation(self, mock_qmsg, mock_base_class):
         """Test successful temp cleanup operation."""
         # Import CleanupOperationResult for testing
-        from utilities.system.system_cleanup.core.cleanup_base import \
+        from tools.system.system_cleanup.core.cleanup_base import \
             CleanupOperationResult
         
         with patch.object(SystemCleanupGUI, 'init_cleanup_tools'), \
@@ -324,7 +324,7 @@ class TestSystemCleanupGUITempCleanup:
     @patch('utilities.system.system_cleanup.QMessageBox')
     def test_run_temp_cleanup_with_errors(self, mock_qmsg, mock_base_class):
         """Test temp cleanup operation with errors."""
-        from utilities.system.system_cleanup.core.cleanup_base import \
+        from tools.system.system_cleanup.core.cleanup_base import \
             CleanupOperationResult
         
         with patch.object(SystemCleanupGUI, 'init_cleanup_tools'), \
@@ -360,7 +360,7 @@ class TestSystemCleanupGUITempCleanup:
     @patch('utilities.system.system_cleanup.QMessageBox')
     def test_run_temp_cleanup_failed_operation(self, mock_qmsg, mock_base_class):
         """Test failed temp cleanup operation."""
-        from utilities.system.system_cleanup.core.cleanup_base import \
+        from tools.system.system_cleanup.core.cleanup_base import \
             CleanupOperationResult
         
         with patch.object(SystemCleanupGUI, 'init_cleanup_tools'), \

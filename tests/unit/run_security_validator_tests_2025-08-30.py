@@ -140,7 +140,7 @@ class SecurityValidatorTestRunner:
         # Check if target module can be imported
         try:
             sys.path.insert(0, str(self.test_dir.parent.parent / "src"))
-            from utilities.network.network_connectivity_complex.core.security_validator import \
+            from tools.network.network_connectivity_complex.core.security_validator import \
                 SecurityValidator
             logger.info("Target module imported successfully")
             return True

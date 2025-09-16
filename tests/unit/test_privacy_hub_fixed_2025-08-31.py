@@ -83,17 +83,17 @@ class TestPrivacyToolsHubBasic:
             'gui.themes': Mock(),
         }):
             # Mock the imports that would fail
-            with patch('src.utilities.privacy.privacy_tools.gui.privacy_hub.SecureEmptyTrashTool'), \
-                 patch('src.utilities.privacy.privacy_tools.gui.privacy_hub.DeleteCookiesTool'), \
-                 patch('src.utilities.privacy.privacy_tools.gui.privacy_hub.BrowserDetector'), \
-                 patch('src.utilities.privacy.privacy_tools.gui.privacy_hub.PlatformUtils'), \
-                 patch('src.utilities.privacy.privacy_tools.gui.privacy_hub.StandardWindow'), \
-                 patch('src.utilities.privacy.privacy_tools.gui.privacy_hub.ThemeManager'), \
-                 patch('src.utilities.privacy.privacy_tools.gui.privacy_hub.Colors'), \
-                 patch('src.utilities.privacy.privacy_tools.gui.privacy_hub.Fonts'):
+            with patch('src.tools.privacy.privacy_tools.gui.privacy_hub.SecureEmptyTrashTool'), \
+                 patch('src.tools.privacy.privacy_tools.gui.privacy_hub.DeleteCookiesTool'), \
+                 patch('src.tools.privacy.privacy_tools.gui.privacy_hub.BrowserDetector'), \
+                 patch('src.tools.privacy.privacy_tools.gui.privacy_hub.PlatformUtils'), \
+                 patch('src.tools.privacy.privacy_tools.gui.privacy_hub.StandardWindow'), \
+                 patch('src.tools.privacy.privacy_tools.gui.privacy_hub.ThemeManager'), \
+                 patch('src.tools.privacy.privacy_tools.gui.privacy_hub.Colors'), \
+                 patch('src.tools.privacy.privacy_tools.gui.privacy_hub.Fonts'):
                 
                 try:
-                    from src.utilities.privacy.privacy_tools.gui.privacy_hub import \
+                    from src.tools.privacy.privacy_tools.gui.privacy_hub import \
                         PrivacyToolsHub
                     assert PrivacyToolsHub is not None
                     assert hasattr(PrivacyToolsHub, '__init__')
@@ -106,16 +106,16 @@ class TestPrivacyToolsHubBasic:
             'gui.standard_window': Mock(),
             'gui.themes': Mock(),
         }):
-            with patch('src.utilities.privacy.privacy_tools.gui.privacy_hub.SecureEmptyTrashTool'), \
-                 patch('src.utilities.privacy.privacy_tools.gui.privacy_hub.DeleteCookiesTool'), \
-                 patch('src.utilities.privacy.privacy_tools.gui.privacy_hub.BrowserDetector'), \
-                 patch('src.utilities.privacy.privacy_tools.gui.privacy_hub.PlatformUtils'), \
-                 patch('src.utilities.privacy.privacy_tools.gui.privacy_hub.StandardWindow'), \
-                 patch('src.utilities.privacy.privacy_tools.gui.privacy_hub.ThemeManager'), \
-                 patch('src.utilities.privacy.privacy_tools.gui.privacy_hub.Colors'), \
-                 patch('src.utilities.privacy.privacy_tools.gui.privacy_hub.Fonts'):
+            with patch('src.tools.privacy.privacy_tools.gui.privacy_hub.SecureEmptyTrashTool'), \
+                 patch('src.tools.privacy.privacy_tools.gui.privacy_hub.DeleteCookiesTool'), \
+                 patch('src.tools.privacy.privacy_tools.gui.privacy_hub.BrowserDetector'), \
+                 patch('src.tools.privacy.privacy_tools.gui.privacy_hub.PlatformUtils'), \
+                 patch('src.tools.privacy.privacy_tools.gui.privacy_hub.StandardWindow'), \
+                 patch('src.tools.privacy.privacy_tools.gui.privacy_hub.ThemeManager'), \
+                 patch('src.tools.privacy.privacy_tools.gui.privacy_hub.Colors'), \
+                 patch('src.tools.privacy.privacy_tools.gui.privacy_hub.Fonts'):
                 
-                from src.utilities.privacy.privacy_tools.gui.privacy_hub import \
+                from src.tools.privacy.privacy_tools.gui.privacy_hub import \
                     PrivacyToolsHub
 
                 # Check expected methods exist
@@ -129,7 +129,7 @@ class TestPrivacyToolsHubBasic:
                 for method in expected_methods:
                     assert hasattr(PrivacyToolsHub, method), f"Method {method} not found"
     
-    @patch('src.utilities.privacy.privacy_tools.gui.privacy_hub.StandardWindow.__init__')
+    @patch('src.tools.privacy.privacy_tools.gui.privacy_hub.StandardWindow.__init__')
     def test_privacy_hub_initialization_mocked(self, mock_super_init, app):
         """Test PrivacyToolsHub initialization with mocked dependencies."""
         mock_super_init.return_value = None
@@ -138,13 +138,13 @@ class TestPrivacyToolsHubBasic:
             'gui.standard_window': Mock(),
             'gui.themes': Mock(),
         }):
-            with patch('src.utilities.privacy.privacy_tools.gui.privacy_hub.SecureEmptyTrashTool') as mock_trash, \
-                 patch('src.utilities.privacy.privacy_tools.gui.privacy_hub.DeleteCookiesTool') as mock_cookies, \
-                 patch('src.utilities.privacy.privacy_tools.gui.privacy_hub.BrowserDetector') as mock_detector, \
-                 patch('src.utilities.privacy.privacy_tools.gui.privacy_hub.PlatformUtils'), \
-                 patch('src.utilities.privacy.privacy_tools.gui.privacy_hub.ThemeManager'), \
-                 patch('src.utilities.privacy.privacy_tools.gui.privacy_hub.Colors'), \
-                 patch('src.utilities.privacy.privacy_tools.gui.privacy_hub.Fonts'):
+            with patch('src.tools.privacy.privacy_tools.gui.privacy_hub.SecureEmptyTrashTool') as mock_trash, \
+                 patch('src.tools.privacy.privacy_tools.gui.privacy_hub.DeleteCookiesTool') as mock_cookies, \
+                 patch('src.tools.privacy.privacy_tools.gui.privacy_hub.BrowserDetector') as mock_detector, \
+                 patch('src.tools.privacy.privacy_tools.gui.privacy_hub.PlatformUtils'), \
+                 patch('src.tools.privacy.privacy_tools.gui.privacy_hub.ThemeManager'), \
+                 patch('src.tools.privacy.privacy_tools.gui.privacy_hub.Colors'), \
+                 patch('src.tools.privacy.privacy_tools.gui.privacy_hub.Fonts'):
                 
                 # Configure mocks
                 mock_trash.return_value = self.mock_tools['trash']
@@ -152,7 +152,7 @@ class TestPrivacyToolsHubBasic:
                 mock_detector.return_value = self.mock_browser_detector
                 
                 # Mock the UI setup methods
-                with patch.object(sys.modules.get('src.utilities.privacy.privacy_tools.gui.privacy_hub', Mock()), 
+                with patch.object(sys.modules.get('src.tools.privacy.privacy_tools.gui.privacy_hub', Mock()), 
                                   'PrivacyToolsHub') as MockHub:
                     mock_hub = Mock()
                     mock_hub._setup_ui = Mock()
@@ -162,7 +162,7 @@ class TestPrivacyToolsHubBasic:
                     mock_hub.resize = Mock()
                     MockHub.return_value = mock_hub
                     
-                    from src.utilities.privacy.privacy_tools.gui.privacy_hub import \
+                    from src.tools.privacy.privacy_tools.gui.privacy_hub import \
                         PrivacyToolsHub
 
                     # Test initialization (would be called automatically)

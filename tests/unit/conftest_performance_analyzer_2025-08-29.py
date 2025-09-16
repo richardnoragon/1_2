@@ -22,11 +22,11 @@ sys.path.insert(0, os.path.join(project_root, 'src'))
 
 # Import the module under test
 try:
-    from src.utilities.network.network_connectivity_complex.core.performance_analyzer import (
+    from src.tools.network.network_connectivity_complex.core.performance_analyzer import (
         PerformanceAnalyzer, PerformanceMeasurement, PerformanceMetric)
 except ImportError:
     try:
-        from utilities.network.network_connectivity_complex.core.performance_analyzer import (
+        from tools.network.network_connectivity_complex.core.performance_analyzer import (
             PerformanceAnalyzer, PerformanceMeasurement, PerformanceMetric)
     except ImportError:
         # Mock the imports for testing if module not found
@@ -163,7 +163,7 @@ def mock_datetime():
     """Mock datetime for consistent testing."""
     fixed_time = datetime(2025, 8, 29, 12, 0, 0)
     target_module = (
-        'src.utilities.network.network_connectivity_complex.'
+        'src.tools.network.network_connectivity_complex.'
         'core.performance_analyzer.datetime'
     )
     with patch(target_module) as mock_dt:

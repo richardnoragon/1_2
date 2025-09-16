@@ -39,7 +39,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
 
 # Import modules under test
 if PYQT5_AVAILABLE:
-    from src.utilities.metadata.office_meta_data_editor import (
+    from src.tools.metadata.office_meta_data_editor import (
         OfficeMetaDataEditorGUI, OfficeMetadataWorker, main)
 
 
@@ -501,7 +501,7 @@ class TestOfficeMetaDataEditorGUI:
     @pytest.fixture
     def window(self, app):
         """Create GUI window for testing."""
-        with patch('src.utilities.metadata.office_meta_data_editor.StandardWindow'):
+        with patch('src.tools.metadata.office_meta_data_editor.StandardWindow'):
             window = OfficeMetaDataEditorGUI()
             return window
     
@@ -656,7 +656,7 @@ class TestOfficeMetaDataEditorGUI:
         window.clear_results = Mock()
         
         with patch.object(window, 'worker', None):
-            with patch('src.utilities.metadata.office_meta_data_editor.OfficeMetadataWorker') as mock_worker_class:
+            with patch('src.tools.metadata.office_meta_data_editor.OfficeMetadataWorker') as mock_worker_class:
                 mock_worker = Mock()
                 mock_worker_class.return_value = mock_worker
                 
@@ -677,7 +677,7 @@ class TestOfficeMetaDataEditorGUI:
         updates = {'title': 'New Title'}
         
         with patch.object(window, 'worker', None):
-            with patch('src.utilities.metadata.office_meta_data_editor.OfficeMetadataWorker') as mock_worker_class:
+            with patch('src.tools.metadata.office_meta_data_editor.OfficeMetadataWorker') as mock_worker_class:
                 mock_worker = Mock()
                 mock_worker_class.return_value = mock_worker
                 
@@ -1180,8 +1180,8 @@ class TestOfficeMetaDataEditorGUI:
 class TestMainFunction:
     """Test suite for main function."""
     
-    @patch('src.utilities.metadata.office_meta_data_editor.sys.exit')
-    @patch('src.utilities.metadata.office_meta_data_editor.QApplication')
+    @patch('src.tools.metadata.office_meta_data_editor.sys.exit')
+    @patch('src.tools.metadata.office_meta_data_editor.QApplication')
     def test_main_function_execution(self, mock_app_class, mock_exit):
         """Test main function execution."""
         if not PYQT5_AVAILABLE:
@@ -1191,12 +1191,12 @@ class TestMainFunction:
         mock_app.exec_.return_value = 0
         mock_app_class.return_value = mock_app
         
-        with patch('src.utilities.metadata.office_meta_data_editor.OfficeMetaDataEditorGUI') as mock_gui:
+        with patch('src.tools.metadata.office_meta_data_editor.OfficeMetaDataEditorGUI') as mock_gui:
             mock_window = Mock()
             mock_gui.return_value = mock_window
             
             # Import and call main function
-            from src.utilities.metadata.office_meta_data_editor import main
+            from src.tools.metadata.office_meta_data_editor import main
             main()
             
             mock_app_class.assert_called_once()
@@ -1311,7 +1311,7 @@ class TestEdgeCases:
     
     def test_gui_with_corrupted_metadata(self, app):
         """Test GUI handling of corrupted metadata."""
-        with patch('src.utilities.metadata.office_meta_data_editor.StandardWindow'):
+        with patch('src.tools.metadata.office_meta_data_editor.StandardWindow'):
             window = OfficeMetaDataEditorGUI()
             
             # Test with metadata containing various data types
@@ -1334,7 +1334,7 @@ class TestEdgeCases:
     
     def test_export_metadata_with_non_serializable_data(self, app):
         """Test exporting metadata with non-serializable data."""
-        with patch('src.utilities.metadata.office_meta_data_editor.StandardWindow'):
+        with patch('src.tools.metadata.office_meta_data_editor.StandardWindow'):
             window = OfficeMetaDataEditorGUI()
             
             # Add non-serializable data
@@ -1361,7 +1361,7 @@ class TestEdgeCases:
     
     def test_worker_thread_cleanup(self, app):
         """Test proper worker thread cleanup."""
-        with patch('src.utilities.metadata.office_meta_data_editor.StandardWindow'):
+        with patch('src.tools.metadata.office_meta_data_editor.StandardWindow'):
             window = OfficeMetaDataEditorGUI()
             
             # Create mock worker

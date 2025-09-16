@@ -114,9 +114,9 @@ class TestBatteryHealthWidget:
         except (AttributeError, tk.TclError):
             pass
     
-    @patch('src.utilities.system.diagnostics_monitoring.gui.'
+    @patch('src.tools.system.diagnostics_monitoring.gui.'
            'battery_health_widget.BatteryMonitor')
-    @patch('src.utilities.system.diagnostics_monitoring.gui.'
+    @patch('src.tools.system.diagnostics_monitoring.gui.'
            'battery_health_widget.BaseWindow')
     def test_init_basic(self, mock_base_window, mock_battery_monitor_class, 
                        root_window, mock_dependencies):
@@ -128,7 +128,7 @@ class TestBatteryHealthWidget:
         mock_base_window.logger = MagicMock()
         
         # Import and create widget
-        from src.utilities.system.diagnostics_monitoring.gui.battery_health_widget import \
+        from src.tools.system.diagnostics_monitoring.gui.battery_health_widget import \
             BatteryHealthWidget
         
         with patch.object(BatteryHealthWidget, 'setup_ui'), \
@@ -144,9 +144,9 @@ class TestBatteryHealthWidget:
             assert isinstance(widget.status_vars, dict)
             assert isinstance(widget.battery_widgets, dict)
     
-    @patch('src.utilities.system.diagnostics_monitoring.gui.'
+    @patch('src.tools.system.diagnostics_monitoring.gui.'
            'battery_health_widget.BatteryMonitor')
-    @patch('src.utilities.system.diagnostics_monitoring.gui.'
+    @patch('src.tools.system.diagnostics_monitoring.gui.'
            'battery_health_widget.BaseWindow')
     def test_init_with_parent(self, mock_base_window, 
                              mock_battery_monitor_class, root_window, 
@@ -157,7 +157,7 @@ class TestBatteryHealthWidget:
         mock_base_window.main_frame = MagicMock()
         mock_base_window.logger = MagicMock()
         
-        from src.utilities.system.diagnostics_monitoring.gui.battery_health_widget import \
+        from src.tools.system.diagnostics_monitoring.gui.battery_health_widget import \
             BatteryHealthWidget
         
         with patch.object(BatteryHealthWidget, 'setup_ui'), \
@@ -169,9 +169,9 @@ class TestBatteryHealthWidget:
             mock_base_window.__init__.assert_called_once_with(
                 root_window, "Battery Health Monitor")
     
-    @patch('src.utilities.system.diagnostics_monitoring.gui.'
+    @patch('src.tools.system.diagnostics_monitoring.gui.'
            'battery_health_widget.BatteryMonitor')
-    @patch('src.utilities.system.diagnostics_monitoring.gui.'
+    @patch('src.tools.system.diagnostics_monitoring.gui.'
            'battery_health_widget.BaseWindow')
     def test_setup_ui_complete(self, mock_base_window, 
                               mock_battery_monitor_class, root_window, 
@@ -184,7 +184,7 @@ class TestBatteryHealthWidget:
         mock_base_window.title = MagicMock()
         mock_base_window.geometry = MagicMock()
         
-        from src.utilities.system.diagnostics_monitoring.gui.battery_health_widget import \
+        from src.tools.system.diagnostics_monitoring.gui.battery_health_widget import \
             BatteryHealthWidget
         
         with patch.object(BatteryHealthWidget, 'start_monitoring'), \
@@ -203,9 +203,9 @@ class TestBatteryHealthWidget:
             mock_control.assert_called_once()
             mock_charts.assert_called_once()
     
-    @patch('src.utilities.system.diagnostics_monitoring.gui.'
+    @patch('src.tools.system.diagnostics_monitoring.gui.'
            'battery_health_widget.BatteryMonitor')
-    @patch('src.utilities.system.diagnostics_monitoring.gui.'
+    @patch('src.tools.system.diagnostics_monitoring.gui.'
            'battery_health_widget.BaseWindow')
     def test_start_monitoring_success(self, mock_base_window, 
                                      mock_battery_monitor_class, 
@@ -217,7 +217,7 @@ class TestBatteryHealthWidget:
         mock_base_window.main_frame = tk.Frame(root_window)
         mock_base_window.logger = MagicMock()
         
-        from src.utilities.system.diagnostics_monitoring.gui.battery_health_widget import \
+        from src.tools.system.diagnostics_monitoring.gui.battery_health_widget import \
             BatteryHealthWidget
         
         with patch.object(BatteryHealthWidget, 'setup_ui'):
@@ -241,9 +241,9 @@ class TestBatteryHealthWidget:
                     state=tk.NORMAL)
                 mock_thread.assert_called_once()
     
-    @patch('src.utilities.system.diagnostics_monitoring.gui.'
+    @patch('src.tools.system.diagnostics_monitoring.gui.'
            'battery_health_widget.BatteryMonitor')
-    @patch('src.utilities.system.diagnostics_monitoring.gui.'
+    @patch('src.tools.system.diagnostics_monitoring.gui.'
            'battery_health_widget.BaseWindow')
     def test_start_monitoring_failure(self, mock_base_window, 
                                      mock_battery_monitor_class, 
@@ -255,7 +255,7 @@ class TestBatteryHealthWidget:
         mock_base_window.main_frame = tk.Frame(root_window)
         mock_base_window.logger = MagicMock()
         
-        from src.utilities.system.diagnostics_monitoring.gui.battery_health_widget import \
+        from src.tools.system.diagnostics_monitoring.gui.battery_health_widget import \
             BatteryHealthWidget
         
         with patch.object(BatteryHealthWidget, 'setup_ui'), \
@@ -272,9 +272,9 @@ class TestBatteryHealthWidget:
             mock_error.assert_called_once_with(
                 "Failed to start battery monitoring")
     
-    @patch('src.utilities.system.diagnostics_monitoring.gui.'
+    @patch('src.tools.system.diagnostics_monitoring.gui.'
            'battery_health_widget.BatteryMonitor')
-    @patch('src.utilities.system.diagnostics_monitoring.gui.'
+    @patch('src.tools.system.diagnostics_monitoring.gui.'
            'battery_health_widget.BaseWindow')
     def test_stop_monitoring(self, mock_base_window, 
                             mock_battery_monitor_class, root_window, 
@@ -285,7 +285,7 @@ class TestBatteryHealthWidget:
         mock_base_window.main_frame = tk.Frame(root_window)
         mock_base_window.logger = MagicMock()
         
-        from src.utilities.system.diagnostics_monitoring.gui.battery_health_widget import \
+        from src.tools.system.diagnostics_monitoring.gui.battery_health_widget import \
             BatteryHealthWidget
         
         with patch.object(BatteryHealthWidget, 'setup_ui'):
@@ -304,9 +304,9 @@ class TestBatteryHealthWidget:
             widget.start_button.config.assert_called_with(state=tk.NORMAL)
             widget.stop_button.config.assert_called_with(state=tk.DISABLED)
     
-    @patch('src.utilities.system.diagnostics_monitoring.gui.'
+    @patch('src.tools.system.diagnostics_monitoring.gui.'
            'battery_health_widget.BatteryMonitor')
-    @patch('src.utilities.system.diagnostics_monitoring.gui.'
+    @patch('src.tools.system.diagnostics_monitoring.gui.'
            'battery_health_widget.BaseWindow')
     def test_update_battery_status_no_batteries(self, mock_base_window, 
                                                mock_battery_monitor_class, 
@@ -316,7 +316,7 @@ class TestBatteryHealthWidget:
         mock_base_window.main_frame = tk.Frame(root_window)
         mock_base_window.logger = MagicMock()
         
-        from src.utilities.system.diagnostics_monitoring.gui.battery_health_widget import \
+        from src.tools.system.diagnostics_monitoring.gui.battery_health_widget import \
             BatteryHealthWidget
         
         with patch.object(BatteryHealthWidget, 'setup_ui'):
@@ -331,9 +331,9 @@ class TestBatteryHealthWidget:
             children = widget.battery_status_frame.winfo_children()
             assert len(children) == 1
     
-    @patch('src.utilities.system.diagnostics_monitoring.gui.'
+    @patch('src.tools.system.diagnostics_monitoring.gui.'
            'battery_health_widget.BatteryMonitor')
-    @patch('src.utilities.system.diagnostics_monitoring.gui.'
+    @patch('src.tools.system.diagnostics_monitoring.gui.'
            'battery_health_widget.BaseWindow')
     def test_refresh_data_success(self, mock_base_window, 
                                  mock_battery_monitor_class, root_window, 
@@ -348,7 +348,7 @@ class TestBatteryHealthWidget:
         mock_base_window.main_frame = tk.Frame(root_window)
         mock_base_window.logger = MagicMock()
         
-        from src.utilities.system.diagnostics_monitoring.gui.battery_health_widget import \
+        from src.tools.system.diagnostics_monitoring.gui.battery_health_widget import \
             BatteryHealthWidget
         
         with patch.object(BatteryHealthWidget, 'setup_ui'), \
@@ -361,9 +361,9 @@ class TestBatteryHealthWidget:
             # Verify UI was updated
             mock_update.assert_called_once()
     
-    @patch('src.utilities.system.diagnostics_monitoring.gui.'
+    @patch('src.tools.system.diagnostics_monitoring.gui.'
            'battery_health_widget.BatteryMonitor')
-    @patch('src.utilities.system.diagnostics_monitoring.gui.'
+    @patch('src.tools.system.diagnostics_monitoring.gui.'
            'battery_health_widget.BaseWindow')
     def test_export_data_success(self, mock_base_window, 
                                 mock_battery_monitor_class, root_window, 
@@ -373,7 +373,7 @@ class TestBatteryHealthWidget:
         mock_base_window.main_frame = tk.Frame(root_window)
         mock_base_window.logger = MagicMock()
         
-        from src.utilities.system.diagnostics_monitoring.gui.battery_health_widget import \
+        from src.tools.system.diagnostics_monitoring.gui.battery_health_widget import \
             BatteryHealthWidget
         
         with patch.object(BatteryHealthWidget, 'setup_ui'), \
@@ -399,9 +399,9 @@ class TestBatteryHealthWidget:
             mock_open.assert_called_once()
             mock_info.assert_called_once()
     
-    @patch('src.utilities.system.diagnostics_monitoring.gui.'
+    @patch('src.tools.system.diagnostics_monitoring.gui.'
            'battery_health_widget.BatteryMonitor')
-    @patch('src.utilities.system.diagnostics_monitoring.gui.'
+    @patch('src.tools.system.diagnostics_monitoring.gui.'
            'battery_health_widget.BaseWindow')
     def test_on_closing(self, mock_base_window, mock_battery_monitor_class, 
                        root_window, mock_dependencies):
@@ -411,7 +411,7 @@ class TestBatteryHealthWidget:
         mock_base_window.logger = MagicMock()
         mock_base_window.destroy = MagicMock()
         
-        from src.utilities.system.diagnostics_monitoring.gui.battery_health_widget import \
+        from src.tools.system.diagnostics_monitoring.gui.battery_health_widget import \
             BatteryHealthWidget
         
         with patch.object(BatteryHealthWidget, 'setup_ui'), \
@@ -429,12 +429,12 @@ class TestBatteryHealthWidget:
     def test_edge_cases(self, root_window, mock_dependencies):
         """Test edge cases and boundary conditions."""
         # Test with invalid interval values
-        from src.utilities.system.diagnostics_monitoring.gui.battery_health_widget import \
+        from src.tools.system.diagnostics_monitoring.gui.battery_health_widget import \
             BatteryHealthWidget
         
-        with patch('src.utilities.system.diagnostics_monitoring.gui.'
+        with patch('src.tools.system.diagnostics_monitoring.gui.'
                   'battery_health_widget.BatteryMonitor'), \
-             patch('src.utilities.system.diagnostics_monitoring.gui.'
+             patch('src.tools.system.diagnostics_monitoring.gui.'
                   'battery_health_widget.BaseWindow'), \
              patch.object(BatteryHealthWidget, 'setup_ui'), \
              patch.object(BatteryHealthWidget, 'start_monitoring'):
@@ -459,9 +459,9 @@ class TestBatteryHealthWidget:
 class TestBatteryHealthWidgetIntegration:
     """Integration tests for BatteryHealthWidget."""
     
-    @patch('src.utilities.system.diagnostics_monitoring.gui.'
+    @patch('src.tools.system.diagnostics_monitoring.gui.'
            'battery_health_widget.BatteryMonitor')
-    @patch('src.utilities.system.diagnostics_monitoring.gui.'
+    @patch('src.tools.system.diagnostics_monitoring.gui.'
            'battery_health_widget.BaseWindow')
     def test_full_monitoring_cycle(self, mock_base_window, 
                                   mock_battery_monitor_class, 
@@ -493,7 +493,7 @@ class TestBatteryHealthWidgetIntegration:
         mock_base_window.main_frame = MagicMock()
         mock_base_window.logger = MagicMock()
         
-        from src.utilities.system.diagnostics_monitoring.gui.battery_health_widget import \
+        from src.tools.system.diagnostics_monitoring.gui.battery_health_widget import \
             BatteryHealthWidget
         
         root = tk.Tk()

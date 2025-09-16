@@ -342,7 +342,7 @@ def test_session_data():
 # Custom assertions and utilities
 def assert_validation_response(response, expected_result=None, expected_rule=None):
     """Custom assertion for ValidationResponse objects."""
-    from utilities.network.network_connectivity_complex.core.security_validator import (
+    from tools.network.network_connectivity_complex.core.security_validator import (
         ValidationResponse, ValidationResult)
     
     assert isinstance(response, ValidationResponse), "Response must be ValidationResponse instance"
@@ -360,7 +360,7 @@ def assert_validation_response(response, expected_result=None, expected_rule=Non
 
 def assert_security_rule(rule, expected_type=None, expected_action=None):
     """Custom assertion for SecurityRule objects."""
-    from utilities.network.network_connectivity_complex.core.security_validator import (
+    from tools.network.network_connectivity_complex.core.security_validator import (
         SecurityRule, ValidationResult)
     
     assert hasattr(rule, 'rule_type'), "Rule must have rule_type attribute"

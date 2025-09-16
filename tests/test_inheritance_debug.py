@@ -15,7 +15,7 @@ try:
     
     # Test importing SystemDiagnosticsGUI directly
     try:
-        from utilities.system.diagnostics_monitoring.system_diagnostics_gui import SystemDiagnosticsGUI
+        from tools.system.diagnostics_monitoring.system_diagnostics_gui import SystemDiagnosticsGUI
         print("✅ SystemDiagnosticsGUI imported successfully")
         print(f"SystemDiagnosticsGUI type: {type(SystemDiagnosticsGUI)}")
         print(f"SystemDiagnosticsGUI MRO: {SystemDiagnosticsGUI.__mro__}")
@@ -26,7 +26,7 @@ try:
         
     # Test importing SystemCleanupGUI
     try:
-        from utilities.system.system_cleanup import SystemCleanupGUI
+        from tools.system.system_cleanup import SystemCleanupGUI
         print("✅ SystemCleanupGUI imported successfully")
         print(f"SystemCleanupGUI type: {type(SystemCleanupGUI)}")
         print(f"SystemCleanupGUI MRO: {SystemCleanupGUI.__mro__}")

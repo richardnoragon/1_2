@@ -15,7 +15,7 @@ try:
     
     print("✅ QApplication created")
     
-    from src.utilities.system.system_cleanup import SystemCleanupGUI
+    from src.tools.system.system_cleanup import SystemCleanupGUI
     print("✅ SystemCleanupGUI imported successfully")
     print("Class type:", type(SystemCleanupGUI))
     

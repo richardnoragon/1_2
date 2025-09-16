@@ -28,12 +28,12 @@ import pytest
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
 
 try:
-    from src.utilities.analysis.config.size_analyzer_config import (
+    from src.tools.analysis.config.size_analyzer_config import (
         SizeAnalyzerConfig, get_config_manager, get_log_manager)
 except ImportError:
     # Fallback import path
     try:
-        from utilities.analysis.config.size_analyzer_config import (
+        from tools.analysis.config.size_analyzer_config import (
             SizeAnalyzerConfig, get_config_manager, get_log_manager)
     except ImportError:
         # Direct import for testing
@@ -316,7 +316,7 @@ class TestSizeAnalyzerConfigInitialization:
         start_time = time.time()
         
         try:
-            with patch('src.utilities.analysis.config.size_analyzer_config.get_config_manager', return_value=None):
+            with patch('src.tools.analysis.config.size_analyzer_config.get_config_manager', return_value=None):
                 config = SizeAnalyzerConfig()
                 assert config.config_manager is not None
                 assert hasattr(config.config_manager, 'config')
@@ -340,7 +340,7 @@ class TestSizeAnalyzerConfigInitialization:
             mock_log_manager = Mock()
             mock_log_manager.get_logger = Mock(return_value=Mock())
             
-            with patch('src.utilities.analysis.config.size_analyzer_config.get_log_manager', return_value=mock_log_manager):
+            with patch('src.tools.analysis.config.size_analyzer_config.get_log_manager', return_value=mock_log_manager):
                 config = SizeAnalyzerConfig(config_manager=mock_config_manager)
                 mock_log_manager.get_logger.assert_called_with('SizeAnalyzer.Config')
                 

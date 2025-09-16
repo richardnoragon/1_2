@@ -24,7 +24,7 @@ except ImportError:
     PYQT_AVAILABLE = False
     pytest.skip("PyQt5 not available", allow_module_level=True)
 
-from src.utilities.network.network_scanner import NetworkScannerGUI
+from src.tools.network.network_scanner import NetworkScannerGUI
 
 
 class TestNetworkScannerCore:
@@ -404,13 +404,13 @@ def mock_network_responses():
 
 def test_main_function_import():
     """Test that main function can be imported."""
-    from src.utilities.network.network_scanner import main
+    from src.tools.network.network_scanner import main
     assert callable(main)
 
 
 def test_network_scanner_class_import():
     """Test that NetworkScannerGUI class can be imported."""
-    from src.utilities.network.network_scanner import NetworkScannerGUI
+    from src.tools.network.network_scanner import NetworkScannerGUI
     assert NetworkScannerGUI is not None
 
 

@@ -126,7 +126,7 @@ def db_manager(temp_db: str) -> Generator[AdvancedFoldersDBManager, None, None]:
     mock_main_db = MagicMock()
     mock_main_db.get_connection.return_value = sqlite3.connect(temp_db)
     
-    with patch('src.utilities.advanced_folders.database.database_manager.get_database_manager', 
+    with patch('src.tools.advanced_folders.database.database_manager.get_database_manager', 
                return_value=mock_main_db):
         manager = AdvancedFoldersDBManager()
         yield manager

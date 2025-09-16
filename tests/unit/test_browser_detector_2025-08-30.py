@@ -20,11 +20,11 @@ import pytest
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "src"))
 
 try:
-    from src.utilities.privacy.privacy_tools.core.browser_detector import \
+    from src.tools.privacy.privacy_tools.core.browser_detector import \
         BrowserDetector
-    from src.utilities.privacy.privacy_tools.core.data_locations import \
+    from src.tools.privacy.privacy_tools.core.data_locations import \
         DataLocations
-    from src.utilities.privacy.privacy_tools.core.platform_utils import \
+    from src.tools.privacy.privacy_tools.core.platform_utils import \
         PlatformUtils
 except ImportError as e:
     pytest.skip(f"Required modules not available: {e}", allow_module_level=True)
@@ -55,7 +55,7 @@ class TestBrowserDetector:
         assert detector._browser_paths == {}
         assert hasattr(detector, 'platform')
     
-    @patch('src.utilities.privacy.privacy_tools.core.platform_utils.PlatformUtils.get_platform')
+    @patch('src.tools.privacy.privacy_tools.core.platform_utils.PlatformUtils.get_platform')
     def test_init_platform_detection(self, mock_get_platform):
         """Test platform detection during initialization."""
         mock_get_platform.return_value = PlatformUtils.WINDOWS
@@ -64,7 +64,7 @@ class TestBrowserDetector:
         mock_get_platform.assert_called_once()
     
     @patch.object(BrowserDetector, '_is_browser_installed')
-    @patch('src.utilities.privacy.privacy_tools.core.data_locations.DataLocations.get_all_supported_browsers')
+    @patch('src.tools.privacy.privacy_tools.core.data_locations.DataLocations.get_all_supported_browsers')
     def test_detect_installed_browsers_fresh(self, mock_get_browsers, mock_is_installed):
         """Test browser detection on fresh instance."""
         mock_get_browsers.return_value = ['chrome', 'firefox', 'edge']
@@ -85,7 +85,7 @@ class TestBrowserDetector:
         
         assert result == ['chrome', 'firefox']
     
-    @patch('src.utilities.privacy.privacy_tools.core.platform_utils.PlatformUtils.get_platform')
+    @patch('src.tools.privacy.privacy_tools.core.platform_utils.PlatformUtils.get_platform')
     def test_is_browser_installed_windows(self, mock_get_platform):
         """Test browser installation check on Windows."""
         mock_get_platform.return_value = PlatformUtils.WINDOWS
@@ -98,7 +98,7 @@ class TestBrowserDetector:
             assert result is True
             mock_check.assert_called_once_with('chrome')
     
-    @patch('src.utilities.privacy.privacy_tools.core.platform_utils.PlatformUtils.get_platform')
+    @patch('src.tools.privacy.privacy_tools.core.platform_utils.PlatformUtils.get_platform')
     def test_is_browser_installed_macos(self, mock_get_platform):
         """Test browser installation check on macOS."""
         mock_get_platform.return_value = PlatformUtils.MACOS
@@ -111,7 +111,7 @@ class TestBrowserDetector:
             assert result is True
             mock_check.assert_called_once_with('safari')
     
-    @patch('src.utilities.privacy.privacy_tools.core.platform_utils.PlatformUtils.get_platform')
+    @patch('src.tools.privacy.privacy_tools.core.platform_utils.PlatformUtils.get_platform')
     def test_is_browser_installed_linux(self, mock_get_platform):
         """Test browser installation check on Linux."""
         mock_get_platform.return_value = PlatformUtils.LINUX
@@ -130,9 +130,9 @@ class TestBrowserDetector:
         result = self.detector._is_browser_installed('chrome')
         assert result is False
     
-    @patch('src.utilities.privacy.privacy_tools.core.platform_utils.PlatformUtils.get_home_directory')
-    @patch('src.utilities.privacy.privacy_tools.core.platform_utils.PlatformUtils.get_local_appdata_directory')
-    @patch('src.utilities.privacy.privacy_tools.core.platform_utils.PlatformUtils.get_appdata_directory')
+    @patch('src.tools.privacy.privacy_tools.core.platform_utils.PlatformUtils.get_home_directory')
+    @patch('src.tools.privacy.privacy_tools.core.platform_utils.PlatformUtils.get_local_appdata_directory')
+    @patch('src.tools.privacy.privacy_tools.core.platform_utils.PlatformUtils.get_appdata_directory')
     def test_check_windows_browser_chrome_exists(self, mock_appdata, mock_local_appdata, mock_home):
         """Test Windows Chrome detection when installed."""
         mock_home.return_value = self.test_home
@@ -147,9 +147,9 @@ class TestBrowserDetector:
             
             assert result is True
     
-    @patch('src.utilities.privacy.privacy_tools.core.platform_utils.PlatformUtils.get_home_directory')
-    @patch('src.utilities.privacy.privacy_tools.core.platform_utils.PlatformUtils.get_local_appdata_directory')
-    @patch('src.utilities.privacy.privacy_tools.core.platform_utils.PlatformUtils.get_appdata_directory')
+    @patch('src.tools.privacy.privacy_tools.core.platform_utils.PlatformUtils.get_home_directory')
+    @patch('src.tools.privacy.privacy_tools.core.platform_utils.PlatformUtils.get_local_appdata_directory')
+    @patch('src.tools.privacy.privacy_tools.core.platform_utils.PlatformUtils.get_appdata_directory')
     def test_check_windows_browser_chrome_not_exists(self, mock_appdata, mock_local_appdata, mock_home):
         """Test Windows Chrome detection when not installed."""
         mock_home.return_value = self.test_home
@@ -162,9 +162,9 @@ class TestBrowserDetector:
             
             assert result is False
     
-    @patch('src.utilities.privacy.privacy_tools.core.platform_utils.PlatformUtils.get_home_directory')
-    @patch('src.utilities.privacy.privacy_tools.core.platform_utils.PlatformUtils.get_local_appdata_directory')
-    @patch('src.utilities.privacy.privacy_tools.core.platform_utils.PlatformUtils.get_appdata_directory')
+    @patch('src.tools.privacy.privacy_tools.core.platform_utils.PlatformUtils.get_home_directory')
+    @patch('src.tools.privacy.privacy_tools.core.platform_utils.PlatformUtils.get_local_appdata_directory')
+    @patch('src.tools.privacy.privacy_tools.core.platform_utils.PlatformUtils.get_appdata_directory')
     def test_check_windows_browser_firefox_exists(self, mock_appdata, mock_local_appdata, mock_home):
         """Test Windows Firefox detection when installed."""
         mock_home.return_value = self.test_home
@@ -177,9 +177,9 @@ class TestBrowserDetector:
             
             assert result is True
     
-    @patch('src.utilities.privacy.privacy_tools.core.platform_utils.PlatformUtils.get_home_directory')
-    @patch('src.utilities.privacy.privacy_tools.core.platform_utils.PlatformUtils.get_local_appdata_directory')
-    @patch('src.utilities.privacy.privacy_tools.core.platform_utils.PlatformUtils.get_appdata_directory')
+    @patch('src.tools.privacy.privacy_tools.core.platform_utils.PlatformUtils.get_home_directory')
+    @patch('src.tools.privacy.privacy_tools.core.platform_utils.PlatformUtils.get_local_appdata_directory')
+    @patch('src.tools.privacy.privacy_tools.core.platform_utils.PlatformUtils.get_appdata_directory')
     def test_check_windows_browser_edge_exists(self, mock_appdata, mock_local_appdata, mock_home):
         """Test Windows Edge detection when installed."""
         mock_home.return_value = self.test_home
@@ -192,9 +192,9 @@ class TestBrowserDetector:
             
             assert result is True
     
-    @patch('src.utilities.privacy.privacy_tools.core.platform_utils.PlatformUtils.get_home_directory')
-    @patch('src.utilities.privacy.privacy_tools.core.platform_utils.PlatformUtils.get_local_appdata_directory')
-    @patch('src.utilities.privacy.privacy_tools.core.platform_utils.PlatformUtils.get_appdata_directory')
+    @patch('src.tools.privacy.privacy_tools.core.platform_utils.PlatformUtils.get_home_directory')
+    @patch('src.tools.privacy.privacy_tools.core.platform_utils.PlatformUtils.get_local_appdata_directory')
+    @patch('src.tools.privacy.privacy_tools.core.platform_utils.PlatformUtils.get_appdata_directory')
     def test_check_windows_browser_no_appdata(self, mock_appdata, mock_local_appdata, mock_home):
         """Test Windows browser detection when appdata directories are None."""
         mock_home.return_value = self.test_home
@@ -209,7 +209,7 @@ class TestBrowserDetector:
         result = self.detector._check_windows_browser("unknown_browser")
         assert result is False
     
-    @patch('src.utilities.privacy.privacy_tools.core.platform_utils.PlatformUtils.get_home_directory')
+    @patch('src.tools.privacy.privacy_tools.core.platform_utils.PlatformUtils.get_home_directory')
     def test_check_macos_browser_chrome_exists(self, mock_home):
         """Test macOS Chrome detection when installed."""
         mock_home.return_value = self.test_home
@@ -220,7 +220,7 @@ class TestBrowserDetector:
             
             assert result is True
     
-    @patch('src.utilities.privacy.privacy_tools.core.platform_utils.PlatformUtils.get_home_directory')
+    @patch('src.tools.privacy.privacy_tools.core.platform_utils.PlatformUtils.get_home_directory')
     def test_check_macos_browser_firefox_exists(self, mock_home):
         """Test macOS Firefox detection when installed."""
         mock_home.return_value = self.test_home
@@ -231,7 +231,7 @@ class TestBrowserDetector:
             
             assert result is True
     
-    @patch('src.utilities.privacy.privacy_tools.core.platform_utils.PlatformUtils.get_home_directory')
+    @patch('src.tools.privacy.privacy_tools.core.platform_utils.PlatformUtils.get_home_directory')
     def test_check_macos_browser_safari_exists(self, mock_home):
         """Test macOS Safari detection when installed."""
         mock_home.return_value = self.test_home
@@ -242,7 +242,7 @@ class TestBrowserDetector:
             
             assert result is True
     
-    @patch('src.utilities.privacy.privacy_tools.core.platform_utils.PlatformUtils.get_home_directory')
+    @patch('src.tools.privacy.privacy_tools.core.platform_utils.PlatformUtils.get_home_directory')
     def test_check_macos_browser_edge_exists(self, mock_home):
         """Test macOS Edge detection when installed."""
         mock_home.return_value = self.test_home
@@ -253,7 +253,7 @@ class TestBrowserDetector:
             
             assert result is True
     
-    @patch('src.utilities.privacy.privacy_tools.core.platform_utils.PlatformUtils.get_home_directory')
+    @patch('src.tools.privacy.privacy_tools.core.platform_utils.PlatformUtils.get_home_directory')
     def test_check_macos_browser_not_exists(self, mock_home):
         """Test macOS browser detection when not installed."""
         mock_home.return_value = self.test_home
@@ -269,7 +269,7 @@ class TestBrowserDetector:
         result = self.detector._check_macos_browser("unknown_browser")
         assert result is False
     
-    @patch('src.utilities.privacy.privacy_tools.core.platform_utils.PlatformUtils.get_home_directory')
+    @patch('src.tools.privacy.privacy_tools.core.platform_utils.PlatformUtils.get_home_directory')
     def test_check_linux_browser_chrome_config_exists(self, mock_home):
         """Test Linux Chrome detection when config directory exists."""
         mock_home.return_value = self.test_home
@@ -280,7 +280,7 @@ class TestBrowserDetector:
             
             assert result is True
     
-    @patch('src.utilities.privacy.privacy_tools.core.platform_utils.PlatformUtils.get_home_directory')
+    @patch('src.tools.privacy.privacy_tools.core.platform_utils.PlatformUtils.get_home_directory')
     @patch.object(BrowserDetector, '_check_command_exists')
     def test_check_linux_browser_chrome_command_exists(self, mock_command_exists, mock_home):
         """Test Linux Chrome detection when command exists."""
@@ -294,7 +294,7 @@ class TestBrowserDetector:
             assert result is True
             mock_command_exists.assert_called_once_with("google-chrome")
     
-    @patch('src.utilities.privacy.privacy_tools.core.platform_utils.PlatformUtils.get_home_directory')
+    @patch('src.tools.privacy.privacy_tools.core.platform_utils.PlatformUtils.get_home_directory')
     def test_check_linux_browser_firefox_exists(self, mock_home):
         """Test Linux Firefox detection when installed."""
         mock_home.return_value = self.test_home
@@ -305,7 +305,7 @@ class TestBrowserDetector:
             
             assert result is True
     
-    @patch('src.utilities.privacy.privacy_tools.core.platform_utils.PlatformUtils.get_home_directory')
+    @patch('src.tools.privacy.privacy_tools.core.platform_utils.PlatformUtils.get_home_directory')
     def test_check_linux_browser_edge_exists(self, mock_home):
         """Test Linux Edge detection when installed."""
         mock_home.return_value = self.test_home
@@ -316,7 +316,7 @@ class TestBrowserDetector:
             
             assert result is True
     
-    @patch('src.utilities.privacy.privacy_tools.core.platform_utils.PlatformUtils.get_home_directory')
+    @patch('src.tools.privacy.privacy_tools.core.platform_utils.PlatformUtils.get_home_directory')
     @patch.object(BrowserDetector, '_check_command_exists')
     def test_check_linux_browser_not_exists(self, mock_command_exists, mock_home):
         """Test Linux browser detection when not installed."""
@@ -353,8 +353,8 @@ class TestBrowserDetector:
         mock_which.assert_called_once_with("nonexistent_command")
     
     @patch.object(BrowserDetector, 'detect_installed_browsers')
-    @patch('src.utilities.privacy.privacy_tools.core.data_locations.DataLocations.get_browser_executable_names')
-    @patch('src.utilities.privacy.privacy_tools.core.platform_utils.PlatformUtils.is_process_running')
+    @patch('src.tools.privacy.privacy_tools.core.data_locations.DataLocations.get_browser_executable_names')
+    @patch('src.tools.privacy.privacy_tools.core.platform_utils.PlatformUtils.is_process_running')
     def test_get_running_browsers(self, mock_is_running, mock_get_exes, mock_detect):
         """Test getting list of running browsers."""
         mock_detect.return_value = ['chrome', 'firefox']
@@ -394,7 +394,7 @@ class TestBrowserDetector:
         assert result is True
     
     @patch.object(BrowserDetector, 'is_browser_running')
-    @patch('src.utilities.privacy.privacy_tools.core.data_locations.DataLocations.get_browser_executable_names')
+    @patch('src.tools.privacy.privacy_tools.core.data_locations.DataLocations.get_browser_executable_names')
     def test_close_browser_unknown_browser(self, mock_get_exes, mock_is_running):
         """Test closing unknown browser."""
         mock_is_running.return_value = True
@@ -404,9 +404,9 @@ class TestBrowserDetector:
         assert result is False
     
     @patch.object(BrowserDetector, 'is_browser_running')
-    @patch('src.utilities.privacy.privacy_tools.core.data_locations.DataLocations.get_browser_executable_names')
-    @patch('src.utilities.privacy.privacy_tools.core.platform_utils.PlatformUtils.is_process_running')
-    @patch('src.utilities.privacy.privacy_tools.core.platform_utils.PlatformUtils.kill_process')
+    @patch('src.tools.privacy.privacy_tools.core.data_locations.DataLocations.get_browser_executable_names')
+    @patch('src.tools.privacy.privacy_tools.core.platform_utils.PlatformUtils.is_process_running')
+    @patch('src.tools.privacy.privacy_tools.core.platform_utils.PlatformUtils.kill_process')
     def test_close_browser_success(self, mock_kill, mock_is_running_process, mock_get_exes, mock_is_running):
         """Test successfully closing a running browser."""
         mock_is_running.return_value = True
@@ -420,9 +420,9 @@ class TestBrowserDetector:
         mock_kill.assert_called_once_with('chrome.exe')
     
     @patch.object(BrowserDetector, 'is_browser_running')
-    @patch('src.utilities.privacy.privacy_tools.core.data_locations.DataLocations.get_browser_executable_names')
-    @patch('src.utilities.privacy.privacy_tools.core.platform_utils.PlatformUtils.is_process_running')
-    @patch('src.utilities.privacy.privacy_tools.core.platform_utils.PlatformUtils.kill_process')
+    @patch('src.tools.privacy.privacy_tools.core.data_locations.DataLocations.get_browser_executable_names')
+    @patch('src.tools.privacy.privacy_tools.core.platform_utils.PlatformUtils.is_process_running')
+    @patch('src.tools.privacy.privacy_tools.core.platform_utils.PlatformUtils.kill_process')
     def test_close_browser_failure(self, mock_kill, mock_is_running_process, mock_get_exes, mock_is_running):
         """Test failing to close a running browser."""
         mock_is_running.return_value = True
@@ -435,7 +435,7 @@ class TestBrowserDetector:
         assert result is False
         mock_kill.assert_called_once_with('chrome.exe')
     
-    @patch('src.utilities.privacy.privacy_tools.core.data_locations.DataLocations.get_browser_data_paths')
+    @patch('src.tools.privacy.privacy_tools.core.data_locations.DataLocations.get_browser_data_paths')
     def test_get_browser_data_paths_fresh(self, mock_get_paths):
         """Test getting browser data paths for first time."""
         expected_paths = {
@@ -611,7 +611,7 @@ class TestBrowserDetectorEdgeCases:
         """Set up test fixtures."""
         self.detector = BrowserDetector()
     
-    @patch('src.utilities.privacy.privacy_tools.core.data_locations.DataLocations.get_all_supported_browsers')
+    @patch('src.tools.privacy.privacy_tools.core.data_locations.DataLocations.get_all_supported_browsers')
     def test_detect_browsers_empty_list(self, mock_get_browsers):
         """Test detection when no browsers are supported."""
         mock_get_browsers.return_value = []
@@ -620,7 +620,7 @@ class TestBrowserDetectorEdgeCases:
         assert result == []
     
     @patch.object(BrowserDetector, '_is_browser_installed')
-    @patch('src.utilities.privacy.privacy_tools.core.data_locations.DataLocations.get_all_supported_browsers')
+    @patch('src.tools.privacy.privacy_tools.core.data_locations.DataLocations.get_all_supported_browsers')
     def test_detect_browsers_all_not_installed(self, mock_get_browsers, mock_is_installed):
         """Test detection when no browsers are installed."""
         mock_get_browsers.return_value = ['chrome', 'firefox']
@@ -630,7 +630,7 @@ class TestBrowserDetectorEdgeCases:
         assert result == []
     
     @patch.object(BrowserDetector, 'detect_installed_browsers')
-    @patch('src.utilities.privacy.privacy_tools.core.data_locations.DataLocations.get_browser_executable_names')
+    @patch('src.tools.privacy.privacy_tools.core.data_locations.DataLocations.get_browser_executable_names')
     def test_get_running_browsers_no_executables(self, mock_get_exes, mock_detect):
         """Test getting running browsers when no executable info available."""
         mock_detect.return_value = ['chrome']
@@ -673,9 +673,9 @@ class TestBrowserDetectorParameterized:
         DataLocations.FIREFOX,
         DataLocations.EDGE
     ])
-    @patch('src.utilities.privacy.privacy_tools.core.platform_utils.PlatformUtils.get_home_directory')
-    @patch('src.utilities.privacy.privacy_tools.core.platform_utils.PlatformUtils.get_local_appdata_directory')
-    @patch('src.utilities.privacy.privacy_tools.core.platform_utils.PlatformUtils.get_appdata_directory')
+    @patch('src.tools.privacy.privacy_tools.core.platform_utils.PlatformUtils.get_home_directory')
+    @patch('src.tools.privacy.privacy_tools.core.platform_utils.PlatformUtils.get_local_appdata_directory')
+    @patch('src.tools.privacy.privacy_tools.core.platform_utils.PlatformUtils.get_appdata_directory')
     def test_windows_browser_detection_all_browsers(self, mock_appdata, mock_local_appdata, 
                                                    mock_home, browser):
         """Test Windows browser detection for all supported browsers."""
@@ -712,7 +712,7 @@ class TestBrowserDetectorParameterized:
         ([False, True], True),  # Only data path exists
         ([False, False], False) # Neither exists
     ])
-    @patch('src.utilities.privacy.privacy_tools.core.platform_utils.PlatformUtils.get_home_directory')
+    @patch('src.tools.privacy.privacy_tools.core.platform_utils.PlatformUtils.get_home_directory')
     def test_macos_chrome_detection_combinations(self, mock_home, exists_results, expected):
         """Test macOS Chrome detection with different path combinations."""
         detector = BrowserDetector()

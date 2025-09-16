@@ -180,6 +180,10 @@ class MultiPaneFileExplorer(QMainWindow):
         # Load configuration
         self.load_configuration()
         
+        # Update layout combo options after loading configuration
+        if hasattr(self, 'layout_combo') and self.layout_combo:
+            self._update_layout_combo_options(self.layout_combo)
+        
         # Setup default layout
         self.setup_default_panes()
         
@@ -279,8 +283,6 @@ class MultiPaneFileExplorer(QMainWindow):
             
             for layout in available:
                 display_name = layout.title()
-                if layout == 'grid' and self.pane_count < 3:
-                    continue  # Skip grid for < 3 panes
                 layout_combo.addItem(display_name)
             
             # Restore previous selection if valid, otherwise use first option
@@ -797,8 +799,7 @@ class MultiPaneFileExplorer(QMainWindow):
         
         toolbar_layout.addWidget(QLabel("Layout:"))
         self.layout_combo = QComboBox()
-        self.layout_combo.addItems(['Horizontal', 'Vertical', 'Grid'])
-        self.layout_combo.setCurrentText(self.layout_mode.title())
+        self._update_layout_combo_options(self.layout_combo)
         self.layout_combo.currentTextChanged.connect(self.on_layout_mode_changed)
         toolbar_layout.addWidget(self.layout_combo)
         
@@ -3151,46 +3152,46 @@ class MultiPaneFileExplorer(QMainWindow):
     # Additional tool launcher methods
     def launch_copy_move_sync(self):
         """Launch Copy/Move/Sync tool."""
-        self._launch_tool("Copy/Move/Sync", "src.utilities.file_operations.copy_move_sync_delete", "CopyMoveSyncDeleteWindow")
+        self._launch_tool("Copy/Move/Sync", "src.tools.file_operations.copy_move_sync_delete", "CopyMoveSyncDeleteWindow")
     
     def launch_disk_usage(self):
         """Launch Disk Usage analyzer."""
-        self._launch_tool("Disk Usage", "src.utilities.analysis.disk_usage", "DiskUsageGUI")
+        self._launch_tool("Disk Usage", "src.tools.analysis.disk_usage", "DiskUsageGUI")
     
     def launch_file_integrity(self):
         """Launch File Integrity checker."""
-        self._launch_tool("File Integrity", "src.utilities.security.file_integrity", "FileIntegrityGUI")
+        self._launch_tool("File Integrity", "src.tools.security.file_integrity", "FileIntegrityGUI")
     
     def launch_pdf_utilities(self):
         """Launch PDF Utilities."""
-        self._launch_tool("PDF Utilities", "src.utilities.pdf_tools.pdf_utilities", "PDFUtilitiesGUI")
+        self._launch_tool("PDF Utilities", "src.tools.pdf_tools.pdf_utilities", "PDFUtilitiesGUI")
     
     def launch_extract_links(self):
         """Launch Extract Links tool."""
-        self._launch_tool("Extract Links", "src.utilities.pdf_tools.extract_links", "ExtractLinksGUI")
+        self._launch_tool("Extract Links", "src.tools.pdf_tools.extract_links", "ExtractLinksGUI")
     
     def launch_page_admin(self):
         """Launch Page Administration tool."""
-        self._launch_tool("Page Administration", "src.utilities.pdf_tools.page_admin", "PageAdminGUI")
+        self._launch_tool("Page Administration", "src.tools.pdf_tools.page_admin", "PageAdminGUI")
     
     def launch_pdf_conversion(self):
         """Launch PDF Conversion tool."""
-        self._launch_tool("PDF Conversion", "src.utilities.pdf_tools.conversion", "PDFConversionGUI")
+        self._launch_tool("PDF Conversion", "src.tools.pdf_tools.conversion", "PDFConversionGUI")
     
     def launch_network_test(self):
         """Launch Network Connectivity test."""
-        self._launch_tool("Network Test", "src.utilities.network.connectivity", "NetworkConnectivityGUI")
+        self._launch_tool("Network Test", "src.tools.network.connectivity", "NetworkConnectivityGUI")
     
     def launch_file_transfer(self):
         """Launch File Transfer tool."""
-        self._launch_tool("File Transfer", "src.utilities.network.file_transfer", "FileTransferGUI")
+        self._launch_tool("File Transfer", "src.tools.network.file_transfer", "FileTransferGUI")
     
 
 
 
     def launch_remote_access(self):
         """Launch Remote Access tool."""
-        self._launch_tool("Remote Access", "src.utilities.network.remote_access", "RemoteAccessGUI")
+        self._launch_tool("Remote Access", "src.tools.network.remote_access", "RemoteAccessGUI")
 
 
 # For development and testing

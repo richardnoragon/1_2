@@ -7,7 +7,7 @@ import unittest
 # Add the project root to the path
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
-from src.utilities.file_operations.secure_delete.secure_delete_logic import \
+from src.tools.file_operations.secure_delete.secure_delete_logic import \
     SecureDeleteLogic
 
 

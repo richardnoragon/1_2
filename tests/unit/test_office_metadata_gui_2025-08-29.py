@@ -35,7 +35,7 @@ except ImportError:
 
 # Import the modules under test
 try:
-    from src.utilities.office_metadata.office_metadata_gui import (
+    from src.tools.office_metadata.office_metadata_gui import (
         MetadataWorker, OfficeMetadataGUI, OfficeMetadataLogic)
 except ImportError as e:
     print(f"Warning: Could not import target modules: {e}")
@@ -679,7 +679,7 @@ class TestOfficeMetadataGUI(unittest.TestCase):
         
         gui.close()
     
-    @patch('src.utilities.office_metadata.office_metadata_gui.QFileDialog.getOpenFileName')
+    @patch('src.tools.office_metadata.office_metadata_gui.QFileDialog.getOpenFileName')
     def test_open_file_dialog_cancelled(self, mock_dialog):
         """Test open file when dialog is cancelled."""
         if OfficeMetadataGUI is None:
@@ -698,7 +698,7 @@ class TestOfficeMetadataGUI(unittest.TestCase):
         
         gui.close()
     
-    @patch('src.utilities.office_metadata.office_metadata_gui.QFileDialog.getSaveFileName')
+    @patch('src.tools.office_metadata.office_metadata_gui.QFileDialog.getSaveFileName')
     @patch('builtins.open', new_callable=mock_open)
     def test_export_metadata_json(self, mock_file, mock_dialog):
         """Test metadata export to JSON."""
@@ -719,7 +719,7 @@ class TestOfficeMetadataGUI(unittest.TestCase):
         
         gui.close()
     
-    @patch('src.utilities.office_metadata.office_metadata_gui.QMessageBox.warning')
+    @patch('src.tools.office_metadata.office_metadata_gui.QMessageBox.warning')
     def test_export_metadata_no_data(self, mock_warning):
         """Test export metadata with no data loaded."""
         if OfficeMetadataGUI is None:
@@ -735,7 +735,7 @@ class TestOfficeMetadataGUI(unittest.TestCase):
         
         gui.close()
     
-    @patch('src.utilities.office_metadata.office_metadata_gui.QMessageBox.information')
+    @patch('src.tools.office_metadata.office_metadata_gui.QMessageBox.information')
     def test_batch_process_not_implemented(self, mock_info):
         """Test batch process feature (not yet implemented)."""
         if OfficeMetadataGUI is None:
@@ -752,7 +752,7 @@ class TestOfficeMetadataGUI(unittest.TestCase):
         
         gui.close()
     
-    @patch('src.utilities.office_metadata.office_metadata_gui.QMessageBox.information')
+    @patch('src.tools.office_metadata.office_metadata_gui.QMessageBox.information')
     def test_security_scan_no_file(self, mock_info):
         """Test security scan with no file loaded."""
         if OfficeMetadataGUI is None:
@@ -785,7 +785,7 @@ class TestOfficeMetadataGUI(unittest.TestCase):
         
         gui.close()
     
-    @patch('src.utilities.office_metadata.office_metadata_gui.QMessageBox.information')
+    @patch('src.tools.office_metadata.office_metadata_gui.QMessageBox.information')
     def test_add_custom_property_not_implemented(self, mock_info):
         """Test add custom property feature (not yet implemented)."""
         if OfficeMetadataGUI is None:
@@ -802,7 +802,7 @@ class TestOfficeMetadataGUI(unittest.TestCase):
         
         gui.close()
     
-    @patch('src.utilities.office_metadata.office_metadata_gui.QMessageBox.information')
+    @patch('src.tools.office_metadata.office_metadata_gui.QMessageBox.information')
     def test_remove_custom_property_not_implemented(self, mock_info):
         """Test remove custom property feature (not yet implemented)."""
         if OfficeMetadataGUI is None:
@@ -819,7 +819,7 @@ class TestOfficeMetadataGUI(unittest.TestCase):
         
         gui.close()
     
-    @patch('src.utilities.office_metadata.office_metadata_gui.QMessageBox.information')
+    @patch('src.tools.office_metadata.office_metadata_gui.QMessageBox.information')
     def test_save_metadata_no_file(self, mock_info):
         """Test save metadata with no file open."""
         if OfficeMetadataGUI is None:
@@ -844,7 +844,7 @@ class TestOfficeMetadataGUI(unittest.TestCase):
         
         test_error = "Test error message"
         
-        with patch('src.utilities.office_metadata.office_metadata_gui.QMessageBox.critical') as mock_critical:
+        with patch('src.tools.office_metadata.office_metadata_gui.QMessageBox.critical') as mock_critical:
             gui.handle_error(test_error)
             
             # Verify critical error dialog shown

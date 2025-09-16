@@ -45,7 +45,7 @@ except ImportError:
 
 # Import target module components
 try:
-    from utilities.network.gui import (DEFAULT_SPEED_LABEL, BandwidthData,
+    from tools.network.gui import (DEFAULT_SPEED_LABEL, BandwidthData,
                                        NetworkScanResult, NetworkToolsWindow,
                                        NetworkWorkerThread)
     MODULE_AVAILABLE = True

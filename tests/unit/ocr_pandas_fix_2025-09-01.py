@@ -38,7 +38,7 @@ def apply_pandas_fix_to_ocr_module():
     sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
     
     try:
-        from src.utilities.pdf_tools.pdf_enhancements import ocr
+        from src.tools.pdf_tools.pdf_enhancements import ocr
 
         # Replace the problematic function with the fixed version
         ocr.save_page_content_fixed = save_page_content_fixed

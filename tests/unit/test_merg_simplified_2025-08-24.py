@@ -30,7 +30,7 @@ with patch.dict('sys.modules', {
     'log_config': Mock()
 }):
     try:
-        from src.utilities.pdf_tools.pdf_basic_operations import merg
+        from src.tools.pdf_tools.pdf_basic_operations import merg
     except ImportError:
         # Create a mock module if import fails
         merg = Mock()
@@ -42,9 +42,9 @@ with patch.dict('sys.modules', {
 class TestMergePdfsFunction:
     """Test cases for the merge_pdfs function"""
     
-    @patch('src.utilities.pdf_tools.pdf_basic_operations.merg.logger')
-    @patch('src.utilities.pdf_tools.pdf_basic_operations.merg.QMessageBox')
-    @patch('src.utilities.pdf_tools.pdf_basic_operations.merg.pikepdf.Pdf')
+    @patch('src.tools.pdf_tools.pdf_basic_operations.merg.logger')
+    @patch('src.tools.pdf_tools.pdf_basic_operations.merg.QMessageBox')
+    @patch('src.tools.pdf_tools.pdf_basic_operations.merg.pikepdf.Pdf')
     def test_merge_pdfs_success(self, mock_pdf_class, mock_messagebox, mock_logger):
         """Test successful PDF merging"""
         # Setup mocks
@@ -70,8 +70,8 @@ class TestMergePdfsFunction:
         # Assertions
         assert result is True
     
-    @patch('src.utilities.pdf_tools.pdf_basic_operations.merg.logger')
-    @patch('src.utilities.pdf_tools.pdf_basic_operations.merg.QMessageBox')
+    @patch('src.tools.pdf_tools.pdf_basic_operations.merg.logger')
+    @patch('src.tools.pdf_tools.pdf_basic_operations.merg.QMessageBox')
     def test_merge_pdfs_empty_input_list(self, mock_messagebox, mock_logger):
         """Test merge_pdfs with empty input list"""
         if hasattr(merg, 'merge_pdfs') and callable(merg.merge_pdfs):
@@ -81,12 +81,12 @@ class TestMergePdfsFunction:
         
         assert result is False
     
-    @patch('src.utilities.pdf_tools.pdf_basic_operations.merg.logger')
-    @patch('src.utilities.pdf_tools.pdf_basic_operations.merg.QMessageBox')
+    @patch('src.tools.pdf_tools.pdf_basic_operations.merg.logger')
+    @patch('src.tools.pdf_tools.pdf_basic_operations.merg.QMessageBox')
     def test_merge_pdfs_file_not_found(self, mock_messagebox, mock_logger):
         """Test merge_pdfs with non-existent file"""
         if hasattr(merg, 'merge_pdfs') and callable(merg.merge_pdfs):
-            with patch('src.utilities.pdf_tools.pdf_basic_operations.merg.pikepdf.Pdf.open', 
+            with patch('src.tools.pdf_tools.pdf_basic_operations.merg.pikepdf.Pdf.open', 
                       side_effect=FileNotFoundError("File not found")):
                 result = merg.merge_pdfs(['nonexistent.pdf'], 'output.pdf')
         else:
@@ -154,8 +154,8 @@ class TestMergeUIClass:
 class TestMainFunction:
     """Test cases for the main function"""
     
-    @patch('src.utilities.pdf_tools.pdf_basic_operations.merg.QApplication')
-    @patch('src.utilities.pdf_tools.pdf_basic_operations.merg.MergeUI')
+    @patch('src.tools.pdf_tools.pdf_basic_operations.merg.QApplication')
+    @patch('src.tools.pdf_tools.pdf_basic_operations.merg.MergeUI')
     def test_main_mock(self, mock_merge_ui, mock_qapp):
         """Test main function (mocked)"""
         mock_app = Mock()
@@ -228,7 +228,7 @@ def generate_test_execution_summary():
     summary = {
         "test_execution_summary": {
             "timestamp": timestamp,
-            "target_module": "src.utilities.pdf_tools.pdf_basic_operations.merg",
+            "target_module": "src.tools.pdf_tools.pdf_basic_operations.merg",
             "test_file": "test_merg_simplified_2025-08-24.py",
             "test_categories": [
                 "merge_pdfs function tests",

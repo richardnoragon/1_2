@@ -68,7 +68,7 @@ def open_folder_manager(self):
     """Launch Folder Manager tool."""
     self.launch_tool(
         "Folder Manager", 
-        "src.utilities.advanced_folders.folder_manager_gui", 
+        "src.tools.advanced_folders.folder_manager_gui", 
         "FolderManagerGUI"
     )
 
@@ -76,7 +76,7 @@ def open_smart_search(self):
     """Launch Smart Search tool."""
     self.launch_tool(
         "Smart Search", 
-        "src.utilities.advanced_folders.smart_search_gui", 
+        "src.tools.advanced_folders.smart_search_gui", 
         "SmartSearchGUI"
     )
 
@@ -84,7 +84,7 @@ def open_performance_dashboard(self):
     """Launch Performance Dashboard tool."""
     self.launch_tool(
         "Performance Dashboard", 
-        "src.utilities.advanced_folders.performance_dashboard_gui", 
+        "src.tools.advanced_folders.performance_dashboard_gui", 
         "PerformanceDashboardGUI"
     )
 
@@ -92,7 +92,7 @@ def open_metadata_explorer(self):
     """Launch Metadata Explorer tool."""
     self.launch_tool(
         "Metadata Explorer", 
-        "src.utilities.advanced_folders.metadata_explorer_gui", 
+        "src.tools.advanced_folders.metadata_explorer_gui", 
         "MetadataExplorerGUI"
     )
 ```
@@ -101,7 +101,7 @@ def open_metadata_explorer(self):
 
 ### Base GUI Class
 
-Create `src/utilities/advanced_folders/base_advanced_gui.py`:
+Create `src/tools/file_management/advanced_folders/base_advanced_gui.py`:
 
 ```python
 """
@@ -203,7 +203,7 @@ class BaseAdvancedFoldersGUI(QMainWindow):
 
 ### Folder Manager GUI
 
-Create `src/utilities/advanced_folders/folder_manager_gui.py`:
+Create `src/tools/file_management/advanced_folders/folder_manager_gui.py`:
 
 ```python
 """
@@ -848,7 +848,7 @@ def test_imports():
         from src.rfu.advanced_folders.models.folder_configuration import FolderConfiguration
         
         # GUI components
-        from src.utilities.advanced_folders.folder_manager_gui import FolderManagerGUI
+        from src.tools.advanced_folders.folder_manager_gui import FolderManagerGUI
         
         print("✓ All imports successful")
         return True

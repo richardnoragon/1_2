@@ -18,7 +18,7 @@ import pytest
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "src"))
 
 try:
-    from utilities.privacy.error_recovery import (PrivacyToolsErrorRecovery,
+    from tools.privacy.error_recovery import (PrivacyToolsErrorRecovery,
                                                   error_recovery, safe_execute,
                                                   safe_import)
     IMPORT_SUCCESS = True

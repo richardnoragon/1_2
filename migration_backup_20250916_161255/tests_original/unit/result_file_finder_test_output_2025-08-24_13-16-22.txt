@@ -1,0 +1,15 @@
+File Finder Test Execution Report
+Generated: 2025-08-24 13:16:26
+Test File: test_file_finder_2025-08-24.py
+============================================================
+
+STDOUT:
+
+
+STDERR:
+ERROR: usage: __main__.py [options] [file_or_dir] [file_or_dir] [...]
+__main__.py: error: argument --json-report: ignored explicit argument 'C:\\Users\\HP1\\1_2\\1_2\\tests\\unit\\result_file_finder_json_report_2025-08-24_13-16-22.json'
+
+
+
+Return Code: 4

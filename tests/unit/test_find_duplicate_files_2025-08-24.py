@@ -28,7 +28,7 @@ import sys
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 try:
-    from src.utilities.analysis.find_duplicate_files import (
+    from src.tools.analysis.find_duplicate_files import (
         DuplicateFinderApp, main
     )
 except ImportError as e:
@@ -51,7 +51,7 @@ class TestDuplicateFinderApp:
     @pytest.fixture
     def duplicate_finder_app(self, app):
         """Create DuplicateFinderApp instance for testing."""
-        with patch('src.utilities.analysis.find_duplicate_files.'
+        with patch('src.tools.analysis.find_duplicate_files.'
                    'STANDARD_WINDOW_AVAILABLE', False):
             finder_app = DuplicateFinderApp()
         yield finder_app
@@ -295,7 +295,7 @@ class TestDuplicateFinderApp:
 
     def test_fallback_mode_initialization(self):
         """Test initialization in fallback mode."""
-        with patch('src.utilities.analysis.find_duplicate_files.'
+        with patch('src.tools.analysis.find_duplicate_files.'
                    'STANDARD_WINDOW_AVAILABLE', False):
             app = DuplicateFinderApp()
             assert app is not None
@@ -334,7 +334,7 @@ class TestEdgeCases:
     @pytest.fixture
     def duplicate_finder_app(self, app):
         """Create DuplicateFinderApp instance for testing."""
-        with patch('src.utilities.analysis.find_duplicate_files.'
+        with patch('src.tools.analysis.find_duplicate_files.'
                    'STANDARD_WINDOW_AVAILABLE', False):
             finder_app = DuplicateFinderApp()
         yield finder_app

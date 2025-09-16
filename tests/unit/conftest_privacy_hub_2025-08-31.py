@@ -265,10 +265,10 @@ def mock_all_imports():
             'PyQt5.QtGui': Mock(),
             'gui.standard_window': Mock(),
             'gui.themes': Mock(),
-            'src.utilities.privacy.privacy_tools.tools.secure_empty_trash': Mock(),
-            'src.utilities.privacy.privacy_tools.tools.delete_cookies': Mock(),
-            'src.utilities.privacy.privacy_tools.core.browser_detector': Mock(),
-            'src.utilities.privacy.privacy_tools.core.platform_utils': Mock()
+            'src.tools.privacy.privacy_tools.tools.secure_empty_trash': Mock(),
+            'src.tools.privacy.privacy_tools.tools.delete_cookies': Mock(),
+            'src.tools.privacy.privacy_tools.core.browser_detector': Mock(),
+            'src.tools.privacy.privacy_tools.core.platform_utils': Mock()
         }
     ):
         yield

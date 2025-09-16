@@ -28,7 +28,7 @@ def test_basic_imports():
             'PyQt5.QtCore': Mock(),
             'PyQt5.QtGui': Mock(),
         }):
-            from utilities.system.diagnostics_monitoring.gui.filesystem_integrity_widget import (
+            from tools.system.diagnostics_monitoring.gui.filesystem_integrity_widget import (
                 FilesystemIntegrityWidget, ScanWorker)
         assert True
     except ImportError as e:
@@ -43,7 +43,7 @@ def test_scan_worker_mock():
         'PyQt5.QtCore': Mock(),
         'PyQt5.QtGui': Mock(),
     }):
-        from utilities.system.diagnostics_monitoring.gui.filesystem_integrity_widget import \
+        from tools.system.diagnostics_monitoring.gui.filesystem_integrity_widget import \
             ScanWorker
 
         # Mock the dependencies
@@ -66,7 +66,7 @@ def test_widget_basic_creation():
     }):
         with patch('utilities.system.diagnostics_monitoring.gui.filesystem_integrity_widget.IntegrityMonitor'):
             with patch('utilities.system.diagnostics_monitoring.gui.filesystem_integrity_widget.get_platform_detector'):
-                from utilities.system.diagnostics_monitoring.gui.filesystem_integrity_widget import \
+                from tools.system.diagnostics_monitoring.gui.filesystem_integrity_widget import \
                     FilesystemIntegrityWidget
                 
                 widget = FilesystemIntegrityWidget()
@@ -85,7 +85,7 @@ def test_widget_info_method():
     }):
         with patch('utilities.system.diagnostics_monitoring.gui.filesystem_integrity_widget.IntegrityMonitor'):
             with patch('utilities.system.diagnostics_monitoring.gui.filesystem_integrity_widget.get_platform_detector'):
-                from utilities.system.diagnostics_monitoring.gui.filesystem_integrity_widget import \
+                from tools.system.diagnostics_monitoring.gui.filesystem_integrity_widget import \
                     FilesystemIntegrityWidget
                 
                 widget = FilesystemIntegrityWidget()
@@ -108,7 +108,7 @@ def test_scan_progress_update():
     }):
         with patch('utilities.system.diagnostics_monitoring.gui.filesystem_integrity_widget.IntegrityMonitor'):
             with patch('utilities.system.diagnostics_monitoring.gui.filesystem_integrity_widget.get_platform_detector'):
-                from utilities.system.diagnostics_monitoring.gui.filesystem_integrity_widget import \
+                from tools.system.diagnostics_monitoring.gui.filesystem_integrity_widget import \
                     FilesystemIntegrityWidget
                 
                 widget = FilesystemIntegrityWidget()

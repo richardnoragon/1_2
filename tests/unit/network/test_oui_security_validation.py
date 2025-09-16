@@ -43,7 +43,7 @@ sys.modules['core.error_handler'].error_handler = mock_error_handler
 
 # Now attempt to import real network modules
 try:
-    from utilities.network.network_connectivity.tools.wifi_analyzer import (
+    from tools.network.network_connectivity.tools.wifi_analyzer import (
         ChannelBand, OUIDatabase, WiFiChannelMap)
     IMPORT_SUCCESS = True
     print("✅ Successfully imported real network implementations!")

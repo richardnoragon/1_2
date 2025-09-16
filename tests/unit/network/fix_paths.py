@@ -12,7 +12,7 @@ def fix_test_file():
         content = f.read()
     
     # Replace all occurrences
-    content = content.replace('src.utilities.network.gui', 'utilities.network.gui')
+    content = content.replace('src.tools.network.gui', 'utilities.network.gui')
     
     # Write back
     with open(file_path, 'w', encoding='utf-8') as f:

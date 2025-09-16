@@ -1,0 +1,12 @@
+Main.py Unit Tests Summary
+Date: 2025-08-28
+Timestamp: 2025-08-28_18-58-37
+Duration: 13.38 seconds
+Exit Code: 1
+Status: FAILED
+
+Generated Files:
+✅ HTML Report: result_main_2025-08-28.html
+✅ JSON Report: result_main_2025-08-28.json
+✅ XML Report: result_main_2025-08-28.xml
+✅ Coverage HTML: index.html

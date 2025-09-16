@@ -22,7 +22,7 @@ sys.path.insert(0, project_root)
 sys.path.insert(0, os.path.join(project_root, 'src'))
 
 # Import the module under test
-from src.utilities.network.network_connectivity_complex.core.performance_analyzer import (
+from src.tools.network.network_connectivity_complex.core.performance_analyzer import (
     PerformanceAnalyzer, PerformanceMeasurement, PerformanceMetric,
     PerformanceReport)
 
@@ -362,7 +362,7 @@ class TestPerformanceAnalyzerCalculateStatistics:
     def test_calculate_statistics_no_matching_measurements(self, populated_analyzer):
         """Test statistics calculation with no matching measurements."""
         # Use a very short time window to ensure no matches
-        with patch('src.utilities.network.network_connectivity_complex.core.performance_analyzer.datetime') as mock_dt:
+        with patch('src.tools.network.network_connectivity_complex.core.performance_analyzer.datetime') as mock_dt:
             # Set current time to very early so no measurements match
             mock_dt.now.return_value = datetime(2020, 1, 1)
             stats = populated_analyzer.calculate_statistics("eth0", PerformanceMetric.LATENCY, 1)

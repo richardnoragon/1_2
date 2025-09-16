@@ -57,20 +57,20 @@ Updated all import references from old to new location:
 from src.rfu.tools.file_operations.file_splitter_joiner import FileSplitJoinGUI
 
 # New Import (ACTIVE):
-from src.utilities.file_operations.file_splitter import FileSplitJoinGUI
+from src.tools.file_operations.file_splitter import FileSplitJoinGUI
 ```
 
 ### 6. **Testing and Verification** ✅
 
 #### **Import Test:**
 ```bash
-python -c "from src.utilities.file_operations.file_splitter import FileSplitJoinGUI; print('✅ Import successful')"
+python -c "from src.tools.file_operations.file_splitter import FileSplitJoinGUI; print('✅ Import successful')"
 Result: ✅ PASSED
 ```
 
 #### **GUI Instantiation Test:**
 ```bash
-python -c "from PyQt5.QtWidgets import QApplication; from src.utilities.file_operations.file_splitter import FileSplitJoinGUI; app = QApplication([]); tool = FileSplitJoinGUI(); print('✅ GUI successful')"
+python -c "from PyQt5.QtWidgets import QApplication; from src.tools.file_operations.file_splitter import FileSplitJoinGUI; app = QApplication([]); tool = FileSplitJoinGUI(); print('✅ GUI successful')"
 Result: ✅ PASSED
 ```
 

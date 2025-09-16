@@ -1,0 +1,48 @@
+extract_links.py does not work
+
+PS G:\Meine Ablage\Computer\Py\RPDFU\1_1> & C:/Users/HP1/anaconda3/envs/env_01_py/python.exe "g:/Meine Ablage/Computer/Py/RPDFU/1_1/extract_image_cli.py"
+Traceback (most recent call last):
+  File "g:\Meine Ablage\Computer\Py\RPDFU\1_1\extract_image_cli.py", line 102, in <module>
+    window = MainWindow()
+             ^^^^^^^^^^^^
+  File "g:\Meine Ablage\Computer\Py\RPDFU\1_1\extract_image_cli.py", line 11, in __init__
+    uic.loadUi('extract_image_cli.ui', self)
+  File "C:\Users\HP1\anaconda3\envs\env_01_py\Lib\site-packages\PyQt5\uic\__init__.py", line 241, in loadUi
+    return DynamicUILoader(package).loadUi(uifile, baseinstance, resource_suffix)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HP1\anaconda3\envs\env_01_py\Lib\site-packages\PyQt5\uic\Loader\loader.py", line 66, in loadUi
+    return self.parse(filename, resource_suffix)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HP1\anaconda3\envs\env_01_py\Lib\site-packages\PyQt5\uic\uiparser.py", line 1020, in parse
+    document = parse(filename)
+               ^^^^^^^^^^^^^^^
+  File "C:\Users\HP1\anaconda3\envs\env_01_py\Lib\xml\etree\ElementTree.py", line 1204, in parse
+    tree.parse(source, parser)
+  File "C:\Users\HP1\anaconda3\envs\env_01_py\Lib\xml\etree\ElementTree.py", line 569, in parse
+    self._root = parser._parse_whole(source)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+xml.etree.ElementTree.ParseError: encoding specified in XML declaration is incorrect: line 1, column 31
+PS G:\Meine Ablage\Computer\Py\RPDFU\1_1> & C:/Users/HP1/anaconda3/envs/env_01_py/python.exe "g:/Meine Ablage/Computer/Py/RPDFU/1_1/extract_links.py"
+Traceback (most recent call last):
+  File "g:\Meine Ablage\Computer\Py\RPDFU\1_1\extract_links.py", line 71, in <module>
+    main()
+  File "g:\Meine Ablage\Computer\Py\RPDFU\1_1\extract_links.py", line 66, in main
+    window = ExtractLinksUI()
+             ^^^^^^^^^^^^^^^^
+  File "g:\Meine Ablage\Computer\Py\RPDFU\1_1\extract_links.py", line 10, in __init__
+    uic.loadUi('extract_links.ui', self)
+  File "C:\Users\HP1\anaconda3\envs\env_01_py\Lib\site-packages\PyQt5\uic\__init__.py", line 241, in loadUi
+    return DynamicUILoader(package).loadUi(uifile, baseinstance, resource_suffix)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HP1\anaconda3\envs\env_01_py\Lib\site-packages\PyQt5\uic\Loader\loader.py", line 66, in loadUi
+    return self.parse(filename, resource_suffix)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HP1\anaconda3\envs\env_01_py\Lib\site-packages\PyQt5\uic\uiparser.py", line 1020, in parse
+    document = parse(filename)
+               ^^^^^^^^^^^^^^^
+  File "C:\Users\HP1\anaconda3\envs\env_01_py\Lib\xml\etree\ElementTree.py", line 1204, in parse
+    tree.parse(source, parser)
+  File "C:\Users\HP1\anaconda3\envs\env_01_py\Lib\xml\etree\ElementTree.py", line 569, in parse
+    self._root = parser._parse_whole(source)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+xml.etree.ElementTree.ParseError: encoding specified in XML declaration is incorrect: line 1, column 31

@@ -8,7 +8,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from src.utilities.advanced_folders.core.folder_models import (
+from src.tools.advanced_folders.core.folder_models import (
     ConfigurationManager, DateTimeRange, FileMetadata, FolderConfiguration,
     FolderType, LogLevel, SearchParameter, SearchType, SizeRange, SortBy,
     ValidationResult)

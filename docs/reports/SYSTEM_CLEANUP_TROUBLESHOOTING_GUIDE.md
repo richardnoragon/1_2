@@ -45,7 +45,7 @@ python -c "
 import sys
 import os
 sys.path.insert(0, os.path.join(os.getcwd(), 'src'))
-from src.utilities.system.system_cleanup import SystemCleanupGUI
+from src.tools.system.system_cleanup import SystemCleanupGUI
 print('✅ Import successful')
 print('Class type:', type(SystemCleanupGUI))
 print('Class MRO:', SystemCleanupGUI.__mro__)
@@ -60,7 +60,7 @@ import os
 sys.path.insert(0, os.path.join(os.getcwd(), 'src'))
 from PyQt5.QtWidgets import QApplication
 app = QApplication([])
-from src.utilities.system.system_cleanup import SystemCleanupGUI
+from src.tools.system.system_cleanup import SystemCleanupGUI
 print('✅ Creating instance...')
 instance = SystemCleanupGUI()
 print('✅ Instance created successfully')
@@ -83,7 +83,7 @@ import os
 sys.path.insert(0, os.path.join(os.getcwd(), 'src'))
 
 # Test each import strategy from main.py
-module_name = 'src.utilities.system.system_cleanup'
+module_name = 'src.tools.system.system_cleanup'
 class_name = 'SystemCleanupGUI'
 
 # Strategy 1: Direct import
@@ -126,7 +126,7 @@ from PyQt5.QtWidgets import QApplication
 app = QApplication([])
 
 try:
-    from src.utilities.system.system_cleanup import SystemCleanupGUI
+    from src.tools.system.system_cleanup import SystemCleanupGUI
     print('✅ Import successful')
     
     # Test validation process

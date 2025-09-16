@@ -175,7 +175,7 @@ class DialogBoxUI(RFUUIInterface):
     
     def launch_tool(self, tool_name: str, category: str) -> bool:
         """Launch tool via existing hub mechanism."""
-        return self.hub.launch_tool(tool_name, f"src.utilities.{category}.{tool_name}")
+        return self.hub.launch_tool(tool_name, f"src.tools.{category}.{tool_name}")
 ```
 
 #### 3. File Explorer UI Implementation (Modern)

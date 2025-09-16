@@ -1,0 +1,275 @@
+# Monitoring Configuration for RFU Integration Testing
+# Phase 1: Foundation Setup - Comprehensive System Monitoring
+
+monitoring:
+  interval: 60  # seconds
+  metrics:
+    - cpu
+    - memory
+    - disk
+    - network
+    - database
+    - environment
+  environments:
+    - dev
+    - staging
+    - prod-like
+  
+  collection:
+    enabled: true
+    batch_size: 100
+    buffer_size: 1000
+    
+  persistence:
+    enabled: true
+    format: "jsonl"  # JSON Lines format
+    compression: false
+
+# Performance thresholds for alerting
+thresholds:
+  # System resource thresholds
+  cpu_percent: 80
+  memory_percent: 85
+  disk_percent: 90
+  
+  # Application performance thresholds
+  response_time_ms: 5000
+  error_rate_percent: 5
+  test_failure_rate_percent: 10
+  
+  # Database thresholds
+  db_connection_timeout_ms: 10000
+  db_query_timeout_ms: 30000
+  db_size_mb: 1000
+  
+  # Environment thresholds
+  file_count_max: 10000
+  env_size_mb: 5000
+
+# Alerting configuration
+alerting:
+  enabled: true
+  
+  # Alert levels and escalation
+  levels:
+    info:
+      enabled: true
+      cooldown_minutes: 60
+    warning:
+      enabled: true
+      cooldown_minutes: 30
+    critical:
+      enabled: true
+      cooldown_minutes: 10
+      escalation_minutes: 15
+  
+  # Email notifications
+  email:
+    enabled: false  # Set to true when email server is configured
+    smtp_server: "localhost"
+    smtp_port: 587
+    use_tls: true
+    username: ""
+    password: ""
+    from_address: "rfu-monitoring@localhost"
+    recipients:
+      - "dev-team@company.com"
+      - "qa-team@company.com"
+    
+    # Email templates
+    templates:
+      subject: "RFU Monitoring Alert: {severity} - {metric}"
+      body_format: "html"  # html or text
+  
+  # Webhook notifications (for Slack, Discord, etc.)
+  webhook:
+    enabled: false  # Set to true when webhook URL is configured
+    url: ""
+    timeout: 30
+    retry_attempts: 3
+    
+    # Custom headers for webhook
+    headers:
+      Content-Type: "application/json"
+      User-Agent: "RFU-Monitoring/1.0"
+    
+    # Payload template
+    payload_template: |
+      {
+        "text": "RFU Integration Testing Alert",
+        "attachments": [
+          {
+            "color": "{color}",
+            "title": "{severity} Alert: {metric}",
+            "text": "{message}",
+            "fields": [
+              {
+                "title": "Environment",
+                "value": "{environment}",
+                "short": true
+              },
+              {
+                "title": "Timestamp",
+                "value": "{timestamp}",
+                "short": true
+              }
+            ]
+          }
+        ]
+      }
+
+# Data retention policies
+retention:
+  # Metrics retention
+  metrics_days: 30
+  metrics_cleanup_interval_hours: 24
+  
+  # Alerts retention
+  alerts_days: 90
+  alerts_cleanup_interval_hours: 24
+  
+  # Log retention
+  logs_days: 14
+  logs_cleanup_interval_hours: 12
+  
+  # Compression for old data
+  compression:
+    enabled: true
+    age_days: 7
+    algorithm: "gzip"
+
+# Health checks configuration
+health_checks:
+  enabled: true
+  interval: 300  # 5 minutes
+  
+  checks:
+    database_connectivity:
+      enabled: true
+      timeout: 30
+      
+    file_system_access:
+      enabled: true
+      test_write: true
+      
+    environment_integrity:
+      enabled: true
+      schema_validation: true
+      
+    external_services:
+      enabled: false  # Enable when external services are configured
+      timeout: 60
+
+# Performance monitoring
+performance:
+  profiling:
+    enabled: false  # Enable for detailed performance analysis
+    cpu_profiling: true
+    memory_profiling: true
+    io_profiling: true
+    
+  benchmarking:
+    enabled: true
+    baseline_update_frequency: "weekly"
+    regression_threshold_percent: 10
+    
+  load_testing:
+    enabled: false  # Enable for load testing scenarios
+    concurrent_users: 10
+    test_duration_minutes: 30
+
+# Security monitoring
+security:
+  monitoring:
+    enabled: true
+    
+  vulnerability_scanning:
+    enabled: true
+    schedule: "daily"
+    
+  access_monitoring:
+    enabled: true
+    failed_login_threshold: 5
+    
+  file_integrity:
+    enabled: true
+    critical_files:
+      - "tests/integration/environments/*/config.yaml"
+      - "tests/integration/scripts/*.py"
+
+# Logging configuration
+logging:
+  level: "INFO"
+  format: "[%(asctime)s] %(levelname)s - %(name)s - %(funcName)s:%(lineno)d - %(message)s"
+  
+  handlers:
+    console:
+      enabled: true
+      level: "INFO"
+      
+    file:
+      enabled: true
+      level: "DEBUG"
+      file: "logs/monitoring.log"
+      max_size_mb: 50
+      backup_count: 10
+      
+    syslog:
+      enabled: false
+      level: "WARNING"
+      facility: "LOG_LOCAL0"
+
+# Integration with external tools
+integrations:
+  prometheus:
+    enabled: false
+    metrics_port: 9090
+    
+  grafana:
+    enabled: false
+    dashboard_url: ""
+    
+  elk_stack:
+    enabled: false
+    elasticsearch_url: ""
+    kibana_url: ""
+
+# Feature flags
+features:
+  real_time_metrics: true
+  predictive_alerting: false
+  anomaly_detection: false
+  auto_scaling: false
+  
+# Environment-specific overrides
+environment_overrides:
+  dev:
+    monitoring:
+      interval: 120  # Less frequent monitoring for dev
+    thresholds:
+      cpu_percent: 90
+      memory_percent: 90
+    alerting:
+      enabled: false  # Disable alerts for dev environment
+      
+  staging:
+    monitoring:
+      interval: 60
+    alerting:
+      levels:
+        critical:
+          cooldown_minutes: 5  # Faster response for staging
+          
+  prod-like:
+    monitoring:
+      interval: 30  # More frequent monitoring for prod-like
+    thresholds:
+      cpu_percent: 70
+      memory_percent: 80
+    alerting:
+      levels:
+        warning:
+          cooldown_minutes: 15
+        critical:
+          cooldown_minutes: 5
+          escalation_minutes: 10

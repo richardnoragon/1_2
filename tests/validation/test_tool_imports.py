@@ -13,7 +13,7 @@ sys.path.insert(0, os.getcwd())
 def test_file_finder():
     """Test File Finder import."""
     try:
-        from src.utilities.file_management.file_finder import FileFinderGUI
+        from src.tools.file_management.file_finder import FileFinderGUI
         print("✅ File Finder import successful")
         return True
     except Exception as e:
@@ -23,7 +23,7 @@ def test_file_finder():
 def test_network_transfer():
     """Test Network Transfer import."""
     try:
-        from src.utilities.network.network_transfer import NetworkTransferGUI
+        from src.tools.network.network_transfer import NetworkTransferGUI
         print("✅ Network Transfer import successful")
         return True
     except Exception as e:
@@ -33,7 +33,7 @@ def test_network_transfer():
 def test_network_connectivity():
     """Test Network Connectivity import."""
     try:
-        from src.utilities.network.network_connectivity import NetworkConnectivityGUI
+        from src.tools.network.network_connectivity import NetworkConnectivityGUI
         print("✅ Network Connectivity import successful")
         return True
     except Exception as e:
@@ -43,7 +43,7 @@ def test_network_connectivity():
 def test_organize():
     """Test Organize tool import."""
     try:
-        from src.utilities.file_operations.organize.organize import OrganizeWindow
+        from src.tools.file_operations.organize.organize import OrganizeWindow
         print("✅ Organize tool import successful")
         return True
     except Exception as e:
@@ -58,7 +58,7 @@ def test_basic_import():
         if src_path not in sys.path:
             sys.path.insert(0, src_path)
             
-        from src.utilities.file_management.file_finder import FileFinderGUI
+        from src.tools.file_management.file_finder import FileFinderGUI
         print("✅ Basic File Finder import (from utilities) successful")
         return True
     except Exception as e:

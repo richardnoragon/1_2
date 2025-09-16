@@ -29,7 +29,7 @@ try:
     from PyQt5.QtWidgets import QApplication, QWidget
 
     # Import the modules to test
-    from src.utilities.file_operations.enhanced_editor.enhanced_editor import (
+    from src.tools.file_operations.enhanced_editor.enhanced_editor import (
         DocumentManager, DocumentType, EditorSettings, EnhancedEditor,
         LineNumberArea, PreferencesDialog, SearchDialog, SearchOptions,
         SyntaxHighlighter, TextEditor)
@@ -449,7 +449,7 @@ class TestEnhancedEditor:
     @pytest.fixture
     def editor(self, app):
         """Create EnhancedEditor instance."""
-        with patch('src.utilities.file_operations.enhanced_editor.enhanced_editor.StandardWindow'):
+        with patch('src.tools.file_operations.enhanced_editor.enhanced_editor.StandardWindow'):
             return EnhancedEditor()
     
     def test_editor_initialization(self, editor):

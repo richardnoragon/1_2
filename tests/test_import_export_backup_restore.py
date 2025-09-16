@@ -16,11 +16,11 @@ from pathlib import Path
 # Add src directory to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
-from utilities.file_management.advanced_folders.core.backup_restore import (
+from tools.file_management.advanced_folders.core.backup_restore import (
     BackupManager, BackupMetadata)
-from utilities.file_management.advanced_folders.core.folder_configuration import (
+from tools.file_management.advanced_folders.core.folder_configuration import (
     FolderConfiguration, FolderConfigurationManager)
-from utilities.file_management.advanced_folders.core.import_export import (
+from tools.file_management.advanced_folders.core.import_export import (
     ConfigurationValidator, ConflictResolver, ImportExportManager)
 
 

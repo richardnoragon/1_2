@@ -874,11 +874,11 @@ def temp_config_file():
 def generate_tool_test_data():
     """Generate test data for tool testing."""
     return [
-        ("File Finder", "src.utilities.file_management.file_finder", "FileFinderGUI"),
-        ("Catalog", "src.utilities.file_management.catalog", "CatalogWindow"),
-        ("Rename", "src.utilities.file_management.rename", "RenameWindow"),
-        ("Organize", "src.utilities.file_management.organize", "OrganizeWindow"),
-        ("CMSD", "src.utilities.file_operations.cmsd", "CopyMoveSyncDeleteWindow"),
+        ("File Finder", "src.tools.file_management.file_finder", "FileFinderGUI"),
+        ("Catalog", "src.tools.file_management.catalog", "CatalogWindow"),
+        ("Rename", "src.tools.file_management.rename", "RenameWindow"),
+        ("Organize", "src.tools.file_management.organize", "OrganizeWindow"),
+        ("CMSD", "src.tools.file_operations.cmsd", "CopyMoveSyncDeleteWindow"),
     ]
 
 

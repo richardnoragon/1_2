@@ -58,7 +58,7 @@ class TestRunner:
             
         if coverage:
             cmd.extend([
-                "--cov=src.utilities.advanced_folders",
+                "--cov=src.tools.file_management.advanced_folders",
                 "--cov-report=html:htmlcov/advanced_folders",
                 "--cov-report=term-missing",
                 "--cov-report=xml:coverage_advanced_folders.xml"
@@ -120,7 +120,7 @@ class TestRunner:
             
         # Check if source modules can be imported
         try:
-            import src.utilities.advanced_folders
+            import src.tools.file_management.advanced_folders
             print("✓ Advanced Folders modules can be imported")
         except ImportError as e:
             print(f"Error: Cannot import Advanced Folders modules: {e}")

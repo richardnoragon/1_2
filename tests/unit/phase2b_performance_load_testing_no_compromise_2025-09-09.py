@@ -47,7 +47,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
 
 try:
     # Import actual RFU components - NO MOCKING
-    from src.utilities.analysis.core.size_analyzer_logic import SizeAnalyzer
+    from src.tools.analysis.core.size_analyzer_logic import SizeAnalyzer
     SizeAnalyzer_available = True
 except ImportError as e:
     print(f"WARNING: Could not import SizeAnalyzer: {e}")

@@ -47,7 +47,7 @@ class TestFileSplitterSecurityEnhancements:
     def test_path_traversal_prevention_basic(self):
         """Test basic path traversal attack prevention."""
         # Mock file splitter logic
-        with patch('src.utilities.file_operations.file_splitter_logic.FileSplitterLogic') as mock_splitter:
+        with patch('src.tools.file_operations.file_splitter_logic.FileSplitterLogic') as mock_splitter:
             splitter_instance = Mock()
             mock_splitter.return_value = splitter_instance
             
@@ -518,7 +518,7 @@ class TestFileSplitterSecurityIntegration:
     def test_security_enhanced_file_splitting(self):
         """Test file splitting with security enhancements."""
         # Mock the enhanced file splitter
-        with patch('src.utilities.file_operations.file_splitter_logic.FileSplitterLogic') as mock_splitter:
+        with patch('src.tools.file_operations.file_splitter_logic.FileSplitterLogic') as mock_splitter:
             
             # Create mock that includes security validation
             splitter_instance = Mock()

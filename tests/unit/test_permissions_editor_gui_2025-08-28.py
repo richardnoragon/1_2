@@ -35,7 +35,7 @@ except ImportError:
 
 # Import test target
 try:
-    from src.utilities.system.permissions_editor import PermissionsEditorGUI
+    from src.tools.system.permissions_editor import PermissionsEditorGUI
     TARGET_MODULE_AVAILABLE = True
 except ImportError as e:
     TARGET_MODULE_AVAILABLE = False
@@ -90,7 +90,7 @@ class TestWidgetInteractions(TestGUIIntegrationSetup):
     
     def test_button_click_events(self):
         """Test button click event handling."""
-        with patch('src.utilities.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
+        with patch('src.tools.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
             self.widget = PermissionsEditorGUI()
             
             # Find buttons by their text
@@ -106,7 +106,7 @@ class TestWidgetInteractions(TestGUIIntegrationSetup):
     
     def test_checkbox_state_changes(self):
         """Test checkbox state change handling."""
-        with patch('src.utilities.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
+        with patch('src.tools.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
             self.widget = PermissionsEditorGUI()
             
             # Test initial state
@@ -130,7 +130,7 @@ class TestWidgetInteractions(TestGUIIntegrationSetup):
     
     def test_status_list_updates(self):
         """Test status list update functionality."""
-        with patch('src.utilities.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
+        with patch('src.tools.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
             self.widget = PermissionsEditorGUI()
             
             # Test adding items
@@ -150,7 +150,7 @@ class TestWidgetInteractions(TestGUIIntegrationSetup):
     
     def test_file_label_updates(self):
         """Test file label update functionality."""
-        with patch('src.utilities.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
+        with patch('src.tools.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
             self.widget = PermissionsEditorGUI()
             
             # Test initial text
@@ -168,7 +168,7 @@ class TestUIStateManagement(TestGUIIntegrationSetup):
     
     def test_state_consistency_after_file_selection(self):
         """Test UI state consistency after file selection."""
-        with patch('src.utilities.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
+        with patch('src.tools.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
             self.widget = PermissionsEditorGUI()
             
             # Simulate file selection
@@ -183,7 +183,7 @@ class TestUIStateManagement(TestGUIIntegrationSetup):
     
     def test_state_consistency_after_clear(self):
         """Test UI state consistency after clearing selection."""
-        with patch('src.utilities.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
+        with patch('src.tools.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
             self.widget = PermissionsEditorGUI()
             
             # Set some state
@@ -203,7 +203,7 @@ class TestUIStateManagement(TestGUIIntegrationSetup):
     
     def test_permission_checkbox_synchronization(self):
         """Test synchronization between checkboxes and file permissions."""
-        with patch('src.utilities.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
+        with patch('src.tools.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
             self.widget = PermissionsEditorGUI()
             self.widget.selected_path = self.test_file
             
@@ -223,7 +223,7 @@ class TestEventHandling(TestGUIIntegrationSetup):
     
     def test_dialog_interactions(self):
         """Test dialog box interactions."""
-        with patch('src.utilities.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
+        with patch('src.tools.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
             self.widget = PermissionsEditorGUI()
             
             # Test warning dialog for no selection
@@ -243,7 +243,7 @@ class TestEventHandling(TestGUIIntegrationSetup):
     
     def test_error_handling_in_ui(self):
         """Test error handling in UI operations."""
-        with patch('src.utilities.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
+        with patch('src.tools.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
             self.widget = PermissionsEditorGUI()
             self.widget.selected_path = "/nonexistent/file.txt"
             
@@ -257,11 +257,11 @@ class TestEventHandling(TestGUIIntegrationSetup):
     
     def test_help_dialog_display(self):
         """Test help dialog display."""
-        with patch('src.utilities.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
+        with patch('src.tools.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
             self.widget = PermissionsEditorGUI()
             
             # Mock the message box to avoid actual display
-            with patch('src.utilities.system.permissions_editor.QMessageBox') as mock_msgbox:
+            with patch('src.tools.system.permissions_editor.QMessageBox') as mock_msgbox:
                 mock_instance = Mock()
                 mock_msgbox.return_value = mock_instance
                 
@@ -279,7 +279,7 @@ class TestWidgetLayout(TestGUIIntegrationSetup):
     
     def test_layout_structure(self):
         """Test that layout structure is properly created."""
-        with patch('src.utilities.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
+        with patch('src.tools.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
             self.widget = PermissionsEditorGUI()
             
             # Verify central widget exists
@@ -295,7 +295,7 @@ class TestWidgetLayout(TestGUIIntegrationSetup):
     
     def test_component_hierarchy(self):
         """Test component hierarchy and parent-child relationships."""
-        with patch('src.utilities.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
+        with patch('src.tools.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
             self.widget = PermissionsEditorGUI()
             
             # Test that key components have correct parents
@@ -307,7 +307,7 @@ class TestWidgetLayout(TestGUIIntegrationSetup):
     
     def test_widget_visibility(self):
         """Test widget visibility states."""
-        with patch('src.utilities.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
+        with patch('src.tools.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
             self.widget = PermissionsEditorGUI()
             
             # All main components should be visible
@@ -323,7 +323,7 @@ class TestResponsiveness(TestGUIIntegrationSetup):
     
     def test_rapid_interactions(self):
         """Test rapid user interactions don't break the UI."""
-        with patch('src.utilities.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
+        with patch('src.tools.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
             self.widget = PermissionsEditorGUI()
             
             # Rapidly toggle checkboxes
@@ -337,7 +337,7 @@ class TestResponsiveness(TestGUIIntegrationSetup):
     
     def test_large_status_updates(self):
         """Test handling of many status updates."""
-        with patch('src.utilities.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
+        with patch('src.tools.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
             self.widget = PermissionsEditorGUI()
             
             # Add many status messages rapidly
@@ -357,7 +357,7 @@ class TestAccessibility(TestGUIIntegrationSetup):
     
     def test_tab_order(self):
         """Test tab order navigation."""
-        with patch('src.utilities.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
+        with patch('src.tools.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
             self.widget = PermissionsEditorGUI()
             
             # Get all focusable widgets
@@ -371,7 +371,7 @@ class TestAccessibility(TestGUIIntegrationSetup):
     
     def test_keyboard_shortcuts(self):
         """Test keyboard shortcut functionality."""
-        with patch('src.utilities.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
+        with patch('src.tools.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
             self.widget = PermissionsEditorGUI()
             
             # Test that checkboxes can be toggled with space key
@@ -389,7 +389,7 @@ class TestIntegrationEdgeCases(TestGUIIntegrationSetup):
     
     def test_window_close_cleanup(self):
         """Test proper cleanup when window is closed."""
-        with patch('src.utilities.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
+        with patch('src.tools.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
             self.widget = PermissionsEditorGUI()
             
             # Set some state
@@ -404,7 +404,7 @@ class TestIntegrationEdgeCases(TestGUIIntegrationSetup):
     
     def test_multiple_widget_instances(self):
         """Test multiple widget instances don't interfere."""
-        with patch('src.utilities.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
+        with patch('src.tools.system.permissions_editor.STANDARD_WINDOW_AVAILABLE', False):
             widget1 = PermissionsEditorGUI()
             widget2 = PermissionsEditorGUI()
             

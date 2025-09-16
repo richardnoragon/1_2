@@ -75,7 +75,7 @@ def create_execution_summary():
             "coverage_enabled": True,
             "html_report": True,
             "json_report": True,
-            "target_module": "src.utilities.file_operations.enhanced_editor.enhanced_editor"
+            "target_module": "src.tools.file_operations.enhanced_editor.enhanced_editor"
         },
         "output_files": {
             "html_report": str(HTML_REPORT),

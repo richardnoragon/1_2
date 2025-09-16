@@ -64,7 +64,7 @@ Updated all import references from old to new location:
 from src.rfu.tools.metadata.edit_image_metadata import ImageMetadataEditorGUI
 
 # New Import (ACTIVE):
-from src.utilities.metadata.image_metadata import ImageMetadataEditorGUI
+from src.tools.metadata.image_metadata import ImageMetadataEditorGUI
 ```
 
 ### 6. **UI Integration Features** ✅
@@ -92,13 +92,13 @@ The migrated implementation maintains full UI integration:
 
 #### **Import Test:**
 ```bash
-python -c "from src.utilities.metadata.image_metadata import ImageMetadataEditorGUI; print('✅ Import successful')"
+python -c "from src.tools.metadata.image_metadata import ImageMetadataEditorGUI; print('✅ Import successful')"
 Result: ✅ PASSED
 ```
 
 #### **GUI Instantiation Test:**
 ```bash
-python -c "from PyQt5.QtWidgets import QApplication; from src.utilities.metadata.image_metadata import ImageMetadataEditorGUI; app = QApplication([]); tool = ImageMetadataEditorGUI(); print('✅ GUI successful')"
+python -c "from PyQt5.QtWidgets import QApplication; from src.tools.metadata.image_metadata import ImageMetadataEditorGUI; app = QApplication([]); tool = ImageMetadataEditorGUI(); print('✅ GUI successful')"
 Result: ✅ PASSED
 ```
 

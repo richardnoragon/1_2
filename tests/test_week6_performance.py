@@ -28,18 +28,18 @@ from PyQt5.QtWidgets import QApplication
 # Add src to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-from src.utilities.advanced_folders.core import (FolderConfiguration,
+from src.tools.advanced_folders.core import (FolderConfiguration,
                                                  SearchFilter)
-from src.utilities.advanced_folders.gui.accessibility_manager import \
+from src.tools.advanced_folders.gui.accessibility_manager import \
     AccessibilityManager
-from src.utilities.advanced_folders.gui.keyboard_shortcuts import \
+from src.tools.advanced_folders.gui.keyboard_shortcuts import \
     KeyboardShortcutsManager
-from src.utilities.advanced_folders.gui.preview_pane import PreviewPaneWidget
-from src.utilities.advanced_folders.integration.backend_integration import \
+from src.tools.advanced_folders.gui.preview_pane import PreviewPaneWidget
+from src.tools.advanced_folders.integration.backend_integration import \
     BackendIntegrationManager
-from src.utilities.advanced_folders.integration.realtime_search import \
+from src.tools.advanced_folders.integration.realtime_search import \
     RealtimeSearchManager
-from src.utilities.advanced_folders.models import FileMetadata, SearchParameter
+from src.tools.advanced_folders.models import FileMetadata, SearchParameter
 
 
 class PerformanceMonitor:
@@ -93,8 +93,8 @@ class TestBackendIntegrationPerformance:
         mock_db = Mock()
         mock_repo = Mock()
         
-        with patch('src.utilities.advanced_folders.database.AdvancedFoldersDBManager', return_value=mock_db), \
-             patch('src.utilities.advanced_folders.repositories.RepositoryManager', return_value=mock_repo):
+        with patch('src.tools.advanced_folders.database.AdvancedFoldersDBManager', return_value=mock_db), \
+             patch('src.tools.advanced_folders.repositories.RepositoryManager', return_value=mock_repo):
             manager = BackendIntegrationManager()
             yield manager
             manager.shutdown()
@@ -656,8 +656,8 @@ class TestIntegratedSystemPerformance:
         mock_db = Mock()
         mock_repo = Mock()
         
-        with patch('src.utilities.advanced_folders.database.AdvancedFoldersDBManager', return_value=mock_db), \
-             patch('src.utilities.advanced_folders.repositories.RepositoryManager', return_value=mock_repo):
+        with patch('src.tools.advanced_folders.database.AdvancedFoldersDBManager', return_value=mock_db), \
+             patch('src.tools.advanced_folders.repositories.RepositoryManager', return_value=mock_repo):
             
             # Initialize all components
             backend_manager = BackendIntegrationManager()
@@ -692,8 +692,8 @@ class TestIntegratedSystemPerformance:
         mock_db = Mock()
         mock_repo = Mock()
         
-        with patch('src.utilities.advanced_folders.database.AdvancedFoldersDBManager', return_value=mock_db), \
-             patch('src.utilities.advanced_folders.repositories.RepositoryManager', return_value=mock_repo):
+        with patch('src.tools.advanced_folders.database.AdvancedFoldersDBManager', return_value=mock_db), \
+             patch('src.tools.advanced_folders.repositories.RepositoryManager', return_value=mock_repo):
             
             # Initialize system
             backend_manager = BackendIntegrationManager()

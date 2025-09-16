@@ -37,7 +37,7 @@ with patch.dict('sys.modules', {
     'PyQt5.QtCore': Mock(),
     'PyQt5.QtGui': Mock(),
 }):
-    from utilities.system.diagnostics_monitoring.gui.filesystem_integrity_widget import (
+    from tools.system.diagnostics_monitoring.gui.filesystem_integrity_widget import (
         PYQT_AVAILABLE, FilesystemIntegrityWidget, ScanWorker)
 
 

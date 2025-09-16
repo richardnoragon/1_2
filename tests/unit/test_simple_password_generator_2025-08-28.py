@@ -70,7 +70,7 @@ def mock_pyqt5():
 def mock_clipboard():
     """Mock clipboard functionality for testing."""
     mock_clipboard = MagicMock()
-    with patch('src.utilities.security.simple_password_generator.QApplication') as mock_qapp:
+    with patch('src.tools.security.simple_password_generator.QApplication') as mock_qapp:
         mock_qapp.clipboard.return_value = mock_clipboard
         yield mock_clipboard
 
@@ -81,7 +81,7 @@ class TestSimplePasswordGeneratorGUI:
     @pytest.fixture
     def password_generator_gui(self, mock_pyqt5):
         """Create a SimplePasswordGeneratorGUI instance for testing."""
-        from src.utilities.security.simple_password_generator import \
+        from src.tools.security.simple_password_generator import \
             SimplePasswordGeneratorGUI
         return SimplePasswordGeneratorGUI()
     
@@ -213,7 +213,7 @@ class TestSimplePasswordGeneratorGUI:
         password_generator_gui.get_character_set.return_value = "ABCabc123!@#"
         
         # Mock secrets.choice to return predictable results
-        with patch('src.utilities.security.simple_password_generator.secrets') as mock_secrets:
+        with patch('src.tools.security.simple_password_generator.secrets') as mock_secrets:
             mock_secrets.choice.side_effect = lambda chars: 'A'  # Always return 'A'
             
             password_generator_gui.generate_password()
@@ -246,7 +246,7 @@ class TestSimplePasswordGeneratorGUI:
             password_generator_gui.get_character_set = MagicMock()
             password_generator_gui.get_character_set.return_value = "ABCabc123"
             
-            with patch('src.utilities.security.simple_password_generator.secrets') as mock_secrets:
+            with patch('src.tools.security.simple_password_generator.secrets') as mock_secrets:
                 mock_secrets.choice.side_effect = lambda chars: 'X'
                 
                 password_generator_gui.generate_password()
@@ -265,7 +265,7 @@ class TestSimplePasswordGeneratorGUI:
         password_generator_gui.get_character_set = MagicMock()
         password_generator_gui.get_character_set.return_value = "ABCabc123"
         
-        with patch('src.utilities.security.simple_password_generator.secrets') as mock_secrets:
+        with patch('src.tools.security.simple_password_generator.secrets') as mock_secrets:
             mock_secrets.choice.side_effect = lambda chars: 'P'  # Always return 'P'
             
             password_generator_gui.generate_multiple_passwords()
@@ -321,7 +321,7 @@ class TestSimplePasswordGeneratorEdgeCases:
     @pytest.fixture
     def password_generator_gui(self, mock_pyqt5):
         """Create a SimplePasswordGeneratorGUI instance for testing."""
-        from src.utilities.security.simple_password_generator import \
+        from src.tools.security.simple_password_generator import \
             SimplePasswordGeneratorGUI
         return SimplePasswordGeneratorGUI()
     
@@ -388,7 +388,7 @@ class TestSimplePasswordGeneratorEdgeCases:
             password_generator_gui.get_character_set = MagicMock()
             password_generator_gui.get_character_set.return_value = "ABC123"
             
-            with patch('src.utilities.security.simple_password_generator.secrets') as mock_secrets:
+            with patch('src.tools.security.simple_password_generator.secrets') as mock_secrets:
                 mock_secrets.choice.side_effect = lambda chars: 'T'
                 
                 password_generator_gui.generate_password()
@@ -407,7 +407,7 @@ class TestSimplePasswordGeneratorEdgeCases:
         password_generator_gui.get_character_set = MagicMock()
         password_generator_gui.get_character_set.return_value = "ABC"
         
-        with patch('src.utilities.security.simple_password_generator.secrets') as mock_secrets:
+        with patch('src.tools.security.simple_password_generator.secrets') as mock_secrets:
             mock_secrets.choice.side_effect = lambda chars: 'M'
             
             password_generator_gui.generate_multiple_passwords()
@@ -423,7 +423,7 @@ class TestSimplePasswordGeneratorSecurity:
     @pytest.fixture
     def password_generator_gui(self, mock_pyqt5):
         """Create a SimplePasswordGeneratorGUI instance for testing."""
-        from src.utilities.security.simple_password_generator import \
+        from src.tools.security.simple_password_generator import \
             SimplePasswordGeneratorGUI
         return SimplePasswordGeneratorGUI()
     
@@ -436,7 +436,7 @@ class TestSimplePasswordGeneratorSecurity:
         password_generator_gui.get_character_set = MagicMock()
         password_generator_gui.get_character_set.return_value = "ABCabc123"
         
-        with patch('src.utilities.security.simple_password_generator.secrets') as mock_secrets:
+        with patch('src.tools.security.simple_password_generator.secrets') as mock_secrets:
             password_generator_gui.generate_password()
             
             # Verify secrets.choice was called (cryptographically secure)
@@ -455,7 +455,7 @@ class TestSimplePasswordGeneratorSecurity:
         
         # Use real secrets module for this test
         import secrets
-        with patch('src.utilities.security.simple_password_generator.secrets', secrets):
+        with patch('src.tools.security.simple_password_generator.secrets', secrets):
             password_generator_gui.generate_password()
             
             # Get the generated password
@@ -475,7 +475,7 @@ class TestSimplePasswordGeneratorIntegration:
     @pytest.fixture
     def password_generator_gui(self, mock_pyqt5):
         """Create a SimplePasswordGeneratorGUI instance for testing."""
-        from src.utilities.security.simple_password_generator import \
+        from src.tools.security.simple_password_generator import \
             SimplePasswordGeneratorGUI
         return SimplePasswordGeneratorGUI()
     
@@ -499,7 +499,7 @@ class TestSimplePasswordGeneratorIntegration:
         password_generator_gui.length_spin.value.return_value = 12
         
         # Step 1: Generate password
-        with patch('src.utilities.security.simple_password_generator.secrets') as mock_secrets:
+        with patch('src.tools.security.simple_password_generator.secrets') as mock_secrets:
             mock_secrets.choice.side_effect = lambda chars: 'S'
             password_generator_gui.generate_password()
             
@@ -538,7 +538,7 @@ class TestSimplePasswordGeneratorIntegration:
         password_generator_gui.count_spin.value.return_value = 5
         
         # Generate multiple passwords
-        with patch('src.utilities.security.simple_password_generator.secrets') as mock_secrets:
+        with patch('src.tools.security.simple_password_generator.secrets') as mock_secrets:
             mock_secrets.choice.side_effect = lambda chars: 'M'
             password_generator_gui.generate_multiple_passwords()
             
@@ -558,17 +558,17 @@ class TestSimplePasswordGeneratorErrorHandling:
                 with patch('sys.exit') as mock_exit:
                     try:
                         # Force module reload to trigger import error
-                        if 'src.utilities.security.simple_password_generator' in sys.modules:
-                            del sys.modules['src.utilities.security.simple_password_generator']
+                        if 'src.tools.security.simple_password_generator' in sys.modules:
+                            del sys.modules['src.tools.security.simple_password_generator']
                         
                         # This should trigger the import error handling
-                        import src.utilities.security.simple_password_generator
+                        import src.tools.security.simple_password_generator
                     except SystemExit:
                         # Expected behavior when PyQt5 is not available
                         pass
     
-    @patch('src.utilities.security.simple_password_generator.QApplication')
-    @patch('src.utilities.security.simple_password_generator.SimplePasswordGeneratorGUI')
+    @patch('src.tools.security.simple_password_generator.QApplication')
+    @patch('src.tools.security.simple_password_generator.SimplePasswordGeneratorGUI')
     def test_main_function_execution(self, mock_gui_class, mock_qapp_class):
         """Test the main function execution."""
         mock_app = MagicMock()
@@ -579,7 +579,7 @@ class TestSimplePasswordGeneratorErrorHandling:
         # Mock sys.argv and sys.exit
         with patch('sys.argv', ['simple_password_generator.py']):
             with patch('sys.exit') as mock_exit:
-                from src.utilities.security.simple_password_generator import \
+                from src.tools.security.simple_password_generator import \
                     main
                 main()
                 
@@ -597,7 +597,7 @@ class TestSimplePasswordGeneratorPerformance:
     @pytest.fixture
     def password_generator_gui(self, mock_pyqt5):
         """Create a SimplePasswordGeneratorGUI instance for testing."""
-        from src.utilities.security.simple_password_generator import \
+        from src.tools.security.simple_password_generator import \
             SimplePasswordGeneratorGUI
         return SimplePasswordGeneratorGUI()
     
@@ -614,7 +614,7 @@ class TestSimplePasswordGeneratorPerformance:
         # Measure generation time
         start_time = time.time()
         
-        with patch('src.utilities.security.simple_password_generator.secrets') as mock_secrets:
+        with patch('src.tools.security.simple_password_generator.secrets') as mock_secrets:
             mock_secrets.choice.side_effect = lambda chars: 'P'
             password_generator_gui.generate_password()
         
@@ -639,7 +639,7 @@ class TestSimplePasswordGeneratorPerformance:
         # Measure generation time
         start_time = time.time()
         
-        with patch('src.utilities.security.simple_password_generator.secrets') as mock_secrets:
+        with patch('src.tools.security.simple_password_generator.secrets') as mock_secrets:
             mock_secrets.choice.side_effect = lambda chars: 'M'
             password_generator_gui.generate_multiple_passwords()
         

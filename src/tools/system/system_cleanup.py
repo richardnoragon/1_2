@@ -28,7 +28,7 @@ except ImportError:
 # Import the comprehensive SystemDiagnosticsGUI as base class
 try:
     # Try absolute import first
-    from src.utilities.system.diagnostics_monitoring.system_diagnostics_gui import SystemDiagnosticsGUI
+    from src.tools.system.diagnostics_monitoring.system_diagnostics_gui import SystemDiagnosticsGUI
     DIAGNOSTICS_GUI_AVAILABLE = True
 except ImportError:
     try:

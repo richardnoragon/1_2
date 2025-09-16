@@ -117,8 +117,6 @@ except ImportError as e:
 
 # Import the full-featured multi-pane file explorer
 try:
-    from src.rfu.file_explorer.multi_pane_explorer_repaired import \
-        MultiPaneFileExplorer
     MULTI_PANE_EXPLORER_AVAILABLE = True
 except ImportError as e:
     print(f"Full multi-pane explorer not available: {e}")
@@ -188,17 +186,38 @@ class InterfaceSelectionDialog:
             button_frame = self._create_button_section()
             layout.addWidget(button_frame)
             
-            # Force proper sizing after all content is added
-            self.dialog.adjustSize()
-            self.dialog.setFixedSize(720, 600)
-            self.dialog.setMinimumSize(720, 600)
-            self.dialog.setMaximumSize(720, 600)
+            # Get screen geometry for proper sizing
+            from PyQt5.QtWidgets import QApplication, QDesktopWidget
+            desktop = QApplication.desktop()
+            screen_geometry = desktop.screenGeometry()
             
-            # Ensure dialog appears centered
+            # Calculate appropriate dialog size (40% of screen width, max 800px)
+            dialog_width = min(800, int(screen_geometry.width() * 0.4))
+            dialog_height = min(700, int(screen_geometry.height() * 0.6))
+            
+            # Ensure minimum readable size
+            dialog_width = max(dialog_width, 750)
+            dialog_height = max(dialog_height, 650)
+            
+            # Set dialog size with proper constraints
+            self.dialog.setFixedSize(dialog_width, dialog_height)
+            self.dialog.adjustSize()
+            
+            # Center dialog on screen
             if self.parent:
+                parent_center_x = self.parent.x() + (self.parent.width() // 2)
+                parent_center_y = self.parent.y() + (self.parent.height() // 2)
                 self.dialog.move(
-                    self.parent.x() + (self.parent.width() - 720) // 2,
-                    self.parent.y() + (self.parent.height() - 600) // 2
+                    parent_center_x - (dialog_width // 2),
+                    parent_center_y - (dialog_height // 2)
+                )
+            else:
+                # Center on screen if no parent
+                screen_center_x = screen_geometry.width() // 2
+                screen_center_y = screen_geometry.height() // 2
+                self.dialog.move(
+                    screen_center_x - (dialog_width // 2),
+                    screen_center_y - (dialog_height // 2)
                 )
             
             # Show dialog and handle result with comprehensive error handling
@@ -210,12 +229,11 @@ class InterfaceSelectionDialog:
             return True  # Default to continuing with fallback
     
     def _apply_dialog_styling(self):
-        """Apply comprehensive styling to the dialog."""
+        """Apply simplified styling to the dialog to ensure text visibility."""
         try:
             self.dialog.setStyleSheet("""
                 QDialog {
-                    background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
-                        stop:0 #f8f9fa, stop:1 #e9ecef);
+                    background-color: #f8f9fa;
                     border: 2px solid #dee2e6;
                     border-radius: 12px;
                 }
@@ -240,44 +258,41 @@ class InterfaceSelectionDialog:
                     font-size: 14px;
                     color: #2c3e50;
                     spacing: 10px;
-                    padding: 5px;
+                    padding: 8px;
+                    background-color: transparent;
                 }
                 QRadioButton::indicator {
-                    width: 16px;
-                    height: 16px;
-                    border-radius: 8px;
-                }
-                QRadioButton::indicator:unchecked {
+                    width: 18px;
+                    height: 18px;
+                    border-radius: 9px;
                     border: 2px solid #bdc3c7;
-                    border-radius: 8px;
                     background-color: #ffffff;
                 }
                 QRadioButton::indicator:checked {
                     border: 2px solid #3498db;
-                    border-radius: 8px;
                     background-color: #3498db;
+                }
+                QRadioButton::indicator:hover {
+                    border: 2px solid #3498db;
                 }
                 QPushButton {
                     font-weight: bold;
-                    font-size: 12px;
+                    font-size: 14px;
+                    color: white;
                     padding: 12px 24px;
                     border-radius: 6px;
                     border: none;
-                    min-width: 100px;
+                    min-width: 120px;
+                    min-height: 40px;
                 }
                 QPushButton#primary {
                     background-color: #3498db;
-                    color: white;
                 }
                 QPushButton#primary:hover {
                     background-color: #2980b9;
                 }
-                QPushButton#primary:pressed {
-                    background-color: #21618c;
-                }
                 QPushButton#secondary {
                     background-color: #95a5a6;
-                    color: white;
                 }
                 QPushButton#secondary:hover {
                     background-color: #7f8c8d;
@@ -285,6 +300,7 @@ class InterfaceSelectionDialog:
                 QCheckBox {
                     font-size: 12px;
                     color: #2c3e50;
+                    background-color: transparent;
                 }
                 QTextEdit {
                     border: 1px solid #bdc3c7;
@@ -759,9 +775,35 @@ try:
             self.logger = logging.getLogger('RFU.MainWindow')
             self.logger.info("Initializing RFU Main Window with dual interface system")
             
-            # Set basic window properties
+            # Set basic window properties with proper sizing
             self.setWindowTitle(APP_NAME)
-            self.setGeometry(200, 200, 900, 700)
+            
+            # Get screen geometry for appropriate window sizing
+            from PyQt5.QtWidgets import QApplication, QDesktopWidget
+            desktop = QApplication.desktop()
+            screen_geometry = desktop.screenGeometry()
+            
+            # Calculate window size (70% of screen width, 80% of screen height, with constraints)
+            window_width = min(1200, int(screen_geometry.width() * 0.7))
+            window_height = min(900, int(screen_geometry.height() * 0.8))
+            
+            # Ensure minimum usable size
+            window_width = max(window_width, 1000)
+            window_height = max(window_height, 750)
+            
+            # Set maximum size to prevent window from becoming too large
+            self.setMaximumSize(
+                min(1400, int(screen_geometry.width() * 0.9)),
+                min(1000, int(screen_geometry.height() * 0.9))
+            )
+            
+            # Set minimum size for usability
+            self.setMinimumSize(900, 650)
+            
+            # Set initial geometry with calculated size
+            start_x = max(50, (screen_geometry.width() - window_width) // 2)
+            start_y = max(50, (screen_geometry.height() - window_height) // 2)
+            self.setGeometry(start_x, start_y, window_width, window_height)
             
             # Initialize core systems
             self._initialize_core_systems()
@@ -1151,11 +1193,7 @@ try:
         
         def _initialize_dialog_hub_interface(self):
             """Initialize the dialog-based hub interface with full tabbed functionality."""
-            # If we have a separate multi-pane explorer window, hide it
-            if hasattr(self, 'multi_pane_explorer_window'):
-                self.multi_pane_explorer_window.hide()
-            
-            # Show the main dialog hub window
+            # Ensure the main window is visible
             self.show()
             
             self.setWindowTitle(f"{APP_NAME} - Dialog Hub Interface")
@@ -1168,9 +1206,9 @@ try:
                 self.dialog_hub_widget = self.centralWidget()
         
         def _initialize_multi_pane_interface(self):
-            """Initialize the multi-pane explorer interface with comprehensive error handling."""
+            """Initialize the multi-pane explorer interface embedded in the main window."""
             try:
-                self.logger.info("Initializing full-featured multi-pane explorer interface")
+                self.logger.info("Initializing multi-pane explorer interface")
                 
                 # Store current dialog hub widget if switching
                 current_widget = self.centralWidget()
@@ -1178,42 +1216,36 @@ try:
                     self.dialog_hub_widget = current_widget
                     self.logger.debug("Stored current dialog hub widget for future restoration")
                 
-                # Try to create the full-featured multi-pane explorer
+                # Create or reuse the multi-pane explorer widget
                 if not self.multi_pane_explorer:
                     try:
-                        if MULTI_PANE_EXPLORER_AVAILABLE:
-                            # Create the full MultiPaneFileExplorer as a separate window
-                            self.multi_pane_explorer_window = MultiPaneFileExplorer()
+                        # Try to import and create the multi-pane explorer widget
+                        try:
+                            from src.rfu.file_explorer.multi_pane_explorer_repaired import \
+                                MultiPaneFileExplorer
+
+                            # Create instance as widget, not window
+                            self.multi_pane_explorer = MultiPaneFileExplorer()
                             
-                            # Hide the main dialog hub window
-                            self.hide()
+                            # Embed properly in main window
+                            self.multi_pane_explorer.setWindowFlags(Qt.Widget)
                             
-                            # Show the multi-pane explorer window
-                            self.multi_pane_explorer_window.show()
-                            
-                            # Store reference for interface switching
-                            self.multi_pane_explorer = self.multi_pane_explorer_window
-                            
-                            self.logger.info("Full multi-pane explorer window created and displayed successfully")
-                            return True
-                        else:
-                            # Fall back to simplified widget embedded in main window
+                            self.logger.info("Multi-pane explorer widget created successfully")
+                        except ImportError:
+                            # Fall back to simplified widget if import fails
                             self.multi_pane_explorer = self._create_simple_multi_pane_widget()
-                            self.setCentralWidget(self.multi_pane_explorer)
-                            self.setWindowTitle(f"{APP_NAME} - Multi-Pane Explorer (Simplified)")
-                            self.logger.warning("Using simplified multi-pane widget (full explorer unavailable)")
+                            self.logger.warning("Import failed, using simplified widget")
                     except Exception as ce:
                         self.logger.error(f"Failed to create multi-pane explorer: {ce}")
                         self._create_fallback_multi_pane()
                         return True  # Fallback is still a success
-                else:
-                    # Explorer already exists, just show it
-                    if hasattr(self, 'multi_pane_explorer_window'):
-                        self.hide()
-                        self.multi_pane_explorer_window.show()
-                    else:
-                        self.setCentralWidget(self.multi_pane_explorer)
-                        self.setWindowTitle(f"{APP_NAME} - Multi-Pane Explorer")
+                
+                # Embed the multi-pane explorer in the main window
+                self.setCentralWidget(self.multi_pane_explorer)
+                self.setWindowTitle(f"{APP_NAME} - Multi-Pane Explorer")
+                
+                # Ensure the main window stays visible
+                self.show()
                 
                 self.logger.info("Multi-pane interface initialization completed successfully")
                 return True
@@ -1423,13 +1455,6 @@ try:
         def closeEvent(self, event):
             """Handle application close event - ensure all windows are properly closed."""
             try:
-                # Close multi-pane explorer window if it exists
-                if hasattr(self, 'multi_pane_explorer_window'):
-                    try:
-                        self.multi_pane_explorer_window.close()
-                    except Exception as e:
-                        self.logger.warning(f"Error closing multi-pane explorer: {e}")
-                
                 # Save configuration if available
                 if self.config_manager:
                     try:

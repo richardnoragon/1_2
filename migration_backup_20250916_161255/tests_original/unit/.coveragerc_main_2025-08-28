@@ -1,0 +1,118 @@
+# Coverage configuration for main.py unit tests
+# Generated: 2025-08-28
+# Target: main.py comprehensive coverage analysis
+
+[run]
+# Source files to measure coverage for
+source = main
+
+# Include patterns
+include = 
+    main.py
+    src/core/constants.py
+    config_manager.py
+    standalone_database_manager.py
+
+# Exclude patterns
+omit = 
+    */tests/*
+    */test_*
+    */__pycache__/*
+    */venv/*
+    */env/*
+    */build/*
+    */dist/*
+    setup.py
+    conftest.py
+    *_test.py
+    test_*.py
+    */migrations/*
+    */static/*
+    */media/*
+
+# Branch coverage
+branch = True
+
+# Data file location
+data_file = .coverage_main_2025-08-28
+
+# Parallel processing
+parallel = True
+
+# Context for coverage
+dynamic_context = test_function
+
+[report]
+# Reporting options
+precision = 2
+show_missing = True
+skip_covered = False
+skip_empty = False
+
+# Sort results
+sort = Cover
+
+# Exclude lines from coverage reporting
+exclude_lines =
+    # Have to re-enable the standard pragma
+    pragma: no cover
+    
+    # Don't complain about missing debug-only code:
+    def __repr__
+    if self\.debug
+    
+    # Don't complain if tests don't hit defensive assertion code:
+    raise AssertionError
+    raise NotImplementedError
+    
+    # Don't complain if non-runnable code isn't run:
+    if 0:
+    if __name__ == .__main__.:
+    
+    # Don't complain about abstract methods
+    @(abc\.)?abstractmethod
+    
+    # Don't complain about platform specific code
+    pragma: no cover
+    
+    # Don't complain about type checking code
+    if TYPE_CHECKING:
+    
+    # Don't complain about debugging code
+    if DEBUG:
+    
+    # Don't complain about exception handling that should never be reached
+    except.*ImportError
+    except.*ModuleNotFoundError
+    
+    # Don't complain about PyQt5 import error handling
+    except ImportError as e:
+    print.*PyQt5.*
+    sys.exit\(1\)
+
+# Fail under threshold
+fail_under = 70
+
+[html]
+# HTML report configuration
+directory = result_main_2025-08-28_coverage
+title = Main.py Unit Tests Coverage Report
+show_contexts = True
+
+[xml]
+# XML report configuration
+output = result_main_2025-08-28_coverage.xml
+
+[json]
+# JSON report configuration
+output = result_main_2025-08-28_coverage.json
+pretty_print = true
+show_contexts = true
+
+[paths]
+# Path mapping for different environments
+source = 
+    main.py
+    src/
+    ./main.py
+    ./src/

@@ -90,7 +90,7 @@ def run_tests():
                 "timestamp": datetime.now().isoformat(),
                 "exit_code": result.returncode,
                 "test_file": "test_rename_2025-08-24.py",
-                "target_module": "src.utilities.file_management.rename",
+                "target_module": "src.tools.file_management.rename",
                 "framework": "pytest",
                 "success": result.returncode == 0
             },

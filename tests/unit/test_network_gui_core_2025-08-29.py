@@ -31,7 +31,7 @@ class TestNetworkGUICore(unittest.TestCase):
         print(f"{'='*60}")
         
         try:
-            from utilities.network.gui import (DEFAULT_SPEED_LABEL,
+            from tools.network.gui import (DEFAULT_SPEED_LABEL,
                                                BandwidthData,
                                                NetworkScanResult)
             cls.NetworkScanResult = NetworkScanResult
@@ -164,7 +164,7 @@ class TestNetworkWorkerThreadCore(unittest.TestCase):
     def setUpClass(cls):
         """Set up test class."""
         try:
-            from utilities.network.gui import NetworkWorkerThread
+            from tools.network.gui import NetworkWorkerThread
             cls.NetworkWorkerThread = NetworkWorkerThread
             cls.module_available = True
         except ImportError:
@@ -352,7 +352,7 @@ class TestNetworkGUIEdgeCases(unittest.TestCase):
     def setUpClass(cls):
         """Set up test class."""
         try:
-            from utilities.network.gui import NetworkWorkerThread
+            from tools.network.gui import NetworkWorkerThread
             cls.NetworkWorkerThread = NetworkWorkerThread
             cls.module_available = True
         except ImportError:

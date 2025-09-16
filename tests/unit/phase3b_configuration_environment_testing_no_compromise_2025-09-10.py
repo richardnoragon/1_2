@@ -63,7 +63,7 @@ import configparser
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from src.rfu.config_manager import ConfigManager, get_config_manager
-from src.utilities.network.network_connectivity_complex.deployment.install import NetworkConnectivityInstaller
+from src.tools.network.network_connectivity_complex.deployment.install import NetworkConnectivityInstaller
 
 
 class Phase3BConfigurationEnvironmentTestingNoCompromise(TestCase):

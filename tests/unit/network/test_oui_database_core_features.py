@@ -23,7 +23,7 @@ dependencies = setup_network_module_dependencies()
 
 # Now import the real network modules
 try:
-    from utilities.network.network_connectivity.tools.wifi_analyzer import (
+    from tools.network.network_connectivity.tools.wifi_analyzer import (
         ChannelBand, OUIDatabase, WiFiChannelMap, WiFiSecurityType)
     REAL_IMPLEMENTATIONS_AVAILABLE = True
     print("✅ Successfully imported real OUI Database implementation!")

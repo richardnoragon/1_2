@@ -27,11 +27,11 @@ import pytest
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
 try:
-    from src.utilities.analysis.config.size_analyzer_config import \
+    from src.tools.analysis.config.size_analyzer_config import \
         SizeAnalyzerConfig
-    from src.utilities.analysis.config.size_analyzer_logging import \
+    from src.tools.analysis.config.size_analyzer_logging import \
         SizeAnalyzerLogger
-    from src.utilities.analysis.core.size_analyzer_logic import SizeAnalyzer
+    from src.tools.analysis.core.size_analyzer_logic import SizeAnalyzer
     IMPORTS_SUCCESSFUL = True
 except ImportError as e:
     print(f"Import error: {e}")

@@ -605,7 +605,7 @@ class SimpleRFUHub(QMainWindow):
         """Create the PDF Tools tab with folder-based dynamic structure."""
         try:
             # Import our enhanced PDF tools widget
-            from src.utilities.pdf_tools.widgets.enhanced_pdf_tools_widget import (
+            from src.tools.pdf_tools.widgets.enhanced_pdf_tools_widget import (
                 EnhancedPDFToolsWidget
             )
             
@@ -1034,7 +1034,7 @@ class SimpleRFUHub(QMainWindow):
             if src_dir not in sys.path:
                 sys.path.insert(0, src_dir)
             
-            from utilities.analysis.check_sum import ChecksumGUI
+            from tools.analysis.check_sum import ChecksumGUI
             
             # Use the new window manager
             utility_window = self._create_utility_window(
@@ -1072,7 +1072,7 @@ class SimpleRFUHub(QMainWindow):
             if src_dir not in sys.path:
                 sys.path.insert(0, src_dir)
             
-            from utilities.analysis.find_duplicate_files import (
+            from tools.analysis.find_duplicate_files import (
                 DuplicateFinderApp)
             
             # Use the new window manager
@@ -1114,7 +1114,7 @@ class SimpleRFUHub(QMainWindow):
             if root_dir not in sys.path:
                 sys.path.insert(0, root_dir)
             
-            from utilities.analysis.size_analyzer import SizeAnalyzerGUI
+            from tools.analysis.size_analyzer import SizeAnalyzerGUI
             
             # Use the new window manager
             utility_window = self._create_utility_window(
@@ -1152,7 +1152,7 @@ class SimpleRFUHub(QMainWindow):
             if src_dir not in sys.path:
                 sys.path.insert(0, src_dir)
             
-            from utilities.analysis.empty_folders import EmptyFoldersGUI
+            from tools.analysis.empty_folders import EmptyFoldersGUI
             
             # Use the new window manager
             utility_window = self._create_utility_window(
@@ -1191,7 +1191,7 @@ class SimpleRFUHub(QMainWindow):
                 sys.path.insert(0, src_dir)
             
             # Use the utilities catalog implementation
-            from src.utilities.file_operations.catalog.catalog import CatalogWindow
+            from src.tools.file_operations.catalog.catalog import CatalogWindow
             
             # Create fresh catalog window
             self._ensure_fresh_window('file_catalog_window')
@@ -1230,7 +1230,7 @@ class SimpleRFUHub(QMainWindow):
             if src_dir not in sys.path:
                 sys.path.insert(0, src_dir)
             
-            from src.utilities.file_operations.file_splitter.gui import (
+            from src.tools.file_operations.file_splitter.gui import (
                 FileSplitJoinGUI
             )
             
@@ -1269,7 +1269,7 @@ class SimpleRFUHub(QMainWindow):
             if src_dir not in sys.path:
                 sys.path.insert(0, src_dir)
             
-            from src.utilities.file_operations.cmsd import CopyMoveSyncDeleteWindow
+            from src.tools.file_operations.cmsd import CopyMoveSyncDeleteWindow
             
             # Create and show the CMSD window
             if not hasattr(self, 'cmsd_window') or \
@@ -1308,7 +1308,7 @@ class SimpleRFUHub(QMainWindow):
             
             # Try to import the sync tool, fall back to placeholder
             try:
-                from utilities.file_operations.synchronization_backup.sync import (
+                from tools.file_operations.synchronization_backup.sync import (
                     SyncWindow
                 )
                 
@@ -1385,7 +1385,7 @@ class SimpleRFUHub(QMainWindow):
             if src_dir not in sys.path:
                 sys.path.insert(0, src_dir)
             
-            from src.utilities.file_operations.organize.organize import OrganizeWindow
+            from src.tools.file_operations.organize.organize import OrganizeWindow
             
             # Create and show the organize files window
             if not hasattr(self, 'organize_files_window') or \
@@ -1424,7 +1424,7 @@ class SimpleRFUHub(QMainWindow):
             if src_dir not in sys.path:
                 sys.path.insert(0, src_dir)
             
-            from src.utilities.file_management.rename import RenameWindow
+            from src.tools.file_management.rename import RenameWindow
             
             # Create and show the batch rename window
             if not hasattr(self, 'batch_rename_window') or \
@@ -1515,7 +1515,7 @@ class SimpleRFUHub(QMainWindow):
     def open_exif_viewer(self):
         """Open EXIF data viewer."""
         try:
-            from src.utilities.metadata.image_metadata import ImageMetadataEditorGUI
+            from src.tools.metadata.image_metadata import ImageMetadataEditorGUI
             exif_window = ImageMetadataEditorGUI()
             exif_window.show()
             self.status_bar.showMessage("EXIF Data Viewer opened")
@@ -1530,7 +1530,7 @@ class SimpleRFUHub(QMainWindow):
     def open_metadata_analyzer(self):
         """Open metadata analyzer."""
         try:
-            from src.utilities.metadata.image_metadata import \
+            from src.tools.metadata.image_metadata import \
                 ImageMetadataEditorGUI
             analyzer_window = ImageMetadataEditorGUI()
             analyzer_window.show()
@@ -1547,7 +1547,7 @@ class SimpleRFUHub(QMainWindow):
         """Open tag editor."""
         try:
             # Try enhanced image metadata editor for tag editing first
-            from src.utilities.metadata.image_metadata import \
+            from src.tools.metadata.image_metadata import \
                 ImageMetadataEditorGUI
             tag_window = ImageMetadataEditorGUI()
             tag_window.show()
@@ -1563,7 +1563,7 @@ class SimpleRFUHub(QMainWindow):
     def open_property_inspector(self):
         """Open property inspector."""
         try:
-            from src.utilities.metadata.office_meta_data_editor import \
+            from src.tools.metadata.office_meta_data_editor import \
                 OfficeMetaDataEditorGUI
             property_window = OfficeMetaDataEditorGUI()
             property_window.show()
@@ -1580,7 +1580,7 @@ class SimpleRFUHub(QMainWindow):
     def open_network_scanner(self):
         """Open network scanner."""
         try:
-            from src.utilities.network.network_scanner import NetworkScannerGUI
+            from src.tools.network.network_scanner import NetworkScannerGUI
             scanner_window = NetworkScannerGUI()
             scanner_window.show()
             self.status_bar.showMessage("Network Scanner opened")
@@ -1600,7 +1600,7 @@ class SimpleRFUHub(QMainWindow):
     def open_network_transfer(self):
         """Open network transfer."""
         try:
-            from src.utilities.network.network_transfer import \
+            from src.tools.network.network_transfer import \
                 NetworkTransferGUI
             transfer_window = NetworkTransferGUI()
             transfer_window.show()
@@ -1621,7 +1621,7 @@ class SimpleRFUHub(QMainWindow):
     def open_bandwidth_monitor(self):
         """Open bandwidth monitor."""
         try:
-            from src.utilities.network.network_connectivity_complex.gui.\
+            from src.tools.network.network_connectivity_complex.gui.\
                 widgets.bandwidth_monitor_widget import BandwidthMonitorWidget
             from src.rfu.gui.standard_window import StandardWindow
             
@@ -1686,7 +1686,7 @@ class SimpleRFUHub(QMainWindow):
     def open_privacy_cleaner(self):
         """Open privacy cleaner."""
         try:
-            from src.utilities.privacy.privacy_tools_simple import SimplePrivacyHub
+            from src.tools.privacy.privacy_tools_simple import SimplePrivacyHub
             privacy_window = SimplePrivacyHub()
             privacy_window.show()
             self.status_bar.showMessage("Privacy Cleaner opened")
@@ -1701,7 +1701,7 @@ class SimpleRFUHub(QMainWindow):
     def open_temp_cleanup(self):
         """Open temporary file cleanup."""
         try:
-            from src.utilities.privacy.privacy_tools_simple import SimplePrivacyHub
+            from src.tools.privacy.privacy_tools_simple import SimplePrivacyHub
             # Use privacy cleaner for temp cleanup functionality
             temp_window = SimplePrivacyHub()
             temp_window.show()
@@ -1717,7 +1717,7 @@ class SimpleRFUHub(QMainWindow):
     def open_browser_cleanup(self):
         """Open browser history cleaner."""
         try:
-            from src.utilities.privacy.privacy_tools_simple import SimplePrivacyHub
+            from src.tools.privacy.privacy_tools_simple import SimplePrivacyHub
             # Use privacy cleaner for browser cleanup functionality
             browser_window = SimplePrivacyHub()
             browser_window.show()
@@ -1745,7 +1745,7 @@ class SimpleRFUHub(QMainWindow):
     def open_data_scanner(self):
         """Open data scanner."""
         try:
-            from src.utilities.privacy.data_anonymizer import DataAnonymizerGUI
+            from src.tools.privacy.data_anonymizer import DataAnonymizerGUI
             scanner_window = DataAnonymizerGUI()
             scanner_window.show()
             self.status_bar.showMessage("Data Scanner opened")
@@ -1839,7 +1839,7 @@ class SimpleRFUHub(QMainWindow):
     def open_password_generator(self):
         """Open password generator."""
         try:
-            from src.utilities.security.simple_password_generator import SimplePasswordGeneratorGUI
+            from src.tools.security.simple_password_generator import SimplePasswordGeneratorGUI
             password_window = SimplePasswordGeneratorGUI()
             password_window.show()
             self.status_bar.showMessage("Password Generator opened")
@@ -1854,7 +1854,7 @@ class SimpleRFUHub(QMainWindow):
     def open_security_scan(self):
         """Open security scan."""
         try:
-            from src.utilities.security.simple_security_scanner import SimpleSecurityScannerGUI
+            from src.tools.security.simple_security_scanner import SimpleSecurityScannerGUI
             scan_window = SimpleSecurityScannerGUI()
             scan_window.show()
             self.status_bar.showMessage("Security Scan opened")
@@ -1916,7 +1916,7 @@ class SimpleRFUHub(QMainWindow):
     def open_system_info(self):
         """Open system information."""
         try:
-            from src.utilities.system.simple_system_info import \
+            from src.tools.system.simple_system_info import \
                 SimpleSystemInfoGUI
             system_window = SimpleSystemInfoGUI()
             system_window.show()
@@ -1939,7 +1939,7 @@ class SimpleRFUHub(QMainWindow):
     def open_process_monitor(self):
         """Open process monitor."""
         try:
-            from src.utilities.system.simple_process_monitor import \
+            from src.tools.system.simple_process_monitor import \
                 SimpleProcessMonitorGUI
             process_window = SimpleProcessMonitorGUI()
             process_window.show()

@@ -31,7 +31,7 @@ except ImportError:
     PYQT5_AVAILABLE = False
     pytest.skip("PyQt5 not available", allow_module_level=True)
 
-from src.utilities.network.network_connectivity import NetworkConnectivityGUI
+from src.tools.network.network_connectivity import NetworkConnectivityGUI
 
 
 class TestNetworkConnectivityGUI:
@@ -117,7 +117,7 @@ class TestNetworkConnectivityGUI:
     @pytest.fixture
     def mock_standard_window(self):
         """Mock StandardWindow for testing."""
-        with patch('src.utilities.network.network_connectivity.StandardWindow') as mock:
+        with patch('src.tools.network.network_connectivity.StandardWindow') as mock:
             mock_instance = Mock()
             mock_instance.main_layout = Mock()
             mock.return_value = mock_instance
@@ -126,7 +126,7 @@ class TestNetworkConnectivityGUI:
     @pytest.fixture
     def network_gui(self, mock_standard_window):
         """Create NetworkConnectivityGUI instance for testing."""
-        with patch('src.utilities.network.network_connectivity.StandardWindow'):
+        with patch('src.tools.network.network_connectivity.StandardWindow'):
             gui = NetworkConnectivityGUI()
             return gui
     
@@ -140,14 +140,14 @@ class TestNetworkConnectivityGUI:
         """Test initialization with menu manager."""
         mock_standard_window.menu_manager = Mock()
         
-        with patch('src.utilities.network.network_connectivity.StandardWindow'):
+        with patch('src.tools.network.network_connectivity.StandardWindow'):
             gui = NetworkConnectivityGUI()
             
         # Verify menu callbacks were registered
         if hasattr(gui, 'menu_manager'):
             gui.menu_manager.register_callback.assert_called()
     
-    @patch('src.utilities.network.network_connectivity.QMessageBox.information')
+    @patch('src.tools.network.network_connectivity.QMessageBox.information')
     def test_show_preferences(self, mock_msgbox, network_gui):
         """Test show_preferences method."""
         network_gui.show_preferences()
@@ -164,7 +164,7 @@ class TestNetworkConnectivityGUI:
         # Mock the results_text widget
         network_gui.results_text = Mock()
         
-        with patch('src.utilities.network.network_connectivity.QMessageBox.information') as mock_msgbox:
+        with patch('src.tools.network.network_connectivity.QMessageBox.information') as mock_msgbox:
             network_gui.refresh_view()
             
         # Verify results_text was updated
@@ -176,13 +176,13 @@ class TestNetworkConnectivityGUI:
         # Mock the layout and widgets
         network_gui.main_layout = Mock()
         
-        with patch('src.utilities.network.network_connectivity.QLabel') as mock_label, \
-             patch('src.utilities.network.network_connectivity.QGroupBox') as mock_groupbox, \
-             patch('src.utilities.network.network_connectivity.QPushButton') as mock_button, \
-             patch('src.utilities.network.network_connectivity.QLineEdit') as mock_lineedit, \
-             patch('src.utilities.network.network_connectivity.QSpinBox') as mock_spinbox, \
-             patch('src.utilities.network.network_connectivity.QTextEdit') as mock_textedit, \
-             patch('src.utilities.network.network_connectivity.QProgressBar') as mock_progressbar:
+        with patch('src.tools.network.network_connectivity.QLabel') as mock_label, \
+             patch('src.tools.network.network_connectivity.QGroupBox') as mock_groupbox, \
+             patch('src.tools.network.network_connectivity.QPushButton') as mock_button, \
+             patch('src.tools.network.network_connectivity.QLineEdit') as mock_lineedit, \
+             patch('src.tools.network.network_connectivity.QSpinBox') as mock_spinbox, \
+             patch('src.tools.network.network_connectivity.QTextEdit') as mock_textedit, \
+             patch('src.tools.network.network_connectivity.QProgressBar') as mock_progressbar:
             
             network_gui.init_ui()
             
@@ -195,7 +195,7 @@ class TestNetworkConnectivityGUI:
             assert mock_textedit.called
             assert mock_progressbar.called
     
-    @patch('src.utilities.network.network_connectivity.QMessageBox.information')
+    @patch('src.tools.network.network_connectivity.QMessageBox.information')
     def test_start_bandwidth_monitor(self, mock_msgbox, network_gui):
         """Test start_bandwidth_monitor method."""
         # Mock required attributes
@@ -215,7 +215,7 @@ class TestNetworkConnectivityGUI:
         args, kwargs = mock_msgbox.call_args
         assert "Bandwidth Monitor" in str(args)
     
-    @patch('src.utilities.network.network_connectivity.QMessageBox.information')
+    @patch('src.tools.network.network_connectivity.QMessageBox.information')
     def test_start_port_scan_valid_input(self, mock_msgbox, network_gui):
         """Test start_port_scan with valid input."""
         # Mock required attributes
@@ -238,7 +238,7 @@ class TestNetworkConnectivityGUI:
         assert "Port Scanner" in str(args)
         assert "192.168.1.1" in str(args)
     
-    @patch('src.utilities.network.network_connectivity.QMessageBox.warning')
+    @patch('src.tools.network.network_connectivity.QMessageBox.warning')
     def test_start_port_scan_empty_target(self, mock_msgbox, network_gui):
         """Test start_port_scan with empty target."""
         # Mock required attributes
@@ -252,7 +252,7 @@ class TestNetworkConnectivityGUI:
         args, kwargs = mock_msgbox.call_args
         assert "Please enter a target IP address" in str(args)
     
-    @patch('src.utilities.network.network_connectivity.QMessageBox.warning')
+    @patch('src.tools.network.network_connectivity.QMessageBox.warning')
     def test_start_port_scan_invalid_port_range(self, mock_msgbox, network_gui):
         """Test start_port_scan with invalid port range."""
         # Mock required attributes
@@ -270,7 +270,7 @@ class TestNetworkConnectivityGUI:
         args, kwargs = mock_msgbox.call_args
         assert "Start port must be less than or equal to end port" in str(args)
     
-    @patch('src.utilities.network.network_connectivity.QMessageBox.information')
+    @patch('src.tools.network.network_connectivity.QMessageBox.information')
     def test_analyze_wifi(self, mock_msgbox, network_gui):
         """Test analyze_wifi method."""
         # Mock required attributes
@@ -306,8 +306,8 @@ class TestNetworkConnectivityGUI:
         network_gui.end_port.value.return_value = end_port
         network_gui.results_text = Mock()
         
-        with patch('src.utilities.network.network_connectivity.QMessageBox.warning') as mock_warning, \
-             patch('src.utilities.network.network_connectivity.QMessageBox.information') as mock_info:
+        with patch('src.tools.network.network_connectivity.QMessageBox.warning') as mock_warning, \
+             patch('src.tools.network.network_connectivity.QMessageBox.information') as mock_info:
             
             network_gui.start_port_scan()
             
@@ -338,7 +338,7 @@ class TestNetworkConnectivityGUI:
     
     def test_menu_callback_registration(self):
         """Test menu callback registration."""
-        with patch('src.utilities.network.network_connectivity.StandardWindow') as mock_window:
+        with patch('src.tools.network.network_connectivity.StandardWindow') as mock_window:
             mock_instance = Mock()
             mock_instance.menu_manager = Mock()
             mock_window.return_value = mock_instance
@@ -354,20 +354,20 @@ class TestNetworkConnectivityGUI:
             for callback_name, callback_func in expected_calls:
                 mock_instance.menu_manager.register_callback.assert_any_call(callback_name, callback_func)
     
-    @patch('src.utilities.network.network_connectivity.sys.exit')
-    @patch('src.utilities.network.network_connectivity.QApplication')
+    @patch('src.tools.network.network_connectivity.sys.exit')
+    @patch('src.tools.network.network_connectivity.QApplication')
     def test_main_function(self, mock_qapp, mock_exit):
         """Test main function execution."""
         mock_app_instance = Mock()
         mock_qapp.return_value = mock_app_instance
         mock_app_instance.exec_.return_value = 0
         
-        with patch('src.utilities.network.network_connectivity.NetworkConnectivityGUI') as mock_gui:
+        with patch('src.tools.network.network_connectivity.NetworkConnectivityGUI') as mock_gui:
             mock_gui_instance = Mock()
             mock_gui.return_value = mock_gui_instance
             
             # Import and call main
-            from src.utilities.network.network_connectivity import main
+            from src.tools.network.network_connectivity import main
             main()
             
             # Verify QApplication was created
@@ -398,7 +398,7 @@ class TestNetworkConnectivityGUI:
         """Test that GUI initialization completes within reasonable time."""
         start_time = datetime.now()
         
-        with patch('src.utilities.network.network_connectivity.StandardWindow'):
+        with patch('src.tools.network.network_connectivity.StandardWindow'):
             gui = NetworkConnectivityGUI()
         
         end_time = datetime.now()
@@ -420,7 +420,7 @@ class TestNetworkConnectivityGUI:
         network_gui.end_port.value.return_value = 443
         network_gui.results_text = Mock()
         
-        with patch('src.utilities.network.network_connectivity.QMessageBox.information'):
+        with patch('src.tools.network.network_connectivity.QMessageBox.information'):
             # Simulate complete workflow
             network_gui.start_bandwidth_monitor()
             network_gui.start_port_scan()
@@ -436,7 +436,7 @@ class TestNetworkConnectivityGUI:
         # Since we can't easily mock import failures in pytest, 
         # we'll just verify the structure exists
         
-        import src.utilities.network.network_connectivity as nc_module
+        import src.tools.network.network_connectivity as nc_module
         assert hasattr(nc_module, 'NetworkConnectivityGUI')
         assert hasattr(nc_module, 'main')
     
@@ -453,7 +453,7 @@ class TestNetworkConnectivityGUI:
         network_gui.end_port = Mock()
         network_gui.end_port.value.return_value = 65535
         
-        with patch('src.utilities.network.network_connectivity.QMessageBox.information') as mock_info:
+        with patch('src.tools.network.network_connectivity.QMessageBox.information') as mock_info:
             network_gui.start_port_scan()
             mock_info.assert_called_once()
     
@@ -479,7 +479,7 @@ class TestNetworkConnectivityGUI:
             network_gui.target_input = Mock()
             network_gui.target_input.text.return_value = target
             
-            with patch('src.utilities.network.network_connectivity.QMessageBox.information'):
+            with patch('src.tools.network.network_connectivity.QMessageBox.information'):
                 network_gui.start_port_scan()
 
 
@@ -521,14 +521,14 @@ class TestNetworkConnectivityPerformance:
     @pytest.mark.performance
     def test_rapid_button_clicks(self):
         """Test rapid button click handling."""
-        with patch('src.utilities.network.network_connectivity.StandardWindow'):
+        with patch('src.tools.network.network_connectivity.StandardWindow'):
             gui = NetworkConnectivityGUI()
             gui.results_text = Mock()
             gui.bandwidth_status = Mock()
             
             # Simulate rapid clicks
             for _ in range(100):
-                with patch('src.utilities.network.network_connectivity.QMessageBox.information'):
+                with patch('src.tools.network.network_connectivity.QMessageBox.information'):
                     gui.start_bandwidth_monitor()
     
     @pytest.mark.stress
@@ -545,7 +545,7 @@ class TestNetworkConnectivityPerformance:
         # Create multiple instances
         instances = []
         for _ in range(10):
-            with patch('src.utilities.network.network_connectivity.StandardWindow'):
+            with patch('src.tools.network.network_connectivity.StandardWindow'):
                 gui = NetworkConnectivityGUI()
                 instances.append(gui)
         

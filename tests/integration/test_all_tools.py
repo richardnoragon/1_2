@@ -59,24 +59,24 @@ def main():
     # List of all tools from main.py
     tools = [
         # File Management Tools
-        ("File Finder", "src.utilities.file_management.file_finder", "FileFinderGUI"),
-        ("Catalog", "src.utilities.file_management.catalog", "CatalogWindow"),
-        ("Rename", "src.utilities.file_management.rename", "RenameWindow"),
-        ("Organize", "src.utilities.file_management.organize", "OrganizeWindow"),
+        ("File Finder", "src.tools.file_management.file_finder", "FileFinderGUI"),
+        ("Catalog", "src.tools.file_management.catalog", "CatalogWindow"),
+        ("Rename", "src.tools.file_management.rename", "RenameWindow"),
+        ("Organize", "src.tools.file_management.organize", "OrganizeWindow"),
         
         # Network Tools
-        ("Network Connectivity", "src.utilities.network.network_connectivity", "NetworkConnectivityGUI"),
-        ("Network Scanner", "src.utilities.network.network_scanner", "NetworkScannerGUI"),
-        ("Network Transfer", "src.utilities.network.network_transfer", "NetworkTransferGUI"),
+        ("Network Connectivity", "src.tools.network.network_connectivity", "NetworkConnectivityGUI"),
+        ("Network Scanner", "src.tools.network.network_scanner", "NetworkScannerGUI"),
+        ("Network Transfer", "src.tools.network.network_transfer", "NetworkTransferGUI"),
         
         # PDF Tools (testing a few key ones)
         ("PDF Utilities", "enhanced_pdf_tools_widget", "EnhancedPDFToolsWidget"),
         
         # Privacy Tools
-        ("Privacy Cleaner", "src.utilities.privacy.privacy_tools_simple", "PrivacyCleanerGUI"),
+        ("Privacy Cleaner", "src.tools.privacy.privacy_tools_simple", "PrivacyCleanerGUI"),
         
         # System Tools  
-        ("System Diagnostics", "src.utilities.system.diagnostics_monitoring", "SystemDiagnosticsGUI"),
+        ("System Diagnostics", "src.tools.system.diagnostics_monitoring", "SystemDiagnosticsGUI"),
     ]
     
     passed = 0

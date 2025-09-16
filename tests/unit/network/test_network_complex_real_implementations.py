@@ -30,15 +30,15 @@ dependencies = setup_network_module_dependencies()
 
 # Now import the real network modules
 try:
-    from utilities.network.network_connectivity.core.network_base import (
+    from tools.network.network_connectivity.core.network_base import (
         NetworkOperationStatus, NetworkAlertLevel, NetworkOperationResult, NetworkToolBase
     )
-    from utilities.network.network_connectivity.tools.wifi_analyzer import (
+    from tools.network.network_connectivity.tools.wifi_analyzer import (
         WiFiSecurityType, WiFiStandard, ChannelBand, InterferenceType,
         AccessPoint, SignalMeasurement, ChannelInfo, InterferenceSource,
         SecurityAssessment, WiFiAlert, OUIDatabase, WiFiChannelMap, WiFiAnalyzer
     )
-    from utilities.network.network_connectivity.tools.port_scanner import (
+    from tools.network.network_connectivity.tools.port_scanner import (
         ScanType, PortState, ScanPolicy, PortInfo, ScanTarget, ScanResult,
         VulnerabilityInfo, ServiceDetector, VulnerabilityAssessment, ScanEngine,
         PortScanner

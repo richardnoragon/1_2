@@ -1,0 +1,20 @@
+{
+  "test_execution_summary": {
+    "timestamp": "2025-08-30 18:00:32",
+    "module": "pdf_view_analysis",
+    "target_file": "src/utilities/pdf_tools/pdf_view_analysis/view.py",
+    "test_file": "test_pdf_view_analysis_2025-08-30.py",
+    "execution_time_seconds": 5.57,
+    "success": false,
+    "reports_generated": [
+      "result_pdf_view_analysis_2025-08-30_report.html",
+      "result_pdf_view_analysis_2025-08-30.json",
+      "result_pdf_view_analysis_2025-08-30_junit.xml",
+      "result_pdf_view_analysis_coverage_2025-08-30/",
+      "result_pdf_view_analysis_coverage_2025-08-30.json"
+    ],
+    "return_code": 4,
+    "stdout_length": 0,
+    "stderr_length": 184
+  }
+}

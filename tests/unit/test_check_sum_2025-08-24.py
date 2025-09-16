@@ -26,11 +26,11 @@ from PyQt5.QtWidgets import QApplication, QMessageBox
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
 
 try:
-    from src.utilities.analysis.check_sum import ChecksumGUI, main
+    from src.tools.analysis.check_sum import ChecksumGUI, main
 except ImportError:
     # Alternative import path
     sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
-    from src.utilities.analysis.check_sum import ChecksumGUI, main
+    from src.tools.analysis.check_sum import ChecksumGUI, main
 
 
 class TestChecksumGUI:
@@ -279,7 +279,7 @@ class TestChecksumGUI:
             result_text = checksum_gui.results_list.item(i).text()
             assert expected_md5 in result_text
     
-    @patch('src.utilities.analysis.check_sum.STANDARD_WINDOW_AVAILABLE', False)
+    @patch('src.tools.analysis.check_sum.STANDARD_WINDOW_AVAILABLE', False)
     def test_fallback_mode_initialization(self, app):
         """Test initialization in fallback mode (without StandardWindow)."""
         gui = ChecksumGUI()

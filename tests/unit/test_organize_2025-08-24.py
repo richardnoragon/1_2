@@ -28,7 +28,7 @@ from PyQt5.QtGui import QStandardItemModel
 from PyQt5.QtWidgets import QApplication
 
 # Import the modules under test
-from src.utilities.file_operations.organize.organize import (OrganizeRule,
+from src.tools.file_operations.organize.organize import (OrganizeRule,
                                                              OrganizeWindow,
                                                              RuleEditDialog,
                                                              RulesDialog, main)
@@ -138,8 +138,8 @@ def sample_rules():
 class TestOrganizeWindow:
     """Test cases for OrganizeWindow class."""
     
-    @patch('src.utilities.file_operations.organize.organize.uic.loadUi')
-    @patch('src.utilities.file_operations.organize.organize.Path.exists')
+    @patch('src.tools.file_operations.organize.organize.uic.loadUi')
+    @patch('src.tools.file_operations.organize.organize.Path.exists')
     def test_organize_window_initialization(self, mock_exists, mock_loadui, qapp):
         """Test OrganizeWindow initialization."""
         mock_exists.return_value = True
@@ -174,8 +174,8 @@ class TestOrganizeWindow:
             assert isinstance(window._list_model, QStandardItemModel)
             assert isinstance(window._organized_files, list)
     
-    @patch('src.utilities.file_operations.organize.organize.uic.loadUi')
-    @patch('src.utilities.file_operations.organize.organize.Path.exists')
+    @patch('src.tools.file_operations.organize.organize.uic.loadUi')
+    @patch('src.tools.file_operations.organize.organize.Path.exists')
     def test_setup_ui_success(self, mock_exists, mock_loadui, qapp):
         """Test successful UI setup."""
         mock_exists.return_value = True
@@ -191,9 +191,9 @@ class TestOrganizeWindow:
             # The UI setup is called in __init__, so just verify it worked
             mock_loadui.assert_called_once()
     
-    @patch('src.utilities.file_operations.organize.organize.uic.loadUi')
-    @patch('src.utilities.file_operations.organize.organize.Path.exists')
-    @patch('src.utilities.file_operations.organize.organize.show_error_dialog')
+    @patch('src.tools.file_operations.organize.organize.uic.loadUi')
+    @patch('src.tools.file_operations.organize.organize.Path.exists')
+    @patch('src.tools.file_operations.organize.organize.show_error_dialog')
     @patch('sys.exit')
     def test_setup_ui_file_not_found(self, mock_exit, mock_error, mock_exists, mock_loadui, qapp):
         """Test UI setup when file is not found."""
@@ -231,7 +231,7 @@ class TestOrganizeWindow:
             assert "Audio" in rule_names
             assert "Archives" in rule_names
     
-    @patch('src.utilities.file_operations.organize.organize.get_existing_directory')
+    @patch('src.tools.file_operations.organize.organize.get_existing_directory')
     def test_load_directory_success(self, mock_get_dir, qapp, temp_directory):
         """Test successful directory loading."""
         mock_get_dir.return_value = temp_directory
@@ -258,7 +258,7 @@ class TestOrganizeWindow:
             window.organizePushButton.setEnabled.assert_called_with(True)
             window.status_label.setText.assert_called_with("Ready to organize files")
     
-    @patch('src.utilities.file_operations.organize.organize.get_existing_directory')
+    @patch('src.tools.file_operations.organize.organize.get_existing_directory')
     def test_load_directory_cancelled(self, mock_get_dir, qapp):
         """Test directory loading when user cancels."""
         mock_get_dir.return_value = None
@@ -495,7 +495,7 @@ class TestOrganizeWindow:
             
             assert result is False
     
-    @patch('src.utilities.file_operations.organize.organize.QMessageBox.information')
+    @patch('src.tools.file_operations.organize.organize.QMessageBox.information')
     def test_organize_files_success(self, mock_msgbox, qapp, temp_directory, sample_files):
         """Test successful file organization."""
         with patch.object(OrganizeWindow, '_setup_ui'), \
@@ -519,7 +519,7 @@ class TestOrganizeWindow:
             mock_msgbox.assert_called_once()
             window.status_label.setText.assert_called()
     
-    @patch('src.utilities.file_operations.organize.organize.show_error_dialog')
+    @patch('src.tools.file_operations.organize.organize.show_error_dialog')
     def test_organize_files_error_handling(self, mock_error, qapp):
         """Test error handling in file organization."""
         with patch.object(OrganizeWindow, '_setup_ui'), \
@@ -537,7 +537,7 @@ class TestOrganizeWindow:
             
             mock_error.assert_called_once()
     
-    @patch('src.utilities.file_operations.organize.organize.QMessageBox.information')
+    @patch('src.tools.file_operations.organize.organize.QMessageBox.information')
     def test_undo_last_organization(self, mock_msgbox, qapp, temp_directory):
         """Test undoing the last organization operation."""
         # Create test files and simulate organization
@@ -639,8 +639,8 @@ class TestRuleEditDialog:
 class TestMainFunction:
     """Test cases for main function."""
     
-    @patch('src.utilities.file_operations.organize.organize.QApplication')
-    @patch('src.utilities.file_operations.organize.organize.OrganizeWindow')
+    @patch('src.tools.file_operations.organize.organize.QApplication')
+    @patch('src.tools.file_operations.organize.organize.OrganizeWindow')
     @patch('sys.exit')
     def test_main_function(self, mock_exit, mock_window, mock_app):
         """Test main function execution."""
@@ -688,7 +688,7 @@ class TestEdgeCasesAndErrorHandling:
              patch.object(OrganizeWindow, '_set_initial_state'), \
              patch.object(OrganizeWindow, '_load_default_rules'), \
              patch.object(OrganizeWindow, 'show'), \
-             patch('src.utilities.file_operations.organize.organize.show_error_dialog') as mock_error:
+             patch('src.tools.file_operations.organize.organize.show_error_dialog') as mock_error:
             
             window = OrganizeWindow()
             window._current_dir = temp_directory

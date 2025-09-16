@@ -31,7 +31,7 @@ class TestWeek6BasicFunctionality:
     def test_preview_pane_widget_creation(self, app):
         """Test preview pane widget can be created."""
         try:
-            from src.utilities.advanced_folders.gui.preview_pane import \
+            from src.tools.advanced_folders.gui.preview_pane import \
                 PreviewPaneWidget
             
             widget = PreviewPaneWidget()
@@ -48,7 +48,7 @@ class TestWeek6BasicFunctionality:
         try:
             from PyQt5.QtWidgets import QWidget
 
-            from src.utilities.advanced_folders.gui.keyboard_shortcuts import \
+            from src.tools.advanced_folders.gui.keyboard_shortcuts import \
                 KeyboardShortcutsManager
             
             parent = QWidget()
@@ -68,7 +68,7 @@ class TestWeek6BasicFunctionality:
         try:
             from PyQt5.QtWidgets import QWidget
 
-            from src.utilities.advanced_folders.gui.accessibility_manager import \
+            from src.tools.advanced_folders.gui.accessibility_manager import \
                 AccessibilityManager
             
             parent = QWidget()
@@ -86,10 +86,10 @@ class TestWeek6BasicFunctionality:
     def test_backend_integration_creation(self, app):
         """Test backend integration manager can be created."""
         try:
-            with patch('src.utilities.advanced_folders.database.AdvancedFoldersDBManager'), \
-                 patch('src.utilities.advanced_folders.repositories.RepositoryManager'):
+            with patch('src.tools.advanced_folders.database.AdvancedFoldersDBManager'), \
+                 patch('src.tools.advanced_folders.repositories.RepositoryManager'):
                 
-                from src.utilities.advanced_folders.integration.backend_integration import \
+                from src.tools.advanced_folders.integration.backend_integration import \
                     BackendIntegrationManager
                 
                 manager = BackendIntegrationManager()
@@ -105,7 +105,7 @@ class TestWeek6BasicFunctionality:
         try:
             mock_backend = Mock()
             
-            from src.utilities.advanced_folders.integration.realtime_search import \
+            from src.tools.advanced_folders.integration.realtime_search import \
                 RealtimeSearchManager
             
             manager = RealtimeSearchManager(mock_backend)
@@ -122,7 +122,7 @@ class TestWeek6BasicFunctionality:
             mock_backend = Mock()
             mock_search = Mock()
             
-            from src.utilities.advanced_folders.integration.ui_data_bridge import \
+            from src.tools.advanced_folders.integration.ui_data_bridge import \
                 UIDataBridge
             
             bridge = UIDataBridge(mock_backend, mock_search)
@@ -136,7 +136,7 @@ class TestWeek6BasicFunctionality:
     def test_preview_pane_file_loading(self, app, tmp_path):
         """Test preview pane can load files."""
         try:
-            from src.utilities.advanced_folders.gui.preview_pane import \
+            from src.tools.advanced_folders.gui.preview_pane import \
                 PreviewPaneWidget
 
             # Create test file
@@ -163,7 +163,7 @@ class TestWeek6BasicFunctionality:
         try:
             from PyQt5.QtWidgets import QWidget
 
-            from src.utilities.advanced_folders.gui.keyboard_shortcuts import \
+            from src.tools.advanced_folders.gui.keyboard_shortcuts import \
                 KeyboardShortcutsManager
             
             parent = QWidget()
@@ -189,7 +189,7 @@ class TestWeek6BasicFunctionality:
         try:
             from PyQt5.QtWidgets import QWidget
 
-            from src.utilities.advanced_folders.gui.accessibility_manager import \
+            from src.tools.advanced_folders.gui.accessibility_manager import \
                 AccessibilityManager
             
             parent = QWidget()
@@ -218,7 +218,7 @@ class TestWeek6BasicFunctionality:
         try:
             from PyQt5.QtWidgets import QWidget
 
-            from src.utilities.advanced_folders.gui.accessibility_manager import \
+            from src.tools.advanced_folders.gui.accessibility_manager import \
                 AccessibilityManager
             
             parent = QWidget()
@@ -255,21 +255,21 @@ class TestWeek6Integration:
             from PyQt5.QtWidgets import QWidget
 
             # Mock dependencies
-            with patch('src.utilities.advanced_folders.database.AdvancedFoldersDBManager'), \
-                 patch('src.utilities.advanced_folders.repositories.RepositoryManager'):
+            with patch('src.tools.advanced_folders.database.AdvancedFoldersDBManager'), \
+                 patch('src.tools.advanced_folders.repositories.RepositoryManager'):
                 
                 # Import all components
-                from src.utilities.advanced_folders.gui.accessibility_manager import \
+                from src.tools.advanced_folders.gui.accessibility_manager import \
                     AccessibilityManager
-                from src.utilities.advanced_folders.gui.keyboard_shortcuts import \
+                from src.tools.advanced_folders.gui.keyboard_shortcuts import \
                     KeyboardShortcutsManager
-                from src.utilities.advanced_folders.gui.preview_pane import \
+                from src.tools.advanced_folders.gui.preview_pane import \
                     PreviewPaneWidget
-                from src.utilities.advanced_folders.integration.backend_integration import \
+                from src.tools.advanced_folders.integration.backend_integration import \
                     BackendIntegrationManager
-                from src.utilities.advanced_folders.integration.realtime_search import \
+                from src.tools.advanced_folders.integration.realtime_search import \
                     RealtimeSearchManager
-                from src.utilities.advanced_folders.integration.ui_data_bridge import \
+                from src.tools.advanced_folders.integration.ui_data_bridge import \
                     UIDataBridge
 
                 # Create all components
@@ -305,12 +305,12 @@ class TestWeek6Integration:
     def test_week6_deliverables_completion(self, app):
         """Test that all Week 6 deliverables are implemented."""
         deliverables = [
-            ('Backend Integration Manager', 'src.utilities.advanced_folders.integration.backend_integration', 'BackendIntegrationManager'),
-            ('Real-time Search Manager', 'src.utilities.advanced_folders.integration.realtime_search', 'RealtimeSearchManager'),
-            ('UI Data Bridge', 'src.utilities.advanced_folders.integration.ui_data_bridge', 'UIDataBridge'),
-            ('Preview Pane Widget', 'src.utilities.advanced_folders.gui.preview_pane', 'PreviewPaneWidget'),
-            ('Keyboard Shortcuts Manager', 'src.utilities.advanced_folders.gui.keyboard_shortcuts', 'KeyboardShortcutsManager'),
-            ('Accessibility Manager', 'src.utilities.advanced_folders.gui.accessibility_manager', 'AccessibilityManager'),
+            ('Backend Integration Manager', 'src.tools.advanced_folders.integration.backend_integration', 'BackendIntegrationManager'),
+            ('Real-time Search Manager', 'src.tools.advanced_folders.integration.realtime_search', 'RealtimeSearchManager'),
+            ('UI Data Bridge', 'src.tools.advanced_folders.integration.ui_data_bridge', 'UIDataBridge'),
+            ('Preview Pane Widget', 'src.tools.advanced_folders.gui.preview_pane', 'PreviewPaneWidget'),
+            ('Keyboard Shortcuts Manager', 'src.tools.advanced_folders.gui.keyboard_shortcuts', 'KeyboardShortcutsManager'),
+            ('Accessibility Manager', 'src.tools.advanced_folders.gui.accessibility_manager', 'AccessibilityManager'),
         ]
         
         completed_deliverables = []

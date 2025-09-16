@@ -89,7 +89,7 @@ class PermissionsEditorTestRunner:
         
         # Check target module
         try:
-            from src.utilities.system.permissions_editor import \
+            from src.tools.system.permissions_editor import \
                 PermissionsEditorGUI
             print("   ✅ Target module permissions_editor available")
         except ImportError as e:

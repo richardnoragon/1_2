@@ -100,7 +100,7 @@ class TestPrivacyToolsHub:
     def privacy_hub(self, app, mock_imports):
         """Create PrivacyToolsHub instance for testing."""
         with patch.multiple(
-            'src.utilities.privacy.privacy_tools.gui.privacy_hub',
+            'src.tools.privacy.privacy_tools.gui.privacy_hub',
             SecureEmptyTrashTool=lambda: self.mock_tools['trash'],
             DeleteCookiesTool=lambda: self.mock_tools['cookies'],
             BrowserDetector=lambda: self.mock_browser_detector,
@@ -111,7 +111,7 @@ class TestPrivacyToolsHub:
             Fonts=Mock()
         ):
             # Import and create the class
-            from src.utilities.privacy.privacy_tools.gui.privacy_hub import \
+            from src.tools.privacy.privacy_tools.gui.privacy_hub import \
                 PrivacyToolsHub
 
             # Mock the parent class initialization
@@ -167,7 +167,7 @@ class TestPrivacyToolsHub:
     def test_setup_ui_called(self, app, mock_imports):
         """Test that UI setup is called during initialization."""
         with patch.multiple(
-            'src.utilities.privacy.privacy_tools.gui.privacy_hub',
+            'src.tools.privacy.privacy_tools.gui.privacy_hub',
             SecureEmptyTrashTool=lambda: self.mock_tools['trash'],
             DeleteCookiesTool=lambda: self.mock_tools['cookies'],
             BrowserDetector=lambda: self.mock_browser_detector,
@@ -177,7 +177,7 @@ class TestPrivacyToolsHub:
             Colors=Mock(),
             Fonts=Mock()
         ):
-            from src.utilities.privacy.privacy_tools.gui.privacy_hub import \
+            from src.tools.privacy.privacy_tools.gui.privacy_hub import \
                 PrivacyToolsHub
             
             with patch.object(PrivacyToolsHub, '_setup_ui') as mock_setup_ui, \
@@ -190,7 +190,7 @@ class TestPrivacyToolsHub:
     def test_connect_signals(self, privacy_hub):
         """Test signal connections for tools."""
         # Import the actual class to test the method
-        from src.utilities.privacy.privacy_tools.gui.privacy_hub import \
+        from src.tools.privacy.privacy_tools.gui.privacy_hub import \
             PrivacyToolsHub
 
         # Call the method
@@ -205,7 +205,7 @@ class TestPrivacyToolsHub:
     
     def test_refresh_browser_info_with_browsers(self, privacy_hub):
         """Test browser info refresh with detected browsers."""
-        from src.utilities.privacy.privacy_tools.gui.privacy_hub import \
+        from src.tools.privacy.privacy_tools.gui.privacy_hub import \
             PrivacyToolsHub
 
         # Configure mock returns
@@ -221,7 +221,7 @@ class TestPrivacyToolsHub:
     
     def test_refresh_browser_info_no_browsers(self, privacy_hub):
         """Test browser info refresh with no detected browsers."""
-        from src.utilities.privacy.privacy_tools.gui.privacy_hub import \
+        from src.tools.privacy.privacy_tools.gui.privacy_hub import \
             PrivacyToolsHub
 
         # Configure mock returns
@@ -237,7 +237,7 @@ class TestPrivacyToolsHub:
     
     def test_preview_trash_operation_success(self, privacy_hub):
         """Test successful trash operation preview."""
-        from src.utilities.privacy.privacy_tools.gui.privacy_hub import \
+        from src.tools.privacy.privacy_tools.gui.privacy_hub import \
             PrivacyToolsHub
 
         # Configure checkbox mock
@@ -266,7 +266,7 @@ class TestPrivacyToolsHub:
     
     def test_preview_trash_operation_error(self, privacy_hub):
         """Test trash operation preview with error."""
-        from src.utilities.privacy.privacy_tools.gui.privacy_hub import \
+        from src.tools.privacy.privacy_tools.gui.privacy_hub import \
             PrivacyToolsHub
 
         # Configure checkbox mock
@@ -285,7 +285,7 @@ class TestPrivacyToolsHub:
     
     def test_preview_cookies_operation_success(self, privacy_hub):
         """Test successful cookies operation preview."""
-        from src.utilities.privacy.privacy_tools.gui.privacy_hub import \
+        from src.tools.privacy.privacy_tools.gui.privacy_hub import \
             PrivacyToolsHub
 
         # Configure checkbox mocks
@@ -324,7 +324,7 @@ class TestPrivacyToolsHub:
     
     def test_preview_cookies_operation_no_filters(self, privacy_hub):
         """Test cookies operation preview without filters."""
-        from src.utilities.privacy.privacy_tools.gui.privacy_hub import \
+        from src.tools.privacy.privacy_tools.gui.privacy_hub import \
             PrivacyToolsHub
 
         # Configure checkbox mocks
@@ -356,7 +356,7 @@ class TestPrivacyToolsHub:
     
     def test_execute_trash_operation(self, privacy_hub):
         """Test trash operation execution."""
-        from src.utilities.privacy.privacy_tools.gui.privacy_hub import \
+        from src.tools.privacy.privacy_tools.gui.privacy_hub import \
             PrivacyToolsHub
 
         # Configure checkbox mocks
@@ -384,7 +384,7 @@ class TestPrivacyToolsHub:
     
     def test_execute_cookies_operation_success(self, privacy_hub):
         """Test successful cookies operation execution."""
-        from src.utilities.privacy.privacy_tools.gui.privacy_hub import \
+        from src.tools.privacy.privacy_tools.gui.privacy_hub import \
             PrivacyToolsHub
 
         # Configure checkbox mocks
@@ -419,7 +419,7 @@ class TestPrivacyToolsHub:
     
     def test_execute_cookies_operation_no_browsers(self, privacy_hub):
         """Test cookies operation execution with no browsers selected."""
-        from src.utilities.privacy.privacy_tools.gui.privacy_hub import \
+        from src.tools.privacy.privacy_tools.gui.privacy_hub import \
             PrivacyToolsHub
 
         # Configure all checkboxes as unchecked
@@ -437,10 +437,10 @@ class TestPrivacyToolsHub:
         # Verify tool is not called
         self.mock_tools['cookies'].run_in_thread.assert_not_called()
     
-    @patch('src.utilities.privacy.privacy_tools.gui.privacy_hub.QMessageBox')
+    @patch('src.tools.privacy.privacy_tools.gui.privacy_hub.QMessageBox')
     def test_quick_clean_all_confirmed(self, mock_qmessagebox, privacy_hub):
         """Test quick clean all operation when confirmed."""
-        from src.utilities.privacy.privacy_tools.gui.privacy_hub import \
+        from src.tools.privacy.privacy_tools.gui.privacy_hub import \
             PrivacyToolsHub
 
         # Configure message box to return Yes
@@ -460,10 +460,10 @@ class TestPrivacyToolsHub:
             # Verify cookies operation is executed
             mock_execute.assert_called_once()
     
-    @patch('src.utilities.privacy.privacy_tools.gui.privacy_hub.QMessageBox')
+    @patch('src.tools.privacy.privacy_tools.gui.privacy_hub.QMessageBox')
     def test_quick_clean_all_cancelled(self, mock_qmessagebox, privacy_hub):
         """Test quick clean all operation when cancelled."""
-        from src.utilities.privacy.privacy_tools.gui.privacy_hub import \
+        from src.tools.privacy.privacy_tools.gui.privacy_hub import \
             PrivacyToolsHub
 
         # Configure message box to return No
@@ -481,7 +481,7 @@ class TestPrivacyToolsHub:
     
     def test_update_progress_trash_tab(self, privacy_hub):
         """Test progress update for trash tab."""
-        from src.utilities.privacy.privacy_tools.gui.privacy_hub import \
+        from src.tools.privacy.privacy_tools.gui.privacy_hub import \
             PrivacyToolsHub
 
         # Configure tab widget to return trash tab index
@@ -497,7 +497,7 @@ class TestPrivacyToolsHub:
     
     def test_update_progress_cookies_tab(self, privacy_hub):
         """Test progress update for cookies tab."""
-        from src.utilities.privacy.privacy_tools.gui.privacy_hub import \
+        from src.tools.privacy.privacy_tools.gui.privacy_hub import \
             PrivacyToolsHub
 
         # Configure tab widget to return cookies tab index
@@ -513,7 +513,7 @@ class TestPrivacyToolsHub:
     
     def test_operation_complete_success(self, privacy_hub):
         """Test operation completion with success."""
-        from src.utilities.privacy.privacy_tools.gui.privacy_hub import \
+        from src.tools.privacy.privacy_tools.gui.privacy_hub import \
             PrivacyToolsHub
 
         # Create mock result
@@ -544,7 +544,7 @@ class TestPrivacyToolsHub:
     
     def test_operation_complete_failure(self, privacy_hub):
         """Test operation completion with failure."""
-        from src.utilities.privacy.privacy_tools.gui.privacy_hub import \
+        from src.tools.privacy.privacy_tools.gui.privacy_hub import \
             PrivacyToolsHub
 
         # Create mock result
@@ -579,7 +579,7 @@ class TestPrivacyToolsHub:
     
     def test_show_error(self, privacy_hub):
         """Test error message display."""
-        from src.utilities.privacy.privacy_tools.gui.privacy_hub import \
+        from src.tools.privacy.privacy_tools.gui.privacy_hub import \
             PrivacyToolsHub
 
         # Call the method
@@ -590,7 +590,7 @@ class TestPrivacyToolsHub:
     
     def test_update_status(self, privacy_hub):
         """Test status message update."""
-        from src.utilities.privacy.privacy_tools.gui.privacy_hub import \
+        from src.tools.privacy.privacy_tools.gui.privacy_hub import \
             PrivacyToolsHub
 
         # Call the method
@@ -599,10 +599,10 @@ class TestPrivacyToolsHub:
         # Verify status message is shown
         privacy_hub.show_status_message.assert_called_once_with("Status updated")
     
-    @patch('src.utilities.privacy.privacy_tools.gui.privacy_hub.QMessageBox')
+    @patch('src.tools.privacy.privacy_tools.gui.privacy_hub.QMessageBox')
     def test_close_event_with_running_thread_accept(self, mock_qmessagebox, privacy_hub):
         """Test close event with running thread - user accepts."""
-        from src.utilities.privacy.privacy_tools.gui.privacy_hub import \
+        from src.tools.privacy.privacy_tools.gui.privacy_hub import \
             PrivacyToolsHub
 
         # Configure running thread
@@ -634,10 +634,10 @@ class TestPrivacyToolsHub:
         # Verify event is accepted
         mock_event.accept.assert_called_once()
     
-    @patch('src.utilities.privacy.privacy_tools.gui.privacy_hub.QMessageBox')
+    @patch('src.tools.privacy.privacy_tools.gui.privacy_hub.QMessageBox')
     def test_close_event_with_running_thread_reject(self, mock_qmessagebox, privacy_hub):
         """Test close event with running thread - user rejects."""
-        from src.utilities.privacy.privacy_tools.gui.privacy_hub import \
+        from src.tools.privacy.privacy_tools.gui.privacy_hub import \
             PrivacyToolsHub
 
         # Configure running thread
@@ -662,7 +662,7 @@ class TestPrivacyToolsHub:
     
     def test_close_event_no_running_thread(self, privacy_hub):
         """Test close event without running thread."""
-        from src.utilities.privacy.privacy_tools.gui.privacy_hub import \
+        from src.tools.privacy.privacy_tools.gui.privacy_hub import \
             PrivacyToolsHub
 
         # No running thread
@@ -679,7 +679,7 @@ class TestPrivacyToolsHub:
     
     def test_tab_creation_methods_exist(self, privacy_hub):
         """Test that all tab creation methods exist."""
-        from src.utilities.privacy.privacy_tools.gui.privacy_hub import \
+        from src.tools.privacy.privacy_tools.gui.privacy_hub import \
             PrivacyToolsHub
 
         # Verify all tab creation methods exist
@@ -692,7 +692,7 @@ class TestPrivacyToolsHub:
     
     def test_edge_case_empty_domain_filter(self, privacy_hub):
         """Test edge case with empty domain filter."""
-        from src.utilities.privacy.privacy_tools.gui.privacy_hub import \
+        from src.tools.privacy.privacy_tools.gui.privacy_hub import \
             PrivacyToolsHub
 
         # Configure input field mocks with empty/whitespace domain
@@ -724,7 +724,7 @@ class TestPrivacyToolsHub:
     
     def test_edge_case_large_trash_items_list(self, privacy_hub):
         """Test edge case with large trash items list."""
-        from src.utilities.privacy.privacy_tools.gui.privacy_hub import \
+        from src.tools.privacy.privacy_tools.gui.privacy_hub import \
             PrivacyToolsHub
 
         # Configure checkbox mock
@@ -760,7 +760,7 @@ class TestPrivacyHubEdgeCases:
     
     def test_browser_detection_exception(self):
         """Test browser detection with exception."""
-        with patch('src.utilities.privacy.privacy_tools.core.browser_detector.BrowserDetector') as mock_detector:
+        with patch('src.tools.privacy.privacy_tools.core.browser_detector.BrowserDetector') as mock_detector:
             mock_detector.return_value.detect_installed_browsers.side_effect = Exception("Detection failed")
             
             # Test should handle exception gracefully

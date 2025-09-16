@@ -17,7 +17,7 @@ import fitz  # PyMuPDF
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
 
 # Import the modules under test
-from src.utilities.pdf_tools.pdf_view_analysis.miner import MainWindow, PDFMiner
+from src.tools.pdf_tools.pdf_view_analysis.miner import MainWindow, PDFMiner
 
 
 class TestPDFMiner:
@@ -47,7 +47,7 @@ class TestPDFMiner:
         """Cleanup after each test"""
         pass
     
-    @patch('src.utilities.pdf_tools.pdf_view_analysis.miner.fitz.open')
+    @patch('src.tools.pdf_tools.pdf_view_analysis.miner.fitz.open')
     def test_pdf_miner_initialization_success(self, mock_fitz_open):
         """Test successful PDFMiner initialization"""
         mock_fitz_open.return_value = self.mock_pdf_doc
@@ -62,7 +62,7 @@ class TestPDFMiner:
         assert miner.zoom == 0.8  # Based on 800px width
         mock_fitz_open.assert_called_once_with(self.test_pdf_path)
     
-    @patch('src.utilities.pdf_tools.pdf_view_analysis.miner.fitz.open')
+    @patch('src.tools.pdf_tools.pdf_view_analysis.miner.fitz.open')
     def test_pdf_miner_initialization_different_widths(self, mock_fitz_open):
         """Test PDFMiner initialization with different page widths"""
         test_cases = [
@@ -81,7 +81,7 @@ class TestPDFMiner:
             assert miner.zoom == expected_zoom
             assert miner.width == width
     
-    @patch('src.utilities.pdf_tools.pdf_view_analysis.miner.fitz.open')
+    @patch('src.tools.pdf_tools.pdf_view_analysis.miner.fitz.open')
     def test_pdf_miner_initialization_file_not_found(self, mock_fitz_open):
         """Test PDFMiner initialization with non-existent file"""
         mock_fitz_open.side_effect = FileNotFoundError("File not found")
@@ -89,7 +89,7 @@ class TestPDFMiner:
         with pytest.raises(FileNotFoundError):
             PDFMiner("nonexistent.pdf")
     
-    @patch('src.utilities.pdf_tools.pdf_view_analysis.miner.fitz.open')
+    @patch('src.tools.pdf_tools.pdf_view_analysis.miner.fitz.open')
     def test_pdf_miner_initialization_invalid_pdf(self, mock_fitz_open):
         """Test PDFMiner initialization with invalid PDF"""
         mock_fitz_open.side_effect = RuntimeError("Invalid PDF")
@@ -97,7 +97,7 @@ class TestPDFMiner:
         with pytest.raises(RuntimeError):
             PDFMiner("invalid.pdf")
     
-    @patch('src.utilities.pdf_tools.pdf_view_analysis.miner.fitz.open')
+    @patch('src.tools.pdf_tools.pdf_view_analysis.miner.fitz.open')
     def test_get_metadata_success(self, mock_fitz_open):
         """Test successful metadata retrieval"""
         mock_fitz_open.return_value = self.mock_pdf_doc
@@ -108,7 +108,7 @@ class TestPDFMiner:
         assert metadata == self.mock_pdf_doc.metadata
         assert num_pages == 5
     
-    @patch('src.utilities.pdf_tools.pdf_view_analysis.miner.fitz.open')
+    @patch('src.tools.pdf_tools.pdf_view_analysis.miner.fitz.open')
     def test_get_metadata_empty_metadata(self, mock_fitz_open):
         """Test metadata retrieval with empty metadata"""
         self.mock_pdf_doc.metadata = {}
@@ -121,7 +121,7 @@ class TestPDFMiner:
         assert metadata == {}
         assert num_pages == 0
     
-    @patch('src.utilities.pdf_tools.pdf_view_analysis.miner.fitz.open')
+    @patch('src.tools.pdf_tools.pdf_view_analysis.miner.fitz.open')
     def test_get_page_with_zoom(self, mock_fitz_open):
         """Test page retrieval with zoom applied"""
         mock_fitz_open.return_value = self.mock_pdf_doc
@@ -136,7 +136,7 @@ class TestPDFMiner:
         
         miner = PDFMiner(self.test_pdf_path)
         
-        with patch('src.utilities.pdf_tools.pdf_view_analysis.miner.QImage') as mock_qimage:
+        with patch('src.tools.pdf_tools.pdf_view_analysis.miner.QImage') as mock_qimage:
             mock_qimage_instance = Mock()
             mock_qimage.return_value = mock_qimage_instance
             
@@ -156,7 +156,7 @@ class TestPDFMiner:
             )
             assert result == mock_qimage_instance
     
-    @patch('src.utilities.pdf_tools.pdf_view_analysis.miner.fitz.open')
+    @patch('src.tools.pdf_tools.pdf_view_analysis.miner.fitz.open')
     def test_get_page_without_zoom(self, mock_fitz_open):
         """Test page retrieval without zoom"""
         # Set zoom to None/False
@@ -174,7 +174,7 @@ class TestPDFMiner:
         miner = PDFMiner(self.test_pdf_path)
         miner.zoom = None  # Force no zoom
         
-        with patch('src.utilities.pdf_tools.pdf_view_analysis.miner.QImage') as mock_qimage:
+        with patch('src.tools.pdf_tools.pdf_view_analysis.miner.QImage') as mock_qimage:
             mock_qimage_instance = Mock()
             mock_qimage.return_value = mock_qimage_instance
             
@@ -184,7 +184,7 @@ class TestPDFMiner:
             mock_page.get_pixmap.assert_called_once_with()
             assert result == mock_qimage_instance
     
-    @patch('src.utilities.pdf_tools.pdf_view_analysis.miner.fitz.open')
+    @patch('src.tools.pdf_tools.pdf_view_analysis.miner.fitz.open')
     def test_get_page_invalid_page_number(self, mock_fitz_open):
         """Test page retrieval with invalid page number"""
         mock_fitz_open.return_value = self.mock_pdf_doc
@@ -195,7 +195,7 @@ class TestPDFMiner:
         with pytest.raises(IndexError):
             miner.get_page(10)  # Page doesn't exist
     
-    @patch('src.utilities.pdf_tools.pdf_view_analysis.miner.fitz.open')
+    @patch('src.tools.pdf_tools.pdf_view_analysis.miner.fitz.open')
     def test_get_text_success(self, mock_fitz_open):
         """Test successful text extraction"""
         mock_fitz_open.return_value = self.mock_pdf_doc
@@ -211,7 +211,7 @@ class TestPDFMiner:
         self.mock_pdf_doc.load_page.assert_called_with(0)
         mock_page.getText.assert_called_with('text')
     
-    @patch('src.utilities.pdf_tools.pdf_view_analysis.miner.fitz.open')
+    @patch('src.tools.pdf_tools.pdf_view_analysis.miner.fitz.open')
     def test_get_text_empty_page(self, mock_fitz_open):
         """Test text extraction from empty page"""
         mock_fitz_open.return_value = self.mock_pdf_doc
@@ -224,7 +224,7 @@ class TestPDFMiner:
         
         assert result == ""
     
-    @patch('src.utilities.pdf_tools.pdf_view_analysis.miner.fitz.open')
+    @patch('src.tools.pdf_tools.pdf_view_analysis.miner.fitz.open')
     def test_get_text_invalid_page_number(self, mock_fitz_open):
         """Test text extraction with invalid page number"""
         mock_fitz_open.return_value = self.mock_pdf_doc
@@ -253,7 +253,7 @@ class TestMainWindow:
         """Setup test data before each test"""
         self.mock_ui_file = "miner.ui"
     
-    @patch('src.utilities.pdf_tools.pdf_view_analysis.miner.uic.loadUi')
+    @patch('src.tools.pdf_tools.pdf_view_analysis.miner.uic.loadUi')
     def test_main_window_initialization(self, mock_load_ui):
         """Test MainWindow initialization"""
         with patch.object(MainWindow, 'actionExit') as mock_exit, \
@@ -270,9 +270,9 @@ class TestMainWindow:
             mock_exit.triggered.connect.assert_called_once()
             mock_open.triggered.connect.assert_called_once()
     
-    @patch('src.utilities.pdf_tools.pdf_view_analysis.miner.uic.loadUi')
-    @patch('src.utilities.pdf_tools.pdf_view_analysis.miner.QFileDialog.getOpenFileName')
-    @patch('src.utilities.pdf_tools.pdf_view_analysis.miner.PDFMiner')
+    @patch('src.tools.pdf_tools.pdf_view_analysis.miner.uic.loadUi')
+    @patch('src.tools.pdf_tools.pdf_view_analysis.miner.QFileDialog.getOpenFileName')
+    @patch('src.tools.pdf_tools.pdf_view_analysis.miner.PDFMiner')
     def test_open_pdf_success(self, mock_pdf_miner_class, mock_file_dialog, mock_load_ui):
         """Test successful PDF opening"""
         # Setup mocks
@@ -303,8 +303,8 @@ class TestMainWindow:
             # Verify show_page was called
             mock_show_page.assert_called_once_with(0)
     
-    @patch('src.utilities.pdf_tools.pdf_view_analysis.miner.uic.loadUi')
-    @patch('src.utilities.pdf_tools.pdf_view_analysis.miner.QFileDialog.getOpenFileName')
+    @patch('src.tools.pdf_tools.pdf_view_analysis.miner.uic.loadUi')
+    @patch('src.tools.pdf_tools.pdf_view_analysis.miner.QFileDialog.getOpenFileName')
     def test_open_pdf_cancelled(self, mock_file_dialog, mock_load_ui):
         """Test PDF opening when user cancels dialog"""
         # User cancels dialog
@@ -323,9 +323,9 @@ class TestMainWindow:
             # Verify PDFMiner was not created
             assert window.pdf_miner == initial_pdf_miner  # Should remain None
     
-    @patch('src.utilities.pdf_tools.pdf_view_analysis.miner.uic.loadUi')
-    @patch('src.utilities.pdf_tools.pdf_view_analysis.miner.QFileDialog.getOpenFileName')
-    @patch('src.utilities.pdf_tools.pdf_view_analysis.miner.PDFMiner')
+    @patch('src.tools.pdf_tools.pdf_view_analysis.miner.uic.loadUi')
+    @patch('src.tools.pdf_tools.pdf_view_analysis.miner.QFileDialog.getOpenFileName')
+    @patch('src.tools.pdf_tools.pdf_view_analysis.miner.PDFMiner')
     def test_open_pdf_invalid_file(self, mock_pdf_miner_class, mock_file_dialog, mock_load_ui):
         """Test PDF opening with invalid file"""
         test_filepath = "/path/to/invalid.pdf"
@@ -343,7 +343,7 @@ class TestMainWindow:
             with pytest.raises(RuntimeError):
                 window.open_pdf()
     
-    @patch('src.utilities.pdf_tools.pdf_view_analysis.miner.uic.loadUi')
+    @patch('src.tools.pdf_tools.pdf_view_analysis.miner.uic.loadUi')
     def test_show_page_with_pdf_miner(self, mock_load_ui):
         """Test show_page with valid PDF miner"""
         with patch.object(MainWindow, 'actionExit') as mock_exit, \
@@ -362,7 +362,7 @@ class TestMainWindow:
             window = MainWindow()
             window.pdf_miner = mock_pdf_miner
             
-            with patch('src.utilities.pdf_tools.pdf_view_analysis.miner.QPixmap.fromImage') as mock_from_image:
+            with patch('src.tools.pdf_tools.pdf_view_analysis.miner.QPixmap.fromImage') as mock_from_image:
                 mock_pixmap = Mock()
                 mock_from_image.return_value = mock_pixmap
                 
@@ -375,7 +375,7 @@ class TestMainWindow:
                 mock_from_image.assert_called_once_with(mock_qimage)
                 mock_pdf_view.setPixmap.assert_called_once_with(mock_pixmap)
     
-    @patch('src.utilities.pdf_tools.pdf_view_analysis.miner.uic.loadUi')
+    @patch('src.tools.pdf_tools.pdf_view_analysis.miner.uic.loadUi')
     def test_show_page_without_pdf_miner(self, mock_load_ui):
         """Test show_page without PDF miner"""
         with patch.object(MainWindow, 'actionExit') as mock_exit, \
@@ -394,7 +394,7 @@ class TestMainWindow:
             # Verify setPixmap was not called
             mock_pdf_view.setPixmap.assert_not_called()
     
-    @patch('src.utilities.pdf_tools.pdf_view_analysis.miner.uic.loadUi')
+    @patch('src.tools.pdf_tools.pdf_view_analysis.miner.uic.loadUi')
     def test_close_action(self, mock_load_ui):
         """Test window close action"""
         with patch.object(MainWindow, 'actionExit') as mock_exit, \
@@ -423,7 +423,7 @@ class TestMainWindowEdgeCases:
             self.app = QApplication.instance()
         yield
     
-    @patch('src.utilities.pdf_tools.pdf_view_analysis.miner.uic.loadUi')
+    @patch('src.tools.pdf_tools.pdf_view_analysis.miner.uic.loadUi')
     def test_ui_file_not_found(self, mock_load_ui):
         """Test handling when UI file is not found"""
         mock_load_ui.side_effect = FileNotFoundError("UI file not found")
@@ -437,8 +437,8 @@ class TestMainWindowEdgeCases:
             with pytest.raises(FileNotFoundError):
                 MainWindow()
     
-    @patch('src.utilities.pdf_tools.pdf_view_analysis.miner.uic.loadUi')
-    @patch('src.utilities.pdf_tools.pdf_view_analysis.miner.QFileDialog.getOpenFileName')
+    @patch('src.tools.pdf_tools.pdf_view_analysis.miner.uic.loadUi')
+    @patch('src.tools.pdf_tools.pdf_view_analysis.miner.QFileDialog.getOpenFileName')
     def test_multiple_pdf_opens(self, mock_file_dialog, mock_load_ui):
         """Test opening multiple PDFs in sequence"""
         with patch.object(MainWindow, 'actionExit') as mock_exit, \
@@ -452,7 +452,7 @@ class TestMainWindowEdgeCases:
             
             # First PDF
             mock_file_dialog.return_value = ("first.pdf", "PDF files (*.pdf)")
-            with patch('src.utilities.pdf_tools.pdf_view_analysis.miner.PDFMiner') as mock_miner1:
+            with patch('src.tools.pdf_tools.pdf_view_analysis.miner.PDFMiner') as mock_miner1:
                 mock_instance1 = Mock()
                 mock_miner1.return_value = mock_instance1
                 window.open_pdf()
@@ -460,7 +460,7 @@ class TestMainWindowEdgeCases:
             
             # Second PDF (should replace first)
             mock_file_dialog.return_value = ("second.pdf", "PDF files (*.pdf)")
-            with patch('src.utilities.pdf_tools.pdf_view_analysis.miner.PDFMiner') as mock_miner2:
+            with patch('src.tools.pdf_tools.pdf_view_analysis.miner.PDFMiner') as mock_miner2:
                 mock_instance2 = Mock()
                 mock_miner2.return_value = mock_instance2
                 window.open_pdf()
@@ -483,9 +483,9 @@ class TestIntegration:
         """Setup test data"""
         self.test_pdf_path = "integration_test.pdf"
     
-    @patch('src.utilities.pdf_tools.pdf_view_analysis.miner.uic.loadUi')
-    @patch('src.utilities.pdf_tools.pdf_view_analysis.miner.fitz.open')
-    @patch('src.utilities.pdf_tools.pdf_view_analysis.miner.QFileDialog.getOpenFileName')
+    @patch('src.tools.pdf_tools.pdf_view_analysis.miner.uic.loadUi')
+    @patch('src.tools.pdf_tools.pdf_view_analysis.miner.fitz.open')
+    @patch('src.tools.pdf_tools.pdf_view_analysis.miner.QFileDialog.getOpenFileName')
     def test_full_workflow_integration(self, mock_file_dialog, mock_fitz_open, mock_load_ui):
         """Test complete workflow from opening file to displaying page"""
         # Setup file dialog
@@ -529,8 +529,8 @@ class TestIntegration:
             # Create window and open PDF
             window = MainWindow()
             
-            with patch('src.utilities.pdf_tools.pdf_view_analysis.miner.QImage') as mock_qimage, \
-                 patch('src.utilities.pdf_tools.pdf_view_analysis.miner.QPixmap.fromImage') as mock_from_image:
+            with patch('src.tools.pdf_tools.pdf_view_analysis.miner.QImage') as mock_qimage, \
+                 patch('src.tools.pdf_tools.pdf_view_analysis.miner.QPixmap.fromImage') as mock_from_image:
                 
                 mock_qimage_instance = Mock()
                 mock_qimage.return_value = mock_qimage_instance

@@ -63,14 +63,14 @@ python src/utilities/network/network_scanner.py       # ✓ Success
 
 ### ✅ Import Testing
 ```python
-from src.utilities.network.network_connectivity import NetworkConnectivityGUI  # ✓ Success
-from src.utilities.network.network_scanner import NetworkScannerGUI            # ✓ Success
+from src.tools.network.network_connectivity import NetworkConnectivityGUI  # ✓ Success
+from src.tools.network.network_scanner import NetworkScannerGUI            # ✓ Success
 ```
 
 ### ✅ Hub Integration Testing
 ```python
-from utilities.network.network_connectivity import NetworkConnectivityGUI  # ✓ Success
-from utilities.network.network_scanner import NetworkScannerGUI            # ✓ Success
+from tools.network.network_connectivity import NetworkConnectivityGUI  # ✓ Success
+from tools.network.network_scanner import NetworkScannerGUI            # ✓ Success
 ```
 
 ## File Structure Changes

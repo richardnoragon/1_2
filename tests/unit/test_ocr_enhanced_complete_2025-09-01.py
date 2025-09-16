@@ -47,7 +47,7 @@ sys.modules['filetype'] = MagicMock()
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
 
 # Import the module under test
-from src.utilities.pdf_tools.pdf_enhancements import ocr
+from src.tools.pdf_tools.pdf_enhancements import ocr
 
 
 class TestOcrCoreImageProcessing:

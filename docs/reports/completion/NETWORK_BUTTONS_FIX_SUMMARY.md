@@ -48,7 +48,7 @@ The user reported that none of the Network tab buttons were starting programs. A
 def open_network_scanner(self):
     """Open network scanner."""
     try:
-        from src.utilities.network.network_scanner import NetworkScannerGUI
+        from src.tools.network.network_scanner import NetworkScannerGUI
         scanner_window = NetworkScannerGUI()
         scanner_window.show()
         self.status_bar.showMessage("Network Scanner opened")

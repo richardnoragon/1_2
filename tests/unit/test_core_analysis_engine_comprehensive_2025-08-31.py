@@ -26,14 +26,14 @@ import pytest
 
 # Import core analysis components
 try:
-    from src.utilities.analysis.check_sum import ChecksumGUI
-    from src.utilities.analysis.config.config_analyzer import (
+    from src.tools.analysis.check_sum import ChecksumGUI
+    from src.tools.analysis.config.config_analyzer import (
         ConfigAnalysisResult, ConfigIssue, ConfigType, ConfigurationAnalyzer,
         SecurityLevel)
-    from src.utilities.analysis.core.size_analyzer_logic import (
+    from src.tools.analysis.core.size_analyzer_logic import (
         SizeAnalyzer, SizeAnalyzerWorker)
-    from src.utilities.analysis.empty_folders import EmptyFoldersFinder
-    from src.utilities.analysis.find_duplicate_files import \
+    from src.tools.analysis.empty_folders import EmptyFoldersFinder
+    from src.tools.analysis.find_duplicate_files import \
         DuplicateFilesFinder
 except ImportError as e:
     pytest.skip(f"Core analysis modules not available: {e}", allow_module_level=True)
