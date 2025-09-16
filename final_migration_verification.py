@@ -8,6 +8,7 @@ import os
 import sys
 from pathlib import Path
 
+
 def verify_migration_complete():
     """Verify that the migration from src/utilities to src/tools is complete."""
     print("=" * 70)
