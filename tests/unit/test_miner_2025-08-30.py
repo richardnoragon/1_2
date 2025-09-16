@@ -1,7 +1,7 @@
 """
 Comprehensive Unit Tests for miner.py
 Generated on: 2025-08-30
-Target: src/utilities/pdf_tools/pdf_view_analysis/miner.py
+Target: src/tools/pdf_tools/pdf_view_analysis/miner.py
 
 Test Coverage:
 - PDFMiner class initialization and methods

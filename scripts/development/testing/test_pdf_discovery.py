@@ -13,7 +13,7 @@ def test_pdf_tools_discovery():
     """Test PDF tools category discovery"""
     
     # Check base path
-    base_path = Path("src/utilities/pdf_tools")
+    base_path = Path("src/tools/pdf_tools")
     print(f"PDF Tools base path: {base_path}")
     print(f"Path exists: {base_path.exists()}")
     

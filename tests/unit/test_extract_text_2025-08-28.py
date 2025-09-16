@@ -1,7 +1,7 @@
 """
 Comprehensive unit tests for extract_text.py
 Generated on: 2025-08-28
-Target: src/utilities/pdf_tools/pdf_content_extraction/extract_text.py
+Target: src/tools/pdf_tools/pdf_content_extraction/extract_text.py
 """
 
 import json

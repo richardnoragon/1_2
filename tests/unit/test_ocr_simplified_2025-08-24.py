@@ -1,7 +1,7 @@
 """
 Simplified OCR Unit Tests with Comprehensive Mocking
 test_ocr_simplified_2025-08-24.py
-Target: src/utilities/pdf_tools/pdf_enhancements/ocr.py
+Target: src/tools/pdf_tools/pdf_enhancements/ocr.py
 Created: 2025-08-24
 Framework: pytest with comprehensive mocking for external dependencies
 """

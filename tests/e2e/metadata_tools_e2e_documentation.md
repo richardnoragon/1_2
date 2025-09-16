@@ -162,7 +162,7 @@ python -m pytest tests/e2e/test_*metadata* tests/e2e/test_file_touch* -v --tb=sh
 python -m pytest tests/e2e/test_*metadata* tests/e2e/test_file_touch* --durations=20 --benchmark-sort=mean
 
 # With coverage analysis
-python -m pytest tests/e2e/test_*metadata* tests/e2e/test_file_touch* --cov=src/utilities/metadata --cov=src/utilities/office_metadata --cov=src/utilities/file_operations/file_touch --cov-report=html:tests/e2e/coverage_html
+python -m pytest tests/e2e/test_*metadata* tests/e2e/test_file_touch* --cov=src/utilities/metadata --cov=src/tools/metadata/office_metadata --cov=src/utilities/file_operations/file_touch --cov-report=html:tests/e2e/coverage_html
 ```
 
 ### Performance Monitoring Commands

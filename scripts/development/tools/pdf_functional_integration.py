@@ -1557,7 +1557,7 @@ class PDFFunctionalIntegration:
             
             # Import and use the conversion function
             try:
-                sys.path.insert(0, r"C:\Users\HP1\1_2\1_2\src\utilities\pdf_tools\pdf_conversion")
+                sys.path.insert(0, r"C:\Users\HP1\1_2\1_2\src\\tools\\pdf_tools\pdf_conversion")
                 from convert_to_docx import convert_pdf2docx, create_folder
                 success = convert_pdf2docx(input_file, output_file, pages)
                 
@@ -1690,7 +1690,7 @@ class PDFFunctionalIntegration:
             
             # Import and use the conversion function
             try:
-                sys.path.insert(0, r"C:\Users\HP1\1_2\1_2\src\utilities\pdf_tools\pdf_conversion")
+                sys.path.insert(0, r"C:\Users\HP1\1_2\1_2\src\\tools\\pdf_tools\pdf_conversion")
                 from convert_to_image import convert_pdf2img
                 
                 # Create output directory
@@ -1848,7 +1848,7 @@ class PDFFunctionalIntegration:
             
             # Import and use the conversion function
             try:
-                sys.path.insert(0, r"C:\Users\HP1\1_2\1_2\src\utilities\pdf_tools\pdf_conversion")
+                sys.path.insert(0, r"C:\Users\HP1\1_2\1_2\src\\tools\\pdf_tools\pdf_conversion")
                 import pdfkit
                 
                 success = False
@@ -1949,7 +1949,7 @@ class PDFFunctionalIntegration:
             
             # Show PDF viewer
             try:
-                sys.path.insert(0, r"C:\Users\HP1\1_2\1_2\src\utilities\pdf_tools\pdf_view_analysis")
+                sys.path.insert(0, r"C:\Users\HP1\1_2\1_2\src\\tools\\pdf_tools\pdf_view_analysis")
                 
                 # Add missing import fix for the view module
                 import builtins
@@ -2090,7 +2090,7 @@ class PDFFunctionalIntegration:
             
             # Perform analysis
             try:
-                sys.path.insert(0, r"C:\Users\HP1\1_2\1_2\src\utilities\pdf_tools\pdf_view_analysis")
+                sys.path.insert(0, r"C:\Users\HP1\1_2\1_2\src\\tools\\pdf_tools\pdf_view_analysis")
                 from miner import PDFMiner
                 import fitz
                 

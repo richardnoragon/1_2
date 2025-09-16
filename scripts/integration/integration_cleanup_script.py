@@ -92,7 +92,7 @@ def create_init_files():
         'src/utilities/system',
         'src/utilities/metadata',
         'src/utilities/file_operations',
-        'src/utilities/pdf_tools'
+        'src/tools/pdf_tools'
     ]
     
     for dir_path in utility_dirs:

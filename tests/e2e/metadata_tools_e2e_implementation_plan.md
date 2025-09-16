@@ -30,7 +30,7 @@ Based on comprehensive analysis of existing E2E test patterns in File Management
    - GPS coordinate processing and geolocation support
    - Batch processing capabilities with worker thread architecture
 
-2. **Office Metadata Tools** ([`src/utilities/metadata/office_meta_data_editor.py`](src/utilities/metadata/office_meta_data_editor.py), [`src/utilities/office_metadata/office_metadata_gui.py`](src/utilities/office_metadata/office_metadata_gui.py))
+2. **Office Metadata Tools** ([`src/utilities/metadata/office_meta_data_editor.py`](src/utilities/metadata/office_meta_data_editor.py), [`src/tools/metadata/office_metadata/office_metadata_gui.py`](src/tools/metadata/office_metadata/office_metadata_gui.py))
    - 1,062 + 886 lines of comprehensive office document processing
    - OOXML format support (DOCX, XLSX, PPTX) with XML parsing
    - Document property management (core, application, custom properties)

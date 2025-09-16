@@ -1,7 +1,7 @@
 """
 Comprehensive OCR Unit Tests - Fixed and Enhanced
 test_ocr_comprehensive_2025-08-31.py
-Target: src/utilities/pdf_tools/pdf_enhancements/ocr.py
+Target: src/tools/pdf_tools/pdf_enhancements/ocr.py
 Created: 2025-08-31
 Framework: pytest with comprehensive mocking for external dependencies
 """

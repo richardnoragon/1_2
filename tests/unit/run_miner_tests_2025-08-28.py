@@ -5,12 +5,12 @@ Created: 2025-08-28
 Executes comprehensive tests with detailed reporting and coverage analysis
 """
 
+import json
 import os
+import platform
+import subprocess
 import sys
 import time
-import json
-import subprocess
-import platform
 from datetime import datetime
 from pathlib import Path
 
@@ -104,7 +104,7 @@ class MinerTestRunner:
             '--self-contained-html',
             f'--json-report-file={self.json_report}',
             f'--junit-xml={self.junit_xml}',
-            f'--cov=src.utilities.pdf_tools.pdf_view_analysis.miner',
+            f'--cov=src.tools.pdf_tools.pdf_view_analysis.miner',
             f'--cov-report=html:{self.coverage_html}',
             f'--cov-report=json:{self.coverage_json}',
             '--cov-report=term-missing',

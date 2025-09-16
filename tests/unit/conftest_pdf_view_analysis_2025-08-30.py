@@ -5,7 +5,7 @@ This module provides common fixtures, mocks, and utilities for testing
 the PDF View Analysis module (view.py).
 
 Created: 2025-08-30
-Target: src/utilities/pdf_tools/pdf_view_analysis/view.py
+Target: src/tools/pdf_tools/pdf_view_analysis/view.py
 """
 
 import json

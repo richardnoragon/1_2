@@ -14,7 +14,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
 
 try:
     from PyQt5.QtWidgets import QApplication, QMessageBox
-    from src.utilities.office_metadata import OfficeMetadataGUI
+    from src.tools.metadata.office_metadata import OfficeMetadataGUI
     
     def main():
         """Main function to run the Office Metadata Tools demo."""

@@ -1,7 +1,7 @@
 """
 Comprehensive test configuration and fixtures for watermark.py testing
 Generated on: 2025-08-24
-Target: src/utilities/pdf_tools/pdf_enhancements/watermark.py
+Target: src/tools/pdf_tools/pdf_enhancements/watermark.py
 """
 
 import json

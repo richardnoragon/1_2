@@ -104,7 +104,7 @@ def generate_test_summary(exit_code):
     
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     print(f"📅 Execution Date/Time: {timestamp}")
-    print(f"🎯 Target Module: src/utilities/pdf_tools/pdf_enhancements/ocr.py")
+    print(f"🎯 Target Module: src/tools/pdf_tools/pdf_enhancements/ocr.py")
     print(f"🧪 Test Suite: test_ocr_enhanced_complete_2025-09-01.py")
     print(f"⚙️ Test Framework: pytest with comprehensive mocking")
     

@@ -4,44 +4,41 @@ PDF Functional Integration - Connects operation engine with enhanced PDF tools w
 Replaces placeholder implementations with functional PDF operations
 """
 
+import logging
 import os
-import sys
 import platform
 import subprocess
-import logging
-from typing import Dict, Any, Optional, Callable
+import sys
 from pathlib import Path
+from typing import Any, Callable, Dict, Optional
 
-from PyQt5.QtWidgets import QMessageBox, QProgressDialog, QApplication, QFileDialog
-from PyQt5.QtCore import QThread, pyqtSignal, QTimer
+from PyQt5.QtCore import QThread, QTimer, pyqtSignal
+from PyQt5.QtWidgets import (QApplication, QFileDialog, QMessageBox,
+                             QProgressDialog)
 
 # Import our PDF operation components
 try:
-    from pdf_operation_engine import (
-        PDFOperationEngine, OperationResult, OperationType,
-        PDFValidator, PDFFileManager
-    )
-    from pdf_parameter_dialogs import (
-        PDFMergeDialog, PDFSplitDialog, PDFSignDialog
-    )
     # Import PDF extraction components
-    from pdf_extraction_engine import (
-        PDFExtractionEngine, ExtractionResult, ExtractionType
-    )
-    from pdf_extraction_parameter_dialogs import (
-        PDFTextExtractionDialog, PDFImageExtractionDialog,
-        PDFMetadataExtractionDialog, PDFTableExtractionDialog,
-        PDFLinkExtractionDialog
-    )
+    from pdf_extraction_engine import (ExtractionResult, ExtractionType,
+                                       PDFExtractionEngine)
+    from pdf_extraction_parameter_dialogs import (PDFImageExtractionDialog,
+                                                  PDFLinkExtractionDialog,
+                                                  PDFMetadataExtractionDialog,
+                                                  PDFTableExtractionDialog,
+                                                  PDFTextExtractionDialog)
+    from pdf_operation_engine import (OperationResult, OperationType,
+                                      PDFFileManager, PDFOperationEngine,
+                                      PDFValidator)
+    from pdf_parameter_dialogs import (PDFMergeDialog, PDFSignDialog,
+                                       PDFSplitDialog)
     # Import PDF security components
-    from pdf_security_engine import (
-        PDFSecurityEngine, SecurityResult, SecurityOperation,
-        SecuritySettings, DigitalSignature
-    )
-    from pdf_security_parameter_dialogs import (
-        PDFEncryptionDialog, PDFDecryptionDialog, PDFDigitalSignatureDialog,
-        PDFSecurityInfoDialog
-    )
+    from pdf_security_engine import (DigitalSignature, PDFSecurityEngine,
+                                     SecurityOperation, SecurityResult,
+                                     SecuritySettings)
+    from pdf_security_parameter_dialogs import (PDFDecryptionDialog,
+                                                PDFDigitalSignatureDialog,
+                                                PDFEncryptionDialog,
+                                                PDFSecurityInfoDialog)
     PDF_COMPONENTS_AVAILABLE = True
 except ImportError as e:
     print(f"Failed to import PDF components: {e}")
@@ -689,8 +686,8 @@ class PDFFunctionalIntegration:
     def open_output_folder(self, file_path: str):
         """Open the output folder containing the result file"""
         try:
-            import subprocess
             import platform
+            import subprocess
             
             folder_path = os.path.dirname(file_path)
             
@@ -990,11 +987,12 @@ class PDFFunctionalIntegration:
                 return
             
             # Get watermark parameters
-            from PyQt5.QtWidgets import QInputDialog, QDialog, QVBoxLayout
-            from PyQt5.QtWidgets import QLabel, QLineEdit, QSlider, QPushButton
-            from PyQt5.QtWidgets import QDialogButtonBox, QHBoxLayout
             from PyQt5.QtCore import Qt
-            
+            from PyQt5.QtWidgets import (QDialog, QDialogButtonBox,
+                                         QHBoxLayout, QInputDialog, QLabel,
+                                         QLineEdit, QPushButton, QSlider,
+                                         QVBoxLayout)
+
             # Create watermark parameter dialog
             dialog = QDialog(self.parent_widget)
             dialog.setWindowTitle("Add Watermark")
@@ -1067,8 +1065,8 @@ class PDFFunctionalIntegration:
             
             # Import and use the watermark function
             try:
-                import sys
                 import os
+                import sys
                 sys.path.append(
                     os.path.join(os.path.dirname(__file__), 
                                'src', 'utilities', 'pdf_tools', 'pdf_enhancements')
@@ -1101,8 +1099,8 @@ class PDFFunctionalIntegration:
                     f"Watermark applied successfully!\nOutput: {output_file}"
                 )
                 # Open output folder
-                import subprocess
                 import platform
+                import subprocess
                 folder_path = os.path.dirname(output_file)
                 if platform.system() == "Windows":
                     subprocess.run(["explorer", folder_path])
@@ -1138,10 +1136,10 @@ class PDFFunctionalIntegration:
                 return
             
             # Get OCR parameters
-            from PyQt5.QtWidgets import QDialog, QVBoxLayout, QLabel
-            from PyQt5.QtWidgets import QLineEdit, QCheckBox, QComboBox
-            from PyQt5.QtWidgets import QDialogButtonBox
-            
+            from PyQt5.QtWidgets import (QCheckBox, QComboBox, QDialog,
+                                         QDialogButtonBox, QLabel, QLineEdit,
+                                         QVBoxLayout)
+
             # Create OCR parameter dialog
             dialog = QDialog(self.parent_widget)
             dialog.setWindowTitle("OCR Processing")
@@ -1211,8 +1209,8 @@ class PDFFunctionalIntegration:
             
             # Import and use the OCR function
             try:
-                import sys
                 import os
+                import sys
                 sys.path.append(
                     os.path.join(os.path.dirname(__file__), 
                                'src', 'utilities', 'pdf_tools', 'pdf_enhancements')
@@ -1262,8 +1260,8 @@ class PDFFunctionalIntegration:
                 
                 # Open output folder
                 if output_file:
-                    import subprocess
                     import platform
+                    import subprocess
                     folder_path = os.path.dirname(output_file)
                     if platform.system() == "Windows":
                         subprocess.run(["explorer", folder_path])
@@ -1299,11 +1297,11 @@ class PDFFunctionalIntegration:
                 return
             
             # Get highlighting parameters
-            from PyQt5.QtWidgets import QDialog, QVBoxLayout, QLabel
-            from PyQt5.QtWidgets import QLineEdit, QComboBox, QSlider
-            from PyQt5.QtWidgets import QDialogButtonBox, QHBoxLayout
             from PyQt5.QtCore import Qt
-            
+            from PyQt5.QtWidgets import (QComboBox, QDialog, QDialogButtonBox,
+                                         QHBoxLayout, QLabel, QLineEdit,
+                                         QSlider, QVBoxLayout)
+
             # Create highlighting parameter dialog
             dialog = QDialog(self.parent_widget)
             dialog.setWindowTitle("Highlight Content")
@@ -1412,8 +1410,8 @@ class PDFFunctionalIntegration:
             
             # Import and use the highlight function
             try:
-                import sys
                 import os
+                import sys
                 sys.path.append(
                     os.path.join(os.path.dirname(__file__), 
                                'src', 'utilities', 'pdf_tools', 'pdf_enhancements')
@@ -1461,8 +1459,8 @@ class PDFFunctionalIntegration:
                 )
                 
                 # Open output folder
-                import subprocess
                 import platform
+                import subprocess
                 folder_path = os.path.dirname(output_file)
                 if platform.system() == "Windows":
                     subprocess.run(["explorer", folder_path])
@@ -1497,9 +1495,9 @@ class PDFFunctionalIntegration:
                 return
             
             # Get conversion parameters
-            from PyQt5.QtWidgets import QDialog, QVBoxLayout, QLabel
-            from PyQt5.QtWidgets import QLineEdit, QCheckBox, QDialogButtonBox
-            
+            from PyQt5.QtWidgets import (QCheckBox, QDialog, QDialogButtonBox,
+                                         QLabel, QLineEdit, QVBoxLayout)
+
             # Create conversion parameter dialog
             dialog = QDialog(self.parent_widget)
             dialog.setWindowTitle("Convert to DOCX")
@@ -1557,7 +1555,7 @@ class PDFFunctionalIntegration:
             
             # Import and use the conversion function
             try:
-                sys.path.insert(0, r"C:\Users\HP1\1_2\1_2\src\utilities\pdf_tools\pdf_conversion")
+                sys.path.insert(0, r"C:\Users\HP1\1_2\src\tools\pdf_tools\pdf_conversion")
                 from convert_to_docx import convert_pdf2docx, create_folder
                 success = convert_pdf2docx(input_file, output_file, pages)
                 
@@ -1620,9 +1618,9 @@ class PDFFunctionalIntegration:
                 return
             
             # Get conversion parameters
-            from PyQt5.QtWidgets import QDialog, QVBoxLayout, QLabel
-            from PyQt5.QtWidgets import QLineEdit, QComboBox, QDialogButtonBox
-            
+            from PyQt5.QtWidgets import (QComboBox, QDialog, QDialogButtonBox,
+                                         QLabel, QLineEdit, QVBoxLayout)
+
             # Create conversion parameter dialog
             dialog = QDialog(self.parent_widget)
             dialog.setWindowTitle("Convert to Images")
@@ -1690,9 +1688,9 @@ class PDFFunctionalIntegration:
             
             # Import and use the conversion function
             try:
-                sys.path.insert(0, r"C:\Users\HP1\1_2\1_2\src\utilities\pdf_tools\pdf_conversion")
+                sys.path.insert(0, r"C:\Users\HP1\1_2\src\tools\pdf_tools\pdf_conversion")
                 from convert_to_image import convert_pdf2img
-                
+
                 # Create output directory
                 os.makedirs(output_dir, exist_ok=True)
                 
@@ -1742,11 +1740,11 @@ class PDFFunctionalIntegration:
             self.logger.info("Starting functional HTML to PDF conversion")
             
             # Get conversion parameters
-            from PyQt5.QtWidgets import QDialog, QVBoxLayout, QLabel
-            from PyQt5.QtWidgets import QLineEdit, QTextEdit, QComboBox
-            from PyQt5.QtWidgets import QDialogButtonBox, QTabWidget, QWidget
-            from PyQt5.QtWidgets import QPushButton, QHBoxLayout
-            
+            from PyQt5.QtWidgets import (QComboBox, QDialog, QDialogButtonBox,
+                                         QHBoxLayout, QLabel, QLineEdit,
+                                         QPushButton, QTabWidget, QTextEdit,
+                                         QVBoxLayout, QWidget)
+
             # Create conversion parameter dialog
             dialog = QDialog(self.parent_widget)
             dialog.setWindowTitle("Convert HTML to PDF")
@@ -1848,7 +1846,7 @@ class PDFFunctionalIntegration:
             
             # Import and use the conversion function
             try:
-                sys.path.insert(0, r"C:\Users\HP1\1_2\1_2\src\utilities\pdf_tools\pdf_conversion")
+                sys.path.insert(0, r"C:\Users\HP1\1_2\src\tools\pdf_tools\pdf_conversion")
                 import pdfkit
                 
                 success = False
@@ -1949,7 +1947,7 @@ class PDFFunctionalIntegration:
             
             # Show PDF viewer
             try:
-                sys.path.insert(0, r"C:\Users\HP1\1_2\1_2\src\utilities\pdf_tools\pdf_view_analysis")
+                sys.path.insert(0, r"C:\Users\HP1\1_2\src\tools\pdf_tools\pdf_view_analysis")
                 
                 # Add missing import fix for the view module
                 import builtins
@@ -2029,10 +2027,11 @@ class PDFFunctionalIntegration:
                 return
             
             # Show analysis options dialog
-            from PyQt5.QtWidgets import QDialog, QVBoxLayout, QLabel
-            from PyQt5.QtWidgets import QCheckBox, QDialogButtonBox, QTextEdit
-            from PyQt5.QtWidgets import QPushButton, QHBoxLayout, QTabWidget, QWidget
-            
+            from PyQt5.QtWidgets import (QCheckBox, QDialog, QDialogButtonBox,
+                                         QHBoxLayout, QLabel, QPushButton,
+                                         QTabWidget, QTextEdit, QVBoxLayout,
+                                         QWidget)
+
             # Create analysis dialog
             dialog = QDialog(self.parent_widget)
             dialog.setWindowTitle("PDF Analysis Options")
@@ -2090,10 +2089,10 @@ class PDFFunctionalIntegration:
             
             # Perform analysis
             try:
-                sys.path.insert(0, r"C:\Users\HP1\1_2\1_2\src\utilities\pdf_tools\pdf_view_analysis")
-                from miner import PDFMiner
+                sys.path.insert(0, r"C:\Users\HP1\1_2\src\tools\pdf_tools\pdf_view_analysis")
                 import fitz
-                
+                from miner import PDFMiner
+
                 # Create PDF miner instance
                 pdf_miner = PDFMiner(input_file)
                 
@@ -2211,7 +2210,7 @@ class PDFFunctionalIntegration:
         """Fallback watermark implementation using PyMuPDF directly"""
         try:
             import fitz
-            
+
             # Open the PDF
             pdf = fitz.open(input_file)
             
@@ -2298,7 +2297,7 @@ class PDFFunctionalIntegration:
         """Fallback highlighting implementation using PyMuPDF"""
         try:
             import fitz
-            
+
             # Open the PDF
             pdf = fitz.open(input_file)
             total_matches = 0
@@ -2402,7 +2401,7 @@ class PDFFunctionalIntegration:
         """Fallback image conversion implementation using PyMuPDF"""
         try:
             import fitz
-            
+
             # Open the PDF
             pdf = fitz.open(input_file)
             output_files = []
@@ -2438,11 +2437,12 @@ class PDFFunctionalIntegration:
         """Fallback PDF viewer implementation using basic display"""
         try:
             import fitz
-            from PyQt5.QtWidgets import QDialog, QVBoxLayout, QLabel, QScrollArea
-            from PyQt5.QtWidgets import QPushButton, QHBoxLayout, QGraphicsView, QGraphicsScene
-            from PyQt5.QtGui import QPixmap
             from PyQt5.QtCore import Qt
-            
+            from PyQt5.QtGui import QPixmap
+            from PyQt5.QtWidgets import (QDialog, QGraphicsScene,
+                                         QGraphicsView, QHBoxLayout, QLabel,
+                                         QPushButton, QScrollArea, QVBoxLayout)
+
             # Create simple viewer dialog
             viewer_dialog = QDialog(self.parent_widget)
             viewer_dialog.setWindowTitle(f"PDF Viewer - {os.path.basename(input_file)}")
@@ -2529,7 +2529,7 @@ class PDFFunctionalIntegration:
         """Fallback PDF analysis implementation using PyMuPDF"""
         try:
             import fitz
-            
+
             # Open PDF
             doc = fitz.open(input_file)
             analysis_results = {}
@@ -2590,8 +2590,9 @@ class PDFFunctionalIntegration:
     def _show_analysis_results(self, results, input_file):
         """Show analysis results in a dialog"""
         try:
-            from PyQt5.QtWidgets import QDialog, QVBoxLayout, QTextEdit, QPushButton
-            
+            from PyQt5.QtWidgets import (QDialog, QPushButton, QTextEdit,
+                                         QVBoxLayout)
+
             # Create results dialog
             results_dialog = QDialog(self.parent_widget)
             results_dialog.setWindowTitle(f"PDF Analysis Results - {os.path.basename(input_file)}")
@@ -2757,7 +2758,9 @@ def integrate_functional_pdf_operations(enhanced_pdf_widget):
 if __name__ == "__main__":
     # Test the integration
     import sys
-    from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QVBoxLayout, QWidget
+
+    from PyQt5.QtWidgets import (QApplication, QMainWindow, QPushButton,
+                                 QVBoxLayout, QWidget)
     
     class TestWidget(QWidget):
         def __init__(self):

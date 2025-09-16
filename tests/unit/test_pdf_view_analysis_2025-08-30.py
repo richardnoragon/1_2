@@ -10,7 +10,7 @@ This test suite provides complete coverage for the PDFViewer class including:
 - Resource cleanup
 
 Created: 2025-08-30
-Module: src/utilities/pdf_tools/pdf_view_analysis/view.py
+Module: src/tools/pdf_tools/pdf_view_analysis/view.py
 """
 
 import os

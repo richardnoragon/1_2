@@ -2,9 +2,9 @@
 """
 Test Runner for merg.py Unit Tests
 Generated on: August 24, 2025
-Target: src.utilities.pdf_tools.pdf_basic_operations.merg
+Target: src.tools.pdf_tools.pdf_basic_operations.merg
 
-This script executes comprehensive unit tests for merg.py with detailed reporting.
+This script executes compre            f.write(f"Target: src.tools.pdf_tools.pdf_basic_operations.merg\n")           f.write(f"Target: src.tools.pdf_tools.pdf_basic_operations.merg\n")ensive unit tests for merg.py with detailed reporting.
 Generates HTML, JSON, and coverage reports with execution timestamps.
 """
 
@@ -119,7 +119,7 @@ class MergTestRunner:
             '--self-contained-html',
             '--json-report',
             '--json-report-file=' + self.output_files['json_report'],
-            '--cov=src.utilities.pdf_tools.pdf_basic_operations.merg',
+            '--cov=src.tools.pdf_tools.pdf_basic_operations.merg',
             '--cov-report=html:' + self.output_files['coverage_html'],
             '--cov-report=json:' + self.output_files['coverage_json'],
             '--cov-report=term-missing',
@@ -182,7 +182,7 @@ class MergTestRunner:
             f.write("MERG.PY UNIT TEST EXECUTION SUMMARY\\n")
             f.write("=" * 50 + "\\n")
             f.write(f"Generated: {end_timestamp}\\n")
-            f.write(f"Target: src.utilities.pdf_tools.pdf_basic_operations.merg\\n")
+            f.write(f"Target: src.tools.pdf_tools.pdf_basic_operations.merg\\n")
             f.write(f"Test File: test_merg_{self.date_stamp}.py\\n\\n")
             
             f.write("EXECUTION DETAILS:\\n")
@@ -284,7 +284,7 @@ class MergTestRunner:
         print("MERG.PY UNIT TEST RUNNER")
         print("=" * 40)
         print(f"Timestamp: {self.timestamp}")
-        print(f"Target: src.utilities.pdf_tools.pdf_basic_operations.merg")
+        print(f"Target: src.tools.pdf_tools.pdf_basic_operations.merg")
         print(f"Test Directory: {self.test_dir}")
         
         # Setup environment

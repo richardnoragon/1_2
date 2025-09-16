@@ -7,20 +7,18 @@ discovers and displays tools based on the folder structure, integrating
 seamlessly into the main RFU hub.
 """
 
-import sys
-import os
 import logging
-from pathlib import Path
-from typing import Dict, Any, Optional, List
+import os
+import sys
 from datetime import datetime, timedelta
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 
-from PyQt5.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QPushButton, 
-    QLabel, QFrame, QScrollArea, QGridLayout, QMessageBox,
-    QProgressBar, QFileDialog, QGroupBox
-)
-from PyQt5.QtCore import Qt, pyqtSignal, QTimer
+from PyQt5.QtCore import Qt, QTimer, pyqtSignal
 from PyQt5.QtGui import QFont
+from PyQt5.QtWidgets import (QFileDialog, QFrame, QGridLayout, QGroupBox,
+                             QHBoxLayout, QLabel, QMessageBox, QProgressBar,
+                             QPushButton, QScrollArea, QVBoxLayout, QWidget)
 
 
 class PDFToolsStateManager:
@@ -259,8 +257,8 @@ class EnhancedPDFToolsWidget(QWidget):
     def discover_and_create_categories(self):
         """Discover PDF tool categories from folder structure and create buttons"""
         # Define the PDF tools base path - fix path calculation
-        # Current file is in: src/utilities/pdf_tools/widgets/enhanced_pdf_tools_widget.py
-        # We want to get to: src/utilities/pdf_tools/
+        # Current file is in: src/tools/pdf_tools/widgets/enhanced_pdf_tools_widget.py
+        # We want to get to: src/tools/pdf_tools/
         base_path = Path(__file__).parent.parent
         
         # Category mapping with colors and descriptions
@@ -590,7 +588,7 @@ class EnhancedPDFToolsWidget(QWidget):
             # Try to execute the program
             import subprocess
             import sys
-            
+
             # Run the program with the current PDF file as argument
             cmd = [sys.executable, file_path, self.state_manager.current_file]
             
@@ -729,7 +727,7 @@ class EnhancedPDFToolsWidget(QWidget):
             return
             
         # Create a simple dialog with recent files
-        from PyQt5.QtWidgets import QDialog, QListWidget, QDialogButtonBox
+        from PyQt5.QtWidgets import QDialog, QDialogButtonBox, QListWidget
         
         dialog = QDialog(self)
         dialog.setWindowTitle("Recent PDF Files")
@@ -773,6 +771,7 @@ class EnhancedPDFToolsWidget(QWidget):
 if __name__ == "__main__":
     """Test the enhanced PDF tools widget"""
     import sys
+
     from PyQt5.QtWidgets import QApplication, QMainWindow
     
     app = QApplication(sys.argv)

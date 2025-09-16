@@ -3,8 +3,8 @@
 Test script to demonstrate the new PDF Tools Widget functionality
 """
 
-import sys
 import os
+import sys
 from pathlib import Path
 
 # Add the project root to the path
@@ -15,9 +15,8 @@ sys.path.insert(0, str(project_root / "src"))
 from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget
 
 try:
-    from src.utilities.pdf_tools.widgets.enhanced_pdf_tools_widget import (
+    from src.tools.pdf_tools.widgets.enhanced_pdf_tools_widget import \
         EnhancedPDFToolsWidget
-    )
     
     class TestWindow(QMainWindow):
         def __init__(self):

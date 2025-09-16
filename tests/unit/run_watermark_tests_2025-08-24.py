@@ -2,7 +2,7 @@
 """
 Test Runner for watermark.py Unit Tests
 Generated on: 2025-08-24
-Target: src/utilities/pdf_tools/pdf_enhancements/watermark.py
+Target: src/tools/pdf_tools/pdf_enhancements/watermark.py
 
 This script executes comprehensive unit tests for the watermark module
 and generates detailed reports with timestamps and standardized naming.
@@ -91,7 +91,7 @@ def run_tests():
     
     # Add coverage reporting
     cmd.extend([
-        "--cov=src.utilities.pdf_tools.pdf_enhancements.watermark",
+        "--cov=src.tools.pdf_tools.pdf_enhancements.watermark",
         f"--cov-report=html:{test_dir / get_output_filename('coverage')}/",
         f"--cov-report=json:{test_dir / get_output_filename('coverage', 'json')}",
         "--cov-report=term-missing",

@@ -1,6 +1,6 @@
 # Requirements for Office Metadata GUI Unit Tests
 # Generated: 2025-08-29
-# Target: src/utilities/office_metadata/office_metadata_gui.py
+# Target: src/tools/metadata/office_metadata/office_metadata_gui.py
 
 # Core testing framework
 pytest>=7.0.0

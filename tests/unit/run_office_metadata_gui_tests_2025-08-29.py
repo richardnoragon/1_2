@@ -3,7 +3,7 @@
 Office Metadata GUI Test Runner
 Comprehensive test execution script for office_metadata_gui.py
 Created: 2025-08-29
-Target: src/utilities/office_metadata/office_metadata_gui.py
+Target: src/tools/metadata/office_metadata/office_metadata_gui.py
 
 This script executes comprehensive unit tests for the Office Metadata GUI
 with standardized reporting, coverage analysis, and result documentation.
@@ -54,7 +54,7 @@ class OfficeMetadataGUITestRunner:
             "--self-contained-html",
             "--json-report",
             f"--json-report-file={self.json_report}",
-            "--cov=src.utilities.office_metadata.office_metadata_gui",
+            "--cov=src.tools.metadata.office_metadata.office_metadata_gui",
             f"--cov-report=html:{self.coverage_html}",
             f"--cov-report=json:{self.coverage_json}",
             f"--cov-report=xml:{self.coverage_xml}",
@@ -104,7 +104,7 @@ class OfficeMetadataGUITestRunner:
         """Check if target module is available."""
         print("\n🎯 Checking target module...")
         
-        target_path = Path("src/utilities/office_metadata/office_metadata_gui.py")
+        target_path = Path("src/tools/metadata/office_metadata/office_metadata_gui.py")
         
         if target_path.exists():
             print(f"  ✅ Target module found: {target_path}")
@@ -112,8 +112,8 @@ class OfficeMetadataGUITestRunner:
         else:
             # Try alternative paths
             alternative_paths = [
-                Path("../../../src/utilities/office_metadata/office_metadata_gui.py"),
-                Path("../../src/utilities/office_metadata/office_metadata_gui.py"),
+                Path("../../../src/tools/metadata/office_metadata/office_metadata_gui.py"),
+                Path("../../src/tools/metadata/office_metadata/office_metadata_gui.py"),
                 Path("src/utilities/office_metadata/office_metadata_gui.py")
             ]
             

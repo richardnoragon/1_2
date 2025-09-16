@@ -5,11 +5,11 @@ Created: 2025-08-28
 Validates test suite completeness and generates final summary
 """
 
+import json
 import os
 import sys
-from pathlib import Path
 from datetime import datetime
-import json
+from pathlib import Path
 
 
 def validate_test_files():
@@ -118,7 +118,7 @@ def generate_validation_summary():
             "basic_test": "python run_miner_tests_2025-08-28.py",
             "pytest_direct": "pytest test_miner_2025-08-28.py -c pytest_miner_2025-08-28.ini",
             "performance_only": "pytest test_miner_performance_2025-08-28.py -m performance",
-            "coverage_report": "pytest --cov=src.utilities.pdf_tools.pdf_view_analysis.miner --cov-report=html"
+            "coverage_report": "pytest --cov=src.tools.pdf_tools.pdf_view_analysis.miner --cov-report=html"
         }
     }
     

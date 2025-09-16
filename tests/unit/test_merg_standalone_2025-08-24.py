@@ -1,7 +1,7 @@
 """
 Standalone Unit Tests for merg.py  
 Generated on: August 24, 2025
-Target Module: src.utilities.pdf_tools.pdf_basic_operations.merg
+Target Module: src.tools.pdf_tools.pdf_basic_operations.merg
 
 This test suite provides comprehensive coverage using mocks and stubs
 to test the logic without requiring actual dependencies.

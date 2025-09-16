@@ -1,7 +1,7 @@
 """
 Comprehensive Unit Tests for miner.py (Standalone Version)
 Created: 2025-08-30
-Target: src/utilities/pdf_tools/pdf_view_analysis/miner.py
+Target: src/tools/pdf_tools/pdf_view_analysis/miner.py
 
 This test suite provides comprehensive coverage of miner.py functionality
 without requiring external PDF dependencies for initial testing.

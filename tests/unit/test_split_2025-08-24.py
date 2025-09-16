@@ -2,7 +2,7 @@
 Comprehensive unit tests for split.py
 Test file: test_split_2025-08-24.py
 Execution timestamp: 2025-08-24
-Target module: src/utilities/pdf_tools/pdf_basic_operations/split.py
+Target module: src/tools/pdf_tools/pdf_basic_operations/split.py
 
 This test suite provides comprehensive coverage of all functions and methods
 in the split.py module, including edge cases, error handling, and GUI components.

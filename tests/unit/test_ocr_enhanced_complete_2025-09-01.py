@@ -1,7 +1,7 @@
 """
 Enhanced OCR Comprehensive Test Suite - Complete Implementation
 test_ocr_enhanced_complete_2025-09-01.py
-Target: src/utilities/pdf_tools/pdf_enhancements/ocr.py
+Target: src/tools/pdf_tools/pdf_enhancements/ocr.py
 Created: 2025-09-01
 Framework: pytest with advanced mocking and comprehensive coverage
 

@@ -34,7 +34,7 @@ def run_extract_metadata_tests():
         "tests/unit/test_extract_metadata_2025-08-24.py",
         "-v",
         "--tb=short",
-        f"--cov=src/utilities/pdf_tools/pdf_content_extraction/extract_metadata",
+        f"--cov=src/tools/pdf_tools/pdf_content_extraction/extract_metadata",
         f"--cov-report=html:tests/unit/result_extract_metadata_2025-08-24_coverage_html",
         f"--cov-report=json:tests/unit/result_extract_metadata_2025-08-24_coverage.json",
         f"--cov-report=term-missing",

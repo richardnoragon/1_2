@@ -148,7 +148,7 @@ class SignTestRunner:
             f"--json-report",
             f"--json-report-file={self.json_report}",
             f"--junit-xml={self.junit_report}",
-            f"--cov=src.utilities.pdf_tools.pdf_basic_operations.sign",
+            f"--cov=src.tools.pdf_tools.pdf_basic_operations.sign",
             f"--cov-report=html:{self.coverage_html}",
             f"--cov-report=json:{self.coverage_json}",
             "--cov-report=term-missing",

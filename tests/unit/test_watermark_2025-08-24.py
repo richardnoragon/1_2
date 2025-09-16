@@ -1,7 +1,7 @@
 """
 Comprehensive Unit Tests for watermark.py
 Generated on: 2025-08-24
-Target: src/utilities/pdf_tools/pdf_enhancements/watermark.py
+Target: src/tools/pdf_tools/pdf_enhancements/watermark.py
 
 This test suite provides comprehensive coverage of the watermark.py module including:
 - add_watermark function with various parameters and edge cases
@@ -26,8 +26,8 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
 # Import target module with error handling
 try:
     from tools.pdf_tools.pdf_enhancements.watermark import (WatermarkUI,
-                                                                add_watermark,
-                                                                main)
+                                                            add_watermark,
+                                                            main)
     WATERMARK_MODULE_AVAILABLE = True
 except ImportError as e:
     WATERMARK_MODULE_AVAILABLE = False
@@ -54,9 +54,9 @@ class TestAddWatermarkFunction:
         if not WATERMARK_MODULE_AVAILABLE:
             pytest.skip("Watermark module not available")
             
-        with patch('utilities.pdf_tools.pdf_enhancements.watermark.logger', 
+        with patch('tools.pdf_tools.pdf_enhancements.watermark.logger', 
                    mock_logger):
-            with patch('utilities.pdf_tools.pdf_enhancements.watermark.fitz', 
+            with patch('tools.pdf_tools.pdf_enhancements.watermark.fitz', 
                        mock_fitz):
                 result = add_watermark(
                     input_file=sample_pdf_file,
@@ -77,9 +77,9 @@ class TestAddWatermarkFunction:
         if not WATERMARK_MODULE_AVAILABLE:
             pytest.skip("Watermark module not available")
             
-        with patch('utilities.pdf_tools.pdf_enhancements.watermark.logger', 
+        with patch('tools.pdf_tools.pdf_enhancements.watermark.logger', 
                    mock_logger):
-            with patch('utilities.pdf_tools.pdf_enhancements.watermark.fitz', 
+            with patch('tools.pdf_tools.pdf_enhancements.watermark.fitz', 
                        mock_fitz):
                 result = add_watermark(
                     input_file=sample_pdf_file,
@@ -98,7 +98,7 @@ class TestAddWatermarkFunction:
         if not WATERMARK_MODULE_AVAILABLE:
             pytest.skip("Watermark module not available")
             
-        with patch('utilities.pdf_tools.pdf_enhancements.watermark.logger', 
+        with patch('tools.pdf_tools.pdf_enhancements.watermark.logger', 
                    mock_logger):
             with pytest.raises(FileNotFoundError):
                 add_watermark(
@@ -117,9 +117,9 @@ class TestAddWatermarkFunction:
         if not WATERMARK_MODULE_AVAILABLE:
             pytest.skip("Watermark module not available")
             
-        with patch('utilities.pdf_tools.pdf_enhancements.watermark.logger', 
+        with patch('tools.pdf_tools.pdf_enhancements.watermark.logger', 
                    mock_logger):
-            with patch('utilities.pdf_tools.pdf_enhancements.watermark.fitz', 
+            with patch('tools.pdf_tools.pdf_enhancements.watermark.fitz', 
                        mock_fitz):
                 result = add_watermark(
                     input_file=sample_pdf_file,
@@ -142,9 +142,9 @@ class TestAddWatermarkFunction:
         test_opacities = [0.0, 0.1, 0.5, 0.9, 1.0]
         
         for opacity in test_opacities:
-            with patch('utilities.pdf_tools.pdf_enhancements.watermark.logger', 
+            with patch('tools.pdf_tools.pdf_enhancements.watermark.logger', 
                        mock_logger):
-                with patch('utilities.pdf_tools.pdf_enhancements.watermark.fitz', 
+                with patch('tools.pdf_tools.pdf_enhancements.watermark.fitz', 
                            mock_fitz):
                     result = add_watermark(
                         input_file=sample_pdf_file,
@@ -162,9 +162,9 @@ class TestAddWatermarkFunction:
         if not WATERMARK_MODULE_AVAILABLE:
             pytest.skip("Watermark module not available")
             
-        with patch('utilities.pdf_tools.pdf_enhancements.watermark.logger', 
+        with patch('tools.pdf_tools.pdf_enhancements.watermark.logger', 
                    mock_logger):
-            with patch('utilities.pdf_tools.pdf_enhancements.watermark.fitz', 
+            with patch('tools.pdf_tools.pdf_enhancements.watermark.fitz', 
                        mock_fitz):
                 result = add_watermark(
                     input_file=sample_pdf_file,
@@ -191,9 +191,9 @@ class TestAddWatermarkFunction:
         ]
         
         for text in special_texts:
-            with patch('utilities.pdf_tools.pdf_enhancements.watermark.logger', 
+            with patch('tools.pdf_tools.pdf_enhancements.watermark.logger', 
                        mock_logger):
-                with patch('utilities.pdf_tools.pdf_enhancements.watermark.fitz', 
+                with patch('tools.pdf_tools.pdf_enhancements.watermark.fitz', 
                            mock_fitz):
                     result = add_watermark(
                         input_file=sample_pdf_file,
@@ -214,9 +214,9 @@ class TestAddWatermarkFunction:
         mock_fitz_error = Mock()
         mock_fitz_error.open.side_effect = Exception("PDF processing error")
         
-        with patch('utilities.pdf_tools.pdf_enhancements.watermark.logger', 
+        with patch('tools.pdf_tools.pdf_enhancements.watermark.logger', 
                    mock_logger):
-            with patch('utilities.pdf_tools.pdf_enhancements.watermark.fitz', 
+            with patch('tools.pdf_tools.pdf_enhancements.watermark.fitz', 
                        mock_fitz_error):
                 with pytest.raises(Exception):
                     add_watermark(
@@ -244,8 +244,8 @@ class TestWatermarkUI:
         os.chdir(temp_dir)
         
         try:
-            with patch('utilities.pdf_tools.pdf_enhancements.watermark.uic.loadUi'):
-                with patch('utilities.pdf_tools.pdf_enhancements.watermark.logger') as mock_logger:
+            with patch('tools.pdf_tools.pdf_enhancements.watermark.uic.loadUi'):
+                with patch('tools.pdf_tools.pdf_enhancements.watermark.logger') as mock_logger:
                     ui = WatermarkUI(config=mock_config)
                     
                     assert ui is not None
@@ -261,9 +261,9 @@ class TestWatermarkUI:
         if not WATERMARK_MODULE_AVAILABLE or not QT_AVAILABLE:
             pytest.skip("Watermark module or PyQt5 not available")
             
-        with patch('utilities.pdf_tools.pdf_enhancements.watermark.uic.loadUi', 
+        with patch('tools.pdf_tools.pdf_enhancements.watermark.uic.loadUi', 
                    side_effect=Exception("UI load failed")):
-            with patch('utilities.pdf_tools.pdf_enhancements.watermark.logger') as mock_logger:
+            with patch('tools.pdf_tools.pdf_enhancements.watermark.logger') as mock_logger:
                 with pytest.raises(Exception):
                     WatermarkUI(config=mock_config)
                     
@@ -280,8 +280,8 @@ class TestWatermarkUI:
         os.chdir(temp_dir)
         
         try:
-            with patch('utilities.pdf_tools.pdf_enhancements.watermark.uic.loadUi'):
-                with patch('utilities.pdf_tools.pdf_enhancements.watermark.logger'):
+            with patch('tools.pdf_tools.pdf_enhancements.watermark.uic.loadUi'):
+                with patch('tools.pdf_tools.pdf_enhancements.watermark.logger'):
                     ui = WatermarkUI(config=mock_config)
                     
                     # Mock UI elements
@@ -306,9 +306,9 @@ class TestWatermarkUI:
         os.chdir(temp_dir)
         
         try:
-            with patch('utilities.pdf_tools.pdf_enhancements.watermark.uic.loadUi'):
-                with patch('utilities.pdf_tools.pdf_enhancements.watermark.logger'):
-                    with patch('utilities.pdf_tools.pdf_enhancements.watermark.ConfigManager') as mock_config_manager:
+            with patch('tools.pdf_tools.pdf_enhancements.watermark.uic.loadUi'):
+                with patch('tools.pdf_tools.pdf_enhancements.watermark.logger'):
+                    with patch('tools.pdf_tools.pdf_enhancements.watermark.ConfigManager') as mock_config_manager:
                         ui = WatermarkUI(config=mock_config)
                         
                         # Mock UI elements
@@ -335,9 +335,9 @@ class TestWatermarkUI:
         os.chdir(temp_dir)
         
         try:
-            with patch('utilities.pdf_tools.pdf_enhancements.watermark.uic.loadUi'):
-                with patch('utilities.pdf_tools.pdf_enhancements.watermark.logger'):
-                    with patch('utilities.pdf_tools.pdf_enhancements.watermark.QFileDialog.getOpenFileName', 
+            with patch('tools.pdf_tools.pdf_enhancements.watermark.uic.loadUi'):
+                with patch('tools.pdf_tools.pdf_enhancements.watermark.logger'):
+                    with patch('tools.pdf_tools.pdf_enhancements.watermark.QFileDialog.getOpenFileName', 
                                return_value=("/test/file.pdf", "PDF Files (*.pdf)")):
                         ui = WatermarkUI(config=mock_config)
                         
@@ -362,9 +362,9 @@ class TestWatermarkUI:
         os.chdir(temp_dir)
         
         try:
-            with patch('utilities.pdf_tools.pdf_enhancements.watermark.uic.loadUi'):
-                with patch('utilities.pdf_tools.pdf_enhancements.watermark.logger'):
-                    with patch('utilities.pdf_tools.pdf_enhancements.watermark.QFileDialog.getOpenFileName', 
+            with patch('tools.pdf_tools.pdf_enhancements.watermark.uic.loadUi'):
+                with patch('tools.pdf_tools.pdf_enhancements.watermark.logger'):
+                    with patch('tools.pdf_tools.pdf_enhancements.watermark.QFileDialog.getOpenFileName', 
                                return_value=("", "")):
                         ui = WatermarkUI(config=mock_config)
                         
@@ -389,11 +389,11 @@ class TestWatermarkUI:
         os.chdir(temp_dir)
         
         try:
-            with patch('utilities.pdf_tools.pdf_enhancements.watermark.uic.loadUi'):
-                with patch('utilities.pdf_tools.pdf_enhancements.watermark.logger'):
-                    with patch('utilities.pdf_tools.pdf_enhancements.watermark.add_watermark', 
+            with patch('tools.pdf_tools.pdf_enhancements.watermark.uic.loadUi'):
+                with patch('tools.pdf_tools.pdf_enhancements.watermark.logger'):
+                    with patch('tools.pdf_tools.pdf_enhancements.watermark.add_watermark', 
                                return_value=True) as mock_add:
-                        with patch('utilities.pdf_tools.pdf_enhancements.watermark.QMessageBox'):
+                        with patch('tools.pdf_tools.pdf_enhancements.watermark.QMessageBox'):
                             ui = WatermarkUI(config=mock_config)
                             
                             # Mock UI elements
@@ -426,9 +426,9 @@ class TestWatermarkUI:
         os.chdir(temp_dir)
         
         try:
-            with patch('utilities.pdf_tools.pdf_enhancements.watermark.uic.loadUi'):
-                with patch('utilities.pdf_tools.pdf_enhancements.watermark.logger'):
-                    with patch('utilities.pdf_tools.pdf_enhancements.watermark.QMessageBox') as mock_msgbox:
+            with patch('tools.pdf_tools.pdf_enhancements.watermark.uic.loadUi'):
+                with patch('tools.pdf_tools.pdf_enhancements.watermark.logger'):
+                    with patch('tools.pdf_tools.pdf_enhancements.watermark.QMessageBox') as mock_msgbox:
                         ui = WatermarkUI(config=mock_config)
                         
                         # Mock UI elements
@@ -456,9 +456,9 @@ class TestWatermarkUI:
         os.chdir(temp_dir)
         
         try:
-            with patch('utilities.pdf_tools.pdf_enhancements.watermark.uic.loadUi'):
-                with patch('utilities.pdf_tools.pdf_enhancements.watermark.logger'):
-                    with patch('utilities.pdf_tools.pdf_enhancements.watermark.QMessageBox') as mock_msgbox:
+            with patch('tools.pdf_tools.pdf_enhancements.watermark.uic.loadUi'):
+                with patch('tools.pdf_tools.pdf_enhancements.watermark.logger'):
+                    with patch('tools.pdf_tools.pdf_enhancements.watermark.QMessageBox') as mock_msgbox:
                         ui = WatermarkUI(config=mock_config)
                         
                         # Mock UI elements
@@ -486,11 +486,11 @@ class TestWatermarkUI:
         os.chdir(temp_dir)
         
         try:
-            with patch('utilities.pdf_tools.pdf_enhancements.watermark.uic.loadUi'):
-                with patch('utilities.pdf_tools.pdf_enhancements.watermark.logger'):
-                    with patch('utilities.pdf_tools.pdf_enhancements.watermark.add_watermark', 
+            with patch('tools.pdf_tools.pdf_enhancements.watermark.uic.loadUi'):
+                with patch('tools.pdf_tools.pdf_enhancements.watermark.logger'):
+                    with patch('tools.pdf_tools.pdf_enhancements.watermark.add_watermark', 
                                return_value=True) as mock_add:
-                        with patch('utilities.pdf_tools.pdf_enhancements.watermark.QMessageBox'):
+                        with patch('tools.pdf_tools.pdf_enhancements.watermark.QMessageBox'):
                             ui = WatermarkUI(config=mock_config)
                             
                             # Mock UI elements
@@ -526,9 +526,9 @@ class TestWatermarkUI:
         os.chdir(temp_dir)
         
         try:
-            with patch('utilities.pdf_tools.pdf_enhancements.watermark.uic.loadUi'):
-                with patch('utilities.pdf_tools.pdf_enhancements.watermark.logger'):
-                    with patch('utilities.pdf_tools.pdf_enhancements.watermark.QMessageBox') as mock_msgbox:
+            with patch('tools.pdf_tools.pdf_enhancements.watermark.uic.loadUi'):
+                with patch('tools.pdf_tools.pdf_enhancements.watermark.logger'):
+                    with patch('tools.pdf_tools.pdf_enhancements.watermark.QMessageBox') as mock_msgbox:
                         ui = WatermarkUI(config=mock_config)
                         
                         # Mock UI elements
@@ -557,9 +557,9 @@ class TestMainFunction:
         if not WATERMARK_MODULE_AVAILABLE or not QT_AVAILABLE:
             pytest.skip("Watermark module or PyQt5 not available")
             
-        with patch('utilities.pdf_tools.pdf_enhancements.watermark.QtWidgets.QApplication') as mock_app:
-            with patch('utilities.pdf_tools.pdf_enhancements.watermark.WatermarkUI') as mock_ui:
-                with patch('utilities.pdf_tools.pdf_enhancements.watermark.logger'):
+        with patch('tools.pdf_tools.pdf_enhancements.watermark.QtWidgets.QApplication') as mock_app:
+            with patch('tools.pdf_tools.pdf_enhancements.watermark.WatermarkUI') as mock_ui:
+                with patch('tools.pdf_tools.pdf_enhancements.watermark.logger'):
                     with patch('sys.exit') as mock_exit:
                         mock_app_instance = Mock()
                         mock_app.return_value = mock_app_instance
@@ -584,8 +584,8 @@ class TestErrorHandlingAndEdgeCases:
             
         large_text = "A" * 1000  # Very long watermark text
         
-        with patch('utilities.pdf_tools.pdf_enhancements.watermark.logger', mock_logger):
-            with patch('utilities.pdf_tools.pdf_enhancements.watermark.fitz', mock_fitz):
+        with patch('tools.pdf_tools.pdf_enhancements.watermark.logger', mock_logger):
+            with patch('tools.pdf_tools.pdf_enhancements.watermark.fitz', mock_fitz):
                 result = add_watermark(
                     input_file=sample_pdf_file,
                     watermark_text=large_text,
@@ -604,8 +604,8 @@ class TestErrorHandlingAndEdgeCases:
         extreme_values = [-1.0, 2.0, 100.0, -0.5]
         
         for opacity in extreme_values:
-            with patch('utilities.pdf_tools.pdf_enhancements.watermark.logger', mock_logger):
-                with patch('utilities.pdf_tools.pdf_enhancements.watermark.fitz', mock_fitz):
+            with patch('tools.pdf_tools.pdf_enhancements.watermark.logger', mock_logger):
+                with patch('tools.pdf_tools.pdf_enhancements.watermark.fitz', mock_fitz):
                     result = add_watermark(
                         input_file=sample_pdf_file,
                         watermark_text="Test",
@@ -621,8 +621,8 @@ class TestErrorHandlingAndEdgeCases:
         if not WATERMARK_MODULE_AVAILABLE:
             pytest.skip("Watermark module not available")
             
-        with patch('utilities.pdf_tools.pdf_enhancements.watermark.logger', mock_logger):
-            with patch('utilities.pdf_tools.pdf_enhancements.watermark.fitz', mock_fitz):
+        with patch('tools.pdf_tools.pdf_enhancements.watermark.logger', mock_logger):
+            with patch('tools.pdf_tools.pdf_enhancements.watermark.fitz', mock_fitz):
                 # Test with None watermark text
                 with pytest.raises(Exception):
                     add_watermark(
@@ -660,8 +660,8 @@ class TestPerformanceAndStress:
         large_mock_doc.save = Mock()
         large_mock_doc.close = Mock()
         
-        with patch('utilities.pdf_tools.pdf_enhancements.watermark.logger', mock_logger):
-            with patch('utilities.pdf_tools.pdf_enhancements.watermark.fitz.open', 
+        with patch('tools.pdf_tools.pdf_enhancements.watermark.logger', mock_logger):
+            with patch('tools.pdf_tools.pdf_enhancements.watermark.fitz.open', 
                        return_value=large_mock_doc):
                 start_time = time.time()
                 

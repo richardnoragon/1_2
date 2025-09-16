@@ -44,7 +44,7 @@ def main():
         f"--html=tests/unit/result_ocr_2025-08-24_{execution_timestamp}.html",
         "--self-contained-html",
         f"--json-report-file=tests/unit/result_ocr_2025-08-24_{execution_timestamp}.json",
-        "--cov=src.utilities.pdf_tools.pdf_enhancements.ocr",
+        "--cov=src.tools.pdf_tools.pdf_enhancements.ocr",
         f"--cov-report=html:tests/unit/htmlcov_ocr_2025-08-24_{execution_timestamp}",
         "--cov-report=term-missing",
         f"--cov-report=json:tests/unit/coverage_ocr_2025-08-24_{execution_timestamp}.json",

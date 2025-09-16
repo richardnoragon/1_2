@@ -1,7 +1,7 @@
 """
 Enhanced Test Runner for miner.py with Comprehensive Reporting
 Created: 2025-08-30
-Target: src/utilities/pdf_tools/pdf_view_analysis/miner.py
+Target: src/tools/pdf_tools/pdf_view_analysis/miner.py
 
 This script provides an enhanced test execution environment with:
 - Detailed HTML and JSON reporting

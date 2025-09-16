@@ -1,7 +1,7 @@
 """
 Pytest Configuration for Office Metadata GUI Tests
 Generated: 2025-08-29
-Target: src/utilities/office_metadata/office_metadata_gui.py
+Target: src/tools/metadata/office_metadata/office_metadata_gui.py
 
 This module provides pytest fixtures and configuration for comprehensive
 testing of the Office Metadata GUI components.
@@ -417,7 +417,7 @@ def test_execution_info():
     return {
         'timestamp': datetime.now().isoformat(),
         'date': datetime.now().strftime('%Y-%m-%d'),
-        'target_module': 'src/utilities/office_metadata/office_metadata_gui.py',
+        'target_module': 'src/tools/metadata/office_metadata/office_metadata_gui.py',
         'test_suite': 'Office Metadata GUI Comprehensive Tests',
         'framework': 'pytest + unittest',
         'categories': [

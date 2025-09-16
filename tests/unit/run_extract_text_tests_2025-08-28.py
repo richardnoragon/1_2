@@ -155,7 +155,7 @@ class ExtractTextTestRunner:
                 ),
                 'test_file': str(self.test_file),
                 'target_module': 'extract_text.py',
-                'target_path': 'src/utilities/pdf_tools/pdf_content_extraction/extract_text.py'
+                'target_path': 'src/tools/pdf_tools/pdf_content_extraction/extract_text.py'
             },
             'results': {},
             'coverage': {},
@@ -378,7 +378,7 @@ class ExtractTextTestRunner:
         print("🚀 Starting comprehensive test execution for extract_text.py")
         print(f"📅 Date: {self.date_suffix}")
         print(f"🎯 Target: extract_text.py")
-        print(f"📍 Path: src/utilities/pdf_tools/pdf_content_extraction/extract_text.py")
+        print(f"📍 Path: src/tools/pdf_tools/pdf_content_extraction/extract_text.py")
         
         try:
             # Setup environment

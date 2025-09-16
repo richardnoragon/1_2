@@ -6,7 +6,7 @@ This script executes comprehensive unit tests for the PDF View Analysis module
 and generates detailed HTML and JSON reports with execution timestamps.
 
 Created: 2025-08-30
-Target: src/utilities/pdf_tools/pdf_view_analysis/view.py
+Target: src/tools/pdf_tools/pdf_view_analysis/view.py
 """
 
 import json
@@ -146,7 +146,7 @@ def generate_summary_report(success, execution_time, test_result):
         "test_execution_summary": {
             "timestamp": timestamp,
             "module": "pdf_view_analysis",
-            "target_file": "src/utilities/pdf_tools/pdf_view_analysis/view.py",
+            "target_file": "src/tools/pdf_tools/pdf_view_analysis/view.py",
             "test_file": "test_pdf_view_analysis_2025-08-30.py",
             "execution_time_seconds": round(execution_time, 2),
             "success": success,

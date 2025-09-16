@@ -13,7 +13,7 @@ print("🔧 Enhanced PDF Tools Widget Restoration Verification")
 print("=" * 60)
 
 # Check that folders exist in the expected location
-pdf_tools_path = Path("src/utilities/pdf_tools")
+pdf_tools_path = Path("src/tools/pdf_tools")
 expected_folders = [
     'pdf_basic_operations',
     'pdf_content_extraction', 
@@ -39,11 +39,12 @@ print(f"\n📊 Found {len(found_folders)}/{len(expected_folders)} expected folde
 
 # Check the enhanced widget path calculation
 try:
-    from utilities.pdf_tools.widgets.enhanced_pdf_tools_widget import EnhancedPDFToolsWidget
+    from tools.pdf_tools.widgets.enhanced_pdf_tools_widget import \
+        EnhancedPDFToolsWidget
     print("\n🔧 Enhanced widget import: ✅ SUCCESS")
     
     # Check the path calculation logic
-    widget_file_path = Path("src/utilities/pdf_tools/widgets/enhanced_pdf_tools_widget.py")
+    widget_file_path = Path("src/tools/pdf_tools/widgets/enhanced_pdf_tools_widget.py")
     if widget_file_path.exists():
         # Simulate the path calculation
         base_path = widget_file_path.parent.parent

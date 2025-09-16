@@ -1155,7 +1155,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
     def open_office_metadata(self):
         """Open office metadata editor."""
         try:
-            from ..utilities.metadata.office_metadata import OfficeMetadataGUI
+            from ..tools.metadata.office_metadata import OfficeMetadataGUI
             tool = OfficeMetadataGUI()
             tool.show()
             self._update_status_bar("Office Metadata Editor opened")
@@ -1167,8 +1167,9 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
     def open_pdf_tools(self):
         """Open PDF tools."""
         try:
-            from ..utilities.metadata.pdf_tools import PDFToolsGUI
-            tool = PDFToolsGUI()
+            from ..tools.pdf_tools.widgets.enhanced_pdf_tools_widget import \
+                EnhancedPDFToolsWidget
+            tool = EnhancedPDFToolsWidget()
             tool.show()
             self._update_status_bar("PDF Tools opened")
             self.logger.info("PDF Tools opened")
