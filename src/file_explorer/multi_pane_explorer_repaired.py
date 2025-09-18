@@ -39,26 +39,24 @@ try:
     from src.file_explorer.core.enhanced_config_manager import \
         get_enhanced_config_manager
     from src.file_explorer.enhanced_file_browser import EnhancedFileBrowser
-    from src.file_explorer.features.bookmark_manager import (
-        BookmarkManager, BookmarkType)
+    from src.file_explorer.features.bookmark_manager import (BookmarkManager,
+                                                             BookmarkType)
     from src.file_explorer.integration.advanced_tool_launcher import (
         AdvancedToolLauncher, LaunchConfiguration)
     from src.file_explorer.integration.keyboard_shortcuts_system import \
         KeyboardShortcutManager
     from src.file_explorer.ui.custom_widgets import (EnhancedStatusBar,
-                                                         EnhancedToolbar,
-                                                         FilePropertyPanel,
-                                                         QuickPreviewWidget,
-                                                         SearchWidget,
-                                                         ThemeColors)
+                                                     EnhancedToolbar,
+                                                     FilePropertyPanel,
+                                                     QuickPreviewWidget,
+                                                     SearchWidget, ThemeColors)
     from src.file_explorer.ui.file_explorer_pane import (FileExplorerPane,
-                                                             FileListWidget,
-                                                             NavigationBar,
-                                                             SortCriteria,
-                                                             ViewMode)
-    from src.file_explorer.ui.pane_manager import (PaneConfiguration,
-                                                       PaneType,
-                                                       ToolsPaneWidget)
+                                                         FileListWidget,
+                                                         NavigationBar,
+                                                         SortCriteria,
+                                                         ViewMode)
+    from src.file_explorer.ui.pane_manager import (PaneConfiguration, PaneType,
+                                                   ToolsPaneWidget)
     from src.file_explorer.ui.widget_lifecycle_manager import (
         get_widget_lifecycle_manager, is_widget_valid, register_widget,
         safe_destroy_widget, safe_widget_operation)
@@ -88,8 +86,8 @@ except ImportError as e:
     AdvancedToolLauncher = None
     KeyboardShortcutManager = None
     
-    # ROBUST FALLBACK CLASSES
-    class ToolsPaneWidget(QWidget):
+    # ROBUST FALLBACK CLASSES - only used if import completely fails
+    class FallbackToolsPaneWidget(QWidget):
         """Fallback ToolsPaneWidget for when imports fail."""
         
         toolLaunched = pyqtSignal(str, str)
@@ -97,7 +95,7 @@ except ImportError as e:
         def __init__(self, config, parent=None):
             super().__init__(parent)
             layout = QVBoxLayout(self)
-            label = QLabel("Tools Pane (Fallback)")
+            label = QLabel("Tools Pane (Import Failed)")
             label.setAlignment(Qt.AlignCenter)
             layout.addWidget(label)
     
@@ -690,6 +688,10 @@ class MultiPaneFileExplorer(QMainWindow):
         bookmark_widget = self.create_simple_bookmark_widget()
         left_panel.addTab(bookmark_widget, "🔖 Bookmarks")
         
+        # Recent locations tab
+        recent_widget = self.create_recent_locations_widget()
+        left_panel.addTab(recent_widget, "📋 Recent")
+        
         # Set tools tab as default active tab
         left_panel.setCurrentIndex(0)
         
@@ -702,10 +704,10 @@ class MultiPaneFileExplorer(QMainWindow):
         
         # Add default bookmarks
         default_bookmarks = [
-            ("Home", str(Path.home())),
-            ("Documents", str(Path.home() / "Documents")),
-            ("Downloads", str(Path.home() / "Downloads")),
-            ("Desktop", str(Path.home() / "Desktop"))
+            ("🏠 Home", str(Path.home())),
+            ("📄 Documents", str(Path.home() / "Documents")),
+            ("⬇️ Downloads", str(Path.home() / "Downloads")),
+            ("🖥️ Desktop", str(Path.home() / "Desktop"))
         ]
         
         for name, path in default_bookmarks:
@@ -716,52 +718,170 @@ class MultiPaneFileExplorer(QMainWindow):
         bookmark_tree.itemDoubleClicked.connect(self._on_bookmark_activated)
         return bookmark_tree
     
+    def create_recent_locations_widget(self):
+        """Create recent locations widget."""
+        recent_tree = QTreeWidget()
+        recent_tree.setHeaderLabels(["Recent Locations"])
+        
+        # Add some default recent locations
+        recent_locations = [
+            str(Path.home()),
+            str(Path.home() / "Documents"),
+            str(Path.home() / "Downloads"),
+        ]
+        
+        for location in recent_locations:
+            item = QTreeWidgetItem([f"📁 {Path(location).name}"])
+            item.setData(0, Qt.UserRole, location)
+            item.setToolTip(0, location)
+            recent_tree.addTopLevelItem(item)
+        
+        recent_tree.itemDoubleClicked.connect(self._on_bookmark_activated)
+        return recent_tree
+    
     def create_tools_widget(self):
         """Create tools widget with all RFU tool categories."""
         try:
+            # Import the real ToolsPaneWidget directly to avoid fallback
+            from src.file_explorer.ui.pane_manager import \
+                PaneConfiguration as RealPaneConfig
+            from src.file_explorer.ui.pane_manager import \
+                PaneType as RealPaneType
+            from src.file_explorer.ui.pane_manager import \
+                ToolsPaneWidget as RealToolsPaneWidget
+
             # Create tools pane configuration
-            tools_config = PaneConfiguration(
+            tools_config = RealPaneConfig(
                 pane_id="main_tools_pane",
-                pane_type=PaneType.TOOLS,
+                pane_type=RealPaneType.TOOLS,
                 title="RFU Tools"
             )
             
-            # Create tools pane widget
-            tools_pane = ToolsPaneWidget(tools_config, self)
+            self.logger.info("Creating ToolsPaneWidget with real implementation...")
             
-            # Connect tool launch signals
-            if hasattr(tools_pane, 'toolLaunched'):
+            # Create tools pane widget with real implementation
+            tools_pane = RealToolsPaneWidget(tools_config, self)
+            
+            self.logger.info(f"ToolsPaneWidget created: {type(tools_pane).__name__}")
+            
+            # Check if tool_categories was properly initialized
+            if hasattr(tools_pane, 'tool_categories'):
+                categories_count = len(tools_pane.tool_categories)
+                self.logger.info(f"Tool categories initialized: {categories_count} categories")
+            else:
+                self.logger.error("ToolsPaneWidget missing tool_categories attribute")
+                return self._create_fallback_tools_widget()
+            
+            # Connect tool launch signals if available
+            if (hasattr(tools_pane, 'toolLaunched') and
+                    hasattr(tools_pane.toolLaunched, 'connect')):
                 tools_pane.toolLaunched.connect(self._on_tool_launched)
             
-            if hasattr(tools_pane, 'toolSelected'):
+            if (hasattr(tools_pane, 'toolSelected') and
+                    hasattr(tools_pane.toolSelected, 'connect')):
                 tools_pane.toolSelected.connect(self._on_tool_selected)
             
-            self.logger.info("Tools widget created successfully")
+            success_msg = "Tools widget created successfully"
+            self.logger.info(success_msg)
             return tools_pane
             
         except Exception as e:
+            import traceback
             self.logger.error(f"Error creating tools widget: {e}")
+            self.logger.error(f"Traceback: {traceback.format_exc()}")
             return self._create_fallback_tools_widget()
     
     def _create_fallback_tools_widget(self):
         """Create fallback tools widget when ToolsPaneWidget fails."""
         fallback_tree = QTreeWidget()
-        fallback_tree.setHeaderLabels(["Tools"])
+        fallback_tree.setHeaderLabels(["🔧 RFU Tools"])
+        fallback_tree.setStyleSheet("""
+            QTreeWidget {
+                background-color: white;
+                border: 1px solid #dee2e6;
+                font-size: 11px;
+            }
+            QTreeWidget::item {
+                padding: 4px;
+                border-bottom: 1px solid #f8f9fa;
+            }
+            QTreeWidget::item:selected {
+                background-color: #007ACC;
+                color: white;
+            }
+            QTreeWidget::item:hover {
+                background-color: #e3f2fd;
+            }
+        """)
         
-        # Add basic tool categories
+        # Add comprehensive tool categories
         categories = {
-            "File Management": ["File Finder", "Catalog Files", "Rename Files"],
-            "File Operations": ["Copy/Move/Sync/Delete", "Compress/Decompress"],
-            "Analysis": ["Size Analyzer", "Duplicate Finder"],
-            "Security": ["Encrypt/Decrypt", "Secure Delete"]
+            "📁 File Management": [
+                "🔍 File Finder",
+                "📋 Catalog Files", 
+                "✏️ Rename Files",
+                "📂 Organize Files",
+                "⚙️ Advanced Folders"
+            ],
+            "🔄 File Operations": [
+                "📋 Copy/Move/Sync/Delete",
+                "🗜️ Compress/Decompress",
+                "✂️ Split/Join Files",
+                "🔄 Synchronize",
+                "📝 Enhanced Editor"
+            ],
+            "📊 Analysis": [
+                "📏 Size Analyzer",
+                "🔍 Duplicate Finder",
+                "🔒 File Checksum",
+                "📁 Empty Folders"
+            ],
+            "🔐 Security": [
+                "⚙️ Security Preferences",
+                "🔐 Encrypt/Decrypt",
+                "🗑️ Secure Delete",
+                "🔑 Permissions Editor"
+            ],
+            "📋 Metadata": [
+                "🖼️ Edit Image Metadata",
+                "📄 Office Metadata Editor",
+                "🕐 File Touch"
+            ],
+            "📄 PDF Tools": [
+                "📄 PDF Utilities",
+                "🔗 Extract Links",
+                "📄 Page Administration"
+            ],
+            "🌐 Network Tools": [
+                "🌐 Network Connectivity",
+                "📡 Network Scanner",
+                "📤 Network Transfer",
+                "🔖 Bookmark Manager"
+            ],
+            "🔒 Privacy Tools": [
+                "🧹 Privacy Cleaner",
+                "🎭 Data Anonymizer"
+            ],
+            "⚙️ System Tools": [
+                "📋 Enhanced Clipboard",
+                "🔧 System Diagnostics",
+                "🧹 System Cleanup",
+                "🔄 Software Maintenance"
+            ]
         }
         
         for category_name, tools in categories.items():
-            category_item = QTreeWidgetItem([f"[FOLDER] {category_name}"])
+            category_item = QTreeWidgetItem([category_name])
             category_item.setData(0, Qt.UserRole, {"type": "category"})
             
+            # Style category items
+            category_item.setForeground(0, Qt.darkBlue)
+            font = category_item.font(0)
+            font.setBold(True)
+            category_item.setFont(0, font)
+            
             for tool_name in tools:
-                tool_item = QTreeWidgetItem([f"[TOOL] {tool_name}"])
+                tool_item = QTreeWidgetItem([tool_name])
                 tool_item.setData(0, Qt.UserRole, {"type": "tool", "name": tool_name})
                 category_item.addChild(tool_item)
             
@@ -1307,6 +1427,10 @@ class MultiPaneFileExplorer(QMainWindow):
             "• Double-click bookmark to navigate\n"
             "• Double-click file to open\n"
             "• Double-click folder to enter\n\n"
+            "Sidebar Features:\n"
+            "• 🔧 Tools - Access all RFU utilities\n"
+            "• 🔖 Bookmarks - Quick navigation shortcuts\n"
+            "• 📋 Recent - Recently visited locations\n\n"
             "Status: All core functionality restored!"
         )
 

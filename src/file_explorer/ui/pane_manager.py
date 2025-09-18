@@ -650,61 +650,68 @@ class ToolsPaneWidget(BasePaneWidget):
     
     def __init__(self, config: PaneConfiguration, parent=None):
         """Initialize tools pane widget."""
-        super().__init__(config, parent)
-        
-        # Tool categories and definitions from RFU main.py
+        # Initialize tool categories BEFORE calling super().__init__()
+        # because super().__init__() will call _setup_ui() which needs tool_categories
         self.tool_categories = {
+            "Analysis": [
+                ("Checksum Calculator", "Calculate and verify file checksums", "src.tools.analysis.check_sum"),
+                ("Duplicate Finder", "Find and remove duplicate files", "src.tools.analysis.find_duplicate_files"),
+                ("Empty Folders", "Find and clean empty folders", "src.tools.analysis.empty_folders"),
+                ("Size Analyzer", "Analyze disk space usage", "src.tools.analysis.size_analyzer"),
+            ],
             "File Management": [
-                ("File Finder", "Search and find files by criteria"),
-                ("Catalog Files", "Create and manage file catalogs"),
-                ("Rename Files", "Batch rename files and folders"),
-                ("Organize Files", "Organize files by type/date"),
-                ("Advanced Folders", "Smart folder monitoring"),
+                ("File Finder", "Search and find files by criteria", "src.tools.file_management.file_finder"),
+                ("Catalog Tool", "Create and manage file catalogs", "src.tools.file_management.catalog_tool"),
+                ("File Renamer", "Batch rename files and folders", "src.tools.file_management.rename"),
+                ("File Organizer", "Organize files by type/date", "src.tools.file_management.organize"),
+                ("Advanced Folders", "Smart folder monitoring and search", "src.tools.file_management.advanced_folders"),
             ],
             "File Operations": [
-                ("Copy/Move/Sync/Delete", "Advanced file operations"),
-                ("Compress/Decompress", "Archive and extract files"),
-                ("Split/Join Files", "Split large files or join parts"),
-                ("Synchronize", "Synchronize directories"),
-                ("Enhanced Editor", "Text editor with syntax highlighting"),
-            ],
-            "Analysis": [
-                ("Size Analyzer", "Analyze disk space usage"),
-                ("Duplicate Finder", "Find and remove duplicate files"),
-                ("File Checksum", "Calculate and verify checksums"),
-                ("Empty Folders", "Find and clean empty folders"),
-            ],
-            "Security": [
-                ("Security Preferences", "Configure security settings"),
-                ("Encrypt/Decrypt", "File encryption and decryption"),
-                ("Secure Delete", "Permanently delete sensitive files"),
-                ("Permissions Editor", "Manage file permissions"),
+                ("Copy/Move/Sync/Delete", "Advanced file operations", "src.tools.file_operations.cmsd.cmsd_logic"),
+                ("File Splitter", "Split large files or join parts", "src.tools.file_operations.file_splitter_logic"),
+                ("Enhanced Editor", "Text editor with syntax highlighting", "src.tools.file_operations.enhanced_editor"),
+                ("File Touch", "Modify file timestamps", "src.tools.file_operations.file_touch"),
+                ("Compression Tools", "Archive and extract files", "src.tools.file_operations.compression"),
+                ("Secure Delete", "Securely delete sensitive files", "src.tools.file_operations.secure_delete"),
+                ("Synchronizer", "Synchronize directories", "src.tools.file_operations.synchronizer"),
             ],
             "Metadata": [
-                ("Edit Image Metadata", "View and edit image metadata"),
-                ("Office Metadata Editor", "Edit document metadata"),
-                ("File Touch", "Modify file timestamps"),
+                ("Image Metadata Editor", "View and edit image metadata", "src.tools.metadata.image_metadata_logic"),
+                ("Office Metadata Editor", "Edit document metadata", "src.tools.metadata.office_meta_data_editor"),
+            ],
+            "Network": [
+                ("Network Connectivity", "Check network connectivity and diagnostics", "src.tools.network.network_connectivity"),
+                ("Network Scanner", "Scan network for devices and services", "src.tools.network.network_scanner"),
+                ("Network Transfer", "Transfer files between RFU clients", "src.tools.network.network_transfer"),
+                ("Bookmark Manager", "Cross-platform bookmark manager", "src.tools.network.bookmark_manager"),
             ],
             "PDF Tools": [
-                ("PDF Utilities", "Comprehensive PDF tools"),
-                ("Extract Links", "Extract links from PDF files"),
-                ("Page Administration", "Manage PDF pages"),
+                ("PDF Basic Operations", "Basic PDF operations", "src.tools.pdf_tools.pdf_basic_operations"),
+                ("PDF Content Extraction", "Extract content from PDFs", "src.tools.pdf_tools.pdf_content_extraction"),
+                ("PDF Conversion", "Convert PDF files", "src.tools.pdf_tools.pdf_conversion"),
+                ("PDF Enhancements", "Enhance PDF documents", "src.tools.pdf_tools.pdf_enhancements"),
+                ("PDF Security", "PDF security operations", "src.tools.pdf_tools.pdf_security"),
+                ("PDF View Analysis", "Analyze PDF structure", "src.tools.pdf_tools.pdf_view_analysis"),
+                ("PDF Batch Processor", "Process PDFs in batch", "src.tools.pdf_tools.batch_processor"),
             ],
-            "Network Tools": [
-                ("Network Connectivity", "Check network connectivity"),
-                ("Network Scanner", "Scan network for devices"),
-                ("Network Transfer", "Transfer files between RFU clients"),
-                ("Bookmark Manager", "Cross-platform bookmark manager"),
+            "Privacy": [
+                ("Privacy Cleaner", "Clean privacy-sensitive data", "src.tools.privacy.privacy_tools"),
+                ("Data Anonymizer", "Anonymize sensitive file data", "src.tools.privacy.data_anonymizer"),
+                ("Simple Privacy Hub", "Simple privacy tools interface", "src.tools.privacy.privacy_tools_simple"),
             ],
-            "Privacy Tools": [
-                ("Privacy Cleaner", "Clean privacy-sensitive data"),
-                ("Data Anonymizer", "Anonymize sensitive file data"),
+            "Security": [
+                ("Encrypt/Decrypt", "File encryption and decryption", "src.tools.security.en_and_decrypt"),
+                ("Secure Delete", "Permanently delete sensitive files", "src.tools.security.secure_delete"),
+                ("Password Generator", "Generate secure passwords", "src.tools.security.simple_password_generator"),
+                ("Security Scanner", "Basic security scanning", "src.tools.security.simple_security_scanner"),
             ],
-            "System Tools": [
-                ("Enhanced Clipboard", "Advanced clipboard management"),
-                ("System Diagnostics", "Comprehensive system analysis"),
-                ("System Cleanup", "Clean temporary files"),
-                ("Software Maintenance", "Update installed software"),
+            "System": [
+                ("System Diagnostics", "Comprehensive system analysis", "src.tools.system.diagnostics_monitoring.system_diagnostics_gui"),
+                ("System Cleanup", "Clean temporary and unnecessary files", "src.tools.system.system_cleanup"),
+                ("Software Maintenance", "Update and maintain installed software", "src.tools.system.software_maintenance"),
+                ("Permissions Editor", "Manage file and folder permissions", "src.tools.system.permissions_editor"),
+                ("Process Monitor", "Monitor system processes", "src.tools.system.simple_process_monitor"),
+                ("System Info", "Display system information", "src.tools.system.simple_system_info"),
             ]
         }
         
@@ -712,6 +719,9 @@ class ToolsPaneWidget(BasePaneWidget):
         self.tools_tree = None
         self.search_widget = None
         self.status_label = None
+        
+        # Now call super().__init__() which will call _setup_ui()
+        super().__init__(config, parent)
         
         self.logger.debug("ToolsPaneWidget initialized")
     
@@ -859,7 +869,7 @@ class ToolsPaneWidget(BasePaneWidget):
             category_item.setData(0, Qt.UserRole, {"type": "category", "name": category_name})
             
             # Add tools to category
-            for tool_name, tool_description in tools:
+            for tool_name, tool_description, tool_module in tools:
                 tool_item = QTreeWidgetItem([f"🔧 {tool_name}"])
                 tool_item.setFont(0, QFont("Arial", 9))
                 tool_item.setForeground(0, QColor("#495057"))
@@ -868,7 +878,8 @@ class ToolsPaneWidget(BasePaneWidget):
                     "type": "tool",
                     "name": tool_name,
                     "category": category_name,
-                    "description": tool_description
+                    "description": tool_description,
+                    "module": tool_module
                 })
                 
                 category_item.addChild(tool_item)
@@ -877,12 +888,14 @@ class ToolsPaneWidget(BasePaneWidget):
             tree_widget.addTopLevelItem(category_item)
             
             # Expand popular categories by default
-            if category_name in ["File Management", "File Operations", "Analysis"]:
+            popular_categories = ["File Management", "File Operations", "Analysis"]
+            if category_name in popular_categories:
                 category_item.setExpanded(True)
         
         # Update status
         if hasattr(self, 'status_label') and self.status_label:
-            self.status_label.setText(f"{len(self.tool_categories)} categories, {total_tools} tools")
+            status_text = f"{len(self.tool_categories)} categories, {total_tools} tools"
+            self.status_label.setText(status_text)
     
     def _filter_tools(self, search_text: str):
         """Filter tools based on search text."""
@@ -919,8 +932,8 @@ class ToolsPaneWidget(BasePaneWidget):
                 tool_description = tool_data.get("description", "").lower()
                 
                 tool_matches = (search_text in tool_name or
-                               search_text in tool_description or
-                               category_visible)
+                                search_text in tool_description or
+                                category_visible)
                 
                 tool_item.setHidden(not tool_matches)
                 
@@ -969,15 +982,20 @@ class ToolsPaneWidget(BasePaneWidget):
             tool_name = item_data.get("name")
             category = item_data.get("category")
             description = item_data.get("description")
+            module_path = item_data.get("module")
             
             if QT_AVAILABLE and self.toolLaunched:
-                self.toolLaunched.emit(tool_name, category)
+                # Emit tool name and module path for proper tool launching
+                self.toolLaunched.emit(tool_name, module_path or category)
             
             # Update status
             if hasattr(self, 'status_label') and self.status_label:
                 self.status_label.setText(f"Launching: {tool_name}")
             
-            self.logger.info(f"Tool activated: {tool_name} ({category})")
+            log_msg = f"Tool activated: {tool_name} ({category})"
+            if module_path:
+                log_msg += f" - Module: {module_path}"
+            self.logger.info(log_msg)
             
         elif item_type == "category":
             # Toggle category expansion
@@ -1006,14 +1024,19 @@ class ToolsPaneWidget(BasePaneWidget):
             
             # Update status with tool description
             if hasattr(self, 'status_label') and self.status_label:
-                self.status_label.setText(description[:80] + "..." if len(description) > 80 else description)
+                if len(description) > 80:
+                    truncated_desc = description[:80] + "..."
+                else:
+                    truncated_desc = description
+                self.status_label.setText(truncated_desc)
             
         elif item_type == "category":
             category_name = item_data.get("name")
             tool_count = len(self.tool_categories.get(category_name, []))
             
             if hasattr(self, 'status_label') and self.status_label:
-                self.status_label.setText(f"{category_name}: {tool_count} tools")
+                status_text = f"{category_name}: {tool_count} tools"
+                self.status_label.setText(status_text)
     
     def _on_category_expanded(self, item):
         """Handle category expansion."""
@@ -1058,9 +1081,12 @@ class ToolsPaneWidget(BasePaneWidget):
             self.search_input.clear()
         self._show_all_items()
         
-        total_tools = sum(len(tools) for tools in self.tool_categories.values())
+        total_tools = sum(len(tools) for tools in
+                          self.tool_categories.values())
         if hasattr(self, 'status_label') and self.status_label:
-            self.status_label.setText(f"{len(self.tool_categories)} categories, {total_tools} tools")
+            categories_count = len(self.tool_categories)
+            status_text = f"{categories_count} categories, {total_tools} tools"
+            self.status_label.setText(status_text)
 
 
 class PaneFactory:
@@ -1069,7 +1095,8 @@ class PaneFactory:
     _pane_classes: ClassVar[Dict[PaneType, Type[BasePaneWidget]]] = {}
     
     @classmethod
-    def register_pane_class(cls, pane_type: PaneType, pane_class: Type[BasePaneWidget]):
+    def register_pane_class(cls, pane_type: PaneType,
+                            pane_class: Type[BasePaneWidget]):
         """
         Register a pane class for a specific pane type.
         
@@ -1080,7 +1107,8 @@ class PaneFactory:
         cls._pane_classes[pane_type] = pane_class
     
     @classmethod
-    def create_pane(cls, config: PaneConfiguration, parent=None) -> BasePaneWidget:
+    def create_pane(cls, config: PaneConfiguration,
+                    parent=None) -> BasePaneWidget:
         """
         Create pane widget based on configuration.
         
@@ -1125,8 +1153,8 @@ class LayoutEngine:
         self._current_layout: Optional[LayoutConfiguration] = None
         self._layout_widgets: Dict[str, QWidget] = {}
     
-    def apply_layout(self, layout_config: LayoutConfiguration, 
-                    container: QWidget, panes: List[BasePaneWidget]) -> bool:
+    def apply_layout(self, layout_config: LayoutConfiguration,
+                     container: QWidget, panes: List[BasePaneWidget]) -> bool:
         """
         Apply layout configuration to container.
         
@@ -1144,7 +1172,8 @@ class LayoutEngine:
             # Get layout algorithm
             algorithm = self._layout_algorithms.get(layout_config.layout_type)
             if not algorithm:
-                self.logger.error(f"Unknown layout type: {layout_config.layout_type}")
+                error_msg = f"Unknown layout type: {layout_config.layout_type}"
+                self.logger.error(error_msg)
                 return False
             
             # Apply layout
@@ -1153,7 +1182,8 @@ class LayoutEngine:
             if success:
                 self.logger.info(f"Applied layout: {layout_config.name}")
             else:
-                self.logger.error(f"Failed to apply layout: {layout_config.name}")
+                error_msg = f"Failed to apply layout: {layout_config.name}"
+                self.logger.error(error_msg)
             
             return success
             
