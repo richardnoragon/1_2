@@ -1,21 +1,54 @@
-from PyQt5.QtWidgets import (
-    QDialog, QTabWidget, QWidget, QVBoxLayout, QHBoxLayout,
-    QLabel, QComboBox, QSpinBox, QCheckBox, QPushButton,
-    QMessageBox, QFileDialog, QFormLayout, QLineEdit
-)
-from PyQt5.QtCore import Qt
 from pathlib import Path
-from core.config_manager import ConfigManager
-from gui.common.base_window import BaseWindow
-from gui.common.dialogs import (
-    show_error_dialog,
-    show_info_dialog,
-    get_existing_directory
-)
-from core.error_handler import get_error_handler
 
-# Get error handler instance
-error_handler = get_error_handler()
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import (QCheckBox, QComboBox, QDialog, QFileDialog,
+                             QFormLayout, QHBoxLayout, QLabel, QLineEdit,
+                             QMessageBox, QPushButton, QSpinBox, QTabWidget,
+                             QVBoxLayout, QWidget)
+
+# Import with fallback handling
+try:
+    from src.config_manager import ConfigManager
+except ImportError:
+    try:
+        from core.config_manager import ConfigManager
+    except ImportError:
+        # Fallback minimal config manager
+        class ConfigManager:
+            def __init__(self):
+                self.settings = {}
+            
+            def get_setting(self, key, default=None):
+                return self.settings.get(key, default)
+            
+            def set_setting(self, key, value):
+                self.settings[key] = value
+            
+            def reset_to_defaults(self):
+                self.settings = {}
+
+try:
+    from core.error_handler import get_error_handler
+    from gui.common.base_window import BaseWindow
+    from gui.common.dialogs import (get_existing_directory, show_error_dialog,
+                                    show_info_dialog)
+
+    # Get error handler instance
+    error_handler = get_error_handler()
+except ImportError:
+    # Fallback implementations
+    BaseWindow = object
+    
+    def show_error_dialog(message, title="Error", parent=None):
+        QMessageBox.critical(parent, title, message)
+    
+    def show_info_dialog(message, title="Information", parent=None):
+        QMessageBox.information(parent, title, message)
+    
+    def get_existing_directory(title, directory="", parent=None):
+        return QFileDialog.getExistingDirectory(parent, title, directory)
+    
+    error_handler = None
 
 
 class SettingsDialog(QDialog):
@@ -247,91 +280,91 @@ class SettingsDialog(QDialog):
         try:
             # General settings
             self.theme_combo.setCurrentText(
-                self.config.get_setting('general.theme', 'light')
+                self.config.get_setting('general', 'theme', 'light')
             )
             self.default_dir_edit.setText(
-                self.config.get_setting('general.default_directory', '')
+                self.config.get_setting('general', 'default_directory', '')
             )
             self.recent_spin.setValue(
-                self.config.get_setting('general.max_recent_entries', 10)
+                self.config.get_setting('general', 'max_recent_entries', 10)
             )
             self.log_level_combo.setCurrentText(
-                self.config.get_setting('general.logging_level', 'INFO')
+                self.config.get_setting('general', 'logging_level', 'INFO')
             )
             self.debug_check.setChecked(
-                self.config.get_setting('general.enable_debug_logging', False)
+                self.config.get_setting('general', 'enable_debug_logging', False)
             )
             
             # Duplicates settings
             self.hash_algo_combo.setCurrentText(
-                self.config.get_setting('duplicates.default_hash_algorithm', 'sha256')
+                self.config.get_setting('duplicates', 'default_hash_algorithm', 'sha256')
             )
             self.min_size_spin.setValue(
-                self.config.get_setting('duplicates.min_file_size', 1024)
+                self.config.get_setting('duplicates', 'min_file_size', 1024)
             )
             self.skip_system_check.setChecked(
-                self.config.get_setting('duplicates.skip_system_files', True)
+                self.config.get_setting('duplicates', 'skip_system_files', True)
             )
             
             # Secure Delete settings
             self.default_passes_spin.setValue(
-                self.config.get_setting('secure_delete.default_passes', 3)
+                self.config.get_setting('secure_delete', 'default_passes', 3)
             )
             self.max_passes_spin.setValue(
-                self.config.get_setting('secure_delete.max_passes', 35)
+                self.config.get_setting('secure_delete', 'max_passes', 35)
             )
             
             # Compression settings
             self.format_combo.setCurrentText(
-                self.config.get_setting('compression.default_format', 'zip')
+                self.config.get_setting('compression', 'default_format', 'zip')
             )
             self.compression_spin.setValue(
-                self.config.get_setting('compression.default_compression_level', 6)
+                self.config.get_setting('compression', 'default_compression_level', 6)
             )
             self.password_check.setChecked(
-                self.config.get_setting('compression.use_password_protection', False)
+                self.config.get_setting('compression', 'use_password_protection', False)
             )
             
             # Sync settings
             self.sync_mode_combo.setCurrentText(
-                self.config.get_setting('sync.default_mode', 'two_way')
+                self.config.get_setting('sync', 'default_mode', 'two_way')
             )
             self.backup_check.setChecked(
-                self.config.get_setting('sync.create_backups', True)
+                self.config.get_setting('sync', 'create_backups', True)
             )
             self.skip_newer_check.setChecked(
-                self.config.get_setting('sync.skip_newer_files', False)
+                self.config.get_setting('sync', 'skip_newer_files', False)
             )
             
             # Catalog settings
             self.catalog_recursive_check.setChecked(
-                self.config.get_setting('catalog.recursive_by_default', True)
+                self.config.get_setting('catalog', 'recursive_by_default', True)
             )
             self.catalog_duplicates_check.setChecked(
-                self.config.get_setting('catalog.check_duplicates', False)
+                self.config.get_setting('catalog', 'check_duplicates', False)
             )
             self.show_sizes_check.setChecked(
-                self.config.get_setting('catalog.show_file_sizes', True)
+                self.config.get_setting('catalog', 'show_file_sizes', True)
             )
             self.show_dates_check.setChecked(
-                self.config.get_setting('catalog.show_dates', True)
+                self.config.get_setting('catalog', 'show_dates', True)
             )
             self.sort_by_combo.setCurrentText(
-                self.config.get_setting('catalog.default_sort_by', 'name')
+                self.config.get_setting('catalog', 'default_sort_by', 'name')
             )
             self.sort_order_combo.setCurrentText(
-                self.config.get_setting('catalog.default_sort_order', 'ascending')
+                self.config.get_setting('catalog', 'default_sort_order', 'ascending')
             )
             
             # Organize settings
             self.organize_recursive_check.setChecked(
-                self.config.get_setting('organize.recursive_by_default', False)
+                self.config.get_setting('organize', 'recursive_by_default', False)
             )
             self.category_folders_check.setChecked(
-                self.config.get_setting('organize.create_category_folders', True)
+                self.config.get_setting('organize', 'create_category_folders', True)
             )
             self.move_files_check.setChecked(
-                self.config.get_setting('organize.move_files', True)
+                self.config.get_setting('organize', 'move_files', True)
             )
         except Exception as e:
             show_error_dialog(
@@ -344,67 +377,67 @@ class SettingsDialog(QDialog):
         """Save settings from the UI to configuration."""
         try:
             # General settings
-            self.config.set_setting('general.theme',
+            self.config.set_setting('general', 'theme',
                                   self.theme_combo.currentText())
-            self.config.set_setting('general.default_directory',
+            self.config.set_setting('general', 'default_directory',
                                   self.default_dir_edit.text())
-            self.config.set_setting('general.max_recent_entries',
+            self.config.set_setting('general', 'max_recent_entries',
                                   self.recent_spin.value())
-            self.config.set_setting('general.logging_level',
+            self.config.set_setting('general', 'logging_level',
                                   self.log_level_combo.currentText())
-            self.config.set_setting('general.enable_debug_logging',
+            self.config.set_setting('general', 'enable_debug_logging',
                                   self.debug_check.isChecked())
             
             # Duplicates settings
-            self.config.set_setting('duplicates.default_hash_algorithm',
+            self.config.set_setting('duplicates', 'default_hash_algorithm',
                                   self.hash_algo_combo.currentText())
-            self.config.set_setting('duplicates.min_file_size',
+            self.config.set_setting('duplicates', 'min_file_size',
                                   self.min_size_spin.value())
-            self.config.set_setting('duplicates.skip_system_files',
+            self.config.set_setting('duplicates', 'skip_system_files',
                                   self.skip_system_check.isChecked())
             
             # Secure Delete settings
-            self.config.set_setting('secure_delete.default_passes',
+            self.config.set_setting('secure_delete', 'default_passes',
                                   self.default_passes_spin.value())
-            self.config.set_setting('secure_delete.max_passes',
+            self.config.set_setting('secure_delete', 'max_passes',
                                   self.max_passes_spin.value())
             
             # Compression settings
-            self.config.set_setting('compression.default_format',
+            self.config.set_setting('compression', 'default_format',
                                   self.format_combo.currentText())
-            self.config.set_setting('compression.default_compression_level',
+            self.config.set_setting('compression', 'default_compression_level',
                                   self.compression_spin.value())
-            self.config.set_setting('compression.use_password_protection',
+            self.config.set_setting('compression', 'use_password_protection',
                                   self.password_check.isChecked())
             
             # Sync settings
-            self.config.set_setting('sync.default_mode',
+            self.config.set_setting('sync', 'default_mode',
                                   self.sync_mode_combo.currentText())
-            self.config.set_setting('sync.create_backups',
+            self.config.set_setting('sync', 'create_backups',
                                   self.backup_check.isChecked())
-            self.config.set_setting('sync.skip_newer_files',
+            self.config.set_setting('sync', 'skip_newer_files',
                                   self.skip_newer_check.isChecked())
             
             # Catalog settings
-            self.config.set_setting('catalog.recursive_by_default',
+            self.config.set_setting('catalog', 'recursive_by_default',
                                   self.catalog_recursive_check.isChecked())
-            self.config.set_setting('catalog.check_duplicates',
+            self.config.set_setting('catalog', 'check_duplicates',
                                   self.catalog_duplicates_check.isChecked())
-            self.config.set_setting('catalog.show_file_sizes',
+            self.config.set_setting('catalog', 'show_file_sizes',
                                   self.show_sizes_check.isChecked())
-            self.config.set_setting('catalog.show_dates',
+            self.config.set_setting('catalog', 'show_dates',
                                   self.show_dates_check.isChecked())
-            self.config.set_setting('catalog.default_sort_by',
+            self.config.set_setting('catalog', 'default_sort_by',
                                   self.sort_by_combo.currentText())
-            self.config.set_setting('catalog.default_sort_order',
+            self.config.set_setting('catalog', 'default_sort_order',
                                   self.sort_order_combo.currentText())
             
             # Organize settings
-            self.config.set_setting('organize.recursive_by_default',
+            self.config.set_setting('organize', 'recursive_by_default',
                                   self.organize_recursive_check.isChecked())
-            self.config.set_setting('organize.create_category_folders',
+            self.config.set_setting('organize', 'create_category_folders',
                                   self.category_folders_check.isChecked())
-            self.config.set_setting('organize.move_files',
+            self.config.set_setting('organize', 'move_files',
                                   self.move_files_check.isChecked())
             
             self.accept()

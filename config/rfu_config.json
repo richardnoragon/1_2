@@ -1,11 +1,13 @@
 {
   "general": {
-    "logging_level": "INFO",
-    "enable_debug_logging": false,
+    "logging_level": "DEBUG",
+    "enable_debug_logging": true,
     "auto_save_config": true,
-    "theme": "light",
+    "theme": "dark",
     "language": "en",
-    "check_for_updates": true
+    "check_for_updates": true,
+    "default_directory": "",
+    "max_recent_entries": 10
   },
   "gui": {
     "window_width": 900,
@@ -36,8 +38,8 @@
   "privacy_tools": {},
   "software_maintenance": {},
   "interface_mode": {
-    "show_startup_dialog": false,
-    "remember_choice": true,
+    "show_startup_dialog": true,
+    "remember_choice": false,
     "current_mode": "multi_pane",
     "auto_detect_enabled": true,
     "transition_animations": true,
@@ -61,5 +63,40 @@
     "switch_count": 0,
     "total_session_time": 0,
     "preference_confidence": 0.5
+  },
+  "test": {
+    "theme": "dark"
+  },
+  "duplicates": {
+    "default_hash_algorithm": "sha256",
+    "min_file_size": 1024,
+    "skip_system_files": true
+  },
+  "secure_delete": {
+    "default_passes": 3,
+    "max_passes": 35
+  },
+  "compression": {
+    "default_format": "zip",
+    "default_compression_level": 6,
+    "use_password_protection": false
+  },
+  "sync": {
+    "default_mode": "two_way",
+    "create_backups": true,
+    "skip_newer_files": false
+  },
+  "catalog": {
+    "recursive_by_default": true,
+    "check_duplicates": false,
+    "show_file_sizes": true,
+    "show_dates": true,
+    "default_sort_by": "name",
+    "default_sort_order": "ascending"
+  },
+  "organize": {
+    "recursive_by_default": false,
+    "create_category_folders": true,
+    "move_files": true
   }
 }

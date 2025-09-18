@@ -23,6 +23,78 @@ from PyQt5.QtWidgets import (QAction, QActionGroup, QApplication, QComboBox,
                              QTabWidget, QToolBar, QTreeWidget,
                              QTreeWidgetItem, QVBoxLayout, QWidget)
 
+# Import theme manager for dynamic theming
+try:
+    from src.gui.themes import Colors, ThemeManager
+    THEME_MANAGER_AVAILABLE = True
+except ImportError:
+    try:
+        from gui.themes import Colors, ThemeManager
+        THEME_MANAGER_AVAILABLE = True
+    except ImportError:
+        print("Theme manager not available - using default styling")
+        THEME_MANAGER_AVAILABLE = False
+        ThemeManager = None
+        Colors = None
+
+# Import SettingsDialog separately to ensure it's always available
+try:
+    from src.gui.settings_dialog import SettingsDialog
+    SETTINGS_DIALOG_AVAILABLE = True
+except ImportError:
+    try:
+        # Try relative import from same directory structure
+        import sys
+        from pathlib import Path
+
+        # Add the src directory to the path if not already there
+        src_dir = Path(__file__).parent.parent
+        if str(src_dir) not in sys.path:
+            sys.path.insert(0, str(src_dir))
+        from gui.settings_dialog import SettingsDialog
+        SETTINGS_DIALOG_AVAILABLE = True
+    except ImportError as e:
+        print(f"Settings dialog import warning: {e}")
+        SettingsDialog = None
+        SETTINGS_DIALOG_AVAILABLE = False
+
+# String constants to avoid duplication
+TOOL_NAMES = {
+    'FILE_FINDER': "File Finder",
+    'SIZE_ANALYZER': "Size Analyzer",
+    'DUPLICATE_FINDER': "Duplicate Finder",
+    'ENCRYPT_DECRYPT': "Encrypt/Decrypt",
+    'SECURE_DELETE': "Secure Delete",
+    'DISK_USAGE': "Disk Usage",
+    'FIND_FILES': "Find Files",
+    'COPY_MOVE_SYNC': "Copy/Move/Sync",
+    'FILE_INTEGRITY': "File Integrity",
+    'PDF_UTILITIES': "PDF Utilities",
+    'NETWORK_TEST': "Network Test",
+    'FILE_TRANSFER': "File Transfer",
+    'REMOTE_ACCESS': "Remote Access"
+}
+
+ERROR_MESSAGES = {
+    'FILE_OPEN_ERROR': "File Open Error",
+    'COPY_ERROR': "Copy Error",
+    'MOVE_ERROR': "Move Error",
+    'COMPARE_ERROR': "Compare Error",
+    'NAVIGATION_ERROR': "Navigation Error"
+}
+
+KEYBOARD_SHORTCUTS = {
+    'SEARCH': "Ctrl+F",
+    'REFRESH': "F5",
+    'HELP': "F1"
+}
+
+# Widget lifecycle constants
+WIDGET_DELETED_ERROR = "wrapped C/C++ object"
+LAYOUT_ERROR_MESSAGES = {
+    'NO_SPLITTER': "Cannot create layout: pane_splitter is None"
+}
+
 # Import RFU components with comprehensive feature set
 try:
     from scripts.maintenance.standalone_database_manager import \
@@ -31,25 +103,19 @@ try:
     from src.file_explorer.core.enhanced_config_manager import \
         get_enhanced_config_manager
     from src.file_explorer.enhanced_file_browser import EnhancedFileBrowser
-    from src.file_explorer.features.bookmark_manager import (
-        BookmarkManager, BookmarkType)
-    from src.file_explorer.integration.advanced_tool_launcher import (
-        AdvancedToolLauncher, LaunchConfiguration)
+    from src.file_explorer.features.bookmark_manager import BookmarkManager
+    from src.file_explorer.integration.advanced_tool_launcher import \
+        AdvancedToolLauncher
     from src.file_explorer.integration.keyboard_shortcuts_system import \
         KeyboardShortcutManager
     from src.file_explorer.ui.custom_widgets import (EnhancedStatusBar,
-                                                         EnhancedToolbar,
-                                                         FilePropertyPanel,
-                                                         QuickPreviewWidget,
-                                                         SearchWidget,
-                                                         ThemeColors)
+                                                     EnhancedToolbar,
+                                                     FilePropertyPanel,
+                                                     QuickPreviewWidget,
+                                                     SearchWidget, ThemeColors)
     from src.file_explorer.ui.file_explorer_pane import (FileExplorerPane,
-                                                             FileListWidget,
-                                                             NavigationBar,
-                                                             SortCriteria,
-                                                             ViewMode)
-    from src.file_explorer.ui.pane_manager import (PaneConfiguration,
-                                                       PaneType)
+                                                         ViewMode)
+    from src.file_explorer.ui.pane_manager import PaneConfiguration, PaneType
     from src.file_explorer.ui.widget_lifecycle_manager import (
         get_widget_lifecycle_manager, is_widget_valid, register_widget,
         safe_destroy_widget, safe_widget_operation)
@@ -60,10 +126,19 @@ except ImportError:
     get_config_manager = None
     get_log_manager = None
     get_widget_lifecycle_manager = None
-    register_widget = lambda *args: ""
-    safe_destroy_widget = lambda *args: True
-    is_widget_valid = lambda *args: True
-    safe_widget_operation = lambda *args: True
+    
+    def register_widget(*args):
+        return ""
+    
+    def safe_destroy_widget(*args):
+        return True
+    
+    def is_widget_valid(*args):
+        return True
+    
+    def safe_widget_operation(*args):
+        return True
+    
     get_enhanced_config_manager = None
     EnhancedFileBrowser = None
     EnhancedToolbar = None
@@ -80,12 +155,14 @@ except ImportError:
         def __init__(self, config, parent=None):
             super().__init__(parent)
             layout = QVBoxLayout(self)
-            label = QLabel(f"File Explorer Pane {getattr(config, 'pane_id', 'Unknown')}")
+            label = QLabel(f"File Explorer Pane "
+                           f"{getattr(config, 'pane_id', 'Unknown')}")
             label.setAlignment(Qt.AlignCenter)
             layout.addWidget(label)
     
     class PaneConfiguration:
-        def __init__(self, pane_id, pane_type="file_explorer", title="File Explorer"):
+        def __init__(self, pane_id, pane_type="file_explorer",
+                     title="File Explorer"):
             self.pane_id = pane_id
             self.pane_type = pane_type
             self.title = title
@@ -116,12 +193,16 @@ class MultiPaneFileExplorer(QMainWindow):
     file_operation_completed = pyqtSignal(str, bool, str)
     
     def __init__(self):
-        super().__init__()        
+        super().__init__()
         
         # Initialize core systems
         self.config_manager = None
         self.db_manager = None
         self.setup_core_systems()
+        
+        # Theme system
+        self.current_theme = "light"  # Default theme
+        self.setup_theme_system()
         
         # Explorer state
         self.panes: List['FileExplorerPane'] = []
@@ -187,6 +268,10 @@ class MultiPaneFileExplorer(QMainWindow):
         # Setup default layout
         self.setup_default_panes()
         
+        # Apply initial theme after UI is set up
+        if THEME_MANAGER_AVAILABLE:
+            QTimer.singleShot(100, self.apply_current_theme)
+        
         self.logger.info("MultiPaneFileExplorer initialized successfully")
     
     def resizeEvent(self, event):
@@ -227,6 +312,143 @@ class MultiPaneFileExplorer(QMainWindow):
                 self.db_manager = get_database_manager()
             except Exception as e:
                 self.logger.warning(f"Database manager not available: {e}")
+    
+    def setup_theme_system(self):
+        """Initialize theme system and load current theme."""
+        try:
+            if THEME_MANAGER_AVAILABLE and self.config_manager:
+                # Load saved theme
+                try:
+                    saved_theme = self.config_manager.get_setting('general', 'theme', 'light')
+                    self.current_theme = saved_theme
+                    self.logger.info(f"Loaded theme: {self.current_theme}")
+                except Exception as e:
+                    self.logger.warning(f"Could not load theme setting: {e}")
+                    self.current_theme = "light"
+                
+                # Register for theme change notifications
+                if ThemeManager:
+                    ThemeManager.add_theme_changed_callback(self._on_theme_changed)
+                    # Set initial theme
+                    ThemeManager.set_theme(self.current_theme)
+            else:
+                self.current_theme = "light"
+                self.logger.info("Theme manager not available, using default light theme")
+        except Exception as e:
+            self.logger.error(f"Error setting up theme system: {e}")
+            self.current_theme = "light"
+    
+    def _on_theme_changed(self, new_theme: str):
+        """Handle theme change notification."""
+        try:
+            self.current_theme = new_theme
+            self.logger.info(f"Theme changed to: {new_theme}")
+            
+            # Apply theme to main window and all components
+            self.apply_current_theme()
+            
+        except Exception as e:
+            self.logger.error(f"Error handling theme change: {e}")
+    
+    def apply_current_theme(self):
+        """Apply the current theme to all UI components."""
+        try:
+            if not THEME_MANAGER_AVAILABLE or not ThemeManager:
+                return
+            
+            # Apply to main window
+            ThemeManager.apply_main_window_theme(self)
+            
+            # Apply to all panes
+            for pane in self.panes:
+                self._apply_theme_to_pane(pane)
+            
+            # Apply to UI components
+            self._apply_theme_to_components()
+            
+            # Update status bar
+            if hasattr(self, 'statusBar'):
+                status_message = f"Theme changed to {self.current_theme} mode"
+                self.statusBar().showMessage(status_message, 3000)
+            
+            self.logger.debug(f"Applied {self.current_theme} theme to all components")
+            
+        except Exception as e:
+            self.logger.error(f"Error applying theme: {e}")
+    
+    def _apply_theme_to_pane(self, pane):
+        """Apply theme to a single pane."""
+        try:
+            if hasattr(pane, '_file_list'):
+                ThemeManager.apply_theme_to_widget(pane._file_list, "tree")
+            
+            if hasattr(pane, '_nav_widget'):
+                nav_widget = pane._nav_widget
+                # Apply theme to navigation components
+                if hasattr(nav_widget, '_drive_combo'):
+                    ThemeManager.apply_theme_to_widget(nav_widget._drive_combo, "combo")
+                if hasattr(nav_widget, '_path_display'):
+                    ThemeManager.apply_theme_to_widget(nav_widget._path_display, "label")
+            
+            # Apply to the pane frame itself
+            ThemeManager.apply_theme_to_widget(pane, "frame")
+            
+        except Exception as e:
+            self.logger.warning(f"Error applying theme to pane: {e}")
+    
+    def _apply_theme_to_components(self):
+        """Apply theme to main UI components."""
+        try:
+            # Apply to combo boxes in toolbar
+            if hasattr(self, 'pane_count_combo'):
+                ThemeManager.apply_theme_to_widget(self.pane_count_combo, "combo")
+            
+            if hasattr(self, 'layout_combo'):
+                ThemeManager.apply_theme_to_widget(self.layout_combo, "combo")
+            
+            # Apply to side panels
+            if hasattr(self, 'bookmark_widget'):
+                ThemeManager.apply_theme_to_widget(self.bookmark_widget, "tree")
+            
+            if hasattr(self, 'recent_widget'):
+                ThemeManager.apply_theme_to_widget(self.recent_widget, "tree")
+            
+            if hasattr(self, 'tools_widget'):
+                ThemeManager.apply_theme_to_widget(self.tools_widget, "tree")
+            
+            # Apply to dock widgets
+            if hasattr(self, 'tool_dock') and self.tool_dock:
+                widget = self.tool_dock.widget()
+                if widget:
+                    ThemeManager.apply_theme_to_widget(widget, "tree")
+            
+        except Exception as e:
+            self.logger.warning(f"Error applying theme to components: {e}")
+    
+    def set_theme(self, theme_name: str):
+        """Set the application theme."""
+        try:
+            if not THEME_MANAGER_AVAILABLE or not ThemeManager:
+                self.logger.warning("Theme manager not available")
+                return
+            
+            if theme_name not in ["light", "dark"]:
+                self.logger.warning(f"Unknown theme: {theme_name}")
+                return
+            
+            # Update theme manager
+            ThemeManager.set_theme(theme_name)
+            
+            # Save to configuration
+            if self.config_manager:
+                try:
+                    self.config_manager.set_setting('general', 'theme', theme_name)
+                    self.logger.info(f"Saved theme setting: {theme_name}")
+                except Exception as e:
+                    self.logger.warning(f"Could not save theme setting: {e}")
+            
+        except Exception as e:
+            self.logger.error(f"Error setting theme: {e}")
     
     def _detect_viewport(self):
         """Detect viewport size and type for responsive behavior."""
@@ -579,6 +801,13 @@ class MultiPaneFileExplorer(QMainWindow):
         tools_menu = menubar.addMenu("&Tools")
         self.populate_tools_menu(tools_menu)
         
+        # Add preferences action to tools menu
+        tools_menu.addSeparator()
+        preferences_action = QAction("&Preferences...", self)
+        preferences_action.setShortcut(QKeySequence("Ctrl+,"))
+        preferences_action.triggered.connect(self.open_preferences)
+        tools_menu.addAction(preferences_action)
+        
         # Help menu
         help_menu = menubar.addMenu("&Help")
         
@@ -675,55 +904,45 @@ class MultiPaneFileExplorer(QMainWindow):
         return recent_tree
     
     def create_enhanced_tools_widget(self):
-        """Create enhanced tools widget with categorized tool access."""
+        """Create enhanced tools widget with automatic tool discovery."""
         tools_tree = QTreeWidget()
         tools_tree.setHeaderLabels(["RFU Tools"])
         
-        # Categorized tools
-        tool_categories = {
-            "File Management": [
-                ("File Finder", "🔍", self.launch_file_finder),
-                ("Catalog Files", "📁", self.launch_catalog),
-                ("Organize Files", "📂", self.launch_organize),
-                ("Copy/Move/Sync", "📋", self.launch_copy_move_sync)
-            ],
-            "Analysis": [
-                ("Size Analyzer", "📊", self.launch_size_analyzer),
-                ("Duplicate Finder", "🔍", self.launch_duplicate_finder),
-                ("File Checksum", "🛡️", self.launch_checksum),
-                ("Disk Usage", "💾", self.launch_disk_usage)
-            ],
-            "Security": [
-                ("Encrypt/Decrypt", "🔒", self.launch_encrypt_decrypt),
-                ("Secure Delete", "🗑️", self.launch_secure_delete),
-                ("Permissions Editor", "🔐", self.launch_permissions),
-                ("File Integrity", "✅", self.launch_file_integrity)
-            ],
-            "PDF Tools": [
-                ("PDF Utilities", "📄", self.launch_pdf_utilities),
-                ("Extract Links", "🔗", self.launch_extract_links),
-                ("Page Administration", "📋", self.launch_page_admin),
-                ("PDF Conversion", "🔄", self.launch_pdf_conversion)
-            ],
-            "Network": [
-                ("Network Connectivity", "🌐", self.launch_network_test),
-                ("File Transfer", "📡", self.launch_file_transfer),
-                ("Remote Access", "🖥️", self.launch_remote_access)
-            ]
-        }
+        # Discover tools from src/tools directory
+        discovered_tools = self._discover_tools_from_directory()
         
-        for category, tools in tool_categories.items():
+        if not discovered_tools:
+            # Fallback to basic tools if discovery fails
+            self.logger.warning("Tool discovery failed, using fallback tools")
+            return self._create_fallback_tools_widget()
+        
+        # Create categorized tree structure
+        for category, tools in discovered_tools.items():
+            if not tools:  # Skip empty categories
+                continue
+                
             category_item = QTreeWidgetItem([category])
             category_item.setExpanded(True)
             
-            for tool_name, icon, callback in tools:
+            for tool_info in tools:
+                tool_name = tool_info.get('display_name', tool_info['name'])
+                icon = tool_info.get('icon', '🔧')
+                module_path = tool_info['module_path']
+                class_name = tool_info['class_name']
+                
                 tool_item = QTreeWidgetItem([f"{icon} {tool_name}"])
-                tool_item.setData(0, Qt.UserRole, callback)
+                # Store tool launch information
+                tool_item.setData(0, Qt.UserRole, {
+                    'name': tool_name,
+                    'module_path': module_path,
+                    'class_name': class_name,
+                    'category': category
+                })
                 category_item.addChild(tool_item)
             
             tools_tree.addTopLevelItem(category_item)
         
-        tools_tree.itemDoubleClicked.connect(self._on_tool_activated)
+        tools_tree.itemDoubleClicked.connect(self._on_discovered_tool_activated)
         return tools_tree
     
     def create_enhanced_bookmark_widget(self):
@@ -926,7 +1145,7 @@ class MultiPaneFileExplorer(QMainWindow):
                 # Load basic configuration - use get_section for dict access
                 try:
                     config = self.config_manager.get_section('file_explorer') or {}
-                except:
+                except (AttributeError, KeyError, TypeError):
                     config = {}
                 
                 # Load pane count and validate
@@ -952,9 +1171,23 @@ class MultiPaneFileExplorer(QMainWindow):
                 if 'grid_columns' in responsive_config:
                     self.grid_columns.update(responsive_config['grid_columns'])
                 
+                # Load and apply theme
+                if THEME_MANAGER_AVAILABLE:
+                    try:
+                        saved_theme = self.config_manager.get_setting(
+                            'general', 'theme', 'light'
+                        )
+                        if saved_theme != self.current_theme:
+                            self.current_theme = saved_theme
+                            if ThemeManager:
+                                ThemeManager.set_theme(saved_theme)
+                            self.logger.info(f"Loaded and applied theme: {saved_theme}")
+                    except Exception as e:
+                        self.logger.warning(f"Could not load theme: {e}")
+                
                 self.logger.info(
                     f"Configuration loaded: {self.pane_count} panes, "
-                    f"{self.layout_mode} layout"
+                    f"{self.layout_mode} layout, {self.current_theme} theme"
                 )
                 
             except Exception as e:
@@ -1004,7 +1237,7 @@ class MultiPaneFileExplorer(QMainWindow):
         """Add new file explorer panes."""
         self.logger.info(f"Adding {count} panes. Current pane count: {len(self.panes)}")
         
-        for i in range(count):
+        for _ in range(count):
             try:
                 # Try to create a proper FileExplorerPane first
                 pane = self._create_file_explorer_pane(len(self.panes) + 1)
@@ -1058,14 +1291,19 @@ class MultiPaneFileExplorer(QMainWindow):
     def _create_simple_fallback_pane(self, pane_number: int) -> QWidget:
         """Create a simple fallback pane when enhanced browser fails."""
         pane_widget = QFrame()
-        pane_widget.setStyleSheet("""
-            QFrame {
-                border: 2px solid #007ACC;
-                background-color: #f8f9fa;
-                margin: 2px;
-                border-radius: 4px;
-            }
-        """)
+        
+        # Apply theme if available, otherwise use basic styling
+        if THEME_MANAGER_AVAILABLE and ThemeManager:
+            ThemeManager.apply_theme_to_widget(pane_widget, "frame")
+        else:
+            pane_widget.setStyleSheet("""
+                QFrame {
+                    border: 2px solid #007ACC;
+                    background-color: #f8f9fa;
+                    margin: 2px;
+                    border-radius: 4px;
+                }
+            """)
         
         layout = QVBoxLayout(pane_widget)
         layout.setContentsMargins(5, 5, 5, 5)
@@ -1074,16 +1312,20 @@ class MultiPaneFileExplorer(QMainWindow):
         # Title label with enhanced styling
         title_label = QLabel(f"File Explorer Pane {pane_number}")
         title_label.setAlignment(Qt.AlignCenter)
-        title_label.setStyleSheet("""
-            QLabel {
-                font-weight: bold; 
-                font-size: 14px; 
-                padding: 8px;
-                background-color: #007ACC;
-                color: white;
-                border-radius: 3px;
-            }
-        """)
+        
+        if THEME_MANAGER_AVAILABLE and ThemeManager:
+            ThemeManager.apply_theme_to_widget(title_label, "label")
+        else:
+            title_label.setStyleSheet("""
+                QLabel {
+                    font-weight: bold; 
+                    font-size: 14px; 
+                    padding: 8px;
+                    background-color: #007ACC;
+                    color: white;
+                    border-radius: 3px;
+                }
+            """)
         layout.addWidget(title_label)
         
         # Add navigation bar
@@ -1093,20 +1335,24 @@ class MultiPaneFileExplorer(QMainWindow):
         # Simple file list with enhanced styling
         file_list = QTreeWidget()
         file_list.setHeaderLabels(["Name", "Size", "Type", "Modified"])
-        file_list.setStyleSheet("""
-            QTreeWidget {
-                background-color: white;
-                border: 1px solid #ddd;
-                font-size: 12px;
-            }
-            QTreeWidget::item {
-                padding: 2px;
-            }
-            QTreeWidget::item:selected {
-                background-color: #007ACC;
-                color: white;
-            }
-        """)
+        
+        if THEME_MANAGER_AVAILABLE and ThemeManager:
+            ThemeManager.apply_theme_to_widget(file_list, "tree")
+        else:
+            file_list.setStyleSheet("""
+                QTreeWidget {
+                    background-color: white;
+                    border: 1px solid #ddd;
+                    font-size: 12px;
+                }
+                QTreeWidget::item {
+                    padding: 2px;
+                }
+                QTreeWidget::item:selected {
+                    background-color: #007ACC;
+                    color: white;
+                }
+            """)
         
         # Store references for navigation
         pane_widget._current_path = Path.home()
@@ -1125,28 +1371,39 @@ class MultiPaneFileExplorer(QMainWindow):
         
         # Status label with enhanced styling
         status_label = QLabel(f"Pane {pane_number} - Ready")
-        status_label.setStyleSheet("""
-            QLabel {
-                font-size: 10px; 
-                color: #666; 
-                padding: 3px;
-                background-color: #e9ecef;
-                border-radius: 2px;
-            }
-        """)
+        
+        if THEME_MANAGER_AVAILABLE and ThemeManager:
+            ThemeManager.apply_theme_to_widget(status_label, "label")
+        else:
+            status_label.setStyleSheet("""
+                QLabel {
+                    font-size: 10px; 
+                    color: #666; 
+                    padding: 3px;
+                    background-color: #e9ecef;
+                    border-radius: 2px;
+                }
+            """)
         layout.addWidget(status_label)
         
         # Ensure the pane is visible
         pane_widget.show()
         
-        self.logger.info(f"Created enhanced fallback pane {pane_number} with visible styling")
+        self.logger.info(f"Created enhanced fallback pane {pane_number} with theming")
         
         return pane_widget
     
     def _create_navigation_bar(self, parent_pane) -> QWidget:
-        """Create navigation bar with drive selection dropdown and path display."""
+        """Create navigation bar with drive selection and path display."""
         nav_widget = QFrame()
-        nav_widget.setStyleSheet("background-color: #f0f0f0; border: 1px solid #ccc; padding: 3px;")
+        
+        # Apply theme-based styling
+        if THEME_MANAGER_AVAILABLE and ThemeManager:
+            ThemeManager.apply_theme_to_widget(nav_widget, "frame")
+        else:
+            nav_widget.setStyleSheet(
+                "background-color: #f0f0f0; border: 1px solid #ccc; padding: 3px;"
+            )
         
         layout = QHBoxLayout(nav_widget)
         layout.setContentsMargins(5, 3, 5, 3)
@@ -1155,11 +1412,15 @@ class MultiPaneFileExplorer(QMainWindow):
         # Drive selection dropdown
         drive_label = QLabel("Drive:")
         drive_label.setStyleSheet("font-weight: bold;")
+        if THEME_MANAGER_AVAILABLE and ThemeManager:
+            ThemeManager.apply_theme_to_widget(drive_label, "label")
         layout.addWidget(drive_label)
         
         drive_combo = QComboBox()
         drive_combo.setMinimumWidth(80)
         drive_combo.setToolTip("Select drive to browse")
+        if THEME_MANAGER_AVAILABLE and ThemeManager:
+            ThemeManager.apply_theme_to_widget(drive_combo, "combo")
         
         # Populate available drives
         drives = self._get_available_drives()
@@ -1180,10 +1441,18 @@ class MultiPaneFileExplorer(QMainWindow):
         # Path display
         path_label = QLabel("Path:")
         path_label.setStyleSheet("font-weight: bold; margin-left: 10px;")
+        if THEME_MANAGER_AVAILABLE and ThemeManager:
+            ThemeManager.apply_theme_to_widget(path_label, "label")
         layout.addWidget(path_label)
         
         path_display = QLabel(str(Path.home()))
-        path_display.setStyleSheet("font-family: monospace; background-color: white; padding: 3px; border: 1px solid #999;")
+        if THEME_MANAGER_AVAILABLE and ThemeManager:
+            ThemeManager.apply_theme_to_widget(path_display, "input")
+        else:
+            path_display.setStyleSheet(
+                "font-family: monospace; background-color: white; "
+                "padding: 3px; border: 1px solid #999;"
+            )
         path_display.setMinimumWidth(200)
         layout.addWidget(path_display, 1)
         
@@ -1192,12 +1461,16 @@ class MultiPaneFileExplorer(QMainWindow):
         up_btn.setMaximumWidth(25)
         up_btn.setToolTip("Go up one directory")
         up_btn.clicked.connect(lambda: self._navigate_up(parent_pane))
+        if THEME_MANAGER_AVAILABLE and ThemeManager:
+            ThemeManager.apply_theme_to_widget(up_btn, "button_secondary")
         layout.addWidget(up_btn)
         
         refresh_btn = QPushButton("⟲")
         refresh_btn.setMaximumWidth(25)
         refresh_btn.setToolTip("Refresh current directory")
         refresh_btn.clicked.connect(lambda: self._refresh_pane(parent_pane))
+        if THEME_MANAGER_AVAILABLE and ThemeManager:
+            ThemeManager.apply_theme_to_widget(refresh_btn, "button_secondary")
         layout.addWidget(refresh_btn)
         
         # Store references for updating
@@ -1251,14 +1524,14 @@ class MultiPaneFileExplorer(QMainWindow):
                                 if stat:
                                     free_gb = (stat.f_bavail * stat.f_frsize) / (1024**3)
                                     free_space = f" ({free_gb:.1f} GB free)"
-                            except:
+                            except (OSError, AttributeError, ValueError):
                                 pass
                             
                             drives.append({
                                 'label': f"{letter}: Drive{free_space}",
                                 'path': drive_path
                             })
-                        except:
+                        except (OSError, PermissionError, ValueError):
                             continue
             else:
                 # Unix-like systems (Linux, macOS)
@@ -1971,6 +2244,8 @@ class MultiPaneFileExplorer(QMainWindow):
                                                self.pane_count)
                     enhanced_config.set_setting('file_explorer', 'layout_mode',
                                                self.layout_mode)
+                    enhanced_config.set_setting('general', 'theme',
+                                               self.current_theme)
                     enhanced_config.save_config()
                     self.logger.debug("Configuration saved with enhanced manager")
                     return
@@ -1982,6 +2257,8 @@ class MultiPaneFileExplorer(QMainWindow):
                                                    self.pane_count)
                     self.config_manager.set_setting('file_explorer.layout_mode',
                                                    self.layout_mode)
+                    self.config_manager.set_setting('general.theme',
+                                                   self.current_theme)
                     self.logger.debug("Configuration saved with basic manager")
                 except Exception as e:
                     self.logger.warning(f"Basic config save failed: {e}")
@@ -1992,27 +2269,39 @@ class MultiPaneFileExplorer(QMainWindow):
     # Tool launcher methods
     def launch_file_finder(self):
         """Launch File Finder tool."""
-        self._launch_tool("File Finder", "src.tools.file_management.file_finder", "FileFinderGUI")
+        self._launch_tool(TOOL_NAMES['FILE_FINDER'],
+                          "src.tools.file_management.file_finder",
+                          "FileFinderGUI")
     
     def launch_size_analyzer(self):
         """Launch Size Analyzer tool."""
-        self._launch_tool("Size Analyzer", "src.tools.analysis.size_analyzer", "SizeAnalyzerGUI")
+        self._launch_tool(TOOL_NAMES['SIZE_ANALYZER'],
+                          "src.tools.analysis.size_analyzer",
+                          "SizeAnalyzerGUI")
     
     def launch_duplicate_finder(self):
         """Launch Duplicate Finder tool."""
-        self._launch_tool("Duplicate Finder", "src.tools.analysis.find_duplicate_files", "DuplicateFinderApp")
+        self._launch_tool(TOOL_NAMES['DUPLICATE_FINDER'],
+                          "src.tools.analysis.find_duplicate_files",
+                          "DuplicateFinderApp")
     
     def launch_encrypt_decrypt(self):
         """Launch Encrypt/Decrypt tool."""
-        self._launch_tool("Encrypt/Decrypt", "src.tools.security.en_and_decrypt", "EnAndDecryptGUI")
+        self._launch_tool(TOOL_NAMES['ENCRYPT_DECRYPT'],
+                          "src.tools.security.en_and_decrypt",
+                          "EnAndDecryptGUI")
     
     def launch_catalog(self):
         """Launch Catalog tool."""
-        self._launch_tool("Catalog", "src.tools.file_management.catalog", "CatalogWindow")
+        self._launch_tool("Catalog",
+                          "src.tools.file_management.catalog",
+                          "CatalogWindow")
     
     def launch_organize(self):
         """Launch Organize tool."""
-        self._launch_tool("Organize", "src.tools.file_management.organize", "OrganizeWindow")
+        self._launch_tool("Organize",
+                          "src.tools.file_management.organize",
+                          "OrganizeWindow")
     
     def launch_checksum(self):
         """Launch Checksum tool."""
@@ -2020,7 +2309,9 @@ class MultiPaneFileExplorer(QMainWindow):
     
     def launch_secure_delete(self):
         """Launch Secure Delete tool."""
-        self._launch_tool("Secure Delete", "src.tools.security.secure_delete", "SecureDeleteGUI")
+        self._launch_tool(TOOL_NAMES['SECURE_DELETE'],
+                          "src.tools.security.secure_delete",
+                          "SecureDeleteGUI")
     
     def launch_permissions(self):
         """Launch Permissions Editor tool."""
@@ -2145,6 +2436,67 @@ class MultiPaneFileExplorer(QMainWindow):
         path = item.data(0, Qt.UserRole)
         if path:
             self.statusBar().showMessage(f"Navigate to: {path}", 2000)
+    
+    def open_preferences(self):
+        """Open the preferences/settings dialog."""
+        try:
+            if SettingsDialog is not None and SETTINGS_DIALOG_AVAILABLE:
+                # Create and show the settings dialog
+                settings_dialog = SettingsDialog(self)
+                result = settings_dialog.exec_()
+                
+                if result == QDialog.Accepted:
+                    # Settings were saved, reload configuration and apply theme
+                    if hasattr(self, 'config_manager') and self.config_manager:
+                        try:
+                            # Reload configuration
+                            self.config_manager.reload()
+                            
+                            # Check if theme changed and apply it
+                            if THEME_MANAGER_AVAILABLE:
+                                new_theme = self.config_manager.get_setting(
+                                    'general', 'theme', 'light'
+                                )
+                                if new_theme != self.current_theme:
+                                    self.set_theme(new_theme)
+                                    self.statusBar().showMessage(
+                                        f"Theme changed to {new_theme} mode", 3000
+                                    )
+                                else:
+                                    self.statusBar().showMessage(
+                                        "Settings saved successfully", 3000
+                                    )
+                            else:
+                                self.statusBar().showMessage(
+                                    "Settings saved successfully", 3000
+                                )
+                            
+                            self.logger.info("Settings updated and applied")
+                            
+                        except Exception as e:
+                            self.logger.warning(f"Error reloading configuration: {e}")
+                            self.statusBar().showMessage(
+                                "Settings saved, restart may be required", 3000
+                            )
+                else:
+                    self.statusBar().showMessage("Settings cancelled", 2000)
+            else:
+                # Fallback message if settings dialog is not available
+                QMessageBox.information(
+                    self,
+                    "Settings",
+                    "Settings dialog is not available in this configuration.\n\n"
+                    "This may happen if the settings module could not be loaded."
+                )
+                self.logger.warning("Settings dialog not available - module not loaded")
+                
+        except Exception as e:
+            self.logger.error(f"Error opening preferences: {e}")
+            QMessageBox.critical(
+                self,
+                "Error",
+                f"Failed to open preferences dialog:\n{e}"
+            )
     
     def show_about(self):
         """Show about dialog."""
@@ -2335,13 +2687,353 @@ class MultiPaneFileExplorer(QMainWindow):
         except Exception as e:
             self.logger.error(f"Error activating recent location: {e}")
     
+    def _on_discovered_tool_activated(self, item, column):
+        """Handle activation of discovered tools."""
+        try:
+            if item.parent():  # Only handle leaf items (actual tools)
+                tool_data = item.data(0, Qt.UserRole)
+                if isinstance(tool_data, dict):
+                    self._launch_discovered_tool(tool_data)
+        except Exception as e:
+            self.logger.error(f"Error activating discovered tool: {e}")
+    
+    def _discover_tools_from_directory(self):
+        """Discover tools from the src/tools directory structure."""
+        tools_dir = Path(__file__).parent.parent / "tools"
+        discovered_tools = {}
+        
+        try:
+            if not tools_dir.exists():
+                self.logger.warning(f"Tools directory not found: {tools_dir}")
+                return {}
+            
+            # Category mapping for organization
+            category_mapping = {
+                'file_management': 'File Management',
+                'analysis': 'Analysis',
+                'security': 'Security',
+                'pdf_tools': 'PDF Tools',
+                'network': 'Network',
+                'system': 'System',
+                'metadata': 'Metadata',
+                'file_operations': 'File Operations',
+                'privacy': 'Privacy'
+            }
+            
+            # Icon mapping for different tool types
+            icon_mapping = {
+                'file_management': '📁',
+                'analysis': '📊',
+                'security': '🔒',
+                'pdf_tools': '📄',
+                'network': '🌐',
+                'system': '⚙️',
+                'metadata': '🏷️',
+                'file_operations': '📋',
+                'privacy': '🛡️'
+            }
+            
+            for category_dir in tools_dir.iterdir():
+                if category_dir.is_dir() and not category_dir.name.startswith('_'):
+                    category_name = category_mapping.get(category_dir.name, category_dir.name.title())
+                    category_icon = icon_mapping.get(category_dir.name, '🔧')
+                    
+                    tools_in_category = []
+                    self._scan_directory_for_tools(category_dir, tools_in_category, category_icon)
+                    
+                    if tools_in_category:
+                        discovered_tools[category_name] = tools_in_category
+            
+            self.logger.info(f"Discovered {sum(len(tools) for tools in discovered_tools.values())} tools in {len(discovered_tools)} categories")
+            return discovered_tools
+            
+        except Exception as e:
+            self.logger.error(f"Error discovering tools: {e}")
+            return {}
+    
+    def _scan_directory_for_tools(self, directory, tools_list, default_icon):
+        """Recursively scan directory for tool files."""
+        try:
+            # Look for Python files that could be tools
+            for item in directory.iterdir():
+                if item.is_file() and item.suffix == '.py' and not item.name.startswith('_'):
+                    tool_info = self._analyze_python_file_for_tool(item, default_icon)
+                    if tool_info:
+                        tools_list.append(tool_info)
+                elif item.is_dir() and not item.name.startswith('_'):
+                    # Check subdirectories
+                    self._scan_directory_for_tools(item, tools_list, default_icon)
+                    
+        except Exception as e:
+            self.logger.warning(f"Error scanning directory {directory}: {e}")
+    
+    def _analyze_python_file_for_tool(self, file_path, default_icon):
+        """Analyze a Python file to determine if it's a launchable tool."""
+        try:
+            # Create module path from file path
+            relative_path = file_path.relative_to(Path(__file__).parent.parent.parent)
+            module_path = str(relative_path.with_suffix('')).replace(os.sep, '.')
+            
+            # Try to extract class information
+            with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+                content = f.read()
+            
+            # Look for GUI classes (common patterns)
+            import re
+            gui_class_patterns = [
+                r'class\s+(\w*GUI)\s*\(',
+                r'class\s+(\w*App)\s*\(',
+                r'class\s+(\w*Window)\s*\(',
+                r'class\s+(\w*Tool)\s*\(',
+                r'class\s+(\w*Dialog)\s*\(',
+                r'class\s+(\w*Widget)\s*\('
+            ]
+            
+            class_name = None
+            for pattern in gui_class_patterns:
+                matches = re.findall(pattern, content)
+                if matches:
+                    # Prefer GUI classes over others
+                    gui_matches = [m for m in matches if 'GUI' in m or 'App' in m or 'Window' in m]
+                    if gui_matches:
+                        class_name = gui_matches[0]
+                        break
+                    else:
+                        class_name = matches[0]
+                        break
+            
+            if not class_name:
+                return None
+            
+            # Create display name from file name
+            display_name = self._create_display_name(file_path.stem)
+            
+            return {
+                'name': file_path.stem,
+                'display_name': display_name,
+                'module_path': module_path,
+                'class_name': class_name,
+                'file_path': str(file_path),
+                'icon': default_icon
+            }
+            
+        except Exception as e:
+            self.logger.warning(f"Error analyzing file {file_path}: {e}")
+            return None
+    
+    def _create_display_name(self, file_name):
+        """Create a user-friendly display name from a file name."""
+        # Handle common naming patterns
+        name_replacements = {
+            'file_finder': 'File Finder',
+            'size_analyzer': 'Size Analyzer',
+            'find_duplicate_files': 'Duplicate Finder',
+            'duplicate_finder': 'Duplicate Finder',
+            'en_and_decrypt': 'Encrypt/Decrypt',
+            'secure_delete': 'Secure Delete',
+            'check_sum': 'File Checksum',
+            'organize': 'File Organizer',
+            'catalog': 'File Catalog',
+            'rename': 'File Renamer'
+        }
+        
+        if file_name in name_replacements:
+            return name_replacements[file_name]
+        
+        # Convert snake_case to Title Case
+        return ' '.join(word.capitalize() for word in file_name.split('_'))
+    
+    def _launch_discovered_tool(self, tool_data):
+        """Launch a discovered tool using its metadata."""
+        try:
+            tool_name = tool_data['display_name']
+            module_path = tool_data['module_path']
+            class_name = tool_data['class_name']
+            
+            self.logger.info(f"Launching tool: {tool_name} ({module_path}.{class_name})")
+            
+            # Import and launch the tool
+            try:
+                module = __import__(module_path, fromlist=[class_name])
+                tool_class = getattr(module, class_name)
+                tool_instance = tool_class()
+                
+                # Show the tool window
+                if hasattr(tool_instance, 'show'):
+                    tool_instance.show()
+                elif hasattr(tool_instance, 'exec_'):
+                    tool_instance.exec_()
+                
+                self.statusBar().showMessage(f"{tool_name} launched successfully", 3000)
+                self.logger.info(f"Successfully launched tool: {tool_name}")
+                
+            except ImportError as e:
+                self.logger.error(f"Failed to import {module_path}: {e}")
+                QMessageBox.warning(
+                    self,
+                    "Tool Launch Error",
+                    f"Could not import {tool_name}:\n\n{e}\n\n"
+                    f"Module: {module_path}\nClass: {class_name}"
+                )
+            except AttributeError as e:
+                self.logger.error(f"Class {class_name} not found in {module_path}: {e}")
+                QMessageBox.warning(
+                    self,
+                    "Tool Launch Error", 
+                    f"Class '{class_name}' not found in {tool_name}:\n\n{e}"
+                )
+            except Exception as e:
+                self.logger.error(f"Error launching {tool_name}: {e}")
+                QMessageBox.warning(
+                    self,
+                    "Tool Launch Error",
+                    f"Could not launch {tool_name}:\n\n{e}"
+                )
+                
+        except Exception as e:
+            self.logger.error(f"Error in _launch_discovered_tool: {e}")
+    
+    def _create_fallback_tools_widget(self):
+        """Create fallback tools widget with minimal functionality."""
+        tools_tree = QTreeWidget()
+        tools_tree.setHeaderLabels(["RFU Tools"])
+        
+        # Basic fallback tools
+        fallback_tools = {
+            "File Management": [
+                ("File Explorer", "📁", lambda: self._open_file_explorer()),
+                ("System Files", "🗂️", lambda: self._open_system_files())
+            ],
+            "Analysis": [
+                ("Directory Info", "📊", lambda: self._show_directory_info()),
+                ("File Properties", "🏷️", lambda: self._show_file_properties())
+            ]
+        }
+        
+        for category, tools in fallback_tools.items():
+            category_item = QTreeWidgetItem([category])
+            category_item.setExpanded(True)
+            
+            for tool_name, icon, callback in tools:
+                tool_item = QTreeWidgetItem([f"{icon} {tool_name}"])
+                tool_item.setData(0, Qt.UserRole, callback)
+                category_item.addChild(tool_item)
+            
+            tools_tree.addTopLevelItem(category_item)
+        
+        tools_tree.itemDoubleClicked.connect(self._on_tool_activated)
+        return tools_tree
+    
+    def _open_file_explorer(self):
+        """Open system file explorer."""
+        try:
+            import platform
+            import subprocess
+            
+            system = platform.system()
+            if system == "Windows":
+                subprocess.Popen(["explorer"])
+            elif system == "Darwin":  # macOS
+                subprocess.Popen(["open", "-a", "Finder"])
+            else:  # Linux
+                subprocess.Popen(["xdg-open", str(Path.home())])
+                
+        except Exception as e:
+            self.logger.error(f"Error opening file explorer: {e}")
+    
+    def _open_system_files(self):
+        """Navigate to system files."""
+        try:
+            if self.panes and self.active_pane_index < len(self.panes):
+                active_pane = self.panes[self.active_pane_index]
+                system_path = Path("/") if platform.system() != "Windows" else Path("C:\\")
+                if hasattr(active_pane, 'navigate_to_path'):
+                    active_pane.navigate_to_path(system_path)
+        except Exception as e:
+            self.logger.error(f"Error navigating to system files: {e}")
+    
+    def _show_directory_info(self):
+        """Show information about current directory."""
+        try:
+            active_pane = self._get_active_pane()
+            if active_pane:
+                current_path = getattr(active_pane, '_current_path', Path.home())
+                if current_path.exists():
+                    stats = self._get_directory_stats(current_path)
+                    QMessageBox.information(
+                        self,
+                        "Directory Information",
+                        f"Path: {current_path}\n\n"
+                        f"Files: {stats['files']}\n"
+                        f"Directories: {stats['dirs']}\n"
+                        f"Total Size: {stats['size']}\n"
+                        f"Last Modified: {stats['modified']}"
+                    )
+        except Exception as e:
+            self.logger.error(f"Error showing directory info: {e}")
+    
+    def _show_file_properties(self):
+        """Show properties of selected file."""
+        try:
+            QMessageBox.information(
+                self,
+                "File Properties",
+                "Select a file in the file list to view its properties.\n\n"
+                "This feature will be enhanced in future versions."
+            )
+        except Exception as e:
+            self.logger.error(f"Error showing file properties: {e}")
+    
+    def _get_directory_stats(self, path):
+        """Get statistics about a directory."""
+        try:
+            files = 0
+            dirs = 0
+            total_size = 0
+            
+            for item in path.iterdir():
+                if item.is_file():
+                    files += 1
+                    try:
+                        total_size += item.stat().st_size
+                    except (OSError, PermissionError):
+                        pass
+                elif item.is_dir():
+                    dirs += 1
+            
+            # Format size
+            if total_size > 1024**3:
+                size_str = f"{total_size / (1024**3):.1f} GB"
+            elif total_size > 1024**2:
+                size_str = f"{total_size / (1024**2):.1f} MB"
+            elif total_size > 1024:
+                size_str = f"{total_size / 1024:.1f} KB"
+            else:
+                size_str = f"{total_size} bytes"
+            
+            modified = datetime.fromtimestamp(path.stat().st_mtime).strftime("%Y-%m-%d %H:%M:%S")
+            
+            return {
+                'files': files,
+                'dirs': dirs,
+                'size': size_str,
+                'modified': modified
+            }
+            
+        except Exception as e:
+            self.logger.error(f"Error getting directory stats: {e}")
+            return {'files': 0, 'dirs': 0, 'size': '0 bytes', 'modified': 'Unknown'}
+    
     def _on_tool_activated(self, item, column):
-        """Handle tool activation from enhanced tools widget."""
+        """Handle tool activation from enhanced tools widget (legacy support)."""
         try:
             if item.parent():  # Only handle leaf items
                 callback = item.data(0, Qt.UserRole)
                 if callable(callback):
                     callback()
+                elif isinstance(callback, dict):
+                    # Handle new-style discovered tool data
+                    self._launch_discovered_tool(callback)
         except Exception as e:
             self.logger.error(f"Error activating tool: {e}")
     
@@ -2397,25 +3089,15 @@ class MultiPaneFileExplorer(QMainWindow):
         """Delete bookmark."""
         try:
             if self.bookmark_manager:
-                # Use advanced bookmark manager
+                # Use advanced bookmark manager for deletion
                 bookmark_path = item.data(0, Qt.UserRole)
-                # TODO: Implement bookmark deletion by path
-                pass
+                if bookmark_path:
+                    # Remove from bookmark manager if method exists
+                    if hasattr(self.bookmark_manager, 'remove_bookmark'):
+                        self.bookmark_manager.remove_bookmark(bookmark_path)
+                    self._refresh_bookmark_widget()
         except Exception as e:
             self.logger.error(f"Error deleting bookmark: {e}")
-    
-    def _handle_file_activation(self, file_path: str):
-        """Handle file activation (opening with default application)."""
-        try:
-            if platform.system() == "Windows":
-                os.startfile(file_path)
-            elif platform.system() == "Darwin":  # macOS
-                subprocess.run(["open", file_path])
-            else:  # Linux and others
-                subprocess.run(["xdg-open", file_path])
-        except Exception as e:
-            self.logger.error(f"Error opening file {file_path}: {e}")
-            QMessageBox.warning(self, "File Open Error", f"Could not open file: {e}")
     
     def _copy_to_other_pane(self):
         """Copy selected files to other pane."""
@@ -2424,7 +3106,9 @@ class MultiPaneFileExplorer(QMainWindow):
             target_pane = self._get_other_pane()
             
             if not source_pane or not target_pane:
-                QMessageBox.warning(self, "Copy Error", "Need at least two panes for copy operation")
+                QMessageBox.warning(
+                    self, ERROR_MESSAGES['COPY_ERROR'],
+                    "Need at least two panes for copy operation")
                 return
             
             # Get selected files from source pane
@@ -2449,11 +3133,14 @@ class MultiPaneFileExplorer(QMainWindow):
                         import shutil
                         shutil.copytree(src, dst, dirs_exist_ok=True)
                         
-                    self.statusBar().showMessage(f"Copied {src.name} to {target_path}", 3000)
+                    self.statusBar().showMessage(
+                        f"Copied {src.name} to {target_path}", 3000)
                     
                 except Exception as e:
                     self.logger.error(f"Error copying {file_path}: {e}")
-                    QMessageBox.warning(self, "Copy Error", f"Error copying {file_path}: {e}")
+                    QMessageBox.warning(
+                        self, ERROR_MESSAGES['COPY_ERROR'],
+                        f"Error copying {file_path}: {e}")
             
             # Refresh target pane
             self._refresh_pane(target_pane)
@@ -2468,7 +3155,9 @@ class MultiPaneFileExplorer(QMainWindow):
             target_pane = self._get_other_pane()
             
             if not source_pane or not target_pane:
-                QMessageBox.warning(self, "Move Error", "Need at least two panes for move operation")
+                QMessageBox.warning(
+                    self, ERROR_MESSAGES['MOVE_ERROR'],
+                    "Need at least two panes for move operation")
                 return
             
             # Get selected files from source pane
@@ -2487,11 +3176,14 @@ class MultiPaneFileExplorer(QMainWindow):
                     dst = target_path / src.name
                     
                     src.rename(dst)
-                    self.statusBar().showMessage(f"Moved {src.name} to {target_path}", 3000)
+                    self.statusBar().showMessage(
+                        f"Moved {src.name} to {target_path}", 3000)
                     
                 except Exception as e:
                     self.logger.error(f"Error moving {file_path}: {e}")
-                    QMessageBox.warning(self, "Move Error", f"Error moving {file_path}: {e}")
+                    QMessageBox.warning(
+                        self, ERROR_MESSAGES['MOVE_ERROR'],
+                        f"Error moving {file_path}: {e}")
             
             # Refresh both panes
             self._refresh_pane(source_pane)
@@ -2589,7 +3281,7 @@ class MultiPaneFileExplorer(QMainWindow):
                 only_in_pane1 = files1 - files2
                 only_in_pane2 = files2 - files1
                 
-                message = f"Comparison Results:\n\n"
+                message = "Comparison Results:\n\n"
                 message += f"Only in {path1.name}: {len(only_in_pane1)} files\n"
                 message += f"Only in {path2.name}: {len(only_in_pane2)} files\n"
                 message += f"Common files: {len(files1 & files2)} files"

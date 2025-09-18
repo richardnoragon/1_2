@@ -809,8 +809,9 @@ class ToolsPaneWidget(BasePaneWidget):
         tools_tree = QTreeWidget()
         tools_tree.setHeaderLabels(["Tools"])
         tools_tree.setAlternatingRowColors(True)
-        tools_tree.setRootIsDecorated(True)
-        tools_tree.setExpandsOnDoubleClick(True)
+        # We'll handle indicators manually
+        tools_tree.setRootIsDecorated(False)
+        tools_tree.setExpandsOnDoubleClick(False)  # Custom expand handling
         tools_tree.setStyleSheet("""
             QTreeWidget {
                 background-color: white;
@@ -818,59 +819,74 @@ class ToolsPaneWidget(BasePaneWidget):
                 font-size: 11px;
                 selection-background-color: #007ACC;
                 selection-color: white;
+                outline: none;
             }
             QTreeWidget::item {
-                padding: 4px;
+                padding: 6px 4px;
                 border-bottom: 1px solid #f0f0f0;
+                min-height: 24px;
             }
             QTreeWidget::item:selected {
                 background-color: #007ACC;
                 color: white;
+                border-radius: 3px;
             }
             QTreeWidget::item:hover {
                 background-color: #e3f2fd;
+                border-radius: 3px;
             }
-            QTreeWidget::branch:has-children:!has-siblings:closed,
-            QTreeWidget::branch:closed:has-children:has-siblings {
-                border-image: none;
-                image: url(none);
+            QTreeWidget::item:has-children {
+                font-weight: bold;
             }
-            QTreeWidget::branch:open:has-children:!has-siblings,
-            QTreeWidget::branch:open:has-children:has-siblings {
-                border-image: none;
-                image: url(none);
+            
+            /* Disable default branch decorations */
+            QTreeWidget::branch {
+                background: transparent;
+                border: none;
+                width: 0px;
+                margin: 0px;
             }
         """)
         
-        # Populate tools tree
-        self._populate_tools_tree(tools_tree)
+        # Populate tools tree with custom indicators
+        self._populate_tools_tree_with_indicators(tools_tree)
         
-        # Connect signals
+        # Connect signals for enhanced click handling
+        tools_tree.itemClicked.connect(self._on_tree_item_clicked)
         tools_tree.itemDoubleClicked.connect(self._on_tool_activated)
-        tools_tree.itemClicked.connect(self._on_tool_selected)
-        tools_tree.itemExpanded.connect(self._on_category_expanded)
+        tools_tree.itemExpanded.connect(self._on_category_state_changed)
+        tools_tree.itemCollapsed.connect(self._on_category_state_changed)
         
         # Enable keyboard navigation
         tools_tree.setFocusPolicy(Qt.StrongFocus)
         
         return tools_tree
     
-    def _populate_tools_tree(self, tree_widget):
-        """Populate tools tree with RFU tool categories."""
+    def _populate_tools_tree_with_indicators(self, tree_widget):
+        """Populate tools tree with custom expand/collapse indicators."""
         tree_widget.clear()
         
         total_tools = 0
         
         for category_name, tools in self.tool_categories.items():
-            # Create category item
-            category_item = QTreeWidgetItem([f"📁 {category_name}"])
+            # Create category item with right arrow (collapsed state)
+            category_display = f"▶ 📁 {category_name}"
+            category_item = QTreeWidgetItem([category_display])
             category_item.setFont(0, QFont("Arial", 10, QFont.Bold))
             category_item.setForeground(0, QColor("#2c3e50"))
-            category_item.setData(0, Qt.UserRole, {"type": "category", "name": category_name})
+            
+            # Store original category name and indicator state
+            category_data = {
+                "type": "category",
+                "name": category_name,
+                "original_text": f"📁 {category_name}",
+                "is_expanded": False
+            }
+            category_item.setData(0, Qt.UserRole, category_data)
             
             # Add tools to category
             for tool_name, tool_description, tool_module in tools:
-                tool_item = QTreeWidgetItem([f"🔧 {tool_name}"])
+                tool_item = QTreeWidgetItem([f"    🔧 {tool_name}"])
                 tool_item.setFont(0, QFont("Arial", 9))
                 tool_item.setForeground(0, QColor("#495057"))
                 tool_item.setToolTip(0, tool_description)
@@ -887,15 +903,168 @@ class ToolsPaneWidget(BasePaneWidget):
             
             tree_widget.addTopLevelItem(category_item)
             
-            # Expand popular categories by default
-            popular_categories = ["File Management", "File Operations", "Analysis"]
+            # Expand popular categories by default and update indicators
+            popular_categories = ["File Management", "File Operations",
+                                  "Analysis"]
             if category_name in popular_categories:
-                category_item.setExpanded(True)
+                self._expand_category_with_animation(
+                    category_item, tree_widget)
         
         # Update status
         if hasattr(self, 'status_label') and self.status_label:
-            status_text = f"{len(self.tool_categories)} categories, {total_tools} tools"
+            categories_count = len(self.tool_categories)
+            status_text = f"{categories_count} categories, {total_tools} tools"
             self.status_label.setText(status_text)
+    
+    def _on_tree_item_clicked(self, item, column):
+        """Handle tree item clicks with smart expand/collapse logic."""
+        if not item:
+            return
+        
+        item_data = item.data(0, Qt.UserRole)
+        if not item_data:
+            return
+        
+        item_type = item_data.get("type")
+        
+        if item_type == "category":
+            # Toggle category expansion on any click
+            tree_widget = item.treeWidget()
+            if item.isExpanded():
+                self._collapse_category_with_animation(item, tree_widget)
+            else:
+                self._expand_category_with_animation(item, tree_widget)
+        
+        # Call the original selection handler
+        self._on_tool_selected(item, column)
+    
+    def _expand_category_with_animation(self, category_item, tree_widget):
+        """Expand category with visual indicator update and animation."""
+        if not category_item or not tree_widget:
+            return
+        
+        item_data = category_item.data(0, Qt.UserRole)
+        if not item_data or item_data.get("type") != "category":
+            return
+        
+        # Update indicator to down arrow
+        original_text = item_data.get("original_text", "")
+        expanded_display = f"▼ {original_text}"
+        category_item.setText(0, expanded_display)
+        
+        # Update data
+        item_data["is_expanded"] = True
+        category_item.setData(0, Qt.UserRole, item_data)
+        
+        # Add visual feedback with color animation
+        category_item.setForeground(0, QColor("#007ACC"))
+        
+        # Expand the item with animation-like effect
+        if QT_AVAILABLE:
+            # Create a smooth expansion effect
+            category_item.setExpanded(True)
+            
+            # Animate child items appearing
+            child_count = category_item.childCount()
+            for i in range(child_count):
+                child_item = category_item.child(i)
+                if child_item:
+                    # Add a subtle delay for each child
+                    QTimer.singleShot(i * 50, lambda ci=child_item:
+                                      self._animate_child_appearance(ci))
+        else:
+            category_item.setExpanded(True)
+        
+        # Emit category expanded signal
+        if QT_AVAILABLE and self.categoryExpanded:
+            category_name = item_data.get("name")
+            self.categoryExpanded.emit(category_name)
+    
+    def _animate_child_appearance(self, child_item):
+        """Animate child item appearance with subtle fade-in effect."""
+        if not child_item or not QT_AVAILABLE:
+            return
+        
+        # Create a temporary highlight effect
+        original_color = child_item.foreground(0)
+        highlight_color = QColor("#007ACC")
+        
+        # Brief highlight animation
+        child_item.setForeground(0, highlight_color)
+        QTimer.singleShot(200, lambda: child_item.setForeground(
+            0, original_color))
+    
+    def _collapse_category_with_animation(self, category_item, tree_widget):
+        """Collapse category with visual indicator update and animation."""
+        if not category_item or not tree_widget:
+            return
+        
+        item_data = category_item.data(0, Qt.UserRole)
+        if not item_data or item_data.get("type") != "category":
+            return
+        
+        # Animate child items disappearing before collapse
+        if QT_AVAILABLE:
+            child_count = category_item.childCount()
+            for i in range(child_count):
+                child_item = category_item.child(i)
+                if child_item:
+                    # Add fade-out effect for children
+                    fade_color = QColor("#cccccc")
+                    child_item.setForeground(0, fade_color)
+        
+        # Small delay for animation effect
+        if QT_AVAILABLE:
+            QTimer.singleShot(100, lambda:
+                              self._complete_collapse(category_item,
+                                                      item_data))
+        else:
+            self._complete_collapse(category_item, item_data)
+    
+    def _complete_collapse(self, category_item, item_data):
+        """Complete the collapse animation."""
+        # Update indicator to right arrow
+        original_text = item_data.get("original_text", "")
+        collapsed_display = f"▶ {original_text}"
+        category_item.setText(0, collapsed_display)
+        
+        # Update data
+        item_data["is_expanded"] = False
+        category_item.setData(0, Qt.UserRole, item_data)
+        
+        # Collapse the item
+        category_item.setExpanded(False)
+        
+        # Reset visual feedback
+        category_item.setForeground(0, QColor("#2c3e50"))
+        
+        # Reset child item colors
+        child_count = category_item.childCount()
+        for i in range(child_count):
+            child_item = category_item.child(i)
+            if child_item:
+                child_item.setForeground(0, QColor("#495057"))
+    
+    def _on_category_state_changed(self, item):
+        """Handle category expansion/collapse state changes."""
+        if not item:
+            return
+        
+        item_data = item.data(0, Qt.UserRole)
+        if not item_data or item_data.get("type") != "category":
+            return
+        
+        # Sync indicator with actual state
+        tree_widget = item.treeWidget()
+        if item.isExpanded() and not item_data.get("is_expanded", False):
+            self._expand_category_with_animation(item, tree_widget)
+        elif not item.isExpanded() and item_data.get("is_expanded", False):
+            self._collapse_category_with_animation(item, tree_widget)
+    
+    def _populate_tools_tree(self, tree_widget):
+        """Populate tools tree with RFU tool categories (legacy method)."""
+        # Delegate to the new indicator-based implementation
+        self._populate_tools_tree_with_indicators(tree_widget)
     
     def _filter_tools(self, search_text: str):
         """Filter tools based on search text."""
@@ -949,10 +1118,16 @@ class ToolsPaneWidget(BasePaneWidget):
         # Update status
         if hasattr(self, 'status_label') and self.status_label:
             if search_text:
-                self.status_label.setText(f"Found: {visible_categories} categories, {visible_tools} tools")
+                found_msg = f"Found: {visible_categories} categories, " \
+                           f"{visible_tools} tools"
+                self.status_label.setText(found_msg)
             else:
-                total_tools = sum(len(tools) for tools in self.tool_categories.values())
-                self.status_label.setText(f"{len(self.tool_categories)} categories, {total_tools} tools")
+                total_tools = sum(len(tools)
+                                  for tools in self.tool_categories.values())
+                categories_count = len(self.tool_categories)
+                status_text = f"{categories_count} categories, " \
+                              f"{total_tools} tools"
+                self.status_label.setText(status_text)
     
     def _show_all_items(self):
         """Show all tools and categories."""
@@ -981,7 +1156,7 @@ class ToolsPaneWidget(BasePaneWidget):
         if item_type == "tool":
             tool_name = item_data.get("name")
             category = item_data.get("category")
-            description = item_data.get("description")
+            description = item_data.get("description")  # noqa: F841
             module_path = item_data.get("module")
             
             if QT_AVAILABLE and self.toolLaunched:
@@ -1058,22 +1233,26 @@ class ToolsPaneWidget(BasePaneWidget):
         return len(self.tool_categories)
     
     def expand_all_categories(self):
-        """Expand all tool categories."""
+        """Expand all tool categories with animation."""
         if not self.tools_tree:
             return
         
         for i in range(self.tools_tree.topLevelItemCount()):
             category_item = self.tools_tree.topLevelItem(i)
-            category_item.setExpanded(True)
+            if not category_item.isExpanded():
+                self._expand_category_with_animation(
+                    category_item, self.tools_tree)
     
     def collapse_all_categories(self):
-        """Collapse all tool categories."""
+        """Collapse all tool categories with animation."""
         if not self.tools_tree:
             return
         
         for i in range(self.tools_tree.topLevelItemCount()):
             category_item = self.tools_tree.topLevelItem(i)
-            category_item.setExpanded(False)
+            if category_item.isExpanded():
+                self._collapse_category_with_animation(
+                    category_item, self.tools_tree)
     
     def clear_search(self):
         """Clear search filter and show all tools."""
@@ -1085,8 +1264,55 @@ class ToolsPaneWidget(BasePaneWidget):
                           self.tool_categories.values())
         if hasattr(self, 'status_label') and self.status_label:
             categories_count = len(self.tool_categories)
-            status_text = f"{categories_count} categories, {total_tools} tools"
+            status_text = f"{categories_count} categories, " \
+                          f"{total_tools} tools"
             self.status_label.setText(status_text)
+    
+    def get_state_data(self) -> Dict[str, Any]:
+        """Get tools pane state data for persistence."""
+        base_data = super().get_state_data()
+        
+        # Add tools-specific state
+        expanded_categories = []
+        if self.tools_tree:
+            for i in range(self.tools_tree.topLevelItemCount()):
+                category_item = self.tools_tree.topLevelItem(i)
+                if category_item.isExpanded():
+                    item_data = category_item.data(0, Qt.UserRole)
+                    if item_data:
+                        category_name = item_data.get("name")
+                        if category_name:
+                            expanded_categories.append(category_name)
+        
+        base_data.update({
+            'expanded_categories': expanded_categories,
+            'search_text': getattr(self.search_input, 'text', lambda: '')(),
+            'tool_count': self.get_tool_count(),
+            'category_count': self.get_category_count()
+        })
+        
+        return base_data
+    
+    def restore_state_data(self, data: Dict[str, Any]):
+        """Restore tools pane state data from persistence."""
+        super().restore_state_data(data)
+        
+        # Restore expanded categories
+        expanded_categories = data.get('expanded_categories', [])
+        if self.tools_tree and expanded_categories:
+            for i in range(self.tools_tree.topLevelItemCount()):
+                category_item = self.tools_tree.topLevelItem(i)
+                item_data = category_item.data(0, Qt.UserRole)
+                if item_data:
+                    category_name = item_data.get("name")
+                    if category_name in expanded_categories:
+                        self._expand_category_with_animation(
+                            category_item, self.tools_tree)
+        
+        # Restore search text
+        search_text = data.get('search_text', '')
+        if search_text and hasattr(self, 'search_input') and self.search_input:
+            self.search_input.setText(search_text)
 
 
 class PaneFactory:
