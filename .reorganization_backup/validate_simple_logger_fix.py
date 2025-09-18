@@ -19,7 +19,7 @@ def test_logger_fix():
     
     try:
         # Import the module
-        from rfu.gui.secure_theme_settings import SecureThemeSettingsWidget
+        from src.gui.secure_theme_settings import SecureThemeSettingsWidget
         
         # Check if we can create an instance (basic test)
         print("  ✓ Module imported successfully")
@@ -73,7 +73,7 @@ def test_factory_function():
     print("\n🔍 Testing factory function...")
     
     try:
-        from rfu.gui.secure_theme_settings import create_secure_theme_settings_widget
+        from src.gui.secure_theme_settings import create_secure_theme_settings_widget
         
         # This might fail due to PyQt5, but should handle gracefully
         try:

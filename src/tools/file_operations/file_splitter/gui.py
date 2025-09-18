@@ -35,7 +35,7 @@ from ..file_splitter_logic import FileSplitterLogic, FileSplitterError
 
 # Import GUI framework
 try:
-    from src.rfu.gui.standard_window import StandardWindow
+    from src.gui.standard_window import StandardWindow
 except ImportError:
     # Fallback for standalone execution
     from PyQt5.QtWidgets import QMainWindow

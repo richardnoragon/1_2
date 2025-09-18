@@ -71,7 +71,7 @@ def test_simple_hub_integration():
     print("=" * 50)
     
     try:
-        from rfu.simple_hub import SimpleRFUHub
+        from src.simple_hub import SimpleRFUHub
         
         # Create a hub instance (but don't show GUI)
         hub = SimpleRFUHub()

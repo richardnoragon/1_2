@@ -21,7 +21,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
 
 # Import the module under test
 try:
-    from rfu.hub import (DARK_BLUE, DARK_GRAY, DARKER_BLUE, DARKER_GRAY,
+    from src.hub import (DARK_BLUE, DARK_GRAY, DARKER_BLUE, DARKER_GRAY,
                          ERROR_RED, LIGHT_BLUE, LIGHT_GRAY, MEDIUM_GRAY,
                          PRIMARY_BLUE, PYQT5_AVAILABLE, SUCCESS_GREEN,
                          TEXT_DARK, TITLE_HEADER_STYLE, WARNING_ORANGE, WHITE,
@@ -824,7 +824,7 @@ class TestRFUHubEdgeCases:
     def test_import_fallbacks(self):
         """Test import fallback mechanisms."""
         # Test that fallback functions work when imports fail
-        from rfu.hub import error_handler, get_config_manager, get_log_manager
+        from src.hub import error_handler, get_config_manager, get_log_manager
 
         # These should be the fallback implementations
         logger = get_log_manager()

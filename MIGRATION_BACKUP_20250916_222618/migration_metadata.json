@@ -1,0 +1,8 @@
+{
+  "timestamp": "2025-09-16T22:26:20.614187",
+  "backup_location": "C:\\Users\\HP1\\1_2\\MIGRATION_BACKUP_20250916_222618",
+  "source_directory": "C:\\Users\\HP1\\1_2\\src\\rfu",
+  "target_directory": "C:\\Users\\HP1\\1_2\\src",
+  "files_in_source": 322,
+  "purpose": "Pre-migration backup for src/rfu \u2192 src migration"
+}

@@ -22,7 +22,7 @@ import pytest
 # Add the src directory to the path to import the module
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
 
-from rfu.log_manager import (LogManager, get_log_manager,
+from src.log_manager import (LogManager, get_log_manager,
                              get_log_manager_instance)
 
 
@@ -431,14 +431,14 @@ class TestGlobalFunctions:
     def setup_method(self):
         """Setup for each test method."""
         # Reset global instance
-        import rfu.log_manager
+        import src.log_manager
         rfu.log_manager._log_manager = None
         LogManager._instance = None
     
     def teardown_method(self):
         """Teardown for each test method."""
         # Reset global instance
-        import rfu.log_manager
+        import src.log_manager
         rfu.log_manager._log_manager = None
         LogManager._instance = None
     

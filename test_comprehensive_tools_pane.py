@@ -28,7 +28,7 @@ try:
     app = QApplication(sys.argv)
     
     # Import and test the multi-pane explorer
-    from src.rfu.file_explorer.multi_pane_explorer_repaired import \
+    from src.file_explorer.multi_pane_explorer_repaired import \
         MultiPaneFileExplorer
     
     explorer = MultiPaneFileExplorer()

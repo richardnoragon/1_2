@@ -62,14 +62,14 @@ except ImportError:
 # Import responsive layout system with mocking
 if PYQT_AVAILABLE:
     try:
-        from src.rfu.file_explorer.enhanced_multi_pane_explorer import \
+        from src.file_explorer.enhanced_multi_pane_explorer import \
             EnhancedMultiPaneExplorer
-        from src.rfu.file_explorer.ui.layout_implementations import (
+        from src.file_explorer.ui.layout_implementations import (
             ContentHierarchyPreserver, DualPaneLayoutImplementor,
             LayoutTransitionManager, LayoutValidationEngine,
             MultiPaneLayoutImplementor, ResponsiveBreakpointHandler,
             SinglePaneLayoutImplementor)
-        from src.rfu.file_explorer.ui.responsive_layout_manager import (
+        from src.file_explorer.ui.responsive_layout_manager import (
             LayoutConfiguration, LayoutConstraint, LayoutType,
             ResponsiveBreakpoint, ResponsiveLayoutManager, ViewportType)
         RESPONSIVE_LAYOUT_AVAILABLE = True

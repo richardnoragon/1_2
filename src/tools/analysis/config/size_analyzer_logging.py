@@ -11,7 +11,7 @@ import os
 from pathlib import Path
 from typing import Any, Dict, Optional
 
-from src.rfu.core.logging_manager import LogManager
+from src.core.logging_manager import LogManager
 
 from .size_analyzer_config import SizeAnalyzerConfig
 

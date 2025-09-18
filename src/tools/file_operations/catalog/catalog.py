@@ -30,8 +30,8 @@ except ImportError:
     uic = None
 
 try:
-    from src.rfu.gui.common.base_window import BaseWindow
-    from src.rfu.gui.common.dialogs import (
+    from src.gui.common.base_window import BaseWindow
+    from src.gui.common.dialogs import (
         get_existing_directory, show_error_dialog
     )
 except ImportError:

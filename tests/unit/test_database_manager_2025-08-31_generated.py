@@ -33,7 +33,7 @@ sys.modules['sqlite3'] = Mock()
 
 # Import the module under test
 try:
-    from rfu.core import DatabaseError, DatabaseQueryError, DatabaseUpdateError, DatabaseConnectionError, DatabaseManager
+    from src.core import DatabaseError, DatabaseQueryError, DatabaseUpdateError, DatabaseConnectionError, DatabaseManager
 except ImportError as e:
     pytest.skip(f"Could not import module: {e}", allow_module_level=True)
 

@@ -16,7 +16,7 @@ print("=" * 50)
 
 # Test 1: Core constants
 try:
-    from src.rfu.core.constants import APP_NAME
+    from src.core.constants import APP_NAME
     print(f"[PASS] Core constants: {APP_NAME}")
 except ImportError as e:
     print(f"[FAIL] Core constants: {e}")
@@ -30,7 +30,7 @@ except ImportError as e:
 
 # Test 3: GUI components
 try:
-    from src.rfu.gui.menu_manager import MenuManager
+    from src.gui.menu_manager import MenuManager
     print("[PASS] Menu manager import")
 except ImportError as e:
     print(f"[FAIL] Menu manager: {e}")

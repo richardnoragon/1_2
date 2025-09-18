@@ -27,8 +27,8 @@ def demo_migration_system():
     print("="*60)
     
     try:
-        from src.rfu.core.migrations import DatabaseMigrationManager
-        from src.rfu.core.database_manager import get_database_manager
+        from src.core.migrations import DatabaseMigrationManager
+        from src.core.database_manager import get_database_manager
         
         # Initialize components
         db_manager = get_database_manager()
@@ -155,7 +155,7 @@ def demo_security_integration():
     print("="*60)
     
     try:
-        from src.rfu.core.database_manager import get_database_manager
+        from src.core.database_manager import get_database_manager
         
         db_manager = get_database_manager()
         

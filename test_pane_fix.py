@@ -13,7 +13,7 @@ sys.path.insert(0, os.path.join(project_root, 'src'))
 try:
     from PyQt5.QtWidgets import QApplication
 
-    from src.rfu.file_explorer.multi_pane_explorer import MultiPaneFileExplorer
+    from src.file_explorer.multi_pane_explorer import MultiPaneFileExplorer
     
     def main():
         print("Testing MultiPaneFileExplorer...")

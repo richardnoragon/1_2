@@ -28,7 +28,7 @@ except ImportError:
     sys.exit(1)
 
 try:
-    from src.rfu.gui.standard_window import StandardWindow
+    from src.gui.standard_window import StandardWindow
     from gui.themes import ThemeManager, Colors, Fonts
     STANDARD_WINDOW_AVAILABLE = True
 except ImportError:

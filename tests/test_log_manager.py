@@ -3,7 +3,7 @@ import os
 import logging
 from io import StringIO
 from tests.test_utils import TestUtils
-from src.rfu.log_manager import LogManager
+from src.log_manager import LogManager
 
 from core.error_handler import error_handler
 

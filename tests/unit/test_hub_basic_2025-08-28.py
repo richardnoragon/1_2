@@ -19,7 +19,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
 def test_hub_imports():
     """Test that hub module can be imported successfully."""
     try:
-        from rfu.hub import RFUHub, UtilityWindow
+        from src.hub import RFUHub, UtilityWindow
         assert RFUHub is not None
         assert UtilityWindow is not None
     except ImportError as e:
@@ -27,7 +27,7 @@ def test_hub_imports():
 
 def test_hub_constants():
     """Test that color and style constants are defined."""
-    from rfu.hub import DARK_BLUE, PRIMARY_BLUE, WHITE
+    from src.hub import DARK_BLUE, PRIMARY_BLUE, WHITE
     assert PRIMARY_BLUE == "#3498db"
     assert DARK_BLUE == "#2980b9"
     assert WHITE == "#ffffff"
@@ -37,7 +37,7 @@ def test_hub_constants():
 @patch('rfu.hub.PYQT5_AVAILABLE', False)
 def test_hub_initialization_no_gui(mock_get_config, mock_get_log):
     """Test RFUHub initialization without GUI."""
-    from rfu.hub import RFUHub
+    from src.hub import RFUHub
 
     # Setup mocks
     mock_log_manager = Mock()
@@ -61,7 +61,7 @@ def test_hub_initialization_no_gui(mock_get_config, mock_get_log):
 @patch('rfu.hub.PYQT5_AVAILABLE', False)
 def test_register_tool_basic(mock_get_config, mock_get_log):
     """Test basic tool registration."""
-    from rfu.hub import RFUHub
+    from src.hub import RFUHub
 
     # Setup mocks
     mock_log_manager = Mock()
@@ -84,7 +84,7 @@ def test_register_tool_basic(mock_get_config, mock_get_log):
 @patch('rfu.hub.PYQT5_AVAILABLE', False)
 def test_unregister_tool_basic(mock_get_config, mock_get_log):
     """Test basic tool unregistration."""
-    from rfu.hub import RFUHub
+    from src.hub import RFUHub
 
     # Setup mocks
     mock_log_manager = Mock()
@@ -105,7 +105,7 @@ def test_unregister_tool_basic(mock_get_config, mock_get_log):
 
 def test_fallback_functions():
     """Test that fallback functions work when imports fail."""
-    from rfu.hub import error_handler, get_config_manager, get_log_manager
+    from src.hub import error_handler, get_config_manager, get_log_manager
 
     # These should be the fallback implementations that work
     logger = get_log_manager()

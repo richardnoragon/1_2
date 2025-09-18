@@ -21,23 +21,23 @@ from unittest.mock import Mock, patch, MagicMock
 import sys
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src'))
 
-from rfu.core.directory_security.directory_security_manager import (
+from src.core.directory_security.directory_security_manager import (
     DirectorySecurityManager, DirectoryStorageResult, DirectoryRetrievalResult
 )
-from rfu.core.directory_security.directory_validator import (
+from src.core.directory_security.directory_validator import (
     DirectoryPathValidator, PathValidationResult
 )
-from rfu.core.directory_security.path_sanitizer import PathSanitizer
-from rfu.core.directory_security.pii_detector import (
+from src.core.directory_security.path_sanitizer import PathSanitizer
+from src.core.directory_security.pii_detector import (
     PIIDetector, PIIAnalysisResult
 )
-from rfu.core.directory_security.directory_encryption import (
+from src.core.directory_security.directory_encryption import (
     DirectoryPathEncryption, DirectoryEncryptionResult, DirectoryDecryptionResult
 )
-from rfu.core.directory_security.directory_permissions import (
+from src.core.directory_security.directory_permissions import (
     DirectoryPermissionManager, PermissionCheckResult, PermissionLevel, DirectoryRole
 )
-from rfu.core.directory_security.directory_audit import (
+from src.core.directory_security.directory_audit import (
     DirectoryAuditLogger, AuditEvent, AuditEventType, AuditSeverity
 )
 

@@ -160,7 +160,7 @@ class EnterpriseTestFramework:
         
         # Test RFU core module imports
         try:
-            from rfu.config_manager import get_config_manager
+            from src.config_manager import get_config_manager
             import_results['config_manager_available'] = True
             successful_imports += 1
             logger.info("✅ RFU config_manager import: SUCCESS")
@@ -174,7 +174,7 @@ class EnterpriseTestFramework:
             )
         
         try:
-            from rfu.log_manager import get_log_manager
+            from src.log_manager import get_log_manager
             import_results['log_manager_available'] = True
             successful_imports += 1
             logger.info("✅ RFU log_manager import: SUCCESS")
@@ -189,7 +189,7 @@ class EnterpriseTestFramework:
         
         # CRITICAL: Test hub class import (THE MAIN BLOCKER)
         try:
-            from rfu.hub import RFUHub
+            from src.hub import RFUHub
             import_results['hub_class_available'] = True
             successful_imports += 1
             logger.info("✅ RFU Hub class import: SUCCESS")
@@ -267,7 +267,7 @@ class EnterpriseTestFramework:
         try:
             # Test main module import and execution path
             try:
-                from rfu.main import main
+                from src.main import main
                 test_results['main_module_import'] = True
                 successful_checks += 1
                 logger.info("✅ Main module import: SUCCESS")
@@ -282,7 +282,7 @@ class EnterpriseTestFramework:
             
             # Test hub instantiation (critical for tool launcher)
             try:
-                from rfu.hub import RFUHub
+                from src.hub import RFUHub
 
                 # Test instantiation in non-GUI mode if possible
                 logger.info("Testing RFUHub instantiation capability...")
@@ -303,7 +303,7 @@ class EnterpriseTestFramework:
                 # Check if the hub has tool launching methods
                 import inspect
 
-                from rfu.hub import RFUHub
+                from src.hub import RFUHub
                 hub_methods = inspect.getmembers(RFUHub, predicate=inspect.ismethod)
                 launch_methods = [m for m in hub_methods if 'launch' in m[0].lower() or 'tool' in m[0].lower()]
                 
@@ -321,7 +321,7 @@ class EnterpriseTestFramework:
             
             # Test error handling framework
             try:
-                from rfu.core.error_handler import error_handler
+                from src.core.error_handler import error_handler
                 test_results['error_handling'] = True
                 successful_checks += 1
                 logger.info("✅ Error handling framework: SUCCESS")

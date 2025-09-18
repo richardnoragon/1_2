@@ -49,7 +49,7 @@ class EnterpriseQAValidator:
         
         # Test core constants
         try:
-            from src.rfu.core.constants import APP_NAME
+            from src.core.constants import APP_NAME
             import_tests['core_constants'] = {'status': 'PASS', 'value': APP_NAME}
         except ImportError as e:
             import_tests['core_constants'] = {'status': 'FAIL', 'error': str(e)}
@@ -63,7 +63,7 @@ class EnterpriseQAValidator:
         
         # Test GUI components
         try:
-            from src.rfu.gui.menu_manager import MenuManager
+            from src.gui.menu_manager import MenuManager
             import_tests['menu_manager'] = {'status': 'PASS'}
         except ImportError as e:
             import_tests['menu_manager'] = {'status': 'FAIL', 'error': str(e)}

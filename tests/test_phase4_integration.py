@@ -26,19 +26,19 @@ import sys
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src'))
 
 # Phase 1: Migration System
-from rfu.database.database_manager import DatabaseManager
-from rfu.database.migration_manager import MigrationManager
+from src.database.database_manager import DatabaseManager
+from src.database.migration_manager import MigrationManager
 
 # Phase 2: Theme Security (would be imported when implemented)
-# from rfu.core.theme_security.theme_encryption_manager import ThemeEncryptionManager
+# from src.core.theme_security.theme_encryption_manager import ThemeEncryptionManager
 
 # Phase 3: Directory Security
-from rfu.core.directory_security.directory_security_manager import DirectorySecurityManager
-from rfu.core.directory_security.directory_validator import DirectoryPathValidator
-from rfu.core.directory_security.pii_detector import PIIDetector
-from rfu.core.directory_security.directory_encryption import DirectoryPathEncryption
-from rfu.core.directory_security.directory_permissions import DirectoryPermissionManager, DirectoryRole
-from rfu.core.directory_security.directory_audit import DirectoryAuditLogger
+from src.core.directory_security.directory_security_manager import DirectorySecurityManager
+from src.core.directory_security.directory_validator import DirectoryPathValidator
+from src.core.directory_security.pii_detector import PIIDetector
+from src.core.directory_security.directory_encryption import DirectoryPathEncryption
+from src.core.directory_security.directory_permissions import DirectoryPermissionManager, DirectoryRole
+from src.core.directory_security.directory_audit import DirectoryAuditLogger
 
 
 class IntegrationTestDatabase:

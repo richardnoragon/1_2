@@ -15,7 +15,7 @@ try:
     
     # Test importing the hub
     try:
-        from rfu.hub import RFUHub
+        from src.hub import RFUHub
         print("✅ RFUHub imported successfully")
     except Exception as e:
         print(f"❌ Failed to import RFUHub: {e}")

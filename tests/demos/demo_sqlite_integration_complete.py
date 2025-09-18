@@ -28,7 +28,7 @@ def demonstrate_database_integration():
         
         # Demonstrate configuration management
         print("\n⚙️ Configuration Management:")
-        from src.rfu.core.enhanced_config_manager import get_enhanced_config_manager
+        from src.core.enhanced_config_manager import get_enhanced_config_manager
         
         config_manager = get_enhanced_config_manager()
         
@@ -53,8 +53,8 @@ def demonstrate_database_integration():
         
         # Demonstrate logging integration
         print("\n📋 Database Logging:")
-        from src.rfu.core.log_manager import LogManager
-        from src.rfu.core.database_logging import get_database_log_service
+        from src.core.log_manager import LogManager
+        from src.core.database_logging import get_database_log_service
         
         log_manager = LogManager()
         logger = log_manager.get_logger('Demo.Integration')

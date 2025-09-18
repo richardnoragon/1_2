@@ -395,7 +395,7 @@ class MigrationValidator:
         
         try:
             # Test config manager import
-            from src.rfu.config_manager import get_config_manager
+            from src.config_manager import get_config_manager
             config = get_config_manager()
             
             self.add_result(ValidationResult(
@@ -439,7 +439,7 @@ class MigrationValidator:
         
         try:
             # Test main module import
-            from src.rfu.main import main
+            from src.main import main
             
             self.add_result(ValidationResult(
                 "main_function",
@@ -448,7 +448,7 @@ class MigrationValidator:
             ))
             
             # Test hub import
-            from src.rfu.hub import RFUHub
+            from src.hub import RFUHub
             
             self.add_result(ValidationResult(
                 "hub_class",

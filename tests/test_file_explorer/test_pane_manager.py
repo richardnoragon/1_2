@@ -43,7 +43,7 @@ from PyQt5.QtWidgets import QApplication, QWidget
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent / 'src'))
 
 try:
-    from src.rfu.file_explorer.core.pane_manager import (PaneConfiguration,
+    from src.file_explorer.core.pane_manager import (PaneConfiguration,
                                                          PaneLayout,
                                                          PaneManager,
                                                          PaneSortOrder,

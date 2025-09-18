@@ -33,7 +33,7 @@ sys.modules['sqlite3'] = Mock()
 
 # Import the module under test
 try:
-    from rfu.core import AppSetting, FileHistory, DirectoryHistory, AppLog, ToolUsage, UserPreference
+    from src.core import AppSetting, FileHistory, DirectoryHistory, AppLog, ToolUsage, UserPreference
 except ImportError as e:
     pytest.skip(f"Could not import module: {e}", allow_module_level=True)
 

@@ -1,0 +1,35 @@
+{
+  "timestamp": "20250917_170025",
+  "pre_migration": {
+    "source_exists": {
+      "status": "PASS",
+      "details": "Source directory found: C:\\Users\\HP1\\1_2\\src\\advanced_folders",
+      "duration": 8.606910705566406e-05,
+      "timestamp": "2025-09-17T17:00:25.881263"
+    },
+    "source_structure": {
+      "status": "PASS",
+      "details": "All required directories present",
+      "duration": 0.0002086162567138672,
+      "timestamp": "2025-09-17T17:00:25.881489"
+    },
+    "target_clean": {
+      "status": "PASS",
+      "details": "Target directory is clean",
+      "duration": 8.320808410644531e-05,
+      "timestamp": "2025-09-17T17:00:25.881584"
+    },
+    "source_importable": {
+      "status": "PASS",
+      "details": "Source module is importable",
+      "duration": 0.0023784637451171875,
+      "timestamp": "2025-09-17T17:00:25.883976"
+    }
+  },
+  "post_migration": {},
+  "import_tests": {},
+  "functionality_tests": {},
+  "performance_tests": {},
+  "rollback_tests": {},
+  "overall_status": "PASS"
+}

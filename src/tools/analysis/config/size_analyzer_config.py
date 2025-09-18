@@ -18,7 +18,7 @@ def get_config_manager():
         import_paths = [
             'src.rfu.core.config_manager',
             'rfu.core.config_manager',
-            'src.rfu.config_manager',
+            'src.config_manager',
             'rfu.config_manager'
         ]
         
@@ -42,7 +42,7 @@ def get_log_manager():
         import_paths = [
             'src.rfu.core.logging_manager',
             'rfu.core.logging_manager',
-            'src.rfu.log_manager',
+            'src.log_manager',
             'rfu.log_manager'
         ]
         

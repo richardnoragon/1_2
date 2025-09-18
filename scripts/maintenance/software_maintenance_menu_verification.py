@@ -43,7 +43,7 @@ def verify_software_maintenance_enhancement():
             print("✅ Software Maintenance Tool instantiated with StandardWindow")
             
             # Verify StandardWindow inheritance
-            from src.rfu.gui.standard_window import StandardWindow
+            from src.gui.standard_window import StandardWindow
             if isinstance(tool, StandardWindow):
                 print("✅ StandardWindow inheritance confirmed")
             else:

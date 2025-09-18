@@ -38,7 +38,7 @@ def test_tool_imports():
 def test_simple_hub_import():
     """Test that we can import the simple hub."""
     try:
-        from rfu.simple_hub import SimpleRFUHub
+        from src.simple_hub import SimpleRFUHub
         print("✓ Simple RFU Hub imported successfully")
         return True
     except ImportError as e:
@@ -48,7 +48,7 @@ def test_simple_hub_import():
 def test_button_methods():
     """Test that button methods exist and can be called."""
     try:
-        from rfu.simple_hub import SimpleRFUHub
+        from src.simple_hub import SimpleRFUHub
         
         # Create a hub instance (but don't show GUI)
         hub = SimpleRFUHub()

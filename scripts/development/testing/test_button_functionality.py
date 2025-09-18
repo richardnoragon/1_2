@@ -60,7 +60,7 @@ def test_hub_import():
     print("\nTesting hub import...")
     
     try:
-        from src.rfu.simple_hub import SimpleRFUHub
+        from src.simple_hub import SimpleRFUHub
         print("✅ SimpleRFUHub - Import successful")
         return True
     except ImportError as e:

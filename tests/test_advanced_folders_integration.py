@@ -205,7 +205,7 @@ class TestAdvancedFoldersIntegration(unittest.TestCase):
         """Test integration with RFU ConfigManager."""
         try:
             # Mock the ConfigManager
-            with patch('src.rfu.config_manager.get_config_manager') as mock_get_config:
+            with patch('src.config_manager.get_config_manager') as mock_get_config:
                 mock_config_manager = Mock()
                 mock_config_manager.get_setting.return_value = {}
                 mock_config_manager.set_setting = Mock()
@@ -349,7 +349,7 @@ class TestAdvancedFoldersSettingsPersistence(unittest.TestCase):
         
         try:
             # Mock ConfigManager for testing
-            with patch('src.rfu.config_manager.get_config_manager') as mock_get_config:
+            with patch('src.config_manager.get_config_manager') as mock_get_config:
                 mock_config_manager = Mock()
                 mock_config_manager.get_setting.return_value = {
                     'advanced_folders': {

@@ -126,7 +126,7 @@ class TestHelperFunctions:
                 expected_paths = [
                     'src.rfu.core.config_manager',
                     'rfu.core.config_manager',
-                    'src.rfu.config_manager',
+                    'src.config_manager',
                     'rfu.config_manager'
                 ]
                 

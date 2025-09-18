@@ -21,7 +21,7 @@ from PyQt5.QtGui import QFont, QColor, QPalette
 
 # Import StandardWindow for menu integration
 try:
-    from src.rfu.gui.standard_window import StandardWindow
+    from src.gui.standard_window import StandardWindow
 except ImportError:
     # Fallback for standalone execution
     StandardWindow = QMainWindow

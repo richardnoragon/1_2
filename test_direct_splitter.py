@@ -16,8 +16,8 @@ try:
     from PyQt5.QtWidgets import (QApplication, QLabel, QSplitter, QVBoxLayout,
                                  QWidget)
 
-    from src.rfu.file_explorer.ui.file_explorer_pane import FileExplorerPane
-    from src.rfu.file_explorer.ui.pane_manager import (PaneConfiguration,
+    from src.file_explorer.ui.file_explorer_pane import FileExplorerPane
+    from src.file_explorer.ui.pane_manager import (PaneConfiguration,
                                                        PaneType)
     
     def test_splitter_direct():

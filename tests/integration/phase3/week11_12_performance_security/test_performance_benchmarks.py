@@ -28,7 +28,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__),
                              '..', '..', '..', '..'))
 
 try:
-    from src.rfu.hub import RFUHub
+    from src.hub import RFUHub
 except ImportError as e:
     print(f"Warning: Could not import RFU components: {e}")
     

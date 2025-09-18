@@ -71,7 +71,7 @@ class Phase5TestEnvironment:
         """Create isolated test database."""
         try:
             # Import database components
-            from src.rfu.file_explorer.database.schema import DatabaseSchema
+            from src.file_explorer.database.schema import DatabaseSchema
             db_path = os.path.join(self.temp_dir, "test_database.db")
             db = DatabaseSchema(db_path)
             db.initialize()

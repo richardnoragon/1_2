@@ -30,7 +30,7 @@ except ImportError:
 try:
     from gui.menu_manager import MenuManager
     from gui.themes import ThemeManager
-    from src.rfu.gui.standard_window import StandardWindow
+    from src.gui.standard_window import StandardWindow
 except ImportError as e:
     print(f"Warning: Could not import menu system: {e}")
     MenuManager = None

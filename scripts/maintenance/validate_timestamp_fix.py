@@ -16,7 +16,7 @@ def test_app_setting_to_dict():
     print("🧪 Testing AppSetting.to_dict() timestamp fields...")
     
     try:
-        from src.rfu.core.database_models import AppSetting
+        from src.core.database_models import AppSetting
         
         # Test 1: Create AppSetting instance without timestamps
         setting = AppSetting(
@@ -79,7 +79,7 @@ def test_user_preference_timestamps():
     print("\n🧪 Testing UserPreference.to_dict() timestamp fields...")
     
     try:
-        from src.rfu.core.database_models import UserPreference
+        from src.core.database_models import UserPreference
         
         now = datetime.now()
         preference = UserPreference(
@@ -119,7 +119,7 @@ def test_models_consistency():
     print("\n🧪 Testing timestamp field consistency across models...")
     
     try:
-        from src.rfu.core.database_models import AppSetting, UserPreference
+        from src.core.database_models import AppSetting, UserPreference
         
         # Test that both models handle None timestamps the same way
         app_setting = AppSetting(section="test", key="test")

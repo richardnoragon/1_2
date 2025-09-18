@@ -21,7 +21,7 @@ sys.path.insert(0, os.path.join(project_root, 'src'))
 sys.path.insert(0, os.path.join(project_root, 'scripts', 'maintenance'))
 
 # Import constants
-from src.rfu.core.constants import APP_NAME
+from src.core.constants import APP_NAME
 
 
 class InterfaceMode(Enum):
@@ -148,7 +148,7 @@ try:
             
             # Configuration
             try:
-                from src.rfu.config_manager import get_config_manager
+                from src.config_manager import get_config_manager
                 self.config_manager = get_config_manager()
                 self._setup_interface_configuration()
             except:
@@ -513,7 +513,7 @@ try:
             self.setWindowTitle(f"{APP_NAME} - Multi-Pane Explorer")
             
             try:
-                from src.rfu.file_explorer.multi_pane_explorer import \
+                from src.file_explorer.multi_pane_explorer import \
                     MultiPaneFileExplorer
                 self.multi_pane_explorer = MultiPaneFileExplorer()
                 self.setCentralWidget(self.multi_pane_explorer)

@@ -20,7 +20,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
 def test_hub_imports():
     """Test that hub module can be imported successfully."""
     try:
-        from rfu.hub import RFUHub, UtilityWindow
+        from src.hub import RFUHub, UtilityWindow
         assert RFUHub is not None
         assert UtilityWindow is not None
     except ImportError as e:
@@ -29,7 +29,7 @@ def test_hub_imports():
 
 def test_hub_constants():
     """Test that color and style constants are defined."""
-    from rfu.hub import (DARK_BLUE, ERROR_RED, PRIMARY_BLUE, SUCCESS_GREEN,
+    from src.hub import (DARK_BLUE, ERROR_RED, PRIMARY_BLUE, SUCCESS_GREEN,
                          TITLE_HEADER_STYLE, WARNING_ORANGE, WHITE)
     assert PRIMARY_BLUE == "#3498db"
     assert DARK_BLUE == "#2980b9"
@@ -45,7 +45,7 @@ def test_hub_constants():
 @patch('rfu.hub.PYQT5_AVAILABLE', False)
 def test_hub_basic_attributes(mock_get_config, mock_get_log):
     """Test RFUHub basic attributes without GUI."""
-    from rfu.hub import RFUHub
+    from src.hub import RFUHub
 
     # Setup mocks
     mock_log_manager = Mock()
@@ -83,7 +83,7 @@ def test_hub_basic_attributes(mock_get_config, mock_get_log):
 @patch('rfu.hub.PYQT5_AVAILABLE', False)
 def test_tool_registration_structure(mock_get_config, mock_get_log):
     """Test tool registration data structures."""
-    from rfu.hub import RFUHub
+    from src.hub import RFUHub
 
     # Setup mocks
     mock_log_manager = Mock()
@@ -124,7 +124,7 @@ def test_tool_registration_structure(mock_get_config, mock_get_log):
 @patch('rfu.hub.PYQT5_AVAILABLE', False)
 def test_tool_unregistration(mock_get_config, mock_get_log):
     """Test tool unregistration functionality."""
-    from rfu.hub import RFUHub
+    from src.hub import RFUHub
 
     # Setup mocks
     mock_log_manager = Mock()
@@ -154,7 +154,7 @@ def test_tool_unregistration(mock_get_config, mock_get_log):
 @patch('rfu.hub.PYQT5_AVAILABLE', False)
 def test_progress_update(mock_get_config, mock_get_log):
     """Test tool progress update functionality."""
-    from rfu.hub import RFUHub
+    from src.hub import RFUHub
 
     # Setup mocks
     mock_log_manager = Mock()
@@ -182,7 +182,7 @@ def test_progress_update(mock_get_config, mock_get_log):
 
 def test_resource_manager_structure():
     """Test resource manager initialization."""
-    from rfu.hub import RFUHub
+    from src.hub import RFUHub
     
     with patch('rfu.hub.get_log_manager'), \
          patch('rfu.hub.get_config_manager'), \
@@ -199,7 +199,7 @@ def test_resource_manager_structure():
 
 def test_resource_release():
     """Test resource release functionality."""
-    from rfu.hub import RFUHub
+    from src.hub import RFUHub
     
     with patch('rfu.hub.get_log_manager'), \
          patch('rfu.hub.get_config_manager'), \
@@ -224,7 +224,7 @@ def test_resource_release():
 
 def test_signal_handlers():
     """Test signal handler methods (should not raise exceptions)."""
-    from rfu.hub import RFUHub
+    from src.hub import RFUHub
     
     with patch('rfu.hub.get_log_manager'), \
          patch('rfu.hub.get_config_manager'), \
@@ -242,7 +242,7 @@ def test_signal_handlers():
 
 def test_menu_callbacks_exist():
     """Test that menu callback methods exist."""
-    from rfu.hub import RFUHub
+    from src.hub import RFUHub
     
     with patch('rfu.hub.get_log_manager'), \
          patch('rfu.hub.get_config_manager'), \
@@ -269,7 +269,7 @@ def test_menu_callbacks_exist():
 
 def test_tool_opening_methods_exist():
     """Test that tool opening methods exist."""
-    from rfu.hub import RFUHub
+    from src.hub import RFUHub
     
     with patch('rfu.hub.get_log_manager'), \
          patch('rfu.hub.get_config_manager'), \
@@ -290,7 +290,7 @@ def test_tool_opening_methods_exist():
 
 def test_utility_window_basic():
     """Test UtilityWindow basic functionality."""
-    from rfu.hub import UtilityWindow
+    from src.hub import UtilityWindow
     
     with patch('rfu.hub.PYQT5_AVAILABLE', False):
         parent_hub = Mock()

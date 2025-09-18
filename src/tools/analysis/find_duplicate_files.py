@@ -14,7 +14,7 @@ from PyQt5.QtWidgets import (
 
 # Import StandardWindow for menu integration
 try:
-    from src.rfu.gui.standard_window import StandardWindow
+    from src.gui.standard_window import StandardWindow
     STANDARD_WINDOW_AVAILABLE = True
 except ImportError:
     # Fallback for standalone execution

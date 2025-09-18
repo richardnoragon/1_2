@@ -25,7 +25,7 @@ def update_tool_to_standard_window(file_path, class_name, window_type="utility")
         if 'from PyQt5.QtWidgets import' in content and 'QMainWindow' in content:
             # Add StandardWindow import
             import_section = content.split('except ImportError:')[0]
-            if 'from src.rfu.gui.standard_window import StandardWindow' not in import_section:
+            if 'from src.gui.standard_window import StandardWindow' not in import_section:
                 # Find the location to add the import
                 lines = content.split('\n')
                 import_added = False
@@ -41,7 +41,7 @@ def update_tool_to_standard_window(file_path, class_name, window_type="utility")
                             '',
                             '# Import StandardWindow for menu integration',
                             'try:',
-                            '    from src.rfu.gui.standard_window import StandardWindow',
+                            '    from src.gui.standard_window import StandardWindow',
                             'except ImportError:',
                             '    # Fallback for standalone execution',
                             '    from PyQt5.QtWidgets import QMainWindow',

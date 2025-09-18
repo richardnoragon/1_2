@@ -24,8 +24,8 @@ project_root = os.path.dirname(os.path.dirname(os.path.dirname(
     os.path.dirname(current_dir))))
 sys.path.append(project_root)
 
-from src.rfu.gui.common.base_window import BaseWindow
-from src.rfu.gui.common.dialogs import (
+from src.gui.common.base_window import BaseWindow
+from src.gui.common.dialogs import (
     get_existing_directory, show_error_dialog
 )
 

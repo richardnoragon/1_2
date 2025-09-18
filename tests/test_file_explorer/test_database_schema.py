@@ -41,10 +41,10 @@ from PyQt5.QtCore import QApplication
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent / 'src'))
 
 try:
-    from src.rfu.file_explorer.database.migrations import (
+    from src.file_explorer.database.migrations import (
         CreateInitialSchemaMigration, DatabaseMigrator, Migration,
         MigrationError)
-    from src.rfu.file_explorer.database.schema import (FileExplorerDatabase,
+    from src.file_explorer.database.schema import (FileExplorerDatabase,
                                                        FileExplorerSchema)
 except ImportError as e:
     pytest.skip(f"Cannot import database modules: {e}", 

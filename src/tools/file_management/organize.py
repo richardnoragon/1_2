@@ -20,7 +20,7 @@ from PyQt5 import uic
 
 # Import StandardWindow for menu integration
 try:
-    from src.rfu.gui.standard_window import StandardWindow
+    from src.gui.standard_window import StandardWindow
 except ImportError:
     # Fallback for standalone execution
     from PyQt5.QtWidgets import QMainWindow

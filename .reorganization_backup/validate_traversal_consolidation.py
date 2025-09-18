@@ -15,7 +15,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent / "src"))
 
 try:
-    from rfu.core.directory_security.directory_validator import DirectoryPathValidator
+    from src.core.directory_security.directory_validator import DirectoryPathValidator
     print("✅ Successfully imported DirectoryPathValidator")
 except ImportError as e:
     print(f"❌ Failed to import DirectoryPathValidator: {e}")

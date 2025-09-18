@@ -17,7 +17,7 @@ def test_database_manager():
     print("🔍 Testing Database Manager...")
     
     try:
-        from src.rfu.core.database_manager import get_database_manager
+        from src.core.database_manager import get_database_manager
         
         db_manager = get_database_manager()
         
@@ -51,7 +51,7 @@ def test_enhanced_config_manager():
     print("\n🔍 Testing Enhanced Configuration Manager...")
     
     try:
-        from src.rfu.core.enhanced_config_manager import get_enhanced_config_manager
+        from src.core.enhanced_config_manager import get_enhanced_config_manager
         
         config_manager = get_enhanced_config_manager()
         
@@ -119,8 +119,8 @@ def test_database_logging():
     print("\n🔍 Testing Database Logging...")
     
     try:
-        from src.rfu.core.log_manager import LogManager
-        from src.rfu.core.database_logging import get_database_log_service
+        from src.core.log_manager import LogManager
+        from src.core.database_logging import get_database_log_service
         
         # Initialize log manager (this should set up database logging)
         log_manager = LogManager()
@@ -191,8 +191,8 @@ def test_file_history_tracking():
     print("\n🔍 Testing File History Tracking...")
     
     try:
-        from src.rfu.core.database_manager import get_database_manager
-        from src.rfu.core.database_models import FileHistory
+        from src.core.database_manager import get_database_manager
+        from src.core.database_models import FileHistory
         
         db_manager = get_database_manager()
         

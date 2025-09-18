@@ -80,8 +80,8 @@ if str(src_dir) not in sys.path:
 # Now import and run the main application
 if __name__ == "__main__":
     try:
-        # Import the main function from rfu.main
-        from rfu.main import main
+        # Import the main function from src.main
+        from src.main import main
         
         # Run the application
         exit_code = main()

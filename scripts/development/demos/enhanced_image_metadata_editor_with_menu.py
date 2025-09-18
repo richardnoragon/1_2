@@ -16,7 +16,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
 # Try to import StandardWindow, fall back to QMainWindow if not available
 STANDARD_WINDOW_AVAILABLE = False
 try:
-    from src.rfu.gui.standard_window import StandardWindow
+    from src.gui.standard_window import StandardWindow
     STANDARD_WINDOW_AVAILABLE = True
 except ImportError:
     print("StandardWindow not available, using fallback mode")

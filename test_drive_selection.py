@@ -16,7 +16,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (QApplication, QLabel, QMainWindow, QVBoxLayout,
                              QWidget)
 
-from src.rfu.file_explorer.enhanced_file_browser import EnhancedFileBrowser
+from src.file_explorer.enhanced_file_browser import EnhancedFileBrowser
 
 
 class DriveSelectionTestWindow(QMainWindow):

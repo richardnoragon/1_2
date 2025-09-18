@@ -56,7 +56,7 @@ except ImportError:
 # Verify RFU module availability
 RFU_IMPORTS_AVAILABLE = False
 try:
-    from src.rfu.config_manager import get_config_manager
+    from src.config_manager import get_config_manager
     RFU_IMPORTS_AVAILABLE = True
 except ImportError:
     logging.warning("RFU core modules not available - using fallback testing")

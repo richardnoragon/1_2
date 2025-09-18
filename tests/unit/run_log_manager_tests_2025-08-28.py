@@ -54,7 +54,7 @@ def run_log_manager_tests():
             "--self-contained-html",
             "--json-report",
             "--json-report-file=" + str(test_dir / "result_log_manager_2025-08-28.json"),
-            "--cov=src.rfu.log_manager",
+            "--cov=src.log_manager",
             "--cov-report=html:" + str(test_dir / "result_log_manager_coverage_2025-08-28"),
             "--cov-report=json:" + str(test_dir / "result_log_manager_coverage_2025-08-28.json"),
             "--cov-report=term-missing",

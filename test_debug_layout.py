@@ -17,7 +17,7 @@ logging.basicConfig(level=logging.DEBUG, format='%(name)s - %(levelname)s - %(me
 try:
     from PyQt5.QtWidgets import QApplication
 
-    from src.rfu.file_explorer.multi_pane_explorer import MultiPaneFileExplorer
+    from src.file_explorer.multi_pane_explorer import MultiPaneFileExplorer
     
     def main():
         print("Debug testing MultiPaneFileExplorer layout...")

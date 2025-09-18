@@ -24,9 +24,9 @@ sys.path.append(os.path.join(os.path.dirname(__file__),
                              '..', '..', '..', '..'))
 
 try:
-    from src.rfu.config_manager import ConfigManager as RFUConfigManager
-    from src.rfu.hub import RFUHub
-    from src.rfu.log_manager import LogManager as RFULogManager
+    from src.config_manager import ConfigManager as RFUConfigManager
+    from src.hub import RFUHub
+    from src.log_manager import LogManager as RFULogManager
 except ImportError as e:
     print(f"Warning: Could not import RFU components: {e}")
     

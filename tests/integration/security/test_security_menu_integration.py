@@ -31,7 +31,7 @@ def test_security_menu_integration():
         # Test 2: Import security preferences dialog
         print("\n2. Testing security preferences dialog import...")
         try:
-            from src.rfu.gui.security_preferences_dialog import SecurityPreferencesDialog
+            from src.gui.security_preferences_dialog import SecurityPreferencesDialog
             print("✅ Security preferences dialog imported successfully")
         except ImportError as e:
             print(f"❌ Failed to import security preferences dialog: {e}")

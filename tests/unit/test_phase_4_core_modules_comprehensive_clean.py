@@ -34,7 +34,7 @@ if str(src_path) not in sys.path:
 
 # Real imports with comprehensive error handling
 try:
-    import rfu.core.config_manager as config_manager
+    import src.core.config_manager as config_manager
     CONFIG_MANAGER_AVAILABLE = True
 except ImportError as e:
     print(f"[IMPORT_ISSUE] Core modules: {e}")

@@ -18,7 +18,7 @@ def test_core_imports():
     """Test core application imports."""
     try:
         # Test constants import
-        from src.rfu.core.constants import APP_NAME
+        from src.core.constants import APP_NAME
         print(f"✓ Core constants import successful: {APP_NAME}")
         
         # Test database manager

@@ -17,7 +17,7 @@ from PyQt5 import uic
 
 # Import StandardWindow for menu integration
 try:
-    from src.rfu.gui.standard_window import StandardWindow
+    from src.gui.standard_window import StandardWindow
     # For dialog functions, try both import paths
     try:
         from gui.common.dialogs import show_error_dialog, get_existing_directory

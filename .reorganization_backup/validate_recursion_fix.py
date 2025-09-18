@@ -18,7 +18,7 @@ def test_recursion_protection():
     
     try:
         # Import the fixed config manager
-        from src.rfu.core.enhanced_config_manager import EnhancedConfigManager
+        from src.core.enhanced_config_manager import EnhancedConfigManager
         
         print("✅ EnhancedConfigManager imported successfully")
         
@@ -69,7 +69,7 @@ def test_recursion_limit():
     print("\n🧪 Testing Recursion Limit Enforcement...")
     
     try:
-        from src.rfu.core.enhanced_config_manager import EnhancedConfigManager
+        from src.core.enhanced_config_manager import EnhancedConfigManager
         config_manager = EnhancedConfigManager()
         
         # Manually set recursion depth to near limit to test protection

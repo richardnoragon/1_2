@@ -1,0 +1,56 @@
+{
+  "timestamp": "20250917_172141",
+  "pre_migration": {},
+  "post_migration": {
+    "legacy_exists": {
+      "status": "PASS",
+      "details": "Legacy directory created: C:\\Users\\HP1\\1_2\\src\\tools\\file_management\\advanced_folders_legacy",
+      "duration": 0.00015974044799804688,
+      "timestamp": "2025-09-17T17:21:41.471602"
+    },
+    "legacy_structure": {
+      "status": "PASS",
+      "details": "All required directories present",
+      "duration": 0.0045969486236572266,
+      "timestamp": "2025-09-17T17:21:41.481758"
+    },
+    "source_cleanup": {
+      "status": "WARNING",
+      "details": "Source directory still exists (not cleaned up)",
+      "duration": 0.00041985511779785156,
+      "timestamp": "2025-09-17T17:21:41.491110"
+    },
+    "current_preserved": {
+      "status": "PASS",
+      "details": "Current implementation preserved",
+      "duration": 0.000217437744140625,
+      "timestamp": "2025-09-17T17:21:41.496168"
+    }
+  },
+  "import_tests": {
+    "legacy_import": {
+      "status": "FAIL",
+      "details": "Unexpected error: source code string cannot contain null bytes",
+      "duration": 0.05482935905456543,
+      "timestamp": "2025-09-17T17:21:41.577076"
+    }
+  },
+  "functionality_tests": {
+    "legacy_functionality": {
+      "status": "FAIL",
+      "details": "Legacy functionality test failed: source code string cannot contain null bytes",
+      "duration": 0.0018830299377441406,
+      "timestamp": "2025-09-17T17:21:41.601170"
+    }
+  },
+  "performance_tests": {
+    "import_performance": {
+      "status": "FAIL",
+      "details": "Performance test failed: source code string cannot contain null bytes",
+      "duration": 0.015180587768554688,
+      "timestamp": "2025-09-17T17:21:41.649673"
+    }
+  },
+  "rollback_tests": {},
+  "overall_status": "FAIL"
+}

@@ -26,12 +26,12 @@ project_root = os.path.dirname(os.path.dirname(os.path.dirname(
     os.path.dirname(current_dir))))
 sys.path.append(project_root)
 
-from src.rfu.log_manager import LogManager
-from src.rfu.gui.common.base_window import BaseWindow
-from src.rfu.gui.common.dialogs import (
+from src.log_manager import LogManager
+from src.gui.common.base_window import BaseWindow
+from src.gui.common.dialogs import (
     show_error_dialog, get_existing_directory
 )
-from src.rfu.gui.common.widgets import ProgressWidget
+from src.gui.common.widgets import ProgressWidget
 
 # a class FilePermissionsGUI, inherits from QMainWindow
 # FileFinderGUI has one menu item, Exit. when the select_pushbutton is pressed

@@ -21,7 +21,7 @@ def test_multi_pane_features():
         if app is None:
             app = QApplication([])
         
-        from src.rfu.file_explorer.multi_pane_explorer import \
+        from src.file_explorer.multi_pane_explorer import \
             MultiPaneFileExplorer
         print("✓ MultiPaneFileExplorer imported successfully")
         

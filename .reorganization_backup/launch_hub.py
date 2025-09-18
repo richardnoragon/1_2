@@ -25,7 +25,7 @@ def main():
     
     try:
         # Import and run the hub
-        from src.rfu.hub import main as hub_main
+        from src.hub import main as hub_main
         hub_main()
     except ImportError as e:
         print(f"Import error: {e}")

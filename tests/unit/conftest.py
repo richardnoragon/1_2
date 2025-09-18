@@ -583,7 +583,7 @@ def sample_log_records_dev_hub():
 def clean_log_manager():
     """Ensure LogManager singleton is reset for each test."""
     try:
-        from rfu.log_manager import LogManager
+        from src.log_manager import LogManager
 
         # Reset singleton before test
         LogManager._instance = None

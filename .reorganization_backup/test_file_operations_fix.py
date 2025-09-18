@@ -70,7 +70,7 @@ def test_hub_integration():
     print("\nTesting hub integration...")
     
     try:
-        from src.rfu.simple_hub import SimpleRFUHub
+        from src.simple_hub import SimpleRFUHub
         
         # Test individual methods (without GUI)
         hub = SimpleRFUHub()

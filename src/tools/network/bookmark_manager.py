@@ -25,7 +25,7 @@ from typing import List, Dict, Optional, Any, Tuple
 
 # Import centralized logging manager
 try:
-    from src.rfu.core.log_manager import LogManager
+    from src.core.log_manager import LogManager
     LOGGING_AVAILABLE = True
 except ImportError:
     LOGGING_AVAILABLE = False
@@ -48,7 +48,7 @@ except ImportError as e:
 
 # Import StandardWindow for menu integration
 try:
-    from src.rfu.gui.standard_window import StandardWindow
+    from src.gui.standard_window import StandardWindow
 except ImportError:
     # Fallback for standalone execution
     StandardWindow = QMainWindow

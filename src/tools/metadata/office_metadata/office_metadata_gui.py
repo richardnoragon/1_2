@@ -28,7 +28,7 @@ except ImportError:
 
 # Import the StandardWindow framework
 try:
-    from src.rfu.gui.standard_window import StandardWindow
+    from src.gui.standard_window import StandardWindow
     STANDARD_WINDOW_AVAILABLE = True
 except ImportError:
     print("StandardWindow not available, using basic QMainWindow")

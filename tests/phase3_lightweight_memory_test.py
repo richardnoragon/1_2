@@ -50,8 +50,8 @@ except ImportError as e:
     sys.exit(1)
 
 try:
-    from src.rfu.config_manager import get_config_manager
-    from src.rfu.file_explorer.multi_pane_explorer import MultiPaneFileExplorer
+    from src.config_manager import get_config_manager
+    from src.file_explorer.multi_pane_explorer import MultiPaneFileExplorer
 except ImportError as e:
     print(f"CRITICAL: RFU components missing: {e}")
     sys.exit(1)

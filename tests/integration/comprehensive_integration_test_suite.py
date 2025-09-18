@@ -61,15 +61,15 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent / 'src'))
 try:
     # Core file explorer components
     # RFU core components
-    from src.rfu.config_manager import ConfigManager
-    from src.rfu.file_explorer.core.pane_manager import PaneManager
-    from src.rfu.file_explorer.database.migrations import DatabaseMigrator
-    from src.rfu.file_explorer.database.schema import FileExplorerDatabase
-    from src.rfu.file_explorer.multi_pane_explorer import MultiPaneFileExplorer
-    from src.rfu.file_explorer.operations.file_operations import \
+    from src.config_manager import ConfigManager
+    from src.file_explorer.core.pane_manager import PaneManager
+    from src.file_explorer.database.migrations import DatabaseMigrator
+    from src.file_explorer.database.schema import FileExplorerDatabase
+    from src.file_explorer.multi_pane_explorer import MultiPaneFileExplorer
+    from src.file_explorer.operations.file_operations import \
         FileOperationManager
-    from src.rfu.file_explorer.tool_integration import ToolIntegration
-    from src.rfu.main import RFUMainWindow
+    from src.file_explorer.tool_integration import ToolIntegration
+    from src.main import RFUMainWindow
     
     IMPORTS_AVAILABLE = True
     

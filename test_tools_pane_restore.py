@@ -24,7 +24,7 @@ try:
     from PyQt5.QtWidgets import QApplication, QMessageBox
 
     # Import the multi-pane explorer
-    from src.rfu.file_explorer.multi_pane_explorer_repaired import \
+    from src.file_explorer.multi_pane_explorer_repaired import \
         MultiPaneFileExplorer
     
     def test_tools_pane_functionality():

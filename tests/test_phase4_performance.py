@@ -25,12 +25,12 @@ from datetime import datetime, timezone
 import sys
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src'))
 
-from rfu.database.database_manager import DatabaseManager
-from rfu.database.migration_manager import MigrationManager
-from rfu.core.directory_security.directory_security_manager import DirectorySecurityManager
-from rfu.core.directory_security.directory_encryption import DirectoryPathEncryption
-from rfu.core.directory_security.pii_detector import PIIDetector
-from rfu.core.directory_security.directory_audit import DirectoryAuditLogger
+from src.database.database_manager import DatabaseManager
+from src.database.migration_manager import MigrationManager
+from src.core.directory_security.directory_security_manager import DirectorySecurityManager
+from src.core.directory_security.directory_encryption import DirectoryPathEncryption
+from src.core.directory_security.pii_detector import PIIDetector
+from src.core.directory_security.directory_audit import DirectoryAuditLogger
 
 
 class PerformanceTestEnvironment:

@@ -13,18 +13,18 @@ from unittest.mock import Mock
 
 import pytest
 
-from src.rfu.advanced_folders.error_handling.error_handler import (
+from src.tools.file_management.advanced_folders_legacy.error_handling.error_handler import (
     ErrorHandler, GracefulDegradation)
 # Import our new Phase 1 Week 2 components
-from src.rfu.advanced_folders.models.folder_configuration import (
+from src.tools.file_management.advanced_folders_legacy.models.folder_configuration import (
     DirectoryTarget, FolderConfiguration, PerformanceSettings,
     SecuritySettings)
-from src.rfu.advanced_folders.models.search_parameters import (
+from src.tools.file_management.advanced_folders_legacy.models.search_parameters import (
     ContentSearchOptions, DateFilter, FileTypeFilter, SearchParameters,
     SizeFilter)
-from src.rfu.advanced_folders.repository.folder_repository import (
+from src.tools.file_management.advanced_folders_legacy.repository.folder_repository import (
     DatabaseConnectionManager, FolderRepository)
-from src.rfu.advanced_folders.validation.validator_framework import \
+from src.tools.file_management.advanced_folders_legacy.validation.validator_framework import \
     ValidationFramework
 
 

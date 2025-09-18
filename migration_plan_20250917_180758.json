@@ -1,0 +1,74 @@
+{
+  "timestamp": "20250917_180758",
+  "migration_type": "intelligent_merge",
+  "source_analysis": {
+    "total_files": 40,
+    "directories": [
+      "core",
+      "error_handling",
+      "error_handling\\__pycache__",
+      "exceptions",
+      "exceptions\\__pycache__",
+      "models",
+      "models\\__pycache__",
+      "repository",
+      "repository\\__pycache__",
+      "tests",
+      "tests\\__pycache__",
+      "validation",
+      "validation\\__pycache__",
+      "__pycache__"
+    ],
+    "key_files": [
+      ".\\API_DOCUMENTATION.md",
+      ".\\README.md",
+      ".\\__init__.py",
+      "error_handling\\__init__.py",
+      "exceptions\\__init__.py",
+      "models\\__init__.py",
+      "repository\\__init__.py",
+      "validation\\__init__.py"
+    ],
+    "python_files": 24
+  },
+  "target_analysis": {
+    "total_files": 94,
+    "directories": [
+      "core",
+      "core\\__pycache__",
+      "database",
+      "database\\__pycache__",
+      "engine",
+      "engine\\__pycache__",
+      "gui",
+      "gui\\tests",
+      "gui\\tests\\__pycache__",
+      "gui\\__pycache__",
+      "integration",
+      "integration\\__pycache__",
+      "models",
+      "models\\__pycache__",
+      "ui",
+      "ui\\__pycache__",
+      "__pycache__"
+    ],
+    "key_files": [
+      ".\\__init__.py",
+      "core\\__init__.py",
+      "database\\__init__.py",
+      "engine\\__init__.py",
+      "gui\\__init__.py",
+      "integration\\__init__.py",
+      "models\\__init__.py"
+    ],
+    "python_files": 50
+  },
+  "merge_strategy": {
+    "preserve_gui": true,
+    "replace_core": true,
+    "merge_tests": true,
+    "update_imports": true,
+    "validate_integration": true
+  },
+  "validation_steps": []
+}

@@ -33,12 +33,12 @@ except ImportError:
 
 # Import StandardWindow for menu integration
 try:
-    from src.rfu.gui.standard_window import StandardWindow
+    from src.gui.standard_window import StandardWindow
     from src.gui.menu_manager import MenuManager
     STANDARD_WINDOW_AVAILABLE = True
 except ImportError:
     try:
-        from rfu.gui.standard_window import StandardWindow
+        from src.gui.standard_window import StandardWindow
         from gui.menu_manager import MenuManager
         STANDARD_WINDOW_AVAILABLE = True
     except ImportError:

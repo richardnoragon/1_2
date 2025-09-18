@@ -848,7 +848,7 @@ try:
         def open_security_preferences(self):
             """Open Security Preferences dialog."""
             try:
-                from src.rfu.gui.security_preferences_dialog import \
+                from src.gui.security_preferences_dialog import \
                     SecurityPreferencesDialog
 
                 # Check if dialog is already open

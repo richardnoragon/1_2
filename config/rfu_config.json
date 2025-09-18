@@ -36,8 +36,8 @@
   "privacy_tools": {},
   "software_maintenance": {},
   "interface_mode": {
-    "show_startup_dialog": true,
-    "remember_choice": false,
+    "show_startup_dialog": false,
+    "remember_choice": true,
     "current_mode": "multi_pane",
     "auto_detect_enabled": true,
     "transition_animations": true,

@@ -68,10 +68,10 @@ def test_standard_window_integration():
     print("\n🏗️  Testing StandardWindow Integration...")
     
     try:
-        from src.rfu.gui.standard_window import StandardWindow
+        from src.gui.standard_window import StandardWindow
         print("  ✅ StandardWindow available")
         
-        from src.rfu.gui.menu_manager import MenuManager
+        from src.gui.menu_manager import MenuManager
         print("  ✅ MenuManager available")
         
         return True

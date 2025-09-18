@@ -301,7 +301,7 @@ class TestFixtures:
             mock_log_mgr.return_value.get_logger.return_value = MockLogger()
             mock_config_mgr.return_value = MockConfigManager()
             
-            from rfu.hub import RFUHub
+            from src.hub import RFUHub
             return RFUHub()
     
     @staticmethod

@@ -148,7 +148,7 @@ from datetime import datetime
 
 sys.path.insert(0, r"{os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))}")
 
-from src.rfu.hub import RFUHub
+from src.hub import RFUHub
 
 class TestingHubServer:
     def __init__(self, port):

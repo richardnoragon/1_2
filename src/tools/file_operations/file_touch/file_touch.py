@@ -19,12 +19,12 @@ project_root = os.path.dirname(os.path.dirname(os.path.dirname(
 sys.path.append(project_root)
 
 # Import shared components
-from src.rfu.log_manager import LogManager
-from src.rfu.gui.common.base_window import BaseWindow
-from src.rfu.gui.common.dialogs import (
+from src.log_manager import LogManager
+from src.gui.common.base_window import BaseWindow
+from src.gui.common.dialogs import (
     show_error_dialog, show_info_dialog, get_open_file_name
 )
-from src.rfu.config_manager import ConfigManager
+from src.config_manager import ConfigManager
 
 # Note: Reliably *setting* creation time is platform-specific and often
 # requires extra privileges or libraries (like pywin32 on Windows).

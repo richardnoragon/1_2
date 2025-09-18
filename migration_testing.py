@@ -382,9 +382,9 @@ class IntegrationTests(unittest.TestCase):
     def test_main_application_components(self):
         """Test that main application components can be imported."""
         main_components = [
-            "src.rfu.main",
-            "src.rfu.hub",
-            "src.rfu.config_manager"
+            "src.main",
+            "src.hub",
+            "src.config_manager"
         ]
         
         for component in main_components:
@@ -422,7 +422,7 @@ class IntegrationTests(unittest.TestCase):
     def test_configuration_system(self):
         """Test that configuration system works with new paths."""
         try:
-            from src.rfu.config_manager import get_config_manager
+            from src.config_manager import get_config_manager
             config = get_config_manager()
             
             # Test basic config functionality
@@ -506,12 +506,12 @@ class EndToEndTests(unittest.TestCase):
         """Simulate application startup process."""
         try:
             # Test main entry point
-            main_module = importlib.import_module("src.rfu.main")
+            main_module = importlib.import_module("src.main")
             self.assertTrue(hasattr(main_module, "main"),
                           "Main module should have main function")
             
             # Test hub creation
-            hub_module = importlib.import_module("src.rfu.hub")
+            hub_module = importlib.import_module("src.hub")
             self.assertTrue(hasattr(hub_module, "RFUHub"),
                           "Hub module should have RFUHub class")
             

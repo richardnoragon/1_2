@@ -36,13 +36,13 @@ class ImportPathUpdater:
             # Core imports that moved
             'from standalone_database_manager import': 'from scripts.maintenance.standalone_database_manager import',
             'from enhanced_pdf_tools_widget import': 'from scripts.development.demos.enhanced_pdf_tools_widget import',
-            'from gui.menu_manager import': 'from src.rfu.gui.menu_manager import',
+            'from gui.menu_manager import': 'from src.gui.menu_manager import',
             
             # Constants import
-            'from src.core.constants import': 'from src.rfu.core.constants import',
+            'from src.core.constants import': 'from src.core.constants import',
             
             # Security dialog import
-            'from src.rfu.gui.security_preferences_dialog import': 'from src.rfu.gui.dialogs.security_preferences_dialog import',
+            'from src.gui.security_preferences_dialog import': 'from src.gui.dialogs.security_preferences_dialog import',
             
             # Tool imports - utilities -> tools reorganization
             'src.utilities.file_management.': 'src.tools.file_management.',
@@ -332,7 +332,7 @@ def test_core_imports():
     """Test core application imports."""
     try:
         # Test constants import
-        from src.rfu.core.constants import APP_NAME
+        from src.core.constants import APP_NAME
         print(f"✓ Core constants import successful: {APP_NAME}")
         
         # Test database manager

@@ -59,7 +59,7 @@ class PerformanceBenchmark:
                                     phase5_environment):
         """Benchmark application startup performance."""
         try:
-            from src.rfu.file_explorer.multi_pane_explorer import \
+            from src.file_explorer.multi_pane_explorer import \
                 MultiPaneFileExplorer
         except ImportError:
             return {'status': 'skipped', 'reason': 'Component not available'}
@@ -123,7 +123,7 @@ class PerformanceBenchmark:
     def benchmark_pane_operations(self, qt_application, phase5_environment):
         """Benchmark pane creation and management operations."""
         try:
-            from src.rfu.file_explorer.multi_pane_explorer import \
+            from src.file_explorer.multi_pane_explorer import \
                 MultiPaneFileExplorer
         except ImportError:
             return {'status': 'skipped', 'reason': 'Component not available'}
@@ -196,7 +196,7 @@ class PerformanceBenchmark:
     def benchmark_ui_responsiveness(self, qt_application, phase5_environment):
         """Benchmark UI responsiveness under various loads."""
         try:
-            from src.rfu.file_explorer.multi_pane_explorer import \
+            from src.file_explorer.multi_pane_explorer import \
                 MultiPaneFileExplorer
         except ImportError:
             return {'status': 'skipped', 'reason': 'Component not available'}
@@ -278,7 +278,7 @@ class PerformanceBenchmark:
     def benchmark_memory_efficiency(self, qt_application, phase5_environment):
         """Benchmark memory usage and efficiency."""
         try:
-            from src.rfu.file_explorer.multi_pane_explorer import \
+            from src.file_explorer.multi_pane_explorer import \
                 MultiPaneFileExplorer
         except ImportError:
             return {'status': 'skipped', 'reason': 'Component not available'}
@@ -333,7 +333,7 @@ class PerformanceBenchmark:
     def benchmark_stress_testing(self, qt_application, phase5_environment):
         """Stress test the application under heavy load."""
         try:
-            from src.rfu.file_explorer.multi_pane_explorer import \
+            from src.file_explorer.multi_pane_explorer import \
                 MultiPaneFileExplorer
         except ImportError:
             return {'status': 'skipped', 'reason': 'Component not available'}

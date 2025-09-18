@@ -16,11 +16,11 @@ from typing import Dict
 
 # Import StandardWindow for menu integration
 try:
-    from src.rfu.gui.standard_window import StandardWindow
+    from src.gui.standard_window import StandardWindow
 except ImportError:
     # Fallback for standalone execution
     try:
-        from rfu.gui.standard_window import StandardWindow
+        from src.gui.standard_window import StandardWindow
     except ImportError:
         # Final fallback - create a minimal StandardWindow substitute
         from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QWidget

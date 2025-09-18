@@ -25,7 +25,7 @@ def test_layout_interface():
     
     try:
         # Import the main file explorer class
-        from src.rfu.file_explorer.multi_pane_explorer import \
+        from src.file_explorer.multi_pane_explorer import \
             MultiPaneFileExplorer
         
         logger.info("Creating MultiPaneFileExplorer instance...")

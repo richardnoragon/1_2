@@ -43,10 +43,10 @@ import pytest
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent / 'src'))
 
 try:
-    from src.rfu.file_explorer.core.file_manager import FileManager
-    from src.rfu.file_explorer.operations.file_operations import \
+    from src.file_explorer.core.file_manager import FileManager
+    from src.file_explorer.operations.file_operations import \
         FileOperationManager
-    from src.rfu.file_explorer.utils.path_utils import PathUtils
+    from src.file_explorer.utils.path_utils import PathUtils
 except ImportError as e:
     pytest.skip(f"Cannot import file explorer modules: {e}", 
                 allow_module_level=True)

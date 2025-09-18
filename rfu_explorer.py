@@ -21,7 +21,7 @@ try:
     from PyQt5.QtWidgets import QApplication, QMessageBox
 
     # Import the multi-pane explorer
-    from src.rfu.file_explorer.multi_pane_explorer import MultiPaneFileExplorer
+    from src.file_explorer.multi_pane_explorer import MultiPaneFileExplorer
     
 except ImportError as e:
     print(f"Error importing required modules: {e}")
@@ -65,7 +65,7 @@ def check_prerequisites() -> bool:
             return True  # Continue without database
             
         # Check if configuration system is available
-        from src.rfu.config_manager import ConfigManager
+        from src.config_manager import ConfigManager
         config_manager = ConfigManager()
         
         return True

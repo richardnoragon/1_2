@@ -50,7 +50,7 @@ class TestFileExplorerCore:
         """Test multi-pane explorer initialization."""
         # Import here to avoid dependency issues
         try:
-            from src.rfu.file_explorer.multi_pane_explorer import \
+            from src.file_explorer.multi_pane_explorer import \
                 MultiPaneFileExplorer
         except ImportError:
             pytest.skip("MultiPaneFileExplorer not available")
@@ -74,7 +74,7 @@ class TestFileExplorerCore:
                            performance_monitor):
         """Test pane creation, removal, and management."""
         try:
-            from src.rfu.file_explorer.multi_pane_explorer import \
+            from src.file_explorer.multi_pane_explorer import \
                 MultiPaneFileExplorer
         except ImportError:
             pytest.skip("MultiPaneFileExplorer not available")
@@ -109,7 +109,7 @@ class TestFileExplorerCore:
     def test_layout_modes(self, qt_application, phase5_environment):
         """Test different pane layout modes."""
         try:
-            from src.rfu.file_explorer.multi_pane_explorer import \
+            from src.file_explorer.multi_pane_explorer import \
                 MultiPaneFileExplorer
         except ImportError:
             pytest.skip("MultiPaneFileExplorer not available")
@@ -137,7 +137,7 @@ class TestFileExplorerCore:
     def test_configuration_persistence(self, qt_application, phase5_environment):
         """Test configuration saving and loading."""
         try:
-            from src.rfu.file_explorer.multi_pane_explorer import \
+            from src.file_explorer.multi_pane_explorer import \
                 MultiPaneFileExplorer
         except ImportError:
             pytest.skip("MultiPaneFileExplorer not available")
@@ -160,7 +160,7 @@ class TestFileExplorerCore:
                                 performance_monitor, memory_monitor):
         """Test application startup performance."""
         try:
-            from src.rfu.file_explorer.multi_pane_explorer import \
+            from src.file_explorer.multi_pane_explorer import \
                 MultiPaneFileExplorer
         except ImportError:
             pytest.skip("MultiPaneFileExplorer not available")
@@ -193,7 +193,7 @@ class TestToolIntegration:
     def test_tool_launcher_basic(self, qt_application, phase5_environment):
         """Test basic tool launching functionality."""
         try:
-            from src.rfu.file_explorer.multi_pane_explorer import \
+            from src.file_explorer.multi_pane_explorer import \
                 MultiPaneFileExplorer
         except ImportError:
             pytest.skip("MultiPaneFileExplorer not available")
@@ -220,7 +220,7 @@ class TestToolIntegration:
     def test_tool_menu_population(self, qt_application, phase5_environment):
         """Test tool menu creation and population."""
         try:
-            from src.rfu.file_explorer.multi_pane_explorer import \
+            from src.file_explorer.multi_pane_explorer import \
                 MultiPaneFileExplorer
         except ImportError:
             pytest.skip("MultiPaneFileExplorer not available")
@@ -240,7 +240,7 @@ class TestToolIntegration:
     def test_quick_tool_buttons(self, qt_application, phase5_environment):
         """Test quick tool access buttons."""
         try:
-            from src.rfu.file_explorer.multi_pane_explorer import \
+            from src.file_explorer.multi_pane_explorer import \
                 MultiPaneFileExplorer
         except ImportError:
             pytest.skip("MultiPaneFileExplorer not available")
@@ -261,7 +261,7 @@ class TestFileOperations:
     def test_navigation_commands(self, qt_application, phase5_environment):
         """Test navigation command handlers."""
         try:
-            from src.rfu.file_explorer.multi_pane_explorer import \
+            from src.file_explorer.multi_pane_explorer import \
                 MultiPaneFileExplorer
         except ImportError:
             pytest.skip("MultiPaneFileExplorer not available")
@@ -287,7 +287,7 @@ class TestFileOperations:
     def test_keyboard_shortcuts(self, qt_application, phase5_environment):
         """Test keyboard shortcut functionality."""
         try:
-            from src.rfu.file_explorer.multi_pane_explorer import \
+            from src.file_explorer.multi_pane_explorer import \
                 MultiPaneFileExplorer
         except ImportError:
             pytest.skip("MultiPaneFileExplorer not available")
@@ -317,7 +317,7 @@ class TestUserInterface:
     def test_dock_widgets(self, qt_application, phase5_environment):
         """Test dock widget functionality."""
         try:
-            from src.rfu.file_explorer.multi_pane_explorer import \
+            from src.file_explorer.multi_pane_explorer import \
                 MultiPaneFileExplorer
         except ImportError:
             pytest.skip("MultiPaneFileExplorer not available")
@@ -347,7 +347,7 @@ class TestUserInterface:
     def test_status_bar(self, qt_application, phase5_environment):
         """Test status bar functionality."""
         try:
-            from src.rfu.file_explorer.multi_pane_explorer import \
+            from src.file_explorer.multi_pane_explorer import \
                 MultiPaneFileExplorer
         except ImportError:
             pytest.skip("MultiPaneFileExplorer not available")
@@ -374,7 +374,7 @@ class TestUserInterface:
     def test_toolbar_functionality(self, qt_application, phase5_environment):
         """Test toolbar creation and functionality."""
         try:
-            from src.rfu.file_explorer.multi_pane_explorer import \
+            from src.file_explorer.multi_pane_explorer import \
                 MultiPaneFileExplorer
         except ImportError:
             pytest.skip("MultiPaneFileExplorer not available")
@@ -395,7 +395,7 @@ class TestErrorHandling:
                                 error_injector):
         """Test handling of invalid tool launches."""
         try:
-            from src.rfu.file_explorer.multi_pane_explorer import \
+            from src.file_explorer.multi_pane_explorer import \
                 MultiPaneFileExplorer
         except ImportError:
             pytest.skip("MultiPaneFileExplorer not available")
@@ -418,13 +418,13 @@ class TestErrorHandling:
                                          phase5_environment):
         """Test handling of configuration errors."""
         try:
-            from src.rfu.file_explorer.multi_pane_explorer import \
+            from src.file_explorer.multi_pane_explorer import \
                 MultiPaneFileExplorer
         except ImportError:
             pytest.skip("MultiPaneFileExplorer not available")
         
         # Test with missing configuration
-        with patch('src.rfu.config_manager.ConfigManager', 
+        with patch('src.config_manager.ConfigManager', 
                   side_effect=Exception("Config error")):
             explorer = MultiPaneFileExplorer()
             # Should handle missing config gracefully
@@ -475,7 +475,7 @@ class TestPerformanceOptimization:
                                      memory_monitor):
         """Test memory usage optimization."""
         try:
-            from src.rfu.file_explorer.multi_pane_explorer import \
+            from src.file_explorer.multi_pane_explorer import \
                 MultiPaneFileExplorer
         except ImportError:
             pytest.skip("MultiPaneFileExplorer not available")
@@ -507,7 +507,7 @@ class TestPerformanceOptimization:
                              performance_monitor):
         """Test UI responsiveness under load."""
         try:
-            from src.rfu.file_explorer.multi_pane_explorer import \
+            from src.file_explorer.multi_pane_explorer import \
                 MultiPaneFileExplorer
         except ImportError:
             pytest.skip("MultiPaneFileExplorer not available")
@@ -536,7 +536,7 @@ class TestRegressionPrevention:
     def test_pane_creation_regression(self, qt_application, phase5_environment):
         """Test for pane creation regressions."""
         try:
-            from src.rfu.file_explorer.multi_pane_explorer import \
+            from src.file_explorer.multi_pane_explorer import \
                 MultiPaneFileExplorer
         except ImportError:
             pytest.skip("MultiPaneFileExplorer not available")
@@ -556,7 +556,7 @@ class TestRegressionPrevention:
     def test_layout_update_regression(self, qt_application, phase5_environment):
         """Test for layout update regressions."""
         try:
-            from src.rfu.file_explorer.multi_pane_explorer import \
+            from src.file_explorer.multi_pane_explorer import \
                 MultiPaneFileExplorer
         except ImportError:
             pytest.skip("MultiPaneFileExplorer not available")

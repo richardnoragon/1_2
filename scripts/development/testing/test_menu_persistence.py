@@ -20,7 +20,7 @@ def test_menu_persistence():
     
     # Test 1: Check if UtilityWindow wrapper class exists
     try:
-        from rfu.simple_hub import UtilityWindow, SimpleRFUHub
+        from src.simple_hub import UtilityWindow, SimpleRFUHub
         print("✅ UtilityWindow wrapper class found")
     except ImportError as e:
         print(f"❌ UtilityWindow not found: {e}")

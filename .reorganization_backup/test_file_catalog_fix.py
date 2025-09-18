@@ -43,7 +43,7 @@ def test_hub_integration():
         app = QApplication(sys.argv)
         
         # Import the hub
-        from src.rfu.simple_hub import SimpleRFUHub
+        from src.simple_hub import SimpleRFUHub
         hub = SimpleRFUHub()
         
         print("✓ Hub created successfully")

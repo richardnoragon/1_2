@@ -26,7 +26,7 @@ sys.path.insert(0, os.path.join(project_root, 'scripts', 'maintenance'))
 sys.path.insert(0, os.path.join(project_root, 'scripts', 'development', 'demos'))
 
 # Import constants for string literals
-from src.rfu.core.constants import (APP_NAME, IMPORT_ERROR, JSON_FILES_FILTER,
+from src.core.constants import (APP_NAME, IMPORT_ERROR, JSON_FILES_FILTER,
                                     SECURITY_TEST, SUGGESTED_SOLUTIONS_HEADER)
 
 
@@ -330,7 +330,7 @@ try:
             
             # Initialize configuration manager
             try:
-                from src.rfu.config_manager import get_config_manager
+                from src.config_manager import get_config_manager
                 self.config_manager = get_config_manager()
                 self._setup_interface_configuration()
             except Exception as e:
@@ -455,7 +455,7 @@ try:
                 
                 # Try to import the multi-pane explorer
                 if not self.multi_pane_explorer:
-                    from src.rfu.file_explorer.multi_pane_explorer import \
+                    from src.file_explorer.multi_pane_explorer import \
                         MultiPaneExplorer
                     self.multi_pane_explorer = MultiPaneExplorer(self)
                 

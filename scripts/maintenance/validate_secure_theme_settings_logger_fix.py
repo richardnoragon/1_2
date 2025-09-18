@@ -32,7 +32,7 @@ def test_logger_initialization():
         if 'rfu.gui.secure_theme_settings' in sys.modules:
             importlib.reload(sys.modules['rfu.gui.secure_theme_settings'])
         
-        from rfu.gui.secure_theme_settings import SecureThemeSettingsWidget
+        from src.gui.secure_theme_settings import SecureThemeSettingsWidget
         
         # Create widget instance (should work without PyQt5)
         widget = SecureThemeSettingsWidget()
@@ -63,7 +63,7 @@ def test_logger_usage():
     print("\nTesting logger usage...")
     
     try:
-        from rfu.gui.secure_theme_settings import SecureThemeSettingsWidget
+        from src.gui.secure_theme_settings import SecureThemeSettingsWidget
         
         # Create widget instance
         widget = SecureThemeSettingsWidget()
@@ -89,7 +89,7 @@ def test_security_event_logging():
     print("\nTesting security event logging...")
     
     try:
-        from rfu.gui.secure_theme_settings import SecureThemeSettingsWidget
+        from src.gui.secure_theme_settings import SecureThemeSettingsWidget
         
         # Create widget instance
         widget = SecureThemeSettingsWidget()
@@ -119,7 +119,7 @@ def test_error_handling():
     print("\nTesting error handling with logging...")
     
     try:
-        from rfu.gui.secure_theme_settings import SecureThemeSettingsWidget
+        from src.gui.secure_theme_settings import SecureThemeSettingsWidget
         
         # Create widget instance
         widget = SecureThemeSettingsWidget()
@@ -151,7 +151,7 @@ def test_factory_function():
     print("\nTesting factory function...")
     
     try:
-        from rfu.gui.secure_theme_settings import create_secure_theme_settings_widget
+        from src.gui.secure_theme_settings import create_secure_theme_settings_widget
         
         # Create widget using factory function
         widget = create_secure_theme_settings_widget()
@@ -171,7 +171,7 @@ def test_logging_configuration():
     print("\nTesting logging configuration...")
     
     try:
-        from rfu.gui.secure_theme_settings import SecureThemeSettingsWidget
+        from src.gui.secure_theme_settings import SecureThemeSettingsWidget
         
         # Create widget instance
         widget = SecureThemeSettingsWidget()

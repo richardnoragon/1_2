@@ -34,12 +34,12 @@ from PyQt5.QtWidgets import QApplication, QWidget
 
 # Import system under test
 try:
-    from src.rfu.file_explorer.core.pane_manager import (PaneConfiguration,
+    from src.file_explorer.core.pane_manager import (PaneConfiguration,
                                                          PaneLayout,
                                                          PaneManager,
                                                          PaneSortOrder,
                                                          PaneViewMode)
-    from src.rfu.file_explorer.database.schema import FileExplorerDatabase
+    from src.file_explorer.database.schema import FileExplorerDatabase
 except ImportError as e:
     pytest.skip(f"Cannot import core modules: {e}", allow_module_level=True)
 
@@ -251,7 +251,7 @@ class TestPaneManager:
     @pytest.fixture
     def pane_manager(self, app):
         """Create a PaneManager instance for testing."""
-        with patch('src.rfu.config_manager.get_config_manager', return_value=None), \
+        with patch('src.config_manager.get_config_manager', return_value=None), \
              patch('src.rfu.file_explorer.core.pane_manager.FileExplorerDatabase', 
                    return_value=None):
             manager = PaneManager()
@@ -522,7 +522,7 @@ class TestPaneManagerPerformance:
     @pytest.fixture
     def performance_pane_manager(self):
         """Create PaneManager for performance testing."""
-        with patch('src.rfu.config_manager.get_config_manager', return_value=None), \
+        with patch('src.config_manager.get_config_manager', return_value=None), \
              patch('src.rfu.file_explorer.core.pane_manager.FileExplorerDatabase', 
                    return_value=None):
             if QApplication.instance() is None:
@@ -619,7 +619,7 @@ class TestPaneManagerSecurity:
     @pytest.fixture
     def security_pane_manager(self):
         """Create PaneManager for security testing."""
-        with patch('src.rfu.config_manager.get_config_manager', return_value=None), \
+        with patch('src.config_manager.get_config_manager', return_value=None), \
              patch('src.rfu.file_explorer.core.pane_manager.FileExplorerDatabase', 
                    return_value=None):
             if QApplication.instance() is None:
@@ -726,7 +726,7 @@ class TestPaneManagerCrossPlatform:
     @pytest.fixture
     def platform_pane_manager(self):
         """Create PaneManager for cross-platform testing."""
-        with patch('src.rfu.config_manager.get_config_manager', return_value=None), \
+        with patch('src.config_manager.get_config_manager', return_value=None), \
              patch('src.rfu.file_explorer.core.pane_manager.FileExplorerDatabase', 
                    return_value=None):
             if QApplication.instance() is None:

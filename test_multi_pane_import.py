@@ -14,7 +14,7 @@ def test_multi_pane_import():
     print("Testing MultiPaneFileExplorer import...")
     
     try:
-        from src.rfu.file_explorer.multi_pane_explorer import \
+        from src.file_explorer.multi_pane_explorer import \
             MultiPaneFileExplorer
         print("✅ Import successful!")
         

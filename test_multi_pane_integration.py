@@ -14,7 +14,7 @@ sys.path.insert(0, str(Path(__file__).parent / "src"))
 def test_import():
     """Test that the module can be imported."""
     try:
-        from rfu.file_explorer.multi_pane_explorer import MultiPaneFileExplorer
+        from src.file_explorer.multi_pane_explorer import MultiPaneFileExplorer
         print("✅ Module import successful")
         return True
     except ImportError as e:
@@ -24,7 +24,7 @@ def test_import():
 def test_class_instantiation():
     """Test that the class can be instantiated."""
     try:
-        from rfu.file_explorer.multi_pane_explorer import MultiPaneFileExplorer
+        from src.file_explorer.multi_pane_explorer import MultiPaneFileExplorer
 
         # Create a dummy QApplication for testing
         try:
@@ -70,7 +70,7 @@ def test_class_instantiation():
 def test_feature_availability():
     """Test that advanced features are properly integrated."""
     try:
-        from rfu.file_explorer.multi_pane_explorer import MultiPaneFileExplorer
+        from src.file_explorer.multi_pane_explorer import MultiPaneFileExplorer
 
         # Check class has expected attributes
         expected_attributes = [

@@ -44,12 +44,12 @@ from PyQt5.QtWidgets import QApplication
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent / 'src'))
 
 try:
-    from src.rfu.file_explorer.navigation.address_bar import AddressBar
-    from src.rfu.file_explorer.navigation.breadcrumb_widget import \
+    from src.file_explorer.navigation.address_bar import AddressBar
+    from src.file_explorer.navigation.breadcrumb_widget import \
         BreadcrumbWidget
-    from src.rfu.file_explorer.navigation.history_manager import (
+    from src.file_explorer.navigation.history_manager import (
         HistoryDatabase, HistoryEntry, HistoryManager)
-    from src.rfu.file_explorer.navigation.navigation_buttons import \
+    from src.file_explorer.navigation.navigation_buttons import \
         NavigationButtons
 except ImportError as e:
     pytest.skip(f"Cannot import navigation modules: {e}", 

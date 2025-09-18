@@ -46,7 +46,7 @@ from PyQt5.QtWidgets import QApplication
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent / 'src'))
 
 try:
-    from src.rfu.file_explorer.operations.file_operations import (
+    from src.file_explorer.operations.file_operations import (
         FileOperationError, FileOperationManager, FileOperationResult,
         OperationStatus, OperationType)
 except ImportError as e:

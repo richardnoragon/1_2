@@ -81,7 +81,7 @@ class HubTestRunner:
             '--self-contained-html',
             '--json-report',
             '--json-report-file=result_hub_2025-08-28.json',
-            '--cov=src.rfu.hub',
+            '--cov=src.hub',
             '--cov-report=html:htmlcov_hub_2025-08-28',
             '--cov-report=json:coverage_hub_2025-08-28.json',
             '--cov-report=term-missing',

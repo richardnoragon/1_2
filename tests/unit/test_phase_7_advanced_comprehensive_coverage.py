@@ -36,8 +36,8 @@ sys.path.insert(0, str(project_root / "src"))
 # Import RFU modules with comprehensive error handling
 try:
     import rfu
-    import rfu.dev_hub
-    import rfu.log_manager
+    import src.dev_hub
+    import src.log_manager
     import utilities
 
     # Import specific utilities modules that are available
