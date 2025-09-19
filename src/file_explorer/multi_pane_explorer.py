@@ -680,86 +680,230 @@ class MultiPaneFileExplorer(QMainWindow):
     
     def setup_main_content_area(self, parent_layout):
         """Setup main content area with panes and side panels."""
-        # Main horizontal splitter
-        main_splitter = QSplitter(Qt.Horizontal)
-        
-        # Left panel (bookmarks, properties)
-        left_panel = self.create_left_panel()
-        if left_panel:
-            main_splitter.addWidget(left_panel)
-        
-        # Center area (file panes) - Create QSplitter for panes
-        self.pane_splitter = QSplitter(Qt.Horizontal)
-        self.is_fallback_splitter = False
-        
-        # Verify splitter was created properly
-        if self.pane_splitter:
-            self.logger.info(f"Created pane_splitter: {type(self.pane_splitter).__name__}")
-            main_splitter.addWidget(self.pane_splitter)
-        else:
-            self.logger.error("CRITICAL: pane_splitter creation failed!")
-        
-        # Right panel (preview, tools)
-        right_panel = self.create_right_panel()
-        if right_panel:
-            main_splitter.addWidget(right_panel)
-        
-        # Set splitter sizes (left: 200px, center: expand, right: 250px)
-        if left_panel and right_panel:
-            main_splitter.setSizes([200, 600, 250])
-        elif left_panel:
-            main_splitter.setSizes([200, 800])
-        elif right_panel:
-            main_splitter.setSizes([750, 250])
-        
-        parent_layout.addWidget(main_splitter, 1)  # Give it stretch factor
-        
-        # Final verification before leaving setup
-        if self.pane_splitter:
-            splitter_type = type(self.pane_splitter).__name__
-            self.logger.info(f"Main content area setup completed - pane_splitter: {splitter_type}")
-        else:
-            self.logger.error("CRITICAL: pane_splitter is None at end of setup!")
+        try:
+            self.logger.info("Setting up main content area")
+            
+            # Main horizontal splitter
+            try:
+                main_splitter = QSplitter(Qt.Horizontal)
+                self.logger.info("Main splitter created successfully")
+            except Exception as e:
+                self.logger.error(f"Failed to create main splitter: {e}")
+                main_splitter = QSplitter()
+                main_splitter.setOrientation(Qt.Horizontal)
+                self.logger.info("Main splitter created with fallback method")
+            
+            # Left panel (bookmarks, properties)
+            self.logger.info("Creating left panel...")
+            left_panel = self.create_left_panel()
+            if left_panel:
+                main_splitter.addWidget(left_panel)
+                self.logger.info(f"Left panel added with {left_panel.count()} tabs")
+            else:
+                self.logger.error("Failed to create left panel")
+            
+            # Center area (file panes) - Create QSplitter for panes
+            self.logger.info("Creating center pane splitter...")
+            self.pane_splitter = None
+            self.is_fallback_splitter = False
+            
+            try:
+                self.pane_splitter = QSplitter(Qt.Horizontal)
+                self.logger.info("QSplitter created successfully")
+            except Exception as e:
+                self.logger.error(f"Failed to create QSplitter: {e}")
+                # Try creating without orientation parameter
+                try:
+                    self.pane_splitter = QSplitter()
+                    self.pane_splitter.setOrientation(Qt.Horizontal)
+                    self.logger.info("QSplitter created with setOrientation fallback")
+                except Exception as e2:
+                    self.logger.error(f"Fallback QSplitter creation also failed: {e2}")
+                    self.pane_splitter = None
+            
+            # Verify splitter was created properly
+            self.logger.info(f"Checking pane_splitter: {self.pane_splitter}")
+            self.logger.info(f"pane_splitter type: {type(self.pane_splitter)}")
+            self.logger.info(f"pane_splitter is None: {self.pane_splitter is None}")
+            self.logger.info(f"bool(pane_splitter): {bool(self.pane_splitter)}")
+            
+            if hasattr(self.pane_splitter, 'isVisible'):
+                self.logger.info(f"pane_splitter.isVisible(): {self.pane_splitter.isVisible()}")
+            if hasattr(self.pane_splitter, 'parent'):
+                self.logger.info(f"pane_splitter.parent(): {self.pane_splitter.parent()}")
+            
+            # Use explicit None check instead of boolean check
+            if self.pane_splitter is not None:
+                self.logger.info(f"Created pane_splitter: {type(self.pane_splitter).__name__}")
+                main_splitter.addWidget(self.pane_splitter)
+            else:
+                self.logger.error("CRITICAL: pane_splitter creation failed!")
+            
+            # Right panel (preview, tools)
+            self.logger.info("Creating right panel...")
+            right_panel = self.create_right_panel()
+            if right_panel:
+                main_splitter.addWidget(right_panel)
+                self.logger.info(f"Right panel added with {right_panel.count()} tabs")
+            else:
+                self.logger.warning("No right panel created")
+            
+            # Set splitter sizes (left: 200px, center: expand, right: 250px)
+            if left_panel and right_panel:
+                main_splitter.setSizes([200, 600, 250])
+                self.logger.info("Set 3-panel layout sizes: [200, 600, 250]")
+            elif left_panel:
+                main_splitter.setSizes([200, 800])
+                self.logger.info("Set 2-panel layout sizes: [200, 800]")
+            elif right_panel:
+                main_splitter.setSizes([750, 250])
+                self.logger.info("Set 2-panel layout sizes: [750, 250]")
+            else:
+                self.logger.warning("Only center panel available")
+            
+            parent_layout.addWidget(main_splitter, 1)  # Give it stretch factor
+            
+            # Ensure splitter is visible
+            main_splitter.setVisible(True)
+            main_splitter.show()
+            
+            # Final verification before leaving setup
+            if self.pane_splitter is not None:
+                splitter_type = type(self.pane_splitter).__name__
+                self.logger.info(f"Main content area setup completed - pane_splitter: {splitter_type}")
+            else:
+                self.logger.error("CRITICAL: pane_splitter is None at end of setup!")
+                
+            self.logger.info("Main content area setup completed successfully")
+                
+        except Exception as e:
+            self.logger.error(f"Error setting up main content area: {e}")
+            # Create minimal fallback
+            fallback_widget = QWidget()
+            fallback_layout = QVBoxLayout(fallback_widget)
+            fallback_label = QLabel("Error creating multi-pane interface")
+            fallback_layout.addWidget(fallback_label)
+            parent_layout.addWidget(fallback_widget)
     
     def create_left_panel(self):
         """Create left side panel with bookmarks and navigation."""
-        left_panel = QTabWidget()
-        left_panel.setMaximumWidth(250)
-        
-        # Bookmarks tab
-        self.bookmark_widget = self.create_enhanced_bookmark_widget()
-        left_panel.addTab(self.bookmark_widget, "Bookmarks")
-        
-        # Recent locations tab
-        self.recent_widget = self.create_recent_locations_widget()
-        left_panel.addTab(self.recent_widget, "Recent")
-        
-        # Tools tab
-        self.tools_widget = self.create_enhanced_tools_widget()
-        left_panel.addTab(self.tools_widget, "Tools")
-        
-        return left_panel
+        try:
+            left_panel = QTabWidget()
+            left_panel.setMaximumWidth(250)
+            left_panel.setMinimumWidth(200)
+            
+            # Tools tab - Create first for immediate tool access
+            self.tools_widget = self.create_enhanced_tools_widget()
+            if self.tools_widget:
+                left_panel.addTab(self.tools_widget, "Tools")
+                self.logger.info("Tools tab added successfully")
+            else:
+                self.logger.warning("Tools widget creation failed")
+            
+            # Bookmarks tab
+            self.bookmark_widget = self.create_enhanced_bookmark_widget()
+            if self.bookmark_widget:
+                left_panel.addTab(self.bookmark_widget, "Bookmarks")
+                self.logger.info("Bookmarks tab added successfully")
+            else:
+                self.logger.warning("Bookmarks widget creation failed")
+            
+            # Recent locations tab
+            self.recent_widget = self.create_recent_locations_widget()
+            if self.recent_widget:
+                left_panel.addTab(self.recent_widget, "Recent")
+                self.logger.info("Recent tab added successfully")
+            else:
+                self.logger.warning("Recent widget creation failed")
+            
+            # Ensure at least one tab exists
+            if left_panel.count() == 0:
+                # Create fallback tab
+                fallback_widget = QTreeWidget()
+                fallback_widget.setHeaderLabels(["Navigation"])
+                fallback_item = QTreeWidgetItem(["No tools available"])
+                fallback_widget.addTopLevelItem(fallback_item)
+                left_panel.addTab(fallback_widget, "Navigation")
+                self.logger.warning("Created fallback navigation tab")
+            
+            # Make sure the panel is visible
+            left_panel.setVisible(True)
+            left_panel.show()
+            
+            self.logger.info(f"Left panel created with {left_panel.count()} tabs")
+            return left_panel
+            
+        except Exception as e:
+            self.logger.error(f"Error creating left panel: {e}")
+            # Return minimal fallback panel
+            fallback_panel = QTabWidget()
+            fallback_widget = QTreeWidget()
+            fallback_widget.setHeaderLabels(["Error"])
+            fallback_item = QTreeWidgetItem([f"Panel creation failed: {e}"])
+            fallback_widget.addTopLevelItem(fallback_item)
+            fallback_panel.addTab(fallback_widget, "Error")
+            return fallback_panel
     
     def create_right_panel(self):
         """Create right side panel with preview and properties."""
-        right_panel = QTabWidget()
-        right_panel.setMaximumWidth(300)
-        
-        # File preview tab
-        if QuickPreviewWidget:
-            self.preview_widget = QuickPreviewWidget()
-            right_panel.addTab(self.preview_widget, "Preview")
-        
-        # File properties tab
-        if FilePropertyPanel:
-            self.property_panel = FilePropertyPanel()
-            right_panel.addTab(self.property_panel, "Properties")
-        
-        # Return None if no widgets were created
-        if right_panel.count() == 0:
+        try:
+            right_panel = QTabWidget()
+            right_panel.setMaximumWidth(300)
+            right_panel.setMinimumWidth(250)
+            
+            tabs_added = 0
+            
+            # File preview tab
+            if QuickPreviewWidget:
+                try:
+                    self.preview_widget = QuickPreviewWidget()
+                    right_panel.addTab(self.preview_widget, "Preview")
+                    tabs_added += 1
+                    self.logger.info("Preview tab added successfully")
+                except Exception as e:
+                    self.logger.warning(f"Failed to create preview widget: {e}")
+            else:
+                # Create fallback preview widget
+                fallback_preview = QTreeWidget()
+                fallback_preview.setHeaderLabels(["Preview"])
+                fallback_item = QTreeWidgetItem(["Select a file to preview"])
+                fallback_preview.addTopLevelItem(fallback_item)
+                right_panel.addTab(fallback_preview, "Preview")
+                tabs_added += 1
+                self.logger.info("Fallback preview tab created")
+            
+            # File properties tab
+            if FilePropertyPanel:
+                try:
+                    self.property_panel = FilePropertyPanel()
+                    right_panel.addTab(self.property_panel, "Properties")
+                    tabs_added += 1
+                    self.logger.info("Properties tab added successfully")
+                except Exception as e:
+                    self.logger.warning(f"Failed to create properties panel: {e}")
+            else:
+                # Create fallback properties widget
+                fallback_props = QTreeWidget()
+                fallback_props.setHeaderLabels(["Properties"])
+                fallback_item = QTreeWidgetItem(["Select a file to view properties"])
+                fallback_props.addTopLevelItem(fallback_item)
+                right_panel.addTab(fallback_props, "Properties")
+                tabs_added += 1
+                self.logger.info("Fallback properties tab created")
+            
+            # Make sure the panel is visible
+            if tabs_added > 0:
+                right_panel.setVisible(True)
+                right_panel.show()
+                self.logger.info(f"Right panel created with {tabs_added} tabs")
+                return right_panel
+            else:
+                self.logger.warning("No tabs were added to right panel, returning None")
+                return None
+                
+        except Exception as e:
+            self.logger.error(f"Error creating right panel: {e}")
             return None
-        
-        return right_panel
     
     def setup_menus(self):
         """Setup application menus."""
@@ -1262,6 +1406,12 @@ class MultiPaneFileExplorer(QMainWindow):
     def _create_file_explorer_pane(self, pane_number: int) -> 'FileExplorerPane':
         """Create a proper FileExplorerPane instance."""
         try:
+            # Check if we have the proper FileExplorerPane implementation
+            if not hasattr(FileExplorerPane, 'navigate_to') and not hasattr(FileExplorerPane, 'set_path'):
+                # We have the fallback class, so use the functional fallback pane instead
+                self.logger.info(f"Using functional fallback pane for pane {pane_number}")
+                return self._create_simple_fallback_pane(pane_number)
+            
             # Create proper PaneConfiguration for FileExplorerPane
             config = PaneConfiguration(
                 pane_id=f"pane_{pane_number}",
@@ -1837,7 +1987,7 @@ class MultiPaneFileExplorer(QMainWindow):
     
     def _create_single_layout(self):
         """Create single pane layout."""
-        if not self.pane_splitter:
+        if self.pane_splitter is None:
             self.logger.error("Cannot create layout: pane_splitter is None")
             return
             
@@ -1897,7 +2047,7 @@ class MultiPaneFileExplorer(QMainWindow):
                         f"layout_mode: {self.layout_mode}")
         
         try:
-            if not self.pane_splitter:
+            if self.pane_splitter is None:
                 self.logger.error("Cannot update layout: pane_splitter is None")
                 return
                 
@@ -1965,7 +2115,7 @@ class MultiPaneFileExplorer(QMainWindow):
         WIDGET_DELETED_ERROR = "wrapped C/C++ object"
         
         try:
-            if not self.pane_splitter:
+            if self.pane_splitter is None:
                 self.logger.error("Cannot add widget: pane_splitter is None")
                 return
                 
@@ -2043,7 +2193,7 @@ class MultiPaneFileExplorer(QMainWindow):
     
     def _create_horizontal_layout(self):
         """Create horizontal layout for panes."""
-        if not self.pane_splitter:
+        if self.pane_splitter is None:
             self.logger.error("Cannot create layout: pane_splitter is None")
             return
             
@@ -2103,7 +2253,7 @@ class MultiPaneFileExplorer(QMainWindow):
     
     def _create_vertical_layout(self):
         """Create vertical layout for panes."""
-        if not self.pane_splitter:
+        if self.pane_splitter is None:
             self.logger.error("Cannot create layout: pane_splitter is None")
             return
             
@@ -2151,7 +2301,7 @@ class MultiPaneFileExplorer(QMainWindow):
         WIDGET_DELETED_ERROR = "wrapped C/C++ object"
         
         try:
-            if not target_splitter or not widget:
+            if target_splitter is None or widget is None:
                 self.logger.warning("Cannot add widget: target_splitter or widget is None")
                 return
                 

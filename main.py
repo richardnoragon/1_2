@@ -27,7 +27,12 @@ sys.path.insert(0, os.path.join(project_root, 'scripts', 'development', 'demos')
 
 # Import constants for string literals
 from src.core.constants import (APP_NAME, IMPORT_ERROR, JSON_FILES_FILTER,
-                                    SECURITY_TEST, SUGGESTED_SOLUTIONS_HEADER)
+                                SECURITY_TEST, SUGGESTED_SOLUTIONS_HEADER)
+
+# PDF tool constants
+PDF_UTILITIES = "PDF Utilities"
+EXTRACT_LINKS = "Extract Links"
+PAGE_ADMINISTRATION = "Page Administration"
 
 
 # Interface mode definitions
@@ -578,13 +583,13 @@ class InterfaceSelectionDialog:
                                 "using default")
                 self.selected_mode = InterfaceMode.DIALOG_HUB
                 self.remember_choice = False
-                return True  # Continue with default
+                return False  # User cancelled
                 
         except Exception as e:
             self.logger.error(f"Error executing interface selection "
                              f"dialog: {e}")
             self._show_fallback_dialog()
-            return True  # Continue with fallback
+            return False  # Error occurred
     
     def _handle_continue(self):
         """Handle continue button click with validation."""
@@ -778,8 +783,27 @@ try:
             # Set basic window properties with proper sizing
             self.setWindowTitle(APP_NAME)
             
-            # Get screen geometry for appropriate window sizing
+            # Configure window size and positioning
+            self._configure_window_geometry()
+            
+            # Initialize core systems
+            self._initialize_core_systems()
+            
+            # Show startup dialog and determine interface mode BEFORE UI initialization
+            self.logger.info("Determining interface mode through startup dialog")
+            self._determine_interface_mode()
+            
+            # Initialize the selected interface
+            self.logger.info(f"Initializing {self.current_interface_mode.value} interface")
+            self._initialize_interface()
+            
+            # Log successful initialization
+            self.logger.info(f"RFU Main Window initialized successfully with {self.current_interface_mode.value} interface")
+        
+        def _configure_window_geometry(self):
+            """Configure window size and positioning based on screen geometry."""
             from PyQt5.QtWidgets import QApplication, QDesktopWidget
+            
             desktop = QApplication.desktop()
             screen_geometry = desktop.screenGeometry()
             
@@ -804,20 +828,6 @@ try:
             start_x = max(50, (screen_geometry.width() - window_width) // 2)
             start_y = max(50, (screen_geometry.height() - window_height) // 2)
             self.setGeometry(start_x, start_y, window_width, window_height)
-            
-            # Initialize core systems
-            self._initialize_core_systems()
-            
-            # Show startup dialog and determine interface mode BEFORE UI initialization
-            self.logger.info("Determining interface mode through startup dialog")
-            self._determine_interface_mode()
-            
-            # Initialize the selected interface
-            self.logger.info(f"Initializing {self.current_interface_mode.value} interface")
-            self._initialize_interface()
-            
-            # Log successful initialization
-            self.logger.info(f"RFU Main Window initialized successfully with {self.current_interface_mode.value} interface")
         
         def _initialize_core_systems(self):
             """Initialize core application systems and state management."""
@@ -1221,7 +1231,7 @@ try:
                     try:
                         # Try to import and create the multi-pane explorer widget
                         try:
-                            from src.file_explorer.multi_pane_explorer_repaired import \
+                            from src.file_explorer.multi_pane_explorer import \
                                 MultiPaneFileExplorer
 
                             # Create instance as widget, not window
@@ -1253,7 +1263,7 @@ try:
             except Exception as e:
                 self.logger.error(f"Error initializing multi-pane interface: {e}")
                 self._create_fallback_multi_pane()
-                return True  # Always return True with fallback
+                return False  # Return False when falling back due to error
 
         
         def _create_simple_multi_pane_widget(self):
@@ -1393,7 +1403,6 @@ try:
                 return
             
             self.transition_in_progress = True
-            old_mode = self.current_interface_mode
             self.current_interface_mode = new_mode
             
             # Update configuration
@@ -1569,9 +1578,9 @@ try:
                 pdf_tab = self.create_enhanced_pdf_tools_tab()
             else:
                 pdf_tab = self.create_tool_category_tab([
-                    ("PDF Utilities", "Comprehensive PDF tools", self.open_pdf_tools),
-                    ("Extract Links", "Extract links from PDF files", self.open_pdf_links),
-                    ("Page Administration", "Manage PDF pages", self.open_pdf_pages),
+                    (PDF_UTILITIES, "Comprehensive PDF tools", self.open_pdf_tools),
+                    (EXTRACT_LINKS, "Extract links from PDF files", self.open_pdf_links),
+                    (PAGE_ADMINISTRATION, "Manage PDF pages", self.open_pdf_pages),
                 ])
             tab_widget.addTab(pdf_tab, "PDF Tools")
             
@@ -1697,9 +1706,9 @@ try:
             
             # Fallback to simple PDF tools
             return self.create_tool_category_tab([
-                ("PDF Utilities", "Comprehensive PDF tools", self.open_pdf_tools),
-                ("Extract Links", "Extract links from PDF files", self.open_pdf_links),
-                ("Page Administration", "Manage PDF pages", self.open_pdf_pages),
+                (PDF_UTILITIES, "Comprehensive PDF tools", self.open_pdf_tools),
+                (EXTRACT_LINKS, "Extract links from PDF files", self.open_pdf_links),
+                (PAGE_ADMINISTRATION, "Manage PDF pages", self.open_pdf_pages),
             ])
         
         def create_menu_bar(self):
@@ -1747,9 +1756,9 @@ try:
         def open_image_metadata(self): self.launch_tool("Edit Image Metadata")
         def open_office_metadata(self): self.launch_tool("Office Metadata Editor")
         def open_file_touch(self): self.launch_tool("File Touch")
-        def open_pdf_tools(self): self.launch_tool("PDF Utilities")
-        def open_pdf_links(self): self.launch_tool("Extract Links")
-        def open_pdf_pages(self): self.launch_tool("Page Administration")
+        def open_pdf_tools(self): self.launch_tool(PDF_UTILITIES)
+        def open_pdf_links(self): self.launch_tool(EXTRACT_LINKS)
+        def open_pdf_pages(self): self.launch_tool(PAGE_ADMINISTRATION)
         def open_network_connectivity(self): self.launch_tool("Network Connectivity")
         def open_network_scanner(self): self.launch_tool("Network Scanner")
         def open_network_transfer(self): self.launch_tool("Network Transfer")

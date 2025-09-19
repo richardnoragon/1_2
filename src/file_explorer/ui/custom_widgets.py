@@ -61,10 +61,19 @@ except ImportError:
         pass
     class QProgressBar:
         pass
-    def pyqtSignal(*args):
+    def pyqt_signal(*args):
+        """
+        Fallback signal implementation when PyQt5 is not available.
+        This is a dummy implementation that returns a no-op function.
+        """
         def dummy_signal(*signal_args):
+            # Empty implementation for fallback compatibility
+            # when PyQt5 is not installed on the system
             pass
         return dummy_signal
+    
+    # Maintain backward compatibility
+    pyqtSignal = pyqt_signal
 
 
 # Color scheme for consistent theming
