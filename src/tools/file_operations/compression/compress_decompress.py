@@ -3,16 +3,16 @@ Compress/Decompress Tool for Richard's File Utilities
 Handles compression and decompression with various archive formats.
 """
 
-from PyQt5.QtWidgets import (
-    QPushButton, QLineEdit, QLabel, QComboBox, QSlider,
-    QFileDialog, QMessageBox, QApplication, QHBoxLayout
-)
-from PyQt5.QtCore import Qt
-import zipfile
+import json
 import os
 import tarfile
-import json
+import zipfile
 from typing import Dict
+
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import (QApplication, QComboBox, QFileDialog, QHBoxLayout,
+                             QLabel, QLineEdit, QMessageBox, QPushButton,
+                             QSlider)
 
 # Import StandardWindow for menu integration
 try:
@@ -94,10 +94,16 @@ class CompressDecompressApp(StandardWindow):
     
     def __init__(self):
         """Initialize the compression/decompression window."""
-        super().__init__(
-            title="Compress/Decompress Files - Richard's File Utilities",
-            window_type="utility"
-        )
+        try:
+            super().__init__(
+                title="Compress/Decompress Files - Richard's File Utilities",
+                window_type="utility"
+            )
+        except TypeError:
+            super().__init__()
+            title = "Compress/Decompress Files - Richard's File Utilities"
+            self.setWindowTitle(title)
+        
         self.init_ui()
         self._setup_menu_callbacks()
     
@@ -399,8 +405,14 @@ class CompressDecompressApp(StandardWindow):
         
     def init_ui(self):
         """Initialize the user interface."""
-        # Use the existing main layout from StandardWindow
-        layout = self.main_layout
+        # Use the existing main layout from StandardWindow or create our own
+        if hasattr(self, 'main_layout'):
+            layout = self.main_layout
+        else:
+            # Create central widget and layout for QMainWindow fallback
+            central_widget = QWidget()
+            self.setCentralWidget(central_widget)
+            layout = QVBoxLayout(central_widget)
         
         # Create header
         header_label = QLabel("Compress/Decompress Files")

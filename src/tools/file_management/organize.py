@@ -5,18 +5,17 @@ customizable rules such as file type, size, date, and naming patterns.
 """
 
 import os
-import sys
 import shutil
-from pathlib import Path
-from typing import List, Tuple, Optional
+import sys
 from dataclasses import dataclass
+from pathlib import Path
+from typing import List, Optional, Tuple
 
-from PyQt5.QtGui import QStandardItemModel, QStandardItem, QIcon
-from PyQt5.QtWidgets import (
-    QApplication, QMessageBox, QDialog, QVBoxLayout, QLabel,
-    QLineEdit, QPushButton, QHBoxLayout, QListWidget, QListWidgetItem
-)
 from PyQt5 import uic
+from PyQt5.QtGui import QIcon, QStandardItem, QStandardItemModel
+from PyQt5.QtWidgets import (QApplication, QDialog, QHBoxLayout, QLabel,
+                             QLineEdit, QListWidget, QListWidgetItem,
+                             QMessageBox, QPushButton, QVBoxLayout)
 
 # Import StandardWindow for menu integration
 try:
@@ -24,7 +23,13 @@ try:
 except ImportError:
     # Fallback for standalone execution
     from PyQt5.QtWidgets import QMainWindow
-    StandardWindow = QMainWindow
+    
+    class StandardWindow(QMainWindow):
+        """Fallback StandardWindow when the main one isn't available."""
+        def __init__(self, title="Organize Files", window_type="file_operations", **kwargs):
+            super().__init__()
+            self.setWindowTitle(title)
+            self.window_type = window_type
 
 def get_existing_directory(parent, title):
     """Directory selection dialog."""

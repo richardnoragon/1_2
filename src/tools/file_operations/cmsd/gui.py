@@ -11,14 +11,13 @@ import sys
 from typing import Optional
 
 try:
-    from PyQt5.QtWidgets import (
-        QWidget, QVBoxLayout, QHBoxLayout, QGridLayout,
-        QPushButton, QLineEdit, QLabel, QProgressBar,
-        QFileDialog, QMessageBox, QGroupBox, QRadioButton,
-        QApplication, QTextEdit, QTreeWidget, QTreeWidgetItem,
-        QButtonGroup, QCheckBox, QTabWidget
-    )
     from PyQt5.QtCore import QThread, pyqtSignal
+    from PyQt5.QtWidgets import (QApplication, QButtonGroup, QCheckBox,
+                                 QFileDialog, QGridLayout, QGroupBox,
+                                 QHBoxLayout, QLabel, QLineEdit, QMessageBox,
+                                 QProgressBar, QPushButton, QRadioButton,
+                                 QTabWidget, QTextEdit, QTreeWidget,
+                                 QTreeWidgetItem, QVBoxLayout, QWidget)
 except ImportError:
     print("PyQt5 not available. Please install PyQt5.")
     sys.exit(1)
@@ -217,10 +216,18 @@ class CopyMoveSyncDeleteWindow(StandardWindow):
     """
     
     def __init__(self):
-        super().__init__(
-            title="Copy/Move/Sync/Delete - Richard's File Utilities",
-            window_type="file_operations"
-        )
+        try:
+            # Try to use StandardWindow with its parameters
+            super().__init__(
+                title="Copy/Move/Sync/Delete - Richard's File Utilities",
+                window_type="file_operations"
+            )
+        except TypeError:
+            # Fallback for QMainWindow (no parameters)
+            super().__init__()
+            title = "Copy/Move/Sync/Delete - Richard's File Utilities"
+            self.setWindowTitle(title)
+        
         self.worker_thread: Optional[CMSDWorkerThread] = None
         self.init_ui()
         self._setup_menu_callbacks()
@@ -238,8 +245,14 @@ class CopyMoveSyncDeleteWindow(StandardWindow):
     
     def init_ui(self):
         """Initialize the user interface."""
-        # Use the existing main layout from StandardWindow
-        layout = self.main_layout
+        # Use the existing main layout from StandardWindow or create our own
+        if hasattr(self, 'main_layout'):
+            layout = self.main_layout
+        else:
+            # Create central widget and layout for QMainWindow fallback
+            central_widget = QWidget()
+            self.setCentralWidget(central_widget)
+            layout = QVBoxLayout(central_widget)
         
         # Create header
         header_label = QLabel("Copy / Move / Sync / Delete")

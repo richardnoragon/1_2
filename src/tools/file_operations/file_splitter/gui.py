@@ -1,24 +1,30 @@
 """
 File Splitter GUI Wrapper
 
-This module provides a GUI wrapper for the enhanced file splitter logic,
+This module provides a GUI wrapper for the enhanced file splitter l    def __init__(self):
+        try:
+            super().__init__(
+                title="File Split & Join - Richard's File Utilities",
+                window_type="file_operations"
+            )
+        except TypeError:
+            super().__init__()
+            self.setWindowTitle("File Split & Join - Richard's File Utilities")
 maintaining compatibility with the existing tools interface while using
 the comprehensive utilities implementation.
 """
 
 import os
 import sys
-from typing import Optional
 from pathlib import Path
+from typing import Optional
 
 try:
-    from PyQt5.QtWidgets import (
-        QWidget, QVBoxLayout, QHBoxLayout, QGridLayout,
-        QPushButton, QLineEdit, QLabel, QProgressBar,
-        QFileDialog, QMessageBox, QGroupBox, QSpinBox,
-        QApplication, QTextEdit
-    )
     from PyQt5.QtCore import Qt, QThread, pyqtSignal
+    from PyQt5.QtWidgets import (QApplication, QFileDialog, QGridLayout,
+                                 QGroupBox, QHBoxLayout, QLabel, QLineEdit,
+                                 QMessageBox, QProgressBar, QPushButton,
+                                 QSpinBox, QTextEdit, QVBoxLayout, QWidget)
 except ImportError:
     print("PyQt5 not available. Please install PyQt5.")
     sys.exit(1)
@@ -31,7 +37,7 @@ if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
 # Import enhanced file splitter logic
-from ..file_splitter_logic import FileSplitterLogic, FileSplitterError
+from ..file_splitter_logic import FileSplitterError, FileSplitterLogic
 
 # Import GUI framework
 try:
@@ -100,10 +106,16 @@ class FileSplitJoinGUI(StandardWindow):
     """
     
     def __init__(self):
-        super().__init__(
-            title="File Splitter/Joiner - Richard's File Utilities",
-            window_type="file_operations"
-        )
+        try:
+            super().__init__(
+                title="File Splitter/Joiner - Richard's File Utilities",
+                window_type="file_operations"
+            )
+        except TypeError:
+            super().__init__()
+            title = "File Splitter/Joiner - Richard's File Utilities"
+            self.setWindowTitle(title)
+        
         self.worker_thread: Optional[SplitterWorkerThread] = None
         self.init_ui()
         self._setup_menu_callbacks()
@@ -118,7 +130,14 @@ class FileSplitJoinGUI(StandardWindow):
     def init_ui(self):
         """Initialize the user interface."""
         # Use the existing main layout from StandardWindow
-        layout = self.main_layout
+        # Use the existing main layout from StandardWindow or create our own
+        if hasattr(self, 'main_layout'):
+            layout = self.main_layout
+        else:
+            # Create central widget and layout for QMainWindow fallback
+            central_widget = QWidget()
+            self.setCentralWidget(central_widget)
+            layout = QVBoxLayout(central_widget)
         
         # Create header
         header_label = QLabel("File Splitter & Joiner")

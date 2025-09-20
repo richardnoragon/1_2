@@ -34,6 +34,11 @@ PDF_UTILITIES = "PDF Utilities"
 EXTRACT_LINKS = "Extract Links"
 PAGE_ADMINISTRATION = "Page Administration"
 
+# Tool launch constants
+TOOL_LAUNCH_ERROR = "Tool Launch Error"
+INTERFACE_SELECTION = "Interface Selection"
+DEFAULT_INTERFACE = "Use Default Interface"
+
 
 # Interface mode definitions
 class InterfaceMode(Enum):
@@ -935,7 +940,6 @@ try:
         def _determine_interface_mode(self):
             """Determine which interface mode to use with comprehensive startup dialog logic."""
             try:
-                # Initialize default mode
                 self.current_interface_mode = InterfaceMode.DIALOG_HUB
                 
                 if not self.config_manager:
@@ -943,32 +947,40 @@ try:
                     self._show_interface_selection_dialog()
                     return
                 
-                # Check if user has saved preference and doesn't want to see dialog
-                saved_mode = self.config_manager.get_setting('interface_mode', 'current_mode')
-                show_startup = self.config_manager.get_setting('interface_mode', 'show_startup_dialog', True)
-                remember_choice = self.config_manager.get_setting('interface_mode', 'remember_choice', False)
+                saved_settings = self._get_saved_interface_settings()
                 
-                self.logger.info(f"Startup configuration - saved_mode: {saved_mode}, show_startup: {show_startup}, remember_choice: {remember_choice}")
-                
-                # If user has saved preference and doesn't want to see dialog
-                if saved_mode and remember_choice and not show_startup:
-                    try:
-                        self.current_interface_mode = InterfaceMode(saved_mode)
-                        self.logger.info(f"Using saved interface mode: {self.current_interface_mode.value}")
-                        return
-                    except ValueError as e:
-                        self.logger.warning(f"Invalid saved interface mode '{saved_mode}': {e}")
-                        # Fall through to show dialog
-                
-                # Show interface selection dialog for first-time users or when requested
-                self.logger.info("Showing interface selection dialog")
-                self._show_interface_selection_dialog()
+                if self._should_use_saved_settings(saved_settings):
+                    self._apply_saved_interface_mode(saved_settings['saved_mode'])
+                else:
+                    self._show_interface_selection_dialog()
                 
             except Exception as e:
                 self.logger.error(f"Error determining interface mode: {e}")
-                # Ultimate fallback
                 self.current_interface_mode = InterfaceMode.DIALOG_HUB
                 self.logger.info("Using fallback interface mode: DIALOG_HUB")
+        
+        def _get_saved_interface_settings(self):
+            """Get saved interface settings from config manager."""
+            return {
+                'saved_mode': self.config_manager.get_setting('interface_mode', 'current_mode'),
+                'show_startup': self.config_manager.get_setting('interface_mode', 'show_startup_dialog', True),
+                'remember_choice': self.config_manager.get_setting('interface_mode', 'remember_choice', False)
+            }
+        
+        def _should_use_saved_settings(self, settings):
+            """Check if saved settings should be used instead of showing dialog."""
+            return (settings['saved_mode'] and 
+                    settings['remember_choice'] and 
+                    not settings['show_startup'])
+        
+        def _apply_saved_interface_mode(self, saved_mode):
+            """Apply the saved interface mode."""
+            try:
+                self.current_interface_mode = InterfaceMode(saved_mode)
+                self.logger.info(f"Using saved interface mode: {self.current_interface_mode.value}")
+            except ValueError as e:
+                self.logger.warning(f"Invalid saved interface mode '{saved_mode}': {e}")
+                self._show_interface_selection_dialog()
         
         def _show_interface_selection_dialog(self):
             """Show enhanced interface selection dialog on startup with comprehensive error handling."""
@@ -1480,20 +1492,169 @@ try:
                 self.logger.error(f"Error during application close: {e}")
                 event.accept()  # Close anyway
         def launch_tool(self, tool_name, module_name=None, class_name=None):
-            """Enhanced tool launch with tracking."""
-            # Track tool usage
+            """Enhanced tool launch with tracking and proper instantiation."""
+            try:
+                self._track_tool_launch(tool_name)
+                
+                if self._handle_existing_window(tool_name):
+                    return
+                
+                if not self._validate_tool_parameters(tool_name, module_name, class_name):
+                    return
+                
+                tool_class = self._import_tool_class(tool_name, module_name, class_name)
+                if not tool_class:
+                    return
+                
+                self._create_and_show_tool(tool_name, tool_class)
+                    
+            except Exception as e:
+                QMessageBox.critical(
+                    self, "Critical Error",
+                    f"Unexpected error launching {tool_name}:\n\n{e}"
+                )
+                self.logger.error(f"Critical error in launch_tool for {tool_name}: {e}")
+        
+        def _track_tool_launch(self, tool_name):
+            """Track tool launch statistics."""
             self.tool_usage_count += 1
-            
-            # Emit signal for tracking
             self.tool_launched.emit(tool_name)
+        
+        def _handle_existing_window(self, tool_name):
+            """Check and show existing window if already open."""
+            if tool_name in self.opened_windows:
+                window = self.opened_windows[tool_name]
+                if window and hasattr(window, 'show'):
+                    window.show()
+                    window.raise_()
+                    window.activateWindow()
+                    return True
+            return False
+        
+        def _validate_tool_parameters(self, tool_name, module_name, class_name):
+            """Validate tool launch parameters."""
+            if not module_name or not class_name:
+                QMessageBox.warning(
+                    self, TOOL_LAUNCH_ERROR,
+                    f"Cannot launch {tool_name}: Missing module or class information.\n\n"
+                    "This tool needs to be properly configured for launching."
+                )
+                return False
+            return True
+        
+        def _import_tool_class(self, tool_name, module_name, class_name):
+            """Import tool class using multiple strategies."""
+            import_strategies = [
+                lambda: self._import_direct(module_name, class_name),
+                lambda: self._import_direct(f"src.{module_name}" if not module_name.startswith('src.') else module_name, class_name),
+                lambda: self._import_absolute(module_name, class_name),
+            ]
             
-            # Show placeholder for demonstration
-            QMessageBox.information(
-                self, "Tool Launch", 
-                f"Launching {tool_name}...\n\n"
-                f"Current Interface: {self.current_interface_mode.value}\n"
-                f"This demonstrates the integrated dual-interface system."
+            for strategy in import_strategies:
+                try:
+                    tool_class = strategy()
+                    if tool_class:
+                        return tool_class
+                except Exception:
+                    continue
+            
+            QMessageBox.warning(
+                self, TOOL_LAUNCH_ERROR,
+                f"Could not import {tool_name}.\n\n"
+                f"Module: {module_name}\n"
+                f"Class: {class_name}\n\n"
+                "Please ensure the tool is properly installed."
             )
+            return None
+        
+        def _create_and_show_tool(self, tool_name, tool_class):
+            """Create and show the tool window."""
+            try:
+                window = tool_class()
+                self.opened_windows[tool_name] = window
+                window.show()
+                
+                self._track_tool_usage_in_db(tool_name)
+                self.logger.info(f"Successfully launched tool: {tool_name}")
+                
+            except TypeError as te:
+                self._handle_tool_type_error(tool_name, te)
+            except Exception as e:
+                self._handle_tool_creation_error(tool_name, e)
+        
+        def _handle_tool_type_error(self, tool_name, error):
+            """Handle TypeError during tool creation."""
+            if "title" in str(error) or "keyword argument" in str(error):
+                QMessageBox.warning(
+                    self, "Tool Configuration Issue",
+                    f"The {tool_name} tool has a configuration issue.\n\n"
+                    f"Error: {error}\n\n"
+                    "This tool may need to be updated for compatibility."
+                )
+                self.logger.error(f"Tool {tool_name} has constructor issues: {error}")
+            else:
+                QMessageBox.critical(
+                    self, TOOL_LAUNCH_ERROR,
+                    f"Failed to create {tool_name} window:\n\n{error}"
+                )
+                self.logger.error(f"Tool instantiation failed for {tool_name}: {error}")
+        
+        def _handle_tool_creation_error(self, tool_name, error):
+            """Handle general errors during tool creation."""
+            QMessageBox.critical(
+                self, TOOL_LAUNCH_ERROR,
+                f"Failed to create {tool_name} window:\n\n{error}"
+            )
+            self.logger.error(f"Tool instantiation failed for {tool_name}: {error}")
+        
+        def _track_tool_usage_in_db(self, tool_name):
+            """Track tool usage in database if available."""
+            if self.database_available and self.db_manager:
+                try:
+                    self._track_tool_usage(tool_name)
+                except Exception as e:
+                    self.logger.warning(f"Failed to track tool usage: {e}")
+        
+        def _import_direct(self, module_name, class_name):
+            """Import using direct module path."""
+            try:
+                module = __import__(module_name, fromlist=[class_name])
+                if hasattr(module, class_name):
+                    return getattr(module, class_name)
+                return None
+            except (ImportError, AttributeError):
+                return None
+        
+        def _import_absolute(self, module_name, class_name):
+            """Import using absolute path with importlib."""
+            try:
+                import importlib
+                module = importlib.import_module(module_name)
+                if hasattr(module, class_name):
+                    return getattr(module, class_name)
+                return None
+            except (ImportError, AttributeError):
+                return None
+        
+        def _track_tool_usage(self, tool_name):
+            """Track tool usage in database."""
+            try:
+                if not self.database_available or not self.db_manager:
+                    return
+                
+                query = """
+                    INSERT INTO tool_usage 
+                    (tool_name, launch_time, interface_mode, session_id)
+                    VALUES (?, datetime('now'), ?, ?)
+                """
+                
+                session_id = f"{self.session_start_time.isoformat()}_{id(self)}"
+                params = (tool_name, self.current_interface_mode.value, session_id)
+                
+                self.db_manager.execute_update(query, params)
+                
+            except Exception as e:
+                self.logger.warning(f"Failed to track tool usage: {e}")
         
         def init_ui(self):
             """Initialize the comprehensive tabbed user interface."""
@@ -1660,13 +1821,13 @@ try:
             
             # Tool name
             name_label = QLabel(name)
-            name_label.setStyleSheet("font-weight: bold; font-size: 14px; color: #495057;")
+            name_label.setStyleSheet("font-weight: bold; font-size: 22px; color: #495057;")
             name_label.setAlignment(Qt.AlignCenter)
             layout.addWidget(name_label)
             
             # Tool description
             desc_label = QLabel(description)
-            desc_label.setStyleSheet("font-size: 11px; color: #6c757d;")
+            desc_label.setStyleSheet("font-size: 18px; color: #6c757d;")
             desc_label.setAlignment(Qt.AlignCenter)
             desc_label.setWordWrap(True)
             layout.addWidget(desc_label)
@@ -1678,9 +1839,10 @@ try:
                     background-color: #007bff;
                     color: white;
                     border: none;
-                    padding: 8px 16px;
+                    padding: 12px 20px;
                     border-radius: 4px;
                     font-weight: bold;
+                    font-size: 20px;
                 }
                 QPushButton:hover {
                     background-color: #0056b3;
@@ -1689,10 +1851,10 @@ try:
                     background-color: #004085;
                 }
             """)
-            launch_button.clicked.connect(lambda: self.launch_tool(name))
+            launch_button.clicked.connect(callback)
             layout.addWidget(launch_button)
             
-            frame.setFixedHeight(120)
+            frame.setFixedHeight(160)
             return frame
         
         def create_enhanced_pdf_tools_tab(self):
@@ -1734,42 +1896,117 @@ try:
             help_menu = menubar.addMenu('&Help')
             help_menu.addAction('&About', self.show_about_dialog)
         
-        # Placeholder tool launch methods (replace with actual implementations)
-        def open_file_finder(self): self.launch_tool("File Finder")
-        def open_catalog(self): self.launch_tool("Catalog Files")
-        def open_rename(self): self.launch_tool("Rename Files")
-        def open_organize(self): self.launch_tool("Organize Files")
-        def open_advanced_folders(self): self.launch_tool("Advanced Folders")
-        def open_cmsd(self): self.launch_tool("Copy/Move/Sync/Delete")
-        def open_compress(self): self.launch_tool("Compress/Decompress")
-        def open_file_splitter(self): self.launch_tool("Split/Join Files")
-        def open_sync(self): self.launch_tool("Synchronize")
-        def open_enhanced_editor(self): self.launch_tool("Enhanced Editor")
-        def open_size_analyzer(self): self.launch_tool("Size Analyzer")
-        def open_duplicate_finder(self): self.launch_tool("Duplicate Finder")
-        def open_checksum(self): self.launch_tool("File Checksum")
-        def open_empty_folders(self): self.launch_tool("Empty Folders")
-        def open_security_preferences(self): self.launch_tool("Security Preferences")
-        def open_encrypt_decrypt(self): self.launch_tool("Encrypt/Decrypt")
-        def open_secure_delete(self): self.launch_tool("Secure Delete")
-        def open_permissions(self): self.launch_tool("Permissions Editor")
-        def open_image_metadata(self): self.launch_tool("Edit Image Metadata")
-        def open_office_metadata(self): self.launch_tool("Office Metadata Editor")
-        def open_file_touch(self): self.launch_tool("File Touch")
-        def open_pdf_tools(self): self.launch_tool(PDF_UTILITIES)
-        def open_pdf_links(self): self.launch_tool(EXTRACT_LINKS)
-        def open_pdf_pages(self): self.launch_tool(PAGE_ADMINISTRATION)
-        def open_network_connectivity(self): self.launch_tool("Network Connectivity")
-        def open_network_scanner(self): self.launch_tool("Network Scanner")
-        def open_network_transfer(self): self.launch_tool("Network Transfer")
-        def open_bookmark_manager(self): self.launch_tool("Bookmark Manager")
-        def open_privacy_cleaner(self): self.launch_tool("Privacy Cleaner")
-        def open_data_anonymizer(self): self.launch_tool("Data Anonymizer")
-        def open_enhanced_clipboard(self): self.launch_tool("Enhanced Clipboard")
-        def open_system_diagnostics(self): self.launch_tool("System Diagnostics")
-        def open_system_cleanup(self): self.launch_tool("System Cleanup")
-        def open_software_maintenance(self): self.launch_tool("Software Maintenance")
+        # File Management Tool Launch Methods
+        def open_file_finder(self): 
+            self.launch_tool("File Finder", "src.tools.file_management.file_finder", "FileFinderGUI")
+        def open_catalog(self): 
+            self.launch_tool("Catalog Files", "src.tools.file_management.catalog_tool", "CatalogWindow")
+        def open_rename(self): 
+            self.launch_tool("Rename Files", "src.tools.file_management.rename", "RenameWindow")
+        def open_organize(self): 
+            self.launch_tool("Organize Files", "src.tools.file_management.organize", "OrganizeWindow")
+        def open_advanced_folders(self): 
+            self.launch_tool("Advanced Folders", 
+                           "src.tools.file_management.advanced_folders.ui.advanced_folders_widget", 
+                           "AdvancedFoldersGUI")
+        # File Operations Tool Launch Methods
+        def open_cmsd(self):
+            self.launch_tool("Copy/Move/Sync/Delete",
+                             "src.tools.file_operations.cmsd.gui",
+                             "CopyMoveSyncDeleteWindow")
+
+        def open_compress(self):
+            self.launch_tool("Compress/Decompress",
+                             "src.tools.file_operations.compression."
+                             "compress_decompress",
+                             "CompressDecompressApp")
+
+        def open_file_splitter(self):
+            self.launch_tool("Split/Join Files",
+                             "src.tools.file_operations.file_splitter.gui",
+                             "FileSplitJoinGUI")
+
+        def open_sync(self):
+            self.launch_tool("Synchronize",
+                             "src.tools.file_operations."
+                             "synchronization_backup.sync",
+                             "SyncWindow")
+
+        def open_enhanced_editor(self):
+            self.launch_tool("Enhanced Editor",
+                             "src.tools.file_operations.enhanced_editor."
+                             "enhanced_editor",
+                             "EnhancedEditor")
+        # Analysis Tool Launch Methods
+        def open_size_analyzer(self):
+            self.launch_tool("Size Analyzer",
+                             "src.tools.analysis.size_analyzer",
+                             "SizeAnalyzerGUI")
+
+        def open_duplicate_finder(self):
+            self.launch_tool("Duplicate Finder",
+                             "src.tools.analysis.find_duplicate_files",
+                             "DuplicateFinderApp")
+
+        def open_checksum(self):
+            self.launch_tool("File Checksum",
+                             "src.tools.analysis.check_sum",
+                             "ChecksumGUI")
+
+        def open_empty_folders(self):
+            self.launch_tool("Empty Folders",
+                             "src.tools.analysis.empty_folders",
+                             "EmptyFoldersGUI")
+        # Security Tool Launch Methods
+        def open_security_preferences(self): 
+            self.launch_tool("Security Preferences", "src.tools.security.security_preferences", "SecurityPreferencesGUI")
+        def open_encrypt_decrypt(self): 
+            self.launch_tool("Encrypt/Decrypt", "src.tools.security.encrypt_decrypt", "EnAndDecryptGUI")
+        def open_secure_delete(self): 
+            self.launch_tool("Secure Delete", "src.tools.security.secure_delete", "SecureDeleteGUI")
+        def open_permissions(self): 
+            self.launch_tool("Permissions Editor", "src.tools.security.permissions", "PermissionsEditorGUI")
+        # Metadata Tool Launch Methods
+        def open_image_metadata(self): 
+            self.launch_tool("Edit Image Metadata", "src.tools.metadata.image_metadata_logic", "ImageMetadataGUI")
+        def open_office_metadata(self): 
+            self.launch_tool("Office Metadata Editor", "src.tools.metadata.office_meta_data_editor", "OfficeMetadataEditorGUI")
+        def open_file_touch(self): 
+            self.launch_tool("File Touch", "src.tools.metadata.file_touch", "FileTouchGUI")
         
+        # PDF Tool Launch Methods
+        def open_pdf_tools(self): 
+            self.launch_tool(PDF_UTILITIES, "src.tools.pdf_tools.pdf_utilities", "PDFUtilitiesGUI")
+        def open_pdf_links(self): 
+            self.launch_tool(EXTRACT_LINKS, "src.tools.pdf_tools.extract_links", "ExtractLinksGUI")
+        def open_pdf_pages(self): 
+            self.launch_tool(PAGE_ADMINISTRATION, "src.tools.pdf_tools.page_administration", "PageAdministrationGUI")
+        
+        # Network Tool Launch Methods
+        def open_network_connectivity(self): 
+            self.launch_tool("Network Connectivity", "src.tools.network.connectivity", "NetworkConnectivityGUI")
+        def open_network_scanner(self): 
+            self.launch_tool("Network Scanner", "src.tools.network.network_scanner", "NetworkScannerGUI")
+        def open_network_transfer(self): 
+            self.launch_tool("Network Transfer", "src.tools.network.network_transfer", "NetworkTransferGUI")
+        def open_bookmark_manager(self): 
+            self.launch_tool("Bookmark Manager", "src.tools.network.bookmarks", "BookmarkManagerGUI")
+        
+        # Privacy Tool Launch Methods
+        def open_privacy_cleaner(self): 
+            self.launch_tool("Privacy Cleaner", "src.tools.privacy.privacy_cleaner", "PrivacyCleanerGUI")
+        def open_data_anonymizer(self): 
+            self.launch_tool("Data Anonymizer", "src.tools.privacy.data_anonymizer", "DataAnonymizerGUI")
+        
+        # System Tool Launch Methods
+        def open_enhanced_clipboard(self): 
+            self.launch_tool("Enhanced Clipboard", "src.tools.system.enhanced_clipboard", "EnhancedClipboardGUI")
+        def open_system_diagnostics(self): 
+            self.launch_tool("System Diagnostics", "src.tools.system.system_diagnostics", "SystemDiagnosticsGUI")
+        def open_system_cleanup(self): 
+            self.launch_tool("System Cleanup", "src.tools.system.system_cleanup", "SystemCleanupGUI")
+        def open_software_maintenance(self): 
+            self.launch_tool("Software Maintenance", "src.tools.system.software_maintenance", "SoftwareMaintenanceGUI")
         # Menu callback implementations
         def new_project(self): QMessageBox.information(self, "New Project", "New project functionality would be implemented here.")
         def open_file(self): QMessageBox.information(self, "Open File", "Open file functionality would be implemented here.")

@@ -60,8 +60,8 @@ try:
 except ImportError:
     # Fallback imports for development
     try:
-        from src.gui.standard_window import StandardWindow
         from src.config_manager import get_config_manager
+        from src.gui.standard_window import StandardWindow
     except ImportError:
         get_config_manager = None
         StandardWindow = QWidget if PYQT5_AVAILABLE else object
@@ -534,7 +534,14 @@ class AdvancedFoldersWidget(StandardWindow if StandardWindow != QWidget else QWi
         """
         super().__init__()
         
-        self.config_manager = config_manager or get_config_manager()
+        # Handle config manager with fallback
+        if config_manager:
+            self.config_manager = config_manager
+        elif get_config_manager is not None:
+            self.config_manager = get_config_manager()
+        else:
+            self.config_manager = None
+        
         self.folder_manager = FolderConfigurationManager(self.config_manager)
         self.search_engine = SearchEngine(enable_caching=True)
         

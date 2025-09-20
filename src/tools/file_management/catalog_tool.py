@@ -11,12 +11,11 @@ import webbrowser
 from datetime import datetime
 
 try:
-    from PyQt5.QtWidgets import (
-        QWidget, QVBoxLayout, QHBoxLayout, QGridLayout,
-        QPushButton, QLineEdit, QListWidget, QListWidgetItem, QLabel,
-        QCheckBox, QGroupBox, QFileDialog, QMessageBox,
-        QApplication, QTextEdit
-    )
+    from PyQt5.QtWidgets import (QApplication, QCheckBox, QFileDialog,
+                                 QGridLayout, QGroupBox, QHBoxLayout, QLabel,
+                                 QLineEdit, QListWidget, QListWidgetItem,
+                                 QMessageBox, QPushButton, QTextEdit,
+                                 QVBoxLayout, QWidget)
 except ImportError:
     print("PyQt5 not available. Please install PyQt5.")
     sys.exit(1)
@@ -26,8 +25,19 @@ try:
     from src.gui.standard_window import StandardWindow
 except ImportError:
     # Fallback for standalone execution
-    from PyQt5.QtWidgets import QMainWindow
-    StandardWindow = QMainWindow
+    from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QWidget
+    
+    class StandardWindow(QMainWindow):
+        """Fallback StandardWindow when the main one isn't available."""
+        def __init__(self, title="Catalog Files", window_type="utility", **kwargs):
+            super().__init__()
+            self.setWindowTitle(title)
+            self.window_type = window_type
+            
+            # Create central widget and main layout
+            self.central_widget = QWidget()
+            self.setCentralWidget(self.central_widget)
+            self.main_layout = QVBoxLayout(self.central_widget)
 
 
 class CatalogWindow(StandardWindow):

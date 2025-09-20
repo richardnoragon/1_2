@@ -1089,7 +1089,7 @@ class MultiPaneFileExplorer(QMainWindow):
                 
             category_item = QTreeWidgetItem([f"📁 {category}"])
             category_item.setExpanded(True)
-            category_item.setToolTip(0, f"Category: {category}")
+            category_item.setToolTip(f"Category: {category}")
             
             category_tools_added = 0
             for tool_info in tools:
@@ -1100,7 +1100,7 @@ class MultiPaneFileExplorer(QMainWindow):
                     class_name = tool_info.get('class_name', '')
                     
                     tool_item = QTreeWidgetItem([f"{icon} {tool_name}"])
-                    tool_item.setToolTip(0, f"Double-click to launch {tool_name}")
+                    tool_item.setToolTip(f"Double-click to launch {tool_name}")
                     
                     # Store tool launch information
                     tool_item.setData(0, Qt.UserRole, {
@@ -2980,7 +2980,7 @@ class MultiPaneFileExplorer(QMainWindow):
             for tool_name, callback in basic_tools:
                 tool_item = QTreeWidgetItem([tool_name])
                 tool_item.setData(0, Qt.UserRole, callback)
-                tool_item.setToolTip(0, f"Click to {tool_name}")
+                tool_item.setToolTip(f"Click to {tool_name}")
                 emergency_item.addChild(tool_item)
             
             tools_tree.addTopLevelItem(emergency_item)

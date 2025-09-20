@@ -14,40 +14,40 @@ Features:
 - Integration with StandardWindow for consistent UI
 """
 
-import sys
+import codecs
+import json
 import os
 import re
-import json
-import codecs
+import sys
 import tempfile
-from pathlib import Path
-from typing import Dict, List, Optional, Any, Union
 from dataclasses import dataclass
 from enum import Enum
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Union
 
-from PyQt5.QtWidgets import (
-    QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QTabWidget,
-    QTextEdit, QPlainTextEdit, QLabel, QPushButton, QLineEdit,
-    QComboBox, QCheckBox, QSpinBox, QSlider, QGroupBox, QFrame,
-    QSplitter, QTreeWidget, QTreeWidgetItem, QListWidget, QListWidgetItem,
-    QFileDialog, QMessageBox, QInputDialog, QProgressBar, QStatusBar,
-    QMenuBar, QMenu, QAction, QToolBar, QTextBrowser, QScrollArea,
-    QGridLayout, QFormLayout, QButtonGroup, QRadioButton,
-    QDialog, QDialogButtonBox, QTableWidget, QTableWidgetItem,
-    QHeaderView, QAbstractItemView, QApplication
-)
-from PyQt5.QtCore import (
-    Qt, QTimer, QThread, pyqtSignal, QObject, QMimeData, QUrl, QPoint,
-    QSize, QRect, QSettings, QFileSystemWatcher, QTextCodec, QDir,
-    QFileInfo, QStandardPaths, QPropertyAnimation, QEasingCurve
-)
-from PyQt5.QtGui import (
-    QFont, QFontMetrics, QColor, QPalette, QPixmap, QIcon, QKeySequence,
-    QTextCursor, QTextCharFormat, QTextDocument, QSyntaxHighlighter,
-    QTextBlockFormat, QTextFormat, QClipboard, QDragEnterEvent,
-    QDropEvent, QKeyEvent, QMouseEvent, QWheelEvent, QPainter,
-    QTextOption, QFontDatabase
-)
+from PyQt5.QtCore import (QDir, QEasingCurve, QFileInfo, QFileSystemWatcher,
+                          QMimeData, QObject, QPoint, QPropertyAnimation,
+                          QRect, QSettings, QSize, QStandardPaths, Qt,
+                          QTextCodec, QThread, QTimer, QUrl, pyqtSignal)
+from PyQt5.QtGui import (QClipboard, QColor, QDragEnterEvent, QDropEvent,
+                         QFont, QFontDatabase, QFontMetrics, QIcon, QKeyEvent,
+                         QKeySequence, QMouseEvent, QPainter, QPalette,
+                         QPixmap, QSyntaxHighlighter, QTextBlockFormat,
+                         QTextCharFormat, QTextCursor, QTextDocument,
+                         QTextFormat, QTextOption, QWheelEvent)
+from PyQt5.QtWidgets import (QAbstractItemView, QAction, QApplication,
+                             QButtonGroup, QCheckBox, QComboBox, QDialog,
+                             QDialogButtonBox, QFileDialog, QFormLayout,
+                             QFrame, QGridLayout, QGroupBox, QHBoxLayout,
+                             QHeaderView, QInputDialog, QLabel, QLineEdit,
+                             QListWidget, QListWidgetItem, QMainWindow, QMenu,
+                             QMenuBar, QMessageBox, QPlainTextEdit,
+                             QProgressBar, QPushButton, QRadioButton,
+                             QScrollArea, QSlider, QSpinBox, QSplitter,
+                             QStatusBar, QTableWidget, QTableWidgetItem,
+                             QTabWidget, QTextBrowser, QTextEdit, QToolBar,
+                             QTreeWidget, QTreeWidgetItem, QVBoxLayout,
+                             QWidget)
 
 # Import StandardWindow for RFU integration
 try:
@@ -499,10 +499,14 @@ class EnhancedEditor(StandardWindow):
     """
     
     def __init__(self):
-        super().__init__(
-            title="Enhanced Editor - Richard's File Utilities",
-            window_type="utility"
-        )
+        try:
+            super().__init__(
+                title="Enhanced Editor - Richard's File Utilities",
+                window_type="utility"
+            )
+        except TypeError:
+            super().__init__()
+            self.setWindowTitle("Enhanced Editor - Richard's File Utilities")
         
         # Initialize components
         self.document_manager = DocumentManager()
@@ -520,29 +524,39 @@ class EnhancedEditor(StandardWindow):
     
     def setup_ui(self):
         """Setup the main user interface."""
-        # Create main splitter
+        main_splitter = self._create_main_splitter()
+        self._setup_panels(main_splitter)
+        self._finalize_ui_setup()
+    
+    def _create_main_splitter(self):
+        """Create and configure the main splitter widget."""
         main_splitter = QSplitter(Qt.Horizontal)
-        self.main_layout.addWidget(main_splitter)
         
-        # Left panel for document outline/explorer
+        # Add to existing layout or create new one
+        if hasattr(self, 'main_layout'):
+            self.main_layout.addWidget(main_splitter)
+        else:
+            central_widget = QWidget()
+            self.setCentralWidget(central_widget)
+            main_layout = QVBoxLayout(central_widget)
+            main_layout.addWidget(main_splitter)
+        
+        return main_splitter
+    
+    def _setup_panels(self, main_splitter):
+        """Setup all three panels of the interface."""
         left_panel = self.create_left_panel()
-        main_splitter.addWidget(left_panel)
-        
-        # Center panel for editor tabs
         center_panel = self.create_center_panel()
-        main_splitter.addWidget(center_panel)
-        
-        # Right panel for properties/search results
         right_panel = self.create_right_panel()
+        
+        main_splitter.addWidget(left_panel)
+        main_splitter.addWidget(center_panel)
         main_splitter.addWidget(right_panel)
-        
-        # Set splitter proportions
         main_splitter.setSizes([200, 600, 200])
-        
-        # Create toolbar
+    
+    def _finalize_ui_setup(self):
+        """Finalize the UI setup with toolbar and status bar."""
         self.create_toolbar()
-        
-        # Update status bar
         self.update_status_bar()
     
     def create_left_panel(self):
@@ -722,55 +736,69 @@ class EnhancedEditor(StandardWindow):
     def open_document(self, file_path: str = None):
         """Open a document from file."""
         if not file_path:
-            file_path, _ = QFileDialog.getOpenFileName(
-                self, 
-                "Open File",
-                "",
-                "All Files (*.*);;"
-                "Text Files (*.txt);;"
-                "Python Files (*.py);;"
-                "JavaScript Files (*.js);;"
-                "HTML Files (*.html);;"
-                "CSS Files (*.css);;"
-                "JSON Files (*.json);;"
-                "XML Files (*.xml)"
-            )
+            file_path = self._get_file_path_from_dialog()
         
         if not file_path:
             return None
         
+        return self._process_file_opening(file_path)
+    
+    def _get_file_path_from_dialog(self):
+        """Get file path from file dialog."""
+        file_path, _ = QFileDialog.getOpenFileName(
+            self, 
+            "Open File",
+            "",
+            "All Files (*.*);;"
+            "Text Files (*.txt);;"
+            "Python Files (*.py);;"
+            "JavaScript Files (*.js);;"
+            "HTML Files (*.html);;"
+            "CSS Files (*.css);;"
+            "JSON Files (*.json);;"
+            "XML Files (*.xml)"
+        )
+        return file_path
+    
+    def _process_file_opening(self, file_path):
+        """Process the actual file opening operation."""
         try:
-            # Detect encoding
             encoding = self.detect_encoding(file_path)
+            content = self._read_file_content(file_path, encoding)
             
-            # Read file content
-            with open(file_path, 'r', encoding=encoding) as f:
-                content = f.read()
-            
-            # Create new document
             doc_id = self.new_document(content, file_path)
+            self._update_document_after_opening(doc_id, encoding, file_path)
             
-            # Update document properties
-            self.document_manager.update_document(
-                doc_id,
-                encoding=encoding,
-                is_modified=False
-            )
-            
-            # Add to recent files
-            self.document_manager.add_to_recent_files(file_path)
-            self.update_recent_files_list()
-            
-            self.show_status_message(f"Opened: {os.path.basename(file_path)}")
             return doc_id
             
         except Exception as e:
-            QMessageBox.critical(
-                self, 
-                "Error Opening File",
-                f"Could not open file {file_path}:\n{str(e)}"
-            )
+            self._handle_file_opening_error(file_path, e)
             return None
+    
+    def _read_file_content(self, file_path, encoding):
+        """Read file content with specified encoding."""
+        with open(file_path, 'r', encoding=encoding) as f:
+            return f.read()
+    
+    def _update_document_after_opening(self, doc_id, encoding, file_path):
+        """Update document properties after successful opening."""
+        self.document_manager.update_document(
+            doc_id,
+            encoding=encoding,
+            is_modified=False
+        )
+        
+        self.document_manager.add_to_recent_files(file_path)
+        self.update_recent_files_list()
+        self.show_status_message(f"Opened: {os.path.basename(file_path)}")
+    
+    def _handle_file_opening_error(self, file_path, error):
+        """Handle errors during file opening."""
+        QMessageBox.critical(
+            self, 
+            "Error Opening File",
+            f"Could not open file {file_path}:\n{str(error)}"
+        )
     
     def save_document(self, doc_id: str = None):
         """Save the current or specified document."""
@@ -866,7 +894,7 @@ class EnhancedEditor(StandardWindow):
             reply = QMessageBox.question(
                 self,
                 "Unsaved Changes",
-                f"Document has unsaved changes. Save before closing?",
+                "Document has unsaved changes. Save before closing?",
                 QMessageBox.Save | QMessageBox.Discard | QMessageBox.Cancel
             )
             
@@ -1006,6 +1034,71 @@ class EnhancedEditor(StandardWindow):
                       options: SearchOptions, forward: bool = True):
         """Perform search operation."""
         cursor = editor.textCursor()
+        
+        if options.use_regex:
+            return self._perform_regex_search(editor, search_text, options, forward)
+        else:
+            return self._perform_standard_search(editor, search_text, options, forward, cursor)
+    
+    def _perform_regex_search(self, editor, search_text, options, forward):
+        """Perform regex-based search."""
+        import re
+        regex_flags = 0 if options.case_sensitive else re.IGNORECASE
+        pattern = re.compile(search_text, regex_flags)
+        
+        text = editor.toPlainText()
+        cursor = editor.textCursor()
+        start_pos = cursor.position()
+        
+        match = self._find_regex_match(pattern, text, start_pos, forward)
+        
+        if match:
+            self._apply_search_result(editor, match.start(), match.end())
+            return True
+        elif options.wrap_around:
+            return self._try_regex_wrap_around(editor, pattern, text, forward)
+        
+        self._show_not_found_message()
+        return False
+    
+    def _find_regex_match(self, pattern, text, start_pos, forward):
+        """Find regex match in specified direction."""
+        if forward:
+            return pattern.search(text, start_pos)
+        else:
+            matches = list(pattern.finditer(text, 0, start_pos))
+            return matches[-1] if matches else None
+    
+    def _try_regex_wrap_around(self, editor, pattern, text, forward):
+        """Try regex search with wrap around."""
+        if forward:
+            match = pattern.search(text, 0)
+        else:
+            matches = list(pattern.finditer(text))
+            match = matches[-1] if matches else None
+        
+        if match:
+            self._apply_search_result(editor, match.start(), match.end())
+            return True
+        return False
+    
+    def _perform_standard_search(self, editor, search_text, options, forward, cursor):
+        """Perform standard text search."""
+        flags = self._get_search_flags(options, forward)
+        
+        found_cursor = editor.document().find(search_text, cursor, flags)
+        
+        if not found_cursor.isNull():
+            editor.setTextCursor(found_cursor)
+            return True
+        elif options.wrap_around:
+            return self._try_standard_wrap_around(editor, search_text, flags, forward)
+        
+        self._show_not_found_message()
+        return False
+    
+    def _get_search_flags(self, options, forward):
+        """Get search flags based on options."""
         flags = QTextDocument.FindFlags()
         
         if not forward:
@@ -1015,62 +1108,30 @@ class EnhancedEditor(StandardWindow):
         if options.whole_words:
             flags |= QTextDocument.FindWholeWords
         
-        if options.use_regex:
-            # Use regex search
-            import re
-            regex_flags = 0 if options.case_sensitive else re.IGNORECASE
-            pattern = re.compile(search_text, regex_flags)
-            
-            text = editor.toPlainText()
-            start_pos = cursor.position()
-            
-            if forward:
-                match = pattern.search(text, start_pos)
-            else:
-                matches = list(pattern.finditer(text, 0, start_pos))
-                match = matches[-1] if matches else None
-            
-            if match:
-                cursor.setPosition(match.start())
-                cursor.setPosition(match.end(), QTextCursor.KeepAnchor)
-                editor.setTextCursor(cursor)
-                return True
-            elif options.wrap_around:
-                # Try from beginning/end
-                if forward:
-                    match = pattern.search(text, 0)
-                else:
-                    matches = list(pattern.finditer(text))
-                    match = matches[-1] if matches else None
-                
-                if match:
-                    cursor.setPosition(match.start())
-                    cursor.setPosition(match.end(), QTextCursor.KeepAnchor)
-                    editor.setTextCursor(cursor)
-                    return True
-        else:
-            # Use standard search
-            if forward:
-                found_cursor = editor.document().find(search_text, cursor, flags)
-            else:
-                found_cursor = editor.document().find(search_text, cursor, flags)
-            
-            if not found_cursor.isNull():
-                editor.setTextCursor(found_cursor)
-                return True
-            elif options.wrap_around:
-                # Try from beginning/end
-                cursor = QTextCursor(editor.document())
-                if not forward:
-                    cursor.movePosition(QTextCursor.End)
-                
-                found_cursor = editor.document().find(search_text, cursor, flags)
-                if not found_cursor.isNull():
-                    editor.setTextCursor(found_cursor)
-                    return True
+        return flags
+    
+    def _try_standard_wrap_around(self, editor, search_text, flags, forward):
+        """Try standard search with wrap around."""
+        cursor = QTextCursor(editor.document())
+        if not forward:
+            cursor.movePosition(QTextCursor.End)
         
-        QMessageBox.information(self, "Search", "Text not found.")
+        found_cursor = editor.document().find(search_text, cursor, flags)
+        if not found_cursor.isNull():
+            editor.setTextCursor(found_cursor)
+            return True
         return False
+    
+    def _apply_search_result(self, editor, start_pos, end_pos):
+        """Apply search result by setting cursor position."""
+        cursor = editor.textCursor()
+        cursor.setPosition(start_pos)
+        cursor.setPosition(end_pos, QTextCursor.KeepAnchor)
+        editor.setTextCursor(cursor)
+    
+    def _show_not_found_message(self):
+        """Show text not found message."""
+        QMessageBox.information(self, "Search", "Text not found.")
     
     def replace_current(self):
         """Replace current selection."""
@@ -1105,37 +1166,64 @@ class EnhancedEditor(StandardWindow):
             return
         
         options = self.search_dialog.get_search_options()
-        
-        # Count replacements
-        replacements = 0
+        replacements = self._perform_replace_all(editor, search_text, replace_text, options)
+        self._show_replace_result(replacements)
+    
+    def _perform_replace_all(self, editor, search_text, replace_text, options):
+        """Perform the actual replace all operation."""
         text = editor.toPlainText()
         
         if options.use_regex:
+            return self._replace_all_regex(text, search_text, replace_text, options)
+        else:
+            return self._replace_all_standard(text, search_text, replace_text, options)
+    
+    def _replace_all_regex(self, text, search_text, replace_text, options):
+        """Perform regex-based replace all."""
+        import re
+        regex_flags = 0 if options.case_sensitive else re.IGNORECASE
+        pattern = re.compile(search_text, regex_flags)
+        new_text, count = pattern.subn(replace_text, text)
+        return new_text, count
+    
+    def _replace_all_standard(self, text, search_text, replace_text, options):
+        """Perform standard replace all."""
+        if options.case_sensitive:
+            new_text = text.replace(search_text, replace_text)
+            replacements = text.count(search_text)
+        else:
             import re
-            regex_flags = 0 if options.case_sensitive else re.IGNORECASE
-            pattern = re.compile(search_text, regex_flags)
-            new_text, count = pattern.subn(replace_text, text)
-            replacements = count
-        else:
-            if options.case_sensitive:
-                new_text = text.replace(search_text, replace_text)
-                replacements = text.count(search_text)
-            else:
-                # Case-insensitive replacement
-                import re
-                pattern = re.compile(re.escape(search_text), re.IGNORECASE)
-                new_text, count = pattern.subn(replace_text, text)
-                replacements = count
+            pattern = re.compile(re.escape(search_text), re.IGNORECASE)
+            new_text, replacements = pattern.subn(replace_text, text)
         
-        if replacements > 0:
-            editor.setPlainText(new_text)
-            QMessageBox.information(
-                self, 
-                "Replace All",
-                f"Replaced {replacements} occurrences."
-            )
+        return new_text, replacements
+    
+    def _show_replace_result(self, result):
+        """Show the result of replace all operation."""
+        if isinstance(result, tuple):
+            new_text, replacements = result
+            editor = self.get_current_editor()
+            if editor and replacements > 0:
+                editor.setPlainText(new_text)
+            
+            if replacements > 0:
+                QMessageBox.information(
+                    self, 
+                    "Replace All",
+                    f"Replaced {replacements} occurrences."
+                )
+            else:
+                QMessageBox.information(self, "Replace All", "No occurrences found.")
         else:
-            QMessageBox.information(self, "Replace All", "No occurrences found.")
+            replacements = result
+            if replacements > 0:
+                QMessageBox.information(
+                    self, 
+                    "Replace All",
+                    f"Replaced {replacements} occurrences."
+                )
+            else:
+                QMessageBox.information(self, "Replace All", "No occurrences found.")
     
     # Standard edit operations
     def undo(self):
@@ -1338,36 +1426,54 @@ class EnhancedEditor(StandardWindow):
     
     def closeEvent(self, event):
         """Handle close event."""
-        # Check for unsaved documents
+        unsaved_docs = self._get_unsaved_documents()
+        
+        if unsaved_docs:
+            if not self._handle_unsaved_documents(unsaved_docs, event):
+                return
+        
+        self.save_settings()
+        event.accept()
+    
+    def _get_unsaved_documents(self):
+        """Get list of unsaved document names."""
         unsaved_docs = []
         for doc_id, document in self.document_manager.documents.items():
             if document.get('is_modified', False):
                 file_path = document.get('file_path', 'Untitled')
                 unsaved_docs.append(os.path.basename(file_path))
+        return unsaved_docs
+    
+    def _handle_unsaved_documents(self, unsaved_docs, event):
+        """Handle unsaved documents before closing."""
+        reply = self._show_unsaved_confirmation_dialog(unsaved_docs)
         
-        if unsaved_docs:
-            reply = QMessageBox.question(
-                self,
-                "Unsaved Changes",
-                f"There are unsaved changes in {len(unsaved_docs)} document(s):\n" +
-                "\n".join(unsaved_docs) + "\n\nSave changes before closing?",
-                QMessageBox.Save | QMessageBox.Discard | QMessageBox.Cancel
-            )
-            
-            if reply == QMessageBox.Save:
-                # Save all modified documents
-                for doc_id, document in self.document_manager.documents.items():
-                    if document.get('is_modified', False):
-                        if not self.save_document(doc_id):
-                            event.ignore()
-                            return
-            elif reply == QMessageBox.Cancel:
-                event.ignore()
-                return
+        if reply == QMessageBox.Save:
+            return self._save_all_modified_documents(event)
+        elif reply == QMessageBox.Cancel:
+            event.ignore()
+            return False
         
-        # Save settings before closing
-        self.save_settings()
-        event.accept()
+        return True
+    
+    def _show_unsaved_confirmation_dialog(self, unsaved_docs):
+        """Show confirmation dialog for unsaved documents."""
+        return QMessageBox.question(
+            self,
+            "Unsaved Changes",
+            f"There are unsaved changes in {len(unsaved_docs)} document(s):\n" +
+            "\n".join(unsaved_docs) + "\n\nSave changes before closing?",
+            QMessageBox.Save | QMessageBox.Discard | QMessageBox.Cancel
+        )
+    
+    def _save_all_modified_documents(self, event):
+        """Save all modified documents."""
+        for doc_id, document in self.document_manager.documents.items():
+            if document.get('is_modified', False):
+                if not self.save_document(doc_id):
+                    event.ignore()
+                    return False
+        return True
 
 
 class PreferencesDialog(QDialog):
