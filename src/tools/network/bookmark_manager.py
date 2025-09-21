@@ -10,18 +10,18 @@ A comprehensive bookmark management tool that supports:
 - Cross-platform storage with SQLite
 """
 
-import sys
-import os
-import json
-import sqlite3
 import csv
 import html
-import re
+import json
 import logging
+import os
+import re
+import sqlite3
+import sys
 from datetime import datetime
 from pathlib import Path
+from typing import Any, Dict, List, Optional, Tuple
 from urllib.parse import urlparse
-from typing import List, Dict, Optional, Any, Tuple
 
 # Import centralized logging manager
 try:
@@ -31,17 +31,19 @@ except ImportError:
     LOGGING_AVAILABLE = False
 
 try:
-    from PyQt5.QtWidgets import (
-        QApplication, QMainWindow, QVBoxLayout, QHBoxLayout, QGridLayout,
-        QWidget, QPushButton, QLineEdit, QTextEdit, QTableWidget, QTableWidgetItem,
-        QLabel, QComboBox, QDateEdit, QGroupBox, QTabWidget, QSplitter,
-        QFileDialog, QMessageBox, QInputDialog, QHeaderView, QMenu,
-        QTreeWidget, QTreeWidgetItem, QCheckBox, QSpinBox, QProgressBar,
-        QFrame, QScrollArea, QToolBar, QStatusBar, QDialog, QDialogButtonBox,
-        QListWidget, QListWidgetItem
-    )
-    from PyQt5.QtCore import Qt, QDate, QThread, pyqtSignal, QTimer
-    from PyQt5.QtGui import QFont, QIcon, QPixmap, QStandardItemModel, QStandardItem
+    from PyQt5.QtCore import QDate, Qt, QThread, QTimer, pyqtSignal
+    from PyQt5.QtGui import (QFont, QIcon, QPixmap, QStandardItem,
+                             QStandardItemModel)
+    from PyQt5.QtWidgets import (QApplication, QCheckBox, QComboBox, QDateEdit,
+                                 QDialog, QDialogButtonBox, QFileDialog,
+                                 QFrame, QGridLayout, QGroupBox, QHBoxLayout,
+                                 QHeaderView, QInputDialog, QLabel, QLineEdit,
+                                 QListWidget, QListWidgetItem, QMainWindow,
+                                 QMenu, QMessageBox, QProgressBar, QPushButton,
+                                 QScrollArea, QSpinBox, QSplitter, QStatusBar,
+                                 QTableWidget, QTableWidgetItem, QTabWidget,
+                                 QTextEdit, QToolBar, QTreeWidget,
+                                 QTreeWidgetItem, QVBoxLayout, QWidget)
 except ImportError as e:
     print(f"PyQt5 import error: {e}")
     sys.exit(1)
@@ -712,14 +714,18 @@ class BookmarkDialog(QDialog):
         }
 
 
-class BookmarkManagerGUI(StandardWindow):
+class BookmarkManagerGUI(QMainWindow):
     """Main Bookmark Manager GUI"""
     
     def __init__(self):
-        super().__init__(
-            title="Bookmark Manager - Richard's File Utilities",
-            window_type="utility"
-        )
+        super().__init__()
+        self.setWindowTitle("Bookmark Manager - Richard's File Utilities")
+        self.setGeometry(200, 200, 1000, 700)
+        
+        # Create central widget and main layout
+        central_widget = QWidget()
+        self.setCentralWidget(central_widget)
+        self.main_layout = QVBoxLayout(central_widget)
         
         # Initialize logging
         if LOGGING_AVAILABLE:

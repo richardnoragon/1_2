@@ -40,7 +40,7 @@
   "interface_mode": {
     "show_startup_dialog": true,
     "remember_choice": false,
-    "current_mode": "dialog_hub",
+    "current_mode": "multi_pane",
     "auto_detect_enabled": true,
     "transition_animations": true,
     "switch_confirmation": false
@@ -98,5 +98,7 @@
     "recursive_by_default": false,
     "create_category_folders": true,
     "move_files": true
-  }
+  },
+  "file_touch_profiles": {},
+  "test_module_profiles": {}
 }

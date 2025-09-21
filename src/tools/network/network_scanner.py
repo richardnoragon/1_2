@@ -5,16 +5,17 @@ Network Scanner Tool for Richard's File Utilities
 A streamlined network scanner utility with essential functionality.
 """
 
-import sys
 import socket
+import sys
+
+# String constant to avoid duplication (SonarQube S1192)
+NETWORK_SCANNER_TEXT = "Network Scanner"
 
 try:
-    from PyQt5.QtWidgets import (
-        QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
-        QPushButton, QLabel, QProgressBar,
-        QApplication, QMessageBox, QGroupBox,
-        QLineEdit, QSpinBox, QTextEdit, QCheckBox
-    )
+    from PyQt5.QtWidgets import (QApplication, QCheckBox, QGroupBox,
+                                 QHBoxLayout, QLabel, QLineEdit, QMainWindow,
+                                 QMessageBox, QProgressBar, QPushButton,
+                                 QSpinBox, QTextEdit, QVBoxLayout, QWidget)
 except ImportError:
     print("PyQt5 not available. Please install PyQt5.")
     sys.exit(1)
@@ -27,14 +28,19 @@ except ImportError:
     StandardWindow = QMainWindow
 
 
-class NetworkScannerGUI(StandardWindow):
+class NetworkScannerGUI(QMainWindow):
     """Main window for Network Scanner operations."""
     
     def __init__(self):
-        super().__init__(
-            title="Network Scanner - Richard's File Utilities",
-            window_type="utility"
-        )
+        super().__init__()
+        self.setWindowTitle("Network Scanner - Richard's File Utilities")
+        self.setGeometry(200, 200, 800, 600)
+        
+        # Create central widget and main layout
+        central_widget = QWidget()
+        self.setCentralWidget(central_widget)
+        self.main_layout = QVBoxLayout(central_widget)
+        
         self.init_ui()
         self._setup_menu_callbacks()
         
@@ -72,7 +78,7 @@ class NetworkScannerGUI(StandardWindow):
         layout = self.main_layout
         
         # Add header
-        header_label = QLabel("Network Scanner")
+        header_label = QLabel(NETWORK_SCANNER_TEXT)
         header_label.setStyleSheet("""
             QLabel {
                 font-size: 18px;
@@ -216,14 +222,14 @@ class NetworkScannerGUI(StandardWindow):
         
         if not target:
             QMessageBox.warning(
-                self, "Network Scanner",
+                self, NETWORK_SCANNER_TEXT,
                 "Please enter a target IP address or hostname."
             )
             return
             
         if start_port > end_port:
             QMessageBox.warning(
-                self, "Network Scanner",
+                self, NETWORK_SCANNER_TEXT,
                 "Start port must be less than or equal to end port."
             )
             return
@@ -257,7 +263,7 @@ class NetworkScannerGUI(StandardWindow):
         
         QMessageBox.information(
             self,
-            "Network Scanner",
+            NETWORK_SCANNER_TEXT,
             f"Network scan initiated for {target}!\n\n"
             f"Scanning ports {start_port}-{end_port}\n"
             f"Check the results area for scan progress."

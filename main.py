@@ -38,6 +38,7 @@ PAGE_ADMINISTRATION = "Page Administration"
 TOOL_LAUNCH_ERROR = "Tool Launch Error"
 INTERFACE_SELECTION = "Interface Selection"
 DEFAULT_INTERFACE = "Use Default Interface"
+USE_DEFAULT_INTERFACE = "Use Default Interface"
 
 
 # Interface mode definitions
@@ -619,7 +620,7 @@ class InterfaceSelectionDialog:
             
             result = QMessageBox.question(
                 self.dialog, 
-                "Use Default Interface", 
+                USE_DEFAULT_INTERFACE, 
                 "Would you like to use the default Dialog Hub interface instead?",
                 QMessageBox.Yes | QMessageBox.No,
                 QMessageBox.Yes
@@ -653,7 +654,7 @@ class InterfaceSelectionDialog:
             
             result = QMessageBox.question(
                 self.dialog,
-                "Use Default Interface",
+                USE_DEFAULT_INTERFACE,
                 "Would you like to use the default Dialog Hub interface?",
                 QMessageBox.Yes | QMessageBox.No,
                 QMessageBox.Yes
@@ -987,43 +988,15 @@ try:
             try:
                 self.logger.info("Initializing interface selection dialog")
                 
-                # Ensure QApplication is available for dialog creation
-                from PyQt5.QtWidgets import QApplication
-                if not QApplication.instance():
-                    self.logger.error("QApplication not available for dialog creation")
-                    self._handle_dialog_fallback()
+                if not self._validate_dialog_prerequisites():
                     return
                 
-                # Create and show the enhanced dialog
                 dialog = InterfaceSelectionDialog(self)
-                
-                # Show dialog with proper error handling
                 dialog_result = dialog.show_selection_dialog()
                 
                 if dialog_result:
-                    # Process user selection
-                    self.current_interface_mode = dialog.selected_mode
-                    self.logger.info(f"User selected interface mode: {self.current_interface_mode.value}")
-                    
-                    # Save preferences if requested and config manager available
-                    if dialog.remember_choice and self.config_manager:
-                        try:
-                            self.config_manager.set_setting('interface_mode', 'current_mode', 
-                                                           self.current_interface_mode.value)
-                            self.config_manager.set_setting('interface_mode', 'remember_choice', True)
-                            self.config_manager.set_setting('interface_mode', 'show_startup_dialog', False)
-                            self.logger.info("Saved user interface preferences")
-                        except Exception as config_error:
-                            self.logger.warning(f"Failed to save interface preferences: {config_error}")
-                    
-                    # Track dialog usage for analytics
-                    if self.database_available and self.db_manager:
-                        try:
-                            self._track_interface_selection(self.current_interface_mode.value, dialog.remember_choice)
-                        except Exception as db_error:
-                            self.logger.warning(f"Failed to track interface selection: {db_error}")
+                    self._process_dialog_selection(dialog)
                 else:
-                    # Dialog cancelled or failed
                     self.logger.warning("Interface selection dialog cancelled or failed")
                     self._handle_dialog_fallback()
                     
@@ -1033,6 +1006,44 @@ try:
             except Exception as e:
                 self.logger.error(f"Unexpected error showing interface selection dialog: {e}")
                 self._handle_dialog_fallback()
+        
+        def _validate_dialog_prerequisites(self) -> bool:
+            """Validate prerequisites for showing the dialog."""
+            from PyQt5.QtWidgets import QApplication
+            if not QApplication.instance():
+                self.logger.error("QApplication not available for dialog creation")
+                self._handle_dialog_fallback()
+                return False
+            return True
+        
+        def _process_dialog_selection(self, dialog):
+            """Process user selection from interface dialog."""
+            self.current_interface_mode = dialog.selected_mode
+            self.logger.info(f"User selected interface mode: {self.current_interface_mode.value}")
+            
+            if dialog.remember_choice and self.config_manager:
+                self._save_interface_preferences()
+            
+            if self.database_available and self.db_manager:
+                self._track_interface_selection_safe(dialog)
+        
+        def _save_interface_preferences(self):
+            """Save interface preferences to config."""
+            try:
+                self.config_manager.set_setting('interface_mode', 'current_mode', 
+                                               self.current_interface_mode.value)
+                self.config_manager.set_setting('interface_mode', 'remember_choice', True)
+                self.config_manager.set_setting('interface_mode', 'show_startup_dialog', False)
+                self.logger.info("Saved user interface preferences")
+            except Exception as config_error:
+                self.logger.warning(f"Failed to save interface preferences: {config_error}")
+        
+        def _track_interface_selection_safe(self, dialog):
+            """Safely track interface selection for analytics."""
+            try:
+                self._track_interface_selection(self.current_interface_mode.value, dialog.remember_choice)
+            except Exception as db_error:
+                self.logger.warning(f"Failed to track interface selection: {db_error}")
         
         def _handle_dialog_fallback(self):
             """Handle fallback when dialog creation or interaction fails."""
@@ -1961,60 +1972,201 @@ try:
         def open_security_preferences(self): 
             self.launch_tool("Security Preferences", "src.tools.security.security_preferences", "SecurityPreferencesGUI")
         def open_encrypt_decrypt(self): 
-            self.launch_tool("Encrypt/Decrypt", "src.tools.security.encrypt_decrypt", "EnAndDecryptGUI")
-        def open_secure_delete(self): 
-            self.launch_tool("Secure Delete", "src.tools.security.secure_delete", "SecureDeleteGUI")
-        def open_permissions(self): 
-            self.launch_tool("Permissions Editor", "src.tools.security.permissions", "PermissionsEditorGUI")
+            self.launch_tool(
+                "Encrypt/Decrypt",
+                "src.tools.security.en_and_decrypt",
+                "EnAndDecryptGUI",
+            )
+        
+        def open_secure_delete(self):
+            self.launch_tool(
+                "Secure Delete",
+                "src.tools.security.secure_delete",
+                "SecureDeleteGUI",
+            )
+        
+        def open_permissions(self):
+            self.launch_tool(
+                "Permissions Editor",
+                "src.tools.system.permissions_editor",
+                "PermissionsEditorGUI",
+            )
         # Metadata Tool Launch Methods
-        def open_image_metadata(self): 
-            self.launch_tool("Edit Image Metadata", "src.tools.metadata.image_metadata_logic", "ImageMetadataGUI")
-        def open_office_metadata(self): 
-            self.launch_tool("Office Metadata Editor", "src.tools.metadata.office_meta_data_editor", "OfficeMetadataEditorGUI")
-        def open_file_touch(self): 
-            self.launch_tool("File Touch", "src.tools.metadata.file_touch", "FileTouchGUI")
+        
+        def open_image_metadata(self):
+            self.launch_tool(
+                "Edit Image Metadata",
+                "src.tools.metadata.image_metadata.gui",
+                "ImageMetadataEditorGUI",
+            )
+        
+        def open_office_metadata(self):
+            self.launch_tool(
+                "Office Metadata Editor",
+                "src.tools.metadata.office_meta_data_editor",
+                "OfficeMetaDataEditorGUI",
+            )
+        
+        def open_file_touch(self):
+            self.launch_tool(
+                "File Touch",
+                "src.tools.file_operations.file_touch.file_touch",
+                "FileTouchGUI",
+            )
         
         # PDF Tool Launch Methods
-        def open_pdf_tools(self): 
-            self.launch_tool(PDF_UTILITIES, "src.tools.pdf_tools.pdf_utilities", "PDFUtilitiesGUI")
-        def open_pdf_links(self): 
-            self.launch_tool(EXTRACT_LINKS, "src.tools.pdf_tools.extract_links", "ExtractLinksGUI")
-        def open_pdf_pages(self): 
-            self.launch_tool(PAGE_ADMINISTRATION, "src.tools.pdf_tools.page_administration", "PageAdministrationGUI")
+        
+        def open_pdf_tools(self):
+            self.launch_tool(
+                PDF_UTILITIES,
+                "src.tools.pdf_tools.pdf_utilities",
+                "PDFUtilitiesGUI",
+            )
+        
+        def open_pdf_links(self):
+            self.launch_tool(
+                EXTRACT_LINKS,
+                "src.tools.pdf_tools.extract_links",
+                "ExtractLinksGUI",
+            )
+        
+        def open_pdf_pages(self):
+            self.launch_tool(
+                PAGE_ADMINISTRATION,
+                "src.tools.pdf_tools.page_administration",
+                "PageAdministrationGUI",
+            )
         
         # Network Tool Launch Methods
-        def open_network_connectivity(self): 
-            self.launch_tool("Network Connectivity", "src.tools.network.connectivity", "NetworkConnectivityGUI")
-        def open_network_scanner(self): 
-            self.launch_tool("Network Scanner", "src.tools.network.network_scanner", "NetworkScannerGUI")
-        def open_network_transfer(self): 
-            self.launch_tool("Network Transfer", "src.tools.network.network_transfer", "NetworkTransferGUI")
-        def open_bookmark_manager(self): 
-            self.launch_tool("Bookmark Manager", "src.tools.network.bookmarks", "BookmarkManagerGUI")
+        
+        def open_network_connectivity(self):
+            self.launch_tool(
+                "Network Connectivity",
+                "src.tools.network.connectivity",
+                "NetworkConnectivityGUI",
+            )
+        
+        def open_network_scanner(self):
+            self.launch_tool(
+                "Network Scanner",
+                "src.tools.network.network_scanner",
+                "NetworkScannerGUI",
+            )
+        
+        def open_network_transfer(self):
+            self.launch_tool(
+                "Network Transfer",
+                "src.tools.network.network_transfer",
+                "NetworkTransferGUI",
+            )
+        
+        def open_bookmark_manager(self):
+            self.launch_tool(
+                "Bookmark Manager",
+                "src.tools.network.bookmarks",
+                "BookmarkManagerGUI",
+            )
         
         # Privacy Tool Launch Methods
-        def open_privacy_cleaner(self): 
-            self.launch_tool("Privacy Cleaner", "src.tools.privacy.privacy_cleaner", "PrivacyCleanerGUI")
-        def open_data_anonymizer(self): 
-            self.launch_tool("Data Anonymizer", "src.tools.privacy.data_anonymizer", "DataAnonymizerGUI")
+        
+        def open_privacy_cleaner(self):
+            self.launch_tool(
+                "Privacy Cleaner",
+                "src.tools.privacy.privacy_cleaner",
+                "PrivacyCleanerGUI",
+            )
+        
+        def open_data_anonymizer(self):
+            self.launch_tool(
+                "Data Anonymizer",
+                "src.tools.privacy.data_anonymizer",
+                "DataAnonymizerGUI",
+            )
         
         # System Tool Launch Methods
-        def open_enhanced_clipboard(self): 
-            self.launch_tool("Enhanced Clipboard", "src.tools.system.enhanced_clipboard", "EnhancedClipboardGUI")
-        def open_system_diagnostics(self): 
-            self.launch_tool("System Diagnostics", "src.tools.system.system_diagnostics", "SystemDiagnosticsGUI")
-        def open_system_cleanup(self): 
-            self.launch_tool("System Cleanup", "src.tools.system.system_cleanup", "SystemCleanupGUI")
-        def open_software_maintenance(self): 
-            self.launch_tool("Software Maintenance", "src.tools.system.software_maintenance", "SoftwareMaintenanceGUI")
+        
+        def open_enhanced_clipboard(self):
+            self.launch_tool(
+                "Enhanced Clipboard",
+                "src.tools.system.enhanced_clipboard",
+                "EnhancedClipboardGUI",
+            )
+        
+        def open_system_diagnostics(self):
+            self.launch_tool(
+                "System Diagnostics",
+                "src.tools.system.system_diagnostics",
+                "SystemDiagnosticsGUI",
+            )
+        
+        def open_system_cleanup(self):
+            self.launch_tool(
+                "System Cleanup",
+                "src.tools.system.system_cleanup",
+                "SystemCleanupGUI",
+            )
+        
+        def open_software_maintenance(self):
+            self.launch_tool(
+                "Software Maintenance",
+                "src.tools.system.software_maintenance",
+                "SoftwareMaintenanceGUI",
+            )
+        
         # Menu callback implementations
-        def new_project(self): QMessageBox.information(self, "New Project", "New project functionality would be implemented here.")
-        def open_file(self): QMessageBox.information(self, "Open File", "Open file functionality would be implemented here.")
-        def save_project(self): QMessageBox.information(self, "Save Project", "Save project functionality would be implemented here.")
-        def save_project_as(self): QMessageBox.information(self, "Save Project As", "Save project as functionality would be implemented here.")
-        def show_main_preferences(self): QMessageBox.information(self, "Preferences", "Main preferences dialog would be shown here.")
-        def refresh_tool_list(self): QMessageBox.information(self, "Refresh", "Tool list refresh functionality would be implemented here.")
-        def show_about_dialog(self): QMessageBox.about(self, "About RFU", f"<h3>{APP_NAME}</h3><p>Version 3.0.0 with Dual Interface System</p><p>A comprehensive file utility suite with intelligent interface selection.</p>")
+        def new_project(self):
+            QMessageBox.information(
+                self,
+                "New Project",
+                "New project functionality would be implemented here.",
+            )
+
+        def open_file(self):
+            QMessageBox.information(
+                self,
+                "Open File",
+                "Open file functionality would be implemented here.",
+            )
+
+        def save_project(self):
+            QMessageBox.information(
+                self,
+                "Save Project",
+                "Save project functionality would be implemented here.",
+            )
+
+        def save_project_as(self):
+            QMessageBox.information(
+                self,
+                "Save Project As",
+                "Save project as functionality would be implemented here.",
+            )
+
+        def show_main_preferences(self):
+            QMessageBox.information(
+                self,
+                "Preferences",
+                "Main preferences dialog would be shown here.",
+            )
+
+        def refresh_tool_list(self):
+            QMessageBox.information(
+                self,
+                "Refresh",
+                "Tool list refresh functionality would be implemented here.",
+            )
+
+        def show_about_dialog(self):
+            QMessageBox.about(
+                self,
+                "About RFU",
+                (
+                    f"<h3>{APP_NAME}</h3>"
+                    "<p>Version 3.0.0 with Dual Interface System</p>"
+                    "<p>A comprehensive file utility suite with intelligent "
+                    "interface selection.</p>"
+                ),
+            )
     
     def main():
         """Main entry point for the application."""

@@ -5,20 +5,19 @@ Office Metadata Editor Tool for Richard's File Utilities
 A comprehensive office document metadata viewing and editing utility.
 """
 
+import json
 import os
 import sys
-import json
 from datetime import datetime
 
 try:
-    from PyQt5.QtWidgets import (
-        QWidget, QVBoxLayout, QGridLayout,
-        QPushButton, QLineEdit, QLabel, QCheckBox, QGroupBox,
-        QFileDialog, QMessageBox, QProgressBar, QApplication,
-        QTextEdit, QSplitter, QTreeWidget, QTreeWidgetItem,
-        QTableWidget, QTableWidgetItem, QTabWidget
-    )
     from PyQt5.QtCore import Qt, QThread, pyqtSignal
+    from PyQt5.QtWidgets import (QApplication, QCheckBox, QFileDialog,
+                                 QGridLayout, QGroupBox, QLabel, QLineEdit,
+                                 QMessageBox, QProgressBar, QPushButton,
+                                 QSplitter, QTableWidget, QTableWidgetItem,
+                                 QTabWidget, QTextEdit, QTreeWidget,
+                                 QTreeWidgetItem, QVBoxLayout, QWidget)
 except ImportError:
     print("PyQt5 not available. Please install PyQt5.")
     sys.exit(1)
@@ -56,13 +55,26 @@ except ImportError:
             def show_warning_dialog(self, title, message):
                 QMessageBox.warning(self, title, message)
                 
+            def create_header(self, text):
+                """Create a standard header label."""
+                header = QLabel(text)
+                header.setStyleSheet("""
+                    QLabel {
+                        font-size: 18px;
+                        font-weight: bold;
+                        padding: 10px;
+                        margin-bottom: 10px;
+                    }
+                """)
+                return header
+                
             def get_file_path(self, title="Select File",
-                             file_filter="All Files (*)"):
+                              file_filter="All Files (*)"):
                 return QFileDialog.getOpenFileName(
                     self, title, "", file_filter)[0]
                 
             def get_save_file_path(self, title="Save File",
-                                 file_filter="All Files (*)"):
+                                   file_filter="All Files (*)"):
                 return QFileDialog.getSaveFileName(
                     self, title, "", file_filter)[0]
                     
@@ -165,8 +177,8 @@ class OfficeMetadataWorker(QThread):
         }
         
         try:
-            import zipfile
             import xml.etree.ElementTree as ET
+            import zipfile
             
             with zipfile.ZipFile(file_path, 'r') as zip_file:
                 # Read core properties
@@ -364,9 +376,9 @@ class OfficeMetaDataEditorGUI(StandardWindow):
     """Office Metadata Editor GUI."""
     
     def __init__(self):
-        super().__init__(
-            title="Office Metadata Editor - Richard's File Utilities",
-            window_type="utility"
+        super().__init__()
+        self.setWindowTitle(
+            "Office Metadata Editor - Richard's File Utilities"
         )
         self.worker = None
         self.selected_files = []

@@ -29,6 +29,14 @@ except ImportError:
 
 # Import StandardWindow for menu integration
 try:
+    import sys
+
+    # Add project root to path for StandardWindow import
+    project_root = os.path.dirname(os.path.dirname(os.path.dirname(
+        os.path.dirname(__file__))))
+    if project_root not in sys.path:
+        sys.path.insert(0, project_root)
+    
     from src.gui.standard_window import StandardWindow
     STANDARD_WINDOW_AVAILABLE = True
 except ImportError:
@@ -36,14 +44,21 @@ except ImportError:
     StandardWindow = QMainWindow
     STANDARD_WINDOW_AVAILABLE = False
 
+# Deletion method constants to avoid string literal duplication
+SINGLE_PASS_METHOD = "Single Pass (Quick)"
+DOD_5220_22_M_METHOD = "DoD 5220.22-M (3 Pass)"
+RANDOM_PATTERN_METHOD = "Random Pattern (7 Pass)"
+GUTMANN_METHOD = "Gutmann Method (35 Pass)"
+CUSTOM_PATTERN_METHOD = "Custom Pattern"
+
 
 class DeletionMethod(Enum):
     """Secure deletion methods available."""
-    SINGLE_PASS = "Single Pass (Quick)"
-    DOD_5220_22_M = "DoD 5220.22-M (3 Pass)"
-    RANDOM_PATTERN = "Random Pattern (7 Pass)"
-    GUTMANN_METHOD = "Gutmann Method (35 Pass)"
-    CUSTOM_PATTERN = "Custom Pattern"
+    SINGLE_PASS = SINGLE_PASS_METHOD
+    DOD_5220_22_M = DOD_5220_22_M_METHOD
+    RANDOM_PATTERN = RANDOM_PATTERN_METHOD
+    GUTMANN_METHOD = GUTMANN_METHOD
+    CUSTOM_PATTERN = CUSTOM_PATTERN_METHOD
 
 
 class SecureDeleteResult:
@@ -120,89 +135,120 @@ class SecureDeleteEngine:
                            f"{method.value}")
             
             # Expand directories to individual files
-            all_files = []
-            for path in file_paths:
-                if os.path.isdir(path):
-                    all_files.extend(self._get_files_recursive(path))
-                elif os.path.isfile(path):
-                    all_files.append(path)
-                else:
-                    result.errors.append(f"Path not found: {path}")
-            
+            all_files = self._expand_file_paths(file_paths, result)
             if not all_files:
-                result.success = False
-                result.message = "No valid files found to delete"
-                return result
+                return self._handle_no_files_result(result)
             
-            total_files = len(all_files)
-            total_bytes = sum(os.path.getsize(f) for f in all_files
-                             if os.path.exists(f))
-            
-            self._update_progress(
-                0, f"Preparing to delete {total_files} files "
-                   f"({self._format_bytes(total_bytes)})")
-            
-            # Delete each file
-            processed_files = 0
-            processed_bytes = 0
-            
-            for file_path in all_files:
-                if self.cancel_requested:
-                    result.success = False
-                    result.message = "Operation cancelled by user"
-                    break
-                
-                try:
-                    file_size = (os.path.getsize(file_path)
-                               if os.path.exists(file_path) else 0)
-                    
-                    self._update_progress(
-                        int((processed_files / total_files) * 100),
-                        f"Deleting: {os.path.basename(file_path)}"
-                    )
-                    
-                    # Perform secure deletion on the file
-                    file_result = self._secure_delete_file(file_path,
-                                                         method, verify)
-                    
-                    if file_result.success:
-                        processed_files += 1
-                        processed_bytes += file_size
-                    else:
-                        result.errors.extend(file_result.errors)
-                        
-                except Exception as e:
-                    error_msg = f"Error deleting {file_path}: {str(e)}"
-                    result.errors.append(error_msg)
-                    self.logger.error(error_msg)
+            # Process files
+            processed_files, processed_bytes = self._process_file_deletion(
+                all_files, method, verify, result)
             
             # Clean up empty directories
-            for path in file_paths:
-                if os.path.isdir(path):
-                    self._remove_empty_directories(path)
+            self._cleanup_empty_directories(file_paths)
             
-            # Final results
-            result.files_processed = processed_files
-            result.bytes_processed = processed_bytes
-            result.duration = time.time() - start_time
-            
-            if processed_files == total_files:
-                result.success = True
-                result.message = (f"Successfully deleted {processed_files} "
-                                f"files ({self._format_bytes(processed_bytes)})")
-            else:
-                result.success = False
-                result.message = (f"Partially completed: {processed_files}/"
-                                f"{total_files} files deleted")
-            
-            self._update_progress(100, result.message)
+            # Finalize results
+            return self._finalize_deletion_result(
+                result, processed_files, processed_bytes, 
+                len(all_files), start_time)
             
         except Exception as e:
-            result.success = False
-            result.message = f"Critical error during deletion: {str(e)}"
-            result.errors.append(result.message)
-            self.logger.error(result.message)
+            return self._handle_deletion_error(result, e)
+    
+    def _expand_file_paths(self, file_paths: List[str], 
+                          result: SecureDeleteResult) -> List[str]:
+        """Expand directory paths to individual files."""
+        all_files = []
+        for path in file_paths:
+            if os.path.isdir(path):
+                all_files.extend(self._get_files_recursive(path))
+            elif os.path.isfile(path):
+                all_files.append(path)
+            else:
+                result.errors.append(f"Path not found: {path}")
+        return all_files
+    
+    def _handle_no_files_result(self, result: SecureDeleteResult) -> SecureDeleteResult:
+        """Handle case when no valid files are found."""
+        result.success = False
+        result.message = "No valid files found to delete"
+        return result
+    
+    def _process_file_deletion(self, all_files: List[str], method: DeletionMethod,
+                              verify: bool, result: SecureDeleteResult) -> tuple:
+        """Process deletion of all files and return counts."""
+        total_files = len(all_files)
+        total_bytes = sum(os.path.getsize(f) for f in all_files
+                         if os.path.exists(f))
         
+        self._update_progress(
+            0, f"Preparing to delete {total_files} files "
+               f"({self._format_bytes(total_bytes)})")
+        
+        processed_files = 0
+        processed_bytes = 0
+        
+        for file_path in all_files:
+            if self.cancel_requested:
+                result.success = False
+                result.message = "Operation cancelled by user"
+                break
+            
+            try:
+                file_size = (os.path.getsize(file_path)
+                           if os.path.exists(file_path) else 0)
+                
+                self._update_progress(
+                    int((processed_files / total_files) * 100),
+                    f"Deleting: {os.path.basename(file_path)}"
+                )
+                
+                file_result = self._secure_delete_file(file_path, method, verify)
+                
+                if file_result.success:
+                    processed_files += 1
+                    processed_bytes += file_size
+                else:
+                    result.errors.extend(file_result.errors)
+                    
+            except Exception as e:
+                error_msg = f"Error deleting {file_path}: {str(e)}"
+                result.errors.append(error_msg)
+                self.logger.error(error_msg)
+        
+        return processed_files, processed_bytes
+    
+    def _cleanup_empty_directories(self, file_paths: List[str]):
+        """Clean up empty directories after file deletion."""
+        for path in file_paths:
+            if os.path.isdir(path):
+                self._remove_empty_directories(path)
+    
+    def _finalize_deletion_result(self, result: SecureDeleteResult,
+                                 processed_files: int, processed_bytes: int,
+                                 total_files: int, start_time: float) -> SecureDeleteResult:
+        """Finalize deletion result with statistics."""
+        result.files_processed = processed_files
+        result.bytes_processed = processed_bytes
+        result.duration = time.time() - start_time
+        
+        if processed_files == total_files:
+            result.success = True
+            result.message = (f"Successfully deleted {processed_files} "
+                            f"files ({self._format_bytes(processed_bytes)})")
+        else:
+            result.success = False
+            result.message = (f"Partially completed: {processed_files}/"
+                            f"{total_files} files deleted")
+        
+        self._update_progress(100, result.message)
+        return result
+    
+    def _handle_deletion_error(self, result: SecureDeleteResult, error: Exception) -> SecureDeleteResult:
+        """Handle critical deletion errors."""
+        result.success = False
+        result.message = f"Critical error during deletion: {str(error)}"
+        result.errors.append(result.message)
+        self.logger.error(result.message)
         return result
     
     def _secure_delete_file(self, file_path: str, method: DeletionMethod,
@@ -211,66 +257,86 @@ class SecureDeleteEngine:
         result = SecureDeleteResult()
         
         try:
-            if not os.path.exists(file_path):
-                result.errors.append(f"File not found: {file_path}")
-                result.success = False
+            # Pre-deletion validation
+            if not self._validate_file_for_deletion(file_path, result):
                 return result
             
             file_size = os.path.getsize(file_path)
-            
-            # Check permissions
-            if not os.access(file_path, os.W_OK):
-                result.errors.append(f"No write permission: {file_path}")
-                result.success = False
-                return result
-            
-            # Perform overwrite passes based on method
-            if method == DeletionMethod.SINGLE_PASS:
-                passes = [None]  # Single random pass
-            elif method == DeletionMethod.DOD_5220_22_M:
-                passes = [0x00, 0xFF, None]  # DoD: zeros, ones, random
-            elif method == DeletionMethod.RANDOM_PATTERN:
-                passes = [None] * 7  # 7 random passes
-            elif method == DeletionMethod.GUTMANN_METHOD:
-                passes = self.GUTMANN_PATTERNS
-            else:  # Custom pattern
-                passes = [None] * 3  # Default to 3 random passes
+            passes = self._get_deletion_passes(method)
             
             # Execute overwrite passes
-            for pass_num, pattern in enumerate(passes, 1):
-                if self.cancel_requested:
-                    result.success = False
-                    result.message = "Operation cancelled"
-                    return result
-                
-                success = self._overwrite_file(file_path, pattern,
-                                             pass_num, len(passes))
-                if not success:
-                    result.errors.append(
-                        f"Failed overwrite pass {pass_num} for {file_path}")
+            if not self._execute_overwrite_passes(file_path, passes):
+                result.errors.append(f"Overwrite passes failed for {file_path}")
             
             # Verify overwrite if requested
-            if verify:
-                if not self._verify_overwrite(file_path):
-                    result.verification_passed = False
-                    result.errors.append(f"Verification failed for {file_path}")
+            if verify and not self._verify_overwrite(file_path):
+                result.verification_passed = False
+                result.errors.append(f"Verification failed for {file_path}")
             
             # Final deletion
-            try:
-                os.remove(file_path)
-                result.success = True
-                result.files_processed = 1
-                result.bytes_processed = file_size
-                self.logger.info(f"Successfully deleted: {file_path}")
-            except OSError as e:
-                result.errors.append(
-                    f"Failed to remove file {file_path}: {str(e)}")
-                result.success = False
+            return self._perform_final_deletion(file_path, file_size, result)
         
         except Exception as e:
             result.success = False
             result.errors.append(f"Error processing {file_path}: {str(e)}")
             self.logger.error(f"Error processing {file_path}: {str(e)}")
+        
+        return result
+    
+    def _validate_file_for_deletion(self, file_path: str, 
+                                   result: SecureDeleteResult) -> bool:
+        """Validate file exists and has write permissions."""
+        if not os.path.exists(file_path):
+            result.errors.append(f"File not found: {file_path}")
+            result.success = False
+            return False
+        
+        if not os.access(file_path, os.W_OK):
+            result.errors.append(f"No write permission: {file_path}")
+            result.success = False
+            return False
+        
+        return True
+    
+    def _get_deletion_passes(self, method: DeletionMethod) -> List:
+        """Get the appropriate deletion passes for the method."""
+        if method == DeletionMethod.SINGLE_PASS:
+            return [None]  # Single random pass
+        elif method == DeletionMethod.DOD_5220_22_M:
+            return [0x00, 0xFF, None]  # DoD: zeros, ones, random
+        elif method == DeletionMethod.RANDOM_PATTERN:
+            return [None] * 7  # 7 random passes
+        elif method == DeletionMethod.GUTMANN_METHOD:
+            return self.GUTMANN_PATTERNS
+        else:  # Custom pattern
+            return [None] * 3  # Default to 3 random passes
+    
+    def _execute_overwrite_passes(self, file_path: str, passes: List) -> bool:
+        """Execute all overwrite passes for a file."""
+        for pass_num, pattern in enumerate(passes, 1):
+            if self.cancel_requested:
+                return False
+            
+            success = self._overwrite_file(file_path, pattern,
+                                         pass_num, len(passes))
+            if not success:
+                return False
+        
+        return True
+    
+    def _perform_final_deletion(self, file_path: str, file_size: int,
+                               result: SecureDeleteResult) -> SecureDeleteResult:
+        """Perform the final file deletion after overwriting."""
+        try:
+            os.remove(file_path)
+            result.success = True
+            result.files_processed = 1
+            result.bytes_processed = file_size
+            self.logger.info(f"Successfully deleted: {file_path}")
+        except OSError as e:
+            result.errors.append(
+                f"Failed to remove file {file_path}: {str(e)}")
+            result.success = False
         
         return result
     
@@ -574,11 +640,11 @@ class SecureDeleteGUI(StandardWindow):
         method_layout.addWidget(QLabel("Method:"))
         self.method_combo = QComboBox()
         self.method_combo.addItems([
-            "Single Pass (Quick)",
-            "DoD 5220.22-M (3 Pass)",
-            "Random Pattern (7 Pass)",
-            "Gutmann Method (35 Pass)",
-            "Custom Pattern"
+            SINGLE_PASS_METHOD,
+            DOD_5220_22_M_METHOD,
+            RANDOM_PATTERN_METHOD,
+            GUTMANN_METHOD,
+            CUSTOM_PATTERN_METHOD
         ])
         self.method_combo.setCurrentIndex(1)  # Default to DoD standard
         method_layout.addWidget(self.method_combo)
@@ -653,7 +719,7 @@ class SecureDeleteGUI(StandardWindow):
             self.files_list.clear()
             self.files_list.addItem(f"📁 {os.path.basename(folder)}")
             self.selected_files = [folder]
-            self.status_label.setText(f"Selected folder for secure deletion")
+            self.status_label.setText("Selected folder for secure deletion")
             
     def secure_delete(self):
         """Perform secure deletion."""
@@ -667,11 +733,11 @@ class SecureDeleteGUI(StandardWindow):
         
         # Map GUI method text to enum
         method_map = {
-            "Single Pass (Quick)": DeletionMethod.SINGLE_PASS,
-            "DoD 5220.22-M (3 Pass)": DeletionMethod.DOD_5220_22_M,
-            "Random Pattern (7 Pass)": DeletionMethod.RANDOM_PATTERN,
-            "Gutmann Method (35 Pass)": DeletionMethod.GUTMANN_METHOD,
-            "Custom Pattern": DeletionMethod.CUSTOM_PATTERN
+            SINGLE_PASS_METHOD: DeletionMethod.SINGLE_PASS,
+            DOD_5220_22_M_METHOD: DeletionMethod.DOD_5220_22_M,
+            RANDOM_PATTERN_METHOD: DeletionMethod.RANDOM_PATTERN,
+            GUTMANN_METHOD: DeletionMethod.GUTMANN_METHOD,
+            CUSTOM_PATTERN_METHOD: DeletionMethod.CUSTOM_PATTERN
         }
         
         method = method_map.get(method_text, DeletionMethod.DOD_5220_22_M)

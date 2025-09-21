@@ -8,17 +8,17 @@ existing tools interface.
 
 import os
 import sys
-from typing import Optional, Dict, Any, List
+from typing import Any, Dict, List, Optional
 
 try:
-    from PyQt5.QtWidgets import (
-        QWidget, QVBoxLayout, QGridLayout, QHBoxLayout,
-        QPushButton, QLineEdit, QLabel, QGroupBox,
-        QFileDialog, QMessageBox, QProgressBar,
-        QTextEdit, QSplitter, QTreeWidget, QTreeWidgetItem,
-        QTabWidget, QApplication
-    )
     from PyQt5.QtCore import Qt, QThread, pyqtSignal
+    from PyQt5.QtGui import QFont
+    from PyQt5.QtWidgets import (QApplication, QFileDialog, QGridLayout,
+                                 QGroupBox, QHBoxLayout, QLabel, QLineEdit,
+                                 QMainWindow, QMessageBox, QProgressBar,
+                                 QPushButton, QSplitter, QTabWidget, QTextEdit,
+                                 QTreeWidget, QTreeWidgetItem, QVBoxLayout,
+                                 QWidget)
 except ImportError:
     print("PyQt5 not available. Please install PyQt5.")
     sys.exit(1)
@@ -33,10 +33,11 @@ if project_root not in sys.path:
 # Import GUI framework
 try:
     from src.gui.standard_window import StandardWindow
+    HAS_STANDARD_WINDOW = True
 except ImportError:
     # Fallback for standalone execution
-    from PyQt5.QtWidgets import QMainWindow
     StandardWindow = QMainWindow
+    HAS_STANDARD_WINDOW = False
 
 # Import enhanced image metadata logic
 from ..image_metadata_logic import ImageMetadataLogic, format_exif_value
@@ -109,16 +110,25 @@ class ImageMetadataEditorGUI(StandardWindow):
     functionality."""
     
     def __init__(self):
-        super().__init__(
-            title="Image Metadata Editor - Richard's File Utilities",
-            window_type="utility"
-        )
+        # Initialize with proper window title based on available base class
+        if HAS_STANDARD_WINDOW:
+            super().__init__(
+                title="Image Metadata Editor - Richard's File Utilities"
+            )
+        else:
+            super().__init__()
+            self.setWindowTitle(
+                "Image Metadata Editor - Richard's File Utilities"
+            )
+        
+        # Initialize instance variables
         self.worker: Optional[ImageMetadataWorkerThread] = None
         self.selected_files: List[str] = []
         self.current_metadata: Dict[str, Any] = {}
         self.current_file_metadata: Dict[str, Any] = {}
         self.metadata_logic = ImageMetadataLogic()
         
+        # Setup UI after parent initialization is complete
         self.init_ui()
         self._setup_menu_callbacks()
         self._connect_signals()
@@ -148,8 +158,16 @@ class ImageMetadataEditorGUI(StandardWindow):
     
     def init_ui(self):
         """Initialize the user interface."""
-        # Use the existing main layout from StandardWindow
-        layout = self.main_layout
+        # Create main layout based on available base class
+        if HAS_STANDARD_WINDOW:
+            # Use the existing main layout from StandardWindow
+            layout = self.main_layout
+        else:
+            # Create our own layout for QMainWindow fallback
+            central_widget = QWidget()
+            self.setCentralWidget(central_widget)
+            layout = QVBoxLayout(central_widget)
+            central_widget.setLayout(layout)
         
         # Create header
         header_label = self.create_header("Image Metadata Editor")
@@ -434,22 +452,33 @@ class ImageMetadataEditorGUI(StandardWindow):
     def create_header(self, text: str) -> QLabel:
         """Create a standard header label."""
         header = QLabel(text)
-        header.setStyleSheet("""
-            QLabel {
-                font-size: 18px;
-                font-weight: bold;
-                color: #2c3e50;
-                padding: 10px;
-                background-color: #ecf0f1;
-                border-radius: 5px;
-                margin-bottom: 10px;
-            }
-        """)
+        if HAS_STANDARD_WINDOW:
+            # Use StandardWindow styling if available
+            header.setStyleSheet("""
+                QLabel {
+                    font-size: 18px;
+                    font-weight: bold;
+                    color: #2c3e50;
+                    padding: 10px;
+                    background-color: #ecf0f1;
+                    border-radius: 5px;
+                    margin-bottom: 10px;
+                }
+            """)
+        else:
+            # Basic styling for fallback
+            header.setStyleSheet("""
+                QLabel {
+                    font-size: 18px;
+                    font-weight: bold;
+                    padding: 10px;
+                    margin-bottom: 10px;
+                }
+            """)
         return header
     
     def _get_monospace_font(self):
         """Get a monospace font for raw data display."""
-        from PyQt5.QtGui import QFont
         font = QFont("Courier New", 9)
         font.setFixedPitch(True)
         return font
@@ -462,7 +491,8 @@ class ImageMetadataEditorGUI(StandardWindow):
             self,
             "Select Image Files",
             "",
-            "Image Files (*.jpg *.jpeg *.png *.tiff *.tif *.bmp);;All Files (*)"
+            "Image Files (*.jpg *.jpeg *.png *.tiff *.tif *.bmp);;"
+            "All Files (*)"
         )
         
         if file_paths:

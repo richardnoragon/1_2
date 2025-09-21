@@ -6,10 +6,10 @@ multiple configuration sections, default values, and automatic persistence.
 """
 
 import json
-from pathlib import Path
-from typing import Any, Dict, Optional, Union
-from threading import Lock
 import logging
+from pathlib import Path
+from threading import Lock
+from typing import Any, Dict, Optional, Union
 
 
 class ConfigManager:
@@ -282,6 +282,87 @@ class ConfigManager:
             
         except Exception as e:
             self.logger.error(f"Failed to save configuration: {e}")
+            return False
+    
+    def get_profiles(self, module_name: str) -> list:
+        """Get list of saved profiles for a module.
+        
+        Args:
+            module_name: Name of the module to get profiles for
+            
+        Returns:
+            List of profile names for the module
+        """
+        profiles_section = f'{module_name}_profiles'
+        if profiles_section not in self.config:
+            self.config[profiles_section] = {}
+            self.save_config()
+        
+        return list(self.config[profiles_section].keys())
+    
+    def save_profile(self, profile_name: str, module_name: str, profile_data: Dict[str, Any]) -> bool:
+        """Save a profile for a module.
+        
+        Args:
+            profile_name: Name of the profile
+            module_name: Name of the module
+            profile_data: Profile configuration data
+            
+        Returns:
+            True if saved successfully, False otherwise
+        """
+        try:
+            profiles_section = f'{module_name}_profiles'
+            if profiles_section not in self.config:
+                self.config[profiles_section] = {}
+            
+            self.config[profiles_section][profile_name] = profile_data
+            self.save_config()
+            self.logger.info(f"Profile '{profile_name}' saved for module '{module_name}'")
+            return True
+        except Exception as e:
+            self.logger.error(f"Failed to save profile '{profile_name}' for module '{module_name}': {e}")
+            return False
+    
+    def load_profile(self, profile_name: str, module_name: str) -> Optional[Dict[str, Any]]:
+        """Load a profile for a module.
+        
+        Args:
+            profile_name: Name of the profile
+            module_name: Name of the module
+            
+        Returns:
+            Profile data if found, None otherwise
+        """
+        try:
+            profiles_section = f'{module_name}_profiles'
+            if profiles_section in self.config and profile_name in self.config[profiles_section]:
+                return self.config[profiles_section][profile_name]
+            return None
+        except Exception as e:
+            self.logger.error(f"Failed to load profile '{profile_name}' for module '{module_name}': {e}")
+            return None
+    
+    def delete_profile(self, profile_name: str, module_name: str) -> bool:
+        """Delete a profile for a module.
+        
+        Args:
+            profile_name: Name of the profile
+            module_name: Name of the module
+            
+        Returns:
+            True if deleted successfully, False otherwise
+        """
+        try:
+            profiles_section = f'{module_name}_profiles'
+            if profiles_section in self.config and profile_name in self.config[profiles_section]:
+                del self.config[profiles_section][profile_name]
+                self.save_config()
+                self.logger.info(f"Profile '{profile_name}' deleted for module '{module_name}'")
+                return True
+            return False
+        except Exception as e:
+            self.logger.error(f"Failed to delete profile '{profile_name}' for module '{module_name}': {e}")
             return False
     
     def load_config(self) -> bool:

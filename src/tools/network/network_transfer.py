@@ -17,28 +17,28 @@ Security Features:
 - TOCTOU (Time-of-Check Time-of-Use) vulnerability prevention
 """
 
-import sys
-import os
-import json
-import socket
-import threading
-import logging
+import base64
 import hashlib
+import hmac
+import json
+import logging
+import os
+import secrets
+import socket
+import ssl
+import sys
+import tempfile
+import threading
 import time
 import zipfile
-import tempfile
-import ssl
-import secrets
-import hmac
-import base64
-from pathlib import Path
 from datetime import datetime
-from typing import Dict, List, Optional, Any, Tuple
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Tuple
 
 # Import cryptography for secure AES-GCM encryption
 try:
-    from cryptography.hazmat.primitives.ciphers.aead import AESGCM
     from cryptography.hazmat.primitives import hashes
+    from cryptography.hazmat.primitives.ciphers.aead import AESGCM
     from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
     CRYPTO_AVAILABLE = True
 except ImportError:
@@ -46,18 +46,17 @@ except ImportError:
     CRYPTO_AVAILABLE = False
 
 try:
-    from PyQt5.QtWidgets import (
-        QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
-        QPushButton, QLabel, QProgressBar, QApplication, 
-        QMessageBox, QGroupBox, QLineEdit, QSpinBox, 
-        QTextEdit, QCheckBox, QComboBox, QListWidget,
-        QListWidgetItem, QFileDialog, QTabWidget,
-        QTableWidget, QTableWidgetItem, QSplitter,
-        QFrame, QGridLayout, QFormLayout, QSlider,
-        QTreeWidget, QTreeWidgetItem, QHeaderView
-    )
-    from PyQt5.QtCore import QThread, pyqtSignal, QTimer, Qt
+    from PyQt5.QtCore import Qt, QThread, QTimer, pyqtSignal
     from PyQt5.QtGui import QFont, QIcon
+    from PyQt5.QtWidgets import (QApplication, QCheckBox, QComboBox,
+                                 QFileDialog, QFormLayout, QFrame, QGridLayout,
+                                 QGroupBox, QHBoxLayout, QHeaderView, QLabel,
+                                 QLineEdit, QListWidget, QListWidgetItem,
+                                 QMainWindow, QMessageBox, QProgressBar,
+                                 QPushButton, QSlider, QSpinBox, QSplitter,
+                                 QTableWidget, QTableWidgetItem, QTabWidget,
+                                 QTextEdit, QTreeWidget, QTreeWidgetItem,
+                                 QVBoxLayout, QWidget)
 except ImportError:
     print("PyQt5 not available. Please install PyQt5.")
     sys.exit(1)
@@ -727,14 +726,19 @@ class TransferClient(QThread):
         self.progress_updated.emit(100)
 
 
-class NetworkTransferGUI(StandardWindow):
+class NetworkTransferGUI(QMainWindow):
     """Main window for Network Transfer operations."""
     
     def __init__(self):
-        super().__init__(
-            title="Network Transfer - Richard's File Utilities",
-            window_type="utility"
-        )
+        super().__init__()
+        self.setWindowTitle("Network Transfer - Richard's File Utilities")
+        self.setGeometry(200, 200, 900, 700)
+        
+        # Create central widget and main layout
+        central_widget = QWidget()
+        self.setCentralWidget(central_widget)
+        self.main_layout = QVBoxLayout(central_widget)
+        
         self.logger = logging.getLogger('RFU.NetworkTransfer')
         self.db_manager = None
         self.transfer_server = None
@@ -1261,7 +1265,7 @@ class NetworkTransferGUI(StandardWindow):
                 return False
         return True
     
-    def _normalize_path(self, file_path: str) -> Path:
+    def _normalize_path(self, file_path: str) -> Optional[Path]:
         """Normalize and resolve the path safely."""
         try:
             normalized_path = Path(file_path).resolve()
