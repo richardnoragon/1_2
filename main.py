@@ -173,9 +173,23 @@ class InterfaceSelectionDialog:
             # Apply comprehensive styling first
             self._apply_dialog_styling()
             
-            layout = QVBoxLayout(self.dialog)
-            layout.setSpacing(20)
-            layout.setContentsMargins(30, 30, 30, 30)
+            # Create main layout for dialog
+            main_layout = QVBoxLayout(self.dialog)
+            main_layout.setContentsMargins(10, 10, 10, 10)
+            
+            # Create scroll area for content
+            from PyQt5.QtCore import Qt
+            from PyQt5.QtWidgets import QScrollArea
+            scroll_area = QScrollArea()
+            scroll_area.setWidgetResizable(True)
+            scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+            scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+            
+            # Create content widget
+            content_widget = QWidget()
+            layout = QVBoxLayout(content_widget)
+            layout.setSpacing(10)
+            layout.setContentsMargins(15, 15, 15, 15)
             
             # Enhanced title section with branding
             title_frame = self._create_title_section()
@@ -197,21 +211,25 @@ class InterfaceSelectionDialog:
             button_frame = self._create_button_section()
             layout.addWidget(button_frame)
             
+            # Set content widget to scroll area and add to main layout
+            scroll_area.setWidget(content_widget)
+            main_layout.addWidget(scroll_area)
+            
             # Get screen geometry for proper sizing
             from PyQt5.QtWidgets import QApplication, QDesktopWidget
             desktop = QApplication.desktop()
             screen_geometry = desktop.screenGeometry()
             
-            # Calculate appropriate dialog size (40% of screen width, max 800px)
-            dialog_width = min(800, int(screen_geometry.width() * 0.4))
-            dialog_height = min(700, int(screen_geometry.height() * 0.6))
+            # Calculate appropriate dialog size (35% of screen width, max 600px)
+            dialog_width = min(600, int(screen_geometry.width() * 0.35))
+            dialog_height = min(500, int(screen_geometry.height() * 0.5))
             
-            # Ensure minimum readable size
-            dialog_width = max(dialog_width, 750)
-            dialog_height = max(dialog_height, 650)
+            # Ensure minimum readable size but keep it smaller
+            dialog_width = max(dialog_width, 480)
+            dialog_height = max(dialog_height, 420)
             
-            # Set dialog size with proper constraints
-            self.dialog.setFixedSize(dialog_width, dialog_height)
+            # Set dialog size but allow proper resizing
+            self.dialog.resize(dialog_width, dialog_height)
             self.dialog.adjustSize()
             
             # Center dialog on screen
@@ -378,7 +396,7 @@ class InterfaceSelectionDialog:
             
             reason_text = QTextEdit()
             reason_text.setPlainText(recommendation['reason'])
-            reason_text.setMaximumHeight(90)
+            reason_text.setMaximumHeight(60)
             reason_text.setReadOnly(True)
             workflow_layout.addWidget(reason_text)
             
@@ -406,7 +424,7 @@ class InterfaceSelectionDialog:
         dialog_frame = self._create_interface_option(
             "dialog_hub",
             "📋 Dialog-Based Hub Interface",
-            "• Comprehensive tabbed interface\n• All tools organized by category\n• Professional workflow design\n• Perfect for organized task management\n• Familiar traditional interface",
+            "• Comprehensive tabbed interface\n• All tools organized by category\n• Perfect for organized task management",
             "#3498db"
         )
         selection_layout.addWidget(dialog_frame)
@@ -415,7 +433,7 @@ class InterfaceSelectionDialog:
         pane_frame = self._create_interface_option(
             "multi_pane",
             "🔀 Multi-Pane Explorer Layout",
-            "• Simultaneous multiple views\n• Resizable, dockable panels\n• File trees and property panels\n• Perfect for complex operations\n• Modern multi-window experience",
+            "• Simultaneous multiple views\n• Resizable, dockable panels\n• Perfect for complex operations",
             "#e74c3c"
         )
         selection_layout.addWidget(pane_frame)
@@ -432,8 +450,8 @@ class InterfaceSelectionDialog:
             QFrame {{
                 border: 2px solid #bdc3c7;
                 border-radius: 8px;
-                padding: 15px;
-                margin: 5px;
+                padding: 10px;
+                margin: 3px;
                 background-color: #ffffff;
             }}
             QFrame:hover {{
@@ -450,19 +468,19 @@ class InterfaceSelectionDialog:
         radio.setStyleSheet(f"""
             QRadioButton {{
                 color: {color}; 
-                font-size: 14px;
+                font-size: 13px;
                 font-weight: bold;
-                spacing: 10px;
-                padding: 8px;
-                margin: 3px;
+                spacing: 8px;
+                padding: 5px;
+                margin: 2px;
             }}
             QRadioButton::indicator {{
-                width: 18px;
-                height: 18px;
-                border-radius: 9px;
+                width: 16px;
+                height: 16px;
+                border-radius: 8px;
                 border: 2px solid #bdc3c7;
                 background-color: white;
-                margin-right: 8px;
+                margin-right: 6px;
             }}
             QRadioButton::indicator:checked {{
                 border: 2px solid {color};
@@ -488,12 +506,12 @@ class InterfaceSelectionDialog:
         # Description with better spacing
         desc_label = QLabel(description)
         desc_label.setStyleSheet("""
-            margin-left: 25px; 
+            margin-left: 20px; 
             color: #555; 
-            font-size: 11px; 
-            line-height: 1.4;
-            padding-top: 5px;
-            padding-bottom: 10px;
+            font-size: 10px; 
+            line-height: 1.3;
+            padding-top: 3px;
+            padding-bottom: 5px;
         """)
         desc_label.setWordWrap(True)
         layout.addWidget(desc_label)
@@ -536,7 +554,7 @@ class InterfaceSelectionDialog:
         cancel_button = QPushButton("Cancel")
         cancel_button.setObjectName("secondary")
         cancel_button.setText("Cancel")  # Ensure text is explicitly set
-        cancel_button.setMinimumSize(100, 35)
+        cancel_button.setMinimumSize(80, 30)
         cancel_button.clicked.connect(self._handle_cancel)
         layout.addWidget(cancel_button)
         
@@ -544,7 +562,7 @@ class InterfaceSelectionDialog:
         continue_button = QPushButton("Continue")
         continue_button.setObjectName("primary")
         continue_button.setText("Continue")  # Ensure text is explicitly set
-        continue_button.setMinimumSize(100, 35)
+        continue_button.setMinimumSize(80, 30)
         continue_button.setDefault(True)
         continue_button.clicked.connect(self._handle_continue)
         layout.addWidget(continue_button)
@@ -789,6 +807,11 @@ try:
             # Set basic window properties with proper sizing
             self.setWindowTitle(APP_NAME)
             
+            # Ensure maximize button and proper window behavior
+            self.setWindowFlags(Qt.Window | Qt.WindowCloseButtonHint |
+                               Qt.WindowMinimizeButtonHint |
+                               Qt.WindowMaximizeButtonHint)
+            
             # Configure window size and positioning
             self._configure_window_geometry()
             
@@ -821,19 +844,17 @@ try:
             window_width = max(window_width, 1000)
             window_height = max(window_height, 750)
             
-            # Set maximum size to prevent window from becoming too large
-            self.setMaximumSize(
-                min(1400, int(screen_geometry.width() * 0.9)),
-                min(1000, int(screen_geometry.height() * 0.9))
-            )
+            # Allow window to be freely resized and maximized
+            # Removed setMaximumSize to enable fullscreen/maximize button
             
             # Set minimum size for usability
             self.setMinimumSize(900, 650)
             
-            # Set initial geometry with calculated size
+            # Set initial geometry with calculated size but allow resizing
             start_x = max(50, (screen_geometry.width() - window_width) // 2)
             start_y = max(50, (screen_geometry.height() - window_height) // 2)
-            self.setGeometry(start_x, start_y, window_width, window_height)
+            self.resize(window_width, window_height)
+            self.move(start_x, start_y)
         
         def _initialize_core_systems(self):
             """Initialize core application systems and state management."""

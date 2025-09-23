@@ -49,9 +49,8 @@ except ImportError:
     # Fallback for direct execution
     try:
         from config_manager import get_config_manager
-        from log_manager import get_log_manager
-
         from core.error_handler import error_handler
+        from log_manager import get_log_manager
     except ImportError:
         # Create minimal fallbacks
         def get_log_manager():
@@ -114,7 +113,10 @@ class UtilityWindow(QMainWindow if PYQT5_AVAILABLE else object):
         super().__init__(parent_hub)
         self.parent_hub = parent_hub
         self.setWindowTitle(f"Richard's File Utilities - {title}")
-        self.setGeometry(150, 150, 900, 700)
+        self.resize(900, 700)
+        self.move(150, 150)
+        # Ensure maximize button is enabled
+        self.setWindowFlags(self.windowFlags() | Qt.WindowMaximizeButtonHint)
         
         # Use the same menu bar as the parent hub
         if hasattr(parent_hub, 'menuBar') and parent_hub.menuBar():
@@ -223,10 +225,13 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
         self._setup_menu_callbacks()
         self.logger.info("Menu system initialized")
         
-        # Set up the window
+        # Set up the window with proper maximize support
         self.setWindowTitle("Richard's File Utilities - Main Hub")
-        self.setGeometry(100, 100, 800, 600)
+        self.resize(800, 600)
+        self.move(100, 100)
         self.setWindowIcon(self._get_application_icon())
+        # Ensure window can be maximized properly
+        self.setWindowFlags(self.windowFlags() | Qt.WindowMaximizeButtonHint)
         
         # Create central widget
         central_widget = QWidget()

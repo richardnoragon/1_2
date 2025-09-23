@@ -15,13 +15,13 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from PyQt5.QtCore import QSettings, Qt, QTimer, pyqtSignal
-from PyQt5.QtGui import QIcon, QKeySequence
+from PyQt5.QtGui import QBrush, QColor, QIcon, QKeySequence
 from PyQt5.QtWidgets import (QAction, QActionGroup, QApplication, QComboBox,
-                             QDialog, QDockWidget, QFrame, QHBoxLayout, QLabel,
-                             QMainWindow, QMenu, QMenuBar, QMessageBox,
-                             QPushButton, QShortcut, QSplitter, QStatusBar,
-                             QTabWidget, QToolBar, QTreeWidget,
-                             QTreeWidgetItem, QVBoxLayout, QWidget)
+                             QDialog, QFrame, QHBoxLayout, QLabel, QMainWindow,
+                             QMenu, QMenuBar, QMessageBox, QPushButton,
+                             QShortcut, QSplitter, QStatusBar, QTabWidget,
+                             QToolBar, QTreeWidget, QTreeWidgetItem,
+                             QVBoxLayout, QWidget)
 
 # Import theme manager for dynamic theming
 try:
@@ -184,6 +184,8 @@ class MultiPaneFileExplorer(QMainWindow):
     - Integrated access to all RFU tools
     - Customizable layouts and color schemes
     - Bookmark and favorites management
+    - Visual folder icons and file type color coding
+    - One-click directory expansion
     """
     
     # Signals
@@ -191,6 +193,118 @@ class MultiPaneFileExplorer(QMainWindow):
     active_pane_changed = pyqtSignal(int)
     file_operation_started = pyqtSignal(str, list)
     file_operation_completed = pyqtSignal(str, bool, str)
+    
+    # File type color mappings for visual organization
+    FILE_TYPE_COLORS = {
+        # Documents
+        '.txt': QColor(100, 149, 237),  # Cornflower blue
+        '.doc': QColor(100, 149, 237),
+        '.docx': QColor(100, 149, 237),
+        '.pdf': QColor(220, 20, 60),    # Crimson
+        '.rtf': QColor(100, 149, 237),
+        '.odt': QColor(100, 149, 237),
+        
+        # Images
+        '.jpg': QColor(255, 140, 0),    # Dark orange
+        '.jpeg': QColor(255, 140, 0),
+        '.png': QColor(255, 140, 0),
+        '.gif': QColor(255, 140, 0),
+        '.bmp': QColor(255, 140, 0),
+        '.svg': QColor(255, 140, 0),
+        '.ico': QColor(255, 140, 0),
+        
+        # Audio
+        '.mp3': QColor(75, 0, 130),     # Indigo
+        '.wav': QColor(75, 0, 130),
+        '.flac': QColor(75, 0, 130),
+        '.ogg': QColor(75, 0, 130),
+        '.m4a': QColor(75, 0, 130),
+        
+        # Video
+        '.mp4': QColor(139, 0, 139),    # Dark magenta
+        '.avi': QColor(139, 0, 139),
+        '.mkv': QColor(139, 0, 139),
+        '.mov': QColor(139, 0, 139),
+        '.wmv': QColor(139, 0, 139),
+        
+        # Code files
+        '.py': QColor(0, 128, 0),       # Green
+        '.js': QColor(255, 215, 0),     # Gold
+        '.html': QColor(255, 69, 0),    # Red orange
+        '.css': QColor(30, 144, 255),   # Dodger blue
+        '.java': QColor(255, 140, 0),   # Dark orange
+        '.cpp': QColor(0, 100, 0),      # Dark green
+        '.c': QColor(0, 100, 0),
+        '.h': QColor(0, 100, 0),
+        '.cs': QColor(128, 0, 128),     # Purple
+        '.php': QColor(139, 69, 19),    # Saddle brown
+        '.sql': QColor(70, 130, 180),   # Steel blue
+        
+        # Archives
+        '.zip': QColor(184, 134, 11),   # Dark goldenrod
+        '.rar': QColor(184, 134, 11),
+        '.7z': QColor(184, 134, 11),
+        '.tar': QColor(184, 134, 11),
+        '.gz': QColor(184, 134, 11),
+        
+        # Executables
+        '.exe': QColor(178, 34, 34),    # Fire brick
+        '.msi': QColor(178, 34, 34),
+        '.deb': QColor(178, 34, 34),
+        '.rpm': QColor(178, 34, 34),
+    }
+    
+    # Unicode icons for different file types and folders
+    FOLDER_ICON = "📁"  # Folder icon
+    FILE_ICONS = {
+        # Default file icon
+        'default': "📄",
+        
+        # Documents
+        '.txt': "📝",
+        '.doc': "📝",
+        '.docx': "📝",
+        '.pdf': "📕",
+        '.rtf': "📝",
+        
+        # Images
+        '.jpg': "🖼️",
+        '.jpeg': "🖼️",
+        '.png': "🖼️",
+        '.gif': "🖼️",
+        '.bmp': "🖼️",
+        '.svg': "🖼️",
+        
+        # Audio
+        '.mp3': "🎵",
+        '.wav': "🎵",
+        '.flac': "🎵",
+        '.ogg': "🎵",
+        
+        # Video
+        '.mp4': "🎬",
+        '.avi': "🎬",
+        '.mkv': "🎬",
+        '.mov': "🎬",
+        
+        # Code
+        '.py': "🐍",
+        '.js': "⚡",
+        '.html': "🌐",
+        '.css': "🎨",
+        '.java': "☕",
+        '.cpp': "⚙️",
+        '.c': "⚙️",
+        
+        # Archives
+        '.zip': "🗜️",
+        '.rar': "🗜️",
+        '.7z': "🗜️",
+        
+        # Executables
+        '.exe': "⚙️",
+        '.msi': "📦",
+    }
     
     def __init__(self):
         super().__init__()
@@ -230,7 +344,7 @@ class MultiPaneFileExplorer(QMainWindow):
         self.property_panel = None
         self.preview_widget = None
         self.search_widget = None
-        self.tool_dock = None
+        # self.tool_dock = None  # Removed: no longer using dock widgets
         self.bookmark_dock = None
         
         # Advanced feature managers
@@ -254,7 +368,7 @@ class MultiPaneFileExplorer(QMainWindow):
         self.setup_ui()
         self.setup_menus()
         self.setup_toolbars()
-        self.setup_docks()
+        # self.setup_docks()  # Removed: redundant tools dock
         self.setup_simple_status_bar()
         self.setup_shortcuts()
         
@@ -416,11 +530,7 @@ class MultiPaneFileExplorer(QMainWindow):
             if hasattr(self, 'tools_widget'):
                 ThemeManager.apply_theme_to_widget(self.tools_widget, "tree")
             
-            # Apply to dock widgets
-            if hasattr(self, 'tool_dock') and self.tool_dock:
-                widget = self.tool_dock.widget()
-                if widget:
-                    ThemeManager.apply_theme_to_widget(widget, "tree")
+            # Apply to dock widgets - removed tool_dock reference
             
         except Exception as e:
             self.logger.warning(f"Error applying theme to components: {e}")
@@ -489,6 +599,9 @@ class MultiPaneFileExplorer(QMainWindow):
     
     def _update_layout_combo_options(self, layout_combo):
         """Update layout combo options based on current pane count."""
+        if not layout_combo:
+            return
+            
         current_text = layout_combo.currentText()
         layout_combo.clear()
         
@@ -499,23 +612,54 @@ class MultiPaneFileExplorer(QMainWindow):
             layout_combo.addItem("Single View")
             layout_combo.setEnabled(False)
             layout_combo.setToolTip("Layout options disabled for single pane")
+            self.logger.debug("Layout combo set to single view mode")
         else:
             layout_combo.setEnabled(True)
             layout_combo.setToolTip("Select layout arrangement")
             
+            # Add available layouts with proper display names
             for layout in available:
-                display_name = layout.title()
+                if layout == 'horizontal':
+                    display_name = "Horizontal"
+                elif layout == 'vertical':
+                    display_name = "Vertical" 
+                elif layout == 'grid':
+                    display_name = "Grid"
+                else:
+                    display_name = layout.title()
                 layout_combo.addItem(display_name)
+                
+            self.logger.debug(f"Layout combo updated with options: {available}")
             
             # Restore previous selection if valid, otherwise use first option
-            if current_text in [item.title() for item in available]:
-                index = layout_combo.findText(current_text)
+            if current_text:
+                # Convert display name back to internal format
+                internal_name = current_text.lower()
+                if internal_name in available:
+                    index = layout_combo.findText(current_text)
+                    if index >= 0:
+                        layout_combo.setCurrentIndex(index)
+                        self.logger.debug(f"Restored layout selection: {current_text}")
+                        return
+                        
+            # No valid previous selection, use current layout_mode if available
+            if self.layout_mode in available:
+                display_name = self.layout_mode.title()
+                index = layout_combo.findText(display_name)
                 if index >= 0:
                     layout_combo.setCurrentIndex(index)
-            elif available:
-                # Fallback to first available option
-                self.layout_mode = available[0]
-                layout_combo.setCurrentText(self.layout_mode.title())
+                    self.logger.debug(f"Set layout combo to current mode: {display_name}")
+                else:
+                    # Fallback to first available option
+                    self.layout_mode = available[0]
+                    layout_combo.setCurrentIndex(0)
+                    self.logger.debug(f"Fallback to first layout: {available[0]}")
+            else:
+                # Current layout_mode not available, use first option
+                if available:
+                    self.layout_mode = available[0]
+                    layout_combo.setCurrentIndex(0)
+                    self.logger.debug(f"Reset layout mode to: {available[0]}")
     
     def _validate_and_update_layout(self):
         """Validate current layout mode and update if necessary."""
@@ -1015,22 +1159,24 @@ class MultiPaneFileExplorer(QMainWindow):
         refresh_action.triggered.connect(self.refresh_current_pane)
         main_toolbar.addAction(refresh_action)
     
-    def setup_docks(self):
-        """Setup dock widgets for additional functionality."""
-        try:
-            # Tool dock only - bookmarks are already in left panel
-            self.tool_dock = QDockWidget("Tools", self)
-            self.tool_dock.setFeatures(QDockWidget.DockWidgetMovable |
-                                     QDockWidget.DockWidgetClosable)
-            tool_widget = self._create_tool_widget()
-            self.tool_dock.setWidget(tool_widget)
-            self.addDockWidget(Qt.RightDockWidgetArea, self.tool_dock)
-            
-            # Keep tool dock visible by default
-            self.tool_dock.show()
-            
-        except Exception as e:
-            self.logger.error(f"Error setting up docks: {e}")
+    # REMOVED: setup_docks() method - redundant tools dock not needed
+    # Tools are already available in the left panel tabbed interface
+    # def setup_docks(self):
+    #     """Setup dock widgets for additional functionality."""
+    #     try:
+    #         # Tool dock only - bookmarks are already in left panel
+    #         self.tool_dock = QDockWidget("Tools", self)
+    #         self.tool_dock.setFeatures(QDockWidget.DockWidgetMovable |
+    #                                  QDockWidget.DockWidgetClosable)
+    #         tool_widget = self._create_tool_widget()
+    #         self.tool_dock.setWidget(tool_widget)
+    #         self.addDockWidget(Qt.RightDockWidgetArea, self.tool_dock)
+    #
+    #         # Keep tool dock visible by default
+    #         self.tool_dock.show()
+    #
+    #     except Exception as e:
+    #         self.logger.error(f"Error setting up docks: {e}")
     
     def create_recent_locations_widget(self):
         """Create recent locations widget."""
@@ -1273,37 +1419,39 @@ class MultiPaneFileExplorer(QMainWindow):
             action.triggered.connect(callback)
             self.addAction(action)
     
-    def _create_tool_widget(self):
-        """Create tool widget for tool dock."""
-        try:
-            # Simple tool widget with common tools
-            from PyQt5.QtWidgets import QListWidget, QListWidgetItem
-            
-            tool_widget = QListWidget()
-            
-            # Add common tools
-            tools = [
-                "Find Files",
-                "Disk Usage",
-                "File Copy/Move",
-                "Duplicate Finder",
-                "Permission Editor",
-                "File Integrity Check"
-            ]
-            
-            for tool in tools:
-                item = QListWidgetItem(tool)
-                tool_widget.addItem(item)
-            
-            # Connect tool activation
-            tool_widget.itemDoubleClicked.connect(self._launch_selected_tool)
-            
-            return tool_widget
-            
-        except Exception as e:
-            self.logger.error(f"Error creating tool widget: {e}")
-            # Fallback to simple label
-            return QLabel("Tools")
+    # REMOVED: _create_tool_widget() method - no longer needed
+    # Tools are now only available through the left panel interface
+    # def _create_tool_widget(self):
+    #     """Create tool widget for tool dock."""
+    #     try:
+    #         # Simple tool widget with common tools
+    #         from PyQt5.QtWidgets import QListWidget, QListWidgetItem
+    #
+    #         tool_widget = QListWidget()
+    #
+    #         # Add common tools
+    #         tools = [
+    #             "Find Files",
+    #             "Disk Usage",
+    #             "File Copy/Move",
+    #             "Duplicate Finder",
+    #             "Permission Editor",
+    #             "File Integrity Check"
+    #         ]
+    #
+    #         for tool in tools:
+    #             item = QListWidgetItem(tool)
+    #             tool_widget.addItem(item)
+    #
+    #         # Connect tool activation
+    #         tool_widget.itemDoubleClicked.connect(self._launch_selected_tool)
+    #
+    #         return tool_widget
+    #
+    #     except Exception as e:
+    #         self.logger.error(f"Error creating tool widget: {e}")
+    #         # Fallback to simple label
+    #         return QLabel("Tools")
     
     def _launch_selected_tool(self, item):
         """Launch the selected tool."""
@@ -1531,6 +1679,14 @@ class MultiPaneFileExplorer(QMainWindow):
         # Simple file list with enhanced styling
         file_list = QTreeWidget()
         file_list.setHeaderLabels(["Name", "Size", "Type", "Modified"])
+        file_list.setAlternatingRowColors(True)
+        file_list.setSortingEnabled(True)
+        
+        # Configure column widths to accommodate icons
+        file_list.setColumnWidth(0, 250)  # Name (wider for icons)
+        file_list.setColumnWidth(1, 80)   # Size
+        file_list.setColumnWidth(2, 80)   # Type
+        file_list.setColumnWidth(3, 120)  # Modified
         
         if THEME_MANAGER_AVAILABLE and ThemeManager:
             ThemeManager.apply_theme_to_widget(file_list, "tree")
@@ -1558,7 +1714,12 @@ class MultiPaneFileExplorer(QMainWindow):
         # Populate with home directory contents
         self._populate_file_list(file_list, Path.home())
         
-        # Connect file list signals
+        # Connect both single-click and double-click signals for enhanced UX
+        # Single-click for directories (one-click expansion)
+        file_list.itemClicked.connect(
+            lambda item: self._on_file_item_single_click(pane_widget, item)
+        )
+        # Double-click for files and alternate directory activation
         file_list.itemDoubleClicked.connect(
             lambda item: self._on_file_item_activated(pane_widget, item)
         )
@@ -1677,19 +1838,24 @@ class MultiPaneFileExplorer(QMainWindow):
         return nav_widget
     
     def _create_enhanced_file_list(self, parent_pane) -> QTreeWidget:
-        """Create enhanced file list with navigation support."""
+        """Create enhanced file list with navigation support and one-click expansion."""
         file_list = QTreeWidget()
         file_list.setHeaderLabels(["Name", "Size", "Type", "Modified"])
         file_list.setAlternatingRowColors(True)
         file_list.setSortingEnabled(True)
         
         # Configure column widths
-        file_list.setColumnWidth(0, 200)  # Name
+        file_list.setColumnWidth(0, 250)  # Name (wider for icons)
         file_list.setColumnWidth(1, 80)   # Size
         file_list.setColumnWidth(2, 80)   # Type
         file_list.setColumnWidth(3, 120)  # Modified
         
-        # Connect double-click for navigation
+        # Connect both single-click and double-click signals for better UX
+        # Single-click for directories (one-click expansion)
+        file_list.itemClicked.connect(
+            lambda item: self._on_file_item_single_click(parent_pane, item)
+        )
+        # Double-click for files and alternate directory activation
         file_list.itemDoubleClicked.connect(
             lambda item: self._on_file_item_activated(parent_pane, item)
         )
@@ -1845,16 +2011,52 @@ class MultiPaneFileExplorer(QMainWindow):
         except Exception as e:
             self.logger.error(f"Error refreshing pane: {e}")
     
-    def _on_file_item_activated(self, pane_widget, item):
-        """Handle file/directory activation in file list."""
+    def _on_file_item_single_click(self, pane_widget, item):
+        """Handle single-click for one-click directory expansion."""
         try:
             if item and item.parent() is None:  # Top-level item
-                file_name = item.text(0)
-                current_path = getattr(pane_widget, '_current_path', Path.home())
-                file_path = current_path / file_name
+                # Get the stored path data if available
+                stored_path = item.data(0, Qt.UserRole)
+                if stored_path:
+                    file_path = Path(stored_path)
+                else:
+                    # Fallback to old method - extract name without icon
+                    display_name = item.text(0)
+                    # Remove icon emojis from display name
+                    file_name = display_name
+                    for icon in [self.FOLDER_ICON] + list(self.FILE_ICONS.values()):
+                        file_name = file_name.replace(icon, "").strip()
+                    
+                    current_path = getattr(pane_widget, '_current_path', Path.home())
+                    file_path = current_path / file_name
+                
+                # Only navigate directories on single-click
+                if file_path.is_dir():
+                    self._navigate_to_path(pane_widget, file_path)
+        except Exception as e:
+            self.logger.error(f"Error on single-click file item: {e}")
+
+    def _on_file_item_activated(self, pane_widget, item):
+        """Handle file/directory activation in file list with one-click navigation."""
+        try:
+            if item and item.parent() is None:  # Top-level item
+                # Get the stored path data if available
+                stored_path = item.data(0, Qt.UserRole)
+                if stored_path:
+                    file_path = Path(stored_path)
+                else:
+                    # Fallback to old method - extract name without icon
+                    display_name = item.text(0)
+                    # Remove icon emojis from display name
+                    file_name = display_name
+                    for icon in [self.FOLDER_ICON] + list(self.FILE_ICONS.values()):
+                        file_name = file_name.replace(icon, "").strip()
+                    
+                    current_path = getattr(pane_widget, '_current_path', Path.home())
+                    file_path = current_path / file_name
                 
                 if file_path.is_dir():
-                    # Navigate into directory
+                    # One-click navigation into directory
                     self._navigate_to_path(pane_widget, file_path)
                 elif file_path.is_file():
                     # Open file with default application
@@ -1863,7 +2065,7 @@ class MultiPaneFileExplorer(QMainWindow):
             self.logger.error(f"Error activating file item: {e}")
     
     def _populate_file_list(self, file_list: QTreeWidget, path: Path):
-        """Populate file list with directory contents."""
+        """Populate file list with directory contents, including visual enhancements."""
         try:
             file_list.clear()
             
@@ -1899,27 +2101,51 @@ class MultiPaneFileExplorer(QMainWindow):
                         type_str = "Directory" if item.is_dir() else "File"
                         modified_str = datetime.fromtimestamp(stat.st_mtime).strftime("%Y-%m-%d %H:%M")
                         
+                        # Get file extension for color coding and icons
+                        extension = item.suffix.lower() if item.suffix else ''
+                        
+                        # Create display name with icon
+                        if item.is_dir():
+                            display_name = f"{self.FOLDER_ICON} {item.name}"
+                        else:
+                            file_icon = self.FILE_ICONS.get(extension, self.FILE_ICONS['default'])
+                            display_name = f"{file_icon} {item.name}"
+                        
                         tree_item = QTreeWidgetItem([
-                            item.name,
+                            display_name,
                             size_str,
                             type_str,
                             modified_str
                         ])
                         
-                        # Set icon or styling for directories
+                        # Apply visual styling
                         if item.is_dir():
-                            tree_item.setBackground(0, Qt.GlobalColor.lightGray)
+                            # Folder styling - light blue background and bold text
+                            tree_item.setBackground(0, QBrush(QColor(230, 240, 250)))
+                            font = tree_item.font(0)
+                            font.setBold(True)
+                            tree_item.setFont(0, font)
+                            tree_item.setForeground(0, QBrush(QColor(25, 25, 112)))  # Midnight blue
+                        else:
+                            # File color coding based on extension
+                            if extension in self.FILE_TYPE_COLORS:
+                                color = self.FILE_TYPE_COLORS[extension]
+                                tree_item.setForeground(0, QBrush(color))
+                        
+                        # Store the actual path for navigation
+                        tree_item.setData(0, Qt.UserRole, str(item))
                         
                         items.append((item.is_dir(), item.name.lower(), tree_item))
                         
                     except (OSError, PermissionError) as e:
                         # Handle files we can't access
                         error_item = QTreeWidgetItem([
-                            item.name,
+                            f"❌ {item.name}",
                             "",
                             "Access Denied",
                             f"Error: {e}"
                         ])
+                        error_item.setForeground(0, QBrush(QColor(255, 0, 0)))  # Red for errors
                         items.append((False, item.name.lower(), error_item))
                 
                 # Sort items: directories first, then by name
@@ -1930,15 +2156,18 @@ class MultiPaneFileExplorer(QMainWindow):
                     file_list.addTopLevelItem(tree_item)
                     
             except PermissionError:
-                error_item = QTreeWidgetItem(["Permission denied", "", "", ""])
+                error_item = QTreeWidgetItem(["❌ Permission denied", "", "", ""])
+                error_item.setForeground(0, QBrush(QColor(255, 0, 0)))
                 file_list.addTopLevelItem(error_item)
             except Exception as e:
-                error_item = QTreeWidgetItem([f"Error: {e}", "", "", ""])
+                error_item = QTreeWidgetItem([f"❌ Error: {e}", "", "", ""])
+                error_item.setForeground(0, QBrush(QColor(255, 0, 0)))
                 file_list.addTopLevelItem(error_item)
                 
         except Exception as e:
             self.logger.error(f"Error populating file list: {e}")
-            error_item = QTreeWidgetItem([f"Failed to load: {e}", "", "", ""])
+            error_item = QTreeWidgetItem([f"❌ Failed to load: {e}", "", "", ""])
+            error_item.setForeground(0, QBrush(QColor(255, 0, 0)))
             file_list.clear()
             file_list.addTopLevelItem(error_item)
     
@@ -2037,32 +2266,35 @@ class MultiPaneFileExplorer(QMainWindow):
             self.logger.error("Cannot create layout: pane_splitter is None")
             return
             
+        self.logger.info("Creating single pane layout")
+            
         # Handle QSplitter
         if hasattr(self.pane_splitter, 'setOrientation'):
             self.pane_splitter.setOrientation(Qt.Horizontal)
-            
-            # Clear existing widgets from splitter
-            if hasattr(self.pane_splitter, 'count'):
-                for i in reversed(range(self.pane_splitter.count())):
-                    widget = self.pane_splitter.widget(i)
-                    if widget:
-                        widget.setParent(None)
+            # Clear existing widgets from splitter safely
+            self._clear_splitter_widgets(self.pane_splitter)
         
         # Handle QWidget with layout
         elif hasattr(self.pane_splitter, 'layout'):
             layout = self.pane_splitter.layout()
             if layout:
                 # Clear existing widgets from layout
-                while layout.count():
-                    child = layout.takeAt(0)
-                    if child.widget():
-                        child.widget().setParent(None)
+                self._clear_splitter_widgets(self.pane_splitter)
         
         # Add single pane if available
         if self.panes:
+            pane = self.panes[0]
+            # Ensure pane is visible
+            if hasattr(pane, 'show'):
+                pane.show()
+                pane.setVisible(True)
+                
             self._safe_add_widget_to_splitter_with_target(
-                self.pane_splitter, self.panes[0]
+                self.pane_splitter, pane
             )
+            self.logger.info("Single pane layout completed")
+        else:
+            self.logger.warning("No panes available for single layout")
     
     def _apply_mobile_layout_adjustments(self):
         """Apply mobile-specific layout adjustments."""
@@ -2089,8 +2321,8 @@ class MultiPaneFileExplorer(QMainWindow):
         """Update the layout of panes based on current responsive configuration."""
         WIDGET_DELETED_ERROR = "wrapped C/C++ object"
         
-        self.logger.info(f"_update_pane_layout called with {len(self.panes)} panes, "
-                        f"layout_mode: {self.layout_mode}")
+        self.logger.info(f"_update_pane_layout called with {len(self.panes)} "
+                        f"panes, layout_mode: {self.layout_mode}")
         
         try:
             if self.pane_splitter is None:
@@ -2103,58 +2335,107 @@ class MultiPaneFileExplorer(QMainWindow):
             
             # Validate panes before applying layout
             valid_panes = []
-            for pane in self.panes:
+            for i, pane in enumerate(self.panes):
                 try:
                     _ = pane.isVisible()  # Test if widget is valid
                     valid_panes.append(pane)
                 except RuntimeError as e:
                     if WIDGET_DELETED_ERROR in str(e):
-                        self.logger.warning(f"Skipping deleted pane: {e}")
+                        self.logger.warning(f"Skipping deleted pane {i}: {e}")
                         continue
                     raise
             
-            self.panes = valid_panes
+            # Update panes list with valid panes only
+            if len(valid_panes) != len(self.panes):
+                self.logger.warning(f"Removed {len(self.panes) - len(valid_panes)} "
+                                  f"invalid panes")
+                self.panes = valid_panes
+            
+            # Re-validate layout mode against available panes
+            available = self.available_layouts.get(len(self.panes), [])
+            if self.layout_mode not in available:
+                if available:
+                    old_mode = self.layout_mode
+                    self.layout_mode = available[0]
+                    self.logger.info(
+                        f"Layout changed from {old_mode} to {self.layout_mode} "
+                        f"due to pane count constraint"
+                    )
+                    # Update combo box if it exists
+                    if hasattr(self, 'layout_combo') and self.layout_combo:
+                        self._update_layout_combo_options(self.layout_combo)
+                else:
+                    self.layout_mode = 'single'
             
             # Apply responsive layout based on mode and constraints
-            self.logger.info(f"Applying layout: {self.layout_mode} for {self.pane_count} panes")
+            self.logger.info(f"Applying layout: {self.layout_mode} for "
+                           f"{len(self.panes)} panes")
             
-            if self.pane_count == 1 or self.layout_mode == 'single':
-                self.logger.info("Creating single pane layout")
-                self._create_single_layout()
-            elif self.layout_mode == 'horizontal':
-                self.logger.info("Creating horizontal layout")
-                self._create_horizontal_layout()
-            elif self.layout_mode == 'vertical':
-                self.logger.info("Creating vertical layout")
-                self._create_vertical_layout()
-            elif self.layout_mode == 'grid' and self.pane_count >= 3:
-                self.logger.info("Creating grid layout")
-                self._create_grid_layout()
-            else:
-                # Fallback to horizontal for invalid combinations
-                self.logger.info("Using fallback horizontal layout")
-                self.layout_mode = 'horizontal'
-                self._create_horizontal_layout()
+            layout_applied = False
+            try:
+                if len(self.panes) == 1 or self.layout_mode == 'single':
+                    self.logger.info("Creating single pane layout")
+                    self._create_single_layout()
+                    layout_applied = True
+                elif self.layout_mode == 'horizontal':
+                    self.logger.info("Creating horizontal layout")
+                    self._create_horizontal_layout()
+                    layout_applied = True
+                elif self.layout_mode == 'vertical':
+                    self.logger.info("Creating vertical layout")
+                    self._create_vertical_layout()
+                    layout_applied = True
+                elif self.layout_mode == 'grid' and len(self.panes) >= 3:
+                    self.logger.info("Creating grid layout")
+                    self._create_grid_layout()
+                    layout_applied = True
+                else:
+                    # Fallback to horizontal for invalid combinations
+                    self.logger.warning(f"Invalid layout combination: {self.layout_mode} "
+                                      f"with {len(self.panes)} panes, using horizontal")
+                    self.layout_mode = 'horizontal'
+                    self._create_horizontal_layout()
+                    layout_applied = True
+                    
+            except Exception as layout_error:
+                self.logger.error(f"Error applying {self.layout_mode} layout: "
+                                f"{layout_error}")
+                layout_applied = False
+            
+            # Fallback recovery if layout application failed
+            if not layout_applied:
+                try:
+                    self.logger.warning("Layout application failed, trying "
+                                      "horizontal fallback")
+                    self.layout_mode = 'horizontal'
+                    self._create_horizontal_layout()
+                    
+                    # Update combo box to reflect fallback
+                    if hasattr(self, 'layout_combo') and self.layout_combo:
+                        index = self.layout_combo.findText("Horizontal")
+                        if index >= 0:
+                            self.layout_combo.setCurrentIndex(index)
+                            
+                except Exception as fallback_error:
+                    self.logger.error(f"Fallback layout failed: {fallback_error}")
+                    # Last resort: set equal sizes for whatever widgets exist
+                    if hasattr(self.pane_splitter, 'setSizes') and self.panes:
+                        sizes = [100] * len(self.panes)
+                        self.pane_splitter.setSizes(sizes)
             
             # Apply mobile-specific adjustments
             if self.is_mobile_viewport:
                 self._apply_mobile_layout_adjustments()
                 
         except Exception as e:
-            self.logger.error(f"Error updating pane layout: {e}")
-            # Fallback to simple horizontal layout
+            self.logger.error(f"Critical error during pane layout update: {e}")
+            # Emergency fallback - just ensure panes have equal sizes
             try:
-                self._create_horizontal_layout()
-            except Exception as fallback_error:
-                self.logger.error(f"Fallback layout failed: {fallback_error}")
-            
-            # Set equal sizes if we have valid panes
-            if self.panes:
-                sizes = [100] * len(self.panes)
-                self.pane_splitter.setSizes(sizes)
-                
-        except Exception as e:
-            self.logger.error(f"Error during pane layout update: {e}")
+                if hasattr(self.pane_splitter, 'setSizes') and self.panes:
+                    sizes = [100] * len(self.panes)
+                    self.pane_splitter.setSizes(sizes)
+            except Exception:
+                pass  # Give up gracefully
     
     def _safe_add_widget_to_splitter(self, widget):
         """Safely add widget to splitter with validation."""
@@ -2192,50 +2473,88 @@ class MultiPaneFileExplorer(QMainWindow):
         """Create a responsive grid layout for panes."""
         if len(self.panes) < 3:
             # Fallback to horizontal for insufficient panes
+            self.logger.warning("Grid layout requires at least 3 panes, falling back to horizontal")
             self._create_horizontal_layout()
             return
+        
+        if self.pane_splitter is None:
+            self.logger.error("Cannot create grid layout: pane_splitter is None")
+            return
+            
+        self.logger.info(f"Creating grid layout for {len(self.panes)} panes")
         
         # Determine optimal grid configuration
         pane_count = len(self.panes)
         cols = self.grid_columns.get(pane_count, 2)
         rows = (pane_count + cols - 1) // cols  # Ceiling division
         
-        self.pane_splitter.setOrientation(Qt.Vertical)
+        self.logger.info(f"Grid configuration: {rows} rows × {cols} columns")
         
-        # Clear existing widgets
-        for i in reversed(range(self.pane_splitter.count())):
-            widget = self.pane_splitter.widget(i)
-            if widget:
-                widget.setParent(None)
+        # Set main splitter to vertical orientation for rows
+        if hasattr(self.pane_splitter, 'setOrientation'):
+            self.pane_splitter.setOrientation(Qt.Vertical)
+        
+        # Clear existing widgets safely
+        self._clear_splitter_widgets(self.pane_splitter)
         
         # Create row splitters
         row_splitters = []
         for row in range(rows):
-            row_splitter = QSplitter(Qt.Horizontal)
-            row_splitters.append(row_splitter)
-            
-            # Add panes to this row
-            start_idx = row * cols
-            end_idx = min(start_idx + cols, pane_count)
-            
-            for pane_idx in range(start_idx, end_idx):
-                if pane_idx < len(self.panes):
-                    self._safe_add_widget_to_splitter_with_target(
-                        row_splitter, self.panes[pane_idx]
-                    )
-            
-            self.pane_splitter.addWidget(row_splitter)
+            try:
+                row_splitter = QSplitter(Qt.Horizontal)
+                row_splitter.setChildrenCollapsible(False)  # Prevent panes from collapsing
+                row_splitters.append(row_splitter)
+                
+                # Add panes to this row
+                start_idx = row * cols
+                end_idx = min(start_idx + cols, pane_count)
+                
+                panes_in_row = 0
+                for pane_idx in range(start_idx, end_idx):
+                    if pane_idx < len(self.panes):
+                        pane = self.panes[pane_idx]
+                        # Ensure pane is visible
+                        if hasattr(pane, 'show'):
+                            pane.show()
+                            pane.setVisible(True)
+                        
+                        self._safe_add_widget_to_splitter_with_target(
+                            row_splitter, pane
+                        )
+                        panes_in_row += 1
+                        self.logger.debug(f"Added pane {pane_idx + 1} to row {row + 1}")
+                
+                # Only add row splitter if it has panes
+                if panes_in_row > 0:
+                    self.pane_splitter.addWidget(row_splitter)
+                    self.logger.debug(f"Added row {row + 1} with {panes_in_row} panes")
+                else:
+                    row_splitters.remove(row_splitter)  # Remove empty row
+                    
+            except Exception as e:
+                self.logger.error(f"Error creating row {row}: {e}")
+                continue
         
         # Set equal sizes for responsive behavior
         if row_splitters:
-            sizes = [100] * len(row_splitters)
-            self.pane_splitter.setSizes(sizes)
+            # Set equal row heights
+            row_sizes = [100] * len(row_splitters)
+            self.pane_splitter.setSizes(row_sizes)
+            self.logger.info(f"Set equal row sizes: {row_sizes}")
             
             # Set equal column sizes within each row
-            for splitter in row_splitters:
+            for i, splitter in enumerate(row_splitters):
                 if splitter.count() > 0:
                     col_sizes = [100] * splitter.count()
                     splitter.setSizes(col_sizes)
+                    self.logger.debug(f"Set equal column sizes for row {i + 1}: {col_sizes}")
+        
+        # Verify grid layout was created successfully
+        total_widgets = sum(splitter.count() for splitter in row_splitters)
+        if total_widgets == len(self.panes):
+            self.logger.info(f"Grid layout created successfully: {len(row_splitters)} rows, {total_widgets} panes")
+        else:
+            self.logger.warning(f"Grid layout incomplete: expected {len(self.panes)} panes, got {total_widgets}")
     
     def _create_horizontal_layout(self):
         """Create horizontal layout for panes."""
@@ -2243,28 +2562,21 @@ class MultiPaneFileExplorer(QMainWindow):
             self.logger.error("Cannot create layout: pane_splitter is None")
             return
             
-        self.logger.info(f"Creating horizontal layout for {len(self.panes)} panes")
+        self.logger.info(f"Creating horizontal layout for {len(self.panes)} "
+                        f"panes")
         
         # Handle QSplitter
         if hasattr(self.pane_splitter, 'setOrientation'):
             self.pane_splitter.setOrientation(Qt.Horizontal)
-            
-            # Clear existing widgets from splitter
-            if hasattr(self.pane_splitter, 'count'):
-                for i in reversed(range(self.pane_splitter.count())):
-                    widget = self.pane_splitter.widget(i)
-                    if widget:
-                        widget.setParent(None)
+            # Clear existing widgets from splitter safely
+            self._clear_splitter_widgets(self.pane_splitter)
         
         # Handle QWidget with layout
         elif hasattr(self.pane_splitter, 'layout'):
             layout = self.pane_splitter.layout()
             if layout:
                 # Clear existing widgets from layout
-                while layout.count():
-                    child = layout.takeAt(0)
-                    if child.widget():
-                        child.widget().setParent(None)
+                self._clear_splitter_widgets(self.pane_splitter)
         
         self.logger.info("Cleared existing widgets from container")
         
@@ -2286,8 +2598,8 @@ class MultiPaneFileExplorer(QMainWindow):
             final_count = self.pane_splitter.count()
             self.logger.info(f"Final splitter count: {final_count}")
             if final_count != len(self.panes):
-                self.logger.warning(f"Expected {len(self.panes)} panes in splitter, "
-                                  f"but found {final_count}")
+                self.logger.warning(f"Expected {len(self.panes)} panes in "
+                                  f"splitter, but found {final_count}")
         
         # Set equal sizes
         if self.panes and hasattr(self.pane_splitter, 'setSizes'):
@@ -2303,26 +2615,21 @@ class MultiPaneFileExplorer(QMainWindow):
             self.logger.error("Cannot create layout: pane_splitter is None")
             return
             
+        self.logger.info(f"Creating vertical layout for {len(self.panes)} "
+                        f"panes")
+        
         # Handle QSplitter
         if hasattr(self.pane_splitter, 'setOrientation'):
             self.pane_splitter.setOrientation(Qt.Vertical)
-            
-            # Clear existing widgets from splitter
-            if hasattr(self.pane_splitter, 'count'):
-                for i in reversed(range(self.pane_splitter.count())):
-                    widget = self.pane_splitter.widget(i)
-                    if widget:
-                        widget.setParent(None)
+            # Clear existing widgets from splitter safely
+            self._clear_splitter_widgets(self.pane_splitter)
         
         # Handle QWidget with layout (convert to vertical layout)
         elif hasattr(self.pane_splitter, 'layout'):
             # Remove existing layout and create new vertical layout
             old_layout = self.pane_splitter.layout()
             if old_layout:
-                while old_layout.count():
-                    child = old_layout.takeAt(0)
-                    if child.widget():
-                        child.widget().setParent(None)
+                self._clear_splitter_widgets(self.pane_splitter)
                 old_layout.deleteLater()
             
             # Create new vertical layout
@@ -2331,7 +2638,14 @@ class MultiPaneFileExplorer(QMainWindow):
             new_layout.setSpacing(2)
         
         # Add all panes vertically
-        for pane in self.panes:
+        for idx, pane in enumerate(self.panes):
+            self.logger.info(f"Adding pane {idx + 1} to vertical layout")
+            
+            # Ensure pane is visible before adding
+            if hasattr(pane, 'show'):
+                pane.show()
+                pane.setVisible(True)
+            
             self._safe_add_widget_to_splitter_with_target(
                 self.pane_splitter, pane
             )
@@ -2340,6 +2654,54 @@ class MultiPaneFileExplorer(QMainWindow):
         if self.panes and hasattr(self.pane_splitter, 'setSizes'):
             sizes = [100] * len(self.panes)
             self.pane_splitter.setSizes(sizes)
+            
+        self.logger.info("Vertical layout creation completed")
+    
+    def _clear_splitter_widgets(self, splitter):
+        """Safely clear all widgets from a splitter."""
+        WIDGET_DELETED_ERROR = "wrapped C/C++ object"
+        
+        try:
+            if splitter is None:
+                return
+                
+            # Clear widgets from QSplitter
+            if hasattr(splitter, 'count') and hasattr(splitter, 'widget'):
+                widgets_to_remove = []
+                for i in range(splitter.count()):
+                    widget = splitter.widget(i)
+                    if widget:
+                        widgets_to_remove.append(widget)
+                
+                # Remove widgets safely
+                for widget in widgets_to_remove:
+                    try:
+                        _ = widget.isVisible()  # Test if widget is still valid
+                        widget.setParent(None)
+                        self.logger.debug(f"Removed widget from splitter: {type(widget).__name__}")
+                    except RuntimeError as e:
+                        if WIDGET_DELETED_ERROR in str(e):
+                            self.logger.debug(f"Widget already deleted during clear: {e}")
+                        else:
+                            raise
+                            
+            # Clear widgets from QWidget with layout
+            elif hasattr(splitter, 'layout'):
+                layout = splitter.layout()
+                if layout:
+                    while layout.count():
+                        child = layout.takeAt(0)
+                        if child.widget():
+                            try:
+                                child.widget().setParent(None)
+                            except RuntimeError as e:
+                                if WIDGET_DELETED_ERROR in str(e):
+                                    self.logger.debug(f"Widget already deleted during layout clear: {e}")
+                                else:
+                                    raise
+                                    
+        except Exception as e:
+            self.logger.error(f"Error clearing splitter widgets: {e}")
     
     def _safe_add_widget_to_splitter_with_target(
             self, target_splitter, widget):
@@ -2394,37 +2756,82 @@ class MultiPaneFileExplorer(QMainWindow):
             pass
     
     def on_layout_mode_changed(self, text):
-        """Handle layout mode change with responsive validation."""
+        """Handle layout mode change with robust validation."""
         if not text or not text.strip():
             # Ignore empty or whitespace-only changes
+            self.logger.debug("Ignoring empty layout mode change")
             return
             
-        new_mode = text.lower()
+        # Convert display text to internal mode
+        text = text.strip()
+        if text == 'Single View':
+            new_mode = 'single'
+        else:
+            new_mode = text.lower()
         
         # Validate layout mode against current pane count constraints
-        available = self.available_layouts.get(self.pane_count, [])
+        available = self.available_layouts.get(len(self.panes), [])
         
-        if new_mode in available or new_mode == 'single view':
-            if new_mode == 'single view':
-                self.layout_mode = 'single'
-            else:
-                self.layout_mode = new_mode
+        self.logger.info(f"Layout mode change requested: {text} -> {new_mode}")
+        self.logger.info(f"Available layouts for {len(self.panes)} panes: {available}")
+        
+        # Check if the requested mode is valid
+        mode_valid = False
+        if new_mode == 'single' and len(self.panes) == 1:
+            mode_valid = True
+        elif new_mode in available:
+            mode_valid = True
             
-            self._update_pane_layout()
-            self.save_configuration()
+        if mode_valid:
+            old_mode = self.layout_mode
+            self.layout_mode = new_mode
             
-            self.logger.info(
-                f"Layout mode changed to {self.layout_mode} "
-                f"for {self.pane_count} panes"
-            )
+            self.logger.info(f"Layout mode changed from {old_mode} to {new_mode}")
+            
+            try:
+                self._update_pane_layout()
+                self.save_configuration()
+                
+                # Update status
+                if hasattr(self, 'statusBar'):
+                    self.statusBar().showMessage(
+                        f"Layout changed to {text}", 2000
+                    )
+                    
+            except Exception as e:
+                self.logger.error(f"Error applying layout change: {e}")
+                # Revert to previous mode
+                self.layout_mode = old_mode
+                
+                # Reset combo box to previous selection
+                if hasattr(self, 'layout_combo') and self.layout_combo:
+                    old_display = old_mode.title() if old_mode != 'single' else 'Single View'
+                    index = self.layout_combo.findText(old_display)
+                    if index >= 0:
+                        self.layout_combo.blockSignals(True)
+                        self.layout_combo.setCurrentIndex(index)
+                        self.layout_combo.blockSignals(False)
+                        
+                if hasattr(self, 'statusBar'):
+                    self.statusBar().showMessage(
+                        f"Layout change failed, reverted to {old_display}", 3000
+                    )
         else:
             self.logger.warning(
                 f"Layout mode {new_mode} not available for "
-                f"{self.pane_count} panes"
+                f"{len(self.panes)} panes. Available: {available}"
             )
+            
             # Revert combo to valid selection
             if hasattr(self, 'layout_combo') and self.layout_combo:
+                self.layout_combo.blockSignals(True)
                 self._update_layout_combo_options(self.layout_combo)
+                self.layout_combo.blockSignals(False)
+                
+            if hasattr(self, 'statusBar'):
+                self.statusBar().showMessage(
+                    f"Layout {text} not available for {len(self.panes)} panes", 3000
+                )
     
     def save_configuration(self):
         """Save current configuration with enhanced Qt object support."""
