@@ -11,27 +11,41 @@ from pathlib import Path
 from typing import List, Optional
 
 try:
-    from PyQt5.QtWidgets import (
-        QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
-        QPushButton, QLabel, QListWidget, QProgressBar,
-        QApplication, QMessageBox, QGroupBox, QFileDialog,
-        QListWidgetItem, QAbstractItemView
-    )
-    from PyQt5.QtCore import Qt, QObject, pyqtSignal, QThread
+    from PyQt5.QtCore import QObject, Qt, QThread, pyqtSignal
     from PyQt5.QtGui import QColor
+    from PyQt5.QtWidgets import (QAbstractItemView, QApplication, QFileDialog,
+                                 QGroupBox, QHBoxLayout, QLabel, QListWidget,
+                                 QListWidgetItem, QMainWindow, QMessageBox,
+                                 QProgressBar, QPushButton, QVBoxLayout,
+                                 QWidget)
 except ImportError:
     print("PyQt5 not available. Please install PyQt5.")
     sys.exit(1)
 
-# Import StandardWindow for menu integration
+# Import SafeStandardWindow for reliable menu integration
 try:
-    from src.gui.standard_window import StandardWindow
+    # Add the correct path for imports
+    sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
+    from src.gui.safe_standard_window import \
+        SafeStandardWindow as StandardWindow
     STANDARD_WINDOW_AVAILABLE = True
-except ImportError:
-    # Fallback for standalone execution
-    from PyQt5.QtWidgets import QMainWindow
-    StandardWindow = QMainWindow
-    STANDARD_WINDOW_AVAILABLE = False
+except ImportError as e:
+    print(f"SafeStandardWindow not available: {e}")
+    # Try original StandardWindow as fallback
+    try:
+        from src.gui.standard_window import StandardWindow
+        STANDARD_WINDOW_AVAILABLE = True
+    except ImportError:
+        # Final fallback - minimal implementation
+        class StandardWindow(QMainWindow):
+            def __init__(self, title="Window", window_type="utility", parent=None):
+                super().__init__(parent)
+                self.setWindowTitle(title)
+            
+            def ensure_menu_bar(self):
+                pass  # No-op for fallback
+        
+        STANDARD_WINDOW_AVAILABLE = False
 
 
 class EmptyFolderLogic(QObject):
@@ -126,16 +140,14 @@ class EmptyFolderLogic(QObject):
 class EmptyFoldersGUI(StandardWindow):
     """Main window for Empty Folders operations."""
     
-    def __init__(self):
-        if STANDARD_WINDOW_AVAILABLE:
-            super().__init__(
-                title="Empty Folders Finder - Richard's File Utilities",
-                window_type="utility"
-            )
-        else:
-            super().__init__()
-            self.setWindowTitle("Empty Folders Finder - Richard's File Utilities")
-            self.setGeometry(100, 100, 800, 600)
+    def __init__(self, parent=None):
+        # Always use the safe constructor parameters
+        super().__init__(
+            title="Empty Folders Finder - Richard's File Utilities",
+            window_type="utility",
+            parent=parent
+        )
+        self.setGeometry(100, 100, 800, 600)
         
         self.current_path: Optional[str] = None
         self.empty_folders: List[str] = []
@@ -145,8 +157,8 @@ class EmptyFoldersGUI(StandardWindow):
         self.init_ui()
         if STANDARD_WINDOW_AVAILABLE:
             self._setup_menu_callbacks()
-            # Ensure menu bar exists
-            self.ensure_menu_bar()
+        # Ensure menu bar exists (safe to call in both modes)
+        self.ensure_menu_bar()
     
     def _setup_menu_callbacks(self):
         """Setup tool-specific menu callbacks."""

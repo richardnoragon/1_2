@@ -72,7 +72,8 @@ TOOL_NAMES = {
     'PDF_UTILITIES': "PDF Utilities",
     'NETWORK_TEST': "Network Test",
     'FILE_TRANSFER': "File Transfer",
-    'REMOTE_ACCESS': "Remote Access"
+    'REMOTE_ACCESS': "Remote Access",
+    'FILE_CATALOG': "File Catalog"
 }
 
 ERROR_MESSAGES = {
@@ -80,7 +81,8 @@ ERROR_MESSAGES = {
     'COPY_ERROR': "Copy Error",
     'MOVE_ERROR': "Move Error",
     'COMPARE_ERROR': "Compare Error",
-    'NAVIGATION_ERROR': "Navigation Error"
+    'NAVIGATION_ERROR': "Navigation Error",
+    'TOOL_LAUNCH_ERROR': "Tool Launch Error"
 }
 
 KEYBOARD_SHORTCUTS = {
@@ -93,6 +95,21 @@ KEYBOARD_SHORTCUTS = {
 WIDGET_DELETED_ERROR = "wrapped C/C++ object"
 LAYOUT_ERROR_MESSAGES = {
     'NO_SPLITTER': "Cannot create layout: pane_splitter is None"
+}
+
+# File type constants
+FILE_EXTENSIONS = {
+    'HTML': '.html',
+    'CSS': '.css',
+    'PYTHON': '.py',
+    'JAVASCRIPT': '.js'
+}
+
+# UI constants
+CATEGORY_NAMES = {
+    'FILE_MANAGEMENT': "File Management",
+    'ANALYSIS': "Analysis",
+    'SECURITY': "Security"
 }
 
 # Import RFU components with comprehensive feature set
@@ -112,7 +129,7 @@ try:
                                                      EnhancedToolbar,
                                                      FilePropertyPanel,
                                                      QuickPreviewWidget,
-                                                     SearchWidget, ThemeColors)
+                                                     SearchWidget)
     from src.file_explorer.ui.file_explorer_pane import (FileExplorerPane,
                                                          ViewMode)
     from src.file_explorer.ui.pane_manager import PaneConfiguration, PaneType
@@ -344,7 +361,6 @@ class MultiPaneFileExplorer(QMainWindow):
         self.property_panel = None
         self.preview_widget = None
         self.search_widget = None
-        # self.tool_dock = None  # Removed: no longer using dock widgets
         self.bookmark_dock = None
         
         # Advanced feature managers
@@ -605,61 +621,103 @@ class MultiPaneFileExplorer(QMainWindow):
         current_text = layout_combo.currentText()
         layout_combo.clear()
         
-        available = self.available_layouts.get(self.pane_count, [])
+        actual_pane_count = self._get_actual_pane_count()
+        available = self.available_layouts.get(actual_pane_count, [])
+        
+        self.logger.debug("Updating layout combo: pane_count=%s, "
+                         "actual_panes=%s, using_count=%s, available=%s",
+                         self.pane_count, len(self.panes), actual_pane_count, available)
         
         if not available:
-            # Single pane - no layout options
-            layout_combo.addItem("Single View")
-            layout_combo.setEnabled(False)
-            layout_combo.setToolTip("Layout options disabled for single pane")
-            self.logger.debug("Layout combo set to single view mode")
+            self._setup_single_pane_combo(layout_combo)
         else:
-            layout_combo.setEnabled(True)
-            layout_combo.setToolTip("Select layout arrangement")
+            self._setup_multi_pane_combo(layout_combo, available, current_text)
+    
+    def _get_actual_pane_count(self):
+        """Get the actual pane count for layout purposes."""
+        return self.pane_count if len(self.panes) == 0 else len(self.panes)
+    
+    def _setup_single_pane_combo(self, layout_combo):
+        """Setup layout combo for single pane view."""
+        layout_combo.addItem("Single View")
+        layout_combo.setEnabled(False)
+        layout_combo.setToolTip("Layout options disabled for single pane")
+        self.logger.debug("Layout combo set to single view mode")
+    
+    def _setup_multi_pane_combo(self, layout_combo, available, current_text):
+        """Setup layout combo for multi-pane view."""
+        layout_combo.setEnabled(True)
+        layout_combo.setToolTip("Select layout arrangement")
+        
+        self._add_layout_options(layout_combo, available)
+        self._restore_layout_selection(layout_combo, available, current_text)
+    
+    def _add_layout_options(self, layout_combo, available):
+        """Add available layout options to combo box."""
+        for layout in available:
+            display_name = self._get_layout_display_name(layout)
+            layout_combo.addItem(display_name)
+        self.logger.debug("Layout combo updated with options: %s", available)
+    
+    def _get_layout_display_name(self, layout):
+        """Get display name for layout option."""
+        layout_names = {
+            'horizontal': "Horizontal",
+            'vertical': "Vertical",
+            'grid': "Grid"
+        }
+        return layout_names.get(layout, layout.title())
+    
+    def _restore_layout_selection(self, layout_combo, available, current_text):
+        """Restore previous layout selection or set default."""
+        if self._try_restore_previous_selection(layout_combo, available, current_text):
+            return
+        
+        if self._try_set_current_layout_mode(layout_combo, available):
+            return
             
-            # Add available layouts with proper display names
-            for layout in available:
-                if layout == 'horizontal':
-                    display_name = "Horizontal"
-                elif layout == 'vertical':
-                    display_name = "Vertical" 
-                elif layout == 'grid':
-                    display_name = "Grid"
-                else:
-                    display_name = layout.title()
-                layout_combo.addItem(display_name)
-                
-            self.logger.debug(f"Layout combo updated with options: {available}")
+        self._set_default_layout_selection(layout_combo, available)
+    
+    def _try_restore_previous_selection(self, layout_combo, available, current_text):
+        """Try to restore the previous layout selection."""
+        if not current_text:
+            return False
             
-            # Restore previous selection if valid, otherwise use first option
-            if current_text:
-                # Convert display name back to internal format
-                internal_name = current_text.lower()
-                if internal_name in available:
-                    index = layout_combo.findText(current_text)
-                    if index >= 0:
-                        layout_combo.setCurrentIndex(index)
-                        self.logger.debug(f"Restored layout selection: {current_text}")
-                        return
-                        
-            # No valid previous selection, use current layout_mode if available
-            if self.layout_mode in available:
-                display_name = self.layout_mode.title()
-                index = layout_combo.findText(display_name)
-                if index >= 0:
-                    layout_combo.setCurrentIndex(index)
-                    self.logger.debug(f"Set layout combo to current mode: {display_name}")
-                else:
-                    # Fallback to first available option
-                    self.layout_mode = available[0]
-                    layout_combo.setCurrentIndex(0)
-                    self.logger.debug(f"Fallback to first layout: {available[0]}")
-            else:
-                # Current layout_mode not available, use first option
-                if available:
-                    self.layout_mode = available[0]
-                    layout_combo.setCurrentIndex(0)
-                    self.logger.debug(f"Reset layout mode to: {available[0]}")
+        internal_name = current_text.lower()
+        if internal_name in available:
+            index = layout_combo.findText(current_text)
+            if index >= 0:
+                layout_combo.setCurrentIndex(index)
+                self.logger.debug("Restored layout selection: %s", current_text)
+                return True
+        return False
+    
+    def _try_set_current_layout_mode(self, layout_combo, available):
+        """Try to set the current layout mode if available."""
+        if self.layout_mode not in available:
+            return False
+            
+        display_name = self._get_layout_display_name(self.layout_mode)
+        index = layout_combo.findText(display_name)
+        if index >= 0:
+            layout_combo.setCurrentIndex(index)
+            self.logger.debug("Set layout combo to current mode: %s", display_name)
+        else:
+            self._set_fallback_layout(layout_combo, available)
+        return True
+    
+    def _set_fallback_layout(self, layout_combo, available):
+        """Set fallback layout when current mode display name not found."""
+        self.layout_mode = available[0]
+        layout_combo.setCurrentIndex(0)
+        self.logger.debug("Fallback to first layout: %s", available[0])
+    
+    def _set_default_layout_selection(self, layout_combo, available):
+        """Set default layout selection when no previous selection."""
+        if available:
+            self.layout_mode = available[0]
+            layout_combo.setCurrentIndex(0)
+            self.logger.debug("Reset layout mode to: %s", available[0])
     
     def _validate_and_update_layout(self):
         """Validate current layout mode and update if necessary."""
@@ -750,19 +808,23 @@ class MultiPaneFileExplorer(QMainWindow):
         self.enhanced_toolbar.add_separator()
         
         # Pane configuration
-        pane_combo = QComboBox()
-        pane_combo.addItems(['1 Pane', '2 Panes', '3 Panes', '4 Panes'])
-        pane_combo.setCurrentIndex(self.pane_count - 1)
-        pane_combo.currentIndexChanged.connect(
+        self.pane_count_combo = QComboBox()
+        self.pane_count_combo.addItems([
+            '1 Pane', '2 Panes', '3 Panes', '4 Panes'
+        ])
+        self.pane_count_combo.setCurrentIndex(self.pane_count - 1)
+        self.pane_count_combo.currentIndexChanged.connect(
             lambda idx: self.set_pane_count(idx + 1)
         )
-        self.enhanced_toolbar.add_widget(pane_combo)
+        self.enhanced_toolbar.add_widget(self.pane_count_combo)
         
         # Layout mode with conditional options
-        layout_combo = QComboBox()
-        self._update_layout_combo_options(layout_combo)
-        layout_combo.currentTextChanged.connect(self.on_layout_mode_changed)
-        self.enhanced_toolbar.add_widget(layout_combo)
+        self.layout_combo = QComboBox()
+        self._update_layout_combo_options(self.layout_combo)
+        self.layout_combo.currentTextChanged.connect(
+            self.on_layout_mode_changed
+        )
+        self.enhanced_toolbar.add_widget(self.layout_combo)
         
         self.enhanced_toolbar.add_separator()
         
@@ -808,9 +870,7 @@ class MultiPaneFileExplorer(QMainWindow):
         
         parent_layout.addWidget(self.enhanced_toolbar)
         
-        # Store references for combo boxes
-        self.pane_count_combo = pane_combo
-        self.layout_combo = layout_combo
+        # Store references for combo boxes (already stored above)
     
     def setup_search_widget(self, parent_layout):
         """Setup search widget (initially hidden)."""
@@ -1351,15 +1411,15 @@ class MultiPaneFileExplorer(QMainWindow):
         self.pane_count_combo.setCurrentText(str(self.pane_count))
         self.pane_count_combo.currentTextChanged.connect(self.on_pane_count_changed)
         toolbar_layout.addWidget(self.pane_count_combo)
-        
+
+        # Always show layout label and combo, only disable for single pane
         toolbar_layout.addWidget(QLabel("Layout:"))
         self.layout_combo = QComboBox()
         self._update_layout_combo_options(self.layout_combo)
         self.layout_combo.currentTextChanged.connect(self.on_layout_mode_changed)
         toolbar_layout.addWidget(self.layout_combo)
-        
+
         toolbar_layout.addStretch()
-        
         parent_layout.addWidget(toolbar_frame)
     
     def setup_simple_status_bar(self):
@@ -1534,41 +1594,45 @@ class MultiPaneFileExplorer(QMainWindow):
     def setup_default_panes(self):
         """Setup the default pane configuration."""
         self.set_pane_count(self.pane_count)
+        
+        # Force update of layout combo after panes are created
+        if hasattr(self, 'layout_combo') and self.layout_combo:
+            self._update_layout_combo_options(self.layout_combo)
 
     def set_pane_count(self, count: int):
         """Set the number of active panes with responsive layout validation."""
         if not 1 <= count <= 4:
             return
-        
+
         old_count = len(self.panes)
         self.pane_count = count
-        
+
         # Update combo box
         if hasattr(self, 'pane_count_combo') and self.pane_count_combo:
             self.pane_count_combo.setCurrentText(str(count))
-        
-        # Validate and update layout constraints
-        self._validate_and_update_layout()
-        
-        # Update layout combo options
-        if hasattr(self, 'layout_combo') and self.layout_combo:
-            self._update_layout_combo_options(self.layout_combo)
-        
+
         # Adjust panes
         if count > old_count:
             self._add_panes(count - old_count)
         elif count < old_count:
             self._remove_panes(old_count - count)
-        
+
+        # Validate and update layout constraints
+        self._validate_and_update_layout()
+
+        # Always update layout combo options after pane count/layout changes
+        if hasattr(self, 'layout_combo') and self.layout_combo:
+            self._update_layout_combo_options(self.layout_combo)
+
         # Update layout
         self._update_pane_layout()
-        
+
         # Emit signal
         self.pane_count_changed.emit(count)
-        
+
         # Save configuration
         self.save_configuration()
-        
+
         self.logger.info(f"Pane count changed to {count}")
     
     def _add_panes(self, count: int):
@@ -2921,25 +2985,186 @@ class MultiPaneFileExplorer(QMainWindow):
         self._launch_tool("Permissions", "src.tools.system.permissions_editor", "PermissionsEditorGUI")
     
     def _launch_tool(self, tool_name: str, module_name: str, class_name: str):
-        """Generic tool launcher with error handling."""
+        """Generic tool launcher with comprehensive error handling and validation."""
         try:
-            # Import and launch tool
-            module = __import__(module_name, fromlist=[class_name])
-            tool_class = getattr(module, class_name)
-            tool_instance = tool_class()
-            tool_instance.show()
+            self.logger.info(f"Launching tool: {tool_name}")
             
-            self.statusBar().showMessage(f"{tool_name} launched successfully", 3000)
-            self.logger.info(f"Launched tool: {tool_name}")
+            # Pre-launch validation
+            if not self._validate_launch_environment(tool_name):
+                return
             
-        except (ImportError, AttributeError) as e:
-            self.logger.error(f"Failed to launch {tool_name}: {e}")
-            QMessageBox.warning(
-                self,
-                "Tool Launch Error",
-                f"Could not launch {tool_name}:\n\n{e}\n\n"
-                f"Please ensure the tool is properly installed."
-            )
+            # Try multiple import strategies with detailed logging
+            import_strategies = [
+                # Strategy 1: Direct import
+                lambda: self._try_direct_import(module_name, class_name),
+                # Strategy 2: Try without 'src' prefix
+                lambda: self._try_no_src_import(module_name, class_name),
+                # Strategy 3: Try with importlib
+                lambda: self._import_with_importlib(module_name, class_name),
+                # Strategy 4: Try alternative paths
+                lambda: self._try_alternative_imports(module_name, class_name),
+                # Strategy 5: Try legacy paths
+                lambda: self._try_legacy_imports(tool_name, class_name)
+            ]
+            
+            tool_instance = None
+            last_error = None
+            
+            for i, strategy in enumerate(import_strategies, 1):
+                try:
+                    self.logger.debug(f"Trying import strategy {i} for {tool_name}")
+                    module = strategy()
+                    if module:
+                        tool_class = getattr(module, class_name)
+                        
+                        # Validate tool class before instantiation
+                        if self._validate_tool_class(tool_class, tool_name):
+                            tool_instance = self._create_tool_instance(tool_class, tool_name)
+                            if tool_instance:
+                                self.logger.info(f"Tool {tool_name} created with strategy {i}")
+                                break
+                        else:
+                            self.logger.warning(f"Tool class validation failed for {tool_name}")
+                            
+                except Exception as e:
+                    last_error = e
+                    self.logger.debug(f"Import strategy {i} failed: {e}")
+                    continue
+            
+            if tool_instance:
+                # Configure and show the tool
+                self._post_launch_configuration(tool_instance, tool_name)
+                
+                if hasattr(self, 'statusBar') and self.statusBar():
+                    self.statusBar().showMessage(f"{tool_name} launched successfully", 3000)
+                self.logger.info(f"Successfully launched tool: {tool_name}")
+                
+                # Track successful launch
+                self._track_tool_usage(tool_name)
+                
+            else:
+                self.logger.error(f"Failed to launch {tool_name}: {last_error}")
+                self._handle_launch_failure(tool_name, last_error)
+                    
+        except Exception as e:
+            self.logger.error(f"Unexpected error launching {tool_name}: {e}")
+            self._handle_unexpected_error(tool_name, e)
+    
+    def _validate_launch_environment(self, tool_name: str) -> bool:
+        """Validate that the environment is ready for tool launch."""
+        try:
+            # Check if we're in a valid state to launch tools
+            if not hasattr(self, 'logger'):
+                print(f"Cannot launch {tool_name}: Logger not available")
+                return False
+            
+            # Check if we have a valid parent widget
+            if not self.isVisible():
+                self.logger.warning(f"Parent window not visible, launching {tool_name} anyway")
+            
+            # Check system resources (basic)
+            try:
+                import psutil
+                memory_percent = psutil.virtual_memory().percent
+                if memory_percent > 90:
+                    self.logger.warning(f"High memory usage ({memory_percent}%) when launching {tool_name}")
+            except ImportError:
+                pass  # psutil not available, skip check
+            
+            return True
+        except Exception as e:
+            self.logger.error(f"Environment validation failed for {tool_name}: {e}")
+            return False
+    
+    def _validate_tool_class(self, tool_class, tool_name: str) -> bool:
+        """Validate that the tool class is suitable for instantiation."""
+        try:
+            # Check if it's actually a class
+            if not isinstance(tool_class, type):
+                self.logger.error(f"{tool_name}: Not a valid class type")
+                return False
+            
+            # Check if it has a callable constructor
+            if not hasattr(tool_class, '__init__'):
+                self.logger.error(f"{tool_name}: No __init__ method")
+                return False
+            
+            # Check constructor signature
+            import inspect
+            try:
+                sig = inspect.signature(tool_class.__init__)
+                self.logger.debug(f"{tool_name} constructor parameters: {list(sig.parameters.keys())}")
+            except Exception as e:
+                self.logger.warning(f"Could not inspect {tool_name} constructor: {e}")
+            
+            return True
+        except Exception as e:
+            self.logger.error(f"Tool class validation failed for {tool_name}: {e}")
+            return False
+    
+    def _try_direct_import(self, module_name: str, class_name: str):
+        """Try direct import strategy."""
+        return __import__(module_name, fromlist=[class_name])
+    
+    def _try_no_src_import(self, module_name: str, class_name: str):
+        """Try import without 'src' prefix."""
+        modified_module = module_name.replace('src.', '')
+        return __import__(modified_module, fromlist=[class_name])
+    
+    def _post_launch_configuration(self, tool_instance, tool_name: str):
+        """Configure tool after successful creation."""
+        try:
+            # Ensure proper window behavior
+            if hasattr(tool_instance, 'show'):
+                # Make sure the tool window appears properly
+                tool_instance.show()
+                tool_instance.raise_()  # Bring to front
+                tool_instance.activateWindow()  # Give focus
+            
+            # Set window state
+            if hasattr(tool_instance, 'setWindowState'):
+                # Ensure window is normal (not minimized)
+                tool_instance.setWindowState(tool_instance.windowState() & ~Qt.WindowMinimized | Qt.WindowActive)
+            
+            self.logger.debug(f"Post-launch configuration completed for {tool_name}")
+            
+        except Exception as e:
+            self.logger.warning(f"Post-launch configuration failed for {tool_name}: {e}")
+    
+    def _handle_launch_failure(self, tool_name: str, error):
+        """Handle tool launch failure with detailed diagnostics."""
+        error_details = []
+        
+        # Categorize the error
+        if "ImportError" in str(type(error)):
+            error_details.append("- Module import failed")
+            error_details.append("- Check if the tool file exists")
+            error_details.append("- Verify Python path configuration")
+        elif "TypeError" in str(type(error)):
+            error_details.append("- Constructor parameter mismatch")
+            error_details.append("- Tool may need updated parameters")
+            error_details.append("- Check tool compatibility")
+        elif "AttributeError" in str(type(error)):
+            error_details.append("- Missing required attributes or methods")
+            error_details.append("- Tool may be incomplete or corrupted")
+        else:
+            error_details.append("- Unexpected error during tool creation")
+        
+        detailed_message = f"Could not launch {tool_name}.\n\n"
+        detailed_message += f"Error: {error}\n\n"
+        detailed_message += "Possible causes:\n"
+        detailed_message += "\n".join(error_details)
+        detailed_message += "\n\nPlease check the tool installation and try again."
+        
+        self._show_user_error("Tool Launch Error", detailed_message)
+    
+    def _handle_unexpected_error(self, tool_name: str, error):
+        """Handle unexpected errors during tool launch."""
+        self._show_user_error("Unexpected Tool Launch Error",
+            f"An unexpected error occurred while launching {tool_name}:\n\n"
+            f"{error}\n\n"
+            f"This may indicate a system-level issue. Please try restarting the application.")
+    
     
     def go_back(self):
         """Navigate back in active pane."""
@@ -3311,6 +3536,147 @@ class MultiPaneFileExplorer(QMainWindow):
                 continue
         return None
     
+    def _import_with_importlib(self, module_path, class_name):
+        """Try importing with importlib for better error handling."""
+        try:
+            import importlib
+            module = importlib.import_module(module_path)
+            if hasattr(module, class_name):
+                return module
+        except ImportError:
+            pass
+        return None
+    
+    def _create_tool_instance(self, tool_class, tool_name):
+        """Create tool instance with comprehensive error handling and parent management."""
+        try:
+            self.logger.info(f"Creating tool instance for {tool_name}")
+            
+            # Enhanced instantiation strategies for better compatibility
+            tool_instance = None
+            creation_strategies = [
+                # Strategy 1: Try with parent parameter
+                lambda: self._try_create_with_parent(tool_class, tool_name),
+                # Strategy 2: Try with default constructor
+                lambda: self._try_create_default(tool_class, tool_name),
+                # Strategy 3: Try with window type parameter
+                lambda: self._try_create_with_window_type(tool_class, tool_name),
+                # Strategy 4: Try with minimal parameters
+                lambda: self._try_create_minimal(tool_class, tool_name)
+            ]
+            
+            last_error = None
+            for i, strategy in enumerate(creation_strategies, 1):
+                try:
+                    self.logger.debug(f"Trying creation strategy {i} for {tool_name}")
+                    tool_instance = strategy()
+                    if tool_instance:
+                        self.logger.info(f"Tool {tool_name} created successfully with strategy {i}")
+                        break
+                except Exception as e:
+                    last_error = e
+                    self.logger.debug(f"Creation strategy {i} failed: {e}")
+                    continue
+            
+            if not tool_instance:
+                self.logger.error(f"All creation strategies failed for {tool_name}: {last_error}")
+                self._show_user_error("Tool Launch Error",
+                    f"Could not create {tool_name} window.\n\n"
+                    f"All instantiation strategies failed.\n\n"
+                    f"Last error: {last_error}")
+                return None
+            
+            # Set parent relationship if tool instance was created successfully
+            if hasattr(tool_instance, 'setParent') and tool_instance.parent() != self:
+                try:
+                    tool_instance.setParent(self)
+                    self.logger.debug(f"Set parent for {tool_name}")
+                except Exception as e:
+                    self.logger.warning(f"Could not set parent for {tool_name}: {e}")
+            
+            # Ensure tool is properly configured
+            self._configure_tool_instance(tool_instance, tool_name)
+            
+            return tool_instance
+            
+        except Exception as e:
+            self.logger.error(f"Unexpected error creating tool instance {tool_name}: {e}")
+            self._show_user_error("Tool Launch Error",
+                f"Unexpected error creating {tool_name} window:\n\n{e}")
+            return None
+    
+    def _try_create_with_parent(self, tool_class, tool_name):
+        """Try creating tool with parent parameter."""
+        try:
+            # Check if constructor accepts parent parameter
+            import inspect
+            sig = inspect.signature(tool_class.__init__)
+            if 'parent' in sig.parameters:
+                return tool_class(parent=self)
+        except Exception:
+            pass
+        return None
+    
+    def _try_create_default(self, tool_class, tool_name):
+        """Try creating tool with default constructor."""
+        return tool_class()
+    
+    def _try_create_with_window_type(self, tool_class, tool_name):
+        """Try creating tool with window_type parameter."""
+        try:
+            import inspect
+            sig = inspect.signature(tool_class.__init__)
+            if 'window_type' in sig.parameters:
+                return tool_class(window_type="utility")
+        except Exception:
+            pass
+        return None
+    
+    def _try_create_minimal(self, tool_class, tool_name):
+        """Try creating tool with minimal safe parameters."""
+        try:
+            import inspect
+            sig = inspect.signature(tool_class.__init__)
+            params = {}
+            
+            # Add safe parameters if they exist
+            if 'title' in sig.parameters:
+                params['title'] = f"{tool_name} - RFU"
+            if 'parent' in sig.parameters:
+                params['parent'] = self
+            if 'window_type' in sig.parameters:
+                params['window_type'] = "utility"
+            
+            return tool_class(**params)
+        except Exception:
+            pass
+        return None
+    
+    def _configure_tool_instance(self, tool_instance, tool_name):
+        """Configure tool instance after creation."""
+        try:
+            # Set window attributes for better integration
+            if hasattr(tool_instance, 'setWindowTitle'):
+                current_title = tool_instance.windowTitle()
+                if not current_title or current_title == "":
+                    tool_instance.setWindowTitle(f"{tool_name} - RFU Explorer")
+            
+            # Set window flags for better behavior
+            if hasattr(tool_instance, 'setWindowFlags'):
+                # Make tool windows independent but associated with parent
+                tool_instance.setWindowFlags(
+                    tool_instance.windowFlags() | Qt.Window
+                )
+            
+            # Set focus policy for better interaction
+            if hasattr(tool_instance, 'setFocusPolicy'):
+                tool_instance.setFocusPolicy(Qt.StrongFocus)
+            
+            self.logger.debug(f"Tool instance {tool_name} configured successfully")
+            
+        except Exception as e:
+            self.logger.warning(f"Error configuring tool instance {tool_name}: {e}")
+    
     def _try_legacy_imports(self, tool_name, class_name):
         """Try legacy import paths based on tool name."""
         legacy_mappings = {
@@ -3329,6 +3695,14 @@ class MultiPaneFileExplorer(QMainWindow):
             except ImportError:
                 pass
         return None
+    
+    def _show_user_error(self, title, message):
+        """Show user-friendly error message."""
+        try:
+            QMessageBox.warning(self, title, message)
+        except Exception as e:
+            self.logger.error(f"Failed to show error dialog: {e}")
+            print(f"{title}: {message}")  # Fallback to console
     
     def _launch_tool_by_name(self, tool_name):
         """Launch tool by name using fallback mapping."""
@@ -3420,26 +3794,33 @@ class MultiPaneFileExplorer(QMainWindow):
             QMessageBox.information(self, "System Information", info)
         except Exception as e:
             self.logger.error(f"Error showing system info: {e}")
-    def _show_user_error(self, title, message):
-        """Show user-friendly error dialog."""
-        try:
-            from PyQt5.QtWidgets import QMessageBox
-            msg = QMessageBox(self)
-            msg.setWindowTitle(title)
-            msg.setText(message)
-            msg.setIcon(QMessageBox.Warning)
-            msg.setStandardButtons(QMessageBox.Ok)
-            msg.exec_()
-            
-            # Also update status bar
-            if hasattr(self, 'statusBar'):
-                self.statusBar().showMessage(f"Error: {title}", 5000)
-                
-        except Exception as e:
-            self.logger.error(f"Failed to show error dialog: {e}")
-            print(f"ERROR: {title} - {message}")
+    
+    def _launch_tool_by_name(self, tool_name):
+        """Launch tool by name using fallback mapping."""
+        # Remove emoji and clean up tool name
+        clean_name = tool_name
+        if clean_name.startswith(('🔍', '📋', '📊', '🔒', '🗑️')):
+            clean_name = clean_name.split(' ', 1)[1] if len(clean_name.split(' ', 1)) > 1 else clean_name
+        
+        # Try to call the corresponding method
+        method_mappings = {
+            'File Finder': self.launch_file_finder,
+            'Size Analyzer': self.launch_size_analyzer,
+            'Duplicate Finder': self.launch_duplicate_finder,
+            'File Checksum': self.launch_checksum,
+            'Empty Folders': self.launch_empty_folders,
+        }
+        
+        if clean_name in method_mappings:
+            try:
+                method_mappings[clean_name]()
+                self.logger.info(f"Launched tool via method mapping: {clean_name}")
+            except Exception as e:
+                self.logger.error(f"Error calling method for {clean_name}: {e}")
+        else:
+            self.logger.warning(f"No method mapping found for tool: {clean_name}")
+    
     def _on_discovered_tool_activated(self, item, column):
-        """Handle activation of discovered tools with enhanced error handling."""
         try:
             if not item:
                 self.logger.warning("No item selected for tool activation")
@@ -3633,7 +4014,7 @@ class MultiPaneFileExplorer(QMainWindow):
         return ' '.join(word.capitalize() for word in file_name.split('_'))
     
     def _launch_discovered_tool(self, tool_data):
-        """Launch a discovered tool using its metadata with enhanced path resolution."""
+        """Launch a discovered tool using its metadata with enhanced path resolution and error handling."""
         try:
             tool_name = tool_data['display_name']
             module_path = tool_data['module_path']
@@ -3650,7 +4031,9 @@ class MultiPaneFileExplorer(QMainWindow):
                 # Strategy 3: Try with different path variations
                 lambda: self._try_alternative_imports(module_path, class_name),
                 # Strategy 4: Try legacy paths
-                lambda: self._try_legacy_imports(tool_name, class_name)
+                lambda: self._try_legacy_imports(tool_name, class_name),
+                # Strategy 5: Try with importlib
+                lambda: self._import_with_importlib(module_path, class_name)
             ]
             
             tool_instance = None
@@ -3662,8 +4045,10 @@ class MultiPaneFileExplorer(QMainWindow):
                     module = strategy()
                     if module:
                         tool_class = getattr(module, class_name)
-                        tool_instance = tool_class()
-                        break
+                        # Use robust instantiation with error handling
+                        tool_instance = self._create_tool_instance(tool_class, tool_name)
+                        if tool_instance:
+                            break
                 except Exception as e:
                     last_error = e
                     self.logger.debug(f"Import strategy failed: {e}")
@@ -4118,9 +4503,9 @@ class MultiPaneFileExplorer(QMainWindow):
         current_path = self._get_pane_current_path(pane)
         if current_path:
             parent_path = str(Path(current_path).parent)
-            if parent_path != current_path:
-                if hasattr(pane, 'navigate_to_path'):
-                    pane.navigate_to_path(Path(parent_path))
+            if (parent_path != current_path and
+                    hasattr(pane, 'navigate_to_path')):
+                pane.navigate_to_path(Path(parent_path))
     
     def _fallback_navigation_forward(self, pane):
         """Fallback navigation forward implementation."""
@@ -4152,7 +4537,8 @@ class MultiPaneFileExplorer(QMainWindow):
             
             # Initialize advanced tool launcher
             if AdvancedToolLauncher:
-                self.tool_launcher = AdvancedToolLauncher(registry=None)  # TODO: Provide proper registry
+                # Create tool launcher with empty registry for now
+                self.tool_launcher = AdvancedToolLauncher(registry={})
             
             # Initialize keyboard shortcut manager
             if KeyboardShortcutManager:

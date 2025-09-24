@@ -1,8 +1,10 @@
 """
 Centralized theme system for Richard's File Utilities.
 
-This module provides consistent styling and appearance across all GUI utilities.
+This module provides consistent styling and appearance across all utilities.
 """
+
+from typing import Callable, List
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QColor, QFont
@@ -32,7 +34,7 @@ class LightColors:
     BUTTON_PRIMARY_HOVER = "#2980B9"
     BUTTON_PRIMARY_PRESSED = "#21618C"
     
-    BUTTON_SECONDARY = "#95A5A6" # Medium gray
+    BUTTON_SECONDARY = "#95A5A6"  # Medium gray
     BUTTON_SECONDARY_HOVER = "#7F8C8D"
     BUTTON_SECONDARY_PRESSED = "#6C7A89"
     
@@ -83,10 +85,54 @@ class Colors:
     
     _current_theme = "light"  # Default theme
     
+    # Initialize with light theme colors by default
+    PRIMARY = LightColors.PRIMARY
+    SECONDARY = LightColors.SECONDARY
+    ACCENT = LightColors.ACCENT
+    BACKGROUND = LightColors.BACKGROUND
+    WINDOW_BACKGROUND = LightColors.WINDOW_BACKGROUND
+    DIALOG_BACKGROUND = LightColors.DIALOG_BACKGROUND
+    TEXT_PRIMARY = LightColors.TEXT_PRIMARY
+    TEXT_SECONDARY = LightColors.TEXT_SECONDARY
+    TEXT_DISABLED = LightColors.TEXT_DISABLED
+    BUTTON_PRIMARY = LightColors.BUTTON_PRIMARY
+    BUTTON_PRIMARY_HOVER = LightColors.BUTTON_PRIMARY_HOVER
+    BUTTON_PRIMARY_PRESSED = LightColors.BUTTON_PRIMARY_PRESSED
+    BUTTON_SECONDARY = LightColors.BUTTON_SECONDARY
+    BUTTON_SECONDARY_HOVER = LightColors.BUTTON_SECONDARY_HOVER
+    BUTTON_SECONDARY_PRESSED = LightColors.BUTTON_SECONDARY_PRESSED
+    SUCCESS = LightColors.SUCCESS
+    WARNING = LightColors.WARNING
+    ERROR = LightColors.ERROR
+    INFO = LightColors.INFO
+    
     @classmethod
     def set_theme(cls, theme_name: str):
-        """Set the current theme."""
+        """Set the current theme and update all color attributes."""
         cls._current_theme = theme_name.lower()
+        color_class = (DarkColors if cls._current_theme == "dark"
+                      else LightColors)
+        
+        # Update all color attributes
+        cls.PRIMARY = color_class.PRIMARY
+        cls.SECONDARY = color_class.SECONDARY
+        cls.ACCENT = color_class.ACCENT
+        cls.BACKGROUND = color_class.BACKGROUND
+        cls.WINDOW_BACKGROUND = color_class.WINDOW_BACKGROUND
+        cls.DIALOG_BACKGROUND = color_class.DIALOG_BACKGROUND
+        cls.TEXT_PRIMARY = color_class.TEXT_PRIMARY
+        cls.TEXT_SECONDARY = color_class.TEXT_SECONDARY
+        cls.TEXT_DISABLED = color_class.TEXT_DISABLED
+        cls.BUTTON_PRIMARY = color_class.BUTTON_PRIMARY
+        cls.BUTTON_PRIMARY_HOVER = color_class.BUTTON_PRIMARY_HOVER
+        cls.BUTTON_PRIMARY_PRESSED = color_class.BUTTON_PRIMARY_PRESSED
+        cls.BUTTON_SECONDARY = color_class.BUTTON_SECONDARY
+        cls.BUTTON_SECONDARY_HOVER = color_class.BUTTON_SECONDARY_HOVER
+        cls.BUTTON_SECONDARY_PRESSED = color_class.BUTTON_SECONDARY_PRESSED
+        cls.SUCCESS = color_class.SUCCESS
+        cls.WARNING = color_class.WARNING
+        cls.ERROR = color_class.ERROR
+        cls.INFO = color_class.INFO
     
     @classmethod
     def get_theme(cls) -> str:
@@ -97,101 +143,6 @@ class Colors:
     def _get_color_class(cls):
         """Get the appropriate color class based on current theme."""
         return DarkColors if cls._current_theme == "dark" else LightColors
-    
-    @classmethod
-    @property
-    def PRIMARY(cls):
-        return cls._get_color_class().PRIMARY
-    
-    @classmethod
-    @property
-    def SECONDARY(cls):
-        return cls._get_color_class().SECONDARY
-    
-    @classmethod
-    @property
-    def ACCENT(cls):
-        return cls._get_color_class().ACCENT
-    
-    @classmethod
-    @property
-    def BACKGROUND(cls):
-        return cls._get_color_class().BACKGROUND
-    
-    @classmethod
-    @property
-    def WINDOW_BACKGROUND(cls):
-        return cls._get_color_class().WINDOW_BACKGROUND
-    
-    @classmethod
-    @property
-    def DIALOG_BACKGROUND(cls):
-        return cls._get_color_class().DIALOG_BACKGROUND
-    
-    @classmethod
-    @property
-    def TEXT_PRIMARY(cls):
-        return cls._get_color_class().TEXT_PRIMARY
-    
-    @classmethod
-    @property
-    def TEXT_SECONDARY(cls):
-        return cls._get_color_class().TEXT_SECONDARY
-    
-    @classmethod
-    @property
-    def TEXT_DISABLED(cls):
-        return cls._get_color_class().TEXT_DISABLED
-    
-    @classmethod
-    @property
-    def BUTTON_PRIMARY(cls):
-        return cls._get_color_class().BUTTON_PRIMARY
-    
-    @classmethod
-    @property
-    def BUTTON_PRIMARY_HOVER(cls):
-        return cls._get_color_class().BUTTON_PRIMARY_HOVER
-    
-    @classmethod
-    @property
-    def BUTTON_PRIMARY_PRESSED(cls):
-        return cls._get_color_class().BUTTON_PRIMARY_PRESSED
-    
-    @classmethod
-    @property
-    def BUTTON_SECONDARY(cls):
-        return cls._get_color_class().BUTTON_SECONDARY
-    
-    @classmethod
-    @property
-    def BUTTON_SECONDARY_HOVER(cls):
-        return cls._get_color_class().BUTTON_SECONDARY_HOVER
-    
-    @classmethod
-    @property
-    def BUTTON_SECONDARY_PRESSED(cls):
-        return cls._get_color_class().BUTTON_SECONDARY_PRESSED
-    
-    @classmethod
-    @property
-    def SUCCESS(cls):
-        return cls._get_color_class().SUCCESS
-    
-    @classmethod
-    @property
-    def WARNING(cls):
-        return cls._get_color_class().WARNING
-    
-    @classmethod
-    @property
-    def ERROR(cls):
-        return cls._get_color_class().ERROR
-    
-    @classmethod
-    @property
-    def INFO(cls):
-        return cls._get_color_class().INFO
 
 # Typography
 class Fonts:
@@ -510,7 +461,7 @@ class Styles:
 class ThemeManager:
     """Manager for applying themes consistently and dynamically."""
     
-    _theme_changed_callbacks = []
+    _theme_changed_callbacks: List[Callable] = []
     
     @classmethod
     def add_theme_changed_callback(cls, callback):
@@ -644,7 +595,8 @@ class ThemeManager:
                         ThemeManager.style_frame(widget)
                     elif "ComboBox" in widget_class:
                         ThemeManager.style_combo_box(widget)
-                    elif "LineEdit" in widget_class or "TextEdit" in widget_class:
+                    elif ("LineEdit" in widget_class or
+                          "TextEdit" in widget_class):
                         ThemeManager.style_input_field(widget)
                     elif "Button" in widget_class:
                         ThemeManager.style_primary_button(widget)
@@ -658,17 +610,21 @@ class ThemeManager:
             print(f"Error applying theme to widget {widget}: {e}")
     
     @staticmethod
-    def create_standard_layout():
+    def create_standard_layout(parent=None):
         """Create a standard layout with consistent spacing."""
-        from PyQt5.QtWidgets import QVBoxLayout
-        
-        layout = QVBoxLayout()
-        layout.setContentsMargins(
-            Spacing.WINDOW_MARGIN,
-            Spacing.WINDOW_MARGIN,
-            Spacing.WINDOW_MARGIN,
-            Spacing.WINDOW_MARGIN
-        )
-        layout.setSpacing(Spacing.LARGE_SPACING)
-        
-        return layout
+        try:
+            from PyQt5.QtWidgets import QVBoxLayout
+            
+            layout = QVBoxLayout(parent)
+            layout.setContentsMargins(
+                Spacing.WINDOW_MARGIN,
+                Spacing.WINDOW_MARGIN,
+                Spacing.WINDOW_MARGIN,
+                Spacing.WINDOW_MARGIN
+            )
+            layout.setSpacing(Spacing.LARGE_SPACING)
+            
+            return layout
+        except ImportError:
+            # Return None if PyQt5 not available
+            return None

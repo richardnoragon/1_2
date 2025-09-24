@@ -3,46 +3,59 @@
 Simple Duplicate Finder GUI for Richard's File Utilities
 """
 
-import sys
-import os
 import hashlib
-from PyQt5.QtWidgets import (
-    QMainWindow, QWidget, QVBoxLayout,
-    QPushButton, QLabel, QListWidget,
-    QApplication, QMessageBox, QGroupBox, QFileDialog
-)
+import os
+import sys
 
-# Import StandardWindow for menu integration
+from PyQt5.QtWidgets import (QApplication, QFileDialog, QGroupBox, QLabel,
+                             QListWidget, QMainWindow, QMessageBox,
+                             QPushButton, QVBoxLayout, QWidget)
+
+# Import SafeStandardWindow for reliable menu integration
 try:
-    from src.gui.standard_window import StandardWindow
+    # Add the correct path for imports
+    sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
+    from src.gui.safe_standard_window import \
+        SafeStandardWindow as StandardWindow
     STANDARD_WINDOW_AVAILABLE = True
-except ImportError:
-    # Fallback for standalone execution
-    from PyQt5.QtWidgets import QMainWindow
-    StandardWindow = QMainWindow
-    STANDARD_WINDOW_AVAILABLE = False
+except ImportError as e:
+    print(f"SafeStandardWindow not available: {e}")
+    # Try original StandardWindow as fallback
+    try:
+        from src.gui.standard_window import StandardWindow
+        STANDARD_WINDOW_AVAILABLE = True
+    except ImportError:
+        # Final fallback - minimal implementation
+        class StandardWindow(QMainWindow):
+            def __init__(self, title="Window", window_type="utility", parent=None):
+                super().__init__(parent)
+                self.setWindowTitle(title)
+            
+            def ensure_menu_bar(self):
+                pass  # No-op for fallback
+        
+        STANDARD_WINDOW_AVAILABLE = False
 
 
 class DuplicateFinderApp(StandardWindow):
     """Simple Duplicate Finder GUI."""
     
-    def __init__(self):
-        if STANDARD_WINDOW_AVAILABLE:
-            super().__init__(
-                title="Duplicate Finder - Richard's File Utilities",
-                window_type="utility"
-            )
-        else:
-            super().__init__()
-            self.setWindowTitle("Duplicate Finder - Richard's File Utilities")
-            self.setGeometry(100, 100, 800, 600)
+    def __init__(self, parent=None):
+        # Always use the safe constructor parameters
+        super().__init__(
+            title="Duplicate Finder - Richard's File Utilities",
+            window_type="utility",
+            parent=parent
+        )
+        self.setGeometry(100, 100, 800, 600)
         
         self.duplicates = {}
+        self.selected_directory = None
         self.init_ui()
         if STANDARD_WINDOW_AVAILABLE:
             self._setup_menu_callbacks()
-            # Ensure menu bar exists
-            self.ensure_menu_bar()
+        # Ensure menu bar exists (safe to call in both modes)
+        self.ensure_menu_bar()
     
     def _setup_menu_callbacks(self):
         """Setup tool-specific menu callbacks."""
