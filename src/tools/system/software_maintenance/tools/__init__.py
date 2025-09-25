@@ -9,7 +9,4 @@ automation, safety features, and comprehensive functionality.
 from .software_updater import SoftwareUpdater
 from .software_deinstaller import SoftwareDeinstaller
 
-__all__ = [
-    'SoftwareUpdater',
-    'SoftwareDeinstaller'
-]
+__all__ = ["SoftwareUpdater", "SoftwareDeinstaller"]

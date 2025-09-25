@@ -38,17 +38,17 @@ def temp_workspace():
     workspace = Path(temp_dir) / "test_workspace"
     src_dir = workspace / "src"
     rfu_dir = src_dir / "rfu"
-    
+
     # Create directory structure
     rfu_dir.mkdir(parents=True)
-    
+
     yield {
-        'temp_dir': temp_dir,
-        'workspace': workspace,
-        'src_dir': src_dir,
-        'rfu_dir': rfu_dir
+        "temp_dir": temp_dir,
+        "workspace": workspace,
+        "src_dir": src_dir,
+        "rfu_dir": rfu_dir,
     }
-    
+
     # Cleanup
     shutil.rmtree(temp_dir, ignore_errors=True)
 
@@ -118,20 +118,20 @@ test_executed = True
 def setup_test_files(temp_workspace, mock_launch_main_file, mock_main_file):
     """Set up test files in the temporary workspace."""
     workspace_data = temp_workspace
-    
+
     # Create launch_main.py
-    launch_main_path = workspace_data['rfu_dir'] / "launch_main.py"
-    with open(launch_main_path, 'w', encoding='utf-8') as f:
+    launch_main_path = workspace_data["rfu_dir"] / "launch_main.py"
+    with open(launch_main_path, "w", encoding="utf-8") as f:
         f.write(mock_launch_main_file)
-    
+
     # Create main.py
-    main_py_path = workspace_data['workspace'] / "main.py"
-    with open(main_py_path, 'w', encoding='utf-8') as f:
+    main_py_path = workspace_data["workspace"] / "main.py"
+    with open(main_py_path, "w", encoding="utf-8") as f:
         f.write(mock_main_file)
-    
-    workspace_data['launch_main_path'] = launch_main_path
-    workspace_data['main_py_path'] = main_py_path
-    
+
+    workspace_data["launch_main_path"] = launch_main_path
+    workspace_data["main_py_path"] = main_py_path
+
     return workspace_data
 
 
@@ -140,12 +140,9 @@ def original_state():
     """Preserve and restore original system state."""
     original_cwd = os.getcwd()
     original_path = sys.path.copy()
-    
-    yield {
-        'cwd': original_cwd,
-        'path': original_path
-    }
-    
+
+    yield {"cwd": original_cwd, "path": original_path}
+
     # Restore state
     os.chdir(original_cwd)
     sys.path[:] = original_path
@@ -155,21 +152,18 @@ def original_state():
 def capture_output():
     """Capture stdout and stderr for testing."""
     from io import StringIO
-    
+
     original_stdout = sys.stdout
     original_stderr = sys.stderr
-    
+
     captured_stdout = StringIO()
     captured_stderr = StringIO()
-    
+
     sys.stdout = captured_stdout
     sys.stderr = captured_stderr
-    
-    yield {
-        'stdout': captured_stdout,
-        'stderr': captured_stderr
-    }
-    
+
+    yield {"stdout": captured_stdout, "stderr": captured_stderr}
+
     # Restore original streams
     sys.stdout = original_stdout
     sys.stderr = original_stderr
@@ -178,7 +172,7 @@ def capture_output():
 @pytest.fixture
 def mock_subprocess():
     """Mock subprocess operations for testing."""
-    with patch('subprocess.run') as mock_run:
+    with patch("subprocess.run") as mock_run:
         mock_run.return_value.returncode = 0
         mock_run.return_value.stdout = "Mock subprocess output"
         mock_run.return_value.stderr = ""
@@ -188,28 +182,24 @@ def mock_subprocess():
 # Test markers
 pytest_plugins = []
 
+
 # Configure test markers
 def pytest_configure(config):
     """Configure pytest markers."""
     config.addinivalue_line(
-        "markers", 
-        "unit: Unit tests for individual functions and methods"
+        "markers", "unit: Unit tests for individual functions and methods"
     )
     config.addinivalue_line(
-        "markers", 
-        "integration: Integration tests with real file system"
+        "markers", "integration: Integration tests with real file system"
     )
     config.addinivalue_line(
-        "markers", 
-        "edge_case: Edge cases and boundary condition tests"
+        "markers", "edge_case: Edge cases and boundary condition tests"
     )
     config.addinivalue_line(
-        "markers", 
-        "performance: Performance and resource usage tests"
+        "markers", "performance: Performance and resource usage tests"
     )
     config.addinivalue_line(
-        "markers", 
-        "slow: Tests that take longer to execute"
+        "markers", "slow: Tests that take longer to execute"
     )
 
 
@@ -229,11 +219,11 @@ def pytest_collection_modifyitems(config, items):
 
 
 # Utility functions for tests
-def create_test_file(path, content, encoding='utf-8'):
+def create_test_file(path, content, encoding="utf-8"):
     """Utility function to create test files."""
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
-    with open(path, 'w', encoding=encoding) as f:
+    with open(path, "w", encoding=encoding) as f:
         f.write(content)
     return path
 
@@ -253,30 +243,30 @@ def assert_directory_exists(path):
 
 
 # Test data constants
-TEST_LAUNCH_MAIN_MINIMAL = '''#!/usr/bin/env python3
+TEST_LAUNCH_MAIN_MINIMAL = """#!/usr/bin/env python3
 import sys
 from pathlib import Path
 workspace_root = Path(__file__).parent.parent.parent
 print(f"Workspace: {workspace_root}")
-'''
+"""
 
-TEST_MAIN_SIMPLE = '''print("Hello from main.py")'''
+TEST_MAIN_SIMPLE = """print("Hello from main.py")"""
 
-TEST_MAIN_WITH_ERROR = '''
+TEST_MAIN_WITH_ERROR = """
 print("Starting main.py")
 raise ValueError("Test error in main.py")
 print("This should not print")
-'''
+"""
 
-TEST_MAIN_EMPTY = ''
+TEST_MAIN_EMPTY = ""
 
 # Export utility functions and constants for use in tests
 __all__ = [
-    'create_test_file',
-    'assert_file_exists', 
-    'assert_directory_exists',
-    'TEST_LAUNCH_MAIN_MINIMAL',
-    'TEST_MAIN_SIMPLE',
-    'TEST_MAIN_WITH_ERROR',
-    'TEST_MAIN_EMPTY'
+    "create_test_file",
+    "assert_file_exists",
+    "assert_directory_exists",
+    "TEST_LAUNCH_MAIN_MINIMAL",
+    "TEST_MAIN_SIMPLE",
+    "TEST_MAIN_WITH_ERROR",
+    "TEST_MAIN_EMPTY",
 ]

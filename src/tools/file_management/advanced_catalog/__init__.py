@@ -12,7 +12,12 @@ Features:
 """
 
 from .advanced_catalog_window import AdvancedCatalogWindow
-from .catalog_data_model import FileEntry, CatalogData, SortCriteria, ColorScheme
+from .catalog_data_model import (
+    FileEntry,
+    CatalogData,
+    SortCriteria,
+    ColorScheme,
+)
 from .sorting_engine import SortingEngine
 from .color_coding_engine import ColorCodingEngine
 
@@ -20,11 +25,11 @@ __version__ = "1.0.0"
 __author__ = "Richard's File Utilities"
 
 __all__ = [
-    'AdvancedCatalogWindow',
-    'FileEntry',
-    'CatalogData', 
-    'SortCriteria',
-    'ColorScheme',
-    'SortingEngine',
-    'ColorCodingEngine'
+    "AdvancedCatalogWindow",
+    "FileEntry",
+    "CatalogData",
+    "SortCriteria",
+    "ColorScheme",
+    "SortingEngine",
+    "ColorCodingEngine",
 ]

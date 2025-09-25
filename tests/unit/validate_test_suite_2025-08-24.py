@@ -11,9 +11,9 @@ from pathlib import Path
 
 def validate_test_files():
     """Validate that all expected test files and reports exist."""
-    
+
     base_path = Path("tests/unit")
-    
+
     expected_files = [
         # Test files
         "test_network_scanner_simplified_2025-08-24.py",
@@ -22,21 +22,20 @@ def validate_test_files():
         "pytest_network_scanner_2025-08-24.ini",
         "run_network_scanner_tests_2025-08-24.py",
         "generate_test_summary_2025-08-24.py",
-        
         # Result files
         "result_network_scanner_simplified_2025-08-24.html",
         "result_network_scanner_simplified_2025-08-24.json",
         "result_network_scanner_test_summary_2025-08-24.md",
-        "result_network_scanner_coverage_simplified_2025-08-24.json"
+        "result_network_scanner_coverage_simplified_2025-08-24.json",
     ]
-    
+
     expected_directories = [
         "result_network_scanner_coverage_simplified_2025-08-24"
     ]
-    
+
     print("Network Scanner Test Files Validation")
     print("=" * 50)
-    
+
     # Check files
     missing_files = []
     for file_name in expected_files:
@@ -47,7 +46,7 @@ def validate_test_files():
         else:
             print(f"❌ {file_name} - MISSING")
             missing_files.append(file_name)
-    
+
     # Check directories
     missing_dirs = []
     for dir_name in expected_directories:
@@ -58,9 +57,9 @@ def validate_test_files():
         else:
             print(f"❌ {dir_name}/ - MISSING")
             missing_dirs.append(dir_name)
-    
+
     print("\n" + "=" * 50)
-    
+
     if not missing_files and not missing_dirs:
         print("✅ All test files and reports created successfully!")
         print(f"📁 Total files created: {len(expected_files)}")
@@ -75,28 +74,30 @@ def validate_test_files():
 
 def display_test_summary():
     """Display a summary of test execution results."""
-    
-    summary_file = Path("tests/unit/result_network_scanner_test_summary_2025-08-24.md")
-    
+
+    summary_file = Path(
+        "tests/unit/result_network_scanner_test_summary_2025-08-24.md"
+    )
+
     if summary_file.exists():
         print("\n📋 TEST EXECUTION SUMMARY:")
         print("-" * 30)
-        
+
         # Read key metrics from summary file
-        with open(summary_file, 'r', encoding='utf-8') as f:
+        with open(summary_file, "r", encoding="utf-8") as f:
             content = f.read()
-            
+
             # Extract key information
             if "33 passed" in content:
                 print("✅ Test Status: ALL PASSED")
                 print("📊 Test Count: 33 tests")
-            
+
             if "93%" in content:
                 print("📈 Code Coverage: 93%")
-            
+
             if "0.89" in content:
                 print("⏱️  Execution Time: ~0.89 seconds")
-        
+
         print(f"📄 Full report: {summary_file}")
     else:
         print("❌ Test summary file not found")
@@ -104,15 +105,15 @@ def display_test_summary():
 
 def main():
     """Main validation function."""
-    
+
     print("Network Scanner Unit Test Validation")
     print("Date: 2025-08-24")
     print("Target: src/utilities/network/network_scanner.py")
     print()
-    
+
     success = validate_test_files()
     display_test_summary()
-    
+
     print("\n" + "=" * 50)
     if success:
         print("🎉 TEST SUITE VALIDATION: SUCCESS")
@@ -121,7 +122,7 @@ def main():
     else:
         print("⚠️  TEST SUITE VALIDATION: INCOMPLETE")
         print("Some files are missing. Please check the test execution.")
-    
+
     return success
 
 

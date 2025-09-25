@@ -7,23 +7,26 @@ from log_config import setup_logger
 # Set up logger
 logger = setup_logger(__name__)
 
+
 class HtmlToPdfConverter(QtWidgets.QMainWindow):
     def __init__(self):
         try:
             super(HtmlToPdfConverter, self).__init__()
-            uic.loadUi('convert_html_to_pdf.ui', self)
-            
+            uic.loadUi("convert_html_to_pdf.ui", self)
+
             # Connect buttons to functions
             self.convertUrlButton.clicked.connect(self.convert_from_url)
             self.convertFileButton.clicked.connect(self.convert_from_file)
             self.convertHtmlButton.clicked.connect(self.convert_from_html)
             self.browseButton.clicked.connect(self.browse_file)
             self.actionExit.triggered.connect(self.close)
-            
+
             logger.info("HTML to PDF converter initialized")
             self.show()
         except Exception as e:
-            logger.error("Failed to initialize HTML to PDF converter: %s", str(e))
+            logger.error(
+                "Failed to initialize HTML to PDF converter: %s", str(e)
+            )
             raise
 
     def browse_file(self):
@@ -32,7 +35,7 @@ class HtmlToPdfConverter(QtWidgets.QMainWindow):
                 self,
                 "Select HTML File",
                 "",
-                "HTML Files (*.html *.htm);;All Files (*.*)"
+                "HTML Files (*.html *.htm);;All Files (*.*)",
             )
             if filename:
                 logger.info("Selected HTML file: %s", filename)
@@ -44,10 +47,7 @@ class HtmlToPdfConverter(QtWidgets.QMainWindow):
     def save_pdf_dialog(self):
         try:
             filename, _ = QFileDialog.getSaveFileName(
-                self,
-                "Save PDF File",
-                "",
-                "PDF Files (*.pdf);;All Files (*.*)"
+                self, "Save PDF File", "", "PDF Files (*.pdf);;All Files (*.*)"
             )
             if filename:
                 logger.info("Selected output PDF file: %s", filename)
@@ -71,11 +71,13 @@ class HtmlToPdfConverter(QtWidgets.QMainWindow):
             logger.warning("No URL provided")
             self.show_error("Please enter a URL")
             return
-            
+
         output_file = self.save_pdf_dialog()
         if output_file:
             try:
-                logger.info("Converting URL to PDF: %s -> %s", url, output_file)
+                logger.info(
+                    "Converting URL to PDF: %s -> %s", url, output_file
+                )
                 self.statusLabel.setText("Converting URL to PDF...")
                 pdfkit.from_url(url, output_file, verbose=True)
                 self.statusLabel.setText("Ready")
@@ -92,11 +94,15 @@ class HtmlToPdfConverter(QtWidgets.QMainWindow):
             logger.warning("No input file selected")
             self.show_error("Please select an HTML file")
             return
-            
+
         output_file = self.save_pdf_dialog()
         if output_file:
             try:
-                logger.info("Converting HTML file to PDF: %s -> %s", input_file, output_file)
+                logger.info(
+                    "Converting HTML file to PDF: %s -> %s",
+                    input_file,
+                    output_file,
+                )
                 self.statusLabel.setText("Converting file to PDF...")
                 pdfkit.from_file(input_file, output_file, verbose=True)
                 self.statusLabel.setText("Ready")
@@ -113,7 +119,7 @@ class HtmlToPdfConverter(QtWidgets.QMainWindow):
             logger.warning("No HTML content provided")
             self.show_error("Please enter HTML content")
             return
-            
+
         output_file = self.save_pdf_dialog()
         if output_file:
             try:
@@ -128,6 +134,7 @@ class HtmlToPdfConverter(QtWidgets.QMainWindow):
                 self.show_error(f"Error converting HTML: %s", str(e))
                 self.statusLabel.setText("Error occurred")
 
+
 def main():
     try:
         app = QtWidgets.QApplication(sys.argv)
@@ -138,5 +145,6 @@ def main():
         logger.critical("Application failed to start: %s", str(e))
         sys.exit(1)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

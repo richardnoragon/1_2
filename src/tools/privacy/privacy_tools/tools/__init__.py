@@ -11,9 +11,9 @@ from .delete_file_history import DeleteFileHistoryTool
 from .delete_downloads import DeleteDownloadsTool
 
 __all__ = [
-    'SecureEmptyTrashTool',
-    'DeleteCookiesTool',
-    'DeleteHistoryTool',
-    'DeleteFileHistoryTool',
-    'DeleteDownloadsTool'
+    "SecureEmptyTrashTool",
+    "DeleteCookiesTool",
+    "DeleteHistoryTool",
+    "DeleteFileHistoryTool",
+    "DeleteDownloadsTool",
 ]

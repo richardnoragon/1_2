@@ -4,6 +4,7 @@ Richards File Utilities (RFU) - Main Entry Point.
 This module serves as the central entry point for the RFU application,
 handling initialization of logging, configuration, and the Qt application.
 """
+
 import sys
 from pathlib import Path
 
@@ -24,7 +25,7 @@ except ImportError:
 def main():
     """
     Initialize and run the Richards File Utilities application.
-    
+
     Returns:
         int: Exit code (0 for success, 1 for failure)
     """
@@ -34,8 +35,8 @@ def main():
     except ImportError:
         from log_manager import get_log_manager
 
-    logger = get_log_manager().get_logger('Main')
-    logger.info('Starting Richards Files Utilities')
+    logger = get_log_manager().get_logger("Main")
+    logger.info("Starting Richards Files Utilities")
 
     try:
         # Initialize configuration
@@ -45,10 +46,10 @@ def main():
             from config_manager import get_config_manager
 
         config = get_config_manager()
-        logging_level = config.get_setting('general', 'logging_level',
-                                           'INFO')
-        debug_enabled = config.get_setting('general',
-                                           'enable_debug_logging', False)
+        logging_level = config.get_setting("general", "logging_level", "INFO")
+        debug_enabled = config.get_setting(
+            "general", "enable_debug_logging", False
+        )
 
         # Initialize network connectivity configuration
         # try:
@@ -62,26 +63,26 @@ def main():
 
         # Set logging level based on configuration
         if debug_enabled:
-            get_log_manager().set_level('DEBUG')
+            get_log_manager().set_level("DEBUG")
         else:
             get_log_manager().set_level(logging_level)
 
         # Create Qt application with proper cleanup
         app = QApplication(sys.argv)
-        logger.info('Qt Application initialized')
+        logger.info("Qt Application initialized")
 
         # Create and show main window
         window = RFUHub()
         window.show()
-        logger.info('Main window displayed')
+        logger.info("Main window displayed")
 
         # Start event loop
         return_code = app.exec_()
-        logger.info('Application shutting down')
+        logger.info("Application shutting down")
 
         # Ensure proper cleanup
         try:
-            if hasattr(window, 'gui_hub') and window.gui_hub:
+            if hasattr(window, "gui_hub") and window.gui_hub:
                 window.gui_hub.close()
             app.quit()
             app.deleteLater()
@@ -91,9 +92,9 @@ def main():
         return return_code
 
     except Exception as e:
-        logger.critical('Critical error in main: %s', str(e), exc_info=True)
+        logger.critical("Critical error in main: %s", str(e), exc_info=True)
         return 1
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())

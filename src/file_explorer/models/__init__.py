@@ -9,5 +9,5 @@ __all__ = [
     "FileInfo",
     "DriveManager",
     "DriveInfo",
-    "DirectoryWatcher"
+    "DirectoryWatcher",
 ]

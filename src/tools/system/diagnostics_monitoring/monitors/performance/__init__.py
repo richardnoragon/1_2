@@ -18,10 +18,10 @@ from .cpu_tracker import CPUTracker
 from .process_analyzer import ProcessAnalyzer
 
 __all__ = [
-    'PerformanceMonitor',
-    'MemoryTracker', 
-    'CPUTracker',
-    'ProcessAnalyzer'
+    "PerformanceMonitor",
+    "MemoryTracker",
+    "CPUTracker",
+    "ProcessAnalyzer",
 ]
 
-__version__ = '1.0.0'
+__version__ = "1.0.0"

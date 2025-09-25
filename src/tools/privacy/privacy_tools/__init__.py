@@ -19,8 +19,4 @@ from .core.privacy_base import PrivacyToolBase
 from .core.browser_detector import BrowserDetector
 from .core.platform_utils import PlatformUtils
 
-__all__ = [
-    'PrivacyToolBase',
-    'BrowserDetector', 
-    'PlatformUtils'
-]
+__all__ = ["PrivacyToolBase", "BrowserDetector", "PlatformUtils"]

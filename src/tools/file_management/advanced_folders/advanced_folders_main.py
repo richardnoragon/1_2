@@ -16,6 +16,7 @@ if str(src_dir) not in sys.path:
 
 try:
     from PyQt5.QtWidgets import QApplication
+
     PYQT5_AVAILABLE = True
 except ImportError:
     PYQT5_AVAILABLE = False
@@ -38,12 +39,12 @@ def main():
     try:
         window = AdvancedFoldersGUI()
         window.show()
-        
-        if hasattr(app, 'exec_'):
+
+        if hasattr(app, "exec_"):
             return app.exec_()
         else:
             return app.exec()
-            
+
     except Exception as e:
         print(f"Failed to launch Advanced Folders: {e}")
         return 1

@@ -21,19 +21,35 @@ def show_warning_dialog(message, title="Warning", parent=None):
     QMessageBox.warning(parent, title, message)
 
 
-def get_existing_directory(caption="Select Directory", directory="", parent=None):
+def get_existing_directory(
+    caption="Select Directory", directory="", parent=None
+):
     """Get an existing directory from user."""
     result = QFileDialog.getExistingDirectory(parent, caption, directory)
     return Path(result) if result else None
 
 
-def get_open_file_name(caption="Open File", directory="", file_filter="All Files (*.*)", parent=None):
+def get_open_file_name(
+    caption="Open File",
+    directory="",
+    file_filter="All Files (*.*)",
+    parent=None,
+):
     """Get a file to open from user."""
-    result, _ = QFileDialog.getOpenFileName(parent, caption, directory, file_filter)
+    result, _ = QFileDialog.getOpenFileName(
+        parent, caption, directory, file_filter
+    )
     return Path(result) if result else None
 
 
-def get_save_file_name(caption="Save File", directory="", file_filter="All Files (*.*)", parent=None):
+def get_save_file_name(
+    caption="Save File",
+    directory="",
+    file_filter="All Files (*.*)",
+    parent=None,
+):
     """Get a file to save from user."""
-    result, _ = QFileDialog.getSaveFileName(parent, caption, directory, file_filter)
+    result, _ = QFileDialog.getSaveFileName(
+        parent, caption, directory, file_filter
+    )
     return Path(result) if result else None

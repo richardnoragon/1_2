@@ -32,32 +32,38 @@ try:
     import sys
     import os
     import importlib.util
-    
+
     # Get the path to the parent system_cleanup.py file
     current_dir = os.path.dirname(__file__)
-    parent_file = os.path.join(os.path.dirname(current_dir), 'system_cleanup.py')
-    
+    parent_file = os.path.join(
+        os.path.dirname(current_dir), "system_cleanup.py"
+    )
+
     if os.path.exists(parent_file):
         # Load the module directly from file
-        spec = importlib.util.spec_from_file_location("system_cleanup_module", parent_file)
+        spec = importlib.util.spec_from_file_location(
+            "system_cleanup_module", parent_file
+        )
         system_cleanup_module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(system_cleanup_module)
-        
+
         # Get the SystemCleanupGUI class
-        SystemCleanupGUI = getattr(system_cleanup_module, 'SystemCleanupGUI', None)
+        SystemCleanupGUI = getattr(
+            system_cleanup_module, "SystemCleanupGUI", None
+        )
         SYSTEM_CLEANUP_GUI_AVAILABLE = SystemCleanupGUI is not None
     else:
         SystemCleanupGUI = None
         SYSTEM_CLEANUP_GUI_AVAILABLE = False
-        
+
 except Exception as e:
     SystemCleanupGUI = None
     SYSTEM_CLEANUP_GUI_AVAILABLE = False
     print(f"Warning: Could not import SystemCleanupGUI: {e}")
 
 __all__ = [
-    'CleanupToolBase',
-    'WindowsUtils',
-    'SafetyManager',
-    'SystemCleanupGUI'
+    "CleanupToolBase",
+    "WindowsUtils",
+    "SafetyManager",
+    "SystemCleanupGUI",
 ]

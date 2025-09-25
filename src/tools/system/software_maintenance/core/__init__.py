@@ -13,9 +13,9 @@ from .update_sources import UpdateSourceManager
 from .platform_support import PlatformSupport
 
 __all__ = [
-    'MaintenanceToolBase',
-    'SoftwareDetector', 
-    'SecurityManager',
-    'UpdateSourceManager',
-    'PlatformSupport'
+    "MaintenanceToolBase",
+    "SoftwareDetector",
+    "SecurityManager",
+    "UpdateSourceManager",
+    "PlatformSupport",
 ]

@@ -14,11 +14,12 @@ from unittest.mock import MagicMock, Mock, patch
 import pytest
 
 # Add src to path for imports
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
 try:
     from PyQt5.QtCore import Qt
     from PyQt5.QtWidgets import QApplication
+
     QT_AVAILABLE = True
 except ImportError:
     QT_AVAILABLE = False
@@ -29,7 +30,7 @@ def qapp():
     """Create QApplication instance for the entire test session."""
     if not QT_AVAILABLE:
         pytest.skip("PyQt5 not available")
-    
+
     if QApplication.instance() is None:
         app = QApplication([])
         yield app
@@ -41,12 +42,14 @@ def qapp():
 @pytest.fixture
 def temp_file():
     """Create a temporary file for testing."""
-    with tempfile.NamedTemporaryFile(mode='w+', delete=False, suffix='.txt') as f:
+    with tempfile.NamedTemporaryFile(
+        mode="w+", delete=False, suffix=".txt"
+    ) as f:
         f.write("Test content for file operations")
         temp_path = f.name
-    
+
     yield temp_path
-    
+
     # Cleanup
     try:
         os.unlink(temp_path)
@@ -57,8 +60,11 @@ def temp_file():
 @pytest.fixture
 def temp_python_file():
     """Create a temporary Python file for testing."""
-    with tempfile.NamedTemporaryFile(mode='w+', delete=False, suffix='.py') as f:
-        f.write("""
+    with tempfile.NamedTemporaryFile(
+        mode="w+", delete=False, suffix=".py"
+    ) as f:
+        f.write(
+            """
 def hello_world():
     print("Hello, World!")
     return True
@@ -72,11 +78,12 @@ class TestClass:
 
 if __name__ == "__main__":
     hello_world()
-""")
+"""
+        )
         temp_path = f.name
-    
+
     yield temp_path
-    
+
     # Cleanup
     try:
         os.unlink(temp_path)
@@ -87,8 +94,11 @@ if __name__ == "__main__":
 @pytest.fixture
 def temp_javascript_file():
     """Create a temporary JavaScript file for testing."""
-    with tempfile.NamedTemporaryFile(mode='w+', delete=False, suffix='.js') as f:
-        f.write("""
+    with tempfile.NamedTemporaryFile(
+        mode="w+", delete=False, suffix=".js"
+    ) as f:
+        f.write(
+            """
 function helloWorld() {
     console.log("Hello, World!");
     return true;
@@ -108,11 +118,12 @@ class TestClass {
 if (typeof window === 'undefined') {
     helloWorld();
 }
-""")
+"""
+        )
         temp_path = f.name
-    
+
     yield temp_path
-    
+
     # Cleanup
     try:
         os.unlink(temp_path)
@@ -200,7 +211,7 @@ if __name__ == "__main__":
 @pytest.fixture
 def sample_javascript_content():
     """Provide sample JavaScript content for testing."""
-    return '''/**
+    return """/**
  * Sample JavaScript module for testing syntax highlighting and parsing.
  */
 
@@ -269,35 +280,37 @@ if (require.main === module) {
 }
 
 module.exports = { Person, calculateAverage };
-'''
+"""
 
 
 @pytest.fixture
 def mock_qsettings():
     """Mock QSettings for testing."""
-    with patch('PyQt5.QtCore.QSettings') as mock_settings:
+    with patch("PyQt5.QtCore.QSettings") as mock_settings:
         mock_instance = Mock()
         mock_settings.return_value = mock_instance
-        
+
         # Set up default return values
-        mock_instance.value.side_effect = lambda key, default=None, type=None: {
-            'font_family': 'Consolas',
-            'font_size': 11,
-            'tab_width': 4,
-            'use_spaces': True,
-            'word_wrap': True,
-            'line_numbers': True,
-            'syntax_highlighting': True,
-            'recent_files': []
-        }.get(key, default)
-        
+        mock_instance.value.side_effect = (
+            lambda key, default=None, type=None: {
+                "font_family": "Consolas",
+                "font_size": 11,
+                "tab_width": 4,
+                "use_spaces": True,
+                "word_wrap": True,
+                "line_numbers": True,
+                "syntax_highlighting": True,
+                "recent_files": [],
+            }.get(key, default)
+        )
+
         yield mock_instance
 
 
 @pytest.fixture
 def mock_file_dialog():
     """Mock file dialogs for testing."""
-    with patch('PyQt5.QtWidgets.QFileDialog') as mock_dialog:
+    with patch("PyQt5.QtWidgets.QFileDialog") as mock_dialog:
         # Set up default return values
         mock_dialog.getOpenFileName.return_value = ("test.py", "")
         mock_dialog.getSaveFileName.return_value = ("test.py", "")
@@ -307,7 +320,7 @@ def mock_file_dialog():
 @pytest.fixture
 def mock_message_box():
     """Mock message boxes for testing."""
-    with patch('PyQt5.QtWidgets.QMessageBox') as mock_msgbox:
+    with patch("PyQt5.QtWidgets.QMessageBox") as mock_msgbox:
         # Set up default return values
         mock_msgbox.question.return_value = mock_msgbox.Save
         mock_msgbox.information.return_value = mock_msgbox.Ok
@@ -320,10 +333,10 @@ def mock_message_box():
 def capture_signals():
     """Utility to capture Qt signals for testing."""
     captured_signals = []
-    
+
     def signal_capture(*args, **kwargs):
         captured_signals.append((args, kwargs))
-    
+
     return signal_capture, captured_signals
 
 
@@ -331,12 +344,12 @@ def capture_signals():
 def test_workspace(temp_directory):
     """Create a test workspace with sample files."""
     workspace = Path(temp_directory)
-    
+
     # Create directory structure
     (workspace / "src").mkdir()
     (workspace / "tests").mkdir()
     (workspace / "docs").mkdir()
-    
+
     # Create sample files
     files = {
         "src/main.py": "print('Hello from main')",
@@ -345,12 +358,12 @@ def test_workspace(temp_directory):
         "docs/readme.md": "# Project Documentation",
         "config.json": '{"setting": "value"}',
         "script.sh": "#!/bin/bash\necho 'Shell script'",
-        "style.css": "body { margin: 0; }"
+        "style.css": "body { margin: 0; }",
     }
-    
+
     for file_path, content in files.items():
         full_path = workspace / file_path
         full_path.parent.mkdir(parents=True, exist_ok=True)
         full_path.write_text(content)
-    
+
     yield workspace

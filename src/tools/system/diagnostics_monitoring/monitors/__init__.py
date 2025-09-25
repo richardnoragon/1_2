@@ -6,8 +6,8 @@ from .filesystem.integrity_monitor import IntegrityMonitor
 from .battery.battery_monitor import BatteryMonitor
 
 __all__ = [
-    'DiskMonitor',
-    'PerformanceMonitor', 
-    'IntegrityMonitor',
-    'BatteryMonitor'
+    "DiskMonitor",
+    "PerformanceMonitor",
+    "IntegrityMonitor",
+    "BatteryMonitor",
 ]

@@ -1,4 +1,3 @@
-
 """
 Responsive Layout Manager for Multi-Pane File Explorer
 
@@ -28,6 +27,7 @@ from PyQt5.QtWidgets import QApplication, QWidget
 
 class LayoutType(Enum):
     """Available layout types with specific use cases."""
+
     # Single pane layouts
     FULL_WIDTH = "full_width"
     CENTERED = "centered"
@@ -50,15 +50,17 @@ class LayoutType(Enum):
 
 class ViewportType(Enum):
     """Viewport categories for responsive behavior."""
-    MOBILE = "mobile"          # < 768px width
-    TABLET = "tablet"          # 768px - 1024px width
-    DESKTOP = "desktop"        # 1024px - 1440px width
-    LARGE_DESKTOP = "large"    # > 1440px width
+
+    MOBILE = "mobile"  # < 768px width
+    TABLET = "tablet"  # 768px - 1024px width
+    DESKTOP = "desktop"  # 1024px - 1440px width
+    LARGE_DESKTOP = "large"  # > 1440px width
 
 
 @dataclass
 class LayoutConstraint:
     """Defines constraints for layout availability."""
+
     min_panes: int = 1
     max_panes: int = 4
     min_viewport_width: int = 0
@@ -70,6 +72,7 @@ class LayoutConstraint:
 @dataclass
 class LayoutConfiguration:
     """Complete configuration for a specific layout."""
+
     layout_type: LayoutType
     display_name: str
     description: str
@@ -84,6 +87,7 @@ class LayoutConfiguration:
 @dataclass
 class ResponsiveBreakpoint:
     """Responsive breakpoint configuration."""
+
     name: str
     min_width: int
     max_width: int
@@ -113,7 +117,7 @@ class ResponsiveLayoutManager(QObject):
 
     def __init__(self, parent: Optional[QObject] = None):
         super().__init__(parent)
-        self.logger = logging.getLogger('RFU.ResponsiveLayoutManager')
+        self.logger = logging.getLogger("RFU.ResponsiveLayoutManager")
 
         # Current state
         self.current_layout: Optional[LayoutType] = None
@@ -158,13 +162,16 @@ class ResponsiveLayoutManager(QObject):
             display_name="Full Width",
             description="Content spans the entire available width",
             constraint=LayoutConstraint(
-                min_panes=1, max_panes=1,
+                min_panes=1,
+                max_panes=1,
                 viewport_types=[
-                    ViewportType.MOBILE, ViewportType.TABLET,
-                    ViewportType.DESKTOP, ViewportType.LARGE_DESKTOP
-                ]
+                    ViewportType.MOBILE,
+                    ViewportType.TABLET,
+                    ViewportType.DESKTOP,
+                    ViewportType.LARGE_DESKTOP,
+                ],
             ),
-            priority=10
+            priority=10,
         )
 
         self.layout_configs[LayoutType.CENTERED] = LayoutConfiguration(
@@ -172,15 +179,17 @@ class ResponsiveLayoutManager(QObject):
             display_name="Centered",
             description="Content centered with margins on both sides",
             constraint=LayoutConstraint(
-                min_panes=1, max_panes=1,
+                min_panes=1,
+                max_panes=1,
                 min_viewport_width=600,
                 viewport_types=[
-                    ViewportType.TABLET, ViewportType.DESKTOP,
-                    ViewportType.LARGE_DESKTOP
-                ]
+                    ViewportType.TABLET,
+                    ViewportType.DESKTOP,
+                    ViewportType.LARGE_DESKTOP,
+                ],
             ),
             margins=(0, 100, 0, 100),
-            priority=8
+            priority=8,
         )
 
         self.layout_configs[LayoutType.LEFT_SIDEBAR] = LayoutConfiguration(
@@ -188,13 +197,15 @@ class ResponsiveLayoutManager(QObject):
             display_name="Left Sidebar",
             description="Content positioned as left sidebar with remaining space",
             constraint=LayoutConstraint(
-                min_panes=1, max_panes=1,
+                min_panes=1,
+                max_panes=1,
                 min_viewport_width=800,
                 viewport_types=[
-                    ViewportType.DESKTOP, ViewportType.LARGE_DESKTOP
-                ]
+                    ViewportType.DESKTOP,
+                    ViewportType.LARGE_DESKTOP,
+                ],
             ),
-            priority=6
+            priority=6,
         )
 
         self.layout_configs[LayoutType.RIGHT_SIDEBAR] = LayoutConfiguration(
@@ -202,13 +213,15 @@ class ResponsiveLayoutManager(QObject):
             display_name="Right Sidebar",
             description="Content positioned as right sidebar with remaining space",
             constraint=LayoutConstraint(
-                min_panes=1, max_panes=1,
+                min_panes=1,
+                max_panes=1,
                 min_viewport_width=800,
                 viewport_types=[
-                    ViewportType.DESKTOP, ViewportType.LARGE_DESKTOP
-                ]
+                    ViewportType.DESKTOP,
+                    ViewportType.LARGE_DESKTOP,
+                ],
             ),
-            priority=6
+            priority=6,
         )
 
         self.layout_configs[LayoutType.CUSTOM_POSITION] = LayoutConfiguration(
@@ -216,14 +229,16 @@ class ResponsiveLayoutManager(QObject):
             display_name="Custom Position",
             description="User-defined positioning with drag and resize",
             constraint=LayoutConstraint(
-                min_panes=1, max_panes=1,
+                min_panes=1,
+                max_panes=1,
                 min_viewport_width=1024,
                 viewport_types=[
-                    ViewportType.DESKTOP, ViewportType.LARGE_DESKTOP
+                    ViewportType.DESKTOP,
+                    ViewportType.LARGE_DESKTOP,
                 ],
-                requires_features=["advanced_positioning"]
+                requires_features=["advanced_positioning"],
             ),
-            priority=4
+            priority=4,
         )
 
     def _init_dual_pane_layouts(self):
@@ -234,14 +249,16 @@ class ResponsiveLayoutManager(QObject):
             display_name="Horizontal Split",
             description="Two panes side by side horizontally",
             constraint=LayoutConstraint(
-                min_panes=2, max_panes=2,
+                min_panes=2,
+                max_panes=2,
                 min_viewport_width=600,
                 viewport_types=[
-                    ViewportType.TABLET, ViewportType.DESKTOP,
-                    ViewportType.LARGE_DESKTOP
-                ]
+                    ViewportType.TABLET,
+                    ViewportType.DESKTOP,
+                    ViewportType.LARGE_DESKTOP,
+                ],
             ),
-            priority=10
+            priority=10,
         )
 
         self.layout_configs[LayoutType.VERTICAL_SPLIT] = LayoutConfiguration(
@@ -249,14 +266,17 @@ class ResponsiveLayoutManager(QObject):
             display_name="Vertical Split",
             description="Two panes stacked vertically",
             constraint=LayoutConstraint(
-                min_panes=2, max_panes=2,
+                min_panes=2,
+                max_panes=2,
                 min_viewport_height=600,
                 viewport_types=[
-                    ViewportType.MOBILE, ViewportType.TABLET,
-                    ViewportType.DESKTOP, ViewportType.LARGE_DESKTOP
-                ]
+                    ViewportType.MOBILE,
+                    ViewportType.TABLET,
+                    ViewportType.DESKTOP,
+                    ViewportType.LARGE_DESKTOP,
+                ],
             ),
-            priority=8
+            priority=8,
         )
 
     def _init_multi_pane_layouts(self):
@@ -267,13 +287,15 @@ class ResponsiveLayoutManager(QObject):
             display_name="Horizontal Row",
             description="All panes arranged in a horizontal row",
             constraint=LayoutConstraint(
-                min_panes=3, max_panes=4,
+                min_panes=3,
+                max_panes=4,
                 min_viewport_width=900,
                 viewport_types=[
-                    ViewportType.DESKTOP, ViewportType.LARGE_DESKTOP
-                ]
+                    ViewportType.DESKTOP,
+                    ViewportType.LARGE_DESKTOP,
+                ],
             ),
-            priority=9
+            priority=9,
         )
 
         self.layout_configs[LayoutType.VERTICAL_COLUMN] = LayoutConfiguration(
@@ -281,14 +303,16 @@ class ResponsiveLayoutManager(QObject):
             display_name="Vertical Column",
             description="All panes arranged in a vertical column",
             constraint=LayoutConstraint(
-                min_panes=3, max_panes=4,
+                min_panes=3,
+                max_panes=4,
                 min_viewport_height=800,
                 viewport_types=[
-                    ViewportType.TABLET, ViewportType.DESKTOP,
-                    ViewportType.LARGE_DESKTOP
-                ]
+                    ViewportType.TABLET,
+                    ViewportType.DESKTOP,
+                    ViewportType.LARGE_DESKTOP,
+                ],
             ),
-            priority=7
+            priority=7,
         )
 
         self.layout_configs[LayoutType.GRID_2X2] = LayoutConfiguration(
@@ -296,15 +320,17 @@ class ResponsiveLayoutManager(QObject):
             display_name="2×2 Grid",
             description="Four panes arranged in a 2×2 grid",
             constraint=LayoutConstraint(
-                min_panes=4, max_panes=4,
+                min_panes=4,
+                max_panes=4,
                 min_viewport_width=800,
                 min_viewport_height=600,
                 viewport_types=[
-                    ViewportType.DESKTOP, ViewportType.LARGE_DESKTOP
-                ]
+                    ViewportType.DESKTOP,
+                    ViewportType.LARGE_DESKTOP,
+                ],
             ),
             grid_dimensions=(2, 2),
-            priority=8
+            priority=8,
         )
 
         self.layout_configs[LayoutType.GRID_2X3] = LayoutConfiguration(
@@ -312,15 +338,17 @@ class ResponsiveLayoutManager(QObject):
             display_name="2×3 Grid",
             description="Panes arranged in a 2×3 grid layout",
             constraint=LayoutConstraint(
-                min_panes=3, max_panes=4,
+                min_panes=3,
+                max_panes=4,
                 min_viewport_width=1000,
                 min_viewport_height=700,
                 viewport_types=[
-                    ViewportType.DESKTOP, ViewportType.LARGE_DESKTOP
-                ]
+                    ViewportType.DESKTOP,
+                    ViewportType.LARGE_DESKTOP,
+                ],
             ),
             grid_dimensions=(2, 3),
-            priority=6
+            priority=6,
         )
 
         self.layout_configs[LayoutType.ADAPTIVE_GRID] = LayoutConfiguration(
@@ -328,14 +356,16 @@ class ResponsiveLayoutManager(QObject):
             display_name="Adaptive Grid",
             description="Adapts grid layout based on pane count and viewport",
             constraint=LayoutConstraint(
-                min_panes=3, max_panes=4,
+                min_panes=3,
+                max_panes=4,
                 min_viewport_width=600,
                 viewport_types=[
-                    ViewportType.TABLET, ViewportType.DESKTOP,
-                    ViewportType.LARGE_DESKTOP
-                ]
+                    ViewportType.TABLET,
+                    ViewportType.DESKTOP,
+                    ViewportType.LARGE_DESKTOP,
+                ],
             ),
-            priority=5
+            priority=5,
         )
 
     def _initialize_responsive_breakpoints(self):
@@ -351,14 +381,13 @@ class ResponsiveLayoutManager(QObject):
                 preferred_layouts=[
                     LayoutType.FULL_WIDTH,
                     LayoutType.VERTICAL_SPLIT,
-                    LayoutType.VERTICAL_COLUMN
+                    LayoutType.VERTICAL_COLUMN,
                 ],
                 layout_overrides={
                     LayoutType.HORIZONTAL_SPLIT: LayoutType.VERTICAL_SPLIT,
-                    LayoutType.GRID_2X2: LayoutType.VERTICAL_COLUMN
-                }
+                    LayoutType.GRID_2X2: LayoutType.VERTICAL_COLUMN,
+                },
             ),
-
             ResponsiveBreakpoint(
                 name="Tablet",
                 min_width=768,
@@ -370,10 +399,9 @@ class ResponsiveLayoutManager(QObject):
                     LayoutType.CENTERED,
                     LayoutType.HORIZONTAL_SPLIT,
                     LayoutType.VERTICAL_SPLIT,
-                    LayoutType.ADAPTIVE_GRID
-                ]
+                    LayoutType.ADAPTIVE_GRID,
+                ],
             ),
-
             ResponsiveBreakpoint(
                 name="Desktop",
                 min_width=1024,
@@ -390,10 +418,9 @@ class ResponsiveLayoutManager(QObject):
                     LayoutType.HORIZONTAL_ROW,
                     LayoutType.VERTICAL_COLUMN,
                     LayoutType.GRID_2X2,
-                    LayoutType.ADAPTIVE_GRID
-                ]
+                    LayoutType.ADAPTIVE_GRID,
+                ],
             ),
-
             ResponsiveBreakpoint(
                 name="Large Desktop",
                 min_width=1440,
@@ -412,9 +439,9 @@ class ResponsiveLayoutManager(QObject):
                     LayoutType.VERTICAL_COLUMN,
                     LayoutType.GRID_2X2,
                     LayoutType.GRID_2X3,
-                    LayoutType.ADAPTIVE_GRID
-                ]
-            )
+                    LayoutType.ADAPTIVE_GRID,
+                ],
+            ),
         ]
 
     def _setup_viewport_monitoring(self):
@@ -453,12 +480,18 @@ class ResponsiveLayoutManager(QObject):
         self.viewport_size = (width, height)
         self.current_viewport = self._determine_viewport_type(width)
 
-        if (old_viewport != self.current_viewport or
-                old_size != self.viewport_size):
-            self.viewport_changed.emit(self.current_viewport, self.viewport_size)
+        if (
+            old_viewport != self.current_viewport
+            or old_size != self.viewport_size
+        ):
+            self.viewport_changed.emit(
+                self.current_viewport, self.viewport_size
+            )
             self._clear_constraint_cache()
             viewport_val = self.current_viewport.value
-            self.logger.info(f"Viewport changed: {viewport_val} ({width}×{height})")
+            self.logger.info(
+                f"Viewport changed: {viewport_val} ({width}×{height})"
+            )
 
     def _determine_viewport_type(self, width: int) -> ViewportType:
         """Determine viewport type based on width."""
@@ -468,8 +501,7 @@ class ResponsiveLayoutManager(QObject):
         return ViewportType.DESKTOP
 
     def get_available_layouts(
-            self, pane_count: int,
-            viewport_type: Optional[ViewportType] = None
+        self, pane_count: int, viewport_type: Optional[ViewportType] = None
     ) -> List[LayoutType]:
         """
         Get available layouts for the given pane count and viewport.
@@ -494,7 +526,7 @@ class ResponsiveLayoutManager(QObject):
 
         for layout_type, config in self.layout_configs.items():
             if self._is_layout_available(
-                    config, pane_count, viewport_type, current_breakpoint
+                config, pane_count, viewport_type, current_breakpoint
             ):
                 available_layouts.append(layout_type)
 
@@ -506,7 +538,8 @@ class ResponsiveLayoutManager(QObject):
         # Apply viewport-specific preferences
         if current_breakpoint:
             preferred = [
-                lt for lt in current_breakpoint.preferred_layouts
+                lt
+                for lt in current_breakpoint.preferred_layouts
                 if lt in available_layouts
             ]
             other = [lt for lt in available_layouts if lt not in preferred]
@@ -518,39 +551,50 @@ class ResponsiveLayoutManager(QObject):
         return available_layouts
 
     def _is_layout_available(
-            self, config: LayoutConfiguration, pane_count: int,
-            viewport_type: ViewportType,
-            breakpoint: Optional[ResponsiveBreakpoint]
+        self,
+        config: LayoutConfiguration,
+        pane_count: int,
+        viewport_type: ViewportType,
+        breakpoint: Optional[ResponsiveBreakpoint],
     ) -> bool:
         """Check if a layout is available under current conditions."""
         constraint = config.constraint
 
-        return (self._check_pane_count_constraint(constraint, pane_count) and
-                self._check_viewport_type_constraint(
-                    constraint, viewport_type) and
-                self._check_viewport_size_constraint(constraint) and
-                self._check_feature_requirements(constraint))
+        return (
+            self._check_pane_count_constraint(constraint, pane_count)
+            and self._check_viewport_type_constraint(constraint, viewport_type)
+            and self._check_viewport_size_constraint(constraint)
+            and self._check_feature_requirements(constraint)
+        )
 
-    def _check_pane_count_constraint(self, constraint: LayoutConstraint,
-                                     pane_count: int) -> bool:
+    def _check_pane_count_constraint(
+        self, constraint: LayoutConstraint, pane_count: int
+    ) -> bool:
         """Check if pane count meets constraint requirements."""
         return constraint.min_panes <= pane_count <= constraint.max_panes
 
-    def _check_viewport_type_constraint(self, constraint: LayoutConstraint,
-                                        viewport_type: ViewportType) -> bool:
+    def _check_viewport_type_constraint(
+        self, constraint: LayoutConstraint, viewport_type: ViewportType
+    ) -> bool:
         """Check if viewport type meets constraint requirements."""
-        return (not constraint.viewport_types or
-                viewport_type in constraint.viewport_types)
+        return (
+            not constraint.viewport_types
+            or viewport_type in constraint.viewport_types
+        )
 
     def _check_viewport_size_constraint(
-            self, constraint: LayoutConstraint) -> bool:
+        self, constraint: LayoutConstraint
+    ) -> bool:
         """Check if viewport size meets constraint requirements."""
         width, height = self.viewport_size
-        return (width >= constraint.min_viewport_width and
-                height >= constraint.min_viewport_height)
+        return (
+            width >= constraint.min_viewport_width
+            and height >= constraint.min_viewport_height
+        )
 
     def _check_feature_requirements(
-            self, constraint: LayoutConstraint) -> bool:
+        self, constraint: LayoutConstraint
+    ) -> bool:
         """Check if all required features are available."""
         if not constraint.requires_features:
             return True
@@ -561,16 +605,19 @@ class ResponsiveLayoutManager(QObject):
         # drag & drop capabilities, multi-monitor support, etc.
         # For now, assume all features are available.
         available_features = [
-            "advanced_positioning", "drag_drop", "multi_monitor"
+            "advanced_positioning",
+            "drag_drop",
+            "multi_monitor",
         ]
         missing_features = [
-            f for f in constraint.requires_features
+            f
+            for f in constraint.requires_features
             if f not in available_features
         ]
         return len(missing_features) == 0
 
     def _get_current_breakpoint(
-            self, viewport_type: ViewportType
+        self, viewport_type: ViewportType
     ) -> Optional[ResponsiveBreakpoint]:
         """Get the current responsive breakpoint."""
         for breakpoint in self.responsive_breakpoints:
@@ -600,9 +647,12 @@ class ResponsiveLayoutManager(QObject):
             msg = f"Pane count changed from {old_count} to {pane_count}"
             self.logger.info(msg)
 
-    def apply_layout(self, layout_type: LayoutType,
-                     container: Optional[QWidget] = None,
-                     animate: bool = True) -> bool:
+    def apply_layout(
+        self,
+        layout_type: LayoutType,
+        container: Optional[QWidget] = None,
+        animate: bool = True,
+    ) -> bool:
         """
         Apply the specified layout to the container.
 
@@ -665,12 +715,15 @@ class ResponsiveLayoutManager(QObject):
         config = self.layout_configs[layout_type]
 
         single_pane_layouts = [
-            LayoutType.FULL_WIDTH, LayoutType.CENTERED,
-            LayoutType.LEFT_SIDEBAR, LayoutType.RIGHT_SIDEBAR,
-            LayoutType.CUSTOM_POSITION
+            LayoutType.FULL_WIDTH,
+            LayoutType.CENTERED,
+            LayoutType.LEFT_SIDEBAR,
+            LayoutType.RIGHT_SIDEBAR,
+            LayoutType.CUSTOM_POSITION,
         ]
         dual_pane_layouts = [
-            LayoutType.HORIZONTAL_SPLIT, LayoutType.VERTICAL_SPLIT
+            LayoutType.HORIZONTAL_SPLIT,
+            LayoutType.VERTICAL_SPLIT,
         ]
 
         if layout_type in single_pane_layouts:
@@ -680,8 +733,9 @@ class ResponsiveLayoutManager(QObject):
         else:
             self._apply_multi_pane_layout(layout_type, config)
 
-    def _apply_layout_with_animation(self, layout_type: LayoutType,
-                                   old_layout: Optional[LayoutType]):
+    def _apply_layout_with_animation(
+        self, layout_type: LayoutType, old_layout: Optional[LayoutType]
+    ):
         """Apply layout with smooth animation transition."""
         # Apply immediately (animation is complex)
         self._apply_layout_immediately(layout_type)
@@ -695,20 +749,23 @@ class ResponsiveLayoutManager(QObject):
         # 4. Content hierarchy preservation during animated transitions
         # Current approach prioritizes stability.
 
-    def _apply_single_pane_layout(self, layout_type: LayoutType,
-                                 config: LayoutConfiguration):
+    def _apply_single_pane_layout(
+        self, layout_type: LayoutType, config: LayoutConfiguration
+    ):
         """Apply single pane layout with unrestricted flexibility."""
         # Implementation would depend on the container widget type
         # This is a placeholder for the actual layout application logic
         self.logger.debug(f"Applying single pane layout: {layout_type.value}")
 
-    def _apply_dual_pane_layout(self, layout_type: LayoutType,
-                               config: LayoutConfiguration):
+    def _apply_dual_pane_layout(
+        self, layout_type: LayoutType, config: LayoutConfiguration
+    ):
         """Apply dual pane layout with horizontal/vertical optimization."""
         self.logger.debug(f"Applying dual pane layout: {layout_type.value}")
 
-    def _apply_multi_pane_layout(self, layout_type: LayoutType,
-                                config: LayoutConfiguration):
+    def _apply_multi_pane_layout(
+        self, layout_type: LayoutType, config: LayoutConfiguration
+    ):
         """Apply multi-pane layout with comprehensive options."""
         self.logger.debug(f"Applying multi-pane layout: {layout_type.value}")
 
@@ -716,21 +773,23 @@ class ResponsiveLayoutManager(QObject):
         """Get layout information dictionary."""
         config = self.layout_configs[layout_type]
         return {
-            'type': layout_type.value,
-            'display_name': config.display_name,
-            'description': config.description,
-            'grid_dimensions': config.grid_dimensions,
-            'spacing': config.spacing,
-            'margins': config.margins
+            "type": layout_type.value,
+            "display_name": config.display_name,
+            "description": config.description,
+            "grid_dimensions": config.grid_dimensions,
+            "spacing": config.spacing,
+            "margins": config.margins,
         }
 
     def get_layout_display_names(
-            self, pane_count: int
+        self, pane_count: int
     ) -> List[Tuple[LayoutType, str]]:
         """Get layout types and their display names for UI."""
         available = self.get_available_layouts(pane_count)
-        return [(layout_type, self.layout_configs[layout_type].display_name)
-                for layout_type in available]
+        return [
+            (layout_type, self.layout_configs[layout_type].display_name)
+            for layout_type in available
+        ]
 
     def get_recommended_layout(self, pane_count: int) -> Optional[LayoutType]:
         """Get the recommended layout for the given pane count."""
@@ -741,8 +800,9 @@ class ResponsiveLayoutManager(QObject):
         """Clear the constraint cache when conditions change."""
         self.constraint_cache.clear()
 
-    def is_layout_available(self, layout_type: LayoutType,
-                           pane_count: Optional[int] = None) -> bool:
+    def is_layout_available(
+        self, layout_type: LayoutType, pane_count: Optional[int] = None
+    ) -> bool:
         """Check if a specific layout is currently available."""
         if pane_count is None:
             pane_count = self.pane_count
@@ -759,16 +819,16 @@ class ResponsiveLayoutManager(QObject):
     def enable_content_hierarchy(self, enabled: bool = True):
         """Enable or disable content hierarchy maintenance during transitions."""
         self.content_hierarchy_enabled = enabled
-        status = 'enabled' if enabled else 'disabled'
+        status = "enabled" if enabled else "disabled"
         self.logger.info(f"Content hierarchy {status}")
 
     def get_viewport_info(self) -> Dict[str, Any]:
         """Get current viewport information."""
         current_bp = self._get_current_breakpoint(self.current_viewport)
         return {
-            'type': self.current_viewport.value,
-            'size': self.viewport_size,
-            'breakpoint': current_bp.name if current_bp else None
+            "type": self.current_viewport.value,
+            "size": self.viewport_size,
+            "breakpoint": current_bp.name if current_bp else None,
         }
 
 
@@ -784,8 +844,11 @@ class LayoutImplementor:
         self.logger = logger
 
     def implement_single_pane_layout(
-            self, container: QWidget, panes: List[QWidget],
-            layout_type: LayoutType, config: LayoutConfiguration
+        self,
+        container: QWidget,
+        panes: List[QWidget],
+        layout_type: LayoutType,
+        config: LayoutConfiguration,
     ) -> bool:
         """Implement single pane layout configurations."""
         if not panes:
@@ -812,8 +875,11 @@ class LayoutImplementor:
             return False
 
     def implement_dual_pane_layout(
-            self, container: QWidget, panes: List[QWidget],
-            layout_type: LayoutType, config: LayoutConfiguration
+        self,
+        container: QWidget,
+        panes: List[QWidget],
+        layout_type: LayoutType,
+        config: LayoutConfiguration,
     ) -> bool:
         """Implement dual pane layout configurations."""
         if len(panes) != 2:
@@ -848,8 +914,11 @@ class LayoutImplementor:
             return False
 
     def implement_multi_pane_layout(
-            self, container: QWidget, panes: List[QWidget],
-            layout_type: LayoutType, config: LayoutConfiguration
+        self,
+        container: QWidget,
+        panes: List[QWidget],
+        layout_type: LayoutType,
+        config: LayoutConfiguration,
     ) -> bool:
         """Implement multi-pane layout configurations."""
         if len(panes) < 3:
@@ -859,7 +928,9 @@ class LayoutImplementor:
             if layout_type == LayoutType.HORIZONTAL_ROW:
                 return self._implement_horizontal_row(container, panes, config)
             elif layout_type == LayoutType.VERTICAL_COLUMN:
-                return self._implement_vertical_column(container, panes, config)
+                return self._implement_vertical_column(
+                    container, panes, config
+                )
             elif layout_type == LayoutType.GRID_2X2:
                 return self._implement_grid_2x2(container, panes, config)
             elif layout_type == LayoutType.GRID_2X3:
@@ -873,8 +944,9 @@ class LayoutImplementor:
             self.logger.error(f"Failed to implement multi-pane layout: {e}")
             return False
 
-    def _implement_full_width(self, container: QWidget, pane: QWidget,
-                             config: LayoutConfiguration):
+    def _implement_full_width(
+        self, container: QWidget, pane: QWidget, config: LayoutConfiguration
+    ):
         """Implement full width single pane layout."""
         from PyQt5.QtWidgets import QHBoxLayout
 
@@ -884,8 +956,9 @@ class LayoutImplementor:
         layout.setSpacing(config.spacing)
         layout.addWidget(pane)
 
-    def _implement_centered(self, container: QWidget, pane: QWidget,
-                           config: LayoutConfiguration):
+    def _implement_centered(
+        self, container: QWidget, pane: QWidget, config: LayoutConfiguration
+    ):
         """Implement centered single pane layout."""
         from PyQt5.QtWidgets import QHBoxLayout
 
@@ -897,8 +970,9 @@ class LayoutImplementor:
         layout.addWidget(pane)
         layout.addStretch()
 
-    def _implement_left_sidebar(self, container: QWidget, pane: QWidget,
-                               config: LayoutConfiguration):
+    def _implement_left_sidebar(
+        self, container: QWidget, pane: QWidget, config: LayoutConfiguration
+    ):
         """Implement left sidebar single pane layout."""
         from PyQt5.QtWidgets import QHBoxLayout
 
@@ -909,8 +983,9 @@ class LayoutImplementor:
         layout.addWidget(pane, stretch=1)
         layout.addStretch(stretch=2)
 
-    def _implement_right_sidebar(self, container: QWidget, pane: QWidget,
-                                config: LayoutConfiguration):
+    def _implement_right_sidebar(
+        self, container: QWidget, pane: QWidget, config: LayoutConfiguration
+    ):
         """Implement right sidebar single pane layout."""
         from PyQt5.QtWidgets import QHBoxLayout
 
@@ -929,8 +1004,12 @@ class LayoutImplementor:
         pane.setParent(container)
         # Position would be set by user interaction
 
-    def _implement_horizontal_row(self, container: QWidget, panes: List[QWidget],
-                                 config: LayoutConfiguration) -> bool:
+    def _implement_horizontal_row(
+        self,
+        container: QWidget,
+        panes: List[QWidget],
+        config: LayoutConfiguration,
+    ) -> bool:
         """Implement horizontal row multi-pane layout."""
         from PyQt5.QtCore import Qt
         from PyQt5.QtWidgets import QSplitter
@@ -948,8 +1027,12 @@ class LayoutImplementor:
         self._apply_container_layout(container, [splitter], config)
         return True
 
-    def _implement_vertical_column(self, container: QWidget, panes: List[QWidget],
-                                  config: LayoutConfiguration) -> bool:
+    def _implement_vertical_column(
+        self,
+        container: QWidget,
+        panes: List[QWidget],
+        config: LayoutConfiguration,
+    ) -> bool:
         """Implement vertical column multi-pane layout."""
         from PyQt5.QtCore import Qt
         from PyQt5.QtWidgets import QSplitter
@@ -967,8 +1050,12 @@ class LayoutImplementor:
         self._apply_container_layout(container, [splitter], config)
         return True
 
-    def _implement_grid_2x2(self, container: QWidget, panes: List[QWidget],
-                           config: LayoutConfiguration) -> bool:
+    def _implement_grid_2x2(
+        self,
+        container: QWidget,
+        panes: List[QWidget],
+        config: LayoutConfiguration,
+    ) -> bool:
         """Implement 2x2 grid layout for exactly 4 panes."""
         if len(panes) != 4:
             return False
@@ -988,8 +1075,12 @@ class LayoutImplementor:
 
         return True
 
-    def _implement_grid_2x3(self, container: QWidget, panes: List[QWidget],
-                           config: LayoutConfiguration) -> bool:
+    def _implement_grid_2x3(
+        self,
+        container: QWidget,
+        panes: List[QWidget],
+        config: LayoutConfiguration,
+    ) -> bool:
         """Implement 2x3 grid layout."""
         from PyQt5.QtWidgets import QGridLayout
 
@@ -1006,8 +1097,12 @@ class LayoutImplementor:
 
         return True
 
-    def _implement_adaptive_grid(self, container: QWidget, panes: List[QWidget],
-                                config: LayoutConfiguration) -> bool:
+    def _implement_adaptive_grid(
+        self,
+        container: QWidget,
+        panes: List[QWidget],
+        config: LayoutConfiguration,
+    ) -> bool:
         """Implement adaptive grid layout based on pane count."""
         from PyQt5.QtWidgets import QGridLayout
 
@@ -1051,8 +1146,12 @@ class LayoutImplementor:
         except Exception as e:
             self.logger.warning(f"Error clearing container layout: {e}")
 
-    def _apply_container_layout(self, container: QWidget, widgets: List[QWidget],
-                               config: LayoutConfiguration):
+    def _apply_container_layout(
+        self,
+        container: QWidget,
+        widgets: List[QWidget],
+        config: LayoutConfiguration,
+    ):
         """Apply layout to container with configuration."""
         from PyQt5.QtWidgets import QVBoxLayout
 
@@ -1082,7 +1181,7 @@ class ContentHierarchyManager:
         self.hierarchy_enabled: bool = True
 
     def capture_content_hierarchy(
-            self, panes: List[QWidget], layout_type: LayoutType
+        self, panes: List[QWidget], layout_type: LayoutType
     ) -> str:
         """
         Capture current content hierarchy state.
@@ -1097,20 +1196,20 @@ class ContentHierarchyManager:
             snapshot_id = f"{layout_type.value}_{len(panes)}_{id(panes[0])}"
 
             snapshot = {
-                'pane_count': len(panes),
-                'layout_type': layout_type.value,
-                'pane_states': []
+                "pane_count": len(panes),
+                "layout_type": layout_type.value,
+                "pane_states": [],
             }
 
             for i, pane in enumerate(panes):
                 pane_state = {
-                    'index': i,
-                    'visible': pane.isVisible() if pane else False,
-                    'geometry': pane.geometry() if pane else None,
-                    'current_path': getattr(pane, '_current_path', None),
-                    'selection_state': self._capture_selection_state(pane)
+                    "index": i,
+                    "visible": pane.isVisible() if pane else False,
+                    "geometry": pane.geometry() if pane else None,
+                    "current_path": getattr(pane, "_current_path", None),
+                    "selection_state": self._capture_selection_state(pane),
                 }
-                snapshot['pane_states'].append(pane_state)
+                snapshot["pane_states"].append(pane_state)
 
             self.content_snapshots[snapshot_id] = snapshot
 
@@ -1122,7 +1221,7 @@ class ContentHierarchyManager:
             return ""
 
     def restore_content_hierarchy(
-            self, snapshot_id: str, panes: List[QWidget]
+        self, snapshot_id: str, panes: List[QWidget]
     ) -> bool:
         """
         Restore content hierarchy from snapshot.
@@ -1143,7 +1242,7 @@ class ContentHierarchyManager:
                 return False
 
             snapshot = self.content_snapshots[snapshot_id]
-            pane_states = snapshot['pane_states']
+            pane_states = snapshot["pane_states"]
 
             # Restore pane states based on new layout
             for i, pane in enumerate(panes):
@@ -1161,19 +1260,21 @@ class ContentHierarchyManager:
     def _capture_selection_state(self, pane: QWidget) -> Dict[str, Any]:
         """Capture selection state from a pane."""
         try:
-            if hasattr(pane, '_file_list'):
+            if hasattr(pane, "_file_list"):
                 file_list = pane._file_list
                 selected_items = file_list.selectedItems()
                 return {
-                    'selected_count': len(selected_items),
-                    'selected_files': [
-                        item.text(0) for item in selected_items
-                    ] if selected_items else []
+                    "selected_count": len(selected_items),
+                    "selected_files": (
+                        [item.text(0) for item in selected_items]
+                        if selected_items
+                        else []
+                    ),
                 }
         except Exception:
             pass
 
-        return {'selected_count': 0, 'selected_files': []}
+        return {"selected_count": 0, "selected_files": []}
 
     def _restore_pane_state(self, pane: QWidget, state: Dict[str, Any]):
         """Restore state to a specific pane."""
@@ -1185,21 +1286,21 @@ class ContentHierarchyManager:
 
     def _restore_pane_path(self, pane: QWidget, state: Dict[str, Any]):
         """Restore the current path for a pane."""
-        if 'current_path' not in state or not state['current_path']:
+        if "current_path" not in state or not state["current_path"]:
             return
 
-        if hasattr(pane, 'set_path'):
-            pane.set_path(str(state['current_path']))
-        elif hasattr(pane, '_current_path'):
-            pane._current_path = state['current_path']
+        if hasattr(pane, "set_path"):
+            pane.set_path(str(state["current_path"]))
+        elif hasattr(pane, "_current_path"):
+            pane._current_path = state["current_path"]
 
     def _restore_pane_selection(self, pane: QWidget, state: Dict[str, Any]):
         """Restore the selection state for a pane."""
-        if not hasattr(pane, '_file_list') or 'selection_state' not in state:
+        if not hasattr(pane, "_file_list") or "selection_state" not in state:
             return
 
-        selection_state = state['selection_state']
-        selected_files = selection_state.get('selected_files', [])
+        selection_state = state["selection_state"]
+        selected_files = selection_state.get("selected_files", [])
 
         if not selected_files:
             return
@@ -1225,7 +1326,7 @@ class ContentHierarchyManager:
     def enable_hierarchy_preservation(self, enabled: bool = True):
         """Enable or disable content hierarchy preservation."""
         self.hierarchy_enabled = enabled
-        status = 'enabled' if enabled else 'disabled'
+        status = "enabled" if enabled else "disabled"
         self.logger.info(f"Content hierarchy preservation {status}")
 
 
@@ -1236,7 +1337,7 @@ class ResponsiveLayoutController:
     """
 
     def __init__(self, container_widget: QWidget):
-        self.logger = logging.getLogger('RFU.ResponsiveLayoutController')
+        self.logger = logging.getLogger("RFU.ResponsiveLayoutController")
         self.container_widget = container_widget
         self.panes: List[QWidget] = []
 
@@ -1266,8 +1367,9 @@ class ResponsiveLayoutController:
         self.panes = panes
         self.layout_manager.set_pane_count(len(panes))
 
-    def apply_layout(self, layout_type: LayoutType,
-                     animate: bool = True) -> bool:
+    def apply_layout(
+        self, layout_type: LayoutType, animate: bool = True
+    ) -> bool:
         """Apply layout with full integration."""
         # Capture content hierarchy before transition
         snapshot_id = self._capture_hierarchy_if_needed(animate, layout_type)
@@ -1283,8 +1385,9 @@ class ResponsiveLayoutController:
 
         return success
 
-    def _capture_hierarchy_if_needed(self, animate: bool,
-                                     layout_type: LayoutType) -> str:
+    def _capture_hierarchy_if_needed(
+        self, animate: bool, layout_type: LayoutType
+    ) -> str:
         """Capture content hierarchy if animation is enabled."""
         if animate and self.hierarchy_manager.hierarchy_enabled:
             return self.hierarchy_manager.capture_content_hierarchy(
@@ -1321,18 +1424,21 @@ class ResponsiveLayoutController:
         """Get available layouts with display names."""
         return self.layout_manager.get_layout_display_names(len(self.panes))
 
-    def _on_layout_changed(self, layout_type: LayoutType,
-                           info: Dict[str, Any]):
+    def _on_layout_changed(
+        self, layout_type: LayoutType, info: Dict[str, Any]
+    ):
         """Handle layout change event."""
         self.logger.info(f"Layout changed to: {info['display_name']}")
 
-    def _on_viewport_changed(self, viewport_type: ViewportType,
-                             size: Tuple[int, int]):
+    def _on_viewport_changed(
+        self, viewport_type: ViewportType, size: Tuple[int, int]
+    ):
         """Handle viewport change event."""
         self.logger.info(f"Viewport changed: {viewport_type.value} {size}")
 
-    def _on_transition_started(self, old_layout: LayoutType,
-                               new_layout: LayoutType):
+    def _on_transition_started(
+        self, old_layout: LayoutType, new_layout: LayoutType
+    ):
         """Handle transition start event."""
         old_name = old_layout.value if old_layout else "None"
         msg = f"Transition started: {old_name} -> {new_layout.value}"

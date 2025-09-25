@@ -13,9 +13,9 @@ from pathlib import Path
 
 def generate_execution_summary():
     """Generate a comprehensive test execution summary."""
-    
+
     timestamp = datetime.datetime.now()
-    
+
     summary = {
         "test_execution_summary": {
             "module_tested": "enhanced_editor.py",
@@ -26,20 +26,19 @@ def generate_execution_summary():
             "platform": "Windows 11",
             "test_file": "test_enhanced_editor_2025-08-29.py",
             "total_lines_of_code_tested": 1500,
-            "estimated_functions_covered": 50
+            "estimated_functions_covered": 50,
         },
-        
         "test_categories": {
             "unit_tests": {
                 "description": "Individual function and method testing",
                 "test_classes": [
                     "TestDocumentType",
-                    "TestSearchOptions", 
+                    "TestSearchOptions",
                     "TestEditorSettings",
                     "TestDocumentManager",
                     "TestEdgeCases",
-                    "TestPerformance"
-                ]
+                    "TestPerformance",
+                ],
             },
             "integration_tests": {
                 "description": "GUI component interaction testing",
@@ -49,93 +48,90 @@ def generate_execution_summary():
                     "TestTextEditor",
                     "TestLineNumberArea",
                     "TestEnhancedEditor",
-                    "TestPreferencesDialog"
-                ]
-            }
+                    "TestPreferencesDialog",
+                ],
+            },
         },
-        
         "test_coverage_areas": {
             "data_structures": [
                 "DocumentType enumeration",
                 "SearchOptions dataclass",
-                "EditorSettings dataclass"
+                "EditorSettings dataclass",
             ],
             "core_functionality": [
                 "Document management",
                 "File operations (open, save, save-as)",
                 "Text editing operations",
                 "Search and replace functionality",
-                "Syntax highlighting"
+                "Syntax highlighting",
             ],
             "user_interface": [
                 "Tabbed document interface",
                 "Search dialog",
                 "Preferences dialog",
                 "Line number display",
-                "Status bar updates"
+                "Status bar updates",
             ],
             "edge_cases": [
                 "Large document handling",
                 "Multiple document management",
                 "Error conditions",
-                "Performance scenarios"
-            ]
+                "Performance scenarios",
+            ],
         },
-        
         "key_test_features": {
             "mocking": "Extensive use of unittest.mock for GUI components",
             "fixtures": "Comprehensive test fixtures for setup and teardown",
             "parametrization": "Multiple test scenarios for edge cases",
             "coverage_analysis": "Line and branch coverage tracking",
-            "performance_testing": "Large document and multi-document scenarios"
+            "performance_testing": "Large document and multi-document scenarios",
         },
-        
         "expected_outcomes": {
             "total_tests": "50+ individual test methods",
             "test_categories": "6 main test classes",
             "coverage_target": "85%+ code coverage",
             "performance_benchmarks": "Large document handling verified",
-            "error_handling": "All error conditions tested"
+            "error_handling": "All error conditions tested",
         },
-        
         "generated_artifacts": {
             "test_file": "test_enhanced_editor_2025-08-29.py",
-            "config_file": "pytest_enhanced_editor_2025-08-29.ini", 
+            "config_file": "pytest_enhanced_editor_2025-08-29.ini",
             "fixtures_file": "conftest_enhanced_editor_2025-08-29.py",
             "test_runner": "run_enhanced_editor_tests_2025-08-29.py",
             "html_report": "result_enhanced_editor_report_2025-08-29.html",
             "json_results": "result_enhanced_editor_results_2025-08-29.json",
             "coverage_html": "result_enhanced_editor_coverage_2025-08-29/",
-            "coverage_json": "result_enhanced_editor_coverage_2025-08-29.json"
+            "coverage_json": "result_enhanced_editor_coverage_2025-08-29.json",
         },
-        
         "testing_best_practices": {
             "isolation": "Each test is independent and can run alone",
             "setup_teardown": "Proper fixture management for test data",
             "assertion_quality": "Comprehensive assertions with meaningful messages",
             "mock_usage": "Strategic mocking of external dependencies",
-            "edge_case_coverage": "Testing boundary conditions and error paths"
+            "edge_case_coverage": "Testing boundary conditions and error paths",
         },
-        
         "recommendations": {
             "maintenance": "Run tests after any code changes to enhanced_editor.py",
             "expansion": "Add integration tests with actual file system operations",
             "performance": "Monitor test execution time as codebase grows",
-            "continuous_integration": "Include in automated CI/CD pipeline"
-        }
+            "continuous_integration": "Include in automated CI/CD pipeline",
+        },
     }
-    
+
     return summary
+
 
 def save_summary_report():
     """Save the test execution summary to a file."""
     summary = generate_execution_summary()
-    
+
     # Save as JSON
-    json_file = Path("tests/unit/result_enhanced_editor_summary_2025-08-29.json")
-    with open(json_file, 'w') as f:
+    json_file = Path(
+        "tests/unit/result_enhanced_editor_summary_2025-08-29.json"
+    )
+    with open(json_file, "w") as f:
         json.dump(summary, f, indent=2)
-    
+
     # Generate markdown report
     md_content = f"""# Enhanced Editor Test Execution Summary
 
@@ -268,14 +264,17 @@ best practices and provide detailed reporting for continuous quality assurance.
 ---
 *Generated on {summary['test_execution_summary']['execution_date']} at {summary['test_execution_summary']['execution_time']}*
 """
-    
-    md_file = Path("tests/unit/result_enhanced_editor_documentation_2025-08-29.md")
-    with open(md_file, 'w') as f:
+
+    md_file = Path(
+        "tests/unit/result_enhanced_editor_documentation_2025-08-29.md"
+    )
+    with open(md_file, "w") as f:
         f.write(md_content)
-    
+
     print(f"Test summary saved to:")
     print(f"  JSON: {json_file}")
     print(f"  Markdown: {md_file}")
+
 
 if __name__ == "__main__":
     save_summary_report()

@@ -5,35 +5,35 @@ from .network_mocks import (
     MockNetworkStats,
     MockPlatformDetector,
     MockNetworkData,
-    MockDeviceDiscovery
+    MockDeviceDiscovery,
 )
 
 from .service_mocks import (
     MockConfigService,
     MockLoggingService,
     MockNotificationService,
-    MockMetricsService
+    MockMetricsService,
 )
 
 from .tool_mocks import (
     MockBandwidthMonitor,
     MockPortScanner,
     MockWiFiAnalyzer,
-    MockLANFileTransfer
+    MockLANFileTransfer,
 )
 
 __all__ = [
-    'MockNetworkInterface',
-    'MockNetworkStats',
-    'MockPlatformDetector',
-    'MockNetworkData',
-    'MockDeviceDiscovery',
-    'MockConfigService',
-    'MockLoggingService',
-    'MockNotificationService',
-    'MockMetricsService',
-    'MockBandwidthMonitor',
-    'MockPortScanner',
-    'MockWiFiAnalyzer',
-    'MockLANFileTransfer'
+    "MockNetworkInterface",
+    "MockNetworkStats",
+    "MockPlatformDetector",
+    "MockNetworkData",
+    "MockDeviceDiscovery",
+    "MockConfigService",
+    "MockLoggingService",
+    "MockNotificationService",
+    "MockMetricsService",
+    "MockBandwidthMonitor",
+    "MockPortScanner",
+    "MockWiFiAnalyzer",
+    "MockLANFileTransfer",
 ]

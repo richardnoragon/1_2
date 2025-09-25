@@ -14,12 +14,24 @@ from pathlib import Path
 def install_requirements():
     """Install required testing packages."""
     print("Installing testing requirements...")
-    requirements_file = Path(__file__).parent / "test_requirements_2025-08-28.txt"
-    
+    requirements_file = (
+        Path(__file__).parent / "test_requirements_2025-08-28.txt"
+    )
+
     try:
-        subprocess.run([
-            sys.executable, "-m", "pip", "install", "-r", str(requirements_file)
-        ], check=True, capture_output=True, text=True)
+        subprocess.run(
+            [
+                sys.executable,
+                "-m",
+                "pip",
+                "install",
+                "-r",
+                str(requirements_file),
+            ],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
         print("✓ Requirements installed successfully")
         return True
     except subprocess.CalledProcessError as e:
@@ -31,16 +43,20 @@ def install_requirements():
 
 def run_tests():
     """Run the comprehensive tests with detailed reporting."""
-    print(f"\nStarting ConfigManager comprehensive tests at {datetime.datetime.now()}")
+    print(
+        f"\nStarting ConfigManager comprehensive tests at {datetime.datetime.now()}"
+    )
     print("=" * 70)
-    
+
     # Change to the test directory
     test_dir = Path(__file__).parent
     os.chdir(test_dir)
-    
+
     # Test command with comprehensive reporting
     cmd = [
-        sys.executable, "-m", "pytest",
+        sys.executable,
+        "-m",
+        "pytest",
         "test_config_manager_2025-08-28.py",
         "-v",
         "--tb=short",
@@ -56,39 +72,39 @@ def run_tests():
         "--cov-report=term-missing",
         "--cov-branch",
         "--cov-fail-under=85",
-        "--capture=no"
+        "--capture=no",
     ]
-    
+
     try:
         result = subprocess.run(cmd, capture_output=False, text=True)
-        
+
         print("\n" + "=" * 70)
         print("Test execution completed!")
         print(f"Exit code: {result.returncode}")
-        
+
         # List generated files
         print("\nGenerated test result files:")
         result_files = [
             "result_config_manager_2025-08-28.html",
-            "result_config_manager_2025-08-28.json", 
-            "result_config_manager_coverage_2025-08-28.json"
+            "result_config_manager_2025-08-28.json",
+            "result_config_manager_coverage_2025-08-28.json",
         ]
-        
+
         for file in result_files:
             if Path(file).exists():
                 print(f"✓ {file}")
             else:
                 print(f"✗ {file} (not found)")
-        
+
         # Check for coverage HTML directory
         coverage_dir = Path("result_config_manager_coverage_2025-08-28")
         if coverage_dir.exists():
             print(f"✓ {coverage_dir}/ (HTML coverage report)")
         else:
             print(f"✗ {coverage_dir}/ (not found)")
-            
+
         return result.returncode == 0
-        
+
     except Exception as e:
         print(f"✗ Test execution failed: {e}")
         return False
@@ -97,20 +113,24 @@ def run_tests():
 def generate_summary_report():
     """Generate a summary report of the test execution."""
     summary_file = Path("result_config_manager_summary_2025-08-28.txt")
-    
-    with open(summary_file, 'w', encoding='utf-8') as f:
+
+    with open(summary_file, "w", encoding="utf-8") as f:
         f.write("ConfigManager Comprehensive Test Summary\n")
         f.write("=" * 50 + "\n")
         f.write(f"Execution Date: {datetime.datetime.now()}\n")
         f.write(f"Test File: test_config_manager_2025-08-28.py\n")
         f.write(f"Target Module: config_manager.py\n\n")
-        
+
         f.write("Generated Reports:\n")
         f.write("- HTML Test Report: result_config_manager_2025-08-28.html\n")
         f.write("- JSON Test Report: result_config_manager_2025-08-28.json\n")
-        f.write("- HTML Coverage Report: result_config_manager_coverage_2025-08-28/\n")
-        f.write("- JSON Coverage Report: result_config_manager_coverage_2025-08-28.json\n\n")
-        
+        f.write(
+            "- HTML Coverage Report: result_config_manager_coverage_2025-08-28/\n"
+        )
+        f.write(
+            "- JSON Coverage Report: result_config_manager_coverage_2025-08-28.json\n\n"
+        )
+
         f.write("Test Categories Covered:\n")
         f.write("- Singleton pattern implementation\n")
         f.write("- Configuration management (get/set/remove)\n")
@@ -122,7 +142,7 @@ def generate_summary_report():
         f.write("- Default value handling\n")
         f.write("- Auto-save functionality\n")
         f.write("- Configuration reset and defaults\n")
-        
+
     print(f"✓ Summary report generated: {summary_file}")
 
 
@@ -131,23 +151,23 @@ def main():
     print("ConfigManager Comprehensive Test Suite")
     print("Date: 2025-08-28")
     print("=" * 50)
-    
+
     # Step 1: Install requirements
     if not install_requirements():
         print("Failed to install requirements. Exiting.")
         return False
-    
+
     # Step 2: Run tests
     success = run_tests()
-    
+
     # Step 3: Generate summary
     generate_summary_report()
-    
+
     if success:
         print("\n🎉 All tests completed successfully!")
     else:
         print("\n⚠️  Some tests failed. Check the reports for details.")
-    
+
     return success
 
 

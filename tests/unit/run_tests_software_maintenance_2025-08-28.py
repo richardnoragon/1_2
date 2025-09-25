@@ -25,7 +25,7 @@ LOGS_DIR = TEST_DIR / "logs"
 TEST_CONFIG = {
     "test_file": "test_software_maintenance_2025-08-28.py",
     "config_file": "pytest_software_maintenance_2025-08-28.ini",
-    "date_suffix": "2025-08-28"
+    "date_suffix": "2025-08-28",
 }
 
 # Result files
@@ -36,22 +36,22 @@ RESULT_FILES = {
     "coverage_json": f"result_software_maintenance_coverage_{TEST_CONFIG['date_suffix']}.json",
     "coverage_xml": f"result_software_maintenance_coverage_{TEST_CONFIG['date_suffix']}.xml",
     "execution_log": f"software_maintenance_test_{TEST_CONFIG['date_suffix']}.log",
-    "summary_report": f"result_software_maintenance_summary_{TEST_CONFIG['date_suffix']}.json"
+    "summary_report": f"result_software_maintenance_summary_{TEST_CONFIG['date_suffix']}.json",
 }
 
 
 def setup_test_environment():
     """Setup test environment and directories."""
     print("Setting up test environment...")
-    
+
     # Create necessary directories
     RESULTS_DIR.mkdir(exist_ok=True)
     LOGS_DIR.mkdir(exist_ok=True)
-    
+
     # Set up Python path
     if str(PROJECT_ROOT) not in sys.path:
         sys.path.insert(0, str(PROJECT_ROOT))
-    
+
     print(f"✓ Test environment ready")
     print(f"  - Project root: {PROJECT_ROOT}")
     print(f"  - Test directory: {TEST_DIR}")
@@ -61,41 +61,44 @@ def setup_test_environment():
 def check_dependencies():
     """Check required dependencies for testing."""
     print("Checking dependencies...")
-    
+
     required_packages = [
         "pytest",
         "pytest-html",
-        "pytest-json-report", 
+        "pytest-json-report",
         "pytest-cov",
-        "pytest-timeout"
+        "pytest-timeout",
     ]
-    
+
     missing_packages = []
-    
+
     for package in required_packages:
         try:
-            __import__(package.replace('-', '_'))
+            __import__(package.replace("-", "_"))
             print(f"  ✓ {package}")
         except ImportError:
             missing_packages.append(package)
             print(f"  ✗ {package} (missing)")
-    
+
     if missing_packages:
         print(f"\nMissing packages: {', '.join(missing_packages)}")
         print("Install with: pip install " + " ".join(missing_packages))
         return False
-    
+
     return True
 
 
 def run_tests():
     """Execute the test suite with comprehensive reporting."""
     print("Running Software Maintenance tests...")
-    
+
     # Construct pytest command
     cmd = [
-        sys.executable, "-m", "pytest",
-        "-c", str(TEST_DIR / TEST_CONFIG["config_file"]),
+        sys.executable,
+        "-m",
+        "pytest",
+        "-c",
+        str(TEST_DIR / TEST_CONFIG["config_file"]),
         str(TEST_DIR / TEST_CONFIG["test_file"]),
         "-v",
         "--tb=short",
@@ -110,17 +113,19 @@ def run_tests():
         "--cov-report=term-missing",
         "--cov-branch",
         "--durations=10",
-        f"--timeout=300"
+        f"--timeout=300",
     ]
-    
+
     # Set environment variables
     env = os.environ.copy()
     env["PYTHONPATH"] = str(PROJECT_ROOT)
-    
+
     # Execute tests
     start_time = datetime.now()
-    print(f"Test execution started at: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
-    
+    print(
+        f"Test execution started at: {start_time.strftime('%Y-%m-%d %H:%M:%S')}"
+    )
+
     try:
         result = subprocess.run(
             cmd,
@@ -128,15 +133,17 @@ def run_tests():
             env=env,
             capture_output=True,
             text=True,
-            timeout=600  # 10 minute timeout
+            timeout=600,  # 10 minute timeout
         )
-        
+
         end_time = datetime.now()
         duration = end_time - start_time
-        
-        print(f"Test execution completed at: {end_time.strftime('%Y-%m-%d %H:%M:%S')}")
+
+        print(
+            f"Test execution completed at: {end_time.strftime('%Y-%m-%d %H:%M:%S')}"
+        )
         print(f"Total duration: {duration}")
-        
+
         # Save execution log
         log_content = {
             "start_time": start_time.isoformat(),
@@ -145,16 +152,18 @@ def run_tests():
             "return_code": result.returncode,
             "stdout": result.stdout,
             "stderr": result.stderr,
-            "command": " ".join(cmd)
+            "command": " ".join(cmd),
         }
-        
-        with open(LOGS_DIR / RESULT_FILES["execution_log"], "w", encoding="utf-8") as f:
+
+        with open(
+            LOGS_DIR / RESULT_FILES["execution_log"], "w", encoding="utf-8"
+        ) as f:
             f.write(result.stdout)
-            f.write("\n" + "="*50 + "\n")
+            f.write("\n" + "=" * 50 + "\n")
             f.write(result.stderr)
-        
+
         return result.returncode == 0, log_content
-        
+
     except subprocess.TimeoutExpired:
         print("❌ Test execution timed out!")
         return False, {"error": "Test execution timed out"}
@@ -166,78 +175,98 @@ def run_tests():
 def process_test_results():
     """Process and analyze test results."""
     print("Processing test results...")
-    
+
     summary = {
         "execution_timestamp": datetime.now().isoformat(),
         "test_file": TEST_CONFIG["test_file"],
         "results": {},
         "coverage": {},
-        "status": "unknown"
+        "status": "unknown",
     }
-    
+
     # Load JSON test results
     json_report_path = RESULTS_DIR / RESULT_FILES["json_report"]
     if json_report_path.exists():
         try:
             with open(json_report_path, "r", encoding="utf-8") as f:
                 test_data = json.load(f)
-            
+
             summary["results"] = {
                 "total_tests": test_data.get("summary", {}).get("total", 0),
                 "passed": test_data.get("summary", {}).get("passed", 0),
                 "failed": test_data.get("summary", {}).get("failed", 0),
                 "skipped": test_data.get("summary", {}).get("skipped", 0),
                 "errors": test_data.get("summary", {}).get("error", 0),
-                "duration": test_data.get("duration", 0)
+                "duration": test_data.get("duration", 0),
             }
-            
-            print(f"  ✓ Test results: {summary['results']['passed']}/{summary['results']['total']} passed")
-            
+
+            print(
+                f"  ✓ Test results: {summary['results']['passed']}/{summary['results']['total']} passed"
+            )
+
         except Exception as e:
             print(f"  ❌ Failed to process JSON results: {e}")
-    
+
     # Load coverage results
     coverage_json_path = RESULTS_DIR / RESULT_FILES["coverage_json"]
     if coverage_json_path.exists():
         try:
             with open(coverage_json_path, "r", encoding="utf-8") as f:
                 coverage_data = json.load(f)
-            
+
             summary["coverage"] = {
-                "line_coverage": coverage_data.get("totals", {}).get("percent_covered", 0),
-                "branch_coverage": coverage_data.get("totals", {}).get("percent_covered_display", "N/A"),
-                "lines_covered": coverage_data.get("totals", {}).get("covered_lines", 0),
-                "lines_total": coverage_data.get("totals", {}).get("num_statements", 0),
-                "missing_lines": coverage_data.get("totals", {}).get("missing_lines", 0)
+                "line_coverage": coverage_data.get("totals", {}).get(
+                    "percent_covered", 0
+                ),
+                "branch_coverage": coverage_data.get("totals", {}).get(
+                    "percent_covered_display", "N/A"
+                ),
+                "lines_covered": coverage_data.get("totals", {}).get(
+                    "covered_lines", 0
+                ),
+                "lines_total": coverage_data.get("totals", {}).get(
+                    "num_statements", 0
+                ),
+                "missing_lines": coverage_data.get("totals", {}).get(
+                    "missing_lines", 0
+                ),
             }
-            
+
             print(f"  ✓ Coverage: {summary['coverage']['line_coverage']:.1f}%")
-            
+
         except Exception as e:
             print(f"  ❌ Failed to process coverage results: {e}")
-    
+
     # Determine overall status
-    if summary["results"].get("failed", 0) == 0 and summary["results"].get("errors", 0) == 0:
+    if (
+        summary["results"].get("failed", 0) == 0
+        and summary["results"].get("errors", 0) == 0
+    ):
         if summary["results"].get("total", 0) > 0:
             summary["status"] = "success"
         else:
             summary["status"] = "no_tests"
     else:
         summary["status"] = "failure"
-    
+
     # Save summary
-    with open(RESULTS_DIR / RESULT_FILES["summary_report"], "w", encoding="utf-8") as f:
+    with open(
+        RESULTS_DIR / RESULT_FILES["summary_report"], "w", encoding="utf-8"
+    ) as f:
         json.dump(summary, f, indent=2)
-    
+
     return summary
 
 
 def generate_final_report(summary, execution_log):
     """Generate final comprehensive report."""
     print("Generating final report...")
-    
-    report_path = RESULTS_DIR / f"SOFTWARE_MAINTENANCE_TEST_COMPLETION_REPORT_2025-08-28.md"
-    
+
+    report_path = (
+        RESULTS_DIR
+        / f"SOFTWARE_MAINTENANCE_TEST_COMPLETION_REPORT_2025-08-28.md"
+    )
+
     report_content = f"""# Software Maintenance Test Completion Report
 
 **Generated:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
@@ -368,10 +397,10 @@ Please review the detailed HTML report for specific failure information.
 **Test Framework:** pytest with comprehensive reporting
 **Documentation:** Complete test suite with mocking and error handling
 """
-    
+
     with open(report_path, "w", encoding="utf-8") as f:
         f.write(report_content)
-    
+
     print(f"✓ Final report saved: {report_path}")
     return report_path
 
@@ -382,42 +411,46 @@ def main():
     print("=" * 50)
     print(f"Date: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print()
-    
+
     # Setup
     setup_test_environment()
-    
+
     # Check dependencies
     if not check_dependencies():
         print("\n❌ Missing dependencies. Please install required packages.")
         return 1
-    
+
     # Run tests
     print()
     success, execution_log = run_tests()
-    
+
     # Process results
     print()
     summary = process_test_results()
-    
+
     # Generate final report
     print()
     report_path = generate_final_report(summary, execution_log)
-    
+
     # Final status
     print()
     print("=" * 50)
     if success:
         print("✅ Test execution completed successfully!")
-        print(f"   Tests passed: {summary['results'].get('passed', 0)}/{summary['results'].get('total', 0)}")
-        print(f"   Coverage: {summary['coverage'].get('line_coverage', 0):.1f}%")
+        print(
+            f"   Tests passed: {summary['results'].get('passed', 0)}/{summary['results'].get('total', 0)}"
+        )
+        print(
+            f"   Coverage: {summary['coverage'].get('line_coverage', 0):.1f}%"
+        )
     else:
         print("❌ Test execution completed with issues!")
         print(f"   Tests failed: {summary['results'].get('failed', 0)}")
         print(f"   Errors: {summary['results'].get('errors', 0)}")
-    
+
     print(f"   Report: {report_path}")
     print("=" * 50)
-    
+
     return 0 if success else 1
 
 

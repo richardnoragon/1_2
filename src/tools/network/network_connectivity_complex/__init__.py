@@ -17,11 +17,11 @@ __version__ = "1.0.0"
 __author__ = "Richard's File Utilities Team"
 
 __all__ = [
-    'NetworkToolBase',
-    'ConnectionManager',
-    'PlatformNetworkDetector',
-    'SecurityValidator',
-    'BandwidthMonitor',
-    'PortScanner',
-    'WiFiAnalyzer'
+    "NetworkToolBase",
+    "ConnectionManager",
+    "PlatformNetworkDetector",
+    "SecurityValidator",
+    "BandwidthMonitor",
+    "PortScanner",
+    "WiFiAnalyzer",
 ]

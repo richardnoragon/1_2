@@ -22,14 +22,14 @@ def setup_environment():
     # Add source directory to Python path
     project_root = Path(__file__).parent.parent.parent
     src_path = project_root / "src"
-    
+
     if str(src_path) not in sys.path:
         sys.path.insert(0, str(src_path))
-    
+
     # Set environment variables
     os.environ["PYTHONPATH"] = str(src_path)
     os.environ["PYTEST_CURRENT_TEST"] = "browser_detector_enhanced_2025-08-30"
-    
+
     return project_root
 
 
@@ -49,20 +49,28 @@ def run_tests():
     print(f"Target Module: browser_detector.py")
     print(f"Test File: test_browser_detector_enhanced_2025-08-30.py")
     print("=" * 80)
-    
+
     # Setup environment
     project_root = setup_environment()
     results_dir = create_results_directory()
-    
+
     # Define test file and config
-    test_file = Path(__file__).parent / "test_browser_detector_enhanced_2025-08-30.py"
-    config_file = Path(__file__).parent / "pytest_browser_detector_enhanced_2025-08-30.ini"
-    
+    test_file = (
+        Path(__file__).parent / "test_browser_detector_enhanced_2025-08-30.py"
+    )
+    config_file = (
+        Path(__file__).parent
+        / "pytest_browser_detector_enhanced_2025-08-30.ini"
+    )
+
     # Build pytest command
     pytest_cmd = [
-        sys.executable, "-m", "pytest",
+        sys.executable,
+        "-m",
+        "pytest",
         str(test_file),
-        f"-c", str(config_file),
+        f"-c",
+        str(config_file),
         "-v",
         "--tb=short",
         "--strict-markers",
@@ -75,13 +83,13 @@ def run_tests():
         f"--cov-report=json:{results_dir}/coverage_browser_detector_enhanced_2025-08-30.json",
         "--cov-report=term-missing",
         "--cov-fail-under=70",
-        f"--junit-xml={results_dir}/result_browser_detector_enhanced_2025-08-30_junit.xml"
+        f"--junit-xml={results_dir}/result_browser_detector_enhanced_2025-08-30_junit.xml",
     ]
-    
+
     print("Executing pytest command...")
     print(" ".join(pytest_cmd))
     print("-" * 80)
-    
+
     try:
         # Run the tests
         result = subprocess.run(
@@ -89,24 +97,24 @@ def run_tests():
             cwd=str(project_root),
             capture_output=True,
             text=True,
-            timeout=600  # 10 minute timeout
+            timeout=600,  # 10 minute timeout
         )
-        
+
         print("STDOUT:")
         print(result.stdout)
-        
+
         if result.stderr:
             print("STDERR:")
             print(result.stderr)
-        
+
         print("-" * 80)
         print(f"Return code: {result.returncode}")
-        
+
         # Generate summary report
         generate_summary_report(results_dir, result)
-        
+
         return result.returncode
-        
+
     except subprocess.TimeoutExpired:
         print("ERROR: Test execution timed out after 10 minutes")
         return 1
@@ -117,10 +125,12 @@ def run_tests():
 
 def generate_summary_report(results_dir, test_result):
     """Generate a summary report of the test execution."""
-    summary_file = results_dir / "result_browser_detector_enhanced_2025-08-30_summary.md"
-    
+    summary_file = (
+        results_dir / "result_browser_detector_enhanced_2025-08-30_summary.md"
+    )
+
     timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    
+
     summary_content = f"""# Browser Detector Enhanced Unit Test Summary
 
 ## Test Execution Details
@@ -158,9 +168,9 @@ def generate_summary_report(results_dir, test_result):
 This comprehensive test suite validates all functionality of the BrowserDetector class
 including platform-specific browser detection, process management, and data access validation.
 """
-    
+
     try:
-        with open(summary_file, 'w', encoding='utf-8') as f:
+        with open(summary_file, "w", encoding="utf-8") as f:
             f.write(summary_content)
         print(f"Summary report generated: {summary_file}")
     except Exception as e:
@@ -169,17 +179,19 @@ including platform-specific browser detection, process management, and data acce
 
 if __name__ == "__main__":
     exit_code = run_tests()
-    
+
     print("\n" + "=" * 80)
     print(f"TEST EXECUTION COMPLETED - Exit Code: {exit_code}")
     print("=" * 80)
-    
+
     if exit_code == 0:
         print("✅ All tests passed successfully!")
     else:
         print("❌ Some tests failed or encountered errors.")
-    
+
     print(f"\nResults available in: C:/Users/richardi/1_2/tests/unit/results/")
-    print("Check the HTML report for detailed test results and coverage information.")
-    
+    print(
+        "Check the HTML report for detailed test results and coverage information."
+    )
+
     sys.exit(exit_code)

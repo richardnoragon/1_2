@@ -1,16 +1,19 @@
 """Centralized style definitions for the application."""
+
 from enum import Enum
 from typing import Dict
 
 
 class Theme(Enum):
     """Available themes for the application."""
+
     LIGHT = "light"
     DARK = "dark"
 
 
 class Colors:
     """Color definitions for the application."""
+
     # Light theme colors
     LIGHT = {
         "window_bg": "#f5f5f5",
@@ -27,7 +30,7 @@ class Colors:
         "border": "#dcdcdc",
         "separator": "#e0e0e0",
         "disabled": "#9e9e9e",
-        "highlight": "#bbdefb"
+        "highlight": "#bbdefb",
     }
 
     # Dark theme colors
@@ -46,22 +49,22 @@ class Colors:
         "border": "#505050",
         "separator": "#606060",
         "disabled": "#707070",
-        "highlight": "#1565C0"
+        "highlight": "#1565C0",
     }
 
 
 def get_base_styles(theme: Theme = Theme.LIGHT, font_size: int = 12) -> str:
     """Get the base stylesheet for the application.
-    
+
     Args:
         theme: The theme to use for styling
         font_size: Base font size in points
-        
+
     Returns:
         The complete stylesheet as a string
     """
     colors = Colors.LIGHT if theme == Theme.LIGHT else Colors.DARK
-    
+
     return f"""
         QMainWindow, QDialog {{
             background-color: {colors['window_bg']};
@@ -275,7 +278,7 @@ def get_base_styles(theme: Theme = Theme.LIGHT, font_size: int = 12) -> str:
 
 def get_custom_styles() -> Dict[str, str]:
     """Get custom styles for specific widgets or windows.
-    
+
     Returns:
         A dictionary of custom style overrides
     """
@@ -296,5 +299,5 @@ def get_custom_styles() -> Dict[str, str]:
             QProgressBar {
                 margin: 10px 0;
             }
-        """
+        """,
     }

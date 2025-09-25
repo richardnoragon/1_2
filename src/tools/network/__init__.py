@@ -15,6 +15,6 @@ except ImportError as e:
 
 __all__ = []
 if NetworkConnectivityGUI:
-    __all__.append('NetworkConnectivityGUI')
+    __all__.append("NetworkConnectivityGUI")
 if NetworkScannerGUI:
-    __all__.append('NetworkScannerGUI')
+    __all__.append("NetworkScannerGUI")

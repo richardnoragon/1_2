@@ -13,11 +13,22 @@ from typing import List, Optional
 try:
     from PyQt5.QtCore import QObject, Qt, QThread, pyqtSignal
     from PyQt5.QtGui import QColor
-    from PyQt5.QtWidgets import (QAbstractItemView, QApplication, QFileDialog,
-                                 QGroupBox, QHBoxLayout, QLabel, QListWidget,
-                                 QListWidgetItem, QMainWindow, QMessageBox,
-                                 QProgressBar, QPushButton, QVBoxLayout,
-                                 QWidget)
+    from PyQt5.QtWidgets import (
+        QAbstractItemView,
+        QApplication,
+        QFileDialog,
+        QGroupBox,
+        QHBoxLayout,
+        QLabel,
+        QListWidget,
+        QListWidgetItem,
+        QMainWindow,
+        QMessageBox,
+        QProgressBar,
+        QPushButton,
+        QVBoxLayout,
+        QWidget,
+    )
 except ImportError:
     print("PyQt5 not available. Please install PyQt5.")
     sys.exit(1)
@@ -25,32 +36,37 @@ except ImportError:
 # Import SafeStandardWindow for reliable menu integration
 try:
     # Add the correct path for imports
-    sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
-    from src.gui.safe_standard_window import \
-        SafeStandardWindow as StandardWindow
+    sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
+    from src.gui.safe_standard_window import (
+        SafeStandardWindow as StandardWindow,
+    )
+
     STANDARD_WINDOW_AVAILABLE = True
 except ImportError as e:
     print(f"SafeStandardWindow not available: {e}")
     # Try original StandardWindow as fallback
     try:
         from src.gui.standard_window import StandardWindow
+
         STANDARD_WINDOW_AVAILABLE = True
     except ImportError:
         # Final fallback - minimal implementation
         class StandardWindow(QMainWindow):
-            def __init__(self, title="Window", window_type="utility", parent=None):
+            def __init__(
+                self, title="Window", window_type="utility", parent=None
+            ):
                 super().__init__(parent)
                 self.setWindowTitle(title)
-            
+
             def ensure_menu_bar(self):
                 pass  # No-op for fallback
-        
+
         STANDARD_WINDOW_AVAILABLE = False
 
 
 class EmptyFolderLogic(QObject):
     """Handles the logic for finding and deleting empty folders."""
-    
+
     progress_updated = pyqtSignal(str)
     folders_found = pyqtSignal(list)
     deletion_update = pyqtSignal(str, bool)
@@ -72,15 +88,15 @@ class EmptyFolderLogic(QObject):
         self._is_running = True
         self._base_path = start_path
         empty_folders = []
-        
+
         try:
             self.progress_updated.emit(f"Scanning directory: {start_path}...")
-            
+
             # Walk through all directories
             for root, dirs, files in os.walk(start_path):
                 if not self._is_running:
                     break
-                    
+
                 # Check if directory is empty
                 try:
                     dir_contents = os.listdir(root)
@@ -90,11 +106,13 @@ class EmptyFolderLogic(QObject):
                         self.progress_updated.emit(f"Found: {folder_name}")
                 except OSError:
                     continue
-                    
+
             if self._is_running:
                 self.folders_found.emit(empty_folders)
-                self.progress_updated.emit(f"Scan complete. Found {len(empty_folders)} empty folders.")
-                
+                self.progress_updated.emit(
+                    f"Scan complete. Found {len(empty_folders)} empty folders."
+                )
+
         except Exception as e:
             self.error_occurred.emit(str(e))
         finally:
@@ -105,16 +123,18 @@ class EmptyFolderLogic(QObject):
         self._is_running = True
         deleted_count = 0
         failed_count = 0
-        
+
         # Sort by path length in reverse order to delete nested folders first
         folders_to_delete = sorted(folders, key=len, reverse=True)
-        
-        self.progress_updated.emit(f"Starting deletion of {len(folders_to_delete)} folders...")
-        
+
+        self.progress_updated.emit(
+            f"Starting deletion of {len(folders_to_delete)} folders..."
+        )
+
         for folder in folders_to_delete:
             if not self._is_running:
                 break
-                
+
             try:
                 if os.path.exists(folder) and os.path.isdir(folder):
                     os.rmdir(folder)
@@ -130,55 +150,58 @@ class EmptyFolderLogic(QObject):
                 failed_count += 1
                 msg = f"Failed to delete {folder}: {str(e)}"
                 self.error_occurred.emit(msg)
-                
+
         if self._is_running:
-            self.progress_updated.emit(f"Deletion complete. Deleted: {deleted_count}, Failed: {failed_count}")
-                
+            self.progress_updated.emit(
+                f"Deletion complete. Deleted: {deleted_count}, Failed: {failed_count}"
+            )
+
         self.finished.emit(False)
 
 
 class EmptyFoldersGUI(StandardWindow):
     """Main window for Empty Folders operations."""
-    
+
     def __init__(self, parent=None):
         # Always use the safe constructor parameters
         super().__init__(
             title="Empty Folders Finder - Richard's File Utilities",
             window_type="utility",
-            parent=parent
+            parent=parent,
         )
         self.setGeometry(100, 100, 800, 600)
-        
+
         self.current_path: Optional[str] = None
         self.empty_folders: List[str] = []
         self.logic: Optional[EmptyFolderLogic] = None
         self.thread: Optional[QThread] = None
-        
+
         self.init_ui()
         if STANDARD_WINDOW_AVAILABLE:
             self._setup_menu_callbacks()
         # Ensure menu bar exists (safe to call in both modes)
         self.ensure_menu_bar()
-    
+
     def _setup_menu_callbacks(self):
         """Setup tool-specific menu callbacks."""
-        if hasattr(self, 'menu_manager'):
+        if hasattr(self, "menu_manager"):
             # Register tool-specific callbacks
-            self.menu_manager.register_callback('new_scan', self.clear_results)
+            self.menu_manager.register_callback("new_scan", self.clear_results)
             # Override the standard help with our tool-specific help
-            self.menu_manager.register_callback('show_user_guide',
-                                                self.show_help)
-            self.menu_manager.register_callback('show_preferences',
-                                                self.show_preferences)
-            self.menu_manager.register_callback('refresh',
-                                                self.refresh_view)
-            
+            self.menu_manager.register_callback(
+                "show_user_guide", self.show_help
+            )
+            self.menu_manager.register_callback(
+                "show_preferences", self.show_preferences
+            )
+            self.menu_manager.register_callback("refresh", self.refresh_view)
+
     def clear_results(self):
         """Clear all scan results."""
         self.empty_folders = []
-        if hasattr(self, 'results_list'):
+        if hasattr(self, "results_list"):
             self.results_list.clear()
-        
+
     def show_help(self):
         """Show help dialog for Empty Folders tool."""
         help_text = """
@@ -231,37 +254,41 @@ class EmptyFoldersGUI(StandardWindow):
         <li><b>F5:</b> Clear results and start new scan</li>
         </ul>
         """
-        
+
         QMessageBox.information(self, "Empty Folders Finder Help", help_text)
-        
+
     def show_preferences(self):
         """Show Empty Folders preferences."""
-        QMessageBox.information(self, "Empty Folders Finder Preferences",
-                                "Empty Folders Finder preferences:\n\n"
-                                "• Scan depth limits\n"
-                                "• Directory exclusion filters\n"
-                                "• Deletion confirmation options\n"
-                                "• Progress display settings\n\n"
-                                "Advanced preferences coming soon!")
-                               
+        QMessageBox.information(
+            self,
+            "Empty Folders Finder Preferences",
+            "Empty Folders Finder preferences:\n\n"
+            "• Scan depth limits\n"
+            "• Directory exclusion filters\n"
+            "• Deletion confirmation options\n"
+            "• Progress display settings\n\n"
+            "Advanced preferences coming soon!",
+        )
+
     def refresh_view(self):
         """Refresh/clear the current scan results."""
         self.clear_results()
-        
+
     def init_ui(self):
         """Initialize the user interface."""
         # Use the existing main layout from StandardWindow or create new layout
-        if STANDARD_WINDOW_AVAILABLE and hasattr(self, 'main_layout'):
+        if STANDARD_WINDOW_AVAILABLE and hasattr(self, "main_layout"):
             layout = self.main_layout
         else:
             # Create central widget and layout for fallback mode
             central_widget = QWidget()
             self.setCentralWidget(central_widget)
             layout = QVBoxLayout(central_widget)
-        
+
         # Add header
         header_label = QLabel("Empty Folders Finder")
-        header_label.setStyleSheet("""
+        header_label.setStyleSheet(
+            """
             QLabel {
                 font-size: 18px;
                 font-weight: bold;
@@ -271,17 +298,19 @@ class EmptyFoldersGUI(StandardWindow):
                 border-radius: 5px;
                 margin-bottom: 10px;
             }
-        """)
+        """
+        )
         layout.addWidget(header_label)
-        
+
         # Directory selection area
         selection_group = QGroupBox("Directory Selection")
         selection_layout = QVBoxLayout(selection_group)
-        
+
         # Path selection
         path_layout = QHBoxLayout()
         self.path_input = QLabel("No directory selected")
-        self.path_input.setStyleSheet("""
+        self.path_input.setStyleSheet(
+            """
             QLabel {
                 padding: 8px;
                 border: 2px solid #bdc3c7;
@@ -289,13 +318,14 @@ class EmptyFoldersGUI(StandardWindow):
                 background-color: #f8f9fa;
                 color: #2c3e50;
             }
-        """)
+        """
+        )
         self.browse_button = QPushButton("Browse...")
         self.browse_button.clicked.connect(self.select_directory)
         path_layout.addWidget(self.path_input)
         path_layout.addWidget(self.browse_button)
         selection_layout.addLayout(path_layout)
-        
+
         # Control buttons
         control_layout = QHBoxLayout()
         self.scan_button = QPushButton("Scan for Empty Folders")
@@ -308,17 +338,17 @@ class EmptyFoldersGUI(StandardWindow):
         control_layout.addWidget(self.stop_button)
         control_layout.addStretch()
         selection_layout.addLayout(control_layout)
-        
+
         layout.addWidget(selection_group)
-        
+
         # Results area
         results_group = QGroupBox("Empty Folders Found")
         results_layout = QVBoxLayout(results_group)
-        
+
         self.results_list = QListWidget()
         self.results_list.setSelectionMode(QAbstractItemView.ExtendedSelection)
         results_layout.addWidget(self.results_list)
-        
+
         # List control buttons
         list_control_layout = QHBoxLayout()
         self.select_all_button = QPushButton("Select All")
@@ -330,18 +360,19 @@ class EmptyFoldersGUI(StandardWindow):
         self.delete_button = QPushButton("Delete Selected")
         self.delete_button.clicked.connect(self.delete_selected)
         self.delete_button.setEnabled(False)
-        
+
         list_control_layout.addWidget(self.select_all_button)
         list_control_layout.addWidget(self.unselect_all_button)
         list_control_layout.addStretch()
         list_control_layout.addWidget(self.delete_button)
         results_layout.addLayout(list_control_layout)
-        
+
         layout.addWidget(results_group)
-        
+
         # Status area
         self.status_label = QLabel("Ready - Select a directory to begin")
-        self.status_label.setStyleSheet("""
+        self.status_label.setStyleSheet(
+            """
             QLabel {
                 padding: 8px;
                 background-color: #f1f2f6;
@@ -349,72 +380,80 @@ class EmptyFoldersGUI(StandardWindow):
                 border-radius: 4px;
                 color: #2c3e50;
             }
-        """)
+        """
+        )
         layout.addWidget(self.status_label)
-        
+
     def select_directory(self):
         """Select directory to scan."""
-        directory = QFileDialog.getExistingDirectory(self, "Select Directory to Scan")
+        directory = QFileDialog.getExistingDirectory(
+            self, "Select Directory to Scan"
+        )
         if directory:
             self.current_path = directory
             self.path_input.setText(directory)
-            self.status_label.setText(f"Selected: {os.path.basename(directory)}")
-            
+            self.status_label.setText(
+                f"Selected: {os.path.basename(directory)}"
+            )
+
             # Clear previous results
             self.results_list.clear()
             self.empty_folders = []
             self.scan_button.setEnabled(True)
             self.update_button_states()
-            
+
     def start_scan(self):
         """Start scanning for empty folders."""
         if not self.current_path:
-            QMessageBox.warning(self, "Error", "Please select a directory first")
+            QMessageBox.warning(
+                self, "Error", "Please select a directory first"
+            )
             return
-            
+
         # Clear previous results
         self.results_list.clear()
         self.empty_folders = []
-        
+
         self.status_label.setText("Scanning for empty folders...")
-        
+
         # Update button states
         self.scan_button.setEnabled(False)
         self.stop_button.setEnabled(True)
         self.delete_button.setEnabled(False)
-        
+
         # Create and start scan thread
         self.logic = EmptyFolderLogic()
         self.thread = QThread()
         self.logic.moveToThread(self.thread)
-        
+
         # Connect signals
         self.logic.progress_updated.connect(self.update_status)
         self.logic.folders_found.connect(self.display_folders)
         self.logic.error_occurred.connect(self.handle_error)
         self.logic.finished.connect(self.scan_complete)
         self.thread.started.connect(
-            lambda: self.logic.find_empty_folders(self.current_path))
-        
+            lambda: self.logic.find_empty_folders(self.current_path)
+        )
+
         self.thread.start()
-        
+
     def stop_operation(self):
         """Stop the current operation."""
         if self.logic:
             self.logic.stop()
         self.stop_button.setEnabled(False)
         self.status_label.setText("Stopping operation...")
-            
+
     def update_status(self, message: str):
         """Update status message."""
         self.status_label.setText(message)
-        
+
     def display_folders(self, folders: List[str]):
         """Display found empty folders."""
         self.empty_folders = folders
-        
+
         self.results_list.clear()
-        
+
         for folder in folders:
             # Show relative path if possible
             if self.current_path:
@@ -426,67 +465,71 @@ class EmptyFoldersGUI(StandardWindow):
                     display_path = folder
             else:
                 display_path = folder
-                
+
             item = QListWidgetItem(display_path)
             item.setData(Qt.UserRole, folder)  # Store full path
             self.results_list.addItem(item)
-            
+
         self.status_label.setText(f"Found {len(folders)} empty folders")
         self.update_button_states()
-        
+
     def select_all_folders(self):
         """Select all folders in the list."""
         self.results_list.selectAll()
-        
+
     def unselect_all_folders(self):
         """Unselect all folders in the list."""
         self.results_list.clearSelection()
-        
+
     def delete_selected(self):
         """Delete selected empty folders."""
         selected_items = self.results_list.selectedItems()
         if not selected_items:
-            QMessageBox.warning(self, "Error", "Please select folders to delete")
+            QMessageBox.warning(
+                self, "Error", "Please select folders to delete"
+            )
             return
-            
+
         folders_to_delete: List[str] = [
             item.data(Qt.UserRole) for item in selected_items
         ]
-        
+
         # Confirm deletion
         reply = QMessageBox.question(
-            self, "Confirm Deletion",
+            self,
+            "Confirm Deletion",
             f"Delete {len(folders_to_delete)} empty folders?\n\n"
             "This action cannot be undone.",
             QMessageBox.Yes | QMessageBox.No,
-            QMessageBox.No
+            QMessageBox.No,
         )
-        
+
         if reply != QMessageBox.Yes:
             return
-            
+
         self.status_label.setText("Deleting folders...")
-        
+
         # Update button states
         self.delete_button.setEnabled(False)
         self.scan_button.setEnabled(False)
         self.stop_button.setEnabled(True)
-        
+
         # Create and start delete thread
         self.logic = EmptyFolderLogic()
         self.thread = QThread()
         self.logic.moveToThread(self.thread)
-        
+
         # Connect signals
         self.logic.progress_updated.connect(self.update_status)
         self.logic.deletion_update.connect(self.handle_deletion)
         self.logic.error_occurred.connect(self.handle_error)
         self.logic.finished.connect(self.delete_complete)
         self.thread.started.connect(
-            lambda: self.logic.delete_folders(folders_to_delete))
-        
+            lambda: self.logic.delete_folders(folders_to_delete)
+        )
+
         self.thread.start()
-        
+
     def handle_deletion(self, folder_path: str, success: bool):
         """Handle deletion results."""
         # Find and update the item in the list
@@ -494,45 +537,45 @@ class EmptyFoldersGUI(StandardWindow):
             item = self.results_list.item(i)
             if item and item.data(Qt.UserRole) == folder_path:
                 if success:
-                    item.setForeground(QColor('gray'))
+                    item.setForeground(QColor("gray"))
                     item.setText(f"[DELETED] {item.text()}")
                     item.setSelected(False)
                 else:
-                    item.setForeground(QColor('red'))
+                    item.setForeground(QColor("red"))
                     item.setText(f"[FAILED] {item.text()}")
                 break
-                
+
     def scan_complete(self):
         """Handle scan completion."""
         self.operation_complete()
-        
+
     def delete_complete(self):
         """Handle delete completion."""
         self.operation_complete()
-        
+
     def operation_complete(self):
         """Handle operation completion - common cleanup."""
         # Re-enable buttons
         self.scan_button.setEnabled(True)
         self.stop_button.setEnabled(False)
-        
+
         self.update_button_states()
-        
+
         # Clean up thread
         if self.thread:
             self.thread.quit()
             self.thread.wait()
             self.thread = None
         self.logic = None
-        
+
     def update_button_states(self):
         """Update button enabled states based on current state."""
         has_folders = self.results_list.count() > 0
-        
+
         self.delete_button.setEnabled(has_folders)
         self.select_all_button.setEnabled(has_folders)
         self.unselect_all_button.setEnabled(has_folders)
-        
+
     def handle_error(self, error_message: str):
         """Handle errors."""
         QMessageBox.critical(self, "Error", error_message)

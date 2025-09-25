@@ -9,4 +9,4 @@ the consolidation effort.
 from .rename_logic import FileRenamer, RenameOperation
 from .gui import RenameWindow
 
-__all__ = ['FileRenamer', 'RenameOperation', 'RenameWindow']
+__all__ = ["FileRenamer", "RenameOperation", "RenameWindow"]

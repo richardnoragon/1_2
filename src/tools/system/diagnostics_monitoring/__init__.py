@@ -11,6 +11,7 @@ try:
     from .core.platform_detector import PlatformDetector
     from .core.data_collector import DataCollector
     from .core.alert_manager import AlertManager
+
     CORE_AVAILABLE = True
 except ImportError:
     MonitorBase = None
@@ -24,6 +25,7 @@ try:
     from .gui.disk_health_widget import DiskHealthWidget
     from .gui.performance_widget import PerformanceWidget
     from .gui.battery_health_widget import BatteryHealthWidget
+
     GUI_WIDGETS_AVAILABLE = True
 except ImportError:
     DiskHealthWidget = None
@@ -35,6 +37,7 @@ except ImportError:
 try:
     from .system_diagnostics_gui import SystemDiagnosticsGUI
     from .system_diagnostics_gui import create_system_diagnostics_gui
+
     MAIN_GUI_AVAILABLE = True
 except ImportError:
     SystemDiagnosticsGUI = None
@@ -45,16 +48,16 @@ __version__ = "1.0.0"
 __author__ = "Richard's File Utilities Team"
 
 __all__ = [
-    'MonitorBase',
-    'PlatformDetector',
-    'DataCollector',
-    'AlertManager',
-    'SystemDiagnosticsGUI',
-    'create_system_diagnostics_gui',
-    'DiskHealthWidget',
-    'PerformanceWidget',
-    'BatteryHealthWidget',
-    'CORE_AVAILABLE',
-    'GUI_WIDGETS_AVAILABLE',
-    'MAIN_GUI_AVAILABLE'
+    "MonitorBase",
+    "PlatformDetector",
+    "DataCollector",
+    "AlertManager",
+    "SystemDiagnosticsGUI",
+    "create_system_diagnostics_gui",
+    "DiskHealthWidget",
+    "PerformanceWidget",
+    "BatteryHealthWidget",
+    "CORE_AVAILABLE",
+    "GUI_WIDGETS_AVAILABLE",
+    "MAIN_GUI_AVAILABLE",
 ]

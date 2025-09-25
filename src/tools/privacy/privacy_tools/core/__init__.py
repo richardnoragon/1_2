@@ -10,8 +10,8 @@ from .platform_utils import PlatformUtils
 from .data_locations import DataLocations
 
 __all__ = [
-    'PrivacyToolBase',
-    'BrowserDetector',
-    'PlatformUtils', 
-    'DataLocations'
+    "PrivacyToolBase",
+    "BrowserDetector",
+    "PlatformUtils",
+    "DataLocations",
 ]

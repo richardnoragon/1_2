@@ -14,7 +14,7 @@ Components:
 
 Usage:
     from src.file_explorer import MultiPaneFileExplorer
-    
+
     app = QApplication(sys.argv)
     explorer = MultiPaneFileExplorer()
     explorer.show()
@@ -27,11 +27,9 @@ __author__ = "Richard Noragon"
 # Import main classes for easy access
 try:
     from .multi_pane_explorer import MultiPaneFileExplorer
-    
-    __all__ = [
-        'MultiPaneFileExplorer'
-    ]
-    
+
+    __all__ = ["MultiPaneFileExplorer"]
+
 except ImportError:
     # Handle missing dependencies gracefully
     __all__ = []

@@ -16,39 +16,53 @@ from pathlib import Path
 def setup_test_environment():
     """Set up the test environment and validate prerequisites."""
     print("Setting up test environment...")
-    
+
     # Get the script directory and project root
     script_dir = Path(__file__).parent
     project_root = script_dir.parent.parent
-    
+
     # Add source directory to Python path
     src_dir = project_root / "src"
     if str(src_dir) not in sys.path:
         sys.path.insert(0, str(src_dir))
-    
+
     # Create necessary directories
     test_dirs = [
         script_dir / "logs",
         script_dir / "assets",
-        script_dir / "test_data" / "extract_image_cli"
+        script_dir / "test_data" / "extract_image_cli",
     ]
-    
+
     for test_dir in test_dirs:
         test_dir.mkdir(parents=True, exist_ok=True)
         print(f"Created/verified directory: {test_dir}")
-    
+
     return script_dir, project_root
+
 
 def install_requirements():
     """Install test requirements if needed."""
-    requirements_file = Path(__file__).parent / "requirements_test_extract_image_cli_2025-08-24.txt"
-    
+    requirements_file = (
+        Path(__file__).parent
+        / "requirements_test_extract_image_cli_2025-08-24.txt"
+    )
+
     if requirements_file.exists():
         print(f"Installing requirements from {requirements_file}")
         try:
-            subprocess.run([
-                sys.executable, "-m", "pip", "install", "-r", str(requirements_file)
-            ], check=True, capture_output=True, text=True)
+            subprocess.run(
+                [
+                    sys.executable,
+                    "-m",
+                    "pip",
+                    "install",
+                    "-r",
+                    str(requirements_file),
+                ],
+                check=True,
+                capture_output=True,
+                text=True,
+            )
             print("Requirements installed successfully.")
         except subprocess.CalledProcessError as e:
             print(f"Warning: Failed to install requirements: {e}")
@@ -56,24 +70,28 @@ def install_requirements():
     else:
         print("Requirements file not found, using existing packages.")
 
+
 def run_pytest_tests():
     """Execute pytest with comprehensive reporting."""
     script_dir = Path(__file__).parent
     test_file = script_dir / "test_extract_image_cli_2025-08-24.py"
     config_file = script_dir / "pytest_extract_image_cli_2025-08-24.ini"
-    
+
     # Verify test files exist
     if not test_file.exists():
         raise FileNotFoundError(f"Test file not found: {test_file}")
-    
+
     if not config_file.exists():
         raise FileNotFoundError(f"Config file not found: {config_file}")
-    
+
     # Construct pytest command
     pytest_cmd = [
-        sys.executable, "-m", "pytest",
+        sys.executable,
+        "-m",
+        "pytest",
         str(test_file),
-        "-c", str(config_file),
+        "-c",
+        str(config_file),
         "--verbose",
         "--tb=long",
         f"--html={script_dir}/result_extract_image_cli_test_report_2025-08-24.html",
@@ -83,34 +101,34 @@ def run_pytest_tests():
         f"--cov-report=json:{script_dir}/result_extract_image_cli_coverage_2025-08-24.json",
         "--cov-report=term-missing",
         "--durations=10",
-        "--capture=no"
+        "--capture=no",
     ]
-    
+
     print(f"Executing pytest command: {' '.join(pytest_cmd)}")
-    
+
     # Execute tests
     start_time = time.time()
     execution_timestamp = datetime.datetime.now()
-    
+
     try:
         result = subprocess.run(
             pytest_cmd,
             cwd=str(script_dir),
             capture_output=True,
             text=True,
-            timeout=600  # 10 minute timeout
+            timeout=600,  # 10 minute timeout
         )
-        
+
         end_time = time.time()
         execution_duration = end_time - start_time
-        
+
         # Generate execution summary
         generate_execution_summary(
             result, execution_timestamp, execution_duration, script_dir
         )
-        
+
         return result
-        
+
     except subprocess.TimeoutExpired:
         print("ERROR: Test execution timed out after 10 minutes")
         return None
@@ -118,10 +136,14 @@ def run_pytest_tests():
         print(f"ERROR: Failed to execute tests: {e}")
         return None
 
+
 def generate_execution_summary(result, start_time, duration, output_dir):
     """Generate a comprehensive execution summary."""
-    summary_file = output_dir / "result_extract_image_cli_execution_summary_2025-08-24.txt"
-    
+    summary_file = (
+        output_dir
+        / "result_extract_image_cli_execution_summary_2025-08-24.txt"
+    )
+
     summary_content = f"""
 EXTRACT_IMAGE_CLI TEST EXECUTION SUMMARY
 Generated on: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
@@ -148,13 +170,13 @@ STDERR OUTPUT:
 TEST RESULTS SUMMARY:
 {'-'*40}
 """
-    
+
     # Try to parse pytest output for test counts
-    stdout_lines = result.stdout.split('\n')
+    stdout_lines = result.stdout.split("\n")
     for line in stdout_lines:
-        if 'passed' in line or 'failed' in line or 'error' in line:
+        if "passed" in line or "failed" in line or "error" in line:
             summary_content += f"{line}\n"
-    
+
     summary_content += f"""
 OUTPUT FILES GENERATED:
 {'-'*40}
@@ -167,11 +189,12 @@ OUTPUT FILES GENERATED:
 EXECUTION STATUS: {'SUCCESS' if result.returncode == 0 else 'FAILED'}
 {'='*60}
 """
-    
-    with open(summary_file, 'w', encoding='utf-8') as f:
+
+    with open(summary_file, "w", encoding="utf-8") as f:
         f.write(summary_content)
-    
+
     print(f"Execution summary written to: {summary_file}")
+
 
 def validate_output_files():
     """Validate that all expected output files were generated."""
@@ -180,15 +203,13 @@ def validate_output_files():
         "result_extract_image_cli_test_report_2025-08-24.html",
         "result_extract_image_cli_test_results_2025-08-24.json",
         "result_extract_image_cli_coverage_2025-08-24.json",
-        "result_extract_image_cli_execution_summary_2025-08-24.txt"
+        "result_extract_image_cli_execution_summary_2025-08-24.txt",
     ]
-    
-    expected_dirs = [
-        "result_extract_image_cli_coverage_2025-08-24"
-    ]
-    
+
+    expected_dirs = ["result_extract_image_cli_coverage_2025-08-24"]
+
     print("Validating output files...")
-    
+
     missing_files = []
     for file_name in expected_files:
         file_path = script_dir / file_name
@@ -198,7 +219,7 @@ def validate_output_files():
         else:
             missing_files.append(file_name)
             print(f"✗ {file_name} (MISSING)")
-    
+
     for dir_name in expected_dirs:
         dir_path = script_dir / dir_name
         if dir_path.exists() and dir_path.is_dir():
@@ -207,29 +228,37 @@ def validate_output_files():
         else:
             missing_files.append(dir_name)
             print(f"✗ {dir_name}/ (MISSING)")
-    
+
     if missing_files:
-        print(f"WARNING: {len(missing_files)} expected output files/directories are missing")
+        print(
+            f"WARNING: {len(missing_files)} expected output files/directories are missing"
+        )
         return False
     else:
         print("All expected output files generated successfully!")
         return True
 
+
 def generate_project_completion_report():
     """Generate a final project completion report."""
     script_dir = Path(__file__).parent
-    report_file = script_dir / "result_extract_image_cli_project_completion_2025-08-24.txt"
-    
+    report_file = (
+        script_dir
+        / "result_extract_image_cli_project_completion_2025-08-24.txt"
+    )
+
     # Try to read test results
     test_results = {}
-    json_results_file = script_dir / "result_extract_image_cli_test_results_2025-08-24.json"
+    json_results_file = (
+        script_dir / "result_extract_image_cli_test_results_2025-08-24.json"
+    )
     if json_results_file.exists():
         try:
-            with open(json_results_file, 'r') as f:
+            with open(json_results_file, "r") as f:
                 test_results = json.load(f)
         except Exception as e:
             print(f"Warning: Could not parse JSON results: {e}")
-    
+
     report_content = f"""
 EXTRACT_IMAGE_CLI COMPREHENSIVE TESTING PROJECT COMPLETION REPORT
 Generated on: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
@@ -255,9 +284,9 @@ TEST SPECIFICATIONS MET:
 TEST EXECUTION SUMMARY:
 {'-'*40}
 """
-    
+
     if test_results:
-        summary = test_results.get('summary', {})
+        summary = test_results.get("summary", {})
         report_content += f"""
 Total Tests: {summary.get('total', 'N/A')}
 Passed: {summary.get('passed', 'N/A')}
@@ -268,7 +297,7 @@ Duration: {test_results.get('duration', 'N/A')} seconds
 """
     else:
         report_content += "Test results data not available\n"
-    
+
     report_content += f"""
 DELIVERABLES COMPLETED:
 {'-'*40}
@@ -304,62 +333,67 @@ extract_image_cli.py module with detailed reporting capabilities.
 
 {'='*70}
 """
-    
-    with open(report_file, 'w', encoding='utf-8') as f:
+
+    with open(report_file, "w", encoding="utf-8") as f:
         f.write(report_content)
-    
+
     print(f"Project completion report written to: {report_file}")
+
 
 def main():
     """Main execution function."""
     print("EXTRACT_IMAGE_CLI COMPREHENSIVE TEST EXECUTION")
-    print("="*60)
+    print("=" * 60)
     print(f"Starting test execution at: {datetime.datetime.now()}")
     print()
-    
+
     try:
         # Setup environment
         script_dir, project_root = setup_test_environment()
         print(f"Working directory: {script_dir}")
         print(f"Project root: {project_root}")
         print()
-        
+
         # Install requirements
         install_requirements()
         print()
-        
+
         # Run tests
         print("Executing comprehensive test suite...")
         result = run_pytest_tests()
-        
+
         if result is None:
             print("ERROR: Test execution failed")
             return 1
-        
+
         print()
         print(f"Test execution completed with exit code: {result.returncode}")
         print()
-        
+
         # Validate outputs
         validate_output_files()
         print()
-        
+
         # Generate completion report
         generate_project_completion_report()
-        
-        print("="*60)
+
+        print("=" * 60)
         print("EXTRACT_IMAGE_CLI TESTING PROJECT COMPLETED")
-        print(f"Final status: {'SUCCESS' if result.returncode == 0 else 'FAILED'}")
+        print(
+            f"Final status: {'SUCCESS' if result.returncode == 0 else 'FAILED'}"
+        )
         print(f"Completed at: {datetime.datetime.now()}")
-        print("="*60)
-        
+        print("=" * 60)
+
         return result.returncode
-        
+
     except Exception as e:
         print(f"CRITICAL ERROR: {e}")
         import traceback
+
         traceback.print_exc()
         return 1
+
 
 if __name__ == "__main__":
     exit_code = main()

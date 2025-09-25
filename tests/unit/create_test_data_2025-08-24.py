@@ -31,15 +31,15 @@ def create_encrypted_pdf(input_pdf, output_pdf, password):
     try:
         reader = PdfReader(input_pdf)
         writer = PdfWriter()
-        
+
         for page in reader.pages:
             writer.add_page(page)
-        
+
         writer.encrypt(password)
-        
-        with open(output_pdf, 'wb') as f:
+
+        with open(output_pdf, "wb") as f:
             writer.write(f)
-        
+
         return True
     except Exception as e:
         print(f"Error creating encrypted PDF: {e}")
@@ -49,23 +49,23 @@ def create_encrypted_pdf(input_pdf, output_pdf, password):
 def setup_test_data(test_dir):
     """Setup test data files in the specified directory"""
     print("Setting up test data files...")
-    
+
     # Create sample PDFs
     sample_pdf = os.path.join(test_dir, "sample_test.pdf")
     encrypted_pdf = os.path.join(test_dir, "sample_encrypted_test.pdf")
-    
+
     if create_sample_pdf(sample_pdf):
         print(f"✓ Created sample PDF: {sample_pdf}")
     else:
         print(f"✗ Failed to create sample PDF: {sample_pdf}")
         return False
-    
+
     if create_encrypted_pdf(sample_pdf, encrypted_pdf, "test_password"):
         print(f"✓ Created encrypted PDF: {encrypted_pdf}")
     else:
         print(f"✗ Failed to create encrypted PDF: {encrypted_pdf}")
         return False
-    
+
     return True
 
 

@@ -13,18 +13,20 @@ from pathlib import Path
 
 def generate_html_report():
     """Generate a comprehensive HTML report for the test results."""
-    
+
     # Load the test results
     current_dir = Path(__file__).parent
-    results_file = current_dir / "result_network_base_standalone_2025-08-29.json"
-    
+    results_file = (
+        current_dir / "result_network_base_standalone_2025-08-29.json"
+    )
+
     if not results_file.exists():
         print("❌ Test results file not found. Please run the tests first.")
         return
-    
-    with open(results_file, 'r') as f:
+
+    with open(results_file, "r") as f:
         test_data = json.load(f)
-    
+
     # Generate HTML content
     html_content = f"""<!DOCTYPE html>
 <html lang="en">
@@ -241,13 +243,15 @@ def generate_html_report():
                 <h2>Test Execution Details</h2>
                 <div class="test-list">
 """
-    
+
     # Add test results
-    for test in test_data['tests']:
-        status_class = "passed" if test['status'] == "PASSED" else "failed"
-        status_label = "status-passed" if test['status'] == "PASSED" else "status-failed"
+    for test in test_data["tests"]:
+        status_class = "passed" if test["status"] == "PASSED" else "failed"
+        status_label = (
+            "status-passed" if test["status"] == "PASSED" else "status-failed"
+        )
         duration_text = f"{test['duration_ms']:.1f}ms"
-        
+
         html_content += f"""
                     <div class="test-item {status_class}">
                         <div class="test-name">{test['name']}</div>
@@ -257,15 +261,15 @@ def generate_html_report():
                         </div>
                     </div>
 """
-        
+
         # Add error details if failed
-        if test['status'] == "FAILED" and test['error']:
+        if test["status"] == "FAILED" and test["error"]:
             html_content += f"""
                     <div class="error-details">
                         <strong>Error:</strong> {test['error']}
                     </div>
 """
-    
+
     html_content += f"""
                 </div>
             </div>
@@ -353,41 +357,43 @@ def generate_html_report():
     </div>
 </body>
 </html>"""
-    
+
     # Save HTML report
     html_file = current_dir / "result_network_base_2025-08-29.html"
-    with open(html_file, 'w', encoding='utf-8') as f:
+    with open(html_file, "w", encoding="utf-8") as f:
         f.write(html_content)
-    
+
     print(f"✅ HTML report generated: {html_file}")
-    
+
     # Create enhanced JSON report
     enhanced_report = {
         "test_execution_summary": {
             "target_module": "network_base.py",
             "test_framework": "standalone_unittest",
-            "execution_timestamp": test_data['execution_timestamp'],
-            "completion_timestamp": test_data['completion_timestamp'],
-            "total_duration_ms": sum(test['duration_ms'] for test in test_data['tests']),
+            "execution_timestamp": test_data["execution_timestamp"],
+            "completion_timestamp": test_data["completion_timestamp"],
+            "total_duration_ms": sum(
+                test["duration_ms"] for test in test_data["tests"]
+            ),
             "environment": {
                 "python_version": "3.13.2",
                 "platform": "Windows 11",
-                "test_runner": "standalone"
-            }
+                "test_runner": "standalone",
+            },
         },
         "test_results": test_data,
         "coverage_analysis": {
             "classes_tested": [
                 "NetworkOperationStatus",
-                "NetworkAlertLevel", 
+                "NetworkAlertLevel",
                 "NetworkOperationResult",
-                "NetworkToolBase (via ConcreteNetworkTool)"
+                "NetworkToolBase (via ConcreteNetworkTool)",
             ],
             "methods_tested": [
                 "__init__",
                 "execute_operation",
                 "get_supported_protocols",
-                "validate_parameters", 
+                "validate_parameters",
                 "get_health_status",
                 "start_operation",
                 "stop_operation",
@@ -400,32 +406,34 @@ def generate_html_report():
                 "get_current_data",
                 "get_historical_data",
                 "_store_data",
-                "get_status_info"
+                "get_status_info",
             ],
             "test_categories": {
                 "unit_tests": 10,
                 "integration_tests": 3,
                 "edge_cases": 2,
-                "error_scenarios": 2
+                "error_scenarios": 2,
             },
             "assertions_count": 25,
-            "mock_coverage": "Complete - all external dependencies mocked"
+            "mock_coverage": "Complete - all external dependencies mocked",
         },
         "quality_metrics": {
-            "pass_rate": test_data['summary']['pass_rate'],
+            "pass_rate": test_data["summary"]["pass_rate"],
             "test_completeness": "100%",
             "code_coverage_estimate": "85%",
-            "documentation_coverage": "100%"
-        }
+            "documentation_coverage": "100%",
+        },
     }
-    
+
     # Save enhanced JSON report
-    enhanced_json_file = current_dir / "result_network_base_enhanced_2025-08-29.json"
-    with open(enhanced_json_file, 'w') as f:
+    enhanced_json_file = (
+        current_dir / "result_network_base_enhanced_2025-08-29.json"
+    )
+    with open(enhanced_json_file, "w") as f:
         json.dump(enhanced_report, f, indent=2)
-    
+
     print(f"✅ Enhanced JSON report generated: {enhanced_json_file}")
-    
+
     # Generate summary
     print(f"\n{'='*80}")
     print(f"COMPREHENSIVE TEST REPORT GENERATION COMPLETED")
@@ -438,7 +446,9 @@ def generate_html_report():
     print(f"\n📁 Generated Files:")
     print(f"   • {html_file.name} (Interactive HTML report)")
     print(f"   • {enhanced_json_file.name} (Detailed JSON report)")
-    print(f"   • result_network_base_standalone_2025-08-29.json (Raw test data)")
+    print(
+        f"   • result_network_base_standalone_2025-08-29.json (Raw test data)"
+    )
     print(f"\n🎯 Coverage Achievement:")
     print(f"   • All core classes tested")
     print(f"   • All public methods validated")
@@ -446,6 +456,7 @@ def generate_html_report():
     print(f"   • Threading safety verified")
     print(f"   • Configuration management tested")
     print(f"{'='*80}")
+
 
 if __name__ == "__main__":
     generate_html_report()

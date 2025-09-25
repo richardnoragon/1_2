@@ -20,4 +20,4 @@ __version__ = "1.0.0"
 from .migrations import DatabaseMigrator
 from .schema import FileExplorerDatabase
 
-__all__ = ['FileExplorerDatabase', 'DatabaseMigrator']
+__all__ = ["FileExplorerDatabase", "DatabaseMigrator"]

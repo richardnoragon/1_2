@@ -3,4 +3,4 @@
 from .error_handler import error_handler
 from .logging_manager import LogManager
 
-__all__ = ['error_handler', 'LogManager']
+__all__ = ["error_handler", "LogManager"]

@@ -13,33 +13,41 @@ from dataclasses import dataclass
 
 from PyQt5.QtGui import QStandardItemModel, QStandardItem, QIcon
 from PyQt5.QtWidgets import (
-    QApplication, QMessageBox, QDialog, QVBoxLayout, QLabel,
-    QLineEdit, QPushButton, QHBoxLayout, QListWidget, QListWidgetItem
+    QApplication,
+    QMessageBox,
+    QDialog,
+    QVBoxLayout,
+    QLabel,
+    QLineEdit,
+    QPushButton,
+    QHBoxLayout,
+    QListWidget,
+    QListWidgetItem,
 )
 from PyQt5 import uic
 
 # Add parent directories to path for imports
 current_dir = os.path.dirname(os.path.abspath(__file__))
-project_root = os.path.dirname(os.path.dirname(os.path.dirname(
-    os.path.dirname(current_dir))))
+project_root = os.path.dirname(
+    os.path.dirname(os.path.dirname(os.path.dirname(current_dir)))
+)
 sys.path.append(project_root)
 
 from src.gui.common.base_window import BaseWindow
-from src.gui.common.dialogs import (
-    get_existing_directory, show_error_dialog
-)
+from src.gui.common.dialogs import get_existing_directory, show_error_dialog
 
 
 @dataclass
 class OrganizeRule:
     """Represents a file organization rule.
-    
+
     Attributes:
         name: Name of the rule
         pattern: File pattern to match (e.g., "*.txt", "*.jpg")
         destination: Destination folder path
         enabled: Whether the rule is active
     """
+
     name: str
     pattern: str
     destination: str
@@ -48,23 +56,24 @@ class OrganizeRule:
 
 class OrganizeWindow(BaseWindow):
     """Main window for file organization operations.
-    
+
     This window provides a graphical interface for organizing files
     based on customizable rules and patterns.
-    
+
     Features:
     - Directory selection and recursive scanning
     - Rule-based file organization
     - Customizable file patterns
     - Preview before organization
     - Undo functionality
-    
+
     Attributes:
         _current_dir: Path to currently selected directory
         _rules: List of organization rules
         _list_model: Model for file list view
         _organized_files: List of files that were moved
     """
+
     # Default paths
     _ICON_PATH = os.path.join(os.path.dirname(__file__), "icons")
     _ICON_NAME = "organize.png"
@@ -72,7 +81,7 @@ class OrganizeWindow(BaseWindow):
 
     def __init__(self) -> None:
         """Initialize the OrganizeWindow.
-        
+
         Sets up:
         - UI components and layout
         - Data models and internal state
@@ -94,8 +103,8 @@ class OrganizeWindow(BaseWindow):
         self._rules: List[OrganizeRule] = []
         self._list_model = QStandardItemModel()
         self._organized_files: List[Tuple[str, str]] = []
-        
-        if hasattr(self, 'listListView'):
+
+        if hasattr(self, "listListView"):
             self.listListView.setModel(self._list_model)
 
     def _setup_ui(self) -> None:
@@ -104,33 +113,33 @@ class OrganizeWindow(BaseWindow):
             ui_file = Path(__file__).parent / self._UI_FILE
             if not ui_file.exists():
                 raise FileNotFoundError(f"UI file not found: {ui_file}")
-                
+
             uic.loadUi(str(ui_file), self)
-            
+
         except (FileNotFoundError, ValueError) as e:
             show_error_dialog(str(e), "UI Error", self)
             sys.exit(1)
 
     def _connect_signals(self) -> None:
         """Connect UI signals to their respective slots."""
-        if hasattr(self, 'selectFolderButton'):
+        if hasattr(self, "selectFolderButton"):
             self.selectFolderButton.clicked.connect(self._load_directory)
-        if hasattr(self, 'organizePushButton'):
+        if hasattr(self, "organizePushButton"):
             self.organizePushButton.clicked.connect(self._organize_files)
-        if hasattr(self, 'rulesButton'):
+        if hasattr(self, "rulesButton"):
             self.rulesButton.clicked.connect(self._show_rules_dialog)
-            
+
         # Connect menu actions
-        if hasattr(self, 'actionexit'):
+        if hasattr(self, "actionexit"):
             self.actionexit.triggered.connect(self.close)
-        if hasattr(self, 'actionselect'):
+        if hasattr(self, "actionselect"):
             self.actionselect.triggered.connect(self._load_directory)
 
     def _set_initial_state(self) -> None:
         """Set the initial state of UI elements."""
-        if hasattr(self, 'organizePushButton'):
+        if hasattr(self, "organizePushButton"):
             self.organizePushButton.setEnabled(False)
-        if hasattr(self, 'status_label'):
+        if hasattr(self, "status_label"):
             self.status_label.setText("Select a folder to begin")
 
     def _setup_icons(self) -> None:
@@ -158,60 +167,60 @@ class OrganizeWindow(BaseWindow):
         )
         if directory:
             self._current_dir = directory
-            if hasattr(self, 'directory_label'):
+            if hasattr(self, "directory_label"):
                 self.directory_label.setText(directory)
             self._update_file_list()
-            if hasattr(self, 'organizePushButton'):
+            if hasattr(self, "organizePushButton"):
                 self.organizePushButton.setEnabled(True)
-            if hasattr(self, 'status_label'):
+            if hasattr(self, "status_label"):
                 self.status_label.setText("Ready to organize files")
 
     def _update_file_list(self) -> None:
         """Update the list view with files from the selected directory."""
         self._list_model.clear()
-        
+
         if not self._current_dir:
             return
-            
+
         try:
             files = self._get_file_list()
             for file_path in sorted(files):
                 self._add_file_to_list(file_path)
-                
+
         except OSError as e:
             show_error_dialog(
                 f"Could not read directory: {str(e)}",
                 title="Error",
-                parent=self
+                parent=self,
             )
 
     def _get_file_list(self) -> List[str]:
         """Get list of files from the current directory.
-        
+
         Returns:
             List[str]: List of full file paths
         """
         files = []
         base_path = Path(self._current_dir)
-        
+
         recursive = False
-        if hasattr(self, 'recursiveCheckBox'):
+        if hasattr(self, "recursiveCheckBox"):
             recursive = self.recursiveCheckBox.isChecked()
-            
+
         if recursive:
-            for path in base_path.rglob('*'):
+            for path in base_path.rglob("*"):
                 if path.is_file():
                     files.append(str(path))
         else:
             for path in base_path.iterdir():
                 if path.is_file():
                     files.append(str(path))
-                    
+
         return files
 
     def _add_file_to_list(self, file_path: str) -> None:
         """Add a file entry to the list model.
-        
+
         Args:
             file_path: Full path to the file
         """
@@ -223,84 +232,82 @@ class OrganizeWindow(BaseWindow):
         """Organize files based on the current rules."""
         if not self._current_dir:
             return
-            
+
         try:
             organized_count = 0
             self._organized_files.clear()
-            
+
             files = self._get_file_list()
             for file_path in files:
                 if self._organize_single_file(file_path):
                     organized_count += 1
-            
+
             self._update_file_list()  # Refresh the list
-            
+
             QMessageBox.information(
                 self,
                 "Organization Complete",
-                f"Organized {organized_count} files based on rules."
+                f"Organized {organized_count} files based on rules.",
             )
-            
-            if hasattr(self, 'status_label'):
-                self.status_label.setText(
-                    f"Organized {organized_count} files"
-                )
-                
+
+            if hasattr(self, "status_label"):
+                self.status_label.setText(f"Organized {organized_count} files")
+
         except Exception as e:
             show_error_dialog(
                 f"Failed to organize files: {str(e)}",
                 title="Error",
-                parent=self
+                parent=self,
             )
 
     def _organize_single_file(self, file_path: str) -> bool:
         """Organize a single file based on rules.
-        
+
         Args:
             file_path: Path to the file to organize
-            
+
         Returns:
             bool: True if file was moved, False otherwise
         """
         file_path_obj = Path(file_path)
         if not file_path_obj.exists():
             return False
-            
+
         for rule in self._rules:
             if not rule.enabled:
                 continue
-                
-            patterns = [p.strip() for p in rule.pattern.split(';')]
+
+            patterns = [p.strip() for p in rule.pattern.split(";")]
             for pattern in patterns:
                 if file_path_obj.match(pattern):
                     return self._move_file_to_destination(
                         file_path, rule.destination
                     )
-                    
+
         return False
 
     def _move_file_to_destination(
         self, file_path: str, destination: str
     ) -> bool:
         """Move a file to its destination folder.
-        
+
         Args:
             file_path: Source file path
             destination: Destination folder name
-            
+
         Returns:
             bool: True if successful, False otherwise
         """
         try:
             source_path = Path(file_path)
             dest_dir = Path(self._current_dir) / destination
-            
+
             # Create destination directory if it doesn't exist
             dest_dir.mkdir(exist_ok=True)
-            
+
             # Build destination path
             dest_path = dest_dir / source_path.name
-            
+
             # Handle duplicate filenames
             counter = 1
             while dest_path.exists():
@@ -308,15 +315,15 @@ class OrganizeWindow(BaseWindow):
                 suffix = source_path.suffix
                 dest_path = dest_dir / f"{stem}_{counter}{suffix}"
                 counter += 1
-            
+
             # Move the file
             shutil.move(str(source_path), str(dest_path))
-            
+
             # Store for potential undo
             self._organized_files.append((str(source_path), str(dest_path)))
-            
+
             return True
-            
+
         except Exception as e:
             print(f"Error moving file {file_path}: {e}")
             return False
@@ -335,30 +342,30 @@ class OrganizeWindow(BaseWindow):
                 if Path(new_path).exists():
                     shutil.move(new_path, original_path)
                     moved_count += 1
-            
+
             self._organized_files.clear()
             self._update_file_list()
-            
+
             QMessageBox.information(
                 self,
                 "Undo Complete",
-                f"Restored {moved_count} files to original locations."
+                f"Restored {moved_count} files to original locations.",
             )
-            
+
         except Exception as e:
             show_error_dialog(
                 f"Failed to undo organization: {str(e)}",
                 title="Error",
-                parent=self
+                parent=self,
             )
 
 
 class RulesDialog(QDialog):
     """Dialog for managing organization rules."""
-    
+
     def __init__(self, rules: List[OrganizeRule], parent=None) -> None:
         """Initialize the rules dialog.
-        
+
         Args:
             rules: Current list of organization rules
             parent: Parent widget
@@ -366,52 +373,54 @@ class RulesDialog(QDialog):
         super().__init__(parent)
         self._rules = rules.copy()
         self._init_ui()
-        
+
     def _init_ui(self) -> None:
         """Initialize the dialog UI."""
         self.setWindowTitle("Manage Organization Rules")
         self.setGeometry(100, 100, 500, 400)
-        
+
         layout = QVBoxLayout()
-        
+
         # Rules list
         self.rules_list = QListWidget()
         self._populate_rules_list()
         layout.addWidget(QLabel("Organization Rules:"))
         layout.addWidget(self.rules_list)
-        
+
         # Buttons
         button_layout = QHBoxLayout()
-        
+
         add_button = QPushButton("Add Rule")
         add_button.clicked.connect(self._add_rule)
         button_layout.addWidget(add_button)
-        
+
         edit_button = QPushButton("Edit Rule")
         edit_button.clicked.connect(self._edit_rule)
         button_layout.addWidget(edit_button)
-        
+
         remove_button = QPushButton("Remove Rule")
         remove_button.clicked.connect(self._remove_rule)
         button_layout.addWidget(remove_button)
-        
+
         layout.addLayout(button_layout)
-        
+
         # OK/Cancel buttons
         ok_button = QPushButton("OK")
         ok_button.clicked.connect(self.accept)
         layout.addWidget(ok_button)
-        
+
         self.setLayout(layout)
-    
+
     def _populate_rules_list(self) -> None:
         """Populate the rules list widget."""
         self.rules_list.clear()
         for rule in self._rules:
             status = "✓" if rule.enabled else "✗"
-            item_text = f"{status} {rule.name}: {rule.pattern} → {rule.destination}"
+            item_text = (
+                f"{status} {rule.name}: {rule.pattern} → {rule.destination}"
+            )
             self.rules_list.addItem(QListWidgetItem(item_text))
-    
+
     def _add_rule(self) -> None:
         """Add a new organization rule."""
         dialog = RuleEditDialog(self)
@@ -419,7 +428,7 @@ class RulesDialog(QDialog):
             new_rule = dialog.get_rule()
             self._rules.append(new_rule)
             self._populate_rules_list()
-    
+
     def _edit_rule(self) -> None:
         """Edit the selected rule."""
         current_row = self.rules_list.currentRow()
@@ -428,17 +437,17 @@ class RulesDialog(QDialog):
             if dialog.exec_():
                 self._rules[current_row] = dialog.get_rule()
                 self._populate_rules_list()
-    
+
     def _remove_rule(self) -> None:
         """Remove the selected rule."""
         current_row = self.rules_list.currentRow()
         if 0 <= current_row < len(self._rules):
             del self._rules[current_row]
             self._populate_rules_list()
-    
+
     def get_rules(self) -> List[OrganizeRule]:
         """Get the current list of rules.
-        
+
         Returns:
             List[OrganizeRule]: Current organization rules
         """
@@ -447,12 +456,12 @@ class RulesDialog(QDialog):
 
 class RuleEditDialog(QDialog):
     """Dialog for editing individual organization rules."""
-    
+
     def __init__(
         self, parent=None, rule: Optional[OrganizeRule] = None
     ) -> None:
         """Initialize the rule edit dialog.
-        
+
         Args:
             parent: Parent widget
             rule: Rule to edit (None for new rule)
@@ -460,14 +469,14 @@ class RuleEditDialog(QDialog):
         super().__init__(parent)
         self._rule = rule
         self._init_ui()
-        
+
     def _init_ui(self) -> None:
         """Initialize the dialog UI."""
         self.setWindowTitle("Edit Rule")
         self.setGeometry(100, 100, 400, 200)
-        
+
         layout = QVBoxLayout()
-        
+
         # Rule name
         name_layout = QHBoxLayout()
         name_layout.addWidget(QLabel("Rule Name:"))
@@ -476,7 +485,7 @@ class RuleEditDialog(QDialog):
             self.name_edit.setText(self._rule.name)
         name_layout.addWidget(self.name_edit)
         layout.addLayout(name_layout)
-        
+
         # File pattern
         pattern_layout = QHBoxLayout()
         pattern_layout.addWidget(QLabel("File Pattern:"))
@@ -485,7 +494,7 @@ class RuleEditDialog(QDialog):
             self.pattern_edit.setText(self._rule.pattern)
         pattern_layout.addWidget(self.pattern_edit)
         layout.addLayout(pattern_layout)
-        
+
         # Destination folder
         dest_layout = QHBoxLayout()
         dest_layout.addWidget(QLabel("Destination:"))
@@ -494,41 +503,40 @@ class RuleEditDialog(QDialog):
             self.dest_edit.setText(self._rule.destination)
         dest_layout.addWidget(self.dest_edit)
         layout.addLayout(dest_layout)
-        
+
         # OK/Cancel buttons
         button_layout = QHBoxLayout()
         ok_button = QPushButton("OK")
         ok_button.clicked.connect(self.accept)
         button_layout.addWidget(ok_button)
-        
+
         cancel_button = QPushButton("Cancel")
         cancel_button.clicked.connect(self.reject)
         button_layout.addWidget(cancel_button)
-        
+
         layout.addLayout(button_layout)
         self.setLayout(layout)
-    
+
     def get_rule(self) -> OrganizeRule:
         """Get the edited rule.
-        
+
         Returns:
             OrganizeRule: The edited rule
         """
         return OrganizeRule(
             name=self.name_edit.text(),
             pattern=self.pattern_edit.text(),
-            destination=self.dest_edit.text()
+            destination=self.dest_edit.text(),
         )
 
 
 def main() -> None:
     """Main entry point for the organize application."""
     app = QApplication(sys.argv)
-    app.setStyle('Fusion')
+    app.setStyle("Fusion")
     _ = OrganizeWindow()  # Keep reference to prevent garbage collection
     sys.exit(app.exec_())
 
 
 if __name__ == "__main__":
     main()
-

@@ -2,4 +2,4 @@
 
 from .disk_health_widget import DiskHealthWidget
 
-__all__ = ['DiskHealthWidget']
+__all__ = ["DiskHealthWidget"]

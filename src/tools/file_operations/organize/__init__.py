@@ -6,4 +6,4 @@ customizable rules such as file type, size, date, and naming patterns.
 
 from .organize import OrganizeWindow, OrganizeRule
 
-__all__ = ['OrganizeWindow', 'OrganizeRule']
+__all__ = ["OrganizeWindow", "OrganizeRule"]

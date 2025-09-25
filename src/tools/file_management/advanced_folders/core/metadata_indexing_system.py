@@ -189,7 +189,7 @@ class MetadataExtractor(ABC):
         pass
     
     @abstractmethod
-    def extract_metadata(self, file_path: str, file_info: FileInfo) -> 
+    def extract_metadata(self, file_path: str, file_info: FileInfo) -> None:
         MetadataExtractionResult:
         """Extract metadata from the file."""
         pass

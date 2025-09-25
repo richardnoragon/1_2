@@ -18,7 +18,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 def create_absolute_minimal_test():
     """Create a test with the absolute minimal memory footprint."""
-    
+
     test_content = '''#!/usr/bin/env python3
 """
 PHASE 3 ABSOLUTE MINIMAL MEMORY TEST - ENTERPRISE MICRO OPTIMIZATION
@@ -152,16 +152,16 @@ def main():
 if __name__ == "__main__":
     main()
 '''
-    
+
     # Write the minimal test
     test_path = Path(__file__).parent / "phase3_absolute_minimal_test.py"
-    with open(test_path, 'w', encoding='utf-8') as f:
+    with open(test_path, "w", encoding="utf-8") as f:
         f.write(test_content)
-    
+
     print("✅ Created absolute minimal memory test")
     print("   Tests theoretical minimum memory with plain Python objects")
     print("   Establishes baseline for PyQt5 overhead assessment")
-    
+
     return test_path
 
 

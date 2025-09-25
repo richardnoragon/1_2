@@ -11,8 +11,8 @@ from .safety_manager import SafetyManager
 from .system_locations import SystemLocations
 
 __all__ = [
-    'CleanupToolBase',
-    'WindowsUtils',
-    'SafetyManager',
-    'SystemLocations'
+    "CleanupToolBase",
+    "WindowsUtils",
+    "SafetyManager",
+    "SystemLocations",
 ]

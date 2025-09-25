@@ -15,21 +15,27 @@ from pathlib import Path
 def setup_test_environment():
     """Setup the test environment and install dependencies."""
     print("Setting up test environment...")
-    
+
     # Install test dependencies
     req_file = "requirements_test_check_sum_2025-08-24.txt"
     requirements_file = Path(__file__).parent / req_file
-    
+
     if requirements_file.exists():
         try:
-            cmd = [sys.executable, "-m", "pip", "install", "-r",
-                   str(requirements_file)]
+            cmd = [
+                sys.executable,
+                "-m",
+                "pip",
+                "install",
+                "-r",
+                str(requirements_file),
+            ]
             subprocess.run(cmd, check=True, capture_output=True, text=True)
             print("✓ Test dependencies installed successfully")
         except subprocess.CalledProcessError as e:
             print(f"✗ Failed to install dependencies: {e}")
             return False
-    
+
     return True
 
 
@@ -37,29 +43,31 @@ def run_checksum_tests():
     """Run the comprehensive test suite for check_sum.py."""
     print(f"\n{'='*60}")
     print("Running Comprehensive Unit Tests for check_sum.py")
-    timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     print(f"Execution Time: {timestamp}")
     print(f"{'='*60}")
-    
+
     # Change to project root directory
     project_root = Path(__file__).parent.parent.parent
     os.chdir(project_root)
-    
+
     # Ensure tests directory exists
     test_dir = Path("tests/unit")
     test_dir.mkdir(parents=True, exist_ok=True)
-    
+
     # Test file path
     test_file = test_dir / "test_check_sum_2025-08-24.py"
-    
+
     if not test_file.exists():
         print(f"✗ Test file not found: {test_file}")
         return False
-    
+
     # Run pytest with comprehensive reporting
     cov_json = "tests/unit/result_check_sum_coverage_2025-08-24.json"
     cmd = [
-        sys.executable, "-m", "pytest",
+        sys.executable,
+        "-m",
+        "pytest",
         str(test_file),
         "-v",
         "--tb=short",
@@ -72,31 +80,32 @@ def run_checksum_tests():
         "--cov=src.utilities.analysis.check_sum",
         "--cov-report=html:tests/unit/result_check_sum_coverage_2025-08-24",
         "--cov-report=term-missing",
-        "--cov-report=json:" + cov_json
+        "--cov-report=json:" + cov_json,
     ]
-    
+
     try:
         print(f"Executing: {' '.join(cmd)}")
-        result = subprocess.run(cmd, capture_output=True, text=True,
-                                timeout=300)
-        
+        result = subprocess.run(
+            cmd, capture_output=True, text=True, timeout=300
+        )
+
         print(f"\n{'='*40} TEST EXECUTION OUTPUT {'='*40}")
         print(result.stdout)
-        
+
         if result.stderr:
             print(f"\n{'='*40} ERROR OUTPUT {'='*40}")
             print(result.stderr)
-        
+
         print(f"\n{'='*40} TEST EXECUTION SUMMARY {'='*40}")
         print(f"Return Code: {result.returncode}")
-        exec_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        exec_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         print(f"Execution completed at: {exec_time}")
-        
+
         # Generate summary report
         generate_test_summary(result.returncode == 0)
-        
+
         return result.returncode == 0
-        
+
     except subprocess.TimeoutExpired:
         print("✗ Test execution timed out after 300 seconds")
         return False
@@ -107,9 +116,11 @@ def run_checksum_tests():
 
 def generate_test_summary(success):
     """Generate a comprehensive test execution summary."""
-    summary_file = (Path("tests/unit") /
-                    "result_check_sum_execution_summary_2025-08-24.txt")
-    
+    summary_file = (
+        Path("tests/unit")
+        / "result_check_sum_execution_summary_2025-08-24.txt"
+    )
+
     summary_content = f"""
 CHECK_SUM.PY UNIT TEST EXECUTION SUMMARY
 ==========================================
@@ -159,9 +170,9 @@ Notes:
 - Proper setup and teardown for test isolation
 - Generated on: {datetime.datetime.now().isoformat()}
 """
-    
+
     try:
-        with open(summary_file, 'w', encoding='utf-8') as f:
+        with open(summary_file, "w", encoding="utf-8") as f:
             f.write(summary_content)
         print(f"✓ Test summary generated: {summary_file}")
     except Exception as e:
@@ -171,14 +182,14 @@ Notes:
 def check_reports():
     """Check if all required reports were generated."""
     print(f"\n{'='*40} REPORT VERIFICATION {'='*40}")
-    
+
     expected_files = [
         "tests/unit/result_check_sum_2025-08-24.html",
         "tests/unit/result_check_sum_2025-08-24.json",
         "tests/unit/result_check_sum_coverage_2025-08-24.json",
-        "tests/unit/result_check_sum_execution_summary_2025-08-24.txt"
+        "tests/unit/result_check_sum_execution_summary_2025-08-24.txt",
     ]
-    
+
     all_present = True
     for file_path in expected_files:
         if Path(file_path).exists():
@@ -187,7 +198,7 @@ def check_reports():
         else:
             print(f"✗ {file_path} (missing)")
             all_present = False
-    
+
     # Check coverage HTML directory
     coverage_dir = Path("tests/unit/result_check_sum_coverage_2025-08-24")
     if coverage_dir.exists() and (coverage_dir / "index.html").exists():
@@ -195,7 +206,7 @@ def check_reports():
     else:
         print(f"✗ {coverage_dir}/index.html (missing)")
         all_present = False
-    
+
     return all_present
 
 
@@ -203,27 +214,27 @@ def main():
     """Main execution function."""
     print("CHECK_SUM.PY COMPREHENSIVE TEST RUNNER")
     print("=" * 50)
-    
+
     # Setup test environment
     if not setup_test_environment():
         print("✗ Failed to setup test environment")
         return 1
-    
+
     # Run tests
     if not run_checksum_tests():
         print("✗ Test execution failed")
         return 1
-    
+
     # Verify reports
     if not check_reports():
         print("⚠ Some reports may be missing")
-    
+
     print(f"\n{'='*50}")
     print("✓ Test execution completed successfully!")
     print("Check the tests/unit directory for detailed reports.")
-    final_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    final_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     print(f"Execution completed: {final_time}")
-    
+
     return 0
 
 

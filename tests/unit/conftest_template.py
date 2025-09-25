@@ -4,7 +4,7 @@ Purpose: Provide consistent pytest configuration addressing import system issues
 
 This template resolves the critical issues identified in unit test review:
 - Standardized Python path configuration
-- Proper module installation for test dependencies  
+- Proper module installation for test dependencies
 - Consistent test environment setup scripts
 """
 
@@ -26,7 +26,7 @@ TEST_CONFIG = setup_test_environment()
 # Configure logging
 logging.basicConfig(
     level=logging.DEBUG,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
 
 
@@ -38,7 +38,7 @@ def setup_test_environment_fixture():
     print(f"   Workspace: {config['workspace_root']}")
     print(f"   Python paths: {len(config['python_paths'])}")
     print(f"   Available modules: {len(config['available_modules'])}")
-    if config['missing_modules']:
+    if config["missing_modules"]:
         print(f"   ⚠️ Missing modules: {len(config['missing_modules'])}")
     return config
 
@@ -50,6 +50,7 @@ def temp_directory():
     yield Path(temp_dir)
     # Cleanup
     import shutil
+
     if os.path.exists(temp_dir):
         shutil.rmtree(temp_dir, ignore_errors=True)
 
@@ -59,15 +60,15 @@ def mock_missing_dependencies():
     """Mock missing dependencies to prevent import errors."""
     config = TEST_CONFIG
     mocks = {}
-    
-    for module in config['missing_modules']:
-        if module not in ['unittest.mock', 'pathlib', 'tempfile', 'logging']:
+
+    for module in config["missing_modules"]:
+        if module not in ["unittest.mock", "pathlib", "tempfile", "logging"]:
             mock_module = MagicMock()
             sys.modules[module] = mock_module
             mocks[module] = mock_module
-    
+
     yield mocks
-    
+
     # Cleanup mocks
     for module in mocks:
         if module in sys.modules:
@@ -77,6 +78,7 @@ def mock_missing_dependencies():
 @pytest.fixture(scope="function")
 def safe_import():
     """Provide safe import functionality that handles missing modules."""
+
     def _safe_import(module_name: str, fallback=None):
         corrected_name = get_module_import_path(module_name)
         try:
@@ -85,14 +87,14 @@ def safe_import():
             if fallback is not None:
                 return fallback
             return MagicMock()
-    
+
     return _safe_import
 
 
 @pytest.fixture(scope="function")
 def debug_logger():
     """Provide debug logger for test debugging."""
-    logger = logging.getLogger('test_debug')
+    logger = logging.getLogger("test_debug")
     logger.setLevel(logging.DEBUG)
     return logger
 
@@ -110,9 +112,9 @@ def pytest_configure(config):
         "performance: Performance and benchmarking tests",
         "edge_case: Edge case and boundary condition tests",
         "mock_heavy: Tests requiring extensive mocking",
-        "import_issues: Tests that address import system issues"
+        "import_issues: Tests that address import system issues",
     ]
-    
+
     for marker in markers:
         config.addinivalue_line("markers", marker)
 
@@ -127,7 +129,11 @@ def pytest_runtest_makereport(item, call):
     """Create test reports with enhanced debugging."""
     if call.when == "call" and call.excinfo is not None:
         # Log import-related failures for debugging
-        if "ImportError" in str(call.excinfo.value) or "ModuleNotFoundError" in str(call.excinfo.value):
-            logger = logging.getLogger('import_debug')
+        if "ImportError" in str(
+            call.excinfo.value
+        ) or "ModuleNotFoundError" in str(call.excinfo.value):
+            logger = logging.getLogger("import_debug")
             logger.error(f"Import error in {item.name}: {call.excinfo.value}")
-            logger.error(f"Current sys.path: {sys.path[:5]}...")  # First 5 paths
+            logger.error(
+                f"Current sys.path: {sys.path[:5]}..."
+            )  # First 5 paths

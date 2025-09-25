@@ -15,12 +15,13 @@ from unittest.mock import Mock, patch
 import pytest
 
 # Add src path to allow imports
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
 # PyQt5 imports with error handling
 try:
     from PyQt5 import QtCore, QtTest, QtWidgets
     from PyQt5.QtWidgets import QApplication
+
     QT_AVAILABLE = True
 except ImportError:
     QT_AVAILABLE = False
@@ -32,6 +33,7 @@ except ImportError:
 # Mock fitz if not available
 try:
     import fitz
+
     FITZ_AVAILABLE = True
 except ImportError:
     FITZ_AVAILABLE = False
@@ -43,7 +45,7 @@ def qapp():
     """Create QApplication instance for GUI tests."""
     if not QT_AVAILABLE:
         pytest.skip("PyQt5 not available")
-    
+
     app = None
     if QApplication:
         app = QApplication.instance()
@@ -89,7 +91,7 @@ def mock_pdf_document():
     """Mock PyMuPDF document for testing."""
     mock_doc = Mock()
     mock_doc.__len__ = Mock(return_value=3)
-    
+
     # Create mock pages
     mock_pages = []
     for i in range(3):
@@ -99,19 +101,19 @@ def mock_pdf_document():
         mock_page.rect.height = 842
         mock_page.insert_text = Mock()
         mock_pages.append(mock_page)
-    
+
     mock_doc.__getitem__ = Mock(side_effect=lambda x: mock_pages[x])
     mock_doc.save = Mock()
     mock_doc.close = Mock()
-    
+
     return mock_doc
 
 
 @pytest.fixture
 def mock_fitz(mock_pdf_document):
     """Mock the fitz module."""
-    with patch('fitz.open', return_value=mock_pdf_document):
-        with patch('fitz.get_text_length', return_value=100):
+    with patch("fitz.open", return_value=mock_pdf_document):
+        with patch("fitz.get_text_length", return_value=100):
             yield fitz
 
 
@@ -131,16 +133,16 @@ def mock_logger():
 def mock_config():
     """Mock configuration dictionary."""
     return {
-        'opacity': 0.5,
-        'watermark_text': 'Test Watermark',
-        'last_directory': '/tmp/test'
+        "opacity": 0.5,
+        "watermark_text": "Test Watermark",
+        "last_directory": "/tmp/test",
     }
 
 
 @pytest.fixture
 def mock_ui_file(temp_dir):
     """Create a mock UI file for testing."""
-    ui_content = '''<?xml version="1.0" encoding="UTF-8"?>
+    ui_content = """<?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">
@@ -160,8 +162,8 @@ def mock_ui_file(temp_dir):
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionExit"/>
  </widget>
-</ui>'''
-    
+</ui>"""
+
     ui_path = os.path.join(temp_dir, "watermark.ui")
     with open(ui_path, "w") as f:
         f.write(ui_content)
@@ -177,44 +179,49 @@ def test_execution_timestamp():
 @pytest.fixture
 def test_results_logger():
     """Logger for test results and execution details."""
+
     class TestResultsLogger:
         def __init__(self):
             self.results = []
             self.start_time = datetime.now()
-        
+
         def log_test_start(self, test_name):
-            self.results.append({
-                'test_name': test_name,
-                'start_time': datetime.now().isoformat(),
-                'status': 'running'
-            })
-        
-        def log_test_result(self, test_name, status, duration=None,
-                            error=None):
+            self.results.append(
+                {
+                    "test_name": test_name,
+                    "start_time": datetime.now().isoformat(),
+                    "status": "running",
+                }
+            )
+
+        def log_test_result(
+            self, test_name, status, duration=None, error=None
+        ):
             for result in self.results:
-                if result['test_name'] == test_name:
-                    result['status'] = status
-                    result['end_time'] = datetime.now().isoformat()
-                    result['duration'] = duration
+                if result["test_name"] == test_name:
+                    result["status"] = status
+                    result["end_time"] = datetime.now().isoformat()
+                    result["duration"] = duration
                     if error:
-                        result['error'] = str(error)
+                        result["error"] = str(error)
                     break
-        
+
         def get_summary(self):
             total_tests = len(self.results)
-            passed = len([r for r in self.results if r['status'] == 'passed'])
-            failed = len([r for r in self.results if r['status'] == 'failed'])
-            
+            passed = len([r for r in self.results if r["status"] == "passed"])
+            failed = len([r for r in self.results if r["status"] == "failed"])
+
             return {
-                'execution_timestamp': self.start_time.isoformat(),
-                'total_tests': total_tests,
-                'passed': passed,
-                'failed': failed,
-                'success_rate': ((passed / total_tests * 100)
-                                 if total_tests > 0 else 0),
-                'results': self.results
+                "execution_timestamp": self.start_time.isoformat(),
+                "total_tests": total_tests,
+                "passed": passed,
+                "failed": failed,
+                "success_rate": (
+                    (passed / total_tests * 100) if total_tests > 0 else 0
+                ),
+                "results": self.results,
             }
-    
+
     return TestResultsLogger()
 
 
@@ -222,7 +229,7 @@ def test_results_logger():
 def setup_test_environment():
     """Set up test environment and cleanup."""
     original_cwd = os.getcwd()
-    logs_dir = os.path.join(os.path.dirname(__file__), 'logs')
+    logs_dir = os.path.join(os.path.dirname(__file__), "logs")
     os.makedirs(logs_dir, exist_ok=True)
     yield
     os.chdir(original_cwd)
@@ -248,13 +255,13 @@ def create_test_pdf(filepath, num_pages=3):
 def generate_test_summary(results, output_path):
     """Generate a comprehensive test execution summary."""
     summary = {
-        'execution_timestamp': datetime.now().isoformat(),
-        'test_file': 'test_watermark_2025-08-24.py',
-        'target_module': 'watermark.py',
-        'results': results
+        "execution_timestamp": datetime.now().isoformat(),
+        "test_file": "test_watermark_2025-08-24.py",
+        "target_module": "watermark.py",
+        "results": results,
     }
-    
-    with open(output_path, 'w') as f:
+
+    with open(output_path, "w") as f:
         json.dump(summary, f, indent=2)
-    
+
     return summary

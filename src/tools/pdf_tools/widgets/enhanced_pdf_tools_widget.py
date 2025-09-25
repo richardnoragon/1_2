@@ -16,16 +16,27 @@ from typing import Any, Dict, List, Optional
 
 from PyQt5.QtCore import Qt, QTimer, pyqtSignal
 from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import (QFileDialog, QFrame, QGridLayout, QGroupBox,
-                             QHBoxLayout, QLabel, QMessageBox, QProgressBar,
-                             QPushButton, QScrollArea, QVBoxLayout, QWidget)
+from PyQt5.QtWidgets import (
+    QFileDialog,
+    QFrame,
+    QGridLayout,
+    QGroupBox,
+    QHBoxLayout,
+    QLabel,
+    QMessageBox,
+    QProgressBar,
+    QPushButton,
+    QScrollArea,
+    QVBoxLayout,
+    QWidget,
+)
 
 
 class PDFToolsStateManager:
     """
     Manages state and data sharing between PDF tool components
     """
-    
+
     def __init__(self):
         self.current_file = None
         self.recent_files = []
@@ -33,7 +44,7 @@ class PDFToolsStateManager:
         self.operation_history = []
         self.shared_data = {}
         self.active_operations = {}
-        
+
     def set_current_file(self, file_path: str):
         """Set the current working PDF file"""
         if file_path:
@@ -44,19 +55,21 @@ class PDFToolsStateManager:
                 self.recent_files = self.recent_files[:10]
             return True
         return False
-        
+
     def get_current_file(self) -> Optional[str]:
         """Get the current working PDF file"""
         return self.current_file
-        
-    def save_operation_state(self, tool_name: str, operation: str, parameters: Dict):
+
+    def save_operation_state(
+        self, tool_name: str, operation: str, parameters: Dict
+    ):
         """Save operation state for history tracking"""
         operation_record = {
-            'tool': tool_name,
-            'operation': operation,
-            'parameters': parameters,
-            'timestamp': datetime.now(),
-            'file': self.current_file
+            "tool": tool_name,
+            "operation": operation,
+            "parameters": parameters,
+            "timestamp": datetime.now(),
+            "file": self.current_file,
         }
         self.operation_history.append(operation_record)
         # Keep only last 50 operations
@@ -67,20 +80,22 @@ class EnhancedPDFToolsWidget(QWidget):
     """
     Enhanced PDF Tools widget with folder-based tool discovery
     """
-    
+
     # Signals for communication with parent
     tool_operation_started = pyqtSignal(str, str)  # tool_name, operation
-    tool_operation_completed = pyqtSignal(str, str, bool)  # tool_name, operation, success
+    tool_operation_completed = pyqtSignal(
+        str, str, bool
+    )  # tool_name, operation, success
     file_selected = pyqtSignal(str)  # file_path
-    
+
     def __init__(self, parent=None):
         super().__init__(parent)
         self.parent_window = parent
-        
+
         # Initialize managers
         self.state_manager = PDFToolsStateManager()
-        self.logger = logging.getLogger('PDFTools')
-        
+        self.logger = logging.getLogger("PDFTools")
+
         # UI components
         self.main_layout = None
         self.status_label = None
@@ -91,54 +106,59 @@ class EnhancedPDFToolsWidget(QWidget):
         self.programs_layout = None
         self.category_title_label = None
         self.back_button = None
-        
+
         self.init_ui()
         self.setup_connections()
-        
+
     def init_ui(self):
         """Initialize the PDF tools interface"""
         self.main_layout = QVBoxLayout(self)
         self.main_layout.setContentsMargins(10, 10, 10, 10)
         self.main_layout.setSpacing(10)
-        
+
         # Create header section
         self.create_header_section()
-        
+
         # Create main interface
         self.create_main_interface()
-        
+
         # Create status section
         self.create_status_section()
-        
+
         # Apply styling
         self.apply_enhanced_styling()
-        
+
     def create_header_section(self):
         """Create the header section with file selection and controls"""
         header_frame = QFrame()
         header_frame.setFrameStyle(QFrame.StyledPanel)
-        header_frame.setStyleSheet("""
+        header_frame.setStyleSheet(
+            """
             QFrame {
                 background-color: #f8f9fa;
                 border: 1px solid #dee2e6;
                 border-radius: 8px;
                 padding: 10px;
             }
-        """)
-        
+        """
+        )
+
         header_layout = QHBoxLayout(header_frame)
-        
+
         # Current file display
         file_group = QGroupBox("Current PDF File")
         file_layout = QHBoxLayout(file_group)
-        
+
         self.current_file_label = QLabel("No file selected")
-        self.current_file_label.setStyleSheet("font-weight: bold; color: #495057;")
+        self.current_file_label.setStyleSheet(
+            "font-weight: bold; color: #495057;"
+        )
         file_layout.addWidget(self.current_file_label)
-        
+
         # File selection button
         select_file_btn = QPushButton("Select PDF File")
-        select_file_btn.setStyleSheet("""
+        select_file_btn.setStyleSheet(
+            """
             QPushButton {
                 background-color: #007bff;
                 color: white;
@@ -150,28 +170,29 @@ class EnhancedPDFToolsWidget(QWidget):
             QPushButton:hover {
                 background-color: #0056b3;
             }
-        """)
+        """
+        )
         select_file_btn.clicked.connect(self.select_pdf_file)
         file_layout.addWidget(select_file_btn)
-        
+
         header_layout.addWidget(file_group)
-        
+
         # Quick actions
         actions_group = QGroupBox("Quick Actions")
         actions_layout = QHBoxLayout(actions_group)
-        
+
         # Recent files button
         recent_btn = QPushButton("Recent Files")
         recent_btn.clicked.connect(self.show_recent_files)
         actions_layout.addWidget(recent_btn)
-        
+
         # Clear cache button
         clear_cache_btn = QPushButton("Clear Cache")
         clear_cache_btn.clicked.connect(self.clear_cache)
         actions_layout.addWidget(clear_cache_btn)
-        
+
         header_layout.addWidget(actions_group)
-        
+
         self.main_layout.addWidget(header_frame)
 
     def create_main_interface(self):
@@ -181,16 +202,18 @@ class EnhancedPDFToolsWidget(QWidget):
         container_layout = QVBoxLayout(main_container)
         container_layout.setContentsMargins(10, 10, 10, 10)
         container_layout.setSpacing(15)
-        
+
         # Create title
         title_label = QLabel("PDF Tools Categories")
-        title_label.setStyleSheet("""
+        title_label.setStyleSheet(
+            """
             font: bold 16pt "Segoe UI";
             color: #212529;
             margin: 10px 0;
-        """)
+        """
+        )
         container_layout.addWidget(title_label)
-        
+
         # Create scroll area for categories
         scroll_area = QScrollArea()
         scroll_area.setWidgetResizable(True)
@@ -198,22 +221,23 @@ class EnhancedPDFToolsWidget(QWidget):
         scroll_widget = QWidget()
         self.categories_layout = QGridLayout(scroll_widget)
         self.categories_layout.setSpacing(15)
-        
+
         # Discover and create category buttons from folder structure
         self.discover_and_create_categories()
-        
+
         scroll_area.setWidget(scroll_widget)
         container_layout.addWidget(scroll_area)
-        
+
         # Create programs display area (initially hidden)
         self.programs_container = QWidget()
         self.programs_container.setVisible(False)
         programs_layout = QVBoxLayout(self.programs_container)
-        
+
         # Back button
         back_layout = QHBoxLayout()
         self.back_button = QPushButton("← Back to Categories")
-        self.back_button.setStyleSheet("""
+        self.back_button.setStyleSheet(
+            """
             QPushButton {
                 background-color: #6c757d;
                 color: white;
@@ -225,21 +249,24 @@ class EnhancedPDFToolsWidget(QWidget):
             QPushButton:hover {
                 background-color: #5a6268;
             }
-        """)
+        """
+        )
         self.back_button.clicked.connect(self.show_categories)
         back_layout.addWidget(self.back_button)
         back_layout.addStretch()
         programs_layout.addLayout(back_layout)
-        
+
         # Category title label
         self.category_title_label = QLabel()
-        self.category_title_label.setStyleSheet("""
+        self.category_title_label.setStyleSheet(
+            """
             font: bold 14pt "Segoe UI";
             color: #212529;
             margin: 10px 0;
-        """)
+        """
+        )
         programs_layout.addWidget(self.category_title_label)
-        
+
         # Programs scroll area
         self.programs_scroll = QScrollArea()
         self.programs_scroll.setWidgetResizable(True)
@@ -249,9 +276,9 @@ class EnhancedPDFToolsWidget(QWidget):
         self.programs_layout.setSpacing(15)
         self.programs_scroll.setWidget(self.programs_widget)
         programs_layout.addWidget(self.programs_scroll)
-        
+
         container_layout.addWidget(self.programs_container)
-        
+
         self.main_layout.addWidget(main_container)
 
     def discover_and_create_categories(self):
@@ -260,73 +287,80 @@ class EnhancedPDFToolsWidget(QWidget):
         # Current file is in: src/tools/pdf_tools/widgets/enhanced_pdf_tools_widget.py
         # We want to get to: src/tools/pdf_tools/
         base_path = Path(__file__).parent.parent
-        
+
         # Category mapping with colors and descriptions
         category_config = {
-            'pdf_basic_operations': {
-                'display_name': 'Basic Operations',
-                'description': 'Merge, split, and sign PDFs',
-                'color': '#4CAF50'
+            "pdf_basic_operations": {
+                "display_name": "Basic Operations",
+                "description": "Merge, split, and sign PDFs",
+                "color": "#4CAF50",
             },
-            'pdf_content_extraction': {
-                'display_name': 'Content Extraction',
-                'description': 'Extract text, images, tables, and metadata',
-                'color': '#2196F3'
+            "pdf_content_extraction": {
+                "display_name": "Content Extraction",
+                "description": "Extract text, images, tables, and metadata",
+                "color": "#2196F3",
             },
-            'pdf_security': {
-                'display_name': 'Security',
-                'description': 'Encrypt, decrypt, and manage security',
-                'color': '#F44336'
+            "pdf_security": {
+                "display_name": "Security",
+                "description": "Encrypt, decrypt, and manage security",
+                "color": "#F44336",
             },
-            'pdf_enhancements': {
-                'display_name': 'Enhancements',
-                'description': 'Watermarks, OCR, and highlighting',
-                'color': '#FF9800'
+            "pdf_enhancements": {
+                "display_name": "Enhancements",
+                "description": "Watermarks, OCR, and highlighting",
+                "color": "#FF9800",
             },
-            'pdf_conversion': {
-                'display_name': 'Conversion',
-                'description': 'Convert PDFs to/from other formats',
-                'color': '#9C27B0'
+            "pdf_conversion": {
+                "display_name": "Conversion",
+                "description": "Convert PDFs to/from other formats",
+                "color": "#9C27B0",
             },
-            'pdf_view_analysis': {
-                'display_name': 'View & Analysis',
-                'description': 'View and analyze PDF contents',
-                'color': '#607D8B'
-            }
+            "pdf_view_analysis": {
+                "display_name": "View & Analysis",
+                "description": "View and analyze PDF contents",
+                "color": "#607D8B",
+            },
         }
-        
+
         # Create category buttons
         row, col = 0, 0
         for folder_name, config in category_config.items():
             folder_path = base_path / folder_name
-            
+
             if folder_path.exists() and folder_path.is_dir():
                 # Create category button
                 category_button = self.create_category_button(
-                    config['display_name'],
-                    config['description'],
-                    config['color'],
+                    config["display_name"],
+                    config["description"],
+                    config["color"],
                     folder_name,
-                    folder_path
+                    folder_path,
                 )
-                
+
                 self.categories_layout.addWidget(category_button, row, col)
-                
+
                 # Move to next position
                 col += 1
                 if col >= 2:  # 2 columns
                     col = 0
                     row += 1
-        
+
         # Add stretch to push buttons to top
         self.categories_layout.setRowStretch(row + 1, 1)
 
-    def create_category_button(self, name: str, description: str, color: str, 
-                             folder_name: str, folder_path: Path):
+    def create_category_button(
+        self,
+        name: str,
+        description: str,
+        color: str,
+        folder_name: str,
+        folder_path: Path,
+    ):
         """Create a category button that shows programs when clicked"""
         frame = QFrame()
         frame.setFrameStyle(QFrame.StyledPanel)
-        frame.setStyleSheet(f"""
+        frame.setStyleSheet(
+            f"""
             QFrame {{
                 background-color: #ffffff;
                 border: 2px solid #e9ecef;
@@ -337,17 +371,19 @@ class EnhancedPDFToolsWidget(QWidget):
                 border-color: {color};
                 background-color: #f8f9fa;
             }}
-        """)
+        """
+        )
         frame.setMinimumHeight(140)
         frame.setMaximumHeight(160)
-        
+
         layout = QVBoxLayout(frame)
         layout.setContentsMargins(15, 15, 15, 15)
         layout.setSpacing(8)
-        
+
         # Category button
         button = QPushButton(name)
-        button.setStyleSheet(f"""
+        button.setStyleSheet(
+            f"""
             QPushButton {{
                 background-color: {color};
                 color: white;
@@ -363,143 +399,163 @@ class EnhancedPDFToolsWidget(QWidget):
             QPushButton:pressed {{
                 background-color: {self._darken_color(color, 0.2)};
             }}
-        """)
+        """
+        )
         button.clicked.connect(
             lambda: self.show_category_programs(name, folder_name, folder_path)
         )
         layout.addWidget(button)
-        
+
         # Description
         desc_label = QLabel(description)
         desc_label.setWordWrap(True)
         desc_label.setAlignment(Qt.AlignCenter)
-        desc_label.setStyleSheet("""
+        desc_label.setStyleSheet(
+            """
             font-size: 11pt;
             color: #6c757d;
             font-weight: normal;
-        """)
+        """
+        )
         layout.addWidget(desc_label)
-        
+
         return frame
 
-    def show_category_programs(self, category_name: str, folder_name: str, 
-                             folder_path: Path):
+    def show_category_programs(
+        self, category_name: str, folder_name: str, folder_path: Path
+    ):
         """Show programs available in the selected category"""
         # Clear existing programs
         self.clear_programs_layout()
-        
+
         # Set category title
         self.category_title_label.setText(
             f"{category_name} - Available Programs"
         )
-        
+
         # Discover programs in the folder
         programs = self.discover_programs_in_folder(folder_path)
-        
+
         if not programs:
             # Show message if no programs found
             no_programs_label = QLabel("No programs found in this category")
             no_programs_label.setAlignment(Qt.AlignCenter)
-            no_programs_label.setStyleSheet("""
+            no_programs_label.setStyleSheet(
+                """
                 font-size: 12pt;
                 color: #6c757d;
                 margin: 50px;
-            """)
+            """
+            )
             self.programs_layout.addWidget(no_programs_label, 0, 0, 1, 2)
         else:
             # Create program buttons
             row, col = 0, 0
             for program_info in programs:
                 program_button = self.create_program_button(
-                    program_info['name'],
-                    program_info['description'],
-                    program_info['file_path'],
-                    category_name
+                    program_info["name"],
+                    program_info["description"],
+                    program_info["file_path"],
+                    category_name,
                 )
-                
+
                 self.programs_layout.addWidget(program_button, row, col)
-                
+
                 # Move to next position
                 col += 1
                 if col >= 2:  # 2 columns
                     col = 0
                     row += 1
-        
+
         # Show programs container and hide categories
         self.programs_container.setVisible(True)
         # Hide categories (find the parent of categories_layout)
         categories_widget = self.categories_layout.parent()
-        while categories_widget and not hasattr(categories_widget, 'setVisible'):
+        while categories_widget and not hasattr(
+            categories_widget, "setVisible"
+        ):
             categories_widget = categories_widget.parent()
-        if categories_widget and hasattr(categories_widget, 'setVisible'):
+        if categories_widget and hasattr(categories_widget, "setVisible"):
             categories_widget.parent().setVisible(False)
 
-    def discover_programs_in_folder(self, folder_path: Path) -> List[Dict[str, str]]:
+    def discover_programs_in_folder(
+        self, folder_path: Path
+    ) -> List[Dict[str, str]]:
         """Discover Python programs in a folder and extract information"""
         programs = []
-        
+
         # Look for .py files (excluding __init__.py and backup files)
         for py_file in folder_path.glob("*.py"):
-            if py_file.name not in ['__init__.py']:
+            if py_file.name not in ["__init__.py"]:
                 # Skip error files and backup files
-                if ('error' in py_file.name.lower() or 
-                    'backup' in py_file.name.lower() or
-                    py_file.name.endswith('_error.txt')):
+                if (
+                    "error" in py_file.name.lower()
+                    or "backup" in py_file.name.lower()
+                    or py_file.name.endswith("_error.txt")
+                ):
                     continue
-                    
+
                 program_name = py_file.stem
                 # Clean up program name for display
-                display_name = program_name.replace('_', ' ').title()
-                
+                display_name = program_name.replace("_", " ").title()
+
                 # Try to extract description from file
                 description = self.extract_program_description(py_file)
-                
-                programs.append({
-                    'name': display_name,
-                    'description': description,
-                    'file_path': str(py_file),
-                    'module_name': program_name
-                })
-        
-        return sorted(programs, key=lambda x: x['name'])
+
+                programs.append(
+                    {
+                        "name": display_name,
+                        "description": description,
+                        "file_path": str(py_file),
+                        "module_name": program_name,
+                    }
+                )
+
+        return sorted(programs, key=lambda x: x["name"])
 
     def extract_program_description(self, file_path: Path) -> str:
         """Extract description from a Python file"""
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, "r", encoding="utf-8") as f:
                 content = f.read()
-                
+
             # Look for module docstring
             import ast
+
             try:
                 tree = ast.parse(content)
-                if (tree.body and isinstance(tree.body[0], ast.Expr) and 
-                    isinstance(tree.body[0].value, ast.Constant) and 
-                    isinstance(tree.body[0].value.value, str)):
+                if (
+                    tree.body
+                    and isinstance(tree.body[0], ast.Expr)
+                    and isinstance(tree.body[0].value, ast.Constant)
+                    and isinstance(tree.body[0].value.value, str)
+                ):
                     docstring = tree.body[0].value.value.strip()
                     # Return first line of docstring
-                    return docstring.split('\n')[0][:100]
+                    return docstring.split("\n")[0][:100]
             except:
                 pass
-                
+
             # Fallback: look for comments at the top
-            lines = content.split('\n')
+            lines = content.split("\n")
             for line in lines[:10]:  # Check first 10 lines
                 line = line.strip()
-                if line.startswith('#') and len(line) > 5:
+                if line.startswith("#") and len(line) > 5:
                     return line[1:].strip()[:100]
-                    
+
         except Exception:
             pass
-            
+
         return f"PDF {file_path.stem.replace('_', ' ').title()}"
 
-    def create_program_button(self, name: str, description: str, 
-                            file_path: str, category: str):
+    def create_program_button(
+        self, name: str, description: str, file_path: str, category: str
+    ):
         """Create a button for an individual program"""
         frame = QFrame()
         frame.setFrameStyle(QFrame.StyledPanel)
-        frame.setStyleSheet("""
+        frame.setStyleSheet(
+            """
             QFrame {
                 background-color: #ffffff;
                 border: 2px solid #e9ecef;
@@ -510,17 +566,19 @@ class EnhancedPDFToolsWidget(QWidget):
                 border-color: #007bff;
                 background-color: #f8f9fa;
             }
-        """)
+        """
+        )
         frame.setMinimumHeight(120)
         frame.setMaximumHeight(140)
-        
+
         layout = QVBoxLayout(frame)
         layout.setContentsMargins(15, 15, 15, 15)
         layout.setSpacing(8)
-        
+
         # Program button
         button = QPushButton(name)
-        button.setStyleSheet("""
+        button.setStyleSheet(
+            """
             QPushButton {
                 background-color: #007bff;
                 color: white;
@@ -536,23 +594,26 @@ class EnhancedPDFToolsWidget(QWidget):
             QPushButton:pressed {
                 background-color: #004085;
             }
-        """)
+        """
+        )
         button.clicked.connect(
             lambda: self.launch_program(name, file_path, category)
         )
         layout.addWidget(button)
-        
+
         # Description
         desc_label = QLabel(description)
         desc_label.setWordWrap(True)
         desc_label.setAlignment(Qt.AlignCenter)
-        desc_label.setStyleSheet("""
+        desc_label.setStyleSheet(
+            """
             font-size: 10pt;
             color: #6c757d;
             font-weight: normal;
-        """)
+        """
+        )
         layout.addWidget(desc_label)
-        
+
         return frame
 
     def clear_programs_layout(self):
@@ -567,64 +628,70 @@ class EnhancedPDFToolsWidget(QWidget):
         self.programs_container.setVisible(False)
         # Show categories container
         categories_widget = self.categories_layout.parent()
-        while categories_widget and not hasattr(categories_widget, 'setVisible'):
+        while categories_widget and not hasattr(
+            categories_widget, "setVisible"
+        ):
             categories_widget = categories_widget.parent()
-        if categories_widget and hasattr(categories_widget, 'setVisible'):
+        if categories_widget and hasattr(categories_widget, "setVisible"):
             categories_widget.parent().setVisible(True)
 
     def launch_program(self, name: str, file_path: str, category: str):
         """Launch the selected PDF program"""
         if not self.state_manager.current_file:
             QMessageBox.warning(
-                self, "No PDF Selected", 
-                "Please select a PDF file first before launching programs."
+                self,
+                "No PDF Selected",
+                "Please select a PDF file first before launching programs.",
             )
             return
-            
+
         try:
             # Update status
             self.status_label.setText(f"Launching {name}...")
-            
+
             # Try to execute the program
             import subprocess
             import sys
 
             # Run the program with the current PDF file as argument
             cmd = [sys.executable, file_path, self.state_manager.current_file]
-            
+
             # For GUI programs, don't wait for completion
             subprocess.Popen(cmd, cwd=os.path.dirname(file_path))
-            
+
             self.status_label.setText(f"Launched {name}")
-            
+
             # Log the operation
-            self.state_manager.save_operation_state(category, f"launch_{name}", {
-                'program_path': file_path,
-                'pdf_file': self.state_manager.current_file
-            })
-            
+            self.state_manager.save_operation_state(
+                category,
+                f"launch_{name}",
+                {
+                    "program_path": file_path,
+                    "pdf_file": self.state_manager.current_file,
+                },
+            )
+
         except Exception as e:
             QMessageBox.critical(
-                self, "Launch Error",
-                f"Failed to launch {name}:\n{str(e)}"
+                self, "Launch Error", f"Failed to launch {name}:\n{str(e)}"
             )
             self.status_label.setText(f"Failed to launch {name}")
 
     def _darken_color(self, hex_color: str, factor: float = 0.1) -> str:
         """Darken a hex color by a given factor"""
         # Remove # if present
-        hex_color = hex_color.lstrip('#')
-        
+        hex_color = hex_color.lstrip("#")
+
         # Convert to RGB
         r = int(hex_color[0:2], 16)
         g = int(hex_color[2:4], 16)
         b = int(hex_color[4:6], 16)
-        
+
         # Darken
         r = max(0, int(r * (1 - factor)))
         g = max(0, int(g * (1 - factor)))
         b = max(0, int(b * (1 - factor)))
-        
+
         # Convert back to hex
         return f"#{r:02x}{g:02x}{b:02x}"
 
@@ -632,21 +699,24 @@ class EnhancedPDFToolsWidget(QWidget):
         """Create the status section with progress and information"""
         status_frame = QFrame()
         status_frame.setFrameStyle(QFrame.StyledPanel)
-        status_frame.setStyleSheet("""
+        status_frame.setStyleSheet(
+            """
             QFrame {
                 background-color: #f8f9fa;
                 border: 1px solid #dee2e6;
                 border-radius: 8px;
                 padding: 10px;
             }
-        """)
-        
+        """
+        )
+
         status_layout = QHBoxLayout(status_frame)
-        
+
         # Progress bar
         self.progress_bar = QProgressBar()
         self.progress_bar.setVisible(False)
-        self.progress_bar.setStyleSheet("""
+        self.progress_bar.setStyleSheet(
+            """
             QProgressBar {
                 border: 1px solid #dee2e6;
                 border-radius: 4px;
@@ -658,19 +728,21 @@ class EnhancedPDFToolsWidget(QWidget):
                 background-color: #007bff;
                 border-radius: 3px;
             }
-        """)
+        """
+        )
         status_layout.addWidget(self.progress_bar)
-        
+
         # Status label
         self.status_label = QLabel("Ready")
         self.status_label.setStyleSheet("font-weight: bold; color: #495057;")
         status_layout.addWidget(self.status_label)
-        
+
         self.main_layout.addWidget(status_frame)
 
     def apply_enhanced_styling(self):
         """Apply enhanced styling consistent with RFU hub"""
-        self.setStyleSheet("""
+        self.setStyleSheet(
+            """
             QWidget {
                 background-color: #ffffff;
                 font-family: "Segoe UI", Arial, sans-serif;
@@ -687,7 +759,8 @@ class EnhancedPDFToolsWidget(QWidget):
                 left: 10px;
                 padding: 0 5px 0 5px;
             }
-        """)
+        """
+        )
 
     def setup_connections(self):
         """Setup signal connections and event handlers"""
@@ -697,12 +770,9 @@ class EnhancedPDFToolsWidget(QWidget):
     def select_pdf_file(self):
         """Open file dialog to select a PDF file"""
         file_path, _ = QFileDialog.getOpenFileName(
-            self,
-            "Select PDF File",
-            "",
-            "PDF Files (*.pdf);;All Files (*)"
+            self, "Select PDF File", "", "PDF Files (*.pdf);;All Files (*)"
         )
-        
+
         if file_path:
             if self.state_manager.set_current_file(file_path):
                 self.current_file_label.setText(os.path.basename(file_path))
@@ -713,43 +783,43 @@ class EnhancedPDFToolsWidget(QWidget):
                 )
             else:
                 QMessageBox.warning(
-                    self, "Invalid File", 
-                    "Please select a valid PDF file."
+                    self, "Invalid File", "Please select a valid PDF file."
                 )
 
     def show_recent_files(self):
         """Show recent files menu"""
         if not self.state_manager.recent_files:
             QMessageBox.information(
-                self, "Recent Files", 
-                "No recent files available."
+                self, "Recent Files", "No recent files available."
             )
             return
-            
+
         # Create a simple dialog with recent files
         from PyQt5.QtWidgets import QDialog, QDialogButtonBox, QListWidget
-        
+
         dialog = QDialog(self)
         dialog.setWindowTitle("Recent PDF Files")
         dialog.setModal(True)
         dialog.resize(400, 300)
-        
+
         layout = QVBoxLayout(dialog)
-        
+
         file_list = QListWidget()
         for file_path in self.state_manager.recent_files:
             if os.path.exists(file_path):
                 file_list.addItem(
                     f"{os.path.basename(file_path)} - {file_path}"
                 )
-                
+
         layout.addWidget(file_list)
-        
-        buttons = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+
+        buttons = QDialogButtonBox(
+            QDialogButtonBox.Ok | QDialogButtonBox.Cancel
+        )
         buttons.accepted.connect(dialog.accept)
         buttons.rejected.connect(dialog.reject)
         layout.addWidget(buttons)
-        
+
         if dialog.exec_() == QDialog.Accepted and file_list.currentItem():
             selected_text = file_list.currentItem().text()
             file_path = selected_text.split(" - ", 1)[1]
@@ -763,8 +833,9 @@ class EnhancedPDFToolsWidget(QWidget):
         self.state_manager.shared_data.clear()
         self.status_label.setText("Cache cleared")
         QMessageBox.information(
-            self, "Cache Cleared", 
-            "Operation cache and temporary data have been cleared."
+            self,
+            "Cache Cleared",
+            "Operation cache and temporary data have been cleared.",
         )
 
 
@@ -773,17 +844,17 @@ if __name__ == "__main__":
     import sys
 
     from PyQt5.QtWidgets import QApplication, QMainWindow
-    
+
     app = QApplication(sys.argv)
-    
+
     # Create test window
     window = QMainWindow()
     window.setWindowTitle("Enhanced PDF Tools Test")
     window.setGeometry(200, 200, 1000, 800)
-    
+
     # Create and set the PDF tools widget
     pdf_widget = EnhancedPDFToolsWidget()
     window.setCentralWidget(pdf_widget)
-    
+
     window.show()
     sys.exit(app.exec_())

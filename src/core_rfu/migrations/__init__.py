@@ -15,9 +15,9 @@ from .rollback_manager import RollbackManager
 from .schema_validator import SchemaValidator
 
 __all__ = [
-    'DatabaseMigrationManager',
-    'MigrationBase',
-    'MigrationMetadata',
-    'RollbackManager',
-    'SchemaValidator',
+    "DatabaseMigrationManager",
+    "MigrationBase",
+    "MigrationMetadata",
+    "RollbackManager",
+    "SchemaValidator",
 ]

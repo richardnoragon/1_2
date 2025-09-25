@@ -11,18 +11,21 @@ from pathlib import Path
 
 def generate_comprehensive_summary():
     """Generate comprehensive test summary with execution timestamp."""
-    
-    timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    
+
+    timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
     # Read JSON report
     json_file = Path("result_en_and_decrypt_2025-08-28.json")
-    
+
     if json_file.exists():
-        with open(json_file, 'r') as f:
+        with open(json_file, "r") as f:
             test_data = json.load(f)
     else:
-        test_data = {"summary": {"total": 16, "error": 0, "passed": 16}, "duration": 0}
-    
+        test_data = {
+            "summary": {"total": 16, "error": 0, "passed": 16},
+            "duration": 0,
+        }
+
     summary = f"""
 ==========================================================================
 COMPREHENSIVE UNIT TEST RESULTS FOR en_and_decrypt.py
@@ -110,14 +113,15 @@ Test Suite: pytest with comprehensive fixtures and mocking
 Target: c:\\Users\\richardi\\1_2\\src\\utilities\\security\\en_and_decrypt.py
 ==========================================================================
 """
-    
+
     return summary
+
 
 if __name__ == "__main__":
     summary = generate_comprehensive_summary()
-    
+
     # Write to file
     with open("result_en_and_decrypt_2025-08-28_summary.txt", "w") as f:
         f.write(summary)
-    
+
     print(summary)

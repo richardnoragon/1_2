@@ -14,23 +14,34 @@ Version: 2.0.0
 import logging
 
 # Setup module logging
-logger = logging.getLogger('RFU.Navigation')
+logger = logging.getLogger("RFU.Navigation")
 
 try:
     # Address bar components
-    from .address_bar import (AddressBar, AddressBarCompleter, NavigationEvent,
-                              PathValidator)
+    from .address_bar import (
+        AddressBar,
+        AddressBarCompleter,
+        NavigationEvent,
+        PathValidator,
+    )
+
     # Breadcrumb navigation components
-    from .breadcrumb_widget import (BreadcrumbDropdown, BreadcrumbSegment,
-                                    BreadcrumbSeparator, BreadcrumbWidget,
-                                    ClickableLabel)
+    from .breadcrumb_widget import (
+        BreadcrumbDropdown,
+        BreadcrumbSegment,
+        BreadcrumbSeparator,
+        BreadcrumbWidget,
+        ClickableLabel,
+    )
+
     # History management components
     from .history_manager import HistoryDatabase, HistoryEntry, HistoryManager
+
     # Navigation buttons components
     from .navigation_buttons import NavigationButtonGroup, NavigationState
-    
+
     logger.debug("Navigation system components loaded successfully")
-    
+
 except ImportError as e:
     logger.error(f"Failed to import navigation components: {e}")
     # Provide fallback None values for graceful degradation
@@ -51,26 +62,23 @@ except ImportError as e:
 
 __all__ = [
     # Address bar
-    'AddressBar',
-    'AddressBarCompleter', 
-    'PathValidator',
-    'NavigationEvent',
-    
+    "AddressBar",
+    "AddressBarCompleter",
+    "PathValidator",
+    "NavigationEvent",
     # Navigation buttons
-    'NavigationButtonGroup',
-    'NavigationState',
-    
+    "NavigationButtonGroup",
+    "NavigationState",
     # History management
-    'HistoryManager',
-    'HistoryEntry',
-    'HistoryDatabase',
-    
+    "HistoryManager",
+    "HistoryEntry",
+    "HistoryDatabase",
     # Breadcrumb navigation
-    'BreadcrumbWidget',
-    'BreadcrumbSegment',
-    'ClickableLabel',
-    'BreadcrumbDropdown',
-    'BreadcrumbSeparator'
+    "BreadcrumbWidget",
+    "BreadcrumbSegment",
+    "ClickableLabel",
+    "BreadcrumbDropdown",
+    "BreadcrumbSeparator",
 ]
 
 # Version information

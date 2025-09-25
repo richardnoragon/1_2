@@ -13,20 +13,20 @@ from datetime import datetime
 
 def generate_test_summary():
     """Generate comprehensive test summary report."""
-    
+
     # Test execution timestamp
     execution_timestamp = datetime.now()
-    
+
     # Load test results
     json_report_path = "C:/Users/HP1/1_2/1_2/tests/unit/result_network_connectivity_simple_2025-08-24.json"
-    
+
     try:
-        with open(json_report_path, 'r') as f:
+        with open(json_report_path, "r") as f:
             test_data = json.load(f)
     except FileNotFoundError:
         print(f"Test report not found at {json_report_path}")
         return
-    
+
     # Generate summary report
     summary_report = f"""
 # Network Connectivity Test Execution Summary Report
@@ -76,13 +76,17 @@ Test Suite: test_network_connectivity_simple_2025-08-24.py
 """
 
     # Add individual test results if available
-    if 'tests' in test_data:
-        for test in test_data['tests']:
-            test_name = test.get('nodeid', 'Unknown Test').split('::')[-1]
-            outcome = test.get('outcome', 'unknown')
-            duration = test.get('call', {}).get('duration', 0)
-            
-            status_icon = "✅" if outcome == "passed" else "❌" if outcome == "failed" else "⏸️"
+    if "tests" in test_data:
+        for test in test_data["tests"]:
+            test_name = test.get("nodeid", "Unknown Test").split("::")[-1]
+            outcome = test.get("outcome", "unknown")
+            duration = test.get("call", {}).get("duration", 0)
+
+            status_icon = (
+                "✅"
+                if outcome == "passed"
+                else "❌" if outcome == "failed" else "⏸️"
+            )
             summary_report += f"\n- {status_icon} **{test_name}** - {outcome.upper()} ({duration:.3f}s)"
 
     summary_report += f"""
@@ -200,9 +204,9 @@ Platform: {test_data.get('platform', 'Unknown')}
 
     # Save summary report
     summary_file = "C:/Users/HP1/1_2/1_2/tests/unit/result_network_connectivity_summary_2025-08-24.md"
-    
+
     try:
-        with open(summary_file, 'w', encoding='utf-8') as f:
+        with open(summary_file, "w", encoding="utf-8") as f:
             f.write(summary_report)
         print(f"✅ Test summary report generated: {summary_file}")
     except Exception as e:
@@ -213,7 +217,7 @@ Platform: {test_data.get('platform', 'Unknown')}
 
 if __name__ == "__main__":
     summary = generate_test_summary()
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print("TEST EXECUTION COMPLETE")
-    print("="*80)
+    print("=" * 80)
     print(summary[:1000] + "..." if len(summary) > 1000 else summary)

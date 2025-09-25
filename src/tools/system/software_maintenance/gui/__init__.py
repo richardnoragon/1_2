@@ -8,6 +8,4 @@ tool interfaces.
 
 from .maintenance_hub import SoftwareMaintenanceHub
 
-__all__ = [
-    'SoftwareMaintenanceHub'
-]
+__all__ = ["SoftwareMaintenanceHub"]

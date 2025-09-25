@@ -13,21 +13,23 @@ from pathlib import Path
 
 def run_complete_test_suite():
     """Run the complete test suite with coverage and detailed reporting."""
-    
-    print("="*80)
+
+    print("=" * 80)
     print("Platform Utils Comprehensive Test Execution")
-    print("="*80)
+    print("=" * 80)
     print("Target: platform_utils.py")
     print("Date: 2025-08-30")
     print("Framework: pytest")
-    print("="*80)
-    
+    print("=" * 80)
+
     # Change to the test directory
     test_dir = Path(__file__).parent
-    
+
     # Build the pytest command with all options
     cmd = [
-        sys.executable, "-m", "pytest",
+        sys.executable,
+        "-m",
+        "pytest",
         "test_platform_utils_2025-08-30.py",
         "-v",
         "--tb=short",
@@ -39,30 +41,30 @@ def run_complete_test_suite():
         "--cov-report=html:result_platform_utils_coverage_2025-08-30",
         "--cov-report=term-missing",
         "--cov-report=json:result_platform_utils_coverage_2025-08-30.json",
-        "--durations=10"
+        "--durations=10",
     ]
-    
+
     try:
         print("Executing test suite...")
         print("Command:", " ".join(cmd))
         print("-" * 80)
-        
+
         # Run the tests
         result = subprocess.run(
             cmd,
             cwd=Path("C:/Users/richardi/1_2"),
             capture_output=False,  # Show output in real-time
-            text=True
+            text=True,
         )
-        
+
         print("-" * 80)
         print(f"Test execution completed with exit code: {result.returncode}")
-        
+
         if result.returncode == 0:
             print("✅ All tests passed successfully!")
         else:
             print("❌ Some tests failed or there were errors.")
-        
+
         # List generated reports
         print("\nGenerated Reports:")
         reports = [
@@ -70,16 +72,16 @@ def run_complete_test_suite():
             "result_platform_utils_2025-08-30.json",
             "result_platform_utils_coverage_2025-08-30",
             "result_platform_utils_coverage_2025-08-30.json",
-            "result_platform_utils_2025-08-30_summary.json"
+            "result_platform_utils_2025-08-30_summary.json",
         ]
-        
+
         for report in reports:
             report_path = test_dir / report
             status = "✓" if report_path.exists() else "✗"
             print(f"  {status} {report}")
-        
+
         return result.returncode == 0
-        
+
     except Exception as e:
         print(f"❌ Error running tests: {e}")
         return False

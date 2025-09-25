@@ -16,12 +16,8 @@ from .battery_monitor import BatteryMonitor
 from .health_analyzer import BatteryHealthAnalyzer
 from .cycle_tracker import ChargeCycleTracker
 
-__all__ = [
-    'BatteryMonitor',
-    'BatteryHealthAnalyzer', 
-    'ChargeCycleTracker'
-]
+__all__ = ["BatteryMonitor", "BatteryHealthAnalyzer", "ChargeCycleTracker"]
 
-__version__ = '1.0.0'
-__author__ = 'Richard\'s File Utilities'
-__description__ = 'Cross-platform battery health monitoring and analysis'
+__version__ = "1.0.0"
+__author__ = "Richard's File Utilities"
+__description__ = "Cross-platform battery health monitoring and analysis"

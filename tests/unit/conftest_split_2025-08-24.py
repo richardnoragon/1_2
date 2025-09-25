@@ -18,7 +18,16 @@ from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 
 # Add source directory to path for imports
-sys.path.insert(0, str(Path(__file__).parent.parent.parent / "src" / "utilities" / "pdf_tools" / "pdf_basic_operations"))
+sys.path.insert(
+    0,
+    str(
+        Path(__file__).parent.parent.parent
+        / "src"
+        / "utilities"
+        / "pdf_tools"
+        / "pdf_basic_operations"
+    ),
+)
 
 
 @pytest.fixture(scope="session")
@@ -49,13 +58,13 @@ def temp_dir():
 def sample_pdf_1_page(temp_dir):
     """Create a sample PDF with 1 page."""
     pdf_path = os.path.join(temp_dir, "sample_1_page.pdf")
-    
+
     # Create PDF using reportlab
     c = canvas.Canvas(pdf_path, pagesize=letter)
     c.drawString(100, 750, "This is page 1")
     c.showPage()
     c.save()
-    
+
     return pdf_path
 
 
@@ -63,14 +72,14 @@ def sample_pdf_1_page(temp_dir):
 def sample_pdf_5_pages(temp_dir):
     """Create a sample PDF with 5 pages."""
     pdf_path = os.path.join(temp_dir, "sample_5_pages.pdf")
-    
+
     # Create PDF using reportlab
     c = canvas.Canvas(pdf_path, pagesize=letter)
     for i in range(1, 6):
         c.drawString(100, 750, f"This is page {i}")
         c.showPage()
     c.save()
-    
+
     return pdf_path
 
 
@@ -78,14 +87,14 @@ def sample_pdf_5_pages(temp_dir):
 def sample_pdf_10_pages(temp_dir):
     """Create a sample PDF with 10 pages."""
     pdf_path = os.path.join(temp_dir, "sample_10_pages.pdf")
-    
+
     # Create PDF using reportlab
     c = canvas.Canvas(pdf_path, pagesize=letter)
     for i in range(1, 11):
         c.drawString(100, 750, f"This is page {i}")
         c.showPage()
     c.save()
-    
+
     return pdf_path
 
 
@@ -93,7 +102,7 @@ def sample_pdf_10_pages(temp_dir):
 def corrupted_pdf(temp_dir):
     """Create a corrupted PDF file for error testing."""
     pdf_path = os.path.join(temp_dir, "corrupted.pdf")
-    with open(pdf_path, 'w') as f:
+    with open(pdf_path, "w") as f:
         f.write("This is not a valid PDF file")
     return pdf_path
 
@@ -123,9 +132,9 @@ def readonly_directory(temp_dir):
     except OSError:
         # If we can't change permissions, skip this fixture
         pytest.skip("Cannot create read-only directory on this system")
-    
+
     yield readonly_dir
-    
+
     # Restore permissions for cleanup
     try:
         os.chmod(readonly_dir, 0o755)
@@ -136,14 +145,14 @@ def readonly_directory(temp_dir):
 @pytest.fixture
 def mock_logger():
     """Mock logger for testing log operations."""
-    with patch('split.logger') as mock_log:
+    with patch("split.logger") as mock_log:
         yield mock_log
 
 
 @pytest.fixture
 def mock_qmessagebox():
     """Mock QMessageBox for testing GUI operations."""
-    with patch('split.QMessageBox') as mock_msg:
+    with patch("split.QMessageBox") as mock_msg:
         mock_msg.critical = Mock()
         mock_msg.warning = Mock()
         mock_msg.information = Mock()
@@ -153,7 +162,7 @@ def mock_qmessagebox():
 @pytest.fixture
 def mock_qfiledialog():
     """Mock QFileDialog for testing file dialog operations."""
-    with patch('split.QFileDialog') as mock_dialog:
+    with patch("split.QFileDialog") as mock_dialog:
         mock_dialog.getOpenFileName = Mock()
         mock_dialog.getExistingDirectory = Mock()
         yield mock_dialog
@@ -172,7 +181,7 @@ def qapp():
 @pytest.fixture
 def mock_ui_file():
     """Mock the UI file loading for SplitUI tests."""
-    with patch('split.uic.loadUi') as mock_loadui:
+    with patch("split.uic.loadUi") as mock_loadui:
         mock_loadui.return_value = None
         yield mock_loadui
 
@@ -181,9 +190,7 @@ def mock_ui_file():
 def mock_splitui_components():
     """Mock all UI components for SplitUI testing."""
     with patch.multiple(
-        'split',
-        QtWidgets=MagicMock(),
-        uic=MagicMock()
+        "split", QtWidgets=MagicMock(), uic=MagicMock()
     ) as mocks:
         # Create mock UI components
         mock_ui = MagicMock()
@@ -199,17 +206,17 @@ def mock_splitui_components():
         mock_ui.progressBar = MagicMock()
         mock_ui.statusBar = MagicMock()
         mock_ui.actionExit = MagicMock()
-        
-        mocks['uic'].loadUi.return_value = mock_ui
+
+        mocks["uic"].loadUi.return_value = mock_ui
         yield mock_ui
 
 
 class MockPdf:
     """Mock PDF class for testing without real PDF operations."""
-    
+
     def __init__(self, num_pages=5):
         self.pages = [MockPage(i) for i in range(num_pages)]
-    
+
     @classmethod
     def open(cls, filename):
         """Mock the pikepdf.Pdf.open method."""
@@ -217,7 +224,7 @@ class MockPdf:
             raise FileNotFoundError(f"No such file: {filename}")
         if "corrupted" in filename:
             raise pikepdf.PdfError("Invalid PDF")
-        
+
         # Return different page counts based on filename
         if "1_page" in filename:
             return cls(1)
@@ -227,12 +234,12 @@ class MockPdf:
             return cls(10)
         else:
             return cls(5)  # Default
-    
+
     @classmethod
     def new(cls):
         """Mock the pikepdf.Pdf.new method."""
         return cls(0)
-    
+
     def save(self, filename):
         """Mock save method."""
         # Create an empty file to simulate saving
@@ -241,7 +248,7 @@ class MockPdf:
 
 class MockPage:
     """Mock PDF page class."""
-    
+
     def __init__(self, page_num):
         self.page_num = page_num
 
@@ -249,7 +256,7 @@ class MockPage:
 @pytest.fixture
 def mock_pikepdf():
     """Mock pikepdf operations."""
-    with patch('split.pikepdf') as mock_pdf:
+    with patch("split.pikepdf") as mock_pdf:
         mock_pdf.Pdf = MockPdf
         mock_pdf.PdfError = pikepdf.PdfError
         yield mock_pdf
@@ -271,12 +278,8 @@ def pytest_configure(config):
     config.addinivalue_line(
         "markers", "integration: Integration tests for component interaction"
     )
-    config.addinivalue_line(
-        "markers", "gui: Tests requiring GUI components"
-    )
-    config.addinivalue_line(
-        "markers", "pdf: Tests working with PDF files"
-    )
+    config.addinivalue_line("markers", "gui: Tests requiring GUI components")
+    config.addinivalue_line("markers", "pdf: Tests working with PDF files")
 
 
 def pytest_runtest_setup(item):
@@ -293,10 +296,14 @@ def pytest_runtest_teardown(item, nextitem):
 
 def pytest_sessionstart(session):
     """Called after the Session object has been created."""
-    print(f"\n=== Test Session Started at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ===")
+    print(
+        f"\n=== Test Session Started at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ==="
+    )
 
 
 def pytest_sessionfinish(session, exitstatus):
     """Called after whole test run finished."""
-    print(f"\n=== Test Session Finished at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ===")
+    print(
+        f"\n=== Test Session Finished at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ==="
+    )
     print(f"Exit status: {exitstatus}")

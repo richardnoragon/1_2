@@ -14,18 +14,31 @@ from unittest.mock import Mock
 import pytest
 
 from src.tools.file_management.advanced_folders_legacy.error_handling.error_handler import (
-    ErrorHandler, GracefulDegradation)
+    ErrorHandler,
+    GracefulDegradation,
+)
+
 # Import our new Phase 1 Week 2 components
 from src.tools.file_management.advanced_folders_legacy.models.folder_configuration import (
-    DirectoryTarget, FolderConfiguration, PerformanceSettings,
-    SecuritySettings)
+    DirectoryTarget,
+    FolderConfiguration,
+    PerformanceSettings,
+    SecuritySettings,
+)
 from src.tools.file_management.advanced_folders_legacy.models.search_parameters import (
-    ContentSearchOptions, DateFilter, FileTypeFilter, SearchParameters,
-    SizeFilter)
+    ContentSearchOptions,
+    DateFilter,
+    FileTypeFilter,
+    SearchParameters,
+    SizeFilter,
+)
 from src.tools.file_management.advanced_folders_legacy.repository.folder_repository import (
-    DatabaseConnectionManager, FolderRepository)
-from src.tools.file_management.advanced_folders_legacy.validation.validator_framework import \
-    ValidationFramework
+    DatabaseConnectionManager,
+    FolderRepository,
+)
+from src.tools.file_management.advanced_folders_legacy.validation.validator_framework import (
+    ValidationFramework,
+)
 
 
 @pytest.fixture
@@ -33,6 +46,7 @@ def temp_dir() -> Generator[Path, None, None]:
     """Create temporary directory for testing."""
     import shutil
     import tempfile
+
     temp_path = Path(tempfile.mkdtemp())
     try:
         yield temp_path
@@ -43,7 +57,7 @@ def temp_dir() -> Generator[Path, None, None]:
 @pytest.fixture
 def temp_db() -> Generator[Path, None, None]:
     """Create temporary SQLite database for testing."""
-    temp_db_path = Path(tempfile.mktemp(suffix='.db'))
+    temp_db_path = Path(tempfile.mktemp(suffix=".db"))
     try:
         yield temp_db_path
     finally:
@@ -87,7 +101,7 @@ def sample_directory_target(temp_dir):
     return DirectoryTarget(
         path=temp_dir / "test_folder",
         name="Test Folder",
-        description="A test folder configuration"
+        description="A test folder configuration",
     )
 
 
@@ -99,7 +113,7 @@ def sample_performance_settings():
         timeout_seconds=30,
         max_results=1000,
         enable_caching=True,
-        cache_duration_minutes=60
+        cache_duration_minutes=60,
     )
 
 
@@ -110,7 +124,7 @@ def sample_security_settings():
         restrict_access=True,
         allowed_extensions={".txt", ".pdf", ".docx"},
         blocked_paths={"/system", "/windows"},
-        require_confirmation=True
+        require_confirmation=True,
     )
 
 
@@ -118,7 +132,7 @@ def sample_security_settings():
 def sample_folder_configuration(
     sample_directory_target,
     sample_performance_settings,
-    sample_security_settings
+    sample_security_settings,
 ):
     """Create sample FolderConfiguration for testing."""
     return FolderConfiguration(
@@ -127,7 +141,7 @@ def sample_folder_configuration(
         enabled=True,
         description="Test folder configuration",
         performance_settings=sample_performance_settings,
-        security_settings=sample_security_settings
+        security_settings=sample_security_settings,
     )
 
 
@@ -138,7 +152,7 @@ def sample_file_type_filter():
         include_extensions={".txt", ".pdf"},
         exclude_extensions={".tmp", ".log"},
         include_mime_types={"text/plain", "application/pdf"},
-        exclude_mime_types={"application/x-executable"}
+        exclude_mime_types={"application/x-executable"},
     )
 
 
@@ -146,8 +160,7 @@ def sample_file_type_filter():
 def sample_size_filter():
     """Create sample SizeFilter for testing."""
     return SizeFilter(
-        min_size_bytes=1024,  # 1KB
-        max_size_bytes=1048576  # 1MB
+        min_size_bytes=1024, max_size_bytes=1048576  # 1KB  # 1MB
     )
 
 
@@ -159,7 +172,7 @@ def sample_date_filter():
         created_after=base_date,
         created_before=datetime(2024, 12, 31, tzinfo=timezone.utc),
         modified_after=base_date,
-        modified_before=datetime(2024, 12, 31, tzinfo=timezone.utc)
+        modified_before=datetime(2024, 12, 31, tzinfo=timezone.utc),
     )
 
 
@@ -171,7 +184,7 @@ def sample_content_search_options():
         search_metadata=True,
         case_sensitive=False,
         use_regex=False,
-        encoding="utf-8"
+        encoding="utf-8",
     )
 
 
@@ -180,7 +193,7 @@ def sample_search_parameters(
     sample_file_type_filter,
     sample_size_filter,
     sample_date_filter,
-    sample_content_search_options
+    sample_content_search_options,
 ):
     """Create sample SearchParameters for testing."""
     return SearchParameters(
@@ -190,7 +203,7 @@ def sample_search_parameters(
         date_filter=sample_date_filter,
         content_search_options=sample_content_search_options,
         max_results=100,
-        timeout_seconds=30
+        timeout_seconds=30,
     )
 
 

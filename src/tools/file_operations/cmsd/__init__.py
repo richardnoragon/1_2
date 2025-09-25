@@ -8,4 +8,4 @@ the enhanced utilities logic.
 
 from .gui import CopyMoveSyncDeleteWindow
 
-__all__ = ['CopyMoveSyncDeleteWindow']
+__all__ = ["CopyMoveSyncDeleteWindow"]

@@ -8,4 +8,4 @@ the enhanced utilities logic.
 
 from .gui import FileSplitJoinGUI
 
-__all__ = ['FileSplitJoinGUI']
+__all__ = ["FileSplitJoinGUI"]

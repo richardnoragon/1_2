@@ -20,7 +20,7 @@ src_path = Path(__file__).parent.parent.parent.parent.parent / "src"
 sys.path.insert(0, str(src_path))
 
 # Test configuration
-pytest_plugins = ['pytestqt']
+pytest_plugins = ["pytestqt"]
 
 # Test markers
 
@@ -42,9 +42,7 @@ def pytest_configure(config):
     config.addinivalue_line(
         "markers", "accessibility: Accessibility compliance tests"
     )
-    config.addinivalue_line(
-        "markers", "slow: Slow running tests (>1 second)"
-    )
+    config.addinivalue_line("markers", "slow: Slow running tests (>1 second)")
 
 
 def pytest_collection_modifyitems(config, items):
@@ -55,9 +53,10 @@ def pytest_collection_modifyitems(config, items):
             item.add_marker(pytest.mark.gui)
 
         # Add unit marker to most tests by default
-        if not any(marker.name in ["integration", "performance",
-                                   "accessibility"]
-                   for marker in item.iter_markers()):
+        if not any(
+            marker.name in ["integration", "performance", "accessibility"]
+            for marker in item.iter_markers()
+        ):
             item.add_marker(pytest.mark.unit)
 
 

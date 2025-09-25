@@ -15,17 +15,17 @@ if __name__ == "__main__":
     try:
         # Import the main function from the workspace root main.py
         sys.path.insert(0, str(workspace_root))
-        
+
         # Read and execute the main.py from workspace root
         main_py_path = workspace_root / "main.py"
         if main_py_path.exists():
-            with open(main_py_path, 'r', encoding='utf-8') as f:
+            with open(main_py_path, "r", encoding="utf-8") as f:
                 main_code = f.read()
-            
+
             # Change working directory to workspace root
             original_cwd = os.getcwd()
             os.chdir(workspace_root)
-            
+
             try:
                 # Execute the main.py code
                 exec(main_code)
@@ -36,7 +36,7 @@ if __name__ == "__main__":
             print("Error: main.py not found in workspace root")
             print(f"Looking for: {main_py_path}")
             sys.exit(1)
-            
+
     except Exception as e:
         print(f"Error launching application: {e}")
         print("\nAlternative: Run from workspace root:")

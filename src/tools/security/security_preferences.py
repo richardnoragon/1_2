@@ -10,9 +10,15 @@ the suite and can be expanded later.
 import sys
 
 try:
-    from PyQt5.QtWidgets import (QApplication, QLabel, QMainWindow,
-                                 QMessageBox, QPushButton, QVBoxLayout,
-                                 QWidget)
+    from PyQt5.QtWidgets import (
+        QApplication,
+        QLabel,
+        QMainWindow,
+        QMessageBox,
+        QPushButton,
+        QVBoxLayout,
+        QWidget,
+    )
 except ImportError:  # pragma: no cover - runtime guard
     print("PyQt5 not available. Please install PyQt5.")
     sys.exit(1)
@@ -30,9 +36,7 @@ class SecurityPreferencesGUI(QMainWindow):
 
     def __init__(self):
         super().__init__()
-        self.setWindowTitle(
-            "Security Preferences - Richard's File Utilities"
-        )
+        self.setWindowTitle("Security Preferences - Richard's File Utilities")
         self.setGeometry(120, 120, 800, 600)
         central = QWidget()
         self.setCentralWidget(central)

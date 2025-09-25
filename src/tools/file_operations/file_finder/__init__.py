@@ -6,4 +6,4 @@ including content, metadata, creation/modification dates, and file types.
 
 from .file_finder import FileFinderWindow
 
-__all__ = ['FileFinderWindow']
+__all__ = ["FileFinderWindow"]

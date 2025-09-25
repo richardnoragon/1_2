@@ -6,8 +6,8 @@ from .corruption_detector import CorruptionDetector
 from .repair_advisor import RepairAdvisor
 
 __all__ = [
-    'IntegrityMonitor',
-    'ScannerEngine', 
-    'CorruptionDetector',
-    'RepairAdvisor'
+    "IntegrityMonitor",
+    "ScannerEngine",
+    "CorruptionDetector",
+    "RepairAdvisor",
 ]

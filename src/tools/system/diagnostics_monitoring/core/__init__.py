@@ -9,11 +9,11 @@ from .data_storage import DataStorage
 from .system_utils import SystemUtils
 
 __all__ = [
-    'MonitorBase',
-    'PlatformDetector',
-    'DataCollector',
-    'AlertManager',
-    'ThresholdManager',
-    'DataStorage',
-    'SystemUtils'
+    "MonitorBase",
+    "PlatformDetector",
+    "DataCollector",
+    "AlertManager",
+    "ThresholdManager",
+    "DataStorage",
+    "SystemUtils",
 ]

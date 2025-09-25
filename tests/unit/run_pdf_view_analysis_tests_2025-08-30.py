@@ -23,11 +23,13 @@ def setup_logging():
     """Set up logging for test execution."""
     logging.basicConfig(
         level=logging.INFO,
-        format='%(asctime)s - %(levelname)s - %(message)s',
+        format="%(asctime)s - %(levelname)s - %(message)s",
         handlers=[
-            logging.FileHandler('result_pdf_view_analysis_execution_log_2025-08-30.txt'),
-            logging.StreamHandler(sys.stdout)
-        ]
+            logging.FileHandler(
+                "result_pdf_view_analysis_execution_log_2025-08-30.txt"
+            ),
+            logging.StreamHandler(sys.stdout),
+        ],
     )
     return logging.getLogger(__name__)
 
@@ -35,102 +37,105 @@ def setup_logging():
 def check_dependencies():
     """Check if required dependencies are available."""
     logger = logging.getLogger(__name__)
-    
+
     required_packages = [
-        'pytest',
-        'pytest-html',
-        'pytest-cov',
-        'pytest-json-report'
+        "pytest",
+        "pytest-html",
+        "pytest-cov",
+        "pytest-json-report",
     ]
-    
+
     missing_packages = []
-    
+
     for package in required_packages:
         try:
-            __import__(package.replace('-', '_'))
+            __import__(package.replace("-", "_"))
         except ImportError:
             missing_packages.append(package)
-    
+
     if missing_packages:
         logger.error(f"Missing required packages: {missing_packages}")
         logger.info("Installing missing packages...")
-        
+
         for package in missing_packages:
             try:
-                subprocess.check_call([sys.executable, '-m', 'pip', 'install', package])
+                subprocess.check_call(
+                    [sys.executable, "-m", "pip", "install", package]
+                )
                 logger.info(f"Successfully installed {package}")
             except subprocess.CalledProcessError:
                 logger.error(f"Failed to install {package}")
                 return False
-    
+
     return True
 
 
 def run_tests():
     """Execute the PDF View Analysis tests."""
     logger = logging.getLogger(__name__)
-    
+
     # Test configuration
     test_file = "test_pdf_view_analysis_2025-08-30.py"
     config_file = "pytest_pdf_view_analysis_2025-08-30.ini"
-    
+
     # Output files
     html_report = "result_pdf_view_analysis_2025-08-30_report.html"
     json_report = "result_pdf_view_analysis_2025-08-30.json"
     junit_report = "result_pdf_view_analysis_2025-08-30_junit.xml"
     coverage_html = "result_pdf_view_analysis_coverage_2025-08-30/"
     coverage_json = "result_pdf_view_analysis_coverage_2025-08-30.json"
-    
+
     # Build pytest command
     cmd = [
-        sys.executable, '-m', 'pytest',
+        sys.executable,
+        "-m",
+        "pytest",
         test_file,
-        f'-c={config_file}',
-        '-v',
-        '--tb=short',
-        f'--html={html_report}',
-        '--self-contained-html',
-        f'--json-report={json_report}',
-        f'--junit-xml={junit_report}',
-        '--cov=view',
-        f'--cov-report=html:{coverage_html}',
-        f'--cov-report=json:{coverage_json}',
-        '--cov-report=term-missing',
-        '--cov-fail-under=60',  # Lower threshold for comprehensive testing
-        '-ra'
+        f"-c={config_file}",
+        "-v",
+        "--tb=short",
+        f"--html={html_report}",
+        "--self-contained-html",
+        f"--json-report={json_report}",
+        f"--junit-xml={junit_report}",
+        "--cov=view",
+        f"--cov-report=html:{coverage_html}",
+        f"--cov-report=json:{coverage_json}",
+        "--cov-report=term-missing",
+        "--cov-fail-under=60",  # Lower threshold for comprehensive testing
+        "-ra",
     ]
-    
+
     logger.info(f"Starting test execution at {datetime.now()}")
     logger.info(f"Command: {' '.join(cmd)}")
-    
+
     start_time = time.time()
-    
+
     try:
         # Run the tests
         result = subprocess.run(
-            cmd,
-            capture_output=True,
-            text=True,
-            cwd=os.getcwd()
+            cmd, capture_output=True, text=True, cwd=os.getcwd()
         )
-        
+
         end_time = time.time()
         execution_time = end_time - start_time
-        
-        logger.info(f"Test execution completed in {execution_time:.2f} seconds")
+
+        logger.info(
+            f"Test execution completed in {execution_time:.2f} seconds"
+        )
         logger.info(f"Return code: {result.returncode}")
-        
+
         # Log stdout and stderr
         if result.stdout:
             logger.info("STDOUT:")
             logger.info(result.stdout)
-        
+
         if result.stderr:
             logger.warning("STDERR:")
             logger.warning(result.stderr)
-        
+
         return result.returncode == 0, execution_time, result
-        
+
     except Exception as e:
         logger.error(f"Test execution failed: {str(e)}")
         return False, 0, None
@@ -139,9 +144,9 @@ def run_tests():
 def generate_summary_report(success, execution_time, test_result):
     """Generate a comprehensive summary report."""
     logger = logging.getLogger(__name__)
-    
-    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    
+
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
     summary = {
         "test_execution_summary": {
             "timestamp": timestamp,
@@ -155,63 +160,81 @@ def generate_summary_report(success, execution_time, test_result):
                 "result_pdf_view_analysis_2025-08-30.json",
                 "result_pdf_view_analysis_2025-08-30_junit.xml",
                 "result_pdf_view_analysis_coverage_2025-08-30/",
-                "result_pdf_view_analysis_coverage_2025-08-30.json"
-            ]
+                "result_pdf_view_analysis_coverage_2025-08-30.json",
+            ],
         }
     }
-    
+
     if test_result:
-        summary["test_execution_summary"]["return_code"] = test_result.returncode
-        summary["test_execution_summary"]["stdout_length"] = len(test_result.stdout) if test_result.stdout else 0
-        summary["test_execution_summary"]["stderr_length"] = len(test_result.stderr) if test_result.stderr else 0
-    
+        summary["test_execution_summary"][
+            "return_code"
+        ] = test_result.returncode
+        summary["test_execution_summary"]["stdout_length"] = (
+            len(test_result.stdout) if test_result.stdout else 0
+        )
+        summary["test_execution_summary"]["stderr_length"] = (
+            len(test_result.stderr) if test_result.stderr else 0
+        )
+
     # Try to load test results from JSON report
     try:
         json_report_path = "result_pdf_view_analysis_2025-08-30.json"
         if os.path.exists(json_report_path):
-            with open(json_report_path, 'r') as f:
+            with open(json_report_path, "r") as f:
                 test_data = json.load(f)
                 summary["test_results"] = {
-                    "total_tests": test_data.get("summary", {}).get("total", 0),
+                    "total_tests": test_data.get("summary", {}).get(
+                        "total", 0
+                    ),
                     "passed": test_data.get("summary", {}).get("passed", 0),
                     "failed": test_data.get("summary", {}).get("failed", 0),
                     "skipped": test_data.get("summary", {}).get("skipped", 0),
-                    "errors": test_data.get("summary", {}).get("error", 0)
+                    "errors": test_data.get("summary", {}).get("error", 0),
                 }
     except Exception as e:
         logger.warning(f"Could not load test results: {str(e)}")
-    
+
     # Try to load coverage data
     try:
-        coverage_json_path = "result_pdf_view_analysis_coverage_2025-08-30.json"
+        coverage_json_path = (
+            "result_pdf_view_analysis_coverage_2025-08-30.json"
+        )
         if os.path.exists(coverage_json_path):
-            with open(coverage_json_path, 'r') as f:
+            with open(coverage_json_path, "r") as f:
                 coverage_data = json.load(f)
                 summary["coverage"] = {
-                    "total_coverage": coverage_data.get("totals", {}).get("percent_covered", 0),
-                    "lines_covered": coverage_data.get("totals", {}).get("covered_lines", 0),
-                    "lines_missing": coverage_data.get("totals", {}).get("missing_lines", 0),
-                    "total_statements": coverage_data.get("totals", {}).get("num_statements", 0)
+                    "total_coverage": coverage_data.get("totals", {}).get(
+                        "percent_covered", 0
+                    ),
+                    "lines_covered": coverage_data.get("totals", {}).get(
+                        "covered_lines", 0
+                    ),
+                    "lines_missing": coverage_data.get("totals", {}).get(
+                        "missing_lines", 0
+                    ),
+                    "total_statements": coverage_data.get("totals", {}).get(
+                        "num_statements", 0
+                    ),
                 }
     except Exception as e:
         logger.warning(f"Could not load coverage data: {str(e)}")
-    
+
     # Save summary report
     summary_file = "result_pdf_view_analysis_summary_2025-08-30.json"
-    with open(summary_file, 'w') as f:
+    with open(summary_file, "w") as f:
         json.dump(summary, f, indent=2)
-    
+
     logger.info(f"Summary report saved to {summary_file}")
-    
+
     return summary
 
 
 def generate_documentation():
     """Generate comprehensive test documentation."""
     logger = logging.getLogger(__name__)
-    
-    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    
+
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
     documentation = f"""# PDF View Analysis Testing Documentation
 
 **Generated:** {timestamp}  
@@ -350,33 +373,33 @@ Test results are captured in multiple formats:
 """
 
     doc_file = "result_pdf_view_analysis_testing_documentation_2025-08-30.md"
-    with open(doc_file, 'w', encoding='utf-8') as f:
+    with open(doc_file, "w", encoding="utf-8") as f:
         f.write(documentation)
-    
+
     logger.info(f"Test documentation saved to {doc_file}")
 
 
 def main():
     """Main test runner function."""
     logger = setup_logging()
-    
+
     logger.info("=" * 80)
     logger.info("PDF VIEW ANALYSIS MODULE - COMPREHENSIVE TESTING")
     logger.info("=" * 80)
     logger.info(f"Test execution started at {datetime.now()}")
-    
+
     # Check dependencies
     if not check_dependencies():
         logger.error("Dependency check failed. Exiting.")
         return 1
-    
+
     # Run tests
     success, execution_time, test_result = run_tests()
-    
+
     # Generate reports
     summary = generate_summary_report(success, execution_time, test_result)
     generate_documentation()
-    
+
     # Final status
     logger.info("=" * 80)
     if success:
@@ -388,11 +411,11 @@ def main():
     else:
         logger.error("❌ TESTS FAILED OR ENCOUNTERED ERRORS")
         logger.error("Check the execution log for details")
-    
+
     logger.info("=" * 80)
-    
+
     return 0 if success else 1
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())

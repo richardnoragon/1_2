@@ -14,9 +14,9 @@ __version__ = "1.0.0"
 __author__ = "RFU Development Team"
 
 __all__ = [
-    'AdvancedFoldersMainWidget',
-    'FolderTreeView',
-    'SearchResultsTable',
-    'AdvancedFoldersToolbar',
-    'AdvancedFoldersMenuManager',
+    "AdvancedFoldersMainWidget",
+    "FolderTreeView",
+    "SearchResultsTable",
+    "AdvancedFoldersToolbar",
+    "AdvancedFoldersMenuManager",
 ]

@@ -7,16 +7,17 @@ from ....core.platform_detector import get_platform_detector
 
 def get_platform_disk_monitor():
     """Get the platform-specific disk monitor implementation.
-    
+
     Returns:
         Platform-specific disk monitor class or None if not available
     """
-    logger = logging.getLogger('RFU.DiagnosticsMonitoring.PlatformImpl')
+    logger = logging.getLogger("RFU.DiagnosticsMonitoring.PlatformImpl")
     platform_detector = get_platform_detector()
-    
+
     try:
         if platform_detector.is_windows():
             from .windows_disk import WindowsDiskMonitor
+
             return WindowsDiskMonitor
         elif platform_detector.is_macos():
             # TODO: Implement macOS-specific monitor
@@ -31,7 +32,7 @@ def get_platform_disk_monitor():
                 "Unsupported platform for platform-specific monitoring"
             )
             return None
-            
+
     except ImportError as e:
         logger.warning(f"Platform-specific disk monitor not available: {e}")
         return None
@@ -40,4 +41,4 @@ def get_platform_disk_monitor():
         return None
 
 
-__all__ = ['get_platform_disk_monitor']
+__all__ = ["get_platform_disk_monitor"]

@@ -35,13 +35,13 @@ try:
     core_dir = Path(__file__).parent / "core"
     constants_file = core_dir / "constants.py"
     error_handler_file = core_dir / "error_handler.py"
-    
+
     if not constants_file.exists() or not error_handler_file.exists():
         print("🏗️ Creating missing src/core structure...")
-        
+
         # Create directory
         core_dir.mkdir(parents=True, exist_ok=True)
-        
+
         # Create __init__.py
         init_file = core_dir / "__init__.py"
         init_content = '''"""
@@ -62,8 +62,8 @@ __all__ = [
 ]
 '''
         if not init_file.exists():
-            init_file.write_text(init_content, encoding='utf-8')
-        
+            init_file.write_text(init_content, encoding="utf-8")
+
         # Create constants.py
         constants_content = '''"""
 Constants for Richard's File Utilities Main Application.
@@ -87,8 +87,8 @@ APP_VERSION = "3.0.0"
 APP_ORGANIZATION = "Richard's File Utilities"
 '''
         if not constants_file.exists():
-            constants_file.write_text(constants_content, encoding='utf-8')
-        
+            constants_file.write_text(constants_content, encoding="utf-8")
+
         # Create error_handler.py with QObject-based implementation
         error_handler_content = '''"""
 Error handling utilities for Richard's File Utilities.
@@ -227,8 +227,10 @@ error_handler = ErrorHandler()
 sys.excepthook = error_handler.handle_exception
 '''
         if not error_handler_file.exists():
-            error_handler_file.write_text(error_handler_content, encoding='utf-8')
-        
+            error_handler_file.write_text(
+                error_handler_content, encoding="utf-8"
+            )
+
         print(f"✅ Created {core_dir}")
         print(f"✅ Created {init_file}")
         print(f"✅ Created {constants_file}")
@@ -267,9 +269,9 @@ __all__ = ["utilities", "rfu", "legacy"]
 def get_package_info():
     """Return information about available packages."""
     return {
-        'utilities': utilities is not None,
-        'rfu': rfu is not None,
-        'legacy': legacy is not None,
-        'version': __version__,
-        'description': __description__
+        "utilities": utilities is not None,
+        "rfu": rfu is not None,
+        "legacy": legacy is not None,
+        "version": __version__,
+        "description": __description__,
     }

@@ -8,4 +8,4 @@ compatibility with the existing tools interface.
 
 from .gui import ImageMetadataEditorGUI
 
-__all__ = ['ImageMetadataEditorGUI']
+__all__ = ["ImageMetadataEditorGUI"]

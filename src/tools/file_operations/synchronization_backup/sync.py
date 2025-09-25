@@ -21,32 +21,39 @@ try:
 
     # For dialog functions, try both import paths
     try:
-        from gui.common.dialogs import (get_existing_directory,
-                                        show_error_dialog)
+        from gui.common.dialogs import (
+            get_existing_directory,
+            show_error_dialog,
+        )
     except ImportError:
         # Fallback functions if imports fail
         def show_error_dialog(parent, title, message):
             QMessageBox.critical(parent, title, message)
-        
+
         def get_existing_directory(parent, caption):
             from PyQt5.QtWidgets import QFileDialog
+
             return QFileDialog.getExistingDirectory(parent, caption)
+
 except ImportError:
     # Fallback to QMainWindow if StandardWindow not available
     from PyQt5.QtWidgets import QMainWindow
+
     StandardWindow = QMainWindow
-    
+
     # Fallback functions for dialogs
     def show_error_dialog(parent, title, message):
         QMessageBox.critical(parent, title, message)
-    
+
     def get_existing_directory(parent, caption):
         from PyQt5.QtWidgets import QFileDialog
+
         return QFileDialog.getExistingDirectory(parent, caption)
 
 
 class SyncWorker(QThread):
     """A class that handles sync worker and inherits from QThread."""
+
     progress = pyqtSignal(int)
     status = pyqtSignal(str)
     finished = pyqtSignal()
@@ -59,10 +66,10 @@ class SyncWorker(QThread):
         target_files: Dict[str, Any],
         source_dir: str,
         target_dir: str,
-        options: Dict[str, Any]
+        options: Dict[str, Any],
     ) -> None:
         """Initialize the SyncWorker.
-        
+
         Args:
             source_files: Source files dictionary
             target_files: Target files dictionary
@@ -80,11 +87,11 @@ class SyncWorker(QThread):
 
     def backup_file(self, file_path: str) -> None:
         """Create a backup of the specified file.
-        
+
         Args:
             file_path: Path to the file to backup
         """
-        if not self.options.get('backup', False):
+        if not self.options.get("backup", False):
             return
         backup_path: str = f"{file_path}.bak"
         if os.path.exists(file_path):
@@ -96,50 +103,50 @@ class SyncWorker(QThread):
         self, src_path: str, tgt_path: str
     ) -> Tuple[bool, str]:
         """Determine if a file should be copied based on sync rules.
-        
+
         Args:
             src_path: Source file path
             tgt_path: Target file path
-            
+
         Returns:
             Tuple of (should_copy, reason)
         """
         if not os.path.exists(tgt_path):
             return True, "new"
-            
+
         src_time: float = os.path.getmtime(src_path)
         tgt_time: float = os.path.getmtime(tgt_path)
-        
+
         if src_time == tgt_time:
             return False, "identical"
-            
+
         conflict_resolution: str = self.options.get(
-            'conflict_resolution', 'newest'
+            "conflict_resolution", "newest"
         )
-        
-        if conflict_resolution == 'newest':
+
+        if conflict_resolution == "newest":
             is_newer: bool = src_time > tgt_time
             return is_newer, "newer" if is_newer else "older"
-        elif conflict_resolution == 'source':
+        elif conflict_resolution == "source":
             return True, "source wins"
-        elif conflict_resolution == 'target':
+        elif conflict_resolution == "target":
             return False, "target wins"
-        
+
         return False, "skipped"
 
     def run(self) -> None:
         """Execute the synchronization process."""
         try:
-            sync_mode: str = self.options.get('sync_mode', 'mirror')
-            
-            if sync_mode == 'mirror':
+            sync_mode: str = self.options.get("sync_mode", "mirror")
+
+            if sync_mode == "mirror":
                 self.mirror_sync()
-            elif sync_mode == 'update':
+            elif sync_mode == "update":
                 self.update_sync()
             else:  # two-way sync
                 self.two_way_sync()
 
-            if not self.options.get('dry_run', False):
+            if not self.options.get("dry_run", False):
                 self.status.emit("Synchronization complete!")
             else:
                 self.status.emit("Dry run complete - no files were modified")
@@ -149,147 +156,157 @@ class SyncWorker(QThread):
 
     def mirror_sync(self) -> None:
         """Perform mirror synchronization.
-        
+
         Target becomes identical to source.
         """
         total_files: int = len(self.source_files)
-        
+
         for idx, file in enumerate(self.source_files):
             if not self.running:
                 return
-            
+
             self._process_source_file_for_mirror(file)
             self.progress.emit(int((idx + 1) * 100 / total_files))
-        
+
         self._remove_extra_target_files()
-    
+
     def _process_source_file_for_mirror(self, file: str) -> None:
         """Process a single source file for mirror sync."""
         source_path: str = os.path.join(self.source_dir, file)
         target_path: str = os.path.join(self.target_dir, file)
-        
+
         should_copy, _ = self.should_copy_file(source_path, target_path)
-        
+
         if should_copy:
             self.preview.emit("COPY", source_path, target_path)
-            if not self.options.get('dry_run', False):
+            if not self.options.get("dry_run", False):
                 self.backup_file(target_path)
                 shutil.copy2(source_path, target_path)
                 self.status.emit(f"Copied: {file}")
-    
+
     def _remove_extra_target_files(self) -> None:
         """Remove files in target that don't exist in source."""
         for file in self.target_files:
             if file not in self.source_files:
                 target_path = os.path.join(self.target_dir, file)
                 self.preview.emit("DELETE", "", target_path)
-                if not self.options.get('dry_run', False):
+                if not self.options.get("dry_run", False):
                     os.remove(target_path)
                     self.status.emit(f"Deleted: {file}")
 
     def update_sync(self) -> None:
         """Perform update synchronization.
-        
+
         Only copy newer files to target.
         """
         total_files: int = len(self.source_files)
-        
+
         for idx, file in enumerate(self.source_files):
             if not self.running:
                 return
-            
+
             self._process_file_for_update(file)
             self.progress.emit(int((idx + 1) * 100 / total_files))
-    
+
     def _process_file_for_update(self, file: str) -> None:
         """Process a single file for update sync."""
         source_path: str = os.path.join(self.source_dir, file)
         target_path: str = os.path.join(self.target_dir, file)
-        
+
         should_copy, reason = self.should_copy_file(source_path, target_path)
-        skip_newer: bool = self.options.get('skip_newer', False)
-        
+        skip_newer: bool = self.options.get("skip_newer", False)
+
         if should_copy and (not skip_newer or reason == "new"):
             self.preview.emit("COPY", source_path, target_path)
-            if not self.options.get('dry_run', False):
+            if not self.options.get("dry_run", False):
                 self.backup_file(target_path)
                 shutil.copy2(source_path, target_path)
                 self.status.emit(f"Copied: {file}")
 
     def two_way_sync(self) -> None:
         """Perform two-way synchronization.
-        
+
         Both directories synchronized.
         """
         all_files: set[str] = set(self.source_files) | set(self.target_files)
         total_files: int = len(all_files)
-        
+
         for idx, file in enumerate(all_files):
             if not self.running:
                 return
-            
+
             self._process_file_for_two_way(file)
             self.progress.emit(int((idx + 1) * 100 / total_files))
-    
+
     def _process_file_for_two_way(self, file: str) -> None:
         """Process a single file for two-way sync."""
         source_path: str = os.path.join(self.source_dir, file)
         target_path: str = os.path.join(self.target_dir, file)
-        
+
         file_location = self._get_file_location(file)
-        
-        if file_location == 'source_only':
+
+        if file_location == "source_only":
             self._copy_to_target(file, source_path, target_path)
-        elif file_location == 'target_only':
+        elif file_location == "target_only":
             self._copy_to_source(file, target_path, source_path)
-        elif file_location == 'both':
+        elif file_location == "both":
             self._sync_existing_files(file, source_path, target_path)
-    
+
     def _get_file_location(self, file: str) -> str:
         """Determine where the file exists."""
         if file in self.source_files and file not in self.target_files:
-            return 'source_only'
+            return "source_only"
         elif file in self.target_files and file not in self.source_files:
-            return 'target_only'
+            return "target_only"
         else:
-            return 'both'
-    
-    def _copy_to_target(self, file: str, source_path: str, target_path: str) -> None:
+            return "both"
+
+    def _copy_to_target(
+        self, file: str, source_path: str, target_path: str
+    ) -> None:
         """Copy file from source to target."""
         self.preview.emit("COPY", source_path, target_path)
-        if not self.options.get('dry_run', False):
+        if not self.options.get("dry_run", False):
             shutil.copy2(source_path, target_path)
             self.status.emit(f"Copied to target: {file}")
-    
-    def _copy_to_source(self, file: str, target_path: str, source_path: str) -> None:
+
+    def _copy_to_source(
+        self, file: str, target_path: str, source_path: str
+    ) -> None:
         """Copy file from target to source."""
         self.preview.emit("COPY", target_path, source_path)
-        if not self.options.get('dry_run', False):
+        if not self.options.get("dry_run", False):
             shutil.copy2(target_path, source_path)
             self.status.emit(f"Copied to source: {file}")
-    
-    def _sync_existing_files(self, file: str, source_path: str, target_path: str) -> None:
+
+    def _sync_existing_files(
+        self, file: str, source_path: str, target_path: str
+    ) -> None:
         """Sync files that exist in both locations."""
         source_time: float = os.path.getmtime(source_path)
         target_time: float = os.path.getmtime(target_path)
-        
+
         if source_time > target_time:
             self._update_target_file(file, source_path, target_path)
         elif target_time > source_time:
             self._update_source_file(file, target_path, source_path)
-    
-    def _update_target_file(self, file: str, source_path: str, target_path: str) -> None:
+
+    def _update_target_file(
+        self, file: str, source_path: str, target_path: str
+    ) -> None:
         """Update target file with newer source."""
         self.preview.emit("COPY", source_path, target_path)
-        if not self.options.get('dry_run', False):
+        if not self.options.get("dry_run", False):
             self.backup_file(target_path)
             shutil.copy2(source_path, target_path)
             self.status.emit(f"Updated target: {file}")
-    
-    def _update_source_file(self, file: str, target_path: str, source_path: str) -> None:
+
+    def _update_source_file(
+        self, file: str, target_path: str, source_path: str
+    ) -> None:
         """Update source file with newer target."""
         self.preview.emit("COPY", target_path, source_path)
-        if not self.options.get('dry_run', False):
+        if not self.options.get("dry_run", False):
             self.backup_file(source_path)
             shutil.copy2(target_path, source_path)
             self.status.emit(f"Updated source: {file}")
@@ -301,21 +318,21 @@ class SyncWorker(QThread):
 
 class SyncWindow(StandardWindow):
     """Main window for file synchronization operations."""
-    
+
     def __init__(self) -> None:
         """Initialize the sync window."""
         try:
             super().__init__(
                 title="Synchronize - Richard's File Utilities",
-                window_type="utility"
+                window_type="utility",
             )
         except TypeError:
             super().__init__()
             self.setWindowTitle("Synchronize - Richard's File Utilities")
-        
-        ui_file: str = os.path.join(os.path.dirname(__file__), 'sync.ui')
+
+        ui_file: str = os.path.join(os.path.dirname(__file__), "sync.ui")
         uic.loadUi(ui_file, self)
-        
+
         self._setup_menu_callbacks()
 
         # Initialize models
@@ -331,10 +348,10 @@ class SyncWindow(StandardWindow):
 
         # Connect buttons
         self.select_left_pushButton.clicked.connect(
-            lambda: self.select_directory('left')
+            lambda: self.select_directory("left")
         )
         self.select_right_pushButton.clicked.connect(
-            lambda: self.select_directory('right')
+            lambda: self.select_directory("right")
         )
         self.compare_pushButton.clicked.connect(self.compare_directories)
         self.sync_pushButton.clicked.connect(self.sync_directories)
@@ -348,16 +365,16 @@ class SyncWindow(StandardWindow):
         self.sync_pushButton.setEnabled(False)
         self.compare_pushButton.setEnabled(False)
         self.progress_bar.setValue(0)
-        
+
         self.show()
 
     def _setup_menu_callbacks(self):
         """Setup tool-specific menu callbacks."""
-        if hasattr(self, 'menu_manager'):
+        if hasattr(self, "menu_manager"):
             # Register tool-specific callbacks
-            self.menu_manager.register_callback('new_sync', self.clear_sync)
-            self.menu_manager.register_callback('help_sync', self.show_help)
-            
+            self.menu_manager.register_callback("new_sync", self.clear_sync)
+            self.menu_manager.register_callback("help_sync", self.show_help)
+
     def clear_sync(self):
         """Clear all sync operations for a new task."""
         # Clear the directory selections and file lists
@@ -370,7 +387,7 @@ class SyncWindow(StandardWindow):
         self.sync_pushButton.setEnabled(False)
         self.compare_pushButton.setEnabled(False)
         self.progress_bar.setValue(0)
-        
+
     def show_help(self):
         """Show help dialog for Synchronize tool."""
         help_text = """
@@ -406,18 +423,18 @@ class SyncWindow(StandardWindow):
         <li><b>F5:</b> Clear sync operations</li>
         </ul>
         """
-        
+
         QMessageBox.information(self, "Synchronize Help", help_text)
 
     def select_directory(self, side: str) -> None:
         """Select a directory for synchronization.
-        
+
         Args:
             side: Either 'left' or 'right' to indicate which directory
         """
         directory: str = get_existing_directory(self, "Select Directory")
         if directory:
-            if side == 'left':
+            if side == "left":
                 self.left_dir = directory
                 self.left_directory_label.setText(directory)
                 self.update_file_list(self.left_model, directory)
@@ -434,7 +451,7 @@ class SyncWindow(StandardWindow):
         self, model: QStandardItemModel, directory: str
     ) -> None:
         """Update the file list for the specified model and directory.
-        
+
         Args:
             model: The QStandardItemModel to update
             directory: The directory path to list files from
@@ -450,26 +467,22 @@ class SyncWindow(StandardWindow):
                     model.appendRow(item)
         except OSError as e:
             msg: str = f"Could not read directory: {str(e)}"
-            show_error_dialog(
-                message=msg,
-                title="Error",
-                parent=self
-            )
+            show_error_dialog(message=msg, title="Error", parent=self)
 
     def get_file_info(self, file_path: str) -> str:
         """Get formatted file information for display.
-        
+
         Args:
             file_path: Path to the file
-            
+
         Returns:
             Formatted string with file size and modification time
         """
         try:
             stats: os.stat_result = os.stat(file_path)
-            modified: str = datetime.fromtimestamp(
-                stats.st_mtime
-            ).strftime('%Y-%m-%d %H:%M:%S')
+            modified: str = datetime.fromtimestamp(stats.st_mtime).strftime(
+                "%Y-%m-%d %H:%M:%S"
+            )
             size: str = self.format_size(stats.st_size)
             return f"Size: {size}\nModified: {modified}"
         except OSError:
@@ -477,14 +490,14 @@ class SyncWindow(StandardWindow):
 
     def format_size(self, size: int) -> str:
         """Format file size in human-readable format.
-        
+
         Args:
             size: File size in bytes
-            
+
         Returns:
             Formatted size string (e.g., "1.5 MB")
         """
-        for unit in ['B', 'KB', 'MB', 'GB']:
+        for unit in ["B", "KB", "MB", "GB"]:
             if size < 1024:
                 return f"{size:.1f} {unit}"
             size /= 1024
@@ -498,7 +511,7 @@ class SyncWindow(StandardWindow):
         try:
             left_files: set[str] = set(os.listdir(self.left_dir))
             right_files: set[str] = set(os.listdir(self.right_dir))
-            
+
             # Reset models
             self.left_model.clear()
             self.right_model.clear()
@@ -511,27 +524,31 @@ class SyncWindow(StandardWindow):
 
                 # Add to left list
                 self._add_list_item(
-                    file, left_path, right_path,
-                    file in left_files, file in right_files,
-                    self.left_model, is_left=True
+                    file,
+                    left_path,
+                    right_path,
+                    file in left_files,
+                    file in right_files,
+                    self.left_model,
+                    is_left=True,
                 )
 
                 # Add to right list
                 self._add_list_item(
-                    file, right_path, left_path,
-                    file in right_files, file in left_files,
-                    self.right_model, is_left=False
+                    file,
+                    right_path,
+                    left_path,
+                    file in right_files,
+                    file in left_files,
+                    self.right_model,
+                    is_left=False,
                 )
 
             self.sync_pushButton.setEnabled(True)
             self.status_label.setText("Comparison complete - Ready to sync")
         except OSError as e:
             msg: str = f"Error comparing directories: {str(e)}"
-            show_error_dialog(
-                message=msg,
-                title="Error",
-                parent=self
-            )
+            show_error_dialog(message=msg, title="Error", parent=self)
 
     def _add_list_item(
         self,
@@ -541,10 +558,10 @@ class SyncWindow(StandardWindow):
         in_first: bool,
         in_second: bool,
         model: QStandardItemModel,
-        is_left: bool
+        is_left: bool,
     ) -> None:
         """Add a file item to the specified model with appropriate styling.
-        
+
         Args:
             file: The filename
             path1: First file path for comparison
@@ -577,41 +594,41 @@ class SyncWindow(StandardWindow):
 
     def get_sync_options(self) -> Dict[str, Any]:
         """Get the current sync options from the UI.
-        
+
         Returns:
             Dictionary containing sync configuration options
         """
         # Get sync mode
-        if hasattr(self, 'mirror_radio') and self.mirror_radio.isChecked():
-            sync_mode: str = 'mirror'
-        elif hasattr(self, 'update_radio') and self.update_radio.isChecked():
-            sync_mode = 'update'
+        if hasattr(self, "mirror_radio") and self.mirror_radio.isChecked():
+            sync_mode: str = "mirror"
+        elif hasattr(self, "update_radio") and self.update_radio.isChecked():
+            sync_mode = "update"
         else:
-            sync_mode = 'two-way'
-            
+            sync_mode = "two-way"
+
         # Get conflict resolution
-        if hasattr(self, 'source_radio') and self.source_radio.isChecked():
-            conflict_resolution: str = 'source'
-        elif hasattr(self, 'target_radio') and self.target_radio.isChecked():
-            conflict_resolution = 'target'
+        if hasattr(self, "source_radio") and self.source_radio.isChecked():
+            conflict_resolution: str = "source"
+        elif hasattr(self, "target_radio") and self.target_radio.isChecked():
+            conflict_resolution = "target"
         else:
-            conflict_resolution = 'newest'
-            
+            conflict_resolution = "newest"
+
         return {
-            'sync_mode': sync_mode,
-            'conflict_resolution': conflict_resolution,
-            'backup': (
-                hasattr(self, 'backup_checkbox') and
-                self.backup_checkbox.isChecked()
+            "sync_mode": sync_mode,
+            "conflict_resolution": conflict_resolution,
+            "backup": (
+                hasattr(self, "backup_checkbox")
+                and self.backup_checkbox.isChecked()
             ),
-            'dry_run': (
-                hasattr(self, 'dry_run_checkbox') and
-                self.dry_run_checkbox.isChecked()
+            "dry_run": (
+                hasattr(self, "dry_run_checkbox")
+                and self.dry_run_checkbox.isChecked()
             ),
-            'skip_newer': (
-                hasattr(self, 'skip_newer_checkbox') and
-                self.skip_newer_checkbox.isChecked()
-            )
+            "skip_newer": (
+                hasattr(self, "skip_newer_checkbox")
+                and self.skip_newer_checkbox.isChecked()
+            ),
         }
 
     def sync_directories(self) -> None:
@@ -620,78 +637,88 @@ class SyncWindow(StandardWindow):
             return
 
         options: Dict[str, Any] = self.get_sync_options()
-        
+
         if not self._confirm_sync_operation(options):
             return
-        
+
         try:
             self._prepare_and_start_sync(options)
         except OSError as e:
             self._handle_sync_start_error(e)
-    
+
     def _confirm_sync_operation(self, options: Dict[str, Any]) -> bool:
         """Show confirmation dialog for sync operation."""
         message = self._build_confirmation_message(options)
-        
+
         reply: int = QMessageBox.question(
             self,
             "Confirm Sync",
             "\n".join(message),
             QMessageBox.Yes | QMessageBox.No,
-            QMessageBox.No
+            QMessageBox.No,
         )
-        
+
         return reply == QMessageBox.Yes
-    
-    def _build_confirmation_message(self, options: Dict[str, Any]) -> List[str]:
+
+    def _build_confirmation_message(
+        self, options: Dict[str, Any]
+    ) -> List[str]:
         """Build confirmation message based on sync options."""
         message: List[str] = ["Please confirm the following sync operation:\n"]
-        
+
         # Add sync mode description
-        if options['sync_mode'] == 'mirror':
-            message.append("- Mirror Mode: Target will be made identical to source")
-        elif options['sync_mode'] == 'update':
+        if options["sync_mode"] == "mirror":
+            message.append(
+                "- Mirror Mode: Target will be made identical to source"
+            )
+        elif options["sync_mode"] == "update":
             message.append("- Update Mode: Only copy newer files to target")
         else:
-            message.append("- Two-Way Sync: Both directories will be synchronized")
-            
-        message.append(f"- Conflict Resolution: {options['conflict_resolution'].title()}")
-        
+            message.append(
+                "- Two-Way Sync: Both directories will be synchronized"
+            )
+
+        message.append(
+            f"- Conflict Resolution: {options['conflict_resolution'].title()}"
+        )
+
         # Add optional features
-        if options['backup']:
+        if options["backup"]:
             message.append("- Backup files will be created before overwriting")
-        if options['dry_run']:
+        if options["dry_run"]:
             message.append("- DRY RUN: No files will be modified")
-        if options['skip_newer']:
+        if options["skip_newer"]:
             message.append("- Existing newer files will be skipped")
-            
+
         message.append("\nContinue with these settings?")
         return message
-    
+
     def _prepare_and_start_sync(self, options: Dict[str, Any]) -> None:
         """Prepare file lists and start sync worker."""
         left_files, right_files = self._get_file_lists()
-        
+
         self.sync_worker = SyncWorker(
             left_files, right_files, self.left_dir, self.right_dir, options
         )
-        
+
         self._connect_worker_signals()
         self._disable_ui_during_sync()
         self.sync_worker.start()
-    
+
     def _get_file_lists(self) -> Tuple[List[str], List[str]]:
         """Get file lists from both directories."""
         left_files: List[str] = [
-            f for f in os.listdir(self.left_dir)
+            f
+            for f in os.listdir(self.left_dir)
             if os.path.isfile(os.path.join(self.left_dir, f))
         ]
         right_files: List[str] = [
-            f for f in os.listdir(self.right_dir)
+            f
+            for f in os.listdir(self.right_dir)
             if os.path.isfile(os.path.join(self.right_dir, f))
         ]
         return left_files, right_files
-    
+
     def _connect_worker_signals(self) -> None:
         """Connect sync worker signals to UI handlers."""
         self.sync_worker.progress.connect(self.progress_bar.setValue)
@@ -699,19 +726,23 @@ class SyncWindow(StandardWindow):
         self.sync_worker.error.connect(self.handle_error)
         self.sync_worker.finished.connect(self.sync_finished)
         self.sync_worker.preview.connect(self.show_preview)
-    
+
     def _disable_ui_during_sync(self) -> None:
         """Disable UI elements during synchronization."""
         self.sync_pushButton.setEnabled(False)
         self.compare_pushButton.setEnabled(False)
         self.select_left_pushButton.setEnabled(False)
         self.select_right_pushButton.setEnabled(False)
-        
+
         # Disable option groups if they exist
-        for group_name in ['sync_mode_group', 'conflict_group', 'additional_options_group']:
+        for group_name in [
+            "sync_mode_group",
+            "conflict_group",
+            "additional_options_group",
+        ]:
             if hasattr(self, group_name):
                 getattr(self, group_name).setEnabled(False)
-    
+
     def _handle_sync_start_error(self, error: OSError) -> None:
         """Handle errors when starting sync operation."""
         msg: str = f"Error starting sync: {str(error)}"
@@ -719,7 +750,7 @@ class SyncWindow(StandardWindow):
 
     def show_preview(self, action: str, source: str, target: str) -> None:
         """Show a preview of the sync operation.
-        
+
         Args:
             action: The sync action (COPY or DELETE)
             source: Source file path
@@ -742,27 +773,25 @@ class SyncWindow(StandardWindow):
         self.compare_pushButton.setEnabled(True)
         self.select_left_pushButton.setEnabled(True)
         self.select_right_pushButton.setEnabled(True)
-        
+
         # Re-enable options
-        if hasattr(self, 'sync_mode_group'):
+        if hasattr(self, "sync_mode_group"):
             self.sync_mode_group.setEnabled(True)
-        if hasattr(self, 'conflict_group'):
+        if hasattr(self, "conflict_group"):
             self.conflict_group.setEnabled(True)
-        if hasattr(self, 'additional_options_group'):
+        if hasattr(self, "additional_options_group"):
             self.additional_options_group.setEnabled(True)
-        
+
         self.compare_directories()  # Refresh the comparison
 
     def handle_error(self, error_msg: str) -> None:
         """Handle synchronization errors.
-        
+
         Args:
             error_msg: The error message to display
         """
         show_error_dialog(
-            message=f"Sync error: {error_msg}",
-            title="Error",
-            parent=self
+            message=f"Sync error: {error_msg}", title="Error", parent=self
         )
         self.sync_finished()
 
@@ -770,7 +799,7 @@ class SyncWindow(StandardWindow):
 def main() -> None:
     """Main function to run the sync application."""
     app: QApplication = QApplication(sys.argv)
-    app.setStyle('Fusion')  # Modern style
+    app.setStyle("Fusion")  # Modern style
     window: SyncWindow = SyncWindow()
     window.show()  # Make sure window stays alive
     sys.exit(app.exec_())

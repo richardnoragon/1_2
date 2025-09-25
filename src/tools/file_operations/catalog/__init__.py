@@ -6,4 +6,4 @@ of files with optional metadata and duplicate detection capabilities.
 
 from .catalog import CatalogWindow
 
-__all__ = ['CatalogWindow']
+__all__ = ["CatalogWindow"]

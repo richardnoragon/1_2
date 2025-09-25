@@ -15,31 +15,40 @@ from unittest.mock import Mock, patch
 import pytest
 
 # Test data directory
-TEST_DATA_DIR = os.path.join(os.path.dirname(__file__), 'test_data')
+TEST_DATA_DIR = os.path.join(os.path.dirname(__file__), "test_data")
 
 
 @pytest.fixture(scope="session", autouse=True)
 def setup_test_environment():
     """Set up the test environment before all tests."""
     print(f"\n{'='*60}")
-    print(f"CONVERT HTML TO PDF TEST SUITE - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    print(
+        f"CONVERT HTML TO PDF TEST SUITE - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
+    )
     print(f"{'='*60}")
-    
+
     # Ensure test data directory exists
     os.makedirs(TEST_DATA_DIR, exist_ok=True)
-    
+
     # Add the source directory to Python path for imports
     src_path = os.path.join(
-        os.path.dirname(__file__), '..', '..', 'src', 'utilities',
-        'pdf_tools', 'pdf_conversion'
+        os.path.dirname(__file__),
+        "..",
+        "..",
+        "src",
+        "utilities",
+        "pdf_tools",
+        "pdf_conversion",
     )
     if src_path not in sys.path:
         sys.path.insert(0, os.path.abspath(src_path))
-    
+
     yield
-    
+
     print(f"\n{'='*60}")
-    print(f"TEST SUITE COMPLETED - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    print(
+        f"TEST SUITE COMPLETED - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
+    )
     print(f"{'='*60}")
 
 
@@ -52,7 +61,7 @@ def test_data_directory():
 @pytest.fixture
 def temp_directory():
     """Create a temporary directory for test files."""
-    temp_dir = tempfile.mkdtemp(prefix='test_convert_html_to_pdf_')
+    temp_dir = tempfile.mkdtemp(prefix="test_convert_html_to_pdf_")
     yield temp_dir
     # Cleanup
     if os.path.exists(temp_dir):
@@ -88,18 +97,18 @@ def temp_html_file(temp_directory):
     </div>
 </body>
 </html>"""
-    
-    html_path = os.path.join(temp_directory, 'test_document.html')
-    with open(html_path, 'w', encoding='utf-8') as f:
+
+    html_path = os.path.join(temp_directory, "test_document.html")
+    with open(html_path, "w", encoding="utf-8") as f:
         f.write(html_content)
-    
+
     yield html_path
 
 
 @pytest.fixture
 def temp_output_pdf(temp_directory):
     """Create a temporary output PDF path for testing."""
-    pdf_path = os.path.join(temp_directory, 'output_document.pdf')
+    pdf_path = os.path.join(temp_directory, "output_document.pdf")
     yield pdf_path
 
 
@@ -107,8 +116,8 @@ def temp_output_pdf(temp_directory):
 def sample_html_content():
     """Provide sample HTML content for testing."""
     return {
-        'simple': '<html><body><h1>Simple Test</h1></body></html>',
-        'complex': '''<!DOCTYPE html>
+        "simple": "<html><body><h1>Simple Test</h1></body></html>",
+        "complex": """<!DOCTYPE html>
 <html>
 <head>
     <title>Complex Test</title>
@@ -148,10 +157,10 @@ def sample_html_content():
         </table>
     </div>
 </body>
-</html>''',
-        'minimal': '<html><body>Minimal content</body></html>',
-        'empty': '',
-        'invalid': '<html><body><h1>Invalid HTML - missing closing tags'
+</html>""",
+        "minimal": "<html><body>Minimal content</body></html>",
+        "empty": "",
+        "invalid": "<html><body><h1>Invalid HTML - missing closing tags",
     }
 
 
@@ -159,29 +168,29 @@ def sample_html_content():
 def sample_urls():
     """Provide sample URLs for testing."""
     return {
-        'valid': [
-            'https://httpbin.org/html',
-            'https://example.com',
-            'https://www.google.com'
+        "valid": [
+            "https://httpbin.org/html",
+            "https://example.com",
+            "https://www.google.com",
         ],
-        'invalid': [
-            'not-a-url',
-            'ftp://invalid-protocol.com',
-            'https://non-existent-domain-12345.com'
+        "invalid": [
+            "not-a-url",
+            "ftp://invalid-protocol.com",
+            "https://non-existent-domain-12345.com",
         ],
-        'empty': '',
-        'malformed': [
-            'htp://missing-t.com',
-            'https:/missing-slash.com',
-            'https://spaces in url.com'
-        ]
+        "empty": "",
+        "malformed": [
+            "htp://missing-t.com",
+            "https:/missing-slash.com",
+            "https://spaces in url.com",
+        ],
     }
 
 
 @pytest.fixture
 def mock_qt_application():
     """Mock QApplication for GUI testing."""
-    with patch('PyQt5.QtWidgets.QApplication') as mock_app:
+    with patch("PyQt5.QtWidgets.QApplication") as mock_app:
         mock_instance = Mock()
         mock_app.return_value = mock_instance
         mock_app.instance.return_value = mock_instance
@@ -191,14 +200,14 @@ def mock_qt_application():
 @pytest.fixture
 def mock_ui_file():
     """Mock UI file loading."""
-    with patch('PyQt5.uic.loadUi') as mock_load_ui:
+    with patch("PyQt5.uic.loadUi") as mock_load_ui:
         yield mock_load_ui
 
 
 @pytest.fixture
 def mock_logger():
     """Mock logger for testing."""
-    with patch('convert_html_to_pdf.logger') as logger_mock:
+    with patch("convert_html_to_pdf.logger") as logger_mock:
         logger_mock.info = Mock()
         logger_mock.debug = Mock()
         logger_mock.warning = Mock()
@@ -210,40 +219,43 @@ def mock_logger():
 @pytest.fixture
 def mock_pdfkit():
     """Mock pdfkit for testing."""
-    with patch('pdfkit.from_url') as mock_from_url, \
-         patch('pdfkit.from_file') as mock_from_file, \
-         patch('pdfkit.from_string') as mock_from_string:
-        
+    with (
+        patch("pdfkit.from_url") as mock_from_url,
+        patch("pdfkit.from_file") as mock_from_file,
+        patch("pdfkit.from_string") as mock_from_string,
+    ):
+
         yield {
-            'from_url': mock_from_url,
-            'from_file': mock_from_file,
-            'from_string': mock_from_string
+            "from_url": mock_from_url,
+            "from_file": mock_from_file,
+            "from_string": mock_from_string,
         }
 
 
 @pytest.fixture
 def mock_file_dialogs():
     """Mock file dialogs for testing."""
-    with patch('PyQt5.QtWidgets.QFileDialog.getOpenFileName') as mock_open, \
-         patch('PyQt5.QtWidgets.QFileDialog.getSaveFileName') as mock_save:
-        
-        yield {
-            'open': mock_open,
-            'save': mock_save
-        }
+    with (
+        patch("PyQt5.QtWidgets.QFileDialog.getOpenFileName") as mock_open,
+        patch("PyQt5.QtWidgets.QFileDialog.getSaveFileName") as mock_save,
+    ):
+
+        yield {"open": mock_open, "save": mock_save}
 
 
 @pytest.fixture
 def mock_message_boxes():
     """Mock message boxes for testing."""
-    with patch('PyQt5.QtWidgets.QMessageBox.information') as mock_info, \
-         patch('PyQt5.QtWidgets.QMessageBox.critical') as mock_critical, \
-         patch('PyQt5.QtWidgets.QMessageBox.warning') as mock_warning:
-        
+    with (
+        patch("PyQt5.QtWidgets.QMessageBox.information") as mock_info,
+        patch("PyQt5.QtWidgets.QMessageBox.critical") as mock_critical,
+        patch("PyQt5.QtWidgets.QMessageBox.warning") as mock_warning,
+    ):
+
         yield {
-            'information': mock_info,
-            'critical': mock_critical,
-            'warning': mock_warning
+            "information": mock_info,
+            "critical": mock_critical,
+            "warning": mock_warning,
         }
 
 
@@ -251,22 +263,22 @@ def mock_message_boxes():
 def mock_ui_components():
     """Create mock UI components for testing."""
     components = {
-        'urlInput': Mock(),
-        'fileInput': Mock(),
-        'htmlInput': Mock(),
-        'statusLabel': Mock(),
-        'convertUrlButton': Mock(),
-        'convertFileButton': Mock(),
-        'convertHtmlButton': Mock(),
-        'browseButton': Mock(),
-        'actionExit': Mock()
+        "urlInput": Mock(),
+        "fileInput": Mock(),
+        "htmlInput": Mock(),
+        "statusLabel": Mock(),
+        "convertUrlButton": Mock(),
+        "convertFileButton": Mock(),
+        "convertHtmlButton": Mock(),
+        "browseButton": Mock(),
+        "actionExit": Mock(),
     }
-    
+
     # Set up default behaviors
-    components['urlInput'].text.return_value = ""
-    components['fileInput'].text.return_value = ""
-    components['htmlInput'].toPlainText.return_value = ""
-    
+    components["urlInput"].text.return_value = ""
+    components["fileInput"].text.return_value = ""
+    components["htmlInput"].toPlainText.return_value = ""
+
     return components
 
 
@@ -274,21 +286,21 @@ def mock_ui_components():
 def conversion_scenarios():
     """Provide various conversion scenarios for testing."""
     return {
-        'url_to_pdf': {
-            'input': 'https://example.com',
-            'output': '/path/to/output.pdf',
-            'method': 'from_url'
+        "url_to_pdf": {
+            "input": "https://example.com",
+            "output": "/path/to/output.pdf",
+            "method": "from_url",
         },
-        'file_to_pdf': {
-            'input': '/path/to/input.html',
-            'output': '/path/to/output.pdf',
-            'method': 'from_file'
+        "file_to_pdf": {
+            "input": "/path/to/input.html",
+            "output": "/path/to/output.pdf",
+            "method": "from_file",
         },
-        'html_to_pdf': {
-            'input': '<html><body><h1>Test</h1></body></html>',
-            'output': '/path/to/output.pdf',
-            'method': 'from_string'
-        }
+        "html_to_pdf": {
+            "input": "<html><body><h1>Test</h1></body></html>",
+            "output": "/path/to/output.pdf",
+            "method": "from_string",
+        },
     }
 
 
@@ -296,13 +308,13 @@ def conversion_scenarios():
 def error_scenarios():
     """Provide different error scenarios for testing."""
     return {
-        'pdfkit_error': Exception("PDFKit processing error"),
-        'file_not_found': FileNotFoundError("HTML file not found"),
-        'permission_error': PermissionError("Permission denied"),
-        'network_error': Exception("Network connection error"),
-        'invalid_url': Exception("Invalid URL format"),
-        'ui_error': Exception("UI component error"),
-        'system_error': OSError("System error occurred")
+        "pdfkit_error": Exception("PDFKit processing error"),
+        "file_not_found": FileNotFoundError("HTML file not found"),
+        "permission_error": PermissionError("Permission denied"),
+        "network_error": Exception("Network connection error"),
+        "invalid_url": Exception("Invalid URL format"),
+        "ui_error": Exception("UI component error"),
+        "system_error": OSError("System error occurred"),
     }
 
 
@@ -313,7 +325,7 @@ def cleanup_test_files():
     # Cleanup any remaining test files
     for root, dirs, files in os.walk(TEST_DATA_DIR):
         for file in files:
-            if file.startswith('test_') and file.endswith('.tmp'):
+            if file.startswith("test_") and file.endswith(".tmp"):
                 try:
                     os.remove(os.path.join(root, file))
                 except OSError:
@@ -334,27 +346,21 @@ def performance_monitor():
 def pytest_configure(config):
     """Configure pytest with custom settings."""
     # Add custom markers
-    config.addinivalue_line(
-        "markers", "unit: mark test as a unit test"
-    )
+    config.addinivalue_line("markers", "unit: mark test as a unit test")
     config.addinivalue_line(
         "markers", "integration: mark test as an integration test"
     )
-    config.addinivalue_line(
-        "markers", "gui: mark test as a GUI test"
-    )
+    config.addinivalue_line("markers", "gui: mark test as a GUI test")
     config.addinivalue_line(
         "markers", "conversion: mark test as a conversion test"
     )
-    config.addinivalue_line(
-        "markers", "slow: mark test as slow running"
-    )
+    config.addinivalue_line("markers", "slow: mark test as slow running")
 
 
 def pytest_runtest_setup(item):
     """Set up before each test item."""
     # Print test name for detailed output
-    if hasattr(item, 'function'):
+    if hasattr(item, "function"):
         print(f"\n🔍 Running: {item.function.__name__}")
 
 
@@ -382,12 +388,12 @@ def pytest_sessionfinish(session, exitstatus):
 
 def pytest_terminal_summary(terminalreporter, exitstatus, config):
     """Add additional terminal summary."""
-    if hasattr(terminalreporter, 'stats'):
-        passed = len(terminalreporter.stats.get('passed', []))
-        failed = len(terminalreporter.stats.get('failed', []))
-        skipped = len(terminalreporter.stats.get('skipped', []))
-        errors = len(terminalreporter.stats.get('error', []))
-        
+    if hasattr(terminalreporter, "stats"):
+        passed = len(terminalreporter.stats.get("passed", []))
+        failed = len(terminalreporter.stats.get("failed", []))
+        skipped = len(terminalreporter.stats.get("skipped", []))
+        errors = len(terminalreporter.stats.get("error", []))
+
         print(f"\n📈 Test Summary:")
         print(f"   ✅ Passed: {passed}")
         print(f"   ❌ Failed: {failed}")
@@ -399,12 +405,12 @@ def pytest_terminal_summary(terminalreporter, exitstatus, config):
 # Test data creation helpers
 def create_test_html_file(content, file_path):
     """Create a test HTML file with specified content."""
-    with open(file_path, 'w', encoding='utf-8') as f:
+    with open(file_path, "w", encoding="utf-8") as f:
         f.write(content)
     return file_path
 
 
-def create_test_pdf_path(directory, filename='test_output.pdf'):
+def create_test_pdf_path(directory, filename="test_output.pdf"):
     """Create a test PDF file path."""
     return os.path.join(directory, filename)
 
@@ -413,7 +419,7 @@ def validate_html_content(content):
     """Validate HTML content for testing."""
     if not content or not isinstance(content, str):
         return False
-    return '<html>' in content.lower() or '<body>' in content.lower()
+    return "<html>" in content.lower() or "<body>" in content.lower()
 
 
 def generate_sample_html(title="Test Document", content="Test content"):

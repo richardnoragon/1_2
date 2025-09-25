@@ -14,12 +14,14 @@ from pathlib import Path
 
 def generate_test_summary():
     """Generate comprehensive test summary report."""
-    
+
     timestamp = datetime.now().isoformat()
-    
+
     # Read JSON test results
-    json_report_path = "tests/unit/result_network_scanner_simplified_2025-08-24.json"
-    
+    json_report_path = (
+        "tests/unit/result_network_scanner_simplified_2025-08-24.json"
+    )
+
     summary_data = {
         "execution_timestamp": timestamp,
         "test_target": "src/utilities/network/network_scanner.py",
@@ -27,33 +29,45 @@ def generate_test_summary():
         "framework": "pytest",
         "coverage_threshold": "80%",
         "actual_coverage": "93%",
-        "status": "PASSED"
+        "status": "PASSED",
     }
-    
+
     try:
         if os.path.exists(json_report_path):
-            with open(json_report_path, 'r') as f:
+            with open(json_report_path, "r") as f:
                 test_data = json.load(f)
-            
-            summary_data.update({
-                "total_tests": test_data.get("summary", {}).get("total", 0),
-                "passed_tests": test_data.get("summary", {}).get("passed", 0),
-                "failed_tests": test_data.get("summary", {}).get("failed", 0),
-                "skipped_tests": test_data.get("summary", {}).get("skipped", 0),
-                "execution_duration": test_data.get("duration", 0),
-                "test_outcome": test_data.get("summary", {}).get("outcome", "unknown")
-            })
+
+            summary_data.update(
+                {
+                    "total_tests": test_data.get("summary", {}).get(
+                        "total", 0
+                    ),
+                    "passed_tests": test_data.get("summary", {}).get(
+                        "passed", 0
+                    ),
+                    "failed_tests": test_data.get("summary", {}).get(
+                        "failed", 0
+                    ),
+                    "skipped_tests": test_data.get("summary", {}).get(
+                        "skipped", 0
+                    ),
+                    "execution_duration": test_data.get("duration", 0),
+                    "test_outcome": test_data.get("summary", {}).get(
+                        "outcome", "unknown"
+                    ),
+                }
+            )
     except Exception as e:
         summary_data["json_parse_error"] = str(e)
-    
+
     return summary_data
 
 
 def create_detailed_report():
     """Create detailed test execution report."""
-    
+
     summary = generate_test_summary()
-    
+
     report_content = f"""
 # Network Scanner Unit Test Execution Report
 **Generated:** {summary['execution_timestamp']}
@@ -168,26 +182,28 @@ validation of the NetworkScannerGUI class and its methods.
 ---
 *Report generated automatically by pytest test runner on {summary['execution_timestamp']}*
 """
-    
+
     return report_content
 
 
 def main():
     """Generate and save the test summary report."""
-    
+
     report_content = create_detailed_report()
-    
+
     # Save the report
-    report_path = "tests/unit/result_network_scanner_test_summary_2025-08-24.md"
-    
-    with open(report_path, 'w', encoding='utf-8') as f:
+    report_path = (
+        "tests/unit/result_network_scanner_test_summary_2025-08-24.md"
+    )
+
+    with open(report_path, "w", encoding="utf-8") as f:
         f.write(report_content)
-    
+
     print("Network Scanner Unit Test Summary Report Generated")
     print(f"Report saved to: {report_path}")
     print("\nTest Execution Summary:")
     print("=" * 50)
-    
+
     summary = generate_test_summary()
     print(f"Status: {summary['status']}")
     print(f"Total Tests: {summary.get('total_tests', 'N/A')}")

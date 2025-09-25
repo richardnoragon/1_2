@@ -11,42 +11,44 @@ from .base_exporter import BaseExporter
 
 class HTMLExporter(BaseExporter):
     """Export catalog as HTML with embedded CSS and color preservation."""
-    
+
     def __init__(self, options: Dict[str, Any] = None):
         super().__init__(options)
-        self.include_css = self.options.get('include_css', True)
-        self.responsive_design = self.options.get('responsive_design', True)
-        self.print_styles = self.options.get('print_styles', True)
-        self.interactive_features = self.options.get('interactive_features', False)
-    
+        self.include_css = self.options.get("include_css", True)
+        self.responsive_design = self.options.get("responsive_design", True)
+        self.print_styles = self.options.get("print_styles", True)
+        self.interactive_features = self.options.get(
+            "interactive_features", False
+        )
+
     def get_file_extension(self) -> str:
         """Return the file extension for HTML format."""
         return "html"
-    
+
     def validate_options(self) -> bool:
         """Validate HTML export options."""
         return True  # HTML options are all boolean, so always valid
-    
+
     def export(self, catalog_data, output_path: Path) -> bool:
         """Generate HTML catalog with color-coding."""
         try:
             if not self._validate_output_path(output_path):
                 return False
-            
+
             self._report_progress(10, "Generating HTML structure...")
             html_content = self._generate_html(catalog_data)
-            
+
             self._report_progress(90, "Writing HTML file...")
-            with open(output_path, 'w', encoding='utf-8') as f:
+            with open(output_path, "w", encoding="utf-8") as f:
                 f.write(html_content)
-            
+
             self._report_progress(100, "HTML export completed")
             return True
-            
+
         except Exception as e:
             print(f"HTML export failed: {e}")
             return False
-    
+
     def _generate_html(self, catalog_data) -> str:
         """Generate complete HTML document."""
         return f"""<!DOCTYPE html>
@@ -65,13 +67,13 @@ class HTMLExporter(BaseExporter):
     {self._generate_footer(catalog_data)}
 </body>
 </html>"""
-    
+
     def _get_directory_name(self, catalog_data) -> str:
         """Get directory name for title."""
         if catalog_data.source_directory:
             return catalog_data.source_directory.name
         return "Unknown Directory"
-    
+
     def _generate_css(self, catalog_data) -> str:
         """Generate embedded CSS styles."""
         return f"""
@@ -273,49 +275,57 @@ body {{
 
 {self._generate_accessibility_css() if self.accessibility_mode else ''}
 </style>"""
-    
+
     def _generate_color_classes(self, catalog_data) -> str:
         """Generate CSS classes for color coding."""
         css_rules = []
-        
+
         # Get color information from entries
         color_categories = set()
         for entry in catalog_data.entries:
             if entry.color_category:
-                color_categories.add((
-                    entry.sort_key or 'default',
-                    entry.color_category.color_hex,
-                    entry.color_category.pattern_type
-                ))
-        
+                color_categories.add(
+                    (
+                        entry.sort_key or "default",
+                        entry.color_category.color_hex,
+                        entry.color_category.pattern_type,
+                    )
+                )
+
         for category, color_hex, pattern_type in color_categories:
-            safe_category = category.replace('_', '-').replace(' ', '-').lower()
-            css_rules.append(f"""
+            safe_category = (
+                category.replace("_", "-").replace(" ", "-").lower()
+            )
+            css_rules.append(
+                f"""
 .color-{safe_category} {{
     background-color: {color_hex};
     border-left: 4px solid {color_hex};
-}}""")
-            
+}}"""
+            )
+
             if self.accessibility_mode:
                 pattern_css = self._get_pattern_css(pattern_type)
                 if pattern_css:
-                    css_rules.append(f"""
+                    css_rules.append(
+                        f"""
 .accessibility-mode .color-{safe_category} {{
     {pattern_css}
-}}""")
-        
-        return '\n'.join(css_rules)
-    
+}}"""
+                    )
+
+        return "\n".join(css_rules)
+
     def _get_pattern_css(self, pattern_type: str) -> str:
         """Get CSS for accessibility patterns."""
         patterns = {
-            'dots': 'background-image: radial-gradient(circle, #000 1px, transparent 1px); background-size: 8px 8px;',
-            'diagonal': 'background-image: repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(0,0,0,0.1) 2px, rgba(0,0,0,0.1) 4px);',
-            'horizontal': 'background-image: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.1) 2px, rgba(0,0,0,0.1) 4px);',
-            'vertical': 'background-image: repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(0,0,0,0.1) 2px, rgba(0,0,0,0.1) 4px);'
+            "dots": "background-image: radial-gradient(circle, #000 1px, transparent 1px); background-size: 8px 8px;",
+            "diagonal": "background-image: repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(0,0,0,0.1) 2px, rgba(0,0,0,0.1) 4px);",
+            "horizontal": "background-image: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.1) 2px, rgba(0,0,0,0.1) 4px);",
+            "vertical": "background-image: repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(0,0,0,0.1) 2px, rgba(0,0,0,0.1) 4px);",
         }
-        return patterns.get(pattern_type, '')
-    
+        return patterns.get(pattern_type, "")
+
     def _generate_responsive_css(self) -> str:
         """Generate responsive CSS for mobile devices."""
         return """
@@ -340,7 +350,7 @@ body {{
         gap: 10px;
     }
 }"""
-    
+
     def _generate_print_css(self) -> str:
         """Generate print-friendly CSS."""
         return """
@@ -374,7 +384,7 @@ body {{
         box-shadow: none;
     }
 }"""
-    
+
     def _generate_accessibility_css(self) -> str:
         """Generate accessibility CSS."""
         return """
@@ -390,7 +400,7 @@ body {{
 .accessibility-mode .file-name {
     font-weight: 600;
 }"""
-    
+
     def _generate_javascript(self) -> str:
         """Generate JavaScript for interactive features."""
         return """
@@ -437,7 +447,7 @@ function filterFileList(searchTerm) {
     });
 }
 </script>"""
-    
+
     def _generate_header(self, catalog_data) -> str:
         """Generate HTML header section."""
         stats = catalog_data.statistics
@@ -452,60 +462,72 @@ function filterFileList(searchTerm) {
         <div class="stat-item">🎨 {catalog_data.sort_criteria.value.title()} Sort</div>
     </div>
 </div>"""
-    
+
     def _generate_legend(self, catalog_data) -> str:
         """Generate color legend section."""
         if not catalog_data.color_legend:
             return ""
-        
+
         legend_html = ['<div class="legend-container">']
-        
+
         for category_name, color_items in catalog_data.color_legend.items():
-            legend_html.append(f"""
+            legend_html.append(
+                f"""
 <div class="legend-section">
-    <h3 class="legend-title">{self._escape_html(category_name)}</h3>""")
-            
+    <h3 class="legend-title">{self._escape_html(category_name)}</h3>"""
+            )
+
             for color_info in color_items:
-                icon = self._escape_html(color_info.icon) if self.accessibility_mode else ''
-                legend_html.append(f"""
+                icon = (
+                    self._escape_html(color_info.icon)
+                    if self.accessibility_mode
+                    else ""
+                )
+                legend_html.append(
+                    f"""
     <div class="legend-item">
         <div class="color-sample" style="background-color: {color_info.color_hex};">
             {icon}
         </div>
         <span class="legend-label">{self._escape_html(color_info.accessibility_label)}</span>
         <span class="legend-description">{self._escape_html(color_info.category_name)}</span>
-    </div>""")
-            
-            legend_html.append('</div>')
-        
-        legend_html.append('</div>')
-        return '\n'.join(legend_html)
-    
+    </div>"""
+                )
+
+            legend_html.append("</div>")
+
+        legend_html.append("</div>")
+        return "\n".join(legend_html)
+
     def _generate_file_list(self, catalog_data) -> str:
         """Generate file list section."""
         file_html = ['<div class="file-list">']
-        
+
         for entry in catalog_data.entries:
-            color_class = ''
+            color_class = ""
             if entry.sort_key:
-                safe_key = entry.sort_key.replace('_', '-').replace(' ', '-').lower()
-                color_class = f'color-{safe_key}'
-            
+                safe_key = (
+                    entry.sort_key.replace("_", "-").replace(" ", "-").lower()
+                )
+                color_class = f"color-{safe_key}"
+
             icon = self._get_file_type_icon(entry.file_type)
             file_link = f"file:///{entry.path}"
-            
-            file_html.append(f"""
+
+            file_html.append(
+                f"""
 <div class="file-entry {color_class}">
     <div class="file-icon">{icon}</div>
     <a href="{file_link}" class="file-name" title="{self._escape_html(str(entry.path))}">{self._escape_html(entry.name)}</a>
     <div class="file-size">{entry.format_size()}</div>
     <div class="file-date">{self._format_date(entry.modified_date, '%Y-%m-%d %H:%M')}</div>
     <div class="file-type">{entry.file_type.value}</div>
-</div>""")
-        
-        file_html.append('</div>')
-        return '\n'.join(file_html)
-    
+</div>"""
+            )
+
+        file_html.append("</div>")
+        return "\n".join(file_html)
+
     def _generate_footer(self, catalog_data) -> str:
         """Generate footer section."""
         metadata = self._create_export_metadata(catalog_data)

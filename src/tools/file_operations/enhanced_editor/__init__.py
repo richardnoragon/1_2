@@ -7,5 +7,5 @@ search/replace functionality, and comprehensive file operations.
 
 from .enhanced_editor import EnhancedEditor
 
-__all__ = ['EnhancedEditor']
-__version__ = '1.0.0'
+__all__ = ["EnhancedEditor"]
+__version__ = "1.0.0"

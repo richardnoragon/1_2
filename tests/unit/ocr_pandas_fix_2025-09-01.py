@@ -15,17 +15,15 @@ def save_page_content_fixed(pdfContent, page_id, page_data):
     if page_data:
         new_rows = []
         for idx, line in enumerate(page_data, 1):
-            line_text = ' '.join(line)
-            new_rows.append({
-                'page': page_id, 
-                'line_id': idx, 
-                'line': line_text
-            })
-        
+            line_text = " ".join(line)
+            new_rows.append(
+                {"page": page_id, "line_id": idx, "line": line_text}
+            )
+
         if new_rows:
             new_df = pd.DataFrame(new_rows)
             pdfContent = pd.concat([pdfContent, new_df], ignore_index=True)
-    
+
     return pdfContent
 
 
@@ -35,17 +33,19 @@ def apply_pandas_fix_to_ocr_module():
     import sys
 
     # Import the OCR module
-    sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
-    
+    sys.path.insert(
+        0, os.path.join(os.path.dirname(__file__), "..", "..", "src")
+    )
+
     try:
         from src.tools.pdf_tools.pdf_enhancements import ocr
 
         # Replace the problematic function with the fixed version
         ocr.save_page_content_fixed = save_page_content_fixed
-        
+
         print("✅ Pandas compatibility fix applied to OCR module")
         return True
-        
+
     except ImportError as e:
         print(f"❌ Could not import OCR module: {e}")
         return False

@@ -18,10 +18,15 @@ Version: 1.0.0 (Phase 1 Foundation)
 
 # Import main utility classes
 try:
-    from .directory_watcher import (DirectoryWatcher, EventDebouncer,
-                                    EventFilter, EventPriority,
-                                    FileSystemEventType, WatchEvent,
-                                    create_directory_watcher)
+    from .directory_watcher import (
+        DirectoryWatcher,
+        EventDebouncer,
+        EventFilter,
+        EventPriority,
+        FileSystemEventType,
+        WatchEvent,
+        create_directory_watcher,
+    )
 except ImportError:
     # Handle missing dependencies gracefully
     pass
@@ -39,14 +44,14 @@ __author__ = "RFU Development Team"
 
 # Module exports
 __all__ = [
-    'DirectoryWatcher',
-    'create_directory_watcher',
-    'EventFilter', 
-    'EventDebouncer',
-    'WatchEvent',
-    'FileSystemEventType',
-    'EventPriority',
+    "DirectoryWatcher",
+    "create_directory_watcher",
+    "EventFilter",
+    "EventDebouncer",
+    "WatchEvent",
+    "FileSystemEventType",
+    "EventPriority",
     "FileOperations",
     "ThumbnailGenerator",
-    "SearchEngine"
+    "SearchEngine",
 ]

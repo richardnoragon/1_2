@@ -23,211 +23,217 @@ from jinja2 import Template
 
 class TestReportGenerator:
     """Comprehensive test report generator for RFU integration testing."""
-    
+
     def __init__(self, artifacts_dir: str, output_dir: str):
         self.artifacts_dir = Path(artifacts_dir)
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)
-        
+
         self.test_results = {}
         self.environments = []
         self.overall_metrics = {}
-        
+
     def generate_report(self):
         """Generate comprehensive test report."""
         print("Generating comprehensive test report...")
-        
+
         # Collect all test results
         self._collect_test_results()
-        
+
         # Analyze results
         self._analyze_results()
-        
+
         # Generate reports
         self._generate_html_report()
         self._generate_json_summary()
         self._generate_markdown_report()
-        
+
         print(f"Test report generated in: {self.output_dir}")
-    
+
     def _collect_test_results(self):
         """Collect test results from all artifacts."""
         print("Collecting test results from artifacts...")
-        
+
         # Find all JUnit XML files
         junit_files = list(self.artifacts_dir.glob("**/test-results-*.xml"))
-        
+
         for junit_file in junit_files:
             try:
                 self._parse_junit_xml(junit_file)
             except Exception as e:
                 print(f"Error parsing {junit_file}: {e}")
-        
+
         # Find all benchmark JSON files
         benchmark_files = list(self.artifacts_dir.glob("**/benchmark-*.json"))
-        
+
         for benchmark_file in benchmark_files:
             try:
                 self._parse_benchmark_json(benchmark_file)
             except Exception as e:
                 print(f"Error parsing {benchmark_file}: {e}")
-        
+
         # Find all security reports
         security_files = list(self.artifacts_dir.glob("**/*-report.json"))
-        
+
         for security_file in security_files:
             try:
                 self._parse_security_report(security_file)
             except Exception as e:
                 print(f"Error parsing {security_file}: {e}")
-        
+
         # Collect environment status files
-        status_files = list(self.artifacts_dir.glob("**/environment_status.json"))
-        
+        status_files = list(
+            self.artifacts_dir.glob("**/environment_status.json")
+        )
+
         for status_file in status_files:
             try:
                 self._parse_environment_status(status_file)
             except Exception as e:
                 print(f"Error parsing {status_file}: {e}")
-    
+
     def _parse_junit_xml(self, junit_file: Path):
         """Parse JUnit XML test results."""
         tree = ET.parse(junit_file)
         root = tree.getroot()
-        
+
         # Extract environment and Python version from filename
         filename = junit_file.name
-        env_match = re.search(r'test-results-(\w+)-py([\d.]+)\.xml', filename)
+        env_match = re.search(r"test-results-(\w+)-py([\d.]+)\.xml", filename)
         if env_match:
             environment = env_match.group(1)
             python_version = env_match.group(2)
         else:
             environment = "unknown"
             python_version = "unknown"
-        
+
         if environment not in self.test_results:
             self.test_results[environment] = {
-                'junit': {},
-                'benchmark': {},
-                'security': {},
-                'environment_status': {}
+                "junit": {},
+                "benchmark": {},
+                "security": {},
+                "environment_status": {},
             }
-        
-        if python_version not in self.test_results[environment]['junit']:
-            self.test_results[environment]['junit'][python_version] = []
-        
+
+        if python_version not in self.test_results[environment]["junit"]:
+            self.test_results[environment]["junit"][python_version] = []
+
         # Parse test suites
-        for testsuite in root.findall('.//testsuite'):
+        for testsuite in root.findall(".//testsuite"):
             suite_data = {
-                'name': testsuite.get('name', 'Unknown'),
-                'tests': int(testsuite.get('tests', 0)),
-                'failures': int(testsuite.get('failures', 0)),
-                'errors': int(testsuite.get('errors', 0)),
-                'skipped': int(testsuite.get('skipped', 0)),
-                'time': float(testsuite.get('time', 0)),
-                'testcases': []
+                "name": testsuite.get("name", "Unknown"),
+                "tests": int(testsuite.get("tests", 0)),
+                "failures": int(testsuite.get("failures", 0)),
+                "errors": int(testsuite.get("errors", 0)),
+                "skipped": int(testsuite.get("skipped", 0)),
+                "time": float(testsuite.get("time", 0)),
+                "testcases": [],
             }
-            
+
             # Parse individual test cases
-            for testcase in testsuite.findall('testcase'):
+            for testcase in testsuite.findall("testcase"):
                 case_data = {
-                    'name': testcase.get('name', 'Unknown'),
-                    'classname': testcase.get('classname', 'Unknown'),
-                    'time': float(testcase.get('time', 0)),
-                    'status': 'passed'
+                    "name": testcase.get("name", "Unknown"),
+                    "classname": testcase.get("classname", "Unknown"),
+                    "time": float(testcase.get("time", 0)),
+                    "status": "passed",
                 }
-                
+
                 # Check for failures, errors, or skipped
-                if testcase.find('failure') is not None:
-                    case_data['status'] = 'failed'
-                    case_data['failure'] = testcase.find('failure').text
-                elif testcase.find('error') is not None:
-                    case_data['status'] = 'error'
-                    case_data['error'] = testcase.find('error').text
-                elif testcase.find('skipped') is not None:
-                    case_data['status'] = 'skipped'
-                    case_data['skipped'] = testcase.find('skipped').text
-                
-                suite_data['testcases'].append(case_data)
-            
-            self.test_results[environment]['junit'][python_version].append(suite_data)
-    
+                if testcase.find("failure") is not None:
+                    case_data["status"] = "failed"
+                    case_data["failure"] = testcase.find("failure").text
+                elif testcase.find("error") is not None:
+                    case_data["status"] = "error"
+                    case_data["error"] = testcase.find("error").text
+                elif testcase.find("skipped") is not None:
+                    case_data["status"] = "skipped"
+                    case_data["skipped"] = testcase.find("skipped").text
+
+                suite_data["testcases"].append(case_data)
+
+            self.test_results[environment]["junit"][python_version].append(
+                suite_data
+            )
+
     def _parse_benchmark_json(self, benchmark_file: Path):
         """Parse benchmark JSON results."""
-        with open(benchmark_file, 'r') as f:
+        with open(benchmark_file, "r") as f:
             data = json.load(f)
-        
+
         # Extract environment from filename
         filename = benchmark_file.name
-        env_match = re.search(r'benchmark-(\w+)\.json', filename)
+        env_match = re.search(r"benchmark-(\w+)\.json", filename)
         environment = env_match.group(1) if env_match else "unknown"
-        
+
         if environment not in self.test_results:
             self.test_results[environment] = {
-                'junit': {},
-                'benchmark': {},
-                'security': {},
-                'environment_status': {}
+                "junit": {},
+                "benchmark": {},
+                "security": {},
+                "environment_status": {},
             }
-        
-        self.test_results[environment]['benchmark'] = data
-    
+
+        self.test_results[environment]["benchmark"] = data
+
     def _parse_security_report(self, security_file: Path):
         """Parse security report JSON files."""
         filename = security_file.name
-        
+
         # Skip if not a security report
-        if not any(tool in filename for tool in ['bandit', 'safety', 'semgrep']):
+        if not any(
+            tool in filename for tool in ["bandit", "safety", "semgrep"]
+        ):
             return
-        
-        with open(security_file, 'r') as f:
+
+        with open(security_file, "r") as f:
             data = json.load(f)
-        
+
         # Determine tool type
-        if 'bandit' in filename:
-            tool = 'bandit'
-        elif 'safety' in filename:
-            tool = 'safety'
-        elif 'semgrep' in filename:
-            tool = 'semgrep'
+        if "bandit" in filename:
+            tool = "bandit"
+        elif "safety" in filename:
+            tool = "safety"
+        elif "semgrep" in filename:
+            tool = "semgrep"
         else:
-            tool = 'unknown'
-        
+            tool = "unknown"
+
         # Store in security results for staging environment (default for security tests)
-        environment = 'staging'
+        environment = "staging"
         if environment not in self.test_results:
             self.test_results[environment] = {
-                'junit': {},
-                'benchmark': {},
-                'security': {},
-                'environment_status': {}
+                "junit": {},
+                "benchmark": {},
+                "security": {},
+                "environment_status": {},
             }
-        
-        self.test_results[environment]['security'][tool] = data
-    
+
+        self.test_results[environment]["security"][tool] = data
+
     def _parse_environment_status(self, status_file: Path):
         """Parse environment status JSON files."""
-        with open(status_file, 'r') as f:
+        with open(status_file, "r") as f:
             data = json.load(f)
-        
-        environment = data.get('environment', 'unknown')
-        
+
+        environment = data.get("environment", "unknown")
+
         if environment not in self.test_results:
             self.test_results[environment] = {
-                'junit': {},
-                'benchmark': {},
-                'security': {},
-                'environment_status': {}
+                "junit": {},
+                "benchmark": {},
+                "security": {},
+                "environment_status": {},
             }
-        
-        self.test_results[environment]['environment_status'] = data
-    
+
+        self.test_results[environment]["environment_status"] = data
+
     def _analyze_results(self):
         """Analyze collected test results."""
         print("Analyzing test results...")
-        
+
         self.environments = list(self.test_results.keys())
-        
+
         # Calculate overall metrics
         total_tests = 0
         total_passed = 0
@@ -235,90 +241,97 @@ class TestReportGenerator:
         total_errors = 0
         total_skipped = 0
         total_time = 0
-        
+
         environment_summaries = []
-        
+
         for env_name, env_data in self.test_results.items():
             env_summary = {
-                'name': env_name,
-                'status': 'unknown',
-                'test_count': 0,
-                'passed': 0,
-                'failed': 0,
-                'errors': 0,
-                'skipped': 0,
-                'total_time': 0,
-                'python_versions': [],
-                'has_benchmarks': bool(env_data.get('benchmark')),
-                'has_security': bool(env_data.get('security')),
-                'environment_healthy': False
+                "name": env_name,
+                "status": "unknown",
+                "test_count": 0,
+                "passed": 0,
+                "failed": 0,
+                "errors": 0,
+                "skipped": 0,
+                "total_time": 0,
+                "python_versions": [],
+                "has_benchmarks": bool(env_data.get("benchmark")),
+                "has_security": bool(env_data.get("security")),
+                "environment_healthy": False,
             }
-            
+
             # Analyze JUnit results
-            for py_version, suites in env_data.get('junit', {}).items():
-                env_summary['python_versions'].append(py_version)
-                
+            for py_version, suites in env_data.get("junit", {}).items():
+                env_summary["python_versions"].append(py_version)
+
                 for suite in suites:
-                    env_summary['test_count'] += suite['tests']
-                    env_summary['failed'] += suite['failures']
-                    env_summary['errors'] += suite['errors']
-                    env_summary['skipped'] += suite['skipped']
-                    env_summary['total_time'] += suite['time']
-                    
+                    env_summary["test_count"] += suite["tests"]
+                    env_summary["failed"] += suite["failures"]
+                    env_summary["errors"] += suite["errors"]
+                    env_summary["skipped"] += suite["skipped"]
+                    env_summary["total_time"] += suite["time"]
+
                     # Calculate passed tests
-                    passed = suite['tests'] - suite['failures'] - suite['errors'] - suite['skipped']
-                    env_summary['passed'] += passed
-            
+                    passed = (
+                        suite["tests"]
+                        - suite["failures"]
+                        - suite["errors"]
+                        - suite["skipped"]
+                    )
+                    env_summary["passed"] += passed
+
             # Determine environment status
-            if env_summary['failed'] > 0 or env_summary['errors'] > 0:
-                env_summary['status'] = 'fail'
-            elif env_summary['test_count'] > 0:
-                env_summary['status'] = 'pass'
+            if env_summary["failed"] > 0 or env_summary["errors"] > 0:
+                env_summary["status"] = "fail"
+            elif env_summary["test_count"] > 0:
+                env_summary["status"] = "pass"
             else:
-                env_summary['status'] = 'no_tests'
-            
+                env_summary["status"] = "no_tests"
+
             # Check environment health
-            env_status = env_data.get('environment_status', {})
-            if env_status.get('status') == 'ready':
-                health_checks = env_status.get('health_checks', {})
-                env_summary['environment_healthy'] = all(
-                    status in ['healthy', 'disabled'] 
+            env_status = env_data.get("environment_status", {})
+            if env_status.get("status") == "ready":
+                health_checks = env_status.get("health_checks", {})
+                env_summary["environment_healthy"] = all(
+                    status in ["healthy", "disabled"]
                     for status in health_checks.values()
                 )
-            
+
             environment_summaries.append(env_summary)
-            
+
             # Add to totals
-            total_tests += env_summary['test_count']
-            total_passed += env_summary['passed']
-            total_failed += env_summary['failed']
-            total_errors += env_summary['errors']
-            total_skipped += env_summary['skipped']
-            total_time += env_summary['total_time']
-        
+            total_tests += env_summary["test_count"]
+            total_passed += env_summary["passed"]
+            total_failed += env_summary["failed"]
+            total_errors += env_summary["errors"]
+            total_skipped += env_summary["skipped"]
+            total_time += env_summary["total_time"]
+
         # Calculate overall status
-        overall_status = 'pass'
+        overall_status = "pass"
         if total_failed > 0 or total_errors > 0:
-            overall_status = 'fail'
+            overall_status = "fail"
         elif total_tests == 0:
-            overall_status = 'no_tests'
-        
+            overall_status = "no_tests"
+
         # Calculate coverage (placeholder - would need actual coverage data)
-        coverage_percentage = 85.0  # This would come from actual coverage reports
-        
+        coverage_percentage = (
+            85.0  # This would come from actual coverage reports
+        )
+
         self.overall_metrics = {
-            'overall_status': overall_status,
-            'total_tests': total_tests,
-            'passed_tests': total_passed,
-            'failed_tests': total_failed,
-            'error_tests': total_errors,
-            'skipped_tests': total_skipped,
-            'total_time': total_time,
-            'coverage_percentage': coverage_percentage,
-            'environments': environment_summaries,
-            'generated_at': datetime.now().isoformat()
+            "overall_status": overall_status,
+            "total_tests": total_tests,
+            "passed_tests": total_passed,
+            "failed_tests": total_failed,
+            "error_tests": total_errors,
+            "skipped_tests": total_skipped,
+            "total_time": total_time,
+            "coverage_percentage": coverage_percentage,
+            "environments": environment_summaries,
+            "generated_at": datetime.now().isoformat(),
         }
-    
+
     def _generate_html_report(self):
         """Generate comprehensive HTML report."""
         html_template = """
@@ -584,25 +597,25 @@ class TestReportGenerator:
 </body>
 </html>
         """
-        
+
         template = Template(html_template)
         html_content = template.render(metrics=self.overall_metrics)
-        
+
         html_file = self.output_dir / "test_report.html"
-        with open(html_file, 'w', encoding='utf-8') as f:
+        with open(html_file, "w", encoding="utf-8") as f:
             f.write(html_content)
-        
+
         print(f"HTML report generated: {html_file}")
-    
+
     def _generate_json_summary(self):
         """Generate JSON summary for programmatic access."""
         summary_file = self.output_dir / "summary.json"
-        
-        with open(summary_file, 'w') as f:
+
+        with open(summary_file, "w") as f:
             json.dump(self.overall_metrics, f, indent=2)
-        
+
         print(f"JSON summary generated: {summary_file}")
-    
+
     def _generate_markdown_report(self):
         """Generate Markdown report for documentation."""
         markdown_template = """# RFU Integration Test Report
@@ -704,35 +717,43 @@ Generated: {{ metrics.generated_at }}
 *Report generated by RFU Integration Testing Framework*
 *Phase 1: Foundation Setup*
         """
-        
+
         template = Template(markdown_template)
         markdown_content = template.render(metrics=self.overall_metrics)
-        
+
         markdown_file = self.output_dir / "test_report.md"
-        with open(markdown_file, 'w', encoding='utf-8') as f:
+        with open(markdown_file, "w", encoding="utf-8") as f:
             f.write(markdown_content)
-        
+
         print(f"Markdown report generated: {markdown_file}")
+
 
 def main():
     """Main function for command-line usage."""
-    parser = argparse.ArgumentParser(description='Generate comprehensive test reports')
-    parser.add_argument('--artifacts-dir', required=True,
-                       help='Directory containing test artifacts')
-    parser.add_argument('--output-dir', required=True,
-                       help='Directory to output reports')
-    
+    parser = argparse.ArgumentParser(
+        description="Generate comprehensive test reports"
+    )
+    parser.add_argument(
+        "--artifacts-dir",
+        required=True,
+        help="Directory containing test artifacts",
+    )
+    parser.add_argument(
+        "--output-dir", required=True, help="Directory to output reports"
+    )
+
     args = parser.parse_args()
-    
+
     if not os.path.exists(args.artifacts_dir):
         print(f"Error: Artifacts directory not found: {args.artifacts_dir}")
         sys.exit(1)
-    
+
     # Generate report
     generator = TestReportGenerator(args.artifacts_dir, args.output_dir)
     generator.generate_report()
-    
+
     print("\nReport generation completed successfully!")
+
 
 if __name__ == "__main__":
     main()

@@ -6,8 +6,15 @@ without complex dependencies.
 """
 
 from PyQt5.QtWidgets import (
-    QMenuBar, QMenu, QAction, QMessageBox, QDialog, 
-    QVBoxLayout, QLabel, QPushButton, QTextEdit
+    QMenuBar,
+    QMenu,
+    QAction,
+    QMessageBox,
+    QDialog,
+    QVBoxLayout,
+    QLabel,
+    QPushButton,
+    QTextEdit,
 )
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QKeySequence, QFont
@@ -15,119 +22,127 @@ from PyQt5.QtGui import QKeySequence, QFont
 
 class SimpleMenuManager:
     """Simplified menu manager for the RFU Hub."""
-    
+
     def __init__(self, parent_window):
         """Initialize the menu manager."""
         self.parent_window = parent_window
         self.callbacks = {}
-    
+
     def create_menubar(self):
         """Create a complete menu bar for the RFU Hub."""
         menubar = self.parent_window.menuBar()
         menubar.clear()
-        
+
         # File Menu
-        file_menu = menubar.addMenu('&File')
-        
+        file_menu = menubar.addMenu("&File")
+
         # File menu actions
-        self._add_action(file_menu, '&New Project...', 'Ctrl+N', 'new_project')
-        self._add_action(file_menu, '&Open...', 'Ctrl+O', 'open_file')
+        self._add_action(file_menu, "&New Project...", "Ctrl+N", "new_project")
+        self._add_action(file_menu, "&Open...", "Ctrl+O", "open_file")
         file_menu.addSeparator()
-        self._add_action(file_menu, '&Save', 'Ctrl+S', 'save_file')
-        self._add_action(file_menu, 'Save &As...', 'Ctrl+Shift+S', 'save_as')
+        self._add_action(file_menu, "&Save", "Ctrl+S", "save_file")
+        self._add_action(file_menu, "Save &As...", "Ctrl+Shift+S", "save_as")
         file_menu.addSeparator()
-        self._add_action(file_menu, '&Export...', 'Ctrl+E', 'export_data')
-        self._add_action(file_menu, '&Import...', 'Ctrl+I', 'import_data')
+        self._add_action(file_menu, "&Export...", "Ctrl+E", "export_data")
+        self._add_action(file_menu, "&Import...", "Ctrl+I", "import_data")
         file_menu.addSeparator()
-        self._add_action(file_menu, 'Pr&eferences...', 'Ctrl+,', 'preferences')
+        self._add_action(file_menu, "Pr&eferences...", "Ctrl+,", "preferences")
         file_menu.addSeparator()
-        
-        exit_action = QAction('E&xit', self.parent_window)
-        exit_action.setShortcut(QKeySequence('Ctrl+Q'))
-        exit_action.setStatusTip('Exit the application')
+
+        exit_action = QAction("E&xit", self.parent_window)
+        exit_action.setShortcut(QKeySequence("Ctrl+Q"))
+        exit_action.setStatusTip("Exit the application")
         exit_action.triggered.connect(self.parent_window.close)
         file_menu.addAction(exit_action)
-        
+
         # Edit Menu
-        edit_menu = menubar.addMenu('&Edit')
-        self._add_action(edit_menu, '&Undo', 'Ctrl+Z', 'undo')
-        self._add_action(edit_menu, '&Redo', 'Ctrl+Y', 'redo')
+        edit_menu = menubar.addMenu("&Edit")
+        self._add_action(edit_menu, "&Undo", "Ctrl+Z", "undo")
+        self._add_action(edit_menu, "&Redo", "Ctrl+Y", "redo")
         edit_menu.addSeparator()
-        self._add_action(edit_menu, 'Cu&t', 'Ctrl+X', 'cut')
-        self._add_action(edit_menu, '&Copy', 'Ctrl+C', 'copy')
-        self._add_action(edit_menu, '&Paste', 'Ctrl+V', 'paste')
+        self._add_action(edit_menu, "Cu&t", "Ctrl+X", "cut")
+        self._add_action(edit_menu, "&Copy", "Ctrl+C", "copy")
+        self._add_action(edit_menu, "&Paste", "Ctrl+V", "paste")
         edit_menu.addSeparator()
-        self._add_action(edit_menu, 'Select &All', 'Ctrl+A', 'select_all')
+        self._add_action(edit_menu, "Select &All", "Ctrl+A", "select_all")
         edit_menu.addSeparator()
-        self._add_action(edit_menu, '&Find...', 'Ctrl+F', 'find_action')
-        self._add_action(edit_menu, '&Replace...', 'Ctrl+H', 'replace_action')
-        
+        self._add_action(edit_menu, "&Find...", "Ctrl+F", "find_action")
+        self._add_action(edit_menu, "&Replace...", "Ctrl+H", "replace_action")
+
         # View Menu
-        view_menu = menubar.addMenu('&View')
-        self._add_action(view_menu, 'Zoom &In', 'Ctrl++', 'zoom_in')
-        self._add_action(view_menu, 'Zoom &Out', 'Ctrl+-', 'zoom_out')
-        self._add_action(view_menu, 'Reset &Zoom', 'Ctrl+0', 'zoom_reset')
+        view_menu = menubar.addMenu("&View")
+        self._add_action(view_menu, "Zoom &In", "Ctrl++", "zoom_in")
+        self._add_action(view_menu, "Zoom &Out", "Ctrl+-", "zoom_out")
+        self._add_action(view_menu, "Reset &Zoom", "Ctrl+0", "zoom_reset")
         view_menu.addSeparator()
-        
+
         # Theme submenu
-        theme_menu = view_menu.addMenu('&Theme')
-        self._add_action(theme_menu, '&Light Theme', '', 'light_theme')
-        self._add_action(theme_menu, '&Dark Theme', '', 'dark_theme')
-        
+        theme_menu = view_menu.addMenu("&Theme")
+        self._add_action(theme_menu, "&Light Theme", "", "light_theme")
+        self._add_action(theme_menu, "&Dark Theme", "", "dark_theme")
+
         view_menu.addSeparator()
-        self._add_action(view_menu, '&Refresh', 'F5', 'refresh')
-        
+        self._add_action(view_menu, "&Refresh", "F5", "refresh")
+
         # Tools Menu
-        tools_menu = menubar.addMenu('&Tools')
-        self._add_action(tools_menu, '&Options...', '', 'options')
+        tools_menu = menubar.addMenu("&Tools")
+        self._add_action(tools_menu, "&Options...", "", "options")
         tools_menu.addSeparator()
-        self._add_action(tools_menu, '&Log Viewer...', '', 'log_viewer')
-        self._add_action(tools_menu, '&Performance Monitor...', '', 'performance')
+        self._add_action(tools_menu, "&Log Viewer...", "", "log_viewer")
+        self._add_action(
+            tools_menu, "&Performance Monitor...", "", "performance"
+        )
         tools_menu.addSeparator()
-        self._add_action(tools_menu, '&Reset Settings...', '', 'reset_settings')
-        
+        self._add_action(
+            tools_menu, "&Reset Settings...", "", "reset_settings"
+        )
+
         # Help Menu
-        help_menu = menubar.addMenu('&Help')
-        self._add_action(help_menu, '&User Guide', 'F1', 'user_guide')
-        self._add_action(help_menu, '&Keyboard Shortcuts...', 'Ctrl+?', 'shortcuts')
+        help_menu = menubar.addMenu("&Help")
+        self._add_action(help_menu, "&User Guide", "F1", "user_guide")
+        self._add_action(
+            help_menu, "&Keyboard Shortcuts...", "Ctrl+?", "shortcuts"
+        )
         help_menu.addSeparator()
-        self._add_action(help_menu, '&About...', '', 'about')
-        
+        self._add_action(help_menu, "&About...", "", "about")
+
         return menubar
-    
+
     def _add_action(self, menu, text, shortcut, callback_name):
         """Add an action to a menu."""
         action = QAction(text, self.parent_window)
-        
+
         if shortcut:
             action.setShortcut(QKeySequence(shortcut))
-        
+
         action.triggered.connect(lambda: self._handle_action(callback_name))
         menu.addAction(action)
         return action
-    
+
     def _handle_action(self, callback_name):
         """Handle menu action."""
         if callback_name in self.callbacks:
             self.callbacks[callback_name]()
         else:
             # Default handler
-            if hasattr(self.parent_window, 'status_bar'):
-                self.parent_window.status_bar.showMessage(f"{callback_name.replace('_', ' ').title()} - Feature coming soon...")
-            
-            if callback_name == 'about':
+            if hasattr(self.parent_window, "status_bar"):
+                self.parent_window.status_bar.showMessage(
+                    f"{callback_name.replace('_', ' ').title()} - Feature coming soon..."
+                )
+
+            if callback_name == "about":
                 self._show_about()
-            elif callback_name == 'user_guide':
+            elif callback_name == "user_guide":
                 self._show_help()
-            elif callback_name == 'shortcuts':
+            elif callback_name == "shortcuts":
                 self._show_shortcuts()
-            elif callback_name == 'log_viewer':
+            elif callback_name == "log_viewer":
                 self._show_log_viewer()
-    
+
     def register_callback(self, action_name, callback):
         """Register a callback for a menu action."""
         self.callbacks[action_name] = callback
-    
+
     def _show_about(self):
         """Show about dialog."""
         QMessageBox.about(
@@ -138,21 +153,22 @@ class SimpleMenuManager:
             <p>A comprehensive suite of file management, analysis, and security tools.</p>
             <p>© 2025 Richard Noragon</p>
             <p>This software provides powerful utilities for file operations, 
-            metadata management, security, and system analysis.</p>"""
+            metadata management, security, and system analysis.</p>""",
         )
-    
+
     def _show_help(self):
         """Show help dialog."""
         dialog = QDialog(self.parent_window)
         dialog.setWindowTitle("User Guide")
         dialog.setModal(True)
         dialog.resize(500, 400)
-        
+
         layout = QVBoxLayout(dialog)
-        
+
         help_text = QTextEdit()
         help_text.setReadOnly(True)
-        help_text.setHtml("""
+        help_text.setHtml(
+            """
         <h2>Richard's File Utilities - User Guide</h2>
         
         <h3>Overview</h3>
@@ -180,27 +196,29 @@ class SimpleMenuManager:
         
         <h3>Menu System</h3>
         <p>Use the menu bar to access file operations, preferences, and help resources.</p>
-        """)
+        """
+        )
         layout.addWidget(help_text)
-        
+
         close_btn = QPushButton("Close")
         close_btn.clicked.connect(dialog.accept)
         layout.addWidget(close_btn)
-        
+
         dialog.exec_()
-    
+
     def _show_shortcuts(self):
         """Show keyboard shortcuts dialog."""
         dialog = QDialog(self.parent_window)
         dialog.setWindowTitle("Keyboard Shortcuts")
         dialog.setModal(True)
         dialog.resize(400, 350)
-        
+
         layout = QVBoxLayout(dialog)
-        
+
         shortcuts_text = QTextEdit()
         shortcuts_text.setReadOnly(True)
-        shortcuts_text.setHtml("""
+        shortcuts_text.setHtml(
+            """
         <h2>Keyboard Shortcuts</h2>
         
         <h3>File Operations</h3>
@@ -239,37 +257,39 @@ class SimpleMenuManager:
         <tr><td><b>F1</b></td><td>User Guide</td></tr>
         <tr><td><b>Ctrl+?</b></td><td>Keyboard Shortcuts</td></tr>
         </table>
-        """)
+        """
+        )
         layout.addWidget(shortcuts_text)
-        
+
         close_btn = QPushButton("Close")
         close_btn.clicked.connect(dialog.accept)
         layout.addWidget(close_btn)
-        
+
         dialog.exec_()
-    
+
     def _show_log_viewer(self):
         """Show log viewer dialog."""
         dialog = QDialog(self.parent_window)
         dialog.setWindowTitle("Log Viewer")
         dialog.setModal(True)
         dialog.resize(600, 400)
-        
+
         layout = QVBoxLayout(dialog)
-        
+
         log_text = QTextEdit()
         log_text.setReadOnly(True)
         log_text.setFont(QFont("Consolas", 9))
-        
+
         # Try to load logs
         try:
             import os
+
             log_file = os.path.join("src", "logs", "rfu.log")
             if not os.path.exists(log_file):
                 log_file = os.path.join("logs", "rfu.log")
-            
+
             if os.path.exists(log_file):
-                with open(log_file, 'r', encoding='utf-8') as f:
+                with open(log_file, "r", encoding="utf-8") as f:
                     content = f.read()
                 log_text.setPlainText(content)
                 # Scroll to bottom
@@ -278,11 +298,11 @@ class SimpleMenuManager:
                 log_text.setPlainText("No log file found.")
         except Exception as e:
             log_text.setPlainText(f"Error loading log file: {e}")
-        
+
         layout.addWidget(log_text)
-        
+
         close_btn = QPushButton("Close")
         close_btn.clicked.connect(dialog.accept)
         layout.addWidget(close_btn)
-        
+
         dialog.exec_()

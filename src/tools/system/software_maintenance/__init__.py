@@ -24,26 +24,24 @@ from .core.security_manager import SecurityManager
 # Import the GUI class for external access
 try:
     from .gui.maintenance_hub import (
-        SoftwareMaintenanceHub as SoftwareMaintenanceGUI
+        SoftwareMaintenanceHub as SoftwareMaintenanceGUI,
     )
 except ImportError:
     # Fallback placeholder if GUI dependencies are missing
-    from PyQt5.QtWidgets import (
-        QMainWindow, QLabel, QVBoxLayout, QWidget
-    )
-    
+    from PyQt5.QtWidgets import QMainWindow, QLabel, QVBoxLayout, QWidget
+
     class SoftwareMaintenanceGUI(QMainWindow):
         """Placeholder class when GUI dependencies are missing."""
-        
+
         def __init__(self):
             super().__init__()
             self.setWindowTitle("Software Maintenance - Dependencies Missing")
             self.setGeometry(100, 100, 600, 400)
-            
+
             central_widget = QWidget()
             self.setCentralWidget(central_widget)
             layout = QVBoxLayout(central_widget)
-            
+
             label = QLabel(
                 "Software Maintenance Toolkit GUI is not available.\n\n"
                 "Missing dependencies detected."
@@ -51,9 +49,10 @@ except ImportError:
             label.setWordWrap(True)
             layout.addWidget(label)
 
+
 __all__ = [
-    'MaintenanceToolBase',
-    'SoftwareDetector',
-    'SecurityManager',
-    'SoftwareMaintenanceGUI'
+    "MaintenanceToolBase",
+    "SoftwareDetector",
+    "SecurityManager",
+    "SoftwareMaintenanceGUI",
 ]

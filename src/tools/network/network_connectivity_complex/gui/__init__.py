@@ -14,9 +14,9 @@ from .widgets.wifi_analyzer_widget import WiFiAnalyzerWidget
 from .widgets.lan_file_transfer_widget import LANFileTransferWidget
 
 __all__ = [
-    'NetworkConnectivityHub',
-    'BandwidthMonitorWidget',
-    'PortScannerWidget',
-    'WiFiAnalyzerWidget',
-    'LANFileTransferWidget'
+    "NetworkConnectivityHub",
+    "BandwidthMonitorWidget",
+    "PortScannerWidget",
+    "WiFiAnalyzerWidget",
+    "LANFileTransferWidget",
 ]

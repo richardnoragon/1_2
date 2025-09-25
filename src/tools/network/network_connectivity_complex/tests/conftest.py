@@ -11,7 +11,11 @@ from typing import Dict, List, Any, Optional
 
 # Import network connectivity components
 from ..core.network_base import NetworkToolBase
-from ..core.platform_network import PlatformNetworkDetector, NetworkInterface, NetworkStats
+from ..core.platform_network import (
+    PlatformNetworkDetector,
+    NetworkInterface,
+    NetworkStats,
+)
 from ..core.connection_manager import ConnectionManager, ConnectionState
 from ..core.security_validator import SecurityValidator
 from ..core.performance_analyzer import PerformanceAnalyzer
@@ -55,12 +59,12 @@ def test_data_dir(temp_dir):
     """Create test data directory with sample files."""
     data_dir = temp_dir / "test_data"
     data_dir.mkdir()
-    
+
     # Create sample test files
     (data_dir / "small_file.txt").write_text("Small test file content")
     (data_dir / "medium_file.txt").write_text("Medium test file content" * 100)
     (data_dir / "large_file.txt").write_text("Large test file content" * 1000)
-    
+
     return data_dir
 
 
@@ -77,7 +81,7 @@ def mock_network_interface():
         is_up=True,
         is_wireless=False,
         speed_mbps=1000,
-        mtu=1500
+        mtu=1500,
     )
 
 
@@ -93,7 +97,7 @@ def mock_wireless_interface():
         is_up=True,
         is_wireless=True,
         speed_mbps=150,
-        mtu=1500
+        mtu=1500,
     )
 
 
@@ -110,17 +114,19 @@ def mock_network_stats():
         errors_out=0,
         drops_in=0,
         drops_out=0,
-        timestamp=datetime.now()
+        timestamp=datetime.now(),
     )
 
 
 @pytest.fixture
-def mock_platform_detector(mock_network_interface, mock_wireless_interface, mock_network_stats):
+def mock_platform_detector(
+    mock_network_interface, mock_wireless_interface, mock_network_stats
+):
     """Create a mock platform network detector."""
     detector = Mock(spec=PlatformNetworkDetector)
     detector.get_network_interfaces.return_value = [
         mock_network_interface,
-        mock_wireless_interface
+        mock_wireless_interface,
     ]
     detector.get_interface_stats.return_value = mock_network_stats
     detector.is_interface_wireless.side_effect = lambda name: name == "wlan0"
@@ -139,31 +145,33 @@ def mock_config_service():
             "default_timeout": 5000,
             "max_concurrent_operations": 10,
             "enable_logging": True,
-            "log_level": "INFO"
+            "log_level": "INFO",
         },
         "bandwidth_monitor": {
             "update_interval": 1000,
             "history_size": 100,
-            "enable_alerts": True
+            "enable_alerts": True,
         },
         "port_scanner": {
             "default_timeout": 3000,
             "max_threads": 50,
-            "scan_techniques": ["tcp_connect", "tcp_syn"]
+            "scan_techniques": ["tcp_connect", "tcp_syn"],
         },
         "wifi_analyzer": {
             "scan_interval": 5000,
             "channel_bands": ["2.4GHz", "5GHz"],
-            "enable_security_analysis": True
+            "enable_security_analysis": True,
         },
         "lan_file_transfer": {
             "discovery_port": 8888,
             "transfer_port_range": [9000, 9100],
             "encryption_enabled": True,
-            "authentication_required": True
-        }
+            "authentication_required": True,
+        },
     }
-    service.get_setting.side_effect = lambda key, default=None: service.get_configuration().get(key, default)
+    service.get_setting.side_effect = (
+        lambda key, default=None: service.get_configuration().get(key, default)
+    )
     return service
 
 
@@ -196,40 +204,80 @@ def mock_metrics_service():
 
 # Tool Fixtures
 @pytest.fixture
-def bandwidth_monitor(mock_platform_detector, mock_config_service, mock_logging_service):
+def bandwidth_monitor(
+    mock_platform_detector, mock_config_service, mock_logging_service
+):
     """Create a bandwidth monitor instance for testing."""
-    with patch('network_connectivity.tools.bandwidth_monitor.get_config_service', return_value=mock_config_service), \
-         patch('network_connectivity.tools.bandwidth_monitor.get_logging_service', return_value=mock_logging_service):
+    with (
+        patch(
+            "network_connectivity.tools.bandwidth_monitor.get_config_service",
+            return_value=mock_config_service,
+        ),
+        patch(
+            "network_connectivity.tools.bandwidth_monitor.get_logging_service",
+            return_value=mock_logging_service,
+        ),
+    ):
         monitor = BandwidthMonitor()
         monitor.platform_detector = mock_platform_detector
         return monitor
 
 
 @pytest.fixture
-def port_scanner(mock_platform_detector, mock_config_service, mock_logging_service):
+def port_scanner(
+    mock_platform_detector, mock_config_service, mock_logging_service
+):
     """Create a port scanner instance for testing."""
-    with patch('network_connectivity.tools.port_scanner.get_config_service', return_value=mock_config_service), \
-         patch('network_connectivity.tools.port_scanner.get_logging_service', return_value=mock_logging_service):
+    with (
+        patch(
+            "network_connectivity.tools.port_scanner.get_config_service",
+            return_value=mock_config_service,
+        ),
+        patch(
+            "network_connectivity.tools.port_scanner.get_logging_service",
+            return_value=mock_logging_service,
+        ),
+    ):
         scanner = PortScanner()
         scanner.platform_detector = mock_platform_detector
         return scanner
 
 
 @pytest.fixture
-def wifi_analyzer(mock_platform_detector, mock_config_service, mock_logging_service):
+def wifi_analyzer(
+    mock_platform_detector, mock_config_service, mock_logging_service
+):
     """Create a WiFi analyzer instance for testing."""
-    with patch('network_connectivity.tools.wifi_analyzer.get_config_service', return_value=mock_config_service), \
-         patch('network_connectivity.tools.wifi_analyzer.get_logging_service', return_value=mock_logging_service):
+    with (
+        patch(
+            "network_connectivity.tools.wifi_analyzer.get_config_service",
+            return_value=mock_config_service,
+        ),
+        patch(
+            "network_connectivity.tools.wifi_analyzer.get_logging_service",
+            return_value=mock_logging_service,
+        ),
+    ):
         analyzer = WiFiAnalyzer()
         analyzer.platform_detector = mock_platform_detector
         return analyzer
 
 
 @pytest.fixture
-def lan_file_transfer(mock_platform_detector, mock_config_service, mock_logging_service):
+def lan_file_transfer(
+    mock_platform_detector, mock_config_service, mock_logging_service
+):
     """Create a LAN file transfer instance for testing."""
-    with patch('network_connectivity.tools.lan_file_transfer.get_config_service', return_value=mock_config_service), \
-         patch('network_connectivity.tools.lan_file_transfer.get_logging_service', return_value=mock_logging_service):
+    with (
+        patch(
+            "network_connectivity.tools.lan_file_transfer.get_config_service",
+            return_value=mock_config_service,
+        ),
+        patch(
+            "network_connectivity.tools.lan_file_transfer.get_logging_service",
+            return_value=mock_logging_service,
+        ),
+    ):
         transfer = LANFileTransfer()
         transfer.platform_detector = mock_platform_detector
         return transfer
@@ -263,16 +311,16 @@ def qt_app():
     try:
         from PyQt6.QtWidgets import QApplication
         import sys
-        
+
         app = QApplication.instance()
         if app is None:
             app = QApplication(sys.argv)
-        
+
         yield app
-        
+
         # Clean up
         app.processEvents()
-        
+
     except ImportError:
         pytest.skip("PyQt6 not available for GUI tests")
 
@@ -283,15 +331,15 @@ def mock_qt_widget():
     try:
         from PyQt6.QtWidgets import QWidget
         from unittest.mock import Mock
-        
+
         widget = Mock(spec=QWidget)
         widget.show = Mock()
         widget.hide = Mock()
         widget.close = Mock()
         widget.update = Mock()
-        
+
         return widget
-        
+
     except ImportError:
         pytest.skip("PyQt6 not available for GUI tests")
 
@@ -302,15 +350,31 @@ def sample_scan_results():
     """Sample port scan results for testing."""
     return {
         "192.168.1.1": {
-            "22": {"state": "open", "service": "ssh", "version": "OpenSSH 8.0"},
-            "80": {"state": "open", "service": "http", "version": "Apache 2.4"},
-            "443": {"state": "open", "service": "https", "version": "Apache 2.4"}
+            "22": {
+                "state": "open",
+                "service": "ssh",
+                "version": "OpenSSH 8.0",
+            },
+            "80": {
+                "state": "open",
+                "service": "http",
+                "version": "Apache 2.4",
+            },
+            "443": {
+                "state": "open",
+                "service": "https",
+                "version": "Apache 2.4",
+            },
         },
         "192.168.1.100": {
             "22": {"state": "closed"},
             "80": {"state": "filtered"},
-            "443": {"state": "open", "service": "https", "version": "nginx 1.18"}
-        }
+            "443": {
+                "state": "open",
+                "service": "https",
+                "version": "nginx 1.18",
+            },
+        },
     }
 
 
@@ -325,7 +389,7 @@ def sample_wifi_networks():
             "frequency": 2437,
             "signal_strength": -45,
             "security": ["WPA2-PSK"],
-            "encryption": "AES"
+            "encryption": "AES",
         },
         {
             "ssid": "TestNetwork2",
@@ -334,8 +398,8 @@ def sample_wifi_networks():
             "frequency": 5180,
             "signal_strength": -60,
             "security": ["WPA3-SAE"],
-            "encryption": "AES"
-        }
+            "encryption": "AES",
+        },
     ]
 
 
@@ -349,22 +413,22 @@ def sample_bandwidth_data():
             "bytes_sent": 1000,
             "bytes_received": 2000,
             "upload_speed": 100,
-            "download_speed": 200
+            "download_speed": 200,
         },
         {
             "timestamp": base_time - timedelta(seconds=5),
             "bytes_sent": 1500,
             "bytes_received": 3000,
             "upload_speed": 100,
-            "download_speed": 200
+            "download_speed": 200,
         },
         {
             "timestamp": base_time,
             "bytes_sent": 2000,
             "bytes_received": 4000,
             "upload_speed": 100,
-            "download_speed": 200
-        }
+            "download_speed": 200,
+        },
     ]
 
 
@@ -374,10 +438,10 @@ def performance_test_config():
     """Configuration for performance tests."""
     return {
         "max_execution_time": 10.0,  # seconds
-        "max_memory_usage": 100,     # MB
-        "max_cpu_usage": 80,         # percentage
+        "max_memory_usage": 100,  # MB
+        "max_cpu_usage": 80,  # percentage
         "iterations": 100,
-        "concurrent_operations": 10
+        "concurrent_operations": 10,
     }
 
 
@@ -385,11 +449,11 @@ def performance_test_config():
 def stress_test_config():
     """Configuration for stress tests."""
     return {
-        "duration": 60,              # seconds
+        "duration": 60,  # seconds
         "max_connections": 1000,
-        "request_rate": 100,         # requests per second
-        "memory_limit": 500,         # MB
-        "cpu_limit": 90              # percentage
+        "request_rate": 100,  # requests per second
+        "memory_limit": 500,  # MB
+        "cpu_limit": 90,  # percentage
     }
 
 
@@ -397,6 +461,7 @@ def stress_test_config():
 @pytest.fixture
 def network_error_simulator():
     """Simulate various network errors for testing."""
+
     class NetworkErrorSimulator:
         def __init__(self):
             self.error_types = [
@@ -405,9 +470,9 @@ def network_error_simulator():
                 "host_unreachable",
                 "network_unreachable",
                 "dns_resolution_failed",
-                "ssl_handshake_failed"
+                "ssl_handshake_failed",
             ]
-        
+
         def simulate_error(self, error_type: str):
             """Simulate a specific network error."""
             if error_type == "connection_timeout":
@@ -424,43 +489,31 @@ def network_error_simulator():
                 raise OSError("SSL handshake failed")
             else:
                 raise ValueError(f"Unknown error type: {error_type}")
-    
+
     return NetworkErrorSimulator()
 
 
 # Test Markers
 def pytest_configure(config):
     """Configure pytest markers."""
-    config.addinivalue_line(
-        "markers", "unit: mark test as a unit test"
-    )
+    config.addinivalue_line("markers", "unit: mark test as a unit test")
     config.addinivalue_line(
         "markers", "integration: mark test as an integration test"
     )
-    config.addinivalue_line(
-        "markers", "gui: mark test as a GUI test"
-    )
+    config.addinivalue_line("markers", "gui: mark test as a GUI test")
     config.addinivalue_line(
         "markers", "performance: mark test as a performance test"
     )
-    config.addinivalue_line(
-        "markers", "stress: mark test as a stress test"
-    )
+    config.addinivalue_line("markers", "stress: mark test as a stress test")
     config.addinivalue_line(
         "markers", "network: mark test as requiring network access"
     )
-    config.addinivalue_line(
-        "markers", "slow: mark test as slow running"
-    )
+    config.addinivalue_line("markers", "slow: mark test as slow running")
     config.addinivalue_line(
         "markers", "windows: mark test as Windows-specific"
     )
-    config.addinivalue_line(
-        "markers", "macos: mark test as macOS-specific"
-    )
-    config.addinivalue_line(
-        "markers", "linux: mark test as Linux-specific"
-    )
+    config.addinivalue_line("markers", "macos: mark test as macOS-specific")
+    config.addinivalue_line("markers", "linux: mark test as Linux-specific")
 
 
 # Test Collection Hooks
@@ -476,9 +529,12 @@ def pytest_collection_modifyitems(config, items):
             item.add_marker(pytest.mark.gui)
         elif "performance" in str(item.fspath):
             item.add_marker(pytest.mark.performance)
-        
+
         # Add slow marker for tests that might take longer
-        if any(keyword in item.name.lower() for keyword in ["stress", "performance", "large"]):
+        if any(
+            keyword in item.name.lower()
+            for keyword in ["stress", "performance", "large"]
+        ):
             item.add_marker(pytest.mark.slow)
 
 
@@ -487,19 +543,24 @@ def pytest_collection_modifyitems(config, items):
 def cleanup_threads():
     """Ensure all threads are cleaned up after tests."""
     initial_thread_count = threading.active_count()
-    
+
     yield
-    
+
     # Wait for threads to finish
     timeout = 5.0
     start_time = time.time()
-    
-    while threading.active_count() > initial_thread_count and time.time() - start_time < timeout:
+
+    while (
+        threading.active_count() > initial_thread_count
+        and time.time() - start_time < timeout
+    ):
         time.sleep(0.1)
-    
+
     # Log warning if threads didn't clean up
     if threading.active_count() > initial_thread_count:
-        print(f"Warning: {threading.active_count() - initial_thread_count} threads still active after test")
+        print(
+            f"Warning: {threading.active_count() - initial_thread_count} threads still active after test"
+        )
 
 
 @pytest.fixture(autouse=True)
@@ -507,6 +568,6 @@ def reset_singletons():
     """Reset singleton instances between tests."""
     # Reset any singleton instances that might interfere with tests
     yield
-    
+
     # Clean up any cached instances
     # This would be implemented based on the actual singleton patterns used

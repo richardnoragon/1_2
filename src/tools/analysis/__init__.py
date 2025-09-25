@@ -3,7 +3,7 @@ Richard's File Utilities - Analysis Tools
 
 This package contains file analysis utilities including:
 - Size Analyzer: Disk space usage analysis
-- Duplicate Finder: Find and manage duplicate files  
+- Duplicate Finder: Find and manage duplicate files
 - Checksum Calculator: File integrity verification
 """
 
@@ -51,12 +51,12 @@ except ImportError as e:
 
 # Export all available classes
 __all__ = [
-    'SizeAnalyzerGUI',
-    'DuplicateFinderApp', 
-    'ChecksumGUI',
-    'SizeAnalyzer',
-    'SizeAnalyzerWorker',
-    'SizeAnalyzerConfig'
+    "SizeAnalyzerGUI",
+    "DuplicateFinderApp",
+    "ChecksumGUI",
+    "SizeAnalyzer",
+    "SizeAnalyzerWorker",
+    "SizeAnalyzerConfig",
 ]
 
 # Provide module information for debugging
@@ -65,12 +65,12 @@ __all__ = [
 def get_available_classes():
     """Return a dictionary of available classes and their status."""
     return {
-        'SizeAnalyzerGUI': SizeAnalyzerGUI is not None,
-        'DuplicateFinderApp': DuplicateFinderApp is not None,
-        'ChecksumGUI': ChecksumGUI is not None,
-        'SizeAnalyzer': SizeAnalyzer is not None,
-        'SizeAnalyzerWorker': SizeAnalyzerWorker is not None,
-        'SizeAnalyzerConfig': SizeAnalyzerConfig is not None
+        "SizeAnalyzerGUI": SizeAnalyzerGUI is not None,
+        "DuplicateFinderApp": DuplicateFinderApp is not None,
+        "ChecksumGUI": ChecksumGUI is not None,
+        "SizeAnalyzer": SizeAnalyzer is not None,
+        "SizeAnalyzerWorker": SizeAnalyzerWorker is not None,
+        "SizeAnalyzerConfig": SizeAnalyzerConfig is not None,
     }
 
 
@@ -78,7 +78,7 @@ def validate_imports():
     """Validate that all expected imports are available."""
     available = get_available_classes()
     missing = [name for name, status in available.items() if not status]
-    
+
     if missing:
         print(f"Missing imports in analysis package: {missing}")
         return False

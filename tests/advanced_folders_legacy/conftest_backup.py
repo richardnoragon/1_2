@@ -13,35 +13,35 @@ from src.tools.file_management.advanced_folders_legacy.models.folder_configurati
     FolderConfiguration,
     DirectoryTarget,
     PerformanceSettings,
-    SecuritySettings
+    SecuritySettings,
 )
 from src.tools.file_management.advanced_folders_legacy.models.search_parameters import (
     SearchParameters,
     FileTypeFilter,
     SizeFilter,
     DateFilter,
-    ContentSearchOptions
+    ContentSearchOptions,
 )
 from src.tools.file_management.advanced_folders_legacy.validation.validator_framework import (
-    ValidationFramework
+    ValidationFramework,
 )
 from src.tools.file_management.advanced_folders_legacy.repository.folder_repository import (
     DatabaseConnectionManager,
-    FolderRepository
+    FolderRepository,
 )
 from src.tools.file_management.advanced_folders_legacy.error_handling.error_handler import (
     ErrorHandler,
-    GracefulDegradation
+    GracefulDegradation,
 )
 
 
 class TestConfig:
     """Testing configuration and constants."""
-    
+
     TEST_DB_NAME = ":memory:"
     TEST_DATA_DIR = Path(__file__).parent / "data"
     TEST_TEMP_DIR = Path(tempfile.gettempdir()) / "advanced_folders_tests"
-    
+
     # Test folder configurations
     SAMPLE_FOLDER_CONFIGS = [
         {
@@ -49,24 +49,24 @@ class TestConfig:
             "path": "/test/documents",
             "folder_type": FolderType.SMART,
             "auto_organize": True,
-            "priority": 1
+            "priority": 1,
         },
         {
             "name": "Downloads",
             "path": "/test/downloads",
             "folder_type": FolderType.MONITORED,
             "auto_organize": False,
-            "priority": 2
+            "priority": 2,
         },
         {
             "name": "Archive",
             "path": "/test/archive",
             "folder_type": FolderType.ARCHIVE,
             "auto_organize": True,
-            "priority": 3
-        }
+            "priority": 3,
+        },
     ]
-    
+
     # Test search parameters
     SAMPLE_SEARCH_PARAMS = [
         {
@@ -74,17 +74,17 @@ class TestConfig:
             "name": "PDF Files",
             "pattern": "*.pdf",
             "case_sensitive": False,
-            "include_subdirs": True
+            "include_subdirs": True,
         },
         {
             "folder_config_id": 1,
             "name": "Large Files",
             "min_size": 100 * 1024 * 1024,  # 100MB
             "case_sensitive": False,
-            "include_subdirs": True
-        }
+            "include_subdirs": True,
+        },
     ]
-    
+
     # Test file metadata
     SAMPLE_FILE_METADATA = [
         {
@@ -93,7 +93,7 @@ class TestConfig:
             "file_name": "sample.pdf",
             "file_size": 1024 * 1024,  # 1MB
             "file_type": "pdf",
-            "checksum": "abcd1234"
+            "checksum": "abcd1234",
         },
         {
             "folder_config_id": 2,
@@ -101,8 +101,8 @@ class TestConfig:
             "file_name": "archive.zip",
             "file_size": 50 * 1024 * 1024,  # 50MB
             "file_type": "zip",
-            "checksum": "efgh5678"
-        }
+            "checksum": "efgh5678",
+        },
     ]
 
 
@@ -120,14 +120,18 @@ def temp_db() -> Generator[str, None, None]:
 
 
 @pytest.fixture
-def db_manager(temp_db: str) -> Generator[AdvancedFoldersDBManager, None, None]:
+def db_manager(
+    temp_db: str,
+) -> Generator[AdvancedFoldersDBManager, None, None]:
     """Create a database manager with test database."""
     # Mock the main database manager
     mock_main_db = MagicMock()
     mock_main_db.get_connection.return_value = sqlite3.connect(temp_db)
-    
-    with patch('src.tools.advanced_folders.database.database_manager.get_database_manager', 
-               return_value=mock_main_db):
+
+    with patch(
+        "src.tools.advanced_folders.database.database_manager.get_database_manager",
+        return_value=mock_main_db,
+    ):
         manager = AdvancedFoldersDBManager()
         yield manager
 
@@ -141,7 +145,7 @@ def sample_folder_config() -> FolderConfiguration:
         folder_type=FolderType.SMART,
         auto_organize=True,
         priority=1,
-        description="Test folder configuration"
+        description="Test folder configuration",
     )
 
 
@@ -153,7 +157,7 @@ def sample_search_parameter() -> SearchParameter:
         name="Test Search",
         pattern="*.txt",
         case_sensitive=False,
-        include_subdirs=True
+        include_subdirs=True,
     )
 
 
@@ -166,16 +170,18 @@ def sample_file_metadata() -> FileMetadata:
         file_name="file.txt",
         file_size=1024,
         file_type="txt",
-        checksum="test_checksum"
+        checksum="test_checksum",
     )
 
 
 @pytest.fixture
 def configuration_manager() -> Generator[ConfigurationManager, None, None]:
     """Create a configuration manager for testing."""
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
+    with tempfile.NamedTemporaryFile(
+        mode="w", suffix=".json", delete=False
+    ) as f:
         config_path = Path(f.name)
-    
+
     try:
         manager = ConfigurationManager(config_path)
         yield manager
@@ -185,8 +191,9 @@ def configuration_manager() -> Generator[ConfigurationManager, None, None]:
 
 
 @pytest.fixture
-def test_data_setup(db_manager: AdvancedFoldersDBManager, 
-                   test_config: TestConfig) -> Dict[str, Any]:
+def test_data_setup(
+    db_manager: AdvancedFoldersDBManager, test_config: TestConfig
+) -> Dict[str, Any]:
     """Set up test data in the database."""
     # Create folder configurations
     folder_ids = []
@@ -194,25 +201,25 @@ def test_data_setup(db_manager: AdvancedFoldersDBManager,
         folder_config = FolderConfiguration(**config_data)
         folder_id = db_manager.create_folder_configuration(folder_config)
         folder_ids.append(folder_id)
-    
+
     # Create search parameters
     search_ids = []
     for search_data in test_config.SAMPLE_SEARCH_PARAMS:
         search_param = SearchParameter(**search_data)
         search_id = db_manager.create_search_parameter(search_param)
         search_ids.append(search_id)
-    
+
     # Create file metadata
     metadata_ids = []
     for metadata_data in test_config.SAMPLE_FILE_METADATA:
         file_metadata = FileMetadata(**metadata_data)
         metadata_id = db_manager.insert_file_metadata(file_metadata)
         metadata_ids.append(metadata_id)
-    
+
     return {
-        'folder_ids': folder_ids,
-        'search_ids': search_ids,
-        'metadata_ids': metadata_ids
+        "folder_ids": folder_ids,
+        "search_ids": search_ids,
+        "metadata_ids": metadata_ids,
     }
 
 
@@ -220,30 +227,28 @@ def test_data_setup(db_manager: AdvancedFoldersDBManager,
 def pytest_configure(config):
     """Configure pytest with custom markers."""
     config.addinivalue_line(
-        "markers", 
-        "unit: marks tests as unit tests (fast, isolated)"
+        "markers", "unit: marks tests as unit tests (fast, isolated)"
     )
     config.addinivalue_line(
-        "markers", 
-        "integration: marks tests as integration tests (slower, database)"
+        "markers",
+        "integration: marks tests as integration tests (slower, database)",
     )
     config.addinivalue_line(
-        "markers", 
-        "performance: marks tests as performance tests (timing sensitive)"
+        "markers",
+        "performance: marks tests as performance tests (timing sensitive)",
     )
     config.addinivalue_line(
-        "markers", 
-        "database: marks tests that require database access"
+        "markers", "database: marks tests that require database access"
     )
     config.addinivalue_line(
-        "markers", 
-        "filesystem: marks tests that require filesystem access"
+        "markers", "filesystem: marks tests that require filesystem access"
     )
 
 
 # Custom assertions
-def assert_folder_config_equal(actual: FolderConfiguration, 
-                              expected: FolderConfiguration) -> None:
+def assert_folder_config_equal(
+    actual: FolderConfiguration, expected: FolderConfiguration
+) -> None:
     """Assert that two folder configurations are equal."""
     assert actual.name == expected.name
     assert actual.path == expected.path
@@ -253,8 +258,9 @@ def assert_folder_config_equal(actual: FolderConfiguration,
     assert actual.description == expected.description
 
 
-def assert_search_param_equal(actual: SearchParameter, 
-                             expected: SearchParameter) -> None:
+def assert_search_param_equal(
+    actual: SearchParameter, expected: SearchParameter
+) -> None:
     """Assert that two search parameters are equal."""
     assert actual.folder_config_id == expected.folder_config_id
     assert actual.name == expected.name
@@ -263,8 +269,9 @@ def assert_search_param_equal(actual: SearchParameter,
     assert actual.include_subdirs == expected.include_subdirs
 
 
-def assert_file_metadata_equal(actual: FileMetadata, 
-                              expected: FileMetadata) -> None:
+def assert_file_metadata_equal(
+    actual: FileMetadata, expected: FileMetadata
+) -> None:
     """Assert that two file metadata objects are equal."""
     assert actual.folder_config_id == expected.folder_config_id
     assert actual.file_path == expected.file_path

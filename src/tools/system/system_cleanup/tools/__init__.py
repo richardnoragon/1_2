@@ -10,8 +10,8 @@ from .log_cleaner import LogCleaner
 from .windows_cache_cleaner import WindowsCacheCleaner
 
 __all__ = [
-    'TempFilesCleaner',
-    'CacheCleaner', 
-    'LogCleaner',
-    'WindowsCacheCleaner'
+    "TempFilesCleaner",
+    "CacheCleaner",
+    "LogCleaner",
+    "WindowsCacheCleaner",
 ]

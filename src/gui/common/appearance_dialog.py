@@ -1,7 +1,13 @@
 """Dialog for configuring application appearance settings."""
+
 from PyQt5.QtWidgets import (
-    QDialog, QVBoxLayout, QHBoxLayout, QLabel,
-    QComboBox, QSpinBox, QPushButton
+    QDialog,
+    QVBoxLayout,
+    QHBoxLayout,
+    QLabel,
+    QComboBox,
+    QSpinBox,
+    QPushButton,
 )
 from .settings import AppearanceSettings
 from .styles import Theme
@@ -12,7 +18,7 @@ class AppearanceDialog(QDialog):
 
     def __init__(self, parent=None):
         """Initialize the dialog.
-        
+
         Args:
             parent: Parent widget
         """
@@ -61,7 +67,7 @@ class AppearanceDialog(QDialog):
         # Set theme
         theme_index = 0 if self._settings.theme == Theme.LIGHT else 1
         self.theme_combo.setCurrentIndex(theme_index)
-        
+
         # Set font size
         self.font_spin.setValue(self._settings.font_size)
 

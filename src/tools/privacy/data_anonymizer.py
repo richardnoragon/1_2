@@ -16,15 +16,15 @@ except ImportError:
         # Final fallback - show error message
         print("Error: Privacy tools are not available.")
         print("Please check your installation and dependencies.")
-        
+
         # Create a minimal error dialog
         try:
             from PyQt5.QtWidgets import QApplication, QMessageBox
-            
+
             class DataAnonymizerGUI:
                 def __init__(self):
                     self.show_error()
-                
+
                 def show_error(self):
                     app = QApplication.instance() or QApplication(sys.argv)
                     QMessageBox.critical(
@@ -33,18 +33,18 @@ except ImportError:
                         "The Data Anonymizer tool is currently unavailable.\n\n"
                         "This may be due to missing dependencies or "
                         "configuration issues.\n\n"
-                        "Please check the installation and try again."
+                        "Please check the installation and try again.",
                     )
-                
+
                 def show(self):
                     pass  # No-op for compatibility
-                    
+
         except ImportError:
             # If even PyQt5 is not available
             class DataAnonymizerGUI:
                 def __init__(self):
                     print("Data Anonymizer: PyQt5 not available")
-                
+
                 def show(self):
                     print("Data Anonymizer: Cannot display GUI without PyQt5")
 
@@ -53,10 +53,10 @@ def main():
     """Main function for standalone execution."""
     try:
         from PyQt5.QtWidgets import QApplication
-        
+
         app = QApplication(sys.argv)
         window = DataAnonymizerGUI()
-        if hasattr(window, 'setWindowTitle'):
+        if hasattr(window, "setWindowTitle"):
             window.setWindowTitle("Data Anonymizer - Richard's File Utilities")
         window.show()
         sys.exit(app.exec_())
