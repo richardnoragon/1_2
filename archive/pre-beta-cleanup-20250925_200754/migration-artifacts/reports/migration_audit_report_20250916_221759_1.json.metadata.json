@@ -1,0 +1,12 @@
+{
+  "original_path": "emergency-backup-20250925_200754\\migration_audit_report_20250916_221759.json",
+  "archived_path": "migration-artifacts\\reports\\migration_audit_report_20250916_221759_1.json",
+  "archived_date": "2025-09-25T20:08:31.797862",
+  "reason": "Pre-beta cleanup: migration-artifacts",
+  "safety_level": "low",
+  "retrieval_priority": "normal",
+  "last_modified": "2025-09-22T19:14:28.383902",
+  "file_size": 26189077,
+  "file_type": "file",
+  "md5_hash": "0c6991ef8ca5a333323bd1cb67a8fa8a"
+}

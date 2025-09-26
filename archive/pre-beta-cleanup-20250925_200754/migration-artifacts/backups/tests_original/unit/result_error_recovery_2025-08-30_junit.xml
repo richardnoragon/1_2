@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="20" failures="0" skipped="0" tests="20" time="3.621" timestamp="2025-08-30T20:41:02.456876+02:00" hostname="DESKTOP-M4DIPMD"><testcase classname="test_error_recovery_clean_2025-08-30.TestPrivacyToolsErrorRecovery" name="test_initialization" time="0.081"><error message="failed on setup with &quot;NameError: name 'logging' is not defined. Did you forget to import 'logging'?&quot;">..\..\..\AppData\Local\Programs\Python\Python313\Lib\site-packages\pytestqt\plugin.py:178: in pytest_runtest_setup
+    result = yield
+             ^^^^^
+conftest.py:694: in reset_logging_error_recovery
+    root_logger = logging.getLogger()
+                  ^^^^^^^
+E   NameError: name 'logging' is not defined. Did you forget to import 'logging'?</error></testcase><testcase classname="test_error_recovery_clean_2025-08-30.TestPrivacyToolsErrorRecovery" name="test_setup_logging" time="0.009"><error message="failed on setup with &quot;NameError: name 'logging' is not defined. Did you forget to import 'logging'?&quot;">..\..\..\AppData\Local\Programs\Python\Python313\Lib\site-packages\pytestqt\plugin.py:178: in pytest_runtest_setup
+    result = yield
+             ^^^^^
+conftest.py:694: in reset_logging_error_recovery
+    root_logger = logging.getLogger()
+                  ^^^^^^^
+E   NameError: name 'logging' is not defined. Did you forget to import 'logging'?</error></testcase><testcase classname="test_error_recovery_clean_2025-08-30.TestPrivacyToolsErrorRecovery" name="test_handle_error_logging" time="0.005"><error message="failed on setup with &quot;NameError: name 'logging' is not defined. Did you forget to import 'logging'?&quot;">..\..\..\AppData\Local\Programs\Python\Python313\Lib\site-packages\pytestqt\plugin.py:178: in pytest_runtest_setup
+    result = yield
+             ^^^^^
+conftest.py:694: in reset_logging_error_recovery
+    root_logger = logging.getLogger()
+                  ^^^^^^^
+E   NameError: name 'logging' is not defined. Did you forget to import 'logging'?</error></testcase><testcase classname="test_error_recovery_clean_2025-08-30.TestPrivacyToolsErrorRecovery" name="test_handle_error_with_known_strategy" time="0.005"><error message="failed on setup with &quot;NameError: name 'logging' is not defined. Did you forget to import 'logging'?&quot;">..\..\..\AppData\Local\Programs\Python\Python313\Lib\site-packages\pytestqt\plugin.py:178: in pytest_runtest_setup
+    result = yield
+             ^^^^^
+conftest.py:694: in reset_logging_error_recovery
+    root_logger = logging.getLogger()
+                  ^^^^^^^
+E   NameError: name 'logging' is not defined. Did you forget to import 'logging'?</error></testcase><testcase classname="test_error_recovery_clean_2025-08-30.TestPrivacyToolsErrorRecovery" name="test_handle_error_with_unknown_strategy" time="0.006"><error message="failed on setup with &quot;NameError: name 'logging' is not defined. Did you forget to import 'logging'?&quot;">..\..\..\AppData\Local\Programs\Python\Python313\Lib\site-packages\pytestqt\plugin.py:178: in pytest_runtest_setup
+    result = yield
+             ^^^^^
+conftest.py:694: in reset_logging_error_recovery
+    root_logger = logging.getLogger()
+                  ^^^^^^^
+E   NameError: name 'logging' is not defined. Did you forget to import 'logging'?</error></testcase><testcase classname="test_error_recovery_clean_2025-08-30.TestPrivacyToolsErrorRecovery" name="test_handle_import_error_privacy_tools" time="0.005"><error message="failed on setup with &quot;NameError: name 'logging' is not defined. Did you forget to import 'logging'?&quot;">..\..\..\AppData\Local\Programs\Python\Python313\Lib\site-packages\pytestqt\plugin.py:178: in pytest_runtest_setup
+    result = yield
+             ^^^^^
+conftest.py:694: in reset_logging_error_recovery
+    root_logger = logging.getLogger()
+                  ^^^^^^^
+E   NameError: name 'logging' is not defined. Did you forget to import 'logging'?</error></testcase><testcase classname="test_error_recovery_clean_2025-08-30.TestPrivacyToolsErrorRecovery" name="test_handle_import_error_gui_themes" time="0.005"><error message="failed on setup with &quot;NameError: name 'logging' is not defined. Did you forget to import 'logging'?&quot;">..\..\..\AppData\Local\Programs\Python\Python313\Lib\site-packages\pytestqt\plugin.py:178: in pytest_runtest_setup
+    result = yield
+             ^^^^^
+conftest.py:694: in reset_logging_error_recovery
+    root_logger = logging.getLogger()
+                  ^^^^^^^
+E   NameError: name 'logging' is not defined. Did you forget to import 'logging'?</error></testcase><testcase classname="test_error_recovery_clean_2025-08-30.TestPrivacyToolsErrorRecovery" name="test_handle_module_not_found_with_quotes" time="0.006"><error message="failed on setup with &quot;NameError: name 'logging' is not defined. Did you forget to import 'logging'?&quot;">..\..\..\AppData\Local\Programs\Python\Python313\Lib\site-packages\pytestqt\plugin.py:178: in pytest_runtest_setup
+    result = yield
+             ^^^^^
+conftest.py:694: in reset_logging_error_recovery
+    root_logger = logging.getLogger()
+                  ^^^^^^^
+E   NameError: name 'logging' is not defined. Did you forget to import 'logging'?</error></testcase><testcase classname="test_error_recovery_clean_2025-08-30.TestPrivacyToolsErrorRecovery" name="test_create_minimal_theme" time="0.012"><error message="failed on setup with &quot;NameError: name 'logging' is not defined. Did you forget to import 'logging'?&quot;">..\..\..\AppData\Local\Programs\Python\Python313\Lib\site-packages\pytestqt\plugin.py:178: in pytest_runtest_setup
+    result = yield
+             ^^^^^
+conftest.py:694: in reset_logging_error_recovery
+    root_logger = logging.getLogger()
+                  ^^^^^^^
+E   NameError: name 'logging' is not defined. Did you forget to import 'logging'?</error></testcase><testcase classname="test_error_recovery_clean_2025-08-30.TestPrivacyToolsErrorRecovery" name="test_handle_metaclass_conflict" time="0.010"><error message="failed on setup with &quot;NameError: name 'logging' is not defined. Did you forget to import 'logging'?&quot;">..\..\..\AppData\Local\Programs\Python\Python313\Lib\site-packages\pytestqt\plugin.py:178: in pytest_runtest_setup
+    result = yield
+             ^^^^^
+conftest.py:694: in reset_logging_error_recovery
+    root_logger = logging.getLogger()
+                  ^^^^^^^
+E   NameError: name 'logging' is not defined. Did you forget to import 'logging'?</error></testcase><testcase classname="test_error_recovery_clean_2025-08-30.TestPrivacyToolsErrorRecovery" name="test_show_import_error_dialog" time="0.004"><error message="failed on setup with &quot;NameError: name 'logging' is not defined. Did you forget to import 'logging'?&quot;">..\..\..\AppData\Local\Programs\Python\Python313\Lib\site-packages\pytestqt\plugin.py:178: in pytest_runtest_setup
+    result = yield
+             ^^^^^
+conftest.py:694: in reset_logging_error_recovery
+    root_logger = logging.getLogger()
+                  ^^^^^^^
+E   NameError: name 'logging' is not defined. Did you forget to import 'logging'?</error></testcase><testcase classname="test_error_recovery_clean_2025-08-30.TestPrivacyToolsErrorRecovery" name="test_dialog_fallback_to_print" time="0.004"><error message="failed on setup with &quot;NameError: name 'logging' is not defined. Did you forget to import 'logging'?&quot;">..\..\..\AppData\Local\Programs\Python\Python313\Lib\site-packages\pytestqt\plugin.py:178: in pytest_runtest_setup
+    result = yield
+             ^^^^^
+conftest.py:694: in reset_logging_error_recovery
+    root_logger = logging.getLogger()
+                  ^^^^^^^
+E   NameError: name 'logging' is not defined. Did you forget to import 'logging'?</error></testcase><testcase classname="test_error_recovery_clean_2025-08-30.TestSafeImportFunction" name="test_safe_import_success" time="0.005"><error message="failed on setup with &quot;NameError: name 'logging' is not defined. Did you forget to import 'logging'?&quot;">..\..\..\AppData\Local\Programs\Python\Python313\Lib\site-packages\pytestqt\plugin.py:178: in pytest_runtest_setup
+    result = yield
+             ^^^^^
+conftest.py:694: in reset_logging_error_recovery
+    root_logger = logging.getLogger()
+                  ^^^^^^^
+E   NameError: name 'logging' is not defined. Did you forget to import 'logging'?</error></testcase><testcase classname="test_error_recovery_clean_2025-08-30.TestSafeImportFunction" name="test_safe_import_failure_with_fallback" time="0.007"><error message="failed on setup with &quot;NameError: name 'logging' is not defined. Did you forget to import 'logging'?&quot;">..\..\..\AppData\Local\Programs\Python\Python313\Lib\site-packages\pytestqt\plugin.py:178: in pytest_runtest_setup
+    result = yield
+             ^^^^^
+conftest.py:694: in reset_logging_error_recovery
+    root_logger = logging.getLogger()
+                  ^^^^^^^
+E   NameError: name 'logging' is not defined. Did you forget to import 'logging'?</error></testcase><testcase classname="test_error_recovery_clean_2025-08-30.TestSafeExecuteFunction" name="test_safe_execute_success" time="0.006"><error message="failed on setup with &quot;NameError: name 'logging' is not defined. Did you forget to import 'logging'?&quot;">..\..\..\AppData\Local\Programs\Python\Python313\Lib\site-packages\pytestqt\plugin.py:178: in pytest_runtest_setup
+    result = yield
+             ^^^^^
+conftest.py:694: in reset_logging_error_recovery
+    root_logger = logging.getLogger()
+                  ^^^^^^^
+E   NameError: name 'logging' is not defined. Did you forget to import 'logging'?</error></testcase><testcase classname="test_error_recovery_clean_2025-08-30.TestSafeExecuteFunction" name="test_safe_execute_failure" time="0.005"><error message="failed on setup with &quot;NameError: name 'logging' is not defined. Did you forget to import 'logging'?&quot;">..\..\..\AppData\Local\Programs\Python\Python313\Lib\site-packages\pytestqt\plugin.py:178: in pytest_runtest_setup
+    result = yield
+             ^^^^^
+conftest.py:694: in reset_logging_error_recovery
+    root_logger = logging.getLogger()
+                  ^^^^^^^
+E   NameError: name 'logging' is not defined. Did you forget to import 'logging'?</error></testcase><testcase classname="test_error_recovery_clean_2025-08-30.TestGlobalErrorRecoveryInstance" name="test_global_instance_exists" time="0.004"><error message="failed on setup with &quot;NameError: name 'logging' is not defined. Did you forget to import 'logging'?&quot;">..\..\..\AppData\Local\Programs\Python\Python313\Lib\site-packages\pytestqt\plugin.py:178: in pytest_runtest_setup
+    result = yield
+             ^^^^^
+conftest.py:694: in reset_logging_error_recovery
+    root_logger = logging.getLogger()
+                  ^^^^^^^
+E   NameError: name 'logging' is not defined. Did you forget to import 'logging'?</error></testcase><testcase classname="test_error_recovery_clean_2025-08-30.TestGlobalErrorRecoveryInstance" name="test_global_instance_functionality" time="0.005"><error message="failed on setup with &quot;NameError: name 'logging' is not defined. Did you forget to import 'logging'?&quot;">..\..\..\AppData\Local\Programs\Python\Python313\Lib\site-packages\pytestqt\plugin.py:178: in pytest_runtest_setup
+    result = yield
+             ^^^^^
+conftest.py:694: in reset_logging_error_recovery
+    root_logger = logging.getLogger()
+                  ^^^^^^^
+E   NameError: name 'logging' is not defined. Did you forget to import 'logging'?</error></testcase><testcase classname="test_error_recovery_clean_2025-08-30.TestEdgeCases" name="test_empty_context_string" time="0.005"><error message="failed on setup with &quot;NameError: name 'logging' is not defined. Did you forget to import 'logging'?&quot;">..\..\..\AppData\Local\Programs\Python\Python313\Lib\site-packages\pytestqt\plugin.py:178: in pytest_runtest_setup
+    result = yield
+             ^^^^^
+conftest.py:694: in reset_logging_error_recovery
+    root_logger = logging.getLogger()
+                  ^^^^^^^
+E   NameError: name 'logging' is not defined. Did you forget to import 'logging'?</error></testcase><testcase classname="test_error_recovery_clean_2025-08-30.TestEdgeCases" name="test_unicode_in_error_messages" time="0.005"><error message="failed on setup with &quot;NameError: name 'logging' is not defined. Did you forget to import 'logging'?&quot;">..\..\..\AppData\Local\Programs\Python\Python313\Lib\site-packages\pytestqt\plugin.py:178: in pytest_runtest_setup
+    result = yield
+             ^^^^^
+conftest.py:694: in reset_logging_error_recovery
+    root_logger = logging.getLogger()
+                  ^^^^^^^
+E   NameError: name 'logging' is not defined. Did you forget to import 'logging'?</error></testcase></testsuite></testsuites>

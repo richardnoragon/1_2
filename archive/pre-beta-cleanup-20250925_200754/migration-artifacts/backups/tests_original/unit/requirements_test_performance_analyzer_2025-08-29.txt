@@ -1,0 +1,32 @@
+# Test requirements for performance_analyzer unit tests
+# Created: 2025-08-29
+# Target: src/utilities/network/network_connectivity_complex/core/performance_analyzer.py
+
+# Core testing framework
+pytest>=7.0.0
+
+# Test reporting and output generation
+pytest-html>=3.1.0
+pytest-json-report>=1.5.0
+pytest-cov>=4.0.0
+
+# Coverage analysis
+coverage>=7.0.0
+
+# Performance monitoring (optional - gracefully handled if missing)
+psutil>=5.9.0
+
+# Additional testing utilities
+pytest-mock>=3.10.0
+pytest-xdist>=3.0.0
+
+# Type checking support (for development)
+mypy>=1.0.0
+
+# Code formatting and linting (for development)
+black>=22.0.0
+flake8>=5.0.0
+
+# Documentation generation (optional)
+sphinx>=5.0.0
+sphinx-rtd-theme>=1.0.0

@@ -1,0 +1,30 @@
+# Testing requirements for platform_utils.py comprehensive testing
+# Generated on: 2025-08-30
+
+# Core testing framework
+pytest>=7.0.0
+
+# HTML reporting
+pytest-html>=3.0.0
+
+# JSON reporting
+pytest-json-report>=1.5.0
+
+# Coverage analysis
+pytest-cov>=4.0.0
+coverage>=6.0.0
+
+# Test utilities
+pytest-mock>=3.6.0
+pytest-timeout>=2.1.0
+pytest-xdist>=2.5.0
+
+# Additional testing utilities
+pytest-benchmark>=4.0.0
+pytest-clarity>=1.0.0
+pytest-sugar>=0.9.0
+
+# Development utilities
+black>=22.0.0
+flake8>=4.0.0
+mypy>=0.910

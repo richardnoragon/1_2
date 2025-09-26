@@ -1,0 +1,32 @@
+{
+  "test_execution": {
+    "timestamp": "2025-08-30T22:26:50.867437",
+    "completion_time": "2025-08-30T22:27:08.360740",
+    "duration_seconds": 17.482057,
+    "success": true
+  },
+  "test_details": {
+    "test_file": "test_data_locations_2025-08-30.py",
+    "target_module": "data_locations.py",
+    "test_directory": "C:\\Users\\richardi\\1_2\\tests\\unit",
+    "command_executed": "C:\\Users\\richardi\\1_2\\venv\\Scripts\\python.exe -m pytest test_data_locations_2025-08-30.py -v --tb=short --html=result_data_locations_2025-08-30.html --self-contained-html --json-report --json-report-file=result_data_locations_2025-08-30.json --cov=utilities.privacy.privacy_tools.core.data_locations --cov-report=html:result_data_locations_2025-08-30_coverage --cov-report=json:result_data_locations_2025-08-30_coverage.json --cov-report=term-missing --maxfail=10 -p no:warnings"
+  },
+  "environment": {
+    "platform": "Windows",
+    "platform_version": "10.0.26100",
+    "python_version": "3.13.2 (tags/v3.13.2:4f8bb39, Feb  4 2025, 15:23:48) [MSC v.1942 64 bit (AMD64)]",
+    "python_executable": "C:\\Users\\richardi\\1_2\\venv\\Scripts\\python.exe",
+    "working_directory": "C:\\Users\\richardi\\1_2\\tests\\unit"
+  },
+  "generated_files": [
+    "result_data_locations_2025-08-30.html",
+    "result_data_locations_2025-08-30.json",
+    "result_data_locations_2025-08-30_coverage/",
+    "result_data_locations_2025-08-30_coverage.json",
+    "result_data_locations_2025-08-30_summary.json"
+  ],
+  "test_output": {
+    "stdout_preview": "============================= test session starts =============================\nplatform win32 -- Python 3.13.2, pytest-8.3.5, pluggy-1.5.0 -- C:\\Users\\richardi\\1_2\\venv\\Scripts\\python.exe\ncachedir: .pytest_cache\nbenchmark: 5.1.0 (defaults: timer=time.perf_counter disable_gc=False min_rounds=5 min_time=0.000005 max_time=1.0 calibration_precision=10 warmup=False warmup_iterations=100000)\nmetadata: {'Python': '3.13.2', 'Platform': 'Windows-11-10.0.26100-SP0', 'Packages': {'pytest': '8.3.5', 'pluggy': '1.5.0'}, 'Plugins': {'Faker': '37.6.0', 'asyncio': '0.26.0', 'benchmark': '5.1.0', 'clarity': '1.0.1', 'cov': '6.1.0', 'html': '4.1.1', 'instafail': '0.5.0', 'json-report': '1.5.0', 'metadata': '3.1.1', 'mock': '3.14.1', 'pdb': '0.3.1', 'profiling': '1.8.1', 'qt': '4.4.0', 'randomly': '3.16.0', 'sugar': '1.1.1', 'timeout': '2.3.1', 'xdist': '3.8.0', 'xvfb': '3.1.1'}}\nPyQt5 5.15.11 -- Qt runtime 5.15.2 -- Qt compiled 5.15.2\nUsing --randomly-seed=3402748189\nrootdir: C:\\Users\\richardi\\1_2\\test...",
+    "stderr_preview": "C:\\Users\\richardi\\1_2\\venv\\Lib\\site-packages\\pytest_asyncio\\plugin.py:217: PytestDeprecationWarning: The configuration option \"asyncio_default_fixture_loop_scope\" is unset.\nThe event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: ..."
+  }
+}

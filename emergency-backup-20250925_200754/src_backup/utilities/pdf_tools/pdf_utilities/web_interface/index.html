@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Tools Hub - Batch Processor</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1><i class="fas fa-file-pdf"></i> PDF Tools Hub</h1>
+                <p>Comprehensive Batch Processing Interface</p>
+            </div>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="nav-tabs">
+            <button class="tab-button active" data-tab="upload">
+                <i class="fas fa-upload"></i> File Upload
+            </button>
+            <button class="tab-button" data-tab="configure">
+                <i class="fas fa-cog"></i> Configure
+            </button>
+            <button class="tab-button" data-tab="process">
+                <i class="fas fa-play"></i> Process
+            </button>
+            <button class="tab-button" data-tab="results">
+                <i class="fas fa-download"></i> Results
+            </button>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- File Upload Tab -->
+            <div id="upload-tab" class="tab-content active">
+                <div class="section-header">
+                    <h2><i class="fas fa-cloud-upload-alt"></i> Upload PDF Files</h2>
+                    <p>Select multiple PDF files for batch processing</p>
+                </div>
+
+                <div class="upload-area" id="upload-area">
+                    <div class="upload-content">
+                        <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                        <h3>Drag & Drop PDF Files Here</h3>
+                        <p>or click to browse files</p>
+                        <input type="file" id="file-input" multiple accept=".pdf" hidden>
+                        <button class="btn btn-primary" onclick="document.getElementById('file-input').click()">
+                            <i class="fas fa-folder-open"></i> Browse Files
+                        </button>
+                    </div>
+                </div>
+
+                <div class="file-list-container" id="file-list-container" style="display: none;">
+                    <h3><i class="fas fa-list"></i> Selected Files</h3>
+                    <div class="file-list" id="file-list"></div>
+                    <div class="file-actions">
+                        <button class="btn btn-secondary" onclick="clearFiles()">
+                            <i class="fas fa-trash"></i> Clear All
+                        </button>
+                        <button class="btn btn-primary" onclick="switchTab('configure')">
+                            <i class="fas fa-arrow-right"></i> Next: Configure
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Configuration Tab -->
+            <div id="configure-tab" class="tab-content">
+                <div class="section-header">
+                    <h2><i class="fas fa-sliders-h"></i> Processing Configuration</h2>
+                    <p>Configure batch processing parameters</p>
+                </div>
+
+                <div class="config-grid">
+                    <div class="config-section">
+                        <h3><i class="fas fa-tools"></i> Operation Type</h3>
+                        <select id="operation-type" class="form-control">
+                            <option value="split">Split PDFs</option>
+                            <option value="merge">Merge PDFs</option>
+                            <option value="compress">Compress PDFs</option>
+                            <option value="extract_text">Extract Text</option>
+                            <option value="extract_images">Extract Images</option>
+                            <option value="watermark">Add Watermark</option>
+                            <option value="encrypt">Encrypt PDFs</option>
+                            <option value="convert_to_images">Convert to Images</option>
+                        </select>
+                    </div>
+
+                    <div class="config-section">
+                        <h3><i class="fas fa-folder"></i> Output Directory</h3>
+                        <div class="input-group">
+                            <input type="text" id="output-directory" class="form-control" 
+                                   placeholder="Select output directory..." readonly>
+                            <button class="btn btn-outline" onclick="selectOutputDirectory()">
+                                <i class="fas fa-folder-open"></i> Browse
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="config-section">
+                        <h3><i class="fas fa-layer-group"></i> Processing Priority</h3>
+                        <select id="priority" class="form-control">
+                            <option value="normal">Normal</option>
+                            <option value="high">High</option>
+                            <option value="low">Low</option>
+                            <option value="urgent">Urgent</option>
+                        </select>
+                    </div>
+
+                    <div class="config-section">
+                        <h3><i class="fas fa-tachometer-alt"></i> Concurrent Jobs</h3>
+                        <input type="range" id="concurrent-jobs" min="1" max="8" value="2" class="range-input">
+                        <span class="range-value" id="concurrent-jobs-value">2</span>
+                    </div>
+                </div>
+
+                <!-- Operation-specific parameters -->
+                <div class="operation-params" id="operation-params">
+                    <!-- Dynamic content based on operation type -->
+                </div>
+
+                <div class="config-actions">
+                    <button class="btn btn-secondary" onclick="switchTab('upload')">
+                        <i class="fas fa-arrow-left"></i> Back: Upload
+                    </button>
+                    <button class="btn btn-primary" onclick="switchTab('process')">
+                        <i class="fas fa-arrow-right"></i> Next: Process
+                    </button>
+                </div>
+            </div>
+
+            <!-- Processing Tab -->
+            <div id="process-tab" class="tab-content">
+                <div class="section-header">
+                    <h2><i class="fas fa-cogs"></i> Batch Processing</h2>
+                    <p>Monitor and control batch operations</p>
+                </div>
+
+                <div class="processing-overview">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fas fa-file-pdf"></i></div>
+                            <div class="stat-content">
+                                <h3 id="total-files">0</h3>
+                                <p>Total Files</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+                            <div class="stat-content">
+                                <h3 id="completed-files">0</h3>
+                                <p>Completed</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                            <div class="stat-content">
+                                <h3 id="failed-files">0</h3>
+                                <p>Failed</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fas fa-clock"></i></div>
+                            <div class="stat-content">
+                                <h3 id="estimated-time">--</h3>
+                                <p>ETA</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="progress-section">
+                    <h3><i class="fas fa-chart-line"></i> Overall Progress</h3>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="overall-progress"></div>
+                        </div>
+                        <span class="progress-text" id="overall-progress-text">0%</span>
+                    </div>
+                </div>
+
+                <div class="current-operation">
+                    <h3><i class="fas fa-play-circle"></i> Current Operation</h3>
+                    <div class="current-file-info">
+                        <div class="file-name" id="current-file-name">Ready to start...</div>
+                        <div class="file-progress">
+                            <div class="progress-bar-container">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="current-file-progress"></div>
+                                </div>
+                                <span class="progress-text" id="current-file-progress-text">0%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="processing-controls">
+                    <button class="btn btn-success" id="start-btn" onclick="startProcessing()">
+                        <i class="fas fa-play"></i> Start Processing
+                    </button>
+                    <button class="btn btn-warning" id="pause-btn" onclick="pauseProcessing()" disabled>
+                        <i class="fas fa-pause"></i> Pause
+                    </button>
+                    <button class="btn btn-danger" id="cancel-btn" onclick="cancelProcessing()" disabled>
+                        <i class="fas fa-stop"></i> Cancel
+                    </button>
+                </div>
+
+                <div class="processing-log">
+                    <h3><i class="fas fa-list-alt"></i> Processing Log</h3>
+                    <div class="log-container" id="processing-log">
+                        <div class="log-entry info">
+                            <span class="log-time">[Ready]</span>
+                            <span class="log-message">Batch processor ready. Click "Start Processing" to begin.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Tab -->
+            <div id="results-tab" class="tab-content">
+                <div class="section-header">
+                    <h2><i class="fas fa-chart-bar"></i> Processing Results</h2>
+                    <p>View and download processed files</p>
+                </div>
+
+                <div class="results-summary" id="results-summary" style="display: none;">
+                    <div class="summary-cards">
+                        <div class="summary-card success">
+                            <div class="card-icon"><i class="fas fa-check-circle"></i></div>
+                            <div class="card-content">
+                                <h3 id="success-count">0</h3>
+                                <p>Successfully Processed</p>
+                            </div>
+                        </div>
+                        <div class="summary-card error">
+                            <div class="card-icon"><i class="fas fa-times-circle"></i></div>
+                            <div class="card-content">
+                                <h3 id="error-count">0</h3>
+                                <p>Processing Errors</p>
+                            </div>
+                        </div>
+                        <div class="summary-card info">
+                            <div class="card-icon"><i class="fas fa-clock"></i></div>
+                            <div class="card-content">
+                                <h3 id="total-time">0s</h3>
+                                <p>Total Processing Time</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="results-actions" id="results-actions" style="display: none;">
+                    <button class="btn btn-primary" onclick="downloadAllResults()">
+                        <i class="fas fa-download"></i> Download All Results
+                    </button>
+                    <button class="btn btn-secondary" onclick="downloadReport()">
+                        <i class="fas fa-file-alt"></i> Download Report
+                    </button>
+                    <button class="btn btn-outline" onclick="resetProcessor()">
+                        <i class="fas fa-refresh"></i> Start New Batch
+                    </button>
+                </div>
+
+                <div class="results-list" id="results-list">
+                    <!-- Dynamic content populated by JavaScript -->
+                </div>
+            </div>
+        </main>
+
+        <!-- Status Messages -->
+        <div class="status-messages" id="status-messages"></div>
+
+        <!-- Loading Overlay -->
+        <div class="loading-overlay" id="loading-overlay" style="display: none;">
+            <div class="loading-content">
+                <div class="spinner"></div>
+                <p>Processing files...</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

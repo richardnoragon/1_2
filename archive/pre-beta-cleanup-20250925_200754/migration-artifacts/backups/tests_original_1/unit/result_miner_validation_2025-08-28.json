@@ -1,0 +1,76 @@
+{
+  "validation_timestamp": "2025-08-28T23:50:56.678297",
+  "test_suite_info": {
+    "target_module": "miner.py",
+    "test_framework": "pytest",
+    "naming_convention": "test_miner_2025-08-28",
+    "output_convention": "result_miner_2025-08-28"
+  },
+  "file_validation": {
+    "test_miner_2025-08-28.py": {
+      "exists": true,
+      "size_bytes": 23427,
+      "path": "C:\\Users\\richardi\\1_2\\tests\\unit\\test_miner_2025-08-28.py"
+    },
+    "test_miner_performance_2025-08-28.py": {
+      "exists": true,
+      "size_bytes": 16215,
+      "path": "C:\\Users\\richardi\\1_2\\tests\\unit\\test_miner_performance_2025-08-28.py"
+    },
+    "conftest_miner_2025-08-28.py": {
+      "exists": true,
+      "size_bytes": 10364,
+      "path": "C:\\Users\\richardi\\1_2\\tests\\unit\\conftest_miner_2025-08-28.py"
+    },
+    "pytest_miner_2025-08-28.ini": {
+      "exists": true,
+      "size_bytes": 1474,
+      "path": "C:\\Users\\richardi\\1_2\\tests\\unit\\pytest_miner_2025-08-28.ini"
+    },
+    "run_miner_tests_2025-08-28.py": {
+      "exists": true,
+      "size_bytes": 11270,
+      "path": "C:\\Users\\richardi\\1_2\\tests\\unit\\run_miner_tests_2025-08-28.py"
+    },
+    "requirements_test_miner_2025-08-28.txt": {
+      "exists": true,
+      "size_bytes": 628,
+      "path": "C:\\Users\\richardi\\1_2\\tests\\unit\\requirements_test_miner_2025-08-28.txt"
+    },
+    "COMPREHENSIVE_TESTING_DOCUMENTATION_miner_2025-08-28.md": {
+      "exists": true,
+      "size_bytes": 10009,
+      "path": "C:\\Users\\richardi\\1_2\\tests\\unit\\COMPREHENSIVE_TESTING_DOCUMENTATION_miner_2025-08-28.md"
+    }
+  },
+  "test_coverage_analysis": {
+    "total_test_methods": 22,
+    "total_test_classes": 4,
+    "categories": {
+      "unit_tests": 3,
+      "edge_cases": 1,
+      "integration": 1,
+      "performance": 0,
+      "gui_tests": 16,
+      "mock_tests": 75
+    },
+    "file_size": 22871,
+    "lines_of_code": 557
+  },
+  "dependency_check": {
+    "pytest": "Available",
+    "pytest-html": "Available",
+    "pytest-json-report": "Missing",
+    "pytest-cov": "Available",
+    "PyQt5": "Available",
+    "PyMuPDF": "Available",
+    "mock": "Available",
+    "memory_profiler": "Available"
+  },
+  "test_execution_commands": {
+    "basic_test": "python run_miner_tests_2025-08-28.py",
+    "pytest_direct": "pytest test_miner_2025-08-28.py -c pytest_miner_2025-08-28.ini",
+    "performance_only": "pytest test_miner_performance_2025-08-28.py -m performance",
+    "coverage_report": "pytest --cov=src.utilities.pdf_tools.pdf_view_analysis.miner --cov-report=html"
+  }
+}

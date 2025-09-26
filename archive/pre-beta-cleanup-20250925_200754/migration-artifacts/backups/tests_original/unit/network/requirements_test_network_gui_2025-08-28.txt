@@ -1,0 +1,29 @@
+# Test Requirements for Network GUI Unit Tests
+# Target: src/utilities/network/gui.py
+# Generated: 2025-08-28
+
+# Core testing framework
+pytest>=8.3.5
+pytest-cov>=6.1.0
+pytest-html>=4.1.1
+pytest-json-report>=1.5.0
+pytest-timeout>=2.3.1
+pytest-randomly>=3.16.0
+
+# PyQt5 testing support
+pytest-qt>=4.4.0
+PyQt5>=5.15.11
+
+# Coverage and reporting
+coverage>=7.8.0
+
+# Mock and testing utilities
+mock>=5.1.0
+
+# Performance testing
+pytest-benchmark>=4.0.0
+
+# Additional testing utilities
+pytest-mock>=3.12.0
+pytest-xdist>=3.6.0  # For parallel test execution
+pytest-asyncio>=0.26.0  # For async test support

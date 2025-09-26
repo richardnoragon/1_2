@@ -1,0 +1,342 @@
+[
+  {
+    "action": "REMOVED",
+    "source": "C:\\Users\\HP1\\1_2\\1_2\\src\\__pycache__",
+    "target": null
+  },
+  {
+    "action": "REMOVED",
+    "source": "C:\\Users\\HP1\\1_2\\1_2\\src\\rfu\\__pycache__",
+    "target": null
+  },
+  {
+    "action": "REMOVED",
+    "source": "C:\\Users\\HP1\\1_2\\1_2\\src\\utilities\\__pycache__",
+    "target": null
+  },
+  {
+    "action": "REMOVED",
+    "source": "C:\\Users\\HP1\\1_2\\1_2\\src\\utilities\\analysis\\__pycache__",
+    "target": null
+  },
+  {
+    "action": "REMOVED",
+    "source": "C:\\Users\\HP1\\1_2\\1_2\\src\\utilities\\file_operations\\__pycache__",
+    "target": null
+  },
+  {
+    "action": "REMOVED",
+    "source": "C:\\Users\\HP1\\1_2\\1_2\\src\\utilities\\metadata\\__pycache__",
+    "target": null
+  },
+  {
+    "action": "REMOVED",
+    "source": "C:\\Users\\HP1\\1_2\\1_2\\src\\utilities\\network\\__pycache__",
+    "target": null
+  },
+  {
+    "action": "REMOVED",
+    "source": "C:\\Users\\HP1\\1_2\\1_2\\src\\utilities\\pdf_tools\\__pycache__",
+    "target": null
+  },
+  {
+    "action": "REMOVED",
+    "source": "C:\\Users\\HP1\\1_2\\1_2\\src\\utilities\\privacy\\__pycache__",
+    "target": null
+  },
+  {
+    "action": "REMOVED",
+    "source": "C:\\Users\\HP1\\1_2\\1_2\\src\\utilities\\security\\__pycache__",
+    "target": null
+  },
+  {
+    "action": "REMOVED",
+    "source": "C:\\Users\\HP1\\1_2\\1_2\\src\\utilities\\system\\__pycache__",
+    "target": null
+  },
+  {
+    "action": "REMOVED",
+    "source": "C:\\Users\\HP1\\1_2\\1_2\\src\\utilities\\system\\diagnostics_monitoring\\__pycache__",
+    "target": null
+  },
+  {
+    "action": "REMOVED",
+    "source": "C:\\Users\\HP1\\1_2\\1_2\\src\\utilities\\system\\software_maintenance\\__pycache__",
+    "target": null
+  },
+  {
+    "action": "REMOVED",
+    "source": "C:\\Users\\HP1\\1_2\\1_2\\src\\utilities\\system\\system_cleanup\\__pycache__",
+    "target": null
+  },
+  {
+    "action": "REMOVED",
+    "source": "C:\\Users\\HP1\\1_2\\1_2\\src\\utilities\\system\\system_cleanup\\core\\__pycache__",
+    "target": null
+  },
+  {
+    "action": "REMOVED",
+    "source": "C:\\Users\\HP1\\1_2\\1_2\\src\\utilities\\system\\software_maintenance\\core\\__pycache__",
+    "target": null
+  },
+  {
+    "action": "REMOVED",
+    "source": "C:\\Users\\HP1\\1_2\\1_2\\src\\utilities\\system\\diagnostics_monitoring\\core\\__pycache__",
+    "target": null
+  },
+  {
+    "action": "REMOVED",
+    "source": "C:\\Users\\HP1\\1_2\\1_2\\src\\utilities\\privacy\\privacy_tools\\__pycache__",
+    "target": null
+  },
+  {
+    "action": "REMOVED",
+    "source": "C:\\Users\\HP1\\1_2\\1_2\\src\\utilities\\privacy\\privacy_tools\\core\\__pycache__",
+    "target": null
+  },
+  {
+    "action": "REMOVED",
+    "source": "C:\\Users\\HP1\\1_2\\1_2\\src\\utilities\\pdf_tools\\pdf_utilities\\__pycache__",
+    "target": null
+  },
+  {
+    "action": "REMOVED",
+    "source": "C:\\Users\\HP1\\1_2\\1_2\\src\\utilities\\network\\network_connectivity\\__pycache__",
+    "target": null
+  },
+  {
+    "action": "REMOVED",
+    "source": "C:\\Users\\HP1\\1_2\\1_2\\src\\utilities\\network\\network_connectivity\\core\\__pycache__",
+    "target": null
+  },
+  {
+    "action": "REMOVED",
+    "source": "C:\\Users\\HP1\\1_2\\1_2\\src\\rfu\\core\\__pycache__",
+    "target": null
+  },
+  {
+    "action": "REMOVED",
+    "source": "C:\\Users\\HP1\\1_2\\1_2\\src\\rfu\\gui\\__pycache__",
+    "target": null
+  },
+  {
+    "action": "REMOVED",
+    "source": "C:\\Users\\HP1\\1_2\\1_2\\src\\rfu\\gui\\common\\__pycache__",
+    "target": null
+  },
+  {
+    "action": "REMOVED",
+    "source": "C:\\Users\\HP1\\1_2\\1_2\\src\\legacy\\file_utilities_1\\__pycache__",
+    "target": null
+  },
+  {
+    "action": "MOVED",
+    "source": "C:\\Users\\HP1\\1_2\\1_2\\src\\utilities\\analysis\\size_analyzer_config.py",
+    "target": "C:\\Users\\HP1\\1_2\\1_2\\src\\utilities\\analysis\\config\\size_analyzer_config.py"
+  },
+  {
+    "action": "MOVED",
+    "source": "C:\\Users\\HP1\\1_2\\1_2\\src\\utilities\\analysis\\size_analyzer_logging.py",
+    "target": "C:\\Users\\HP1\\1_2\\1_2\\src\\utilities\\analysis\\config\\size_analyzer_logging.py"
+  },
+  {
+    "action": "MOVED",
+    "source": "C:\\Users\\HP1\\1_2\\1_2\\src\\utilities\\analysis\\size_analyzer_logic.py",
+    "target": "C:\\Users\\HP1\\1_2\\1_2\\src\\utilities\\analysis\\core\\size_analyzer_logic.py"
+  },
+  {
+    "action": "MOVED",
+    "source": "C:\\Users\\HP1\\1_2\\1_2\\src\\utilities\\analysis\\find_duplicate_files.ui",
+    "target": "C:\\Users\\HP1\\1_2\\1_2\\src\\utilities\\analysis\\gui\\find_duplicate_files.ui"
+  },
+  {
+    "action": "CREATED",
+    "source": "C:\\Users\\HP1\\1_2\\1_2\\src\\utilities\\analysis\\core\\__init__.py",
+    "target": null
+  },
+  {
+    "action": "CREATED",
+    "source": "C:\\Users\\HP1\\1_2\\1_2\\src\\utilities\\analysis\\gui\\__init__.py",
+    "target": null
+  },
+  {
+    "action": "CREATED",
+    "source": "C:\\Users\\HP1\\1_2\\1_2\\src\\utilities\\analysis\\config\\__init__.py",
+    "target": null
+  },
+  {
+    "action": "MOVED",
+    "source": "C:\\Users\\HP1\\1_2\\1_2\\src\\utilities\\security\\encryption_config.py",
+    "target": "C:\\Users\\HP1\\1_2\\1_2\\src\\utilities\\security\\config\\encryption_config.py"
+  },
+  {
+    "action": "MOVED",
+    "source": "C:\\Users\\HP1\\1_2\\1_2\\src\\utilities\\security\\encryption_logging.py",
+    "target": "C:\\Users\\HP1\\1_2\\1_2\\src\\utilities\\security\\config\\encryption_logging.py"
+  },
+  {
+    "action": "MOVED",
+    "source": "C:\\Users\\HP1\\1_2\\1_2\\src\\utilities\\security\\encryption_logic.py",
+    "target": "C:\\Users\\HP1\\1_2\\1_2\\src\\utilities\\security\\core\\encryption_logic.py"
+  },
+  {
+    "action": "MOVED",
+    "source": "C:\\Users\\HP1\\1_2\\1_2\\src\\utilities\\security\\secure_delete_config.py",
+    "target": "C:\\Users\\HP1\\1_2\\1_2\\src\\utilities\\security\\config\\secure_delete_config.py"
+  },
+  {
+    "action": "MOVED",
+    "source": "C:\\Users\\HP1\\1_2\\1_2\\src\\utilities\\security\\secure_delete_logging.py",
+    "target": "C:\\Users\\HP1\\1_2\\1_2\\src\\utilities\\security\\config\\secure_delete_logging.py"
+  },
+  {
+    "action": "MOVED",
+    "source": "C:\\Users\\HP1\\1_2\\1_2\\src\\utilities\\security\\secure_delete_logic.py",
+    "target": "C:\\Users\\HP1\\1_2\\1_2\\src\\utilities\\security\\core\\secure_delete_logic.py"
+  },
+  {
+    "action": "CREATED",
+    "source": "C:\\Users\\HP1\\1_2\\1_2\\src\\utilities\\security\\core\\__init__.py",
+    "target": null
+  },
+  {
+    "action": "CREATED",
+    "source": "C:\\Users\\HP1\\1_2\\1_2\\src\\utilities\\security\\config\\__init__.py",
+    "target": null
+  },
+  {
+    "action": "MOVED",
+    "source": "C:\\Users\\HP1\\1_2\\1_2\\src\\utilities\\system\\permissions_editor.ui",
+    "target": "C:\\Users\\HP1\\1_2\\1_2\\src\\utilities\\system\\gui\\permissions_editor.ui"
+  },
+  {
+    "action": "CREATED",
+    "source": "C:\\Users\\HP1\\1_2\\1_2\\src\\utilities\\system\\gui\\__init__.py",
+    "target": null
+  },
+  {
+    "action": "ANALYZED",
+    "source": "analysis: 4 Python files, 3 subdirectories",
+    "target": null
+  },
+  {
+    "action": "ANALYZED",
+    "source": "file_operations: 5 Python files, 1 subdirectories",
+    "target": null
+  },
+  {
+    "action": "ANALYZED",
+    "source": "metadata: 3 Python files, 0 subdirectories",
+    "target": null
+  },
+  {
+    "action": "ANALYZED",
+    "source": "network: 3 Python files, 1 subdirectories",
+    "target": null
+  },
+  {
+    "action": "ANALYZED",
+    "source": "pdf_tools: 1 Python files, 1 subdirectories",
+    "target": null
+  },
+  {
+    "action": "ANALYZED",
+    "source": "privacy: 3 Python files, 1 subdirectories",
+    "target": null
+  },
+  {
+    "action": "ANALYZED",
+    "source": "security: 3 Python files, 2 subdirectories",
+    "target": null
+  },
+  {
+    "action": "ANALYZED",
+    "source": "system: 5 Python files, 4 subdirectories",
+    "target": null
+  },
+  {
+    "action": "REVIEWED",
+    "source": "Legacy folder: 19 items",
+    "target": null
+  },
+  {
+    "action": "ANALYZED",
+    "source": "RFU folder: 6 Python files, 2 subdirectories",
+    "target": null
+  },
+  {
+    "action": "REMOVED",
+    "source": "C:\\Users\\HP1\\1_2\\1_2\\src\\logs",
+    "target": null
+  },
+  {
+    "action": "UPDATED",
+    "source": "C:\\Users\\HP1\\1_2\\1_2\\src\\utilities\\__init__.py",
+    "target": null
+  },
+  {
+    "action": "UPDATED",
+    "source": "C:\\Users\\HP1\\1_2\\1_2\\src\\utilities\\analysis\\__init__.py",
+    "target": null
+  },
+  {
+    "action": "UPDATED",
+    "source": "C:\\Users\\HP1\\1_2\\1_2\\src\\utilities\\security\\__init__.py",
+    "target": null
+  },
+  {
+    "action": "UPDATED",
+    "source": "C:\\Users\\HP1\\1_2\\1_2\\src\\utilities\\system\\__init__.py",
+    "target": null
+  },
+  {
+    "action": "UPDATED",
+    "source": "C:\\Users\\HP1\\1_2\\1_2\\src\\utilities\\network\\__init__.py",
+    "target": null
+  },
+  {
+    "action": "UPDATED",
+    "source": "C:\\Users\\HP1\\1_2\\1_2\\src\\utilities\\privacy\\__init__.py",
+    "target": null
+  },
+  {
+    "action": "VALIDATED",
+    "source": "C:\\Users\\HP1\\1_2\\1_2\\src\\utilities\\analysis\\check_sum.py",
+    "target": null
+  },
+  {
+    "action": "VALIDATED",
+    "source": "C:\\Users\\HP1\\1_2\\1_2\\src\\utilities\\analysis\\find_duplicate_files.py",
+    "target": null
+  },
+  {
+    "action": "VALIDATED",
+    "source": "C:\\Users\\HP1\\1_2\\1_2\\src\\utilities\\analysis\\size_analyzer.py",
+    "target": null
+  },
+  {
+    "action": "VALIDATED",
+    "source": "C:\\Users\\HP1\\1_2\\1_2\\src\\utilities\\security\\en_and_decrypt.py",
+    "target": null
+  },
+  {
+    "action": "VALIDATED",
+    "source": "C:\\Users\\HP1\\1_2\\1_2\\src\\utilities\\security\\secure_delete.py",
+    "target": null
+  },
+  {
+    "action": "VALIDATED",
+    "source": "C:\\Users\\HP1\\1_2\\1_2\\src\\utilities\\system\\permissions_editor.py",
+    "target": null
+  },
+  {
+    "action": "VALIDATED",
+    "source": "C:\\Users\\HP1\\1_2\\1_2\\src\\utilities\\network\\network_connectivity.py",
+    "target": null
+  },
+  {
+    "action": "VALIDATED",
+    "source": "C:\\Users\\HP1\\1_2\\1_2\\src\\utilities\\privacy\\privacy_tools.py",
+    "target": null
+  }
+]

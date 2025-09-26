@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="2" time="7.769" timestamp="2025-09-01T01:52:32.318307+02:00" hostname="DESKTOP-M4DIPMD"><testcase classname="test_enhanced_editor_critical_functionality_2025-09-01.TestUndoRedoOperations" name="test_text_editor_undo_redo_basic" time="4.884" /><testcase classname="test_enhanced_editor_critical_functionality_2025-09-01.TestUndoRedoOperations" name="test_text_editor_multiple_undo_redo" time="0.029"><failure message="AssertionError: assert '' == 'First Second '&#10;  &#10;  - First Second">test_enhanced_editor_critical_functionality_2025-09-01.py:178: in test_text_editor_multiple_undo_redo
+    assert editor.toPlainText() == expected_state
+E   AssertionError: assert '' == 'First Second '
+E     
+E     - First Second</failure></testcase></testsuite></testsuites>

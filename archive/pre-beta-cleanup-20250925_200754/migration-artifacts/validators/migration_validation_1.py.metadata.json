@@ -1,0 +1,12 @@
+{
+  "original_path": "emergency-backup-20250925_200754\\migration_validation.py",
+  "archived_path": "migration-artifacts\\validators\\migration_validation_1.py",
+  "archived_date": "2025-09-25T20:09:29.801251",
+  "reason": "Pre-beta cleanup: migration-artifacts",
+  "safety_level": "low",
+  "retrieval_priority": "normal",
+  "last_modified": "2025-09-22T19:14:30.782165",
+  "file_size": 26333,
+  "file_type": "file",
+  "md5_hash": "394ee1db176948c882fd0de0fad6a69a"
+}

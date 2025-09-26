@@ -166,7 +166,7 @@ class UtilityWindow(QMainWindow if PYQT5_AVAILABLE else object):
         try:
             # Use the same menu manager pattern
             if hasattr(self.parent_hub, "menu_manager"):
-                from .simple_menu_manager import SimpleMenuManager
+                from simple_menu_manager import SimpleMenuManager
 
                 self.menu_manager = SimpleMenuManager(self)
                 self.menu_manager.create_menubar()
@@ -254,7 +254,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
             return
 
         # Initialize menu system
-        from .simple_menu_manager import SimpleMenuManager
+        from simple_menu_manager import SimpleMenuManager
 
         self.menu_manager = SimpleMenuManager(self)
         self.menu_manager.create_menubar()

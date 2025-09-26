@@ -1,0 +1,20 @@
+{
+  "execution_summary": {
+    "total_tests": 6,
+    "passed_tests": 1,
+    "failed_tests": 5,
+    "blocked_tests": 0,
+    "skipped_tests": 0,
+    "overall_coverage": 0.0,
+    "execution_time": 17.12451410293579,
+    "memory_peak": 26.1015625,
+    "quality_gates_passed": {
+      "import_success_rate": true,
+      "unit_test_success_rate": false,
+      "integration_success_rate": false,
+      "security_success_rate": false,
+      "performance_compliance": false,
+      "system_success_rate": false,
+      "code_coverage_threshold": false
+    },
+    "failure_breakdown": {

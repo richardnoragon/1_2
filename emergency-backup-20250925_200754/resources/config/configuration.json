@@ -1,0 +1,340 @@
+{
+    "general": {
+        "theme": "light",
+        "default_directory": "",
+        "recent_directories": [],
+        "max_recent_entries": 10,
+        "logging_level": "INFO",
+        "enable_debug_logging": false
+    },
+    "duplicates": {
+        "default_hash_algorithm": "sha256",
+        "min_file_size": 1024,
+        "skip_system_files": true
+    },
+    "secure_delete": {
+        "default_passes": 3,
+        "max_passes": 35
+    },
+    "compression": {
+        "default_format": "zip",
+        "default_compression_level": 6,
+        "use_password_protection": false
+    },
+    "sync": {
+        "default_mode": "two_way",
+        "create_backups": true,
+        "skip_newer_files": false
+    },
+    "catalog": {
+        "recursive_by_default": true,
+        "check_duplicates": false,
+        "show_file_sizes": true,
+        "show_dates": true,
+        "default_sort_by": "name",
+        "default_sort_order": "ascending"
+    },
+    "organize": {
+        "recursive_by_default": false,
+        "create_category_folders": true,
+        "move_files": true
+    },
+    "pdf_tools": {
+        "general": {
+            "last_opened_directory": "",
+            "default_output_directory": "",
+            "recent_files": [],
+            "max_recent_files": 10
+        },
+        "viewer": {
+            "zoom_factor": 1.0,
+            "default_page": 1,
+            "fit_to_window": true
+        },
+        "watermark": {
+            "opacity": 0.5,
+            "watermark_text": "",
+            "last_directory": "",
+            "font_size": 36,
+            "color": "#808080"
+        },
+        "extract_text": {
+            "default_format": "txt",
+            "include_page_numbers": true,
+            "preserve_layout": false
+        },
+        "split": {
+            "default_mode": "single_pages",
+            "preserve_bookmarks": false
+        },
+        "merge": {
+            "preserve_bookmarks": true,
+            "optimize_output": true
+        },
+        "ocr": {
+            "language": "eng",
+            "dpi": 300,
+            "output_format": "pdf"
+        },
+        "encryption": {
+            "default_algorithm": "AES256",
+            "key_length": 256
+        }
+    },
+    "network_connectivity": {
+        "general": {
+            "default_timeout": 5000,
+            "max_concurrent_operations": 10,
+            "enable_logging": true,
+            "log_level": "INFO",
+            "auto_save_results": true,
+            "results_retention_days": 30,
+            "enable_notifications": true,
+            "notification_sound": true,
+            "data_cache_timeout": 30,
+            "max_history_entries": 1000
+        },
+        "bandwidth_monitor": {
+            "monitoring_interval": 1000,
+            "data_retention_hours": 24,
+            "alert_threshold_mbps": 100.0,
+            "enable_alerts": true,
+            "monitor_interfaces": "auto",
+            "chart_update_interval": 2000,
+            "enable_real_time_chart": true,
+            "show_upload_download_separate": true,
+            "data_units": "auto",
+            "enable_application_monitoring": false,
+            "alert_email": "",
+            "peak_detection_enabled": true,
+            "baseline_calculation_hours": 168,
+            "export_format": "csv",
+            "auto_export_enabled": false,
+            "auto_export_interval_hours": 24
+        },
+        "wifi_analyzer": {
+            "scan_interval": 30000,
+            "signal_interval": 2000,
+            "enable_security_analysis": true,
+            "enable_interference_detection": true,
+            "enable_channel_analysis": true,
+            "data_retention_hours": 24,
+            "max_access_points": 1000,
+            "enable_alerts": true,
+            "weak_signal_threshold": -70,
+            "security_alert_level": "medium",
+            "scan_type": "active",
+            "bands": ["2.4GHz", "5GHz"],
+            "channel_width_detection": true,
+            "vendor_identification": true,
+            "hidden_network_detection": true,
+            "beacon_analysis": true,
+            "probe_request_analysis": false,
+            "monitor_mode_required": false,
+            "auto_channel_recommendation": true,
+            "interference_threshold": 0.7,
+            "security_score_threshold": 0.5,
+            "signal_history_size": 1000,
+            "export_format": "json",
+            "include_vendor_info": true,
+            "include_capabilities": true,
+            "real_time_updates": true,
+            "update_interval": 5000
+        },
+        "lan_file_transfer": {
+            "discovery_port": 8765,
+            "transfer_port": 8766,
+            "discovery_interval": 30,
+            "max_concurrent_transfers": 3,
+            "default_chunk_size": 65536,
+            "encryption_enabled": true,
+            "compression_enabled": false,
+            "default_compression": "gzip",
+            "transfer_timeout": 300,
+            "connection_timeout": 30,
+            "enable_device_discovery": true,
+            "auto_accept_trusted": false,
+            "require_authentication": true,
+            "enable_resume": true,
+            "max_file_size_mb": 1024,
+            "allowed_file_types": [],
+            "blocked_file_types": [".exe", ".bat", ".cmd", ".scr"],
+            "default_download_path": "Downloads",
+            "enable_bandwidth_limiting": false,
+            "max_upload_speed_mbps": 0,
+            "max_download_speed_mbps": 0,
+            "enable_notifications": true,
+            "log_transfers": true,
+            "keep_transfer_history": true,
+            "history_retention_days": 30,
+            "enable_security_scanning": false,
+            "trust_local_network": true,
+            "device_name": "",
+            "enable_upnp": false,
+            "firewall_auto_config": false
+        },
+        "port_scanner": {
+            "default_scan_type": "tcp",
+            "common_ports": [
+                21, 22, 23, 25, 53, 80, 110, 135, 139, 143,
+                443, 993, 995, 1723, 3306, 3389, 5432, 5900
+            ],
+            "scan_timeout": 3000,
+            "max_threads": 50,
+            "enable_service_detection": true,
+            "enable_os_detection": false,
+            "enable_vulnerability_scan": false,
+            "scan_delay": 0,
+            "randomize_scan_order": false,
+            "save_scan_results": true,
+            "export_formats": ["json", "csv", "xml"],
+            "stealth_mode": false,
+            "custom_port_ranges": [],
+            "exclude_ports": [],
+            "enable_banner_grabbing": true
+        },
+        "security": {
+            "require_admin_for_scans": false,
+            "whitelist_scan_targets": [],
+            "blacklist_scan_targets": [
+                "127.0.0.1",
+                "localhost",
+                "::1"
+            ],
+            "max_scan_rate": 1000,
+            "enable_scan_logging": true,
+            "alert_on_suspicious_activity": true,
+            "encrypt_stored_data": false,
+            "data_retention_policy": "30_days",
+            "audit_trail_enabled": true,
+            "security_level": "moderate"
+        },
+        "performance": {
+            "enable_performance_monitoring": true,
+            "max_memory_usage_mb": 512,
+            "max_cpu_usage_percent": 25,
+            "operation_timeout_multiplier": 1.0,
+            "enable_background_operations": true,
+            "priority_level": "normal",
+            "thread_pool_size": "auto",
+            "cache_size_mb": 64,
+            "enable_compression": true
+        }
+    },
+    "size_analyzer": {
+        "general": {
+            "module_path": "file_utilities_2.gui.size_analyzer_gui",
+            "class_name": "SizeAnalyzerGUI",
+            "last_opened_directory": "",
+            "default_output_directory": "",
+            "recent_directories": [],
+            "max_recent_directories": 10,
+            "enable_logging": true,
+            "log_level": "INFO",
+            "auto_save_results": true,
+            "results_retention_days": 30
+        },
+        "analysis": {
+            "default_top_files_count": 20,
+            "progress_update_interval": 100,
+            "max_concurrent_operations": 1,
+            "include_hidden_files": false,
+            "follow_symlinks": false,
+            "skip_system_files": true,
+            "file_size_threshold": 0,
+            "enable_file_type_analysis": true,
+            "enable_directory_tree": true,
+            "enable_performance_metrics": true
+        },
+        "export": {
+            "default_format": "json",
+            "include_metadata": true,
+            "include_performance_metrics": true,
+            "include_file_list": true,
+            "include_directory_tree": false,
+            "compress_exports": false,
+            "auto_timestamp_exports": true,
+            "export_formats": ["json", "csv", "txt"]
+        },
+        "ui": {
+            "window_geometry": {
+                "width": 800,
+                "height": 600,
+                "remember_size": true,
+                "remember_position": true,
+                "center_on_screen": true
+            },
+            "progress_visualization": {
+                "show_progress_bar": true,
+                "show_progress_details": true,
+                "show_time_estimates": true,
+                "update_frequency": 500
+            },
+            "results_display": {
+                "show_file_types": true,
+                "show_largest_files": true,
+                "show_directory_tree": false,
+                "auto_expand_results": true,
+                "results_font_family": "Consolas",
+                "results_font_size": 10
+            }
+        },
+        "performance": {
+            "enable_performance_monitoring": true,
+            "max_memory_usage_mb": 256,
+            "max_cpu_usage_percent": 50,
+            "operation_timeout_seconds": 300,
+            "enable_background_operations": true,
+            "priority_level": "normal",
+            "thread_pool_size": 1,
+            "cache_size_mb": 32,
+            "enable_progress_caching": true
+        },
+        "resources": {
+            "icon_path": "file_utilities_2/gui/icons/size_analyzer.png",
+            "ui_file": "file_utilities_2/gui/size_analyzer.ui",
+            "help_file": "file_utilities_2/docs/size_analyzer_help.html",
+            "template_path": "file_utilities_2/templates/size_analyzer",
+            "cache_directory": "cache/size_analyzer",
+            "temp_directory": "temp/size_analyzer",
+            "log_directory": "logs/size_analyzer"
+        },
+        "hub_integration": {
+            "enable_hub_integration": true,
+            "tool_name": "Size Analyzer",
+            "tool_category": "analysis",
+            "resource_requirements": {
+                "cpu_priority": "normal",
+                "memory_limit_mb": 256,
+                "disk_io_priority": "normal"
+            },
+            "event_broadcasting": {
+                "broadcast_start": true,
+                "broadcast_progress": true,
+                "broadcast_completion": true,
+                "broadcast_errors": true
+            },
+            "coordination": {
+                "allow_resource_sharing": true,
+                "coordinate_with_tools": ["tree_map", "checksum"],
+                "exclusive_mode": false
+            }
+        },
+        "logging": {
+            "enable_tool_logging": true,
+            "log_level": "INFO",
+            "log_file": "logs/size_analyzer/size_analyzer.log",
+            "max_log_size_mb": 10,
+            "backup_count": 5,
+            "log_format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+            "log_categories": {
+                "core_logic": "INFO",
+                "gui_events": "INFO",
+                "hub_integration": "INFO",
+                "performance": "DEBUG",
+                "errors": "ERROR"
+            }
+        }
+    },
+    "profiles": {}
+}

@@ -1,0 +1,61 @@
+# Test Requirements for Enhanced Editor Tests
+# Generated: 2025-08-31
+# Target: enhanced_editor.py
+
+# Core testing framework
+pytest>=7.0.0
+
+# HTML test reports
+pytest-html>=3.1.0
+
+# JSON test reports
+pytest-json-report>=1.5.0
+
+# Code coverage
+pytest-cov>=4.0.0
+coverage>=7.0.0
+
+# Performance and timing
+pytest-benchmark>=4.0.0
+
+# Mock and testing utilities
+pytest-mock>=3.10.0
+
+# Parallel test execution
+pytest-xdist>=3.0.0
+
+# Additional test utilities
+pytest-timeout>=2.1.0
+pytest-clarity>=1.0.0
+
+# PyQt5 for GUI testing (if available)
+PyQt5>=5.15.0; platform_system != "Linux"
+
+# Alternative Qt bindings
+PySide2>=5.15.0; platform_system == "Linux"
+
+# Test data generation
+factory-boy>=3.2.0
+faker>=15.0.0
+
+# Assertion helpers
+assertpy>=1.1
+
+# Memory profiling for performance tests
+memory-profiler>=0.60.0
+
+# Color output for better readability
+colorama>=0.4.0
+
+# Plugin for better error messages
+pytest-clarity>=1.0.0
+
+# JUnit XML support (included with pytest but listed for clarity)
+# pytest includes junitxml support by default
+
+# Additional development dependencies
+# (uncomment if needed for development)
+# black>=22.0.0
+# flake8>=5.0.0
+# mypy>=0.991
+# pre-commit>=2.20.0

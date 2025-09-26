@@ -1,0 +1,39 @@
+# Test Dependencies for secure_delete.py Unit Tests
+# Generated: 2025-08-28
+
+# Core testing framework
+pytest>=7.0.0
+pytest-cov>=4.0.0
+pytest-html>=3.1.0
+pytest-mock>=3.8.0
+pytest-xvfb>=2.0.0  # For GUI testing on headless systems
+
+# Coverage and reporting
+coverage>=6.0.0
+pytest-json-report>=1.5.0
+
+# Mocking and test utilities
+mock>=4.0.0
+responses>=0.21.0
+
+# Additional testing utilities
+pytest-timeout>=2.1.0
+pytest-benchmark>=3.4.0
+pytest-randomly>=3.12.0
+
+# Code quality
+flake8>=4.0.0
+black>=22.0.0
+isort>=5.10.0
+
+# Documentation
+pytest-doctestplus>=0.12.0
+
+# PyQt5 for GUI testing (if not already installed)
+PyQt5>=5.15.0
+
+# Additional utilities for file operations testing
+tempfile  # Built-in
+pathlib   # Built-in
+shutil    # Built-in
+hashlib   # Built-in

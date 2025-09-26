@@ -1,0 +1,11 @@
+{
+  "mock_test_execution": {
+    "start_time": "2025-08-29T00:59:01.486923",
+    "end_time": "2025-08-29T00:59:01.548538",
+    "total_execution_time": "0:00:00.061615",
+    "test_file": "test_disk_health_widget_mock_2025-08-29.py",
+    "mock_tests_executed": 1,
+    "framework": "pytest with unittest.mock",
+    "mocking_strategy": "comprehensive_pyqt5_mocking"
+  }
+}

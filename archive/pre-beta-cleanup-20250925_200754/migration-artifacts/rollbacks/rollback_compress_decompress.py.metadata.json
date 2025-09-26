@@ -1,0 +1,12 @@
+{
+  "original_path": "scripts\\maintenance\\rollback_compress_decompress.py",
+  "archived_path": "migration-artifacts\\rollbacks\\rollback_compress_decompress.py",
+  "archived_date": "2025-09-25T20:09:28.365076",
+  "reason": "Pre-beta cleanup: migration-artifacts",
+  "safety_level": "low",
+  "retrieval_priority": "normal",
+  "last_modified": "2025-09-22T19:14:30.875454",
+  "file_size": 853,
+  "file_type": "file",
+  "md5_hash": "8ace6884b9ee055f37f8f2e69683bdc5"
+}

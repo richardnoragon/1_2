@@ -1,0 +1,63 @@
+{
+  "timestamp": "2025-08-31 23:45:58",
+  "total_duration": 174.56162929534912,
+  "summary": {
+    "total_suites": 5,
+    "total_tests": 55,
+    "total_passed": 0,
+    "total_failed": 0,
+    "total_skipped": 0
+  },
+  "test_results": [
+    {
+      "test_suite": "Size Analyzer Logging",
+      "status": "PASSED",
+      "duration": 9.297774076461792,
+      "tests_run": 26,
+      "tests_passed": 0,
+      "tests_failed": 0,
+      "tests_skipped": 0,
+      "error_message": ""
+    },
+    {
+      "test_suite": "Core Analysis Engine Unit Tests",
+      "status": "FAILED",
+      "duration": 11.035098552703857,
+      "tests_run": 0,
+      "tests_passed": 0,
+      "tests_failed": 0,
+      "tests_skipped": 0,
+      "error_message": ""
+    },
+    {
+      "test_suite": "Core Analysis Engine Integration",
+      "status": "PASSED",
+      "duration": 8.14698314666748,
+      "tests_run": 10,
+      "tests_passed": 0,
+      "tests_failed": 0,
+      "tests_skipped": 0,
+      "error_message": ""
+    },
+    {
+      "test_suite": "Core Analysis Engine Performance",
+      "status": "FAILED",
+      "duration": 135.1395881175995,
+      "tests_run": 9,
+      "tests_passed": 0,
+      "tests_failed": 0,
+      "tests_skipped": 0,
+      "error_message": ""
+    },
+    {
+      "test_suite": "Core Analysis Engine End-to-End",
+      "status": "PASSED",
+      "duration": 7.6150126457214355,
+      "tests_run": 10,
+      "tests_passed": 0,
+      "tests_failed": 0,
+      "tests_skipped": 0,
+      "error_message": ""
+    }
+  ]
+}

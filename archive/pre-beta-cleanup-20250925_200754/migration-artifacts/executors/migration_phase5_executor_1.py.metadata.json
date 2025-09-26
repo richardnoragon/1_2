@@ -1,0 +1,12 @@
+{
+  "original_path": "emergency-backup-20250925_200754\\migration_phase5_executor.py",
+  "archived_path": "migration-artifacts\\executors\\migration_phase5_executor_1.py",
+  "archived_date": "2025-09-25T20:08:26.925263",
+  "reason": "Pre-beta cleanup: migration-artifacts",
+  "safety_level": "low",
+  "retrieval_priority": "normal",
+  "last_modified": "2025-09-22T19:14:30.780151",
+  "file_size": 16572,
+  "file_type": "file",
+  "md5_hash": "423102fa8fe2376091b0d08d2af99c51"
+}

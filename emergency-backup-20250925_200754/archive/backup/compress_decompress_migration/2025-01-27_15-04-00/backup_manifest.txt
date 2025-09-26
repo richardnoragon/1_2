@@ -1,0 +1,23 @@
+COMPRESS_DECOMPRESS MIGRATION BACKUP
+Created: 2025-01-27T15:04:00
+Source Directory: c:\Users\HP1\1_2\1_2
+Backup Directory: c:\Users\HP1\1_2\1_2\backup\compress_decompress_migration\2025-01-27_15-04-00
+
+FILES BACKED UP:
+  - compress_decompress.py (392 lines)
+  - compress_decompress.ui (209 lines)
+
+MIGRATION DETAILS:
+  - Source: compress_decompress.py, compress_decompress.ui
+  - Target: file_utilities_1/compress_decompress.py, file_utilities_1/compress_decompress.ui
+  - Class Rename: CompressDecompressApp → CompressDecompressWindow
+  - UI Path Update: uic.loadUi("compress_decompress.ui", self) → Path(__file__).parent / "compress_decompress.ui"
+  - BaseWindow Integration: Already inherits from BaseWindow
+  - Icon Integration: Add _setup_icons() method
+  - Package Export: Add to file_utilities_1/__init__.py
+  - RFU Hub Update: Update import path
+
+ROLLBACK INSTRUCTIONS:
+1. Run rollback_compress_decompress.py
+2. Verify files restored to original location
+3. Test original functionality

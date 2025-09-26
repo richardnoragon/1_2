@@ -1,0 +1,11 @@
+{
+  "original_path": "archive\\pre-beta-cleanup-20250925_200754\\migration-artifacts\\backups\\MIGRATION_BACKUP_20250916_222618_2\\src_complete_backup",
+  "archived_path": "migration-artifacts\\backups\\src_complete_backup_1",
+  "archived_date": "2025-09-25T20:09:23.097608",
+  "reason": "Pre-beta cleanup: migration-artifacts",
+  "safety_level": "low",
+  "retrieval_priority": "normal",
+  "last_modified": "2025-09-22T19:14:27.379993",
+  "file_size": 10718127,
+  "file_type": "directory"
+}

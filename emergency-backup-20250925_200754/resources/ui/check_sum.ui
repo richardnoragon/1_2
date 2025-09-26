@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>600</width>
+    <height>500</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Checksum Utility</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <property name="spacing">
+     <number>10</number>
+    </property>
+    <property name="leftMargin">
+     <number>20</number>
+    </property>
+    <property name="topMargin">
+     <number>20</number>
+    </property>
+    <property name="rightMargin">
+     <number>20</number>
+    </property>
+    <property name="bottomMargin">
+     <number>20</number>
+    </property>
+    <item>
+     <widget class="QGroupBox" name="fileGroupBox">
+      <property name="title">
+       <string>File/Directory Selection</string>
+      </property>
+      <layout class="QVBoxLayout" name="fileLayout">
+       <item>
+        <layout class="QHBoxLayout" name="filePathLayout">
+         <item>
+          <widget class="QLineEdit" name="filePathInput">
+           <property name="placeholderText">
+            <string>Select file or directory...</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="browseButton">
+           <property name="text">
+            <string>Browse</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QGroupBox" name="optionsGroupBox">
+      <property name="title">
+       <string>Options</string>
+      </property>
+      <layout class="QGridLayout" name="optionsLayout">
+       <item row="0" column="0">
+        <widget class="QLabel" name="modeLabel">
+         <property name="text">
+          <string>Mode:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QComboBox" name="modeCombo">
+         <item>
+          <property name="text">
+           <string>Calculate File</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Verify File</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Calculate Directory</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Verify Directory</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="algorithmLabel">
+         <property name="text">
+          <string>Algorithm:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QComboBox" name="algorithmCombo">
+         <item>
+          <property name="text">
+           <string>MD5</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>SHA-1</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>SHA-256</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>SHA-512</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="checksumLabel">
+         <property name="text">
+          <string>Expected Checksum:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QLineEdit" name="checksumInput">
+         <property name="placeholderText">
+          <string>Enter expected checksum for verification...</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QGroupBox" name="resultsGroupBox">
+      <property name="title">
+       <string>Results</string>
+      </property>
+      <layout class="QVBoxLayout" name="resultsLayout">
+       <item>
+        <widget class="QTextEdit" name="resultsArea">
+         <property name="readOnly">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QProgressBar" name="progressBar">
+      <property name="value">
+       <number>0</number>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="buttonLayout">
+      <item>
+       <widget class="QPushButton" name="calculateButton">
+        <property name="text">
+         <string>Calculate/Verify</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="clearButton">
+        <property name="text">
+         <string>Clear</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="saveButton">
+        <property name="text">
+         <string>Save Results</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>600</width>
+     <height>22</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

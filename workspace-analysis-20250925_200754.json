@@ -1,0 +1,3167 @@
+{
+  "total_files": 34119,
+  "total_directories": 4250,
+  "migration_artifacts": [
+    {
+      "file": "migration_phase1_executor.py",
+      "category": "executors",
+      "size": 11841,
+      "modified": "2025-09-22T19:14:30.777142"
+    },
+    {
+      "file": "migration_phase2_executor.py",
+      "category": "executors",
+      "size": 13529,
+      "modified": "2025-09-22T19:14:30.777142"
+    },
+    {
+      "file": "migration_phase3_executor.py",
+      "category": "executors",
+      "size": 13992,
+      "modified": "2025-09-22T19:14:30.779147"
+    },
+    {
+      "file": "migration_phase4_executor.py",
+      "category": "executors",
+      "size": 13646,
+      "modified": "2025-09-22T19:14:30.780151"
+    },
+    {
+      "file": "migration_phase5_executor.py",
+      "category": "executors",
+      "size": 16572,
+      "modified": "2025-09-22T19:14:30.780151"
+    },
+    {
+      "file": "migration_phase1_executor.py",
+      "category": "executors",
+      "size": 11841,
+      "modified": "2025-09-22T19:14:30.777142"
+    },
+    {
+      "file": "migration_phase2_executor.py",
+      "category": "executors",
+      "size": 13529,
+      "modified": "2025-09-22T19:14:30.777142"
+    },
+    {
+      "file": "migration_phase3_executor.py",
+      "category": "executors",
+      "size": 13992,
+      "modified": "2025-09-22T19:14:30.779147"
+    },
+    {
+      "file": "migration_phase4_executor.py",
+      "category": "executors",
+      "size": 13646,
+      "modified": "2025-09-22T19:14:30.780151"
+    },
+    {
+      "file": "migration_phase5_executor.py",
+      "category": "executors",
+      "size": 16572,
+      "modified": "2025-09-22T19:14:30.780151"
+    },
+    {
+      "file": "migration_master.py",
+      "category": "executors",
+      "size": 20544,
+      "modified": "2025-09-22T19:14:30.777142"
+    },
+    {
+      "file": "advanced_folders_migration_report_20250917_172120.json",
+      "category": "reports",
+      "size": 7901,
+      "modified": "2025-09-22T19:14:27.754181"
+    },
+    {
+      "file": "migration_audit_report_20250916_221759.json",
+      "category": "reports",
+      "size": 26189077,
+      "modified": "2025-09-22T19:14:28.383902"
+    },
+    {
+      "file": "MIGRATION_FINAL_COMPLETION_REPORT_20250916_223246.json",
+      "category": "reports",
+      "size": 1213,
+      "modified": "2025-09-22T19:14:27.723602"
+    },
+    {
+      "file": "migration_phase2_report_20250916_222746.json",
+      "category": "reports",
+      "size": 3638,
+      "modified": "2025-09-22T19:14:30.779147"
+    },
+    {
+      "file": "migration_phase3_report_20250916_222920.json",
+      "category": "reports",
+      "size": 41901,
+      "modified": "2025-09-22T19:14:30.780151"
+    },
+    {
+      "file": "migration_phase4_report_20250916_223059.json",
+      "category": "reports",
+      "size": 1779,
+      "modified": "2025-09-22T19:14:30.780151"
+    },
+    {
+      "file": "migration_report_20250916_161301.json",
+      "category": "reports",
+      "size": 68277,
+      "modified": "2025-09-22T19:14:30.782165"
+    },
+    {
+      "file": "migration_validation_report_20250917_165433.json",
+      "category": "reports",
+      "size": 1086,
+      "modified": "2025-09-22T19:14:30.782165"
+    },
+    {
+      "file": "migration_validation_report_20250917_165747.json",
+      "category": "reports",
+      "size": 1084,
+      "modified": "2025-09-22T19:14:30.782165"
+    },
+    {
+      "file": "migration_validation_report_20250917_165902.json",
+      "category": "reports",
+      "size": 1091,
+      "modified": "2025-09-22T19:14:30.787217"
+    },
+    {
+      "file": "migration_validation_report_20250917_165910.json",
+      "category": "reports",
+      "size": 1090,
+      "modified": "2025-09-22T19:14:30.787217"
+    },
+    {
+      "file": "migration_validation_report_20250917_170016.json",
+      "category": "reports",
+      "size": 1060,
+      "modified": "2025-09-22T19:14:30.787217"
+    },
+    {
+      "file": "migration_validation_report_20250917_170025.json",
+      "category": "reports",
+      "size": 1061,
+      "modified": "2025-09-22T19:14:30.787217"
+    },
+    {
+      "file": "migration_validation_report_20250917_171046.json",
+      "category": "reports",
+      "size": 1062,
+      "modified": "2025-09-22T19:14:30.787217"
+    },
+    {
+      "file": "migration_validation_report_20250917_172141.json",
+      "category": "reports",
+      "size": 1863,
+      "modified": "2025-09-22T19:14:30.787217"
+    },
+    {
+      "file": "ADVANCED_FOLDERS_MIGRATION_COMPLETION_REPORT.md",
+      "category": "reports",
+      "size": 8576,
+      "modified": "2025-09-22T19:14:27.220391"
+    },
+    {
+      "file": "FINAL_FILE_MANAGEMENT_MIGRATION_COMPLETION_REPORT_20250916.md",
+      "category": "reports",
+      "size": 8460,
+      "modified": "2025-09-22T19:14:27.225412"
+    },
+    {
+      "file": "MIGRATION_COMPLETION_REPORT_20250916_165945.md",
+      "category": "reports",
+      "size": 2440,
+      "modified": "2025-09-22T19:14:27.723602"
+    },
+    {
+      "file": "MIGRATION_COMPLETION_REPORT_FINAL_20250917.md",
+      "category": "reports",
+      "size": 6466,
+      "modified": "2025-09-22T19:14:27.723602"
+    },
+    {
+      "file": "MIGRATION_VERIFICATION_COMPLETION_REPORT_20250916.md",
+      "category": "reports",
+      "size": 3838,
+      "modified": "2025-09-22T19:14:27.723602"
+    },
+    {
+      "file": "OFFICE_METADATA_MIGRATION_COMPLETION_REPORT_20250916.md",
+      "category": "reports",
+      "size": 7756,
+      "modified": "2025-09-22T19:14:27.728693"
+    },
+    {
+      "file": "UTILITIES_TO_TOOLS_MIGRATION_COMPLETION_REPORT_20250916.md",
+      "category": "reports",
+      "size": 8543,
+      "modified": "2025-09-22T19:14:27.738950"
+    },
+    {
+      "file": "migration_complete_documentation.md",
+      "category": "reports",
+      "size": 13543,
+      "modified": "2025-09-22T19:14:30.774134"
+    },
+    {
+      "file": "MIGRATION_COMPLETION_REPORT_20250916_165945.md",
+      "category": "reports",
+      "size": 2440,
+      "modified": "2025-09-22T19:14:27.723602"
+    },
+    {
+      "file": "MIGRATION_COMPLETION_REPORT_FINAL_20250917.md",
+      "category": "reports",
+      "size": 6466,
+      "modified": "2025-09-22T19:14:27.723602"
+    },
+    {
+      "file": "MIGRATION_COMPLETION_SUMMARY_20250916_223246.md",
+      "category": "reports",
+      "size": 2223,
+      "modified": "2025-09-22T19:14:27.723602"
+    },
+    {
+      "file": "migration_inventory_analysis.md",
+      "category": "reports",
+      "size": 7571,
+      "modified": "2025-09-22T19:14:30.776138"
+    },
+    {
+      "file": "MIGRATION_PACKAGE_README.md",
+      "category": "reports",
+      "size": 9956,
+      "modified": "2025-09-22T19:14:27.723602"
+    },
+    {
+      "file": "MIGRATION_VERIFICATION_COMPLETION_REPORT_20250916.md",
+      "category": "reports",
+      "size": 3838,
+      "modified": "2025-09-22T19:14:27.723602"
+    },
+    {
+      "file": "migration_backup_20250916_161255",
+      "category": "backups",
+      "size": 0,
+      "modified": "2025-09-22T19:14:28.844904"
+    },
+    {
+      "file": "migration_backup_20250916_222325",
+      "category": "backups",
+      "size": 0,
+      "modified": "2025-09-22T19:14:30.064665"
+    },
+    {
+      "file": "MIGRATION_BACKUP_20250916_222618",
+      "category": "backups",
+      "size": 0,
+      "modified": "2025-09-22T19:14:27.255550"
+    },
+    {
+      "file": "migration_backup_20250917_154600",
+      "category": "backups",
+      "size": 0,
+      "modified": "2025-09-22T19:14:30.629980"
+    },
+    {
+      "file": "migration_backup_20250917_172120",
+      "category": "backups",
+      "size": 0,
+      "modified": "2025-09-22T19:14:30.715981"
+    },
+    {
+      "file": "migration_backup_file_operations_2025-09-16_21-33-28",
+      "category": "backups",
+      "size": 0,
+      "modified": "2025-09-22T19:14:30.767072"
+    },
+    {
+      "file": "migration_backup_20250916_161255",
+      "category": "backups",
+      "size": 0,
+      "modified": "2025-09-22T19:14:28.844904"
+    },
+    {
+      "file": "migration_backup_20250916_222325",
+      "category": "backups",
+      "size": 0,
+      "modified": "2025-09-22T19:14:30.064665"
+    },
+    {
+      "file": "MIGRATION_BACKUP_20250916_222618",
+      "category": "backups",
+      "size": 0,
+      "modified": "2025-09-22T19:14:27.255550"
+    },
+    {
+      "file": "migration_backup_20250917_154600",
+      "category": "backups",
+      "size": 0,
+      "modified": "2025-09-22T19:14:30.629980"
+    },
+    {
+      "file": "migration_backup_20250917_172120",
+      "category": "backups",
+      "size": 0,
+      "modified": "2025-09-22T19:14:30.715981"
+    },
+    {
+      "file": "migration_backup_file_operations_2025-09-16_21-33-28",
+      "category": "backups",
+      "size": 0,
+      "modified": "2025-09-22T19:14:30.767072"
+    },
+    {
+      "file": "migration_backup_20250916_161255\\backup_manifest.json",
+      "category": "backups",
+      "size": 268,
+      "modified": "2025-09-22T19:14:28.385407"
+    },
+    {
+      "file": "migration_backup_20250916_161255\\config_original",
+      "category": "backups",
+      "size": 0,
+      "modified": "2025-09-22T19:14:28.390893"
+    },
+    {
+      "file": "migration_backup_20250916_161255\\main_backup.py",
+      "category": "backups",
+      "size": 83567,
+      "modified": "2025-09-22T19:14:28.390893"
+    },
+    {
+      "file": "migration_backup_20250916_161255\\requirements_backup.txt",
+      "category": "backups",
+      "size": 1423,
+      "modified": "2025-09-22T19:14:28.390893"
+    },
+    {
+      "file": "migration_backup_20250916_161255\\src_original",
+      "category": "backups",
+      "size": 0,
+      "modified": "2025-09-22T19:14:28.735018"
+    },
+    {
+      "file": "migration_backup_20250916_161255\\tests_original",
+      "category": "backups",
+      "size": 0,
+      "modified": "2025-09-22T19:14:30.028769"
+    },
+    {
+      "file": "migration_backup_20250916_222325\\file_manifest.json",
+      "category": "backups",
+      "size": 73745,
+      "modified": "2025-09-22T19:14:30.064665"
+    },
+    {
+      "file": "migration_backup_20250916_222325\\src_complete",
+      "category": "backups",
+      "size": 0,
+      "modified": "2025-09-22T19:14:30.322856"
+    },
+    {
+      "file": "MIGRATION_BACKUP_20250916_222618\\backup_verification.json",
+      "category": "backups",
+      "size": 322,
+      "modified": "2025-09-22T19:14:27.225412"
+    },
+    {
+      "file": "MIGRATION_BACKUP_20250916_222618\\core_rfu",
+      "category": "backups",
+      "size": 0,
+      "modified": "2025-09-22T19:14:27.246883"
+    },
+    {
+      "file": "MIGRATION_BACKUP_20250916_222618\\migration_metadata.json",
+      "category": "backups",
+      "size": 333,
+      "modified": "2025-09-22T19:14:27.255550"
+    },
+    {
+      "file": "MIGRATION_BACKUP_20250916_222618\\project_files_backup",
+      "category": "backups",
+      "size": 0,
+      "modified": "2025-09-22T19:14:27.255550"
+    },
+    {
+      "file": "MIGRATION_BACKUP_20250916_222618\\src_complete_backup",
+      "category": "backups",
+      "size": 0,
+      "modified": "2025-09-22T19:14:27.379993"
+    },
+    {
+      "file": "MIGRATION_BACKUP_20250916_222618\\__init___rfu.py",
+      "category": "backups",
+      "size": 428,
+      "modified": "2025-09-22T19:14:27.225412"
+    },
+    {
+      "file": "migration_backup_20250917_154600\\MIGRATION_LOG.md",
+      "category": "backups",
+      "size": 962,
+      "modified": "2025-09-22T19:14:30.606299"
+    },
+    {
+      "file": "migration_backup_20250917_154600\\src_advanced_folders_original",
+      "category": "backups",
+      "size": 0,
+      "modified": "2025-09-22T19:14:30.626990"
+    },
+    {
+      "file": "migration_backup_20250917_154600\\target_advanced_folders_current",
+      "category": "backups",
+      "size": 0,
+      "modified": "2025-09-22T19:14:30.663534"
+    },
+    {
+      "file": "migration_backup_20250917_172120\\advanced_folders",
+      "category": "backups",
+      "size": 0,
+      "modified": "2025-09-22T19:14:30.674131"
+    },
+    {
+      "file": "migration_backup_20250917_172120\\existing_advanced_folders",
+      "category": "backups",
+      "size": 0,
+      "modified": "2025-09-22T19:14:30.715981"
+    },
+    {
+      "file": "migration_backup_20250917_172120\\src_advanced_folders",
+      "category": "backups",
+      "size": 0,
+      "modified": "2025-09-22T19:14:30.741782"
+    },
+    {
+      "file": "migration_backup_file_operations_2025-09-16_21-33-28\\file-operations_original",
+      "category": "backups",
+      "size": 0,
+      "modified": "2025-09-22T19:14:30.763562"
+    },
+    {
+      "file": "migration_backup_file_operations_2025-09-16_21-33-28\\file_operations_current",
+      "category": "backups",
+      "size": 0,
+      "modified": "2025-09-22T19:14:30.774134"
+    },
+    {
+      "file": "rollback_migration_20250916_161150.py",
+      "category": "rollbacks",
+      "size": 1878,
+      "modified": "2025-09-22T19:14:30.817516"
+    },
+    {
+      "file": "rollback_migration_20250916_161255.py",
+      "category": "rollbacks",
+      "size": 1878,
+      "modified": "2025-09-22T19:14:30.817516"
+    },
+    {
+      "file": "rollback_migration_20250917_172120.py",
+      "category": "rollbacks",
+      "size": 1861,
+      "modified": "2025-09-22T19:14:30.817516"
+    },
+    {
+      "file": "rollback_migration_20250916_161150.py",
+      "category": "rollbacks",
+      "size": 1878,
+      "modified": "2025-09-22T19:14:30.817516"
+    },
+    {
+      "file": "rollback_migration_20250916_161255.py",
+      "category": "rollbacks",
+      "size": 1878,
+      "modified": "2025-09-22T19:14:30.817516"
+    },
+    {
+      "file": "rollback_migration_20250917_172120.py",
+      "category": "rollbacks",
+      "size": 1861,
+      "modified": "2025-09-22T19:14:30.817516"
+    },
+    {
+      "file": "migration_validation.py",
+      "category": "validators",
+      "size": 26333,
+      "modified": "2025-09-22T19:14:30.782165"
+    },
+    {
+      "file": "migration_validation_tools.py",
+      "category": "validators",
+      "size": 19996,
+      "modified": "2025-09-22T19:14:30.787217"
+    },
+    {
+      "file": "migration_audit_comprehensive.py",
+      "category": "validators",
+      "size": 14849,
+      "modified": "2025-09-22T19:14:28.323497"
+    },
+    {
+      "file": "migration_automation.py",
+      "category": "automation",
+      "size": 21492,
+      "modified": "2025-09-22T19:14:28.383902"
+    },
+    {
+      "file": "migration_controller.py",
+      "category": "automation",
+      "size": 12829,
+      "modified": "2025-09-22T19:14:30.774134"
+    },
+    {
+      "file": ".reorganization_backup\\Phase1_Database_Migration_System_Completion_Report.md",
+      "category": "reports",
+      "size": 11152,
+      "modified": "2025-09-22T19:14:27.151692"
+    },
+    {
+      "file": ".reorganization_backup\\MIGRATION_MANAGER_ENHANCEMENT_COMPLETION_SUMMARY.md",
+      "category": "reports",
+      "size": 6814,
+      "modified": "2025-09-22T19:14:27.133179"
+    },
+    {
+      "file": ".reorganization_backup\\Migration_System_Technical_Documentation.md",
+      "category": "reports",
+      "size": 19472,
+      "modified": "2025-09-22T19:14:27.134179"
+    },
+    {
+      "file": "archive\\legacy_code\\file_utilities_2\\docs\\MIGRATION_SUMMARY.md",
+      "category": "reports",
+      "size": 16989,
+      "modified": "2025-09-22T19:14:27.806088"
+    },
+    {
+      "file": "archive\\legacy_code\\file_utilities_2\\docs\\MIGRATION_TECHNICAL_DOCUMENTATION.md",
+      "category": "reports",
+      "size": 31665,
+      "modified": "2025-09-22T19:14:27.806088"
+    },
+    {
+      "file": "archive\\migration_reports\\CATALOG_MIGRATION_VALIDATION_REPORT.md",
+      "category": "reports",
+      "size": 5472,
+      "modified": "2025-09-22T19:14:27.873371"
+    },
+    {
+      "file": "archive\\migration_reports\\CHECKSUM_MIGRATION_FINAL_VALIDATION_REPORT.md",
+      "category": "reports",
+      "size": 13745,
+      "modified": "2025-09-22T19:14:27.873371"
+    },
+    {
+      "file": "archive\\migration_reports\\CMSD_MIGRATION_COMPLETION_REPORT.md",
+      "category": "reports",
+      "size": 7993,
+      "modified": "2025-09-22T19:14:27.878541"
+    },
+    {
+      "file": "archive\\migration_reports\\COMPRESS_DECOMPRESS_MIGRATION_VALIDATION_REPORT.md",
+      "category": "reports",
+      "size": 7831,
+      "modified": "2025-09-22T19:14:27.880046"
+    },
+    {
+      "file": "archive\\migration_reports\\EMPTY_FOLDERS_MIGRATION_VALIDATION_REPORT.md",
+      "category": "reports",
+      "size": 7794,
+      "modified": "2025-09-22T19:14:27.883838"
+    },
+    {
+      "file": "archive\\migration_reports\\ENCRYPTION_MIGRATION_COMPLETION_REPORT.md",
+      "category": "reports",
+      "size": 15674,
+      "modified": "2025-09-22T19:14:27.883838"
+    },
+    {
+      "file": "archive\\migration_reports\\FILE_FINDER_MIGRATION_COMPLETION_REPORT.md",
+      "category": "reports",
+      "size": 19736,
+      "modified": "2025-09-22T19:14:27.889193"
+    },
+    {
+      "file": "archive\\migration_reports\\FILE_FINDER_MIGRATION_STATUS_AND_PROGRESS_REPORT.md",
+      "category": "reports",
+      "size": 18608,
+      "modified": "2025-09-22T19:14:27.890697"
+    },
+    {
+      "file": "archive\\migration_reports\\FILE_FINDER_MIGRATION_VERIFICATION_REPORT.md",
+      "category": "reports",
+      "size": 10651,
+      "modified": "2025-09-22T19:14:27.890697"
+    },
+    {
+      "file": "archive\\migration_reports\\FILE_SPLITTER_MIGRATION_FINAL_COMPLETION_REPORT.md",
+      "category": "reports",
+      "size": 15050,
+      "modified": "2025-09-22T19:14:27.894214"
+    },
+    {
+      "file": "archive\\migration_reports\\FILE_SPLITTER_MIGRATION_VALIDATION_REPORT.md",
+      "category": "reports",
+      "size": 10494,
+      "modified": "2025-09-22T19:14:27.896719"
+    },
+    {
+      "file": "archive\\migration_reports\\FILE_TOUCH_MIGRATION_COMPLETION_REPORT.md",
+      "category": "reports",
+      "size": 12222,
+      "modified": "2025-09-22T19:14:27.899295"
+    },
+    {
+      "file": "archive\\migration_reports\\IMAGE_METADATA_MIGRATION_COMPLETION_REPORT.md",
+      "category": "reports",
+      "size": 7681,
+      "modified": "2025-09-22T19:14:27.904314"
+    },
+    {
+      "file": "archive\\migration_reports\\ORGANIZE_MIGRATION_FINAL_VALIDATION_REPORT.md",
+      "category": "reports",
+      "size": 10842,
+      "modified": "2025-09-22T19:14:27.904314"
+    },
+    {
+      "file": "archive\\migration_reports\\RENAME_MIGRATION_COMPLETION_REPORT.md",
+      "category": "reports",
+      "size": 9939,
+      "modified": "2025-09-22T19:14:27.909703"
+    },
+    {
+      "file": "archive\\migration_reports\\SECURE_DELETE_MIGRATION_COMPLETION_REPORT.md",
+      "category": "reports",
+      "size": 12875,
+      "modified": "2025-09-22T19:14:27.913327"
+    },
+    {
+      "file": "archive\\migration_reports\\SIZE_ANALYZER_FINAL_MIGRATION_REPORT.md",
+      "category": "reports",
+      "size": 17648,
+      "modified": "2025-09-22T19:14:27.915072"
+    },
+    {
+      "file": "archive\\migration_reports\\SIZE_ANALYZER_MIGRATION_COMPLETION_REPORT.md",
+      "category": "reports",
+      "size": 8824,
+      "modified": "2025-09-22T19:14:27.915072"
+    },
+    {
+      "file": "archive\\migration_reports\\TAG_VIEWER_EDITOR_MIGRATION_COMPLETION_REPORT.md",
+      "category": "reports",
+      "size": 12063,
+      "modified": "2025-09-22T19:14:27.915072"
+    },
+    {
+      "file": "archive\\migration_reports\\TAG_VIEWER_EDITOR_MIGRATION_FINAL_COMPLETION_REPORT.md",
+      "category": "reports",
+      "size": 30337,
+      "modified": "2025-09-22T19:14:27.920251"
+    },
+    {
+      "file": "archive\\migration_reports\\TAG_VIEWER_EDITOR_MIGRATION_VALIDATION_REPORT.md",
+      "category": "reports",
+      "size": 11187,
+      "modified": "2025-09-22T19:14:27.920251"
+    },
+    {
+      "file": "archive\\migration_reports\\TAG_VIEWER_EDITOR_POST_MIGRATION_COMPREHENSIVE_TEST_REPORT.md",
+      "category": "reports",
+      "size": 15246,
+      "modified": "2025-09-22T19:14:27.920251"
+    },
+    {
+      "file": "archive\\migration_reports\\TREE_MAP_MIGRATION_FINAL_REPORT.md",
+      "category": "reports",
+      "size": 27605,
+      "modified": "2025-09-22T19:14:27.920251"
+    },
+    {
+      "file": "archive\\migration_reports\\TREE_MAP_MIGRATION_PROGRESS_REPORT.md",
+      "category": "reports",
+      "size": 21132,
+      "modified": "2025-09-22T19:14:27.920251"
+    },
+    {
+      "file": "archive\\migration_reports\\MIGRATION_PLAN.md",
+      "category": "reports",
+      "size": 6299,
+      "modified": "2025-09-22T19:14:27.904314"
+    },
+    {
+      "file": "archive\\migration_reports\\migration_progress.md",
+      "category": "reports",
+      "size": 11914,
+      "modified": "2025-09-22T19:14:27.925296"
+    },
+    {
+      "file": "docs\\migration_guide.md",
+      "category": "reports",
+      "size": 29038,
+      "modified": "2025-09-22T19:14:28.185881"
+    },
+    {
+      "file": "docs\\deployment\\Migration_System_Technical_Documentation.md",
+      "category": "reports",
+      "size": 19472,
+      "modified": "2025-09-22T19:14:28.003850"
+    },
+    {
+      "file": "docs\\developer\\MIGRATION_SUMMARY.md",
+      "category": "reports",
+      "size": 16989,
+      "modified": "2025-09-22T19:14:28.040607"
+    },
+    {
+      "file": "docs\\developer\\MIGRATION_TECHNICAL_DOCUMENTATION.md",
+      "category": "reports",
+      "size": 31665,
+      "modified": "2025-09-22T19:14:28.040607"
+    },
+    {
+      "file": "docs\\onboarding\\04_personas\\MIGRATION_GUIDE.md",
+      "category": "reports",
+      "size": 30754,
+      "modified": "2025-09-22T19:14:28.201117"
+    },
+    {
+      "file": "docs\\reports\\completion\\Phase1_Database_Migration_System_Completion_Report.md",
+      "category": "reports",
+      "size": 11152,
+      "modified": "2025-09-22T19:14:28.266540"
+    },
+    {
+      "file": "docs\\reports\\completion\\MIGRATION_MANAGER_ENHANCEMENT_COMPLETION_SUMMARY.md",
+      "category": "reports",
+      "size": 6814,
+      "modified": "2025-09-22T19:14:28.250465"
+    },
+    {
+      "file": "docs\\technical\\migration_manager_enhancement_report.md",
+      "category": "reports",
+      "size": 11891,
+      "modified": "2025-09-22T19:14:28.292465"
+    },
+    {
+      "file": "docs\\technical\\migration_manager_enhancement_report.md",
+      "category": "reports",
+      "size": 11891,
+      "modified": "2025-09-22T19:14:28.292465"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_phase1_executor.py",
+      "category": "executors",
+      "size": 11841,
+      "modified": "2025-09-22T19:14:30.777142"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_phase2_executor.py",
+      "category": "executors",
+      "size": 13529,
+      "modified": "2025-09-22T19:14:30.777142"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_phase3_executor.py",
+      "category": "executors",
+      "size": 13992,
+      "modified": "2025-09-22T19:14:30.779147"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_phase4_executor.py",
+      "category": "executors",
+      "size": 13646,
+      "modified": "2025-09-22T19:14:30.780151"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_phase5_executor.py",
+      "category": "executors",
+      "size": 16572,
+      "modified": "2025-09-22T19:14:30.780151"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_phase1_executor.py",
+      "category": "executors",
+      "size": 11841,
+      "modified": "2025-09-22T19:14:30.777142"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_phase2_executor.py",
+      "category": "executors",
+      "size": 13529,
+      "modified": "2025-09-22T19:14:30.777142"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_phase3_executor.py",
+      "category": "executors",
+      "size": 13992,
+      "modified": "2025-09-22T19:14:30.779147"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_phase4_executor.py",
+      "category": "executors",
+      "size": 13646,
+      "modified": "2025-09-22T19:14:30.780151"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_phase5_executor.py",
+      "category": "executors",
+      "size": 16572,
+      "modified": "2025-09-22T19:14:30.780151"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_master.py",
+      "category": "executors",
+      "size": 20544,
+      "modified": "2025-09-22T19:14:30.777142"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\advanced_folders_migration_report_20250917_172120.json",
+      "category": "reports",
+      "size": 7901,
+      "modified": "2025-09-22T19:14:27.754181"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_audit_report_20250916_221759.json",
+      "category": "reports",
+      "size": 26189077,
+      "modified": "2025-09-22T19:14:28.383902"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\MIGRATION_FINAL_COMPLETION_REPORT_20250916_223246.json",
+      "category": "reports",
+      "size": 1213,
+      "modified": "2025-09-22T19:14:27.723602"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_phase2_report_20250916_222746.json",
+      "category": "reports",
+      "size": 3638,
+      "modified": "2025-09-22T19:14:30.779147"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_phase3_report_20250916_222920.json",
+      "category": "reports",
+      "size": 41901,
+      "modified": "2025-09-22T19:14:30.780151"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_phase4_report_20250916_223059.json",
+      "category": "reports",
+      "size": 1779,
+      "modified": "2025-09-22T19:14:30.780151"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_report_20250916_161301.json",
+      "category": "reports",
+      "size": 68277,
+      "modified": "2025-09-22T19:14:30.782165"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_validation_report_20250917_165433.json",
+      "category": "reports",
+      "size": 1086,
+      "modified": "2025-09-22T19:14:30.782165"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_validation_report_20250917_165747.json",
+      "category": "reports",
+      "size": 1084,
+      "modified": "2025-09-22T19:14:30.782165"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_validation_report_20250917_165902.json",
+      "category": "reports",
+      "size": 1091,
+      "modified": "2025-09-22T19:14:30.787217"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_validation_report_20250917_165910.json",
+      "category": "reports",
+      "size": 1090,
+      "modified": "2025-09-22T19:14:30.787217"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_validation_report_20250917_170016.json",
+      "category": "reports",
+      "size": 1060,
+      "modified": "2025-09-22T19:14:30.787217"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_validation_report_20250917_170025.json",
+      "category": "reports",
+      "size": 1061,
+      "modified": "2025-09-22T19:14:30.787217"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_validation_report_20250917_171046.json",
+      "category": "reports",
+      "size": 1062,
+      "modified": "2025-09-22T19:14:30.787217"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_validation_report_20250917_172141.json",
+      "category": "reports",
+      "size": 1863,
+      "modified": "2025-09-22T19:14:30.787217"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\ADVANCED_FOLDERS_MIGRATION_COMPLETION_REPORT.md",
+      "category": "reports",
+      "size": 8576,
+      "modified": "2025-09-22T19:14:27.220391"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\FINAL_FILE_MANAGEMENT_MIGRATION_COMPLETION_REPORT_20250916.md",
+      "category": "reports",
+      "size": 8460,
+      "modified": "2025-09-22T19:14:27.225412"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\MIGRATION_COMPLETION_REPORT_20250916_165945.md",
+      "category": "reports",
+      "size": 2440,
+      "modified": "2025-09-22T19:14:27.723602"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\MIGRATION_COMPLETION_REPORT_FINAL_20250917.md",
+      "category": "reports",
+      "size": 6466,
+      "modified": "2025-09-22T19:14:27.723602"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\MIGRATION_VERIFICATION_COMPLETION_REPORT_20250916.md",
+      "category": "reports",
+      "size": 3838,
+      "modified": "2025-09-22T19:14:27.723602"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\OFFICE_METADATA_MIGRATION_COMPLETION_REPORT_20250916.md",
+      "category": "reports",
+      "size": 7756,
+      "modified": "2025-09-22T19:14:27.728693"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\UTILITIES_TO_TOOLS_MIGRATION_COMPLETION_REPORT_20250916.md",
+      "category": "reports",
+      "size": 8543,
+      "modified": "2025-09-22T19:14:27.738950"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_complete_documentation.md",
+      "category": "reports",
+      "size": 13543,
+      "modified": "2025-09-22T19:14:30.774134"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\MIGRATION_COMPLETION_REPORT_20250916_165945.md",
+      "category": "reports",
+      "size": 2440,
+      "modified": "2025-09-22T19:14:27.723602"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\MIGRATION_COMPLETION_REPORT_FINAL_20250917.md",
+      "category": "reports",
+      "size": 6466,
+      "modified": "2025-09-22T19:14:27.723602"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\MIGRATION_COMPLETION_SUMMARY_20250916_223246.md",
+      "category": "reports",
+      "size": 2223,
+      "modified": "2025-09-22T19:14:27.723602"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_inventory_analysis.md",
+      "category": "reports",
+      "size": 7571,
+      "modified": "2025-09-22T19:14:30.776138"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\MIGRATION_PACKAGE_README.md",
+      "category": "reports",
+      "size": 9956,
+      "modified": "2025-09-22T19:14:27.723602"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\MIGRATION_VERIFICATION_COMPLETION_REPORT_20250916.md",
+      "category": "reports",
+      "size": 3838,
+      "modified": "2025-09-22T19:14:27.723602"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_backup_20250916_161255",
+      "category": "backups",
+      "size": 0,
+      "modified": "2025-09-22T19:14:28.844904"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_backup_20250916_222325",
+      "category": "backups",
+      "size": 0,
+      "modified": "2025-09-22T19:14:30.064665"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\MIGRATION_BACKUP_20250916_222618",
+      "category": "backups",
+      "size": 0,
+      "modified": "2025-09-22T19:14:27.255550"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_backup_20250917_154600",
+      "category": "backups",
+      "size": 0,
+      "modified": "2025-09-22T19:14:30.629980"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_backup_20250917_172120",
+      "category": "backups",
+      "size": 0,
+      "modified": "2025-09-22T19:14:30.715981"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_backup_file_operations_2025-09-16_21-33-28",
+      "category": "backups",
+      "size": 0,
+      "modified": "2025-09-22T19:14:30.767072"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_backup_20250916_161255",
+      "category": "backups",
+      "size": 0,
+      "modified": "2025-09-22T19:14:28.844904"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_backup_20250916_222325",
+      "category": "backups",
+      "size": 0,
+      "modified": "2025-09-22T19:14:30.064665"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\MIGRATION_BACKUP_20250916_222618",
+      "category": "backups",
+      "size": 0,
+      "modified": "2025-09-22T19:14:27.255550"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_backup_20250917_154600",
+      "category": "backups",
+      "size": 0,
+      "modified": "2025-09-22T19:14:30.629980"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_backup_20250917_172120",
+      "category": "backups",
+      "size": 0,
+      "modified": "2025-09-22T19:14:30.715981"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_backup_file_operations_2025-09-16_21-33-28",
+      "category": "backups",
+      "size": 0,
+      "modified": "2025-09-22T19:14:30.767072"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_backup_20250916_161255\\backup_manifest.json",
+      "category": "backups",
+      "size": 268,
+      "modified": "2025-09-22T19:14:28.385407"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_backup_20250916_161255\\config_original",
+      "category": "backups",
+      "size": 0,
+      "modified": "2025-09-22T19:14:28.390893"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_backup_20250916_161255\\main_backup.py",
+      "category": "backups",
+      "size": 83567,
+      "modified": "2025-09-22T19:14:28.390893"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_backup_20250916_161255\\requirements_backup.txt",
+      "category": "backups",
+      "size": 1423,
+      "modified": "2025-09-22T19:14:28.390893"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_backup_20250916_161255\\src_original",
+      "category": "backups",
+      "size": 0,
+      "modified": "2025-09-22T19:14:28.735018"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_backup_20250916_161255\\tests_original",
+      "category": "backups",
+      "size": 0,
+      "modified": "2025-09-22T19:14:30.028769"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_backup_20250916_222325\\file_manifest.json",
+      "category": "backups",
+      "size": 73745,
+      "modified": "2025-09-22T19:14:30.064665"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_backup_20250916_222325\\src_complete",
+      "category": "backups",
+      "size": 0,
+      "modified": "2025-09-22T19:14:30.322856"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\MIGRATION_BACKUP_20250916_222618\\backup_verification.json",
+      "category": "backups",
+      "size": 322,
+      "modified": "2025-09-22T19:14:27.225412"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\MIGRATION_BACKUP_20250916_222618\\core_rfu",
+      "category": "backups",
+      "size": 0,
+      "modified": "2025-09-22T19:14:27.246883"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\MIGRATION_BACKUP_20250916_222618\\migration_metadata.json",
+      "category": "backups",
+      "size": 333,
+      "modified": "2025-09-22T19:14:27.255550"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\MIGRATION_BACKUP_20250916_222618\\project_files_backup",
+      "category": "backups",
+      "size": 0,
+      "modified": "2025-09-22T19:14:27.255550"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\MIGRATION_BACKUP_20250916_222618\\src_complete_backup",
+      "category": "backups",
+      "size": 0,
+      "modified": "2025-09-22T19:14:27.379993"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\MIGRATION_BACKUP_20250916_222618\\__init___rfu.py",
+      "category": "backups",
+      "size": 428,
+      "modified": "2025-09-22T19:14:27.225412"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_backup_20250917_154600\\MIGRATION_LOG.md",
+      "category": "backups",
+      "size": 962,
+      "modified": "2025-09-22T19:14:30.606299"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_backup_20250917_154600\\src_advanced_folders_original",
+      "category": "backups",
+      "size": 0,
+      "modified": "2025-09-22T19:14:30.626990"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_backup_20250917_154600\\target_advanced_folders_current",
+      "category": "backups",
+      "size": 0,
+      "modified": "2025-09-22T19:14:30.663534"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_backup_20250917_172120\\advanced_folders",
+      "category": "backups",
+      "size": 0,
+      "modified": "2025-09-22T19:14:30.674131"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_backup_20250917_172120\\existing_advanced_folders",
+      "category": "backups",
+      "size": 0,
+      "modified": "2025-09-22T19:14:30.715981"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_backup_20250917_172120\\src_advanced_folders",
+      "category": "backups",
+      "size": 0,
+      "modified": "2025-09-22T19:14:30.741782"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_backup_file_operations_2025-09-16_21-33-28\\file-operations_original",
+      "category": "backups",
+      "size": 0,
+      "modified": "2025-09-22T19:14:30.763562"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_backup_file_operations_2025-09-16_21-33-28\\file_operations_current",
+      "category": "backups",
+      "size": 0,
+      "modified": "2025-09-22T19:14:30.774134"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\rollback_migration_20250916_161150.py",
+      "category": "rollbacks",
+      "size": 1878,
+      "modified": "2025-09-22T19:14:30.817516"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\rollback_migration_20250916_161255.py",
+      "category": "rollbacks",
+      "size": 1878,
+      "modified": "2025-09-22T19:14:30.817516"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\rollback_migration_20250917_172120.py",
+      "category": "rollbacks",
+      "size": 1861,
+      "modified": "2025-09-22T19:14:30.817516"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\rollback_migration_20250916_161150.py",
+      "category": "rollbacks",
+      "size": 1878,
+      "modified": "2025-09-22T19:14:30.817516"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\rollback_migration_20250916_161255.py",
+      "category": "rollbacks",
+      "size": 1878,
+      "modified": "2025-09-22T19:14:30.817516"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\rollback_migration_20250917_172120.py",
+      "category": "rollbacks",
+      "size": 1861,
+      "modified": "2025-09-22T19:14:30.817516"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_validation.py",
+      "category": "validators",
+      "size": 26333,
+      "modified": "2025-09-22T19:14:30.782165"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_validation_tools.py",
+      "category": "validators",
+      "size": 19996,
+      "modified": "2025-09-22T19:14:30.787217"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_audit_comprehensive.py",
+      "category": "validators",
+      "size": 14849,
+      "modified": "2025-09-22T19:14:28.323497"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_automation.py",
+      "category": "automation",
+      "size": 21492,
+      "modified": "2025-09-22T19:14:28.383902"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_controller.py",
+      "category": "automation",
+      "size": 12829,
+      "modified": "2025-09-22T19:14:30.774134"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\.reorganization_backup\\Phase1_Database_Migration_System_Completion_Report.md",
+      "category": "reports",
+      "size": 11152,
+      "modified": "2025-09-22T19:14:27.151692"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\.reorganization_backup\\MIGRATION_MANAGER_ENHANCEMENT_COMPLETION_SUMMARY.md",
+      "category": "reports",
+      "size": 6814,
+      "modified": "2025-09-22T19:14:27.133179"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\.reorganization_backup\\Migration_System_Technical_Documentation.md",
+      "category": "reports",
+      "size": 19472,
+      "modified": "2025-09-22T19:14:27.134179"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\archive\\legacy_code\\file_utilities_2\\docs\\MIGRATION_SUMMARY.md",
+      "category": "reports",
+      "size": 16989,
+      "modified": "2025-09-22T19:14:27.806088"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\archive\\legacy_code\\file_utilities_2\\docs\\MIGRATION_TECHNICAL_DOCUMENTATION.md",
+      "category": "reports",
+      "size": 31665,
+      "modified": "2025-09-22T19:14:27.806088"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\archive\\migration_reports\\CATALOG_MIGRATION_VALIDATION_REPORT.md",
+      "category": "reports",
+      "size": 5472,
+      "modified": "2025-09-22T19:14:27.873371"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\archive\\migration_reports\\CHECKSUM_MIGRATION_FINAL_VALIDATION_REPORT.md",
+      "category": "reports",
+      "size": 13745,
+      "modified": "2025-09-22T19:14:27.873371"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\archive\\migration_reports\\CMSD_MIGRATION_COMPLETION_REPORT.md",
+      "category": "reports",
+      "size": 7993,
+      "modified": "2025-09-22T19:14:27.878541"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\archive\\migration_reports\\COMPRESS_DECOMPRESS_MIGRATION_VALIDATION_REPORT.md",
+      "category": "reports",
+      "size": 7831,
+      "modified": "2025-09-22T19:14:27.880046"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\archive\\migration_reports\\EMPTY_FOLDERS_MIGRATION_VALIDATION_REPORT.md",
+      "category": "reports",
+      "size": 7794,
+      "modified": "2025-09-22T19:14:27.883838"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\archive\\migration_reports\\ENCRYPTION_MIGRATION_COMPLETION_REPORT.md",
+      "category": "reports",
+      "size": 15674,
+      "modified": "2025-09-22T19:14:27.883838"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\archive\\migration_reports\\FILE_FINDER_MIGRATION_COMPLETION_REPORT.md",
+      "category": "reports",
+      "size": 19736,
+      "modified": "2025-09-22T19:14:27.889193"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\archive\\migration_reports\\FILE_FINDER_MIGRATION_STATUS_AND_PROGRESS_REPORT.md",
+      "category": "reports",
+      "size": 18608,
+      "modified": "2025-09-22T19:14:27.890697"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\archive\\migration_reports\\FILE_FINDER_MIGRATION_VERIFICATION_REPORT.md",
+      "category": "reports",
+      "size": 10651,
+      "modified": "2025-09-22T19:14:27.890697"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\archive\\migration_reports\\FILE_SPLITTER_MIGRATION_FINAL_COMPLETION_REPORT.md",
+      "category": "reports",
+      "size": 15050,
+      "modified": "2025-09-22T19:14:27.894214"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\archive\\migration_reports\\FILE_SPLITTER_MIGRATION_VALIDATION_REPORT.md",
+      "category": "reports",
+      "size": 10494,
+      "modified": "2025-09-22T19:14:27.896719"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\archive\\migration_reports\\FILE_TOUCH_MIGRATION_COMPLETION_REPORT.md",
+      "category": "reports",
+      "size": 12222,
+      "modified": "2025-09-22T19:14:27.899295"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\archive\\migration_reports\\IMAGE_METADATA_MIGRATION_COMPLETION_REPORT.md",
+      "category": "reports",
+      "size": 7681,
+      "modified": "2025-09-22T19:14:27.904314"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\archive\\migration_reports\\ORGANIZE_MIGRATION_FINAL_VALIDATION_REPORT.md",
+      "category": "reports",
+      "size": 10842,
+      "modified": "2025-09-22T19:14:27.904314"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\archive\\migration_reports\\RENAME_MIGRATION_COMPLETION_REPORT.md",
+      "category": "reports",
+      "size": 9939,
+      "modified": "2025-09-22T19:14:27.909703"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\archive\\migration_reports\\SECURE_DELETE_MIGRATION_COMPLETION_REPORT.md",
+      "category": "reports",
+      "size": 12875,
+      "modified": "2025-09-22T19:14:27.913327"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\archive\\migration_reports\\SIZE_ANALYZER_FINAL_MIGRATION_REPORT.md",
+      "category": "reports",
+      "size": 17648,
+      "modified": "2025-09-22T19:14:27.915072"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\archive\\migration_reports\\SIZE_ANALYZER_MIGRATION_COMPLETION_REPORT.md",
+      "category": "reports",
+      "size": 8824,
+      "modified": "2025-09-22T19:14:27.915072"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\archive\\migration_reports\\TAG_VIEWER_EDITOR_MIGRATION_COMPLETION_REPORT.md",
+      "category": "reports",
+      "size": 12063,
+      "modified": "2025-09-22T19:14:27.915072"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\archive\\migration_reports\\TAG_VIEWER_EDITOR_MIGRATION_FINAL_COMPLETION_REPORT.md",
+      "category": "reports",
+      "size": 30337,
+      "modified": "2025-09-22T19:14:27.920251"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\archive\\migration_reports\\TAG_VIEWER_EDITOR_MIGRATION_VALIDATION_REPORT.md",
+      "category": "reports",
+      "size": 11187,
+      "modified": "2025-09-22T19:14:27.920251"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\archive\\migration_reports\\TAG_VIEWER_EDITOR_POST_MIGRATION_COMPREHENSIVE_TEST_REPORT.md",
+      "category": "reports",
+      "size": 15246,
+      "modified": "2025-09-22T19:14:27.920251"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\archive\\migration_reports\\TREE_MAP_MIGRATION_FINAL_REPORT.md",
+      "category": "reports",
+      "size": 27605,
+      "modified": "2025-09-22T19:14:27.920251"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\archive\\migration_reports\\TREE_MAP_MIGRATION_PROGRESS_REPORT.md",
+      "category": "reports",
+      "size": 21132,
+      "modified": "2025-09-22T19:14:27.920251"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\archive\\migration_reports\\MIGRATION_PLAN.md",
+      "category": "reports",
+      "size": 6299,
+      "modified": "2025-09-22T19:14:27.904314"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\archive\\migration_reports\\migration_progress.md",
+      "category": "reports",
+      "size": 11914,
+      "modified": "2025-09-22T19:14:27.925296"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\docs\\migration_guide.md",
+      "category": "reports",
+      "size": 29038,
+      "modified": "2025-09-22T19:14:28.185881"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\docs\\deployment\\Migration_System_Technical_Documentation.md",
+      "category": "reports",
+      "size": 19472,
+      "modified": "2025-09-22T19:14:28.003850"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\docs\\developer\\MIGRATION_SUMMARY.md",
+      "category": "reports",
+      "size": 16989,
+      "modified": "2025-09-22T19:14:28.040607"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\docs\\developer\\MIGRATION_TECHNICAL_DOCUMENTATION.md",
+      "category": "reports",
+      "size": 31665,
+      "modified": "2025-09-22T19:14:28.040607"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\docs\\onboarding\\04_personas\\MIGRATION_GUIDE.md",
+      "category": "reports",
+      "size": 30754,
+      "modified": "2025-09-22T19:14:28.201117"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\docs\\reports\\completion\\Phase1_Database_Migration_System_Completion_Report.md",
+      "category": "reports",
+      "size": 11152,
+      "modified": "2025-09-22T19:14:28.266540"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\docs\\reports\\completion\\MIGRATION_MANAGER_ENHANCEMENT_COMPLETION_SUMMARY.md",
+      "category": "reports",
+      "size": 6814,
+      "modified": "2025-09-22T19:14:28.250465"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\docs\\technical\\migration_manager_enhancement_report.md",
+      "category": "reports",
+      "size": 11891,
+      "modified": "2025-09-22T19:14:28.292465"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\docs\\technical\\migration_manager_enhancement_report.md",
+      "category": "reports",
+      "size": 11891,
+      "modified": "2025-09-22T19:14:28.292465"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_backup_20250916_161255\\src_original\\rfu\\core\\migrations\\rollback_manager.py",
+      "category": "rollbacks",
+      "size": 17676,
+      "modified": "2025-09-22T19:14:28.443122"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_backup_20250916_222325\\src_complete\\rfu\\core\\migrations\\rollback_manager.py",
+      "category": "rollbacks",
+      "size": 17676,
+      "modified": "2025-09-22T19:14:30.250608"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\MIGRATION_BACKUP_20250916_222618\\core_rfu\\migrations\\rollback_manager.py",
+      "category": "rollbacks",
+      "size": 17676,
+      "modified": "2025-09-22T19:14:27.246883"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\MIGRATION_BACKUP_20250916_222618\\src_complete_backup\\rfu\\core\\migrations\\rollback_manager.py",
+      "category": "rollbacks",
+      "size": 17676,
+      "modified": "2025-09-22T19:14:27.307739"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_backup_20250917_154600\\MIGRATION_LOG.md",
+      "category": "reports",
+      "size": 962,
+      "modified": "2025-09-22T19:14:30.606299"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\scripts\\maintenance\\rollback_compress_decompress.py",
+      "category": "rollbacks",
+      "size": 853,
+      "modified": "2025-09-22T19:14:30.875454"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\src\\core_rfu\\migrations\\rollback_manager.py",
+      "category": "rollbacks",
+      "size": 17805,
+      "modified": "2025-09-24T19:50:37.206240"
+    },
+    {
+      "file": "migration_backup_20250916_161255\\src_original\\rfu\\core\\migrations\\rollback_manager.py",
+      "category": "rollbacks",
+      "size": 17676,
+      "modified": "2025-09-22T19:14:28.443122"
+    },
+    {
+      "file": "migration_backup_20250916_222325\\src_complete\\rfu\\core\\migrations\\rollback_manager.py",
+      "category": "rollbacks",
+      "size": 17676,
+      "modified": "2025-09-22T19:14:30.250608"
+    },
+    {
+      "file": "MIGRATION_BACKUP_20250916_222618\\core_rfu\\migrations\\rollback_manager.py",
+      "category": "rollbacks",
+      "size": 17676,
+      "modified": "2025-09-22T19:14:27.246883"
+    },
+    {
+      "file": "MIGRATION_BACKUP_20250916_222618\\src_complete_backup\\rfu\\core\\migrations\\rollback_manager.py",
+      "category": "rollbacks",
+      "size": 17676,
+      "modified": "2025-09-22T19:14:27.307739"
+    },
+    {
+      "file": "migration_backup_20250917_154600\\MIGRATION_LOG.md",
+      "category": "reports",
+      "size": 962,
+      "modified": "2025-09-22T19:14:30.606299"
+    },
+    {
+      "file": "scripts\\maintenance\\rollback_compress_decompress.py",
+      "category": "rollbacks",
+      "size": 853,
+      "modified": "2025-09-22T19:14:30.875454"
+    },
+    {
+      "file": "src\\core_rfu\\migrations\\rollback_manager.py",
+      "category": "rollbacks",
+      "size": 17805,
+      "modified": "2025-09-24T19:50:37.206240"
+    }
+  ],
+  "debug_artifacts": [
+    {
+      "file": "debug_layout_simple.py",
+      "category": "debug_scripts",
+      "size": 0,
+      "modified": "2025-09-23T17:52:34.009543"
+    },
+    {
+      "file": "debug_pane_splitter.py",
+      "category": "debug_scripts",
+      "size": 3975,
+      "modified": "2025-09-22T19:14:27.972390"
+    },
+    {
+      "file": "debug_tools_sidebar.py",
+      "category": "debug_scripts",
+      "size": 5497,
+      "modified": "2025-09-22T19:14:27.972390"
+    },
+    {
+      "file": "debug_tool_instantiation.py",
+      "category": "debug_scripts",
+      "size": 2423,
+      "modified": "2025-09-22T19:14:27.972390"
+    },
+    {
+      "file": "fix_cache_manager_linting.py",
+      "category": "fix_scripts",
+      "size": 6579,
+      "modified": "2025-09-22T19:14:28.302608"
+    },
+    {
+      "file": "fix_critical_errors.py",
+      "category": "fix_scripts",
+      "size": 11512,
+      "modified": "2025-09-24T20:06:47.747111"
+    },
+    {
+      "file": "fix_critical_panel_errors.py",
+      "category": "fix_scripts",
+      "size": 8438,
+      "modified": "2025-09-22T19:14:28.302608"
+    },
+    {
+      "file": "fix_main_syntax.py",
+      "category": "fix_scripts",
+      "size": 1012,
+      "modified": "2025-09-22T19:14:28.302608"
+    },
+    {
+      "file": "fix_performance_monitor_linting.py",
+      "category": "fix_scripts",
+      "size": 4662,
+      "modified": "2025-09-22T19:14:28.302608"
+    },
+    {
+      "file": "fix_search_cache_linting.py",
+      "category": "fix_scripts",
+      "size": 5683,
+      "modified": "2025-09-22T19:14:28.302608"
+    },
+    {
+      "file": "fix_search_engine_linting.py",
+      "category": "fix_scripts",
+      "size": 10944,
+      "modified": "2025-09-22T19:14:28.302608"
+    },
+    {
+      "file": "fix_tool_launching.py",
+      "category": "fix_scripts",
+      "size": 29376,
+      "modified": "2025-09-22T19:14:28.307746"
+    },
+    {
+      "file": "fix_type_errors.py",
+      "category": "fix_scripts",
+      "size": 7197,
+      "modified": "2025-09-24T20:03:29.145755"
+    },
+    {
+      "file": "diagnostic_tool_launch.py",
+      "category": "diagnostic",
+      "size": 10582,
+      "modified": "2025-09-22T19:14:27.972390"
+    },
+    {
+      "file": "test_font_fix.py",
+      "category": "test_files",
+      "size": 3075,
+      "modified": "2025-09-22T19:14:31.613553"
+    },
+    {
+      "file": "test_grid_layout.py",
+      "category": "test_files",
+      "size": 6406,
+      "modified": "2025-09-23T17:32:13.144974"
+    },
+    {
+      "file": "test_import_only.py",
+      "category": "test_files",
+      "size": 5118,
+      "modified": "2025-09-24T03:46:30.557446"
+    },
+    {
+      "file": "test_larger_fonts.py",
+      "category": "test_files",
+      "size": 1921,
+      "modified": "2025-09-22T19:14:31.613553"
+    },
+    {
+      "file": "test_layout_fix.py",
+      "category": "test_files",
+      "size": 4565,
+      "modified": "2025-09-24T02:47:51.616578"
+    },
+    {
+      "file": "test_layout_functionality.py",
+      "category": "test_files",
+      "size": 15464,
+      "modified": "2025-09-24T04:17:14.262848"
+    },
+    {
+      "file": "test_layout_logic.py",
+      "category": "test_files",
+      "size": 1881,
+      "modified": "2025-09-23T17:32:13.159509"
+    },
+    {
+      "file": "test_layout_options.py",
+      "category": "test_files",
+      "size": 2297,
+      "modified": "2025-09-24T02:47:51.601749"
+    },
+    {
+      "file": "test_real_layout_selection.py",
+      "category": "test_files",
+      "size": 0,
+      "modified": "2025-09-23T17:52:34.009543"
+    },
+    {
+      "file": "test_simple_launch.py",
+      "category": "test_files",
+      "size": 1627,
+      "modified": "2025-09-24T03:47:01.046992"
+    },
+    {
+      "file": "test_tool_fix_verification.py",
+      "category": "test_files",
+      "size": 3674,
+      "modified": "2025-09-22T19:14:31.613553"
+    },
+    {
+      "file": "test_tool_imports.py",
+      "category": "test_files",
+      "size": 3647,
+      "modified": "2025-09-22T19:14:31.613553"
+    },
+    {
+      "file": "test_tool_launch.py",
+      "category": "test_files",
+      "size": 7547,
+      "modified": "2025-09-24T03:45:47.582260"
+    },
+    {
+      "file": "test_tool_launching.py",
+      "category": "test_files",
+      "size": 5198,
+      "modified": "2025-09-22T19:14:31.616268"
+    },
+    {
+      "file": "test_tool_launch_verification.py",
+      "category": "test_files",
+      "size": 4735,
+      "modified": "2025-09-22T19:14:31.613553"
+    },
+    {
+      "file": "test_ui_improvements.py",
+      "category": "test_files",
+      "size": 3184,
+      "modified": "2025-09-22T21:25:15.497011"
+    },
+    {
+      "file": "debug_layout_simple.py",
+      "category": "layout_tests",
+      "size": 0,
+      "modified": "2025-09-23T17:52:34.009543"
+    },
+    {
+      "file": "layout_control_demo.py",
+      "category": "layout_tests",
+      "size": 7257,
+      "modified": "2025-09-22T19:14:28.318436"
+    },
+    {
+      "file": "test_layout_fix.py",
+      "category": "layout_tests",
+      "size": 4565,
+      "modified": "2025-09-24T02:47:51.616578"
+    },
+    {
+      "file": "test_layout_functionality.py",
+      "category": "layout_tests",
+      "size": 15464,
+      "modified": "2025-09-24T04:17:14.262848"
+    },
+    {
+      "file": "test_layout_logic.py",
+      "category": "layout_tests",
+      "size": 1881,
+      "modified": "2025-09-23T17:32:13.159509"
+    },
+    {
+      "file": "test_layout_options.py",
+      "category": "layout_tests",
+      "size": 2297,
+      "modified": "2025-09-24T02:47:51.601749"
+    },
+    {
+      "file": "test_real_layout_selection.py",
+      "category": "layout_tests",
+      "size": 0,
+      "modified": "2025-09-23T17:52:34.009543"
+    },
+    {
+      "file": "debug_pane_splitter.py",
+      "category": "layout_tests",
+      "size": 3975,
+      "modified": "2025-09-22T19:14:27.972390"
+    },
+    {
+      "file": "corrected_pane_layout_compatibility_test_20250913_211836.json",
+      "category": "compatibility",
+      "size": 27020,
+      "modified": "2025-09-22T19:14:27.957008"
+    },
+    {
+      "file": "corrected_pane_layout_compatibility_test_20250914_112605.json",
+      "category": "compatibility",
+      "size": 31614,
+      "modified": "2025-09-22T19:14:27.957008"
+    },
+    {
+      "file": "corrected_pane_layout_compatibility_test_20250914_132020.json",
+      "category": "compatibility",
+      "size": 26070,
+      "modified": "2025-09-22T19:14:27.957008"
+    },
+    {
+      "file": "enterprise_edge_case_test_results_20250914_112750.json",
+      "category": "compatibility",
+      "size": 1781,
+      "modified": "2025-09-22T19:14:28.302608"
+    },
+    {
+      "file": ".reorganization_backup\\fix_main_issues.py",
+      "category": "fix_scripts",
+      "size": 2107,
+      "modified": "2025-09-22T19:14:27.173518"
+    },
+    {
+      "file": ".reorganization_backup\\organized_layout_demo.py",
+      "category": "layout_tests",
+      "size": 21953,
+      "modified": "2025-09-22T19:14:27.179762"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\debug_layout_simple.py",
+      "category": "debug_scripts",
+      "size": 0,
+      "modified": "2025-09-23T17:52:34.009543"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\debug_pane_splitter.py",
+      "category": "debug_scripts",
+      "size": 3975,
+      "modified": "2025-09-22T19:14:27.972390"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\debug_tools_sidebar.py",
+      "category": "debug_scripts",
+      "size": 5497,
+      "modified": "2025-09-22T19:14:27.972390"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\debug_tool_instantiation.py",
+      "category": "debug_scripts",
+      "size": 2423,
+      "modified": "2025-09-22T19:14:27.972390"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\fix_cache_manager_linting.py",
+      "category": "fix_scripts",
+      "size": 6579,
+      "modified": "2025-09-22T19:14:28.302608"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\fix_critical_errors.py",
+      "category": "fix_scripts",
+      "size": 11512,
+      "modified": "2025-09-24T20:06:47.747111"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\fix_critical_panel_errors.py",
+      "category": "fix_scripts",
+      "size": 8438,
+      "modified": "2025-09-22T19:14:28.302608"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\fix_main_syntax.py",
+      "category": "fix_scripts",
+      "size": 1012,
+      "modified": "2025-09-22T19:14:28.302608"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\fix_performance_monitor_linting.py",
+      "category": "fix_scripts",
+      "size": 4662,
+      "modified": "2025-09-22T19:14:28.302608"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\fix_search_cache_linting.py",
+      "category": "fix_scripts",
+      "size": 5683,
+      "modified": "2025-09-22T19:14:28.302608"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\fix_search_engine_linting.py",
+      "category": "fix_scripts",
+      "size": 10944,
+      "modified": "2025-09-22T19:14:28.302608"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\fix_tool_launching.py",
+      "category": "fix_scripts",
+      "size": 29376,
+      "modified": "2025-09-22T19:14:28.307746"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\fix_type_errors.py",
+      "category": "fix_scripts",
+      "size": 7197,
+      "modified": "2025-09-24T20:03:29.145755"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\diagnostic_tool_launch.py",
+      "category": "diagnostic",
+      "size": 10582,
+      "modified": "2025-09-22T19:14:27.972390"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\debug_layout_simple.py",
+      "category": "layout_tests",
+      "size": 0,
+      "modified": "2025-09-23T17:52:34.009543"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\layout_control_demo.py",
+      "category": "layout_tests",
+      "size": 7257,
+      "modified": "2025-09-22T19:14:28.318436"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\test_layout_fix.py",
+      "category": "layout_tests",
+      "size": 4565,
+      "modified": "2025-09-24T02:47:51.616578"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\test_layout_functionality.py",
+      "category": "layout_tests",
+      "size": 15464,
+      "modified": "2025-09-24T04:17:14.262848"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\test_layout_logic.py",
+      "category": "layout_tests",
+      "size": 1881,
+      "modified": "2025-09-23T17:32:13.159509"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\test_layout_options.py",
+      "category": "layout_tests",
+      "size": 2297,
+      "modified": "2025-09-24T02:47:51.601749"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\test_real_layout_selection.py",
+      "category": "layout_tests",
+      "size": 0,
+      "modified": "2025-09-23T17:52:34.009543"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\debug_pane_splitter.py",
+      "category": "layout_tests",
+      "size": 3975,
+      "modified": "2025-09-22T19:14:27.972390"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\corrected_pane_layout_compatibility_test_20250913_211836.json",
+      "category": "compatibility",
+      "size": 27020,
+      "modified": "2025-09-22T19:14:27.957008"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\corrected_pane_layout_compatibility_test_20250914_112605.json",
+      "category": "compatibility",
+      "size": 31614,
+      "modified": "2025-09-22T19:14:27.957008"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\corrected_pane_layout_compatibility_test_20250914_132020.json",
+      "category": "compatibility",
+      "size": 26070,
+      "modified": "2025-09-22T19:14:27.957008"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\enterprise_edge_case_test_results_20250914_112750.json",
+      "category": "compatibility",
+      "size": 1781,
+      "modified": "2025-09-22T19:14:28.302608"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\.reorganization_backup\\fix_main_issues.py",
+      "category": "fix_scripts",
+      "size": 2107,
+      "modified": "2025-09-22T19:14:27.173518"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\.reorganization_backup\\organized_layout_demo.py",
+      "category": "layout_tests",
+      "size": 21953,
+      "modified": "2025-09-22T19:14:27.179762"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_backup_20250916_161255\\src_original\\rfu\\file_explorer\\enhanced_multi_pane_explorer.py",
+      "category": "layout_tests",
+      "size": 36241,
+      "modified": "2025-09-22T19:14:28.463119"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_backup_20250916_161255\\src_original\\rfu\\file_explorer\\multi_pane_explorer.py",
+      "category": "layout_tests",
+      "size": 134633,
+      "modified": "2025-09-22T19:14:28.469415"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_backup_20250916_161255\\src_original\\rfu\\file_explorer\\multi_pane_explorer_fixed.py",
+      "category": "layout_tests",
+      "size": 32763,
+      "modified": "2025-09-22T19:14:28.474504"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_backup_20250916_161255\\src_original\\rfu\\file_explorer\\multi_pane_explorer_repaired.py",
+      "category": "layout_tests",
+      "size": 54497,
+      "modified": "2025-09-22T19:14:28.474504"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_backup_20250916_161255\\src_original\\rfu\\file_explorer\\core\\pane_manager.py",
+      "category": "layout_tests",
+      "size": 35146,
+      "modified": "2025-09-22T19:14:28.459029"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_backup_20250916_161255\\src_original\\rfu\\file_explorer\\ui\\enhanced_layout_integration.py",
+      "category": "layout_tests",
+      "size": 28151,
+      "modified": "2025-09-22T19:14:28.490993"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_backup_20250916_161255\\src_original\\rfu\\file_explorer\\ui\\layout_implementations.py",
+      "category": "layout_tests",
+      "size": 38036,
+      "modified": "2025-09-22T19:14:28.490993"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_backup_20250916_161255\\src_original\\rfu\\file_explorer\\ui\\responsive_layout_manager.py",
+      "category": "layout_tests",
+      "size": 51244,
+      "modified": "2025-09-22T19:14:28.495078"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_backup_20250916_161255\\src_original\\rfu\\file_explorer\\ui\\enhanced_pane_manager.py",
+      "category": "layout_tests",
+      "size": 23189,
+      "modified": "2025-09-22T19:14:28.490993"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_backup_20250916_161255\\src_original\\rfu\\file_explorer\\ui\\pane_manager.py",
+      "category": "layout_tests",
+      "size": 62728,
+      "modified": "2025-09-22T19:14:28.495078"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_backup_20250916_161255\\tests_original\\debug_import_export.py",
+      "category": "debug_scripts",
+      "size": 5869,
+      "modified": "2025-09-22T19:14:28.863400"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_backup_20250916_161255\\tests_original\\e2e\\test_responsive_layout_system_e2e.py",
+      "category": "layout_tests",
+      "size": 28789,
+      "modified": "2025-09-22T19:14:28.901543"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_backup_20250916_161255\\tests_original\\test_file_explorer\\test_pane_manager.py",
+      "category": "layout_tests",
+      "size": 33407,
+      "modified": "2025-09-22T19:14:29.063229"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_backup_20250916_161255\\tests_original\\test_file_explorer\\test_pane_manager_fixed.py",
+      "category": "layout_tests",
+      "size": 32380,
+      "modified": "2025-09-22T19:14:29.063229"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_backup_20250916_161255\\tests_original\\unit\\debug_test_execution.py",
+      "category": "debug_scripts",
+      "size": 4925,
+      "modified": "2025-09-22T19:14:29.160174"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_backup_20250916_161255\\tests_original\\unit\\test_responsive_layout_constraints.py",
+      "category": "layout_tests",
+      "size": 29005,
+      "modified": "2025-09-22T19:14:29.992413"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_backup_20250916_161255\\tests_original\\unit\\network\\fix_paths.py",
+      "category": "fix_scripts",
+      "size": 659,
+      "modified": "2025-09-22T19:14:29.175709"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_backup_20250916_222325\\src_complete\\rfu\\file_explorer\\enhanced_multi_pane_explorer.py",
+      "category": "layout_tests",
+      "size": 36241,
+      "modified": "2025-09-22T19:14:30.267841"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_backup_20250916_222325\\src_complete\\rfu\\file_explorer\\multi_pane_explorer.py",
+      "category": "layout_tests",
+      "size": 134604,
+      "modified": "2025-09-22T19:14:30.280097"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_backup_20250916_222325\\src_complete\\rfu\\file_explorer\\multi_pane_explorer_fixed.py",
+      "category": "layout_tests",
+      "size": 32763,
+      "modified": "2025-09-22T19:14:30.281110"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_backup_20250916_222325\\src_complete\\rfu\\file_explorer\\multi_pane_explorer_repaired.py",
+      "category": "layout_tests",
+      "size": 54497,
+      "modified": "2025-09-22T19:14:30.281110"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_backup_20250916_222325\\src_complete\\rfu\\file_explorer\\core\\pane_manager.py",
+      "category": "layout_tests",
+      "size": 35146,
+      "modified": "2025-09-22T19:14:30.263305"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_backup_20250916_222325\\src_complete\\rfu\\file_explorer\\ui\\enhanced_layout_integration.py",
+      "category": "layout_tests",
+      "size": 28151,
+      "modified": "2025-09-22T19:14:30.296863"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_backup_20250916_222325\\src_complete\\rfu\\file_explorer\\ui\\layout_implementations.py",
+      "category": "layout_tests",
+      "size": 38036,
+      "modified": "2025-09-22T19:14:30.296863"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_backup_20250916_222325\\src_complete\\rfu\\file_explorer\\ui\\responsive_layout_manager.py",
+      "category": "layout_tests",
+      "size": 51244,
+      "modified": "2025-09-22T19:14:30.296863"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_backup_20250916_222325\\src_complete\\rfu\\file_explorer\\ui\\enhanced_pane_manager.py",
+      "category": "layout_tests",
+      "size": 23189,
+      "modified": "2025-09-22T19:14:30.296863"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_backup_20250916_222325\\src_complete\\rfu\\file_explorer\\ui\\pane_manager.py",
+      "category": "layout_tests",
+      "size": 62728,
+      "modified": "2025-09-22T19:14:30.296863"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\MIGRATION_BACKUP_20250916_222618\\src_complete_backup\\rfu\\file_explorer\\enhanced_multi_pane_explorer.py",
+      "category": "layout_tests",
+      "size": 36241,
+      "modified": "2025-09-22T19:14:27.318969"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\MIGRATION_BACKUP_20250916_222618\\src_complete_backup\\rfu\\file_explorer\\multi_pane_explorer.py",
+      "category": "layout_tests",
+      "size": 134604,
+      "modified": "2025-09-22T19:14:27.334919"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\MIGRATION_BACKUP_20250916_222618\\src_complete_backup\\rfu\\file_explorer\\multi_pane_explorer_fixed.py",
+      "category": "layout_tests",
+      "size": 32763,
+      "modified": "2025-09-22T19:14:27.334919"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\MIGRATION_BACKUP_20250916_222618\\src_complete_backup\\rfu\\file_explorer\\multi_pane_explorer_repaired.py",
+      "category": "layout_tests",
+      "size": 54497,
+      "modified": "2025-09-22T19:14:27.334919"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\MIGRATION_BACKUP_20250916_222618\\src_complete_backup\\rfu\\file_explorer\\core\\pane_manager.py",
+      "category": "layout_tests",
+      "size": 35146,
+      "modified": "2025-09-22T19:14:27.318969"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\MIGRATION_BACKUP_20250916_222618\\src_complete_backup\\rfu\\file_explorer\\ui\\enhanced_layout_integration.py",
+      "category": "layout_tests",
+      "size": 28151,
+      "modified": "2025-09-22T19:14:27.349991"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\MIGRATION_BACKUP_20250916_222618\\src_complete_backup\\rfu\\file_explorer\\ui\\layout_implementations.py",
+      "category": "layout_tests",
+      "size": 38036,
+      "modified": "2025-09-22T19:14:27.354997"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\MIGRATION_BACKUP_20250916_222618\\src_complete_backup\\rfu\\file_explorer\\ui\\responsive_layout_manager.py",
+      "category": "layout_tests",
+      "size": 51244,
+      "modified": "2025-09-22T19:14:27.354997"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\MIGRATION_BACKUP_20250916_222618\\src_complete_backup\\rfu\\file_explorer\\ui\\enhanced_pane_manager.py",
+      "category": "layout_tests",
+      "size": 23189,
+      "modified": "2025-09-22T19:14:27.349991"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\MIGRATION_BACKUP_20250916_222618\\src_complete_backup\\rfu\\file_explorer\\ui\\pane_manager.py",
+      "category": "layout_tests",
+      "size": 62728,
+      "modified": "2025-09-22T19:14:27.354997"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\results\\enterprise_integration_test_report_20250913_165027.json",
+      "category": "compatibility",
+      "size": 3432,
+      "modified": "2025-09-22T19:14:30.807267"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\results\\enterprise_integration_test_report_20250913_165152.json",
+      "category": "compatibility",
+      "size": 2785,
+      "modified": "2025-09-22T19:14:30.807267"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\results\\enterprise_integration_test_report_20250913_165341.json",
+      "category": "compatibility",
+      "size": 2098,
+      "modified": "2025-09-22T19:14:30.807267"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\scripts\\development\\demos\\organized_layout_demo.py",
+      "category": "layout_tests",
+      "size": 21953,
+      "modified": "2025-09-22T19:14:30.833414"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\scripts\\maintenance\\fix_main_issues.py",
+      "category": "fix_scripts",
+      "size": 2107,
+      "modified": "2025-09-22T19:14:30.868421"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\scripts\\maintenance\\diagnostic_repair_script.py",
+      "category": "diagnostic",
+      "size": 15231,
+      "modified": "2025-09-22T19:14:30.864944"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\src\\file_explorer\\multi_pane_explorer.py",
+      "category": "layout_tests",
+      "size": 226019,
+      "modified": "2025-09-24T19:50:56.250377"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\src\\file_explorer\\core\\pane_manager.py",
+      "category": "layout_tests",
+      "size": 34063,
+      "modified": "2025-09-24T19:59:21.890501"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\src\\file_explorer\\ui\\enhanced_layout_integration.py",
+      "category": "layout_tests",
+      "size": 28170,
+      "modified": "2025-09-24T19:50:45.238525"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\src\\file_explorer\\ui\\layout_implementations.py",
+      "category": "layout_tests",
+      "size": 37559,
+      "modified": "2025-09-24T19:59:21.901093"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\src\\file_explorer\\ui\\responsive_layout_manager.py",
+      "category": "layout_tests",
+      "size": 53328,
+      "modified": "2025-09-24T19:50:45.701711"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\src\\file_explorer\\ui\\enhanced_pane_manager.py",
+      "category": "layout_tests",
+      "size": 23036,
+      "modified": "2025-09-24T19:50:44.603084"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\src\\file_explorer\\ui\\pane_manager.py",
+      "category": "layout_tests",
+      "size": 77183,
+      "modified": "2025-09-24T19:50:47.070029"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\tests\\debug_import_export.py",
+      "category": "debug_scripts",
+      "size": 5724,
+      "modified": "2025-09-24T19:51:21.388768"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\tests\\e2e\\test_responsive_layout_system_e2e.py",
+      "category": "layout_tests",
+      "size": 28777,
+      "modified": "2025-09-22T19:14:31.677642"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\tests\\pre_beta\\multi_pane_explorer_fixed.py",
+      "category": "layout_tests",
+      "size": 222764,
+      "modified": "2025-09-24T04:42:54.855873"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\tests\\pre_beta\\multi_pane_explorer_fixed_final.py",
+      "category": "layout_tests",
+      "size": 226019,
+      "modified": "2025-09-24T19:51:42.312545"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\tests\\pre_beta\\test_multi_pane_explorer_repaired.py",
+      "category": "layout_tests",
+      "size": 12246,
+      "modified": "2025-09-22T19:14:31.779886"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\tests\\pre_beta\\verify_multi_pane_explorer_repair.py",
+      "category": "layout_tests",
+      "size": 6823,
+      "modified": "2025-09-24T19:51:28.460679"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\tests\\test_file_explorer\\test_pane_manager.py",
+      "category": "layout_tests",
+      "size": 33403,
+      "modified": "2025-09-22T19:14:31.805696"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\tests\\test_file_explorer\\test_pane_manager_fixed.py",
+      "category": "layout_tests",
+      "size": 32356,
+      "modified": "2025-09-22T19:14:31.810767"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\tests\\unit\\debug_test_execution.py",
+      "category": "debug_scripts",
+      "size": 4830,
+      "modified": "2025-09-24T19:51:30.138739"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\tests\\unit\\test_responsive_layout_constraints.py",
+      "category": "layout_tests",
+      "size": 29005,
+      "modified": "2025-09-22T19:14:32.450607"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\tests\\unit\\network\\fix_paths.py",
+      "category": "fix_scripts",
+      "size": 645,
+      "modified": "2025-09-24T19:51:30.587156"
+    },
+    {
+      "file": "migration_backup_20250916_161255\\src_original\\rfu\\file_explorer\\enhanced_multi_pane_explorer.py",
+      "category": "layout_tests",
+      "size": 36241,
+      "modified": "2025-09-22T19:14:28.463119"
+    },
+    {
+      "file": "migration_backup_20250916_161255\\src_original\\rfu\\file_explorer\\multi_pane_explorer.py",
+      "category": "layout_tests",
+      "size": 134633,
+      "modified": "2025-09-22T19:14:28.469415"
+    },
+    {
+      "file": "migration_backup_20250916_161255\\src_original\\rfu\\file_explorer\\multi_pane_explorer_fixed.py",
+      "category": "layout_tests",
+      "size": 32763,
+      "modified": "2025-09-22T19:14:28.474504"
+    },
+    {
+      "file": "migration_backup_20250916_161255\\src_original\\rfu\\file_explorer\\multi_pane_explorer_repaired.py",
+      "category": "layout_tests",
+      "size": 54497,
+      "modified": "2025-09-22T19:14:28.474504"
+    },
+    {
+      "file": "migration_backup_20250916_161255\\src_original\\rfu\\file_explorer\\core\\pane_manager.py",
+      "category": "layout_tests",
+      "size": 35146,
+      "modified": "2025-09-22T19:14:28.459029"
+    },
+    {
+      "file": "migration_backup_20250916_161255\\src_original\\rfu\\file_explorer\\ui\\enhanced_layout_integration.py",
+      "category": "layout_tests",
+      "size": 28151,
+      "modified": "2025-09-22T19:14:28.490993"
+    },
+    {
+      "file": "migration_backup_20250916_161255\\src_original\\rfu\\file_explorer\\ui\\layout_implementations.py",
+      "category": "layout_tests",
+      "size": 38036,
+      "modified": "2025-09-22T19:14:28.490993"
+    },
+    {
+      "file": "migration_backup_20250916_161255\\src_original\\rfu\\file_explorer\\ui\\responsive_layout_manager.py",
+      "category": "layout_tests",
+      "size": 51244,
+      "modified": "2025-09-22T19:14:28.495078"
+    },
+    {
+      "file": "migration_backup_20250916_161255\\src_original\\rfu\\file_explorer\\ui\\enhanced_pane_manager.py",
+      "category": "layout_tests",
+      "size": 23189,
+      "modified": "2025-09-22T19:14:28.490993"
+    },
+    {
+      "file": "migration_backup_20250916_161255\\src_original\\rfu\\file_explorer\\ui\\pane_manager.py",
+      "category": "layout_tests",
+      "size": 62728,
+      "modified": "2025-09-22T19:14:28.495078"
+    },
+    {
+      "file": "migration_backup_20250916_161255\\tests_original\\debug_import_export.py",
+      "category": "debug_scripts",
+      "size": 5869,
+      "modified": "2025-09-22T19:14:28.863400"
+    },
+    {
+      "file": "migration_backup_20250916_161255\\tests_original\\e2e\\test_responsive_layout_system_e2e.py",
+      "category": "layout_tests",
+      "size": 28789,
+      "modified": "2025-09-22T19:14:28.901543"
+    },
+    {
+      "file": "migration_backup_20250916_161255\\tests_original\\test_file_explorer\\test_pane_manager.py",
+      "category": "layout_tests",
+      "size": 33407,
+      "modified": "2025-09-22T19:14:29.063229"
+    },
+    {
+      "file": "migration_backup_20250916_161255\\tests_original\\test_file_explorer\\test_pane_manager_fixed.py",
+      "category": "layout_tests",
+      "size": 32380,
+      "modified": "2025-09-22T19:14:29.063229"
+    },
+    {
+      "file": "migration_backup_20250916_161255\\tests_original\\unit\\debug_test_execution.py",
+      "category": "debug_scripts",
+      "size": 4925,
+      "modified": "2025-09-22T19:14:29.160174"
+    },
+    {
+      "file": "migration_backup_20250916_161255\\tests_original\\unit\\test_responsive_layout_constraints.py",
+      "category": "layout_tests",
+      "size": 29005,
+      "modified": "2025-09-22T19:14:29.992413"
+    },
+    {
+      "file": "migration_backup_20250916_161255\\tests_original\\unit\\network\\fix_paths.py",
+      "category": "fix_scripts",
+      "size": 659,
+      "modified": "2025-09-22T19:14:29.175709"
+    },
+    {
+      "file": "migration_backup_20250916_222325\\src_complete\\rfu\\file_explorer\\enhanced_multi_pane_explorer.py",
+      "category": "layout_tests",
+      "size": 36241,
+      "modified": "2025-09-22T19:14:30.267841"
+    },
+    {
+      "file": "migration_backup_20250916_222325\\src_complete\\rfu\\file_explorer\\multi_pane_explorer.py",
+      "category": "layout_tests",
+      "size": 134604,
+      "modified": "2025-09-22T19:14:30.280097"
+    },
+    {
+      "file": "migration_backup_20250916_222325\\src_complete\\rfu\\file_explorer\\multi_pane_explorer_fixed.py",
+      "category": "layout_tests",
+      "size": 32763,
+      "modified": "2025-09-22T19:14:30.281110"
+    },
+    {
+      "file": "migration_backup_20250916_222325\\src_complete\\rfu\\file_explorer\\multi_pane_explorer_repaired.py",
+      "category": "layout_tests",
+      "size": 54497,
+      "modified": "2025-09-22T19:14:30.281110"
+    },
+    {
+      "file": "migration_backup_20250916_222325\\src_complete\\rfu\\file_explorer\\core\\pane_manager.py",
+      "category": "layout_tests",
+      "size": 35146,
+      "modified": "2025-09-22T19:14:30.263305"
+    },
+    {
+      "file": "migration_backup_20250916_222325\\src_complete\\rfu\\file_explorer\\ui\\enhanced_layout_integration.py",
+      "category": "layout_tests",
+      "size": 28151,
+      "modified": "2025-09-22T19:14:30.296863"
+    },
+    {
+      "file": "migration_backup_20250916_222325\\src_complete\\rfu\\file_explorer\\ui\\layout_implementations.py",
+      "category": "layout_tests",
+      "size": 38036,
+      "modified": "2025-09-22T19:14:30.296863"
+    },
+    {
+      "file": "migration_backup_20250916_222325\\src_complete\\rfu\\file_explorer\\ui\\responsive_layout_manager.py",
+      "category": "layout_tests",
+      "size": 51244,
+      "modified": "2025-09-22T19:14:30.296863"
+    },
+    {
+      "file": "migration_backup_20250916_222325\\src_complete\\rfu\\file_explorer\\ui\\enhanced_pane_manager.py",
+      "category": "layout_tests",
+      "size": 23189,
+      "modified": "2025-09-22T19:14:30.296863"
+    },
+    {
+      "file": "migration_backup_20250916_222325\\src_complete\\rfu\\file_explorer\\ui\\pane_manager.py",
+      "category": "layout_tests",
+      "size": 62728,
+      "modified": "2025-09-22T19:14:30.296863"
+    },
+    {
+      "file": "MIGRATION_BACKUP_20250916_222618\\src_complete_backup\\rfu\\file_explorer\\enhanced_multi_pane_explorer.py",
+      "category": "layout_tests",
+      "size": 36241,
+      "modified": "2025-09-22T19:14:27.318969"
+    },
+    {
+      "file": "MIGRATION_BACKUP_20250916_222618\\src_complete_backup\\rfu\\file_explorer\\multi_pane_explorer.py",
+      "category": "layout_tests",
+      "size": 134604,
+      "modified": "2025-09-22T19:14:27.334919"
+    },
+    {
+      "file": "MIGRATION_BACKUP_20250916_222618\\src_complete_backup\\rfu\\file_explorer\\multi_pane_explorer_fixed.py",
+      "category": "layout_tests",
+      "size": 32763,
+      "modified": "2025-09-22T19:14:27.334919"
+    },
+    {
+      "file": "MIGRATION_BACKUP_20250916_222618\\src_complete_backup\\rfu\\file_explorer\\multi_pane_explorer_repaired.py",
+      "category": "layout_tests",
+      "size": 54497,
+      "modified": "2025-09-22T19:14:27.334919"
+    },
+    {
+      "file": "MIGRATION_BACKUP_20250916_222618\\src_complete_backup\\rfu\\file_explorer\\core\\pane_manager.py",
+      "category": "layout_tests",
+      "size": 35146,
+      "modified": "2025-09-22T19:14:27.318969"
+    },
+    {
+      "file": "MIGRATION_BACKUP_20250916_222618\\src_complete_backup\\rfu\\file_explorer\\ui\\enhanced_layout_integration.py",
+      "category": "layout_tests",
+      "size": 28151,
+      "modified": "2025-09-22T19:14:27.349991"
+    },
+    {
+      "file": "MIGRATION_BACKUP_20250916_222618\\src_complete_backup\\rfu\\file_explorer\\ui\\layout_implementations.py",
+      "category": "layout_tests",
+      "size": 38036,
+      "modified": "2025-09-22T19:14:27.354997"
+    },
+    {
+      "file": "MIGRATION_BACKUP_20250916_222618\\src_complete_backup\\rfu\\file_explorer\\ui\\responsive_layout_manager.py",
+      "category": "layout_tests",
+      "size": 51244,
+      "modified": "2025-09-22T19:14:27.354997"
+    },
+    {
+      "file": "MIGRATION_BACKUP_20250916_222618\\src_complete_backup\\rfu\\file_explorer\\ui\\enhanced_pane_manager.py",
+      "category": "layout_tests",
+      "size": 23189,
+      "modified": "2025-09-22T19:14:27.349991"
+    },
+    {
+      "file": "MIGRATION_BACKUP_20250916_222618\\src_complete_backup\\rfu\\file_explorer\\ui\\pane_manager.py",
+      "category": "layout_tests",
+      "size": 62728,
+      "modified": "2025-09-22T19:14:27.354997"
+    },
+    {
+      "file": "results\\enterprise_integration_test_report_20250913_165027.json",
+      "category": "compatibility",
+      "size": 3432,
+      "modified": "2025-09-22T19:14:30.807267"
+    },
+    {
+      "file": "results\\enterprise_integration_test_report_20250913_165152.json",
+      "category": "compatibility",
+      "size": 2785,
+      "modified": "2025-09-22T19:14:30.807267"
+    },
+    {
+      "file": "results\\enterprise_integration_test_report_20250913_165341.json",
+      "category": "compatibility",
+      "size": 2098,
+      "modified": "2025-09-22T19:14:30.807267"
+    },
+    {
+      "file": "scripts\\development\\demos\\organized_layout_demo.py",
+      "category": "layout_tests",
+      "size": 21953,
+      "modified": "2025-09-22T19:14:30.833414"
+    },
+    {
+      "file": "scripts\\maintenance\\fix_main_issues.py",
+      "category": "fix_scripts",
+      "size": 2107,
+      "modified": "2025-09-22T19:14:30.868421"
+    },
+    {
+      "file": "scripts\\maintenance\\diagnostic_repair_script.py",
+      "category": "diagnostic",
+      "size": 15231,
+      "modified": "2025-09-22T19:14:30.864944"
+    },
+    {
+      "file": "src\\file_explorer\\multi_pane_explorer.py",
+      "category": "layout_tests",
+      "size": 226019,
+      "modified": "2025-09-24T19:50:56.250377"
+    },
+    {
+      "file": "src\\file_explorer\\core\\pane_manager.py",
+      "category": "layout_tests",
+      "size": 34063,
+      "modified": "2025-09-24T19:59:21.890501"
+    },
+    {
+      "file": "src\\file_explorer\\ui\\enhanced_layout_integration.py",
+      "category": "layout_tests",
+      "size": 28170,
+      "modified": "2025-09-24T19:50:45.238525"
+    },
+    {
+      "file": "src\\file_explorer\\ui\\layout_implementations.py",
+      "category": "layout_tests",
+      "size": 37559,
+      "modified": "2025-09-24T19:59:21.901093"
+    },
+    {
+      "file": "src\\file_explorer\\ui\\responsive_layout_manager.py",
+      "category": "layout_tests",
+      "size": 53328,
+      "modified": "2025-09-24T19:50:45.701711"
+    },
+    {
+      "file": "src\\file_explorer\\ui\\enhanced_pane_manager.py",
+      "category": "layout_tests",
+      "size": 23036,
+      "modified": "2025-09-24T19:50:44.603084"
+    },
+    {
+      "file": "src\\file_explorer\\ui\\pane_manager.py",
+      "category": "layout_tests",
+      "size": 77183,
+      "modified": "2025-09-24T19:50:47.070029"
+    },
+    {
+      "file": "tests\\debug_import_export.py",
+      "category": "debug_scripts",
+      "size": 5724,
+      "modified": "2025-09-24T19:51:21.388768"
+    },
+    {
+      "file": "tests\\e2e\\test_responsive_layout_system_e2e.py",
+      "category": "layout_tests",
+      "size": 28777,
+      "modified": "2025-09-22T19:14:31.677642"
+    },
+    {
+      "file": "tests\\pre_beta\\multi_pane_explorer_fixed.py",
+      "category": "layout_tests",
+      "size": 222764,
+      "modified": "2025-09-24T04:42:54.855873"
+    },
+    {
+      "file": "tests\\pre_beta\\multi_pane_explorer_fixed_final.py",
+      "category": "layout_tests",
+      "size": 226019,
+      "modified": "2025-09-24T19:51:42.312545"
+    },
+    {
+      "file": "tests\\pre_beta\\test_multi_pane_explorer_repaired.py",
+      "category": "layout_tests",
+      "size": 12246,
+      "modified": "2025-09-22T19:14:31.779886"
+    },
+    {
+      "file": "tests\\pre_beta\\verify_multi_pane_explorer_repair.py",
+      "category": "layout_tests",
+      "size": 6823,
+      "modified": "2025-09-24T19:51:28.460679"
+    },
+    {
+      "file": "tests\\test_file_explorer\\test_pane_manager.py",
+      "category": "layout_tests",
+      "size": 33403,
+      "modified": "2025-09-22T19:14:31.805696"
+    },
+    {
+      "file": "tests\\test_file_explorer\\test_pane_manager_fixed.py",
+      "category": "layout_tests",
+      "size": 32356,
+      "modified": "2025-09-22T19:14:31.810767"
+    },
+    {
+      "file": "tests\\unit\\debug_test_execution.py",
+      "category": "debug_scripts",
+      "size": 4830,
+      "modified": "2025-09-24T19:51:30.138739"
+    },
+    {
+      "file": "tests\\unit\\test_responsive_layout_constraints.py",
+      "category": "layout_tests",
+      "size": 29005,
+      "modified": "2025-09-22T19:14:32.450607"
+    },
+    {
+      "file": "tests\\unit\\network\\fix_paths.py",
+      "category": "fix_scripts",
+      "size": 645,
+      "modified": "2025-09-24T19:51:30.587156"
+    }
+  ],
+  "legacy_backups": [
+    {
+      "file": ".reorganization_backup",
+      "category": "reorganization",
+      "size": 2084771,
+      "modified": "2025-09-22T19:14:27.213527"
+    },
+    {
+      "file": ".temp_reorganization_plan",
+      "category": "temp_plans",
+      "size": 127280,
+      "modified": "2025-09-22T19:14:27.220391"
+    },
+    {
+      "file": "main_corrected_dual_interface.py",
+      "category": "variant_mains",
+      "size": 43336,
+      "modified": "2025-09-22T19:14:28.323497"
+    },
+    {
+      "file": "main_dual_interface.py",
+      "category": "variant_mains",
+      "size": 33638,
+      "modified": "2025-09-22T19:14:28.323497"
+    },
+    {
+      "file": "migration_backup_20250916_161255",
+      "category": "backup_dirs",
+      "size": 47515017,
+      "modified": "2025-09-22T19:14:28.844904"
+    },
+    {
+      "file": "migration_backup_20250916_222325",
+      "category": "backup_dirs",
+      "size": 10791872,
+      "modified": "2025-09-22T19:14:30.064665"
+    },
+    {
+      "file": "MIGRATION_BACKUP_20250916_222618",
+      "category": "backup_dirs",
+      "size": 11538414,
+      "modified": "2025-09-22T19:14:27.255550"
+    },
+    {
+      "file": "migration_backup_20250917_154600",
+      "category": "backup_dirs",
+      "size": 1802166,
+      "modified": "2025-09-22T19:14:30.629980"
+    },
+    {
+      "file": "migration_backup_20250917_172120",
+      "category": "backup_dirs",
+      "size": 1996912,
+      "modified": "2025-09-22T19:14:30.715981"
+    },
+    {
+      "file": "migration_backup_file_operations_2025-09-16_21-33-28",
+      "category": "backup_dirs",
+      "size": 430671,
+      "modified": "2025-09-22T19:14:30.767072"
+    },
+    {
+      "file": "archive\\legacy_file_utilities_backup_20250819_193234",
+      "category": "backup_dirs",
+      "size": 140897,
+      "modified": "2025-09-22T19:14:27.873371"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\.reorganization_backup",
+      "category": "reorganization",
+      "size": 2084771,
+      "modified": "2025-09-22T19:14:27.213527"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\.temp_reorganization_plan",
+      "category": "temp_plans",
+      "size": 127280,
+      "modified": "2025-09-22T19:14:27.220391"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\main_corrected_dual_interface.py",
+      "category": "variant_mains",
+      "size": 43336,
+      "modified": "2025-09-22T19:14:28.323497"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\main_dual_interface.py",
+      "category": "variant_mains",
+      "size": 33638,
+      "modified": "2025-09-22T19:14:28.323497"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_backup_20250916_161255",
+      "category": "backup_dirs",
+      "size": 47515017,
+      "modified": "2025-09-22T19:14:28.844904"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_backup_20250916_222325",
+      "category": "backup_dirs",
+      "size": 10791872,
+      "modified": "2025-09-22T19:14:30.064665"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\MIGRATION_BACKUP_20250916_222618",
+      "category": "backup_dirs",
+      "size": 11538414,
+      "modified": "2025-09-22T19:14:27.255550"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_backup_20250917_154600",
+      "category": "backup_dirs",
+      "size": 1802166,
+      "modified": "2025-09-22T19:14:30.629980"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_backup_20250917_172120",
+      "category": "backup_dirs",
+      "size": 1996912,
+      "modified": "2025-09-22T19:14:30.715981"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_backup_file_operations_2025-09-16_21-33-28",
+      "category": "backup_dirs",
+      "size": 430671,
+      "modified": "2025-09-22T19:14:30.767072"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\archive\\legacy_file_utilities_backup_20250819_193234",
+      "category": "backup_dirs",
+      "size": 140897,
+      "modified": "2025-09-22T19:14:27.873371"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_backup_20250916_161255\\main_backup.py",
+      "category": "variant_mains",
+      "size": 83567,
+      "modified": "2025-09-22T19:14:28.390893"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_backup_20250916_161255\\src_original\\rfu\\main_minimal.py",
+      "category": "variant_mains",
+      "size": 1274,
+      "modified": "2025-09-22T19:14:28.520952"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_backup_20250916_161255\\src_original\\rfu\\backup_20250823_184612",
+      "category": "backup_dirs",
+      "size": 143723,
+      "modified": "2025-09-22T19:14:28.422578"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_backup_20250916_161255\\src_original\\rfu\\file_explorer\\main_application.py",
+      "category": "variant_mains",
+      "size": 44928,
+      "modified": "2025-09-22T19:14:28.469415"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_backup_20250916_161255\\src_original\\utilities\\advanced_folders\\gui\\main_widget.py",
+      "category": "variant_mains",
+      "size": 34657,
+      "modified": "2025-09-22T19:14:28.750370"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_backup_20250916_222325\\src_complete\\rfu\\main_minimal.py",
+      "category": "variant_mains",
+      "size": 1274,
+      "modified": "2025-09-22T19:14:30.322856"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_backup_20250916_222325\\src_complete\\rfu\\backup_20250823_184612",
+      "category": "backup_dirs",
+      "size": 143723,
+      "modified": "2025-09-22T19:14:30.235181"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_backup_20250916_222325\\src_complete\\rfu\\file_explorer\\main_application.py",
+      "category": "variant_mains",
+      "size": 44928,
+      "modified": "2025-09-22T19:14:30.276081"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_backup_20250916_222325\\src_complete\\tools\\file_management\\advanced_folders\\gui\\main_widget.py",
+      "category": "variant_mains",
+      "size": 34657,
+      "modified": "2025-09-22T19:14:30.364120"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\MIGRATION_BACKUP_20250916_222618\\project_files_backup\\main_corrected_dual_interface.py",
+      "category": "variant_mains",
+      "size": 43348,
+      "modified": "2025-09-22T19:14:27.255550"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\MIGRATION_BACKUP_20250916_222618\\project_files_backup\\main_dual_interface.py",
+      "category": "variant_mains",
+      "size": 33650,
+      "modified": "2025-09-22T19:14:27.255550"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\MIGRATION_BACKUP_20250916_222618\\src_complete_backup\\rfu\\main_minimal.py",
+      "category": "variant_mains",
+      "size": 1274,
+      "modified": "2025-09-22T19:14:27.379993"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\MIGRATION_BACKUP_20250916_222618\\src_complete_backup\\rfu\\backup_20250823_184612",
+      "category": "backup_dirs",
+      "size": 143723,
+      "modified": "2025-09-22T19:14:27.290020"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\MIGRATION_BACKUP_20250916_222618\\src_complete_backup\\rfu\\file_explorer\\main_application.py",
+      "category": "variant_mains",
+      "size": 44928,
+      "modified": "2025-09-22T19:14:27.329846"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\MIGRATION_BACKUP_20250916_222618\\src_complete_backup\\tools\\file_management\\advanced_folders\\gui\\main_widget.py",
+      "category": "variant_mains",
+      "size": 34657,
+      "modified": "2025-09-22T19:14:27.421737"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_backup_20250917_154600\\target_advanced_folders_current\\gui\\main_widget.py",
+      "category": "variant_mains",
+      "size": 34657,
+      "modified": "2025-09-22T19:14:30.647961"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\migration_backup_20250917_172120\\existing_advanced_folders\\gui\\main_widget.py",
+      "category": "variant_mains",
+      "size": 34657,
+      "modified": "2025-09-22T19:14:30.696618"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\src\\main_minimal.py",
+      "category": "variant_mains",
+      "size": 1292,
+      "modified": "2025-09-24T19:50:46.328900"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\src\\backup_20250823_184612",
+      "category": "backup_dirs",
+      "size": 143723,
+      "modified": "2025-09-22T19:14:30.931972"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\src\\file_explorer\\main_application.py",
+      "category": "variant_mains",
+      "size": 44066,
+      "modified": "2025-09-24T19:50:41.834938"
+    },
+    {
+      "file": "emergency-backup-20250925_200754\\src\\tools\\file_management\\advanced_folders\\gui\\main_widget.py",
+      "category": "variant_mains",
+      "size": 34061,
+      "modified": "2025-09-24T19:50:53.314703"
+    },
+    {
+      "file": "migration_backup_20250916_161255\\main_backup.py",
+      "category": "variant_mains",
+      "size": 83567,
+      "modified": "2025-09-22T19:14:28.390893"
+    },
+    {
+      "file": "migration_backup_20250916_161255\\src_original\\rfu\\main_minimal.py",
+      "category": "variant_mains",
+      "size": 1274,
+      "modified": "2025-09-22T19:14:28.520952"
+    },
+    {
+      "file": "migration_backup_20250916_161255\\src_original\\rfu\\backup_20250823_184612",
+      "category": "backup_dirs",
+      "size": 143723,
+      "modified": "2025-09-22T19:14:28.422578"
+    },
+    {
+      "file": "migration_backup_20250916_161255\\src_original\\rfu\\file_explorer\\main_application.py",
+      "category": "variant_mains",
+      "size": 44928,
+      "modified": "2025-09-22T19:14:28.469415"
+    },
+    {
+      "file": "migration_backup_20250916_161255\\src_original\\utilities\\advanced_folders\\gui\\main_widget.py",
+      "category": "variant_mains",
+      "size": 34657,
+      "modified": "2025-09-22T19:14:28.750370"
+    },
+    {
+      "file": "migration_backup_20250916_222325\\src_complete\\rfu\\main_minimal.py",
+      "category": "variant_mains",
+      "size": 1274,
+      "modified": "2025-09-22T19:14:30.322856"
+    },
+    {
+      "file": "migration_backup_20250916_222325\\src_complete\\rfu\\backup_20250823_184612",
+      "category": "backup_dirs",
+      "size": 143723,
+      "modified": "2025-09-22T19:14:30.235181"
+    },
+    {
+      "file": "migration_backup_20250916_222325\\src_complete\\rfu\\file_explorer\\main_application.py",
+      "category": "variant_mains",
+      "size": 44928,
+      "modified": "2025-09-22T19:14:30.276081"
+    },
+    {
+      "file": "migration_backup_20250916_222325\\src_complete\\tools\\file_management\\advanced_folders\\gui\\main_widget.py",
+      "category": "variant_mains",
+      "size": 34657,
+      "modified": "2025-09-22T19:14:30.364120"
+    },
+    {
+      "file": "MIGRATION_BACKUP_20250916_222618\\project_files_backup\\main_corrected_dual_interface.py",
+      "category": "variant_mains",
+      "size": 43348,
+      "modified": "2025-09-22T19:14:27.255550"
+    },
+    {
+      "file": "MIGRATION_BACKUP_20250916_222618\\project_files_backup\\main_dual_interface.py",
+      "category": "variant_mains",
+      "size": 33650,
+      "modified": "2025-09-22T19:14:27.255550"
+    },
+    {
+      "file": "MIGRATION_BACKUP_20250916_222618\\src_complete_backup\\rfu\\main_minimal.py",
+      "category": "variant_mains",
+      "size": 1274,
+      "modified": "2025-09-22T19:14:27.379993"
+    },
+    {
+      "file": "MIGRATION_BACKUP_20250916_222618\\src_complete_backup\\rfu\\backup_20250823_184612",
+      "category": "backup_dirs",
+      "size": 143723,
+      "modified": "2025-09-22T19:14:27.290020"
+    },
+    {
+      "file": "MIGRATION_BACKUP_20250916_222618\\src_complete_backup\\rfu\\file_explorer\\main_application.py",
+      "category": "variant_mains",
+      "size": 44928,
+      "modified": "2025-09-22T19:14:27.329846"
+    },
+    {
+      "file": "MIGRATION_BACKUP_20250916_222618\\src_complete_backup\\tools\\file_management\\advanced_folders\\gui\\main_widget.py",
+      "category": "variant_mains",
+      "size": 34657,
+      "modified": "2025-09-22T19:14:27.421737"
+    },
+    {
+      "file": "migration_backup_20250917_154600\\target_advanced_folders_current\\gui\\main_widget.py",
+      "category": "variant_mains",
+      "size": 34657,
+      "modified": "2025-09-22T19:14:30.647961"
+    },
+    {
+      "file": "migration_backup_20250917_172120\\existing_advanced_folders\\gui\\main_widget.py",
+      "category": "variant_mains",
+      "size": 34657,
+      "modified": "2025-09-22T19:14:30.696618"
+    },
+    {
+      "file": "src\\main_minimal.py",
+      "category": "variant_mains",
+      "size": 1292,
+      "modified": "2025-09-24T19:50:46.328900"
+    },
+    {
+      "file": "src\\backup_20250823_184612",
+      "category": "backup_dirs",
+      "size": 143723,
+      "modified": "2025-09-22T19:14:30.931972"
+    },
+    {
+      "file": "src\\file_explorer\\main_application.py",
+      "category": "variant_mains",
+      "size": 44066,
+      "modified": "2025-09-24T19:50:41.834938"
+    },
+    {
+      "file": "src\\tools\\file_management\\advanced_folders\\gui\\main_widget.py",
+      "category": "variant_mains",
+      "size": 34061,
+      "modified": "2025-09-24T19:50:53.314703"
+    },
+    {
+      "file": "venv\\Lib\\site-packages\\fire\\main_test.py",
+      "category": "variant_mains",
+      "size": 3318,
+      "modified": "2025-09-24T18:50:15.472907"
+    },
+    {
+      "file": "venv\\Lib\\site-packages\\pip\\_internal\\cli\\main_parser.py",
+      "category": "variant_mains",
+      "size": 4329,
+      "modified": "2025-09-24T18:49:02.960815"
+    }
+  ],
+  "critical_files_found": [
+    "src/hub.py",
+    "pyproject.toml",
+    "LICENSE",
+    "src/config_manager.py",
+    ".gitignore",
+    "requirements.txt",
+    "pytest.ini"
+  ],
+  "potential_issues": [
+    "Critical file missing: README.md",
+    "Critical file missing: src/rfu/main.py"
+  ]
+}

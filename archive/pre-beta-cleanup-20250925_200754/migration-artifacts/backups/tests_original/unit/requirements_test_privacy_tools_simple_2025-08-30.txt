@@ -1,0 +1,23 @@
+# Test requirements for privacy_tools_simple.py unit tests
+# Generated on 2025-08-30
+
+# Core testing framework
+pytest>=7.4.0
+pytest-cov>=4.1.0
+pytest-html>=3.2.0
+pytest-json-report>=1.5.0
+pytest-timeout>=2.1.0
+pytest-mock>=3.11.1
+pytest-qt>=4.2.0
+
+# PyQt5 for GUI testing
+PyQt5>=5.15.0
+
+# Coverage and reporting
+coverage>=7.2.0
+
+# Mock and testing utilities
+mock>=4.0.3
+
+# Additional utilities
+colorama>=0.4.6  # For colored test output on Windows

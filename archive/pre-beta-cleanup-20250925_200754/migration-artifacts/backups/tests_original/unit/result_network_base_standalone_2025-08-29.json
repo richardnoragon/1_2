@@ -1,0 +1,74 @@
+{
+  "execution_timestamp": "2025-08-29T22:59:19.732948",
+  "test_framework": "standalone_unittest",
+  "target_module": "network_base.py",
+  "tests": [
+    {
+      "name": "test_enum_values",
+      "status": "PASSED",
+      "duration_ms": 0.014781951904296875,
+      "error": null
+    },
+    {
+      "name": "test_operation_result",
+      "status": "PASSED",
+      "duration_ms": 0.04172325134277344,
+      "error": null
+    },
+    {
+      "name": "test_tool_initialization",
+      "status": "PASSED",
+      "duration_ms": 4.538297653198242,
+      "error": null
+    },
+    {
+      "name": "test_start_operation",
+      "status": "PASSED",
+      "duration_ms": 1051.3863563537598,
+      "error": null
+    },
+    {
+      "name": "test_stop_operation",
+      "status": "PASSED",
+      "duration_ms": 18.990516662597656,
+      "error": null
+    },
+    {
+      "name": "test_data_storage",
+      "status": "PASSED",
+      "duration_ms": 0.8251667022705078,
+      "error": null
+    },
+    {
+      "name": "test_health_status",
+      "status": "PASSED",
+      "duration_ms": 0.7994174957275391,
+      "error": null
+    },
+    {
+      "name": "test_status_info",
+      "status": "PASSED",
+      "duration_ms": 0.8881092071533203,
+      "error": null
+    },
+    {
+      "name": "test_callbacks",
+      "status": "PASSED",
+      "duration_ms": 0.7963180541992188,
+      "error": null
+    },
+    {
+      "name": "test_error_handling",
+      "status": "PASSED",
+      "duration_ms": 0.7076263427734375,
+      "error": null
+    }
+  ],
+  "completion_timestamp": "2025-08-29T22:59:20.897612",
+  "summary": {
+    "total_tests": 10,
+    "passed": 10,
+    "failed": 0,
+    "pass_rate": 100.0
+  }
+}

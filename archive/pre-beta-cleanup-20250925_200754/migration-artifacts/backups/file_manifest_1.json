@@ -1,0 +1,1549 @@
+{
+  "timestamp": "2025-09-16T22:23:27.064221",
+  "source_location": "C:\\Users\\HP1\\1_2\\src\\rfu",
+  "target_location": "C:\\Users\\HP1\\1_2\\src",
+  "files": {
+    "config_manager.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\config_manager.py",
+      "size": 14218,
+      "modified": "2025-09-08T18:01:54.470433",
+      "hash": "4296b72bd42e5761a61737f5ff6b9688"
+    },
+    "dev_hub.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\dev_hub.py",
+      "size": 14015,
+      "modified": "2025-09-08T18:01:54.494382",
+      "hash": "a79514b8aaf5949556aae78f54ad2577"
+    },
+    "hub.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\hub.py",
+      "size": 62779,
+      "modified": "2025-09-16T20:02:25.324718",
+      "hash": "73db878671aa71fb4301bdfa950276b7"
+    },
+    "hub_standalone.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\hub_standalone.py",
+      "size": 5010,
+      "modified": "2025-09-08T18:01:54.511947",
+      "hash": "1e84c292437e30b5bd9ca1789894d614"
+    },
+    "launch_main.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\launch_main.py",
+      "size": 1535,
+      "modified": "2025-09-08T18:01:54.511947",
+      "hash": "535d154286f5b64671a4a106aba1c37d"
+    },
+    "log_manager.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\log_manager.py",
+      "size": 9602,
+      "modified": "2025-09-08T18:01:54.511947",
+      "hash": "62667d83c5a01c4d7188ad2a679f15da"
+    },
+    "main.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\main.py",
+      "size": 2860,
+      "modified": "2025-09-13T16:59:36.053594",
+      "hash": "ffa3b3b79cf8023b105a2ad0a61a0444"
+    },
+    "main_minimal.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\main_minimal.py",
+      "size": 1274,
+      "modified": "2025-09-08T18:01:54.512948",
+      "hash": "265f4fce208c38871915b3d22338439f"
+    },
+    "__init__.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\__init__.py",
+      "size": 428,
+      "modified": "2025-09-08T18:01:54.462317",
+      "hash": "b45b9ca47efd701d87c3d66e17083b5b"
+    },
+    "advanced_folders\\API_DOCUMENTATION.md": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\advanced_folders\\API_DOCUMENTATION.md",
+      "size": 27924,
+      "modified": "2025-09-11T21:34:03.309271",
+      "hash": "e8f4d5de55c7d44f65328ecc71990aad"
+    },
+    "advanced_folders\\INTEGRATION_GUIDE.md": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\advanced_folders\\INTEGRATION_GUIDE.md",
+      "size": 37606,
+      "modified": "2025-09-16T17:01:33.855801",
+      "hash": "7f7c0f99f4723737d0fb625fc241073e"
+    },
+    "advanced_folders\\README.md": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\advanced_folders\\README.md",
+      "size": 21034,
+      "modified": "2025-09-16T16:13:00.943848",
+      "hash": "f7047f5bac352b1b740d9f06125153df"
+    },
+    "advanced_folders\\__init__.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\advanced_folders\\__init__.py",
+      "size": 1333,
+      "modified": "2025-09-11T20:49:49.415026",
+      "hash": "21ecbdca153a1be90dbcfae91e587892"
+    },
+    "archive_20250823_191555\\ARCHIVE_README.md": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\archive_20250823_191555\\ARCHIVE_README.md",
+      "size": 3581,
+      "modified": "2025-09-08T18:01:54.463317",
+      "hash": "a03d869cacf1aa6f7c743d3dc96e8575"
+    },
+    "archive_20250823_191555\\hub.py.new": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\archive_20250823_191555\\hub.py.new",
+      "size": 58422,
+      "modified": "2025-09-08T18:01:54.464319",
+      "hash": "4734573cbb32ec253f9e7166838c4210"
+    },
+    "archive_20250823_191555\\hub_consolidated.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\archive_20250823_191555\\hub_consolidated.py",
+      "size": 58422,
+      "modified": "2025-09-08T18:01:54.464319",
+      "hash": "4734573cbb32ec253f9e7166838c4210"
+    },
+    "archive_20250823_191555\\rfuhub.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\archive_20250823_191555\\rfuhub.py",
+      "size": 5999,
+      "modified": "2025-09-08T18:01:54.465318",
+      "hash": "45298ac95dd9163c3daf3bffecb9664b"
+    },
+    "archive_20250823_191555\\simple_hub.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\archive_20250823_191555\\simple_hub.py",
+      "size": 90428,
+      "modified": "2025-09-16T16:13:00.638685",
+      "hash": "ee2f5025aabeed89b72a73ba06e206f4"
+    },
+    "archive_20250823_191555\\simple_hub.py.backup": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\archive_20250823_191555\\simple_hub.py.backup",
+      "size": 81872,
+      "modified": "2025-09-08T18:01:54.466317",
+      "hash": "1ddf9ae9bcb3c85743f74fde1f31007c"
+    },
+    "archive_20250823_191555\\simple_menu_manager.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\archive_20250823_191555\\simple_menu_manager.py",
+      "size": 11806,
+      "modified": "2025-09-08T18:01:54.467316",
+      "hash": "e67c5c99481e8d2beed8f3fcd7b69627"
+    },
+    "backup_20250823_184612\\hub.py.original": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\backup_20250823_184612\\hub.py.original",
+      "size": 47192,
+      "modified": "2025-09-08T18:01:54.468317",
+      "hash": "4b95acc80e1585df2a2927771a7d572e"
+    },
+    "backup_20250823_184612\\rfuhub.py.original": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\backup_20250823_184612\\rfuhub.py.original",
+      "size": 5999,
+      "modified": "2025-09-08T18:01:54.468317",
+      "hash": "45298ac95dd9163c3daf3bffecb9664b"
+    },
+    "backup_20250823_184612\\simple_hub.py.original": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\backup_20250823_184612\\simple_hub.py.original",
+      "size": 90532,
+      "modified": "2025-09-08T18:01:54.469631",
+      "hash": "84e3f2898e31c4ff9897d451a5106b0f"
+    },
+    "core\\config_manager.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\core\\config_manager.py",
+      "size": 21205,
+      "modified": "2025-09-08T18:01:54.471438",
+      "hash": "f77cfd36d71ffb6e319e36b378800e5c"
+    },
+    "core\\constants.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\core\\constants.py",
+      "size": 2343,
+      "modified": "2025-09-08T18:01:54.458804",
+      "hash": "843ab7b0fd61f7685e482bb24d71df39"
+    },
+    "core\\database_logging.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\core\\database_logging.py",
+      "size": 11310,
+      "modified": "2025-09-08T18:01:54.471438",
+      "hash": "5fafb9a5d652a4a5f6e3579e63c6b59f"
+    },
+    "core\\database_manager.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\core\\database_manager.py",
+      "size": 26176,
+      "modified": "2025-09-08T18:01:54.472976",
+      "hash": "cb8290b781b5a08b40b8ff4fa3d752cf"
+    },
+    "core\\database_models.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\core\\database_models.py",
+      "size": 6880,
+      "modified": "2025-09-08T18:01:54.472976",
+      "hash": "b11381a134563a7bf1f1508739971d6d"
+    },
+    "core\\enhanced_config_manager.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\core\\enhanced_config_manager.py",
+      "size": 23674,
+      "modified": "2025-09-08T18:01:54.478009",
+      "hash": "371073e65e7ad4a5ab60cec691e779e9"
+    },
+    "core\\error_handler.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\core\\error_handler.py",
+      "size": 3420,
+      "modified": "2025-09-08T18:01:54.479009",
+      "hash": "94818931ba8d05e7d63db248d93a9b8a"
+    },
+    "core\\logging_manager.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\core\\logging_manager.py",
+      "size": 8389,
+      "modified": "2025-09-08T18:01:54.481009",
+      "hash": "4e6358053cc0edaffb83a97d3fe7ec73"
+    },
+    "core\\log_manager.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\core\\log_manager.py",
+      "size": 10948,
+      "modified": "2025-09-08T18:01:54.481009",
+      "hash": "9c3f696404d710e667632d5c4a1b28c3"
+    },
+    "core\\__init__.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\core\\__init__.py",
+      "size": 186,
+      "modified": "2025-09-08T18:01:54.470433",
+      "hash": "95f92df69fa05b99f305403bf86d74a1"
+    },
+    "database\\database_manager.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\database\\database_manager.py",
+      "size": 26611,
+      "modified": "2025-09-08T18:01:54.493378",
+      "hash": "334a8a6ea9a800a6b638719953b13aa1"
+    },
+    "database\\__init__.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\database\\__init__.py",
+      "size": 178,
+      "modified": "2025-09-08T18:01:54.493378",
+      "hash": "77ebdde3f97caed2a68d47c2dd4e5e6c"
+    },
+    "file_explorer\\enhanced_file_browser.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\enhanced_file_browser.py",
+      "size": 18428,
+      "modified": "2025-09-13T18:41:59.583867",
+      "hash": "b09f0122c53f580d4f0196dfb6996bc7"
+    },
+    "file_explorer\\enhanced_multi_pane_explorer.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\enhanced_multi_pane_explorer.py",
+      "size": 36241,
+      "modified": "2025-09-14T20:00:05.997642",
+      "hash": "6cc49aa9b7203e3a7990fa3319eac3e3"
+    },
+    "file_explorer\\integration_patch.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\integration_patch.py",
+      "size": 14595,
+      "modified": "2025-09-13T08:43:50.832660",
+      "hash": "be293079714f9de3b0d31ae867e59f57"
+    },
+    "file_explorer\\main_application.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\main_application.py",
+      "size": 44928,
+      "modified": "2025-09-13T06:46:32.649271",
+      "hash": "e41e0441382d00d8eb80f68ea74eeb73"
+    },
+    "file_explorer\\migration_manager.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\migration_manager.py",
+      "size": 30171,
+      "modified": "2025-09-13T08:21:21.302999",
+      "hash": "f039b1b92c226d450fcea748ece6d7fa"
+    },
+    "file_explorer\\multi_pane_explorer.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\multi_pane_explorer.py",
+      "size": 134604,
+      "modified": "2025-09-16T16:40:38.232383",
+      "hash": "bffa549c63b5963eab25fc0e21a83796"
+    },
+    "file_explorer\\multi_pane_explorer.py.backup": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\multi_pane_explorer.py.backup",
+      "size": 134728,
+      "modified": "2025-09-16T21:26:52.471376",
+      "hash": "2be871ea43efebff74df497058722feb"
+    },
+    "file_explorer\\multi_pane_explorer_fixed.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\multi_pane_explorer_fixed.py",
+      "size": 32763,
+      "modified": "2025-09-14T17:55:12.264252",
+      "hash": "1e880a58217964de1f9edf009f579e6e"
+    },
+    "file_explorer\\multi_pane_explorer_repaired.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\multi_pane_explorer_repaired.py",
+      "size": 54497,
+      "modified": "2025-09-15T16:02:51.424988",
+      "hash": "7915eaec1ae650415167b931e0eadfe8"
+    },
+    "file_explorer\\__init__.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\__init__.py",
+      "size": 1042,
+      "modified": "2025-09-12T21:57:36.992869",
+      "hash": "99daa8072db78b35403d9daaa03c7535"
+    },
+    "gui\\log_viewer.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\gui\\log_viewer.py",
+      "size": 10065,
+      "modified": "2025-09-08T18:01:54.503382",
+      "hash": "fe6d14095a28e1a276ccf1cfdb442506"
+    },
+    "gui\\log_viewer.py.bak": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\gui\\log_viewer.py.bak",
+      "size": 8138,
+      "modified": "2025-09-08T18:01:54.503991",
+      "hash": "7d5da7c34df51a037c92f4b3e4054a1a"
+    },
+    "gui\\log_viewer.py.new": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\gui\\log_viewer.py.new",
+      "size": 8061,
+      "modified": "2025-09-08T18:01:54.503991",
+      "hash": "6e1b4d701b565598f9c0204e34c5647f"
+    },
+    "gui\\menu_manager.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\gui\\menu_manager.py",
+      "size": 34316,
+      "modified": "2025-09-08T18:01:54.340958",
+      "hash": "edae75a4a29dae1c4c13e18df70d3dfe"
+    },
+    "gui\\secure_theme_settings.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\gui\\secure_theme_settings.py",
+      "size": 22236,
+      "modified": "2025-09-08T18:01:54.504997",
+      "hash": "373e6457ae660422858977f8056c97c7"
+    },
+    "gui\\settings_dialog.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\gui\\settings_dialog.py",
+      "size": 17921,
+      "modified": "2025-09-08T18:01:54.505996",
+      "hash": "2410ca755cae37ca029ac928efb674e3"
+    },
+    "gui\\settings_dialog.py.bak": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\gui\\settings_dialog.py.bak",
+      "size": 16789,
+      "modified": "2025-09-08T18:01:54.505996",
+      "hash": "ce150061765578c2cb1dc6a9706dba41"
+    },
+    "gui\\settings_dialog.py.new": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\gui\\settings_dialog.py.new",
+      "size": 17642,
+      "modified": "2025-09-08T18:01:54.506996",
+      "hash": "9460c4ae6c01aa4f52feb9419a3af23f"
+    },
+    "gui\\standard_window.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\gui\\standard_window.py",
+      "size": 12139,
+      "modified": "2025-09-08T18:01:54.506996",
+      "hash": "e6eb8765373e7e16331932da6e092c8e"
+    },
+    "gui\\themes.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\gui\\themes.py",
+      "size": 8970,
+      "modified": "2025-09-08T18:01:54.508129",
+      "hash": "5e569dbdb4970483019b92ef669f663e"
+    },
+    "gui\\__init__.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\gui\\__init__.py",
+      "size": 102,
+      "modified": "2025-09-08T18:01:54.494382",
+      "hash": "2ed4136b46a4c4f0bf1cf7048a0b98d4"
+    },
+    "__pycache__\\config_manager.cpython-313.pyc": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\__pycache__\\config_manager.cpython-313.pyc",
+      "size": 17176,
+      "modified": "2025-09-08T18:22:52.566810",
+      "hash": "7c63bb5f2656576f6edf24e396348a4a"
+    },
+    "__pycache__\\dev_hub.cpython-313.pyc": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\__pycache__\\dev_hub.cpython-313.pyc",
+      "size": 18594,
+      "modified": "2025-09-08T20:09:51.720461",
+      "hash": "13dc8acf1767b3bba3b5b8625b5349c5"
+    },
+    "__pycache__\\hub.cpython-313.pyc": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\__pycache__\\hub.cpython-313.pyc",
+      "size": 81697,
+      "modified": "2025-09-16T19:42:24.245275",
+      "hash": "2f415fe0fb90ce126b00b3bdf6311d3d"
+    },
+    "__pycache__\\log_manager.cpython-313.pyc": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\__pycache__\\log_manager.cpython-313.pyc",
+      "size": 12308,
+      "modified": "2025-09-08T18:22:52.425437",
+      "hash": "6d57c854e336b0054921dbc5baca2381"
+    },
+    "__pycache__\\main.cpython-313.pyc": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\__pycache__\\main.cpython-313.pyc",
+      "size": 3205,
+      "modified": "2025-09-13T16:51:45.593757",
+      "hash": "ee7ce84e2e655bce2824e15729201b87"
+    },
+    "__pycache__\\__init__.cpython-313.pyc": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\__pycache__\\__init__.cpython-313.pyc",
+      "size": 451,
+      "modified": "2025-09-08T18:22:51.513075",
+      "hash": "7d9958efeaeae391db52e95101a8960d"
+    },
+    "gui\\common\\appearance_dialog.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\gui\\common\\appearance_dialog.py",
+      "size": 2585,
+      "modified": "2025-09-08T18:01:54.495383",
+      "hash": "f887bc6beae2254c8cf2f53ff145d0aa"
+    },
+    "gui\\common\\base_dialog.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\gui\\common\\base_dialog.py",
+      "size": 3110,
+      "modified": "2025-09-08T18:01:54.496383",
+      "hash": "a5fe4811a462aebe62c41351a1e57b3c"
+    },
+    "gui\\common\\base_window.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\gui\\common\\base_window.py",
+      "size": 6240,
+      "modified": "2025-09-08T18:01:54.496383",
+      "hash": "e9fc762ce232dd82fc17c9d1e676b14a"
+    },
+    "gui\\common\\base_window.py.bak": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\gui\\common\\base_window.py.bak",
+      "size": 4195,
+      "modified": "2025-09-08T18:01:54.497381",
+      "hash": "422892e76b6045210b03ac4d56c9a97e"
+    },
+    "gui\\common\\base_window.py.new": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\gui\\common\\base_window.py.new",
+      "size": 6558,
+      "modified": "2025-09-08T18:01:54.497381",
+      "hash": "2fd3d1b0dabcd23e733092fdb94edf51"
+    },
+    "gui\\common\\dialogs.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\gui\\common\\dialogs.py",
+      "size": 7504,
+      "modified": "2025-09-08T18:01:54.498383",
+      "hash": "2659c17bd109759487b2505faee24a67"
+    },
+    "gui\\common\\dialogs.py.bak": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\gui\\common\\dialogs.py.bak",
+      "size": 7454,
+      "modified": "2025-09-08T18:01:54.498383",
+      "hash": "801d7cecafb5f04a66ad87960b6a92ef"
+    },
+    "gui\\common\\settings.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\gui\\common\\settings.py",
+      "size": 2439,
+      "modified": "2025-09-08T18:01:54.499382",
+      "hash": "cf98f9b5e87a99a5bf8d24aaa39f2027"
+    },
+    "gui\\common\\standard_window.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\gui\\common\\standard_window.py",
+      "size": 8827,
+      "modified": "2025-09-08T18:01:54.499382",
+      "hash": "dc0a44e78bca32bf6ca9094a6c7362a8"
+    },
+    "gui\\common\\styles.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\gui\\common\\styles.py",
+      "size": 8709,
+      "modified": "2025-09-08T18:01:54.500382",
+      "hash": "dce6ccf7b4cf10e200c458e3806ad8a3"
+    },
+    "gui\\common\\styles.py.new": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\gui\\common\\styles.py.new",
+      "size": 8709,
+      "modified": "2025-09-08T18:01:54.500382",
+      "hash": "dce6ccf7b4cf10e200c458e3806ad8a3"
+    },
+    "gui\\common\\widgets.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\gui\\common\\widgets.py",
+      "size": 7833,
+      "modified": "2025-09-08T18:01:54.500382",
+      "hash": "4b2f4ed98c86b8fcc1ad0d65e8deb33b"
+    },
+    "gui\\common\\widgets.py.bak": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\gui\\common\\widgets.py.bak",
+      "size": 7811,
+      "modified": "2025-09-08T18:01:54.501383",
+      "hash": "597867b65b41a2f893d4dc9688fc4df5"
+    },
+    "gui\\common\\__init__.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\gui\\common\\__init__.py",
+      "size": 682,
+      "modified": "2025-09-08T18:01:54.495383",
+      "hash": "a9e05b3dd786115c7fffd9a9c9b15200"
+    },
+    "gui\\dialogs\\dialogs_simple.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\gui\\dialogs\\dialogs_simple.py",
+      "size": 1406,
+      "modified": "2025-09-08T18:01:54.502383",
+      "hash": "528791557e368b9550be0ee4cf95b54d"
+    },
+    "gui\\dialogs\\security_preferences_dialog.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\gui\\dialogs\\security_preferences_dialog.py",
+      "size": 62534,
+      "modified": "2025-09-08T18:01:54.504997",
+      "hash": "42a0d20871d1721a6a6e1042e852e346"
+    },
+    "gui\\file_ops\\rename_window.py.bak": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\gui\\file_ops\\rename_window.py.bak",
+      "size": 9225,
+      "modified": "2025-09-08T18:01:54.502383",
+      "hash": "f387d73778ee6336cf030da8ac17975c"
+    },
+    "gui\\widgets\\empty_folders_simple.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\gui\\widgets\\empty_folders_simple.py",
+      "size": 8840,
+      "modified": "2025-09-08T18:01:54.508129",
+      "hash": "ef1d088de803892c0fff8db6dc31ee27"
+    },
+    "gui\\widgets\\file_touch_simple.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\gui\\widgets\\file_touch_simple.py",
+      "size": 7388,
+      "modified": "2025-09-08T18:01:54.509172",
+      "hash": "d2a561c42a573f698c2e1a45df9915f5"
+    },
+    "gui\\widgets\\widgets_simple.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\gui\\widgets\\widgets_simple.py",
+      "size": 751,
+      "modified": "2025-09-08T18:01:54.509943",
+      "hash": "acabc922ad4df6ec2f51259e9f443670"
+    },
+    "gui\\windows\\base_window_simple.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\gui\\windows\\base_window_simple.py",
+      "size": 887,
+      "modified": "2025-09-08T18:01:54.510949",
+      "hash": "a7563a752eeddc4a0fb0cc8861ca2b2b"
+    },
+    "gui\\__pycache__\\menu_manager.cpython-313.pyc": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\gui\\__pycache__\\menu_manager.cpython-313.pyc",
+      "size": 43340,
+      "modified": "2025-09-10T20:27:26.244241",
+      "hash": "87c9fc512b1810e0cf6e902ee0c08438"
+    },
+    "gui\\__pycache__\\standard_window.cpython-313.pyc": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\gui\\__pycache__\\standard_window.cpython-313.pyc",
+      "size": 17335,
+      "modified": "2025-09-08T18:22:52.599344",
+      "hash": "89d6e9e6e0fe8838ca2685ef313a7a31"
+    },
+    "gui\\__pycache__\\__init__.cpython-313.pyc": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\gui\\__pycache__\\__init__.cpython-313.pyc",
+      "size": 199,
+      "modified": "2025-09-08T18:22:51.677743",
+      "hash": "eedcb474e3512d0f8ff2eba2126c7fff"
+    },
+    "gui\\common\\__pycache__\\base_window.cpython-313.pyc": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\gui\\common\\__pycache__\\base_window.cpython-313.pyc",
+      "size": 8610,
+      "modified": "2025-09-08T18:22:51.728819",
+      "hash": "9062ef59ba3ef717bc73d2d6edefcead"
+    },
+    "gui\\common\\__pycache__\\dialogs.cpython-313.pyc": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\gui\\common\\__pycache__\\dialogs.cpython-313.pyc",
+      "size": 8500,
+      "modified": "2025-09-08T18:22:51.733868",
+      "hash": "86d662f1bc1a748be2a99d91aa62817e"
+    },
+    "gui\\common\\__pycache__\\widgets.cpython-313.pyc": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\gui\\common\\__pycache__\\widgets.cpython-313.pyc",
+      "size": 11903,
+      "modified": "2025-09-08T18:22:51.750124",
+      "hash": "1e5b66e393624d9b4c7b2303b92f541b"
+    },
+    "gui\\common\\__pycache__\\__init__.cpython-313.pyc": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\gui\\common\\__pycache__\\__init__.cpython-313.pyc",
+      "size": 680,
+      "modified": "2025-09-08T18:22:51.724301",
+      "hash": "dfbf6fc110522f1b3c8ae917955e1fe4"
+    },
+    "file_explorer\\core\\enhanced_config_manager.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\core\\enhanced_config_manager.py",
+      "size": 20516,
+      "modified": "2025-09-13T08:43:50.984140",
+      "hash": "ac58e5b9ac7fa74c92811bdff56c3005"
+    },
+    "file_explorer\\core\\pane_manager.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\core\\pane_manager.py",
+      "size": 35146,
+      "modified": "2025-09-12T22:22:08.397938",
+      "hash": "8d5f846746d098c5a6c62ac25e510347"
+    },
+    "file_explorer\\core\\__init__.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\core\\__init__.py",
+      "size": 0,
+      "modified": "2025-09-13T08:43:51.431932",
+      "hash": "d41d8cd98f00b204e9800998ecf8427e"
+    },
+    "file_explorer\\database\\cache_manager.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\database\\cache_manager.py",
+      "size": 27499,
+      "modified": "2025-09-12T22:39:54.250235",
+      "hash": "ce066ed224f5456e3d6bd4ec8cd1c0ee"
+    },
+    "file_explorer\\database\\migrations.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\database\\migrations.py",
+      "size": 34680,
+      "modified": "2025-09-12T22:22:09.219151",
+      "hash": "d4fb82ffd26ddc2c253975fce0b689a6"
+    },
+    "file_explorer\\database\\schema.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\database\\schema.py",
+      "size": 21578,
+      "modified": "2025-09-12T21:57:36.608261",
+      "hash": "972ddbe0dfa52d6fb38c27c8e42b61e4"
+    },
+    "file_explorer\\database\\__init__.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\database\\__init__.py",
+      "size": 713,
+      "modified": "2025-09-12T22:22:07.543043",
+      "hash": "c3581b7e26978d6105676f218d9f7d16"
+    },
+    "file_explorer\\features\\bookmark_manager.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\features\\bookmark_manager.py",
+      "size": 57846,
+      "modified": "2025-09-13T07:32:00.336967",
+      "hash": "291cd388624ead4405e97f8704f553e3"
+    },
+    "file_explorer\\features\\color_scheme_manager.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\features\\color_scheme_manager.py",
+      "size": 49848,
+      "modified": "2025-09-13T07:45:23.426082",
+      "hash": "d03c771382054de2293951933db17a0c"
+    },
+    "file_explorer\\features\\search_engine.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\features\\search_engine.py",
+      "size": 48045,
+      "modified": "2025-09-13T07:31:59.846498",
+      "hash": "4324270221df4863aa5ba369449bfd39"
+    },
+    "file_explorer\\features\\view_modes.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\features\\view_modes.py",
+      "size": 51599,
+      "modified": "2025-09-13T07:32:00.341969",
+      "hash": "337e18087ec61a7edb6c530f52d2681f"
+    },
+    "file_explorer\\integration\\advanced_tool_launcher.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\integration\\advanced_tool_launcher.py",
+      "size": 31877,
+      "modified": "2025-09-13T08:03:08.894015",
+      "hash": "b58f1a974943936a04ace322b515cd5c"
+    },
+    "file_explorer\\integration\\keyboard_shortcuts_system.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\integration\\keyboard_shortcuts_system.py",
+      "size": 44139,
+      "modified": "2025-09-13T08:03:09.435549",
+      "hash": "b833cc5bc343e74af1863c5696029c2b"
+    },
+    "file_explorer\\integration\\plugin_system_foundation.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\integration\\plugin_system_foundation.py",
+      "size": 44650,
+      "modified": "2025-09-13T08:03:09.129349",
+      "hash": "f5ff5cd62cc359ed8c644f1c3912479e"
+    },
+    "file_explorer\\integration\\tool_integration_framework.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\integration\\tool_integration_framework.py",
+      "size": 37657,
+      "modified": "2025-09-16T16:13:00.146895",
+      "hash": "09b320c05bb3fe69a60aef2c82fd0e4b"
+    },
+    "file_explorer\\models\\drive_manager.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\models\\drive_manager.py",
+      "size": 39986,
+      "modified": "2025-09-12T22:39:54.250235",
+      "hash": "21ebbbdac760744538b985511bf36560"
+    },
+    "file_explorer\\models\\enhanced_file_model.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\models\\enhanced_file_model.py",
+      "size": 38358,
+      "modified": "2025-09-12T22:22:08.068687",
+      "hash": "ad5ab0578bf8fdf515d87020220d82eb"
+    },
+    "file_explorer\\models\\__init__.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\models\\__init__.py",
+      "size": 329,
+      "modified": "2025-09-12T22:39:53.654145",
+      "hash": "6a3d9858f46ec67a1459058c3c116b2c"
+    },
+    "file_explorer\\navigation\\address_bar.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\navigation\\address_bar.py",
+      "size": 20687,
+      "modified": "2025-09-13T07:06:47.558217",
+      "hash": "2b9319a4d218eb0b3a053451805fbc0e"
+    },
+    "file_explorer\\navigation\\breadcrumb_widget.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\navigation\\breadcrumb_widget.py",
+      "size": 23051,
+      "modified": "2025-09-13T07:06:48.413478",
+      "hash": "ccef6027ba83e07d42382cc452081642"
+    },
+    "file_explorer\\navigation\\history_manager.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\navigation\\history_manager.py",
+      "size": 25694,
+      "modified": "2025-09-13T07:06:48.402961",
+      "hash": "12eec1c29f6f2170d2595f683c8ee09b"
+    },
+    "file_explorer\\navigation\\navigation_buttons.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\navigation\\navigation_buttons.py",
+      "size": 19694,
+      "modified": "2025-09-13T07:06:48.120615",
+      "hash": "0a519e6e8e3123545bf6c74997740823"
+    },
+    "file_explorer\\navigation\\__init__.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\navigation\\__init__.py",
+      "size": 2321,
+      "modified": "2025-09-13T07:06:47.457131",
+      "hash": "fc3ed279365e5339208b81fe4ad0046f"
+    },
+    "file_explorer\\operations\\error_recovery.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\operations\\error_recovery.py",
+      "size": 29199,
+      "modified": "2025-09-13T07:06:47.308755",
+      "hash": "baba0a744008722eaf0cc9a58d8facee"
+    },
+    "file_explorer\\operations\\file_operations.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\operations\\file_operations.py",
+      "size": 40001,
+      "modified": "2025-09-13T07:06:46.840087",
+      "hash": "3a4ab449366ded037ca2e6991428d5ab"
+    },
+    "file_explorer\\operations\\operation_workers.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\operations\\operation_workers.py",
+      "size": 25958,
+      "modified": "2025-09-13T07:06:47.157820",
+      "hash": "347c0baee8c8e7cb88a92ca188cbf482"
+    },
+    "file_explorer\\operations\\progress_tracking.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\operations\\progress_tracking.py",
+      "size": 21413,
+      "modified": "2025-09-13T07:06:49.113463",
+      "hash": "c1bf468236e14e170cde48208d5eb10f"
+    },
+    "file_explorer\\operations\\__init__.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\operations\\__init__.py",
+      "size": 1926,
+      "modified": "2025-09-13T07:06:46.748278",
+      "hash": "406de3216626055a32707d902c80844d"
+    },
+    "file_explorer\\preview\\__init__.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\preview\\__init__.py",
+      "size": 2360,
+      "modified": "2025-09-13T07:06:48.843174",
+      "hash": "3a753a38f33eb338495476e263bce9ce"
+    },
+    "file_explorer\\tests\\conftest.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\tests\\conftest.py",
+      "size": 18429,
+      "modified": "2025-09-13T06:46:34.091694",
+      "hash": "2fda0af0adc4710b184af2c511312c8f"
+    },
+    "file_explorer\\tests\\test_comprehensive.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\tests\\test_comprehensive.py",
+      "size": 27472,
+      "modified": "2025-09-13T06:46:33.750933",
+      "hash": "2af23feeae389cb0c175733c3cad52f4"
+    },
+    "file_explorer\\tests\\test_database.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\tests\\test_database.py",
+      "size": 9651,
+      "modified": "2025-09-13T06:46:34.281642",
+      "hash": "f479165d22030c3d56c27690e5248e84"
+    },
+    "file_explorer\\tests\\test_performance.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\tests\\test_performance.py",
+      "size": 17642,
+      "modified": "2025-09-13T06:46:34.885683",
+      "hash": "6a7b6241a7f921604aec1dc3a491e375"
+    },
+    "file_explorer\\tests\\test_phase3_accessibility.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\tests\\test_phase3_accessibility.py",
+      "size": 15504,
+      "modified": "2025-09-13T07:32:00.905364",
+      "hash": "47d5dbbbab424b507ec5ce056cd64010"
+    },
+    "file_explorer\\tests\\test_phase3_comprehensive.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\tests\\test_phase3_comprehensive.py",
+      "size": 33454,
+      "modified": "2025-09-13T07:32:00.348010",
+      "hash": "afcd932679f279b01acfa21224448987"
+    },
+    "file_explorer\\tests\\test_phase3_e2e.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\tests\\test_phase3_e2e.py",
+      "size": 17413,
+      "modified": "2025-09-13T07:32:01.782035",
+      "hash": "a5b0925c607173d5fc7d301edeaac000"
+    },
+    "file_explorer\\tests\\test_phase3_performance.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\tests\\test_phase3_performance.py",
+      "size": 11758,
+      "modified": "2025-09-13T07:32:00.779459",
+      "hash": "e06d450e2ddfc08eeaa9e2610fdf2128"
+    },
+    "file_explorer\\tests\\test_ui.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\tests\\test_ui.py",
+      "size": 17259,
+      "modified": "2025-09-13T06:46:34.575356",
+      "hash": "4dd3758a465bcf19791f2c24ab3d40e5"
+    },
+    "file_explorer\\ui\\custom_widgets.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\ui\\custom_widgets.py",
+      "size": 40122,
+      "modified": "2025-09-13T06:46:32.650283",
+      "hash": "b684a65dd0d8aab66cef29bea45e3344"
+    },
+    "file_explorer\\ui\\enhanced_layout_integration.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\ui\\enhanced_layout_integration.py",
+      "size": 28151,
+      "modified": "2025-09-14T19:56:07.154437",
+      "hash": "31d133f99fb0652b649cbab3d0aa6418"
+    },
+    "file_explorer\\ui\\enhanced_pane_manager.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\ui\\enhanced_pane_manager.py",
+      "size": 23189,
+      "modified": "2025-09-13T08:43:50.509651",
+      "hash": "03294e9e55b545fb9cc19790a48bead7"
+    },
+    "file_explorer\\ui\\file_explorer_pane.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\ui\\file_explorer_pane.py",
+      "size": 46394,
+      "modified": "2025-09-14T18:05:29.577135",
+      "hash": "08ac5d0202d0ab1d7bc08f7010ad7eed"
+    },
+    "file_explorer\\ui\\layout_implementations.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\ui\\layout_implementations.py",
+      "size": 38036,
+      "modified": "2025-09-14T19:58:06.404536",
+      "hash": "93df6d81059ccd6bc38788f7e0cce2ec"
+    },
+    "file_explorer\\ui\\pane_manager.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\ui\\pane_manager.py",
+      "size": 62728,
+      "modified": "2025-09-15T15:59:12.845886",
+      "hash": "d5123439d6068ccc415a4a97e4126ef8"
+    },
+    "file_explorer\\ui\\responsive_layout_manager.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\ui\\responsive_layout_manager.py",
+      "size": 51244,
+      "modified": "2025-09-14T19:54:37.908231",
+      "hash": "f5ebfab4e68c26e135b71886e6e1980e"
+    },
+    "file_explorer\\ui\\widget_lifecycle_manager.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\ui\\widget_lifecycle_manager.py",
+      "size": 16057,
+      "modified": "2025-09-13T08:43:50.394355",
+      "hash": "57a6e3fc0b7c42b60b8585e47a895251"
+    },
+    "file_explorer\\ui\\__init__.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\ui\\__init__.py",
+      "size": 1115,
+      "modified": "2025-09-13T06:46:32.305488",
+      "hash": "0abe85c00bbd1a3b23658aa773ad2524"
+    },
+    "file_explorer\\utils\\directory_watcher.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\utils\\directory_watcher.py",
+      "size": 35643,
+      "modified": "2025-09-12T22:39:55.439852",
+      "hash": "0a011af0debf46d57b65405e464bdf58"
+    },
+    "file_explorer\\utils\\drive_detector.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\utils\\drive_detector.py",
+      "size": 37785,
+      "modified": "2025-09-12T22:22:08.685470",
+      "hash": "da373e1bea7f2ba7d354324f84f9fa66"
+    },
+    "file_explorer\\utils\\__init__.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\utils\\__init__.py",
+      "size": 1439,
+      "modified": "2025-09-12T22:39:53.999390",
+      "hash": "e9cc3b6b3c77f5bcd102c2a93f30325d"
+    },
+    "file_explorer\\__pycache__\\enhanced_file_browser.cpython-313.pyc": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\__pycache__\\enhanced_file_browser.cpython-313.pyc",
+      "size": 23100,
+      "modified": "2025-09-13T19:02:27.377569",
+      "hash": "5539a229f738ed2b90ab12030211a63e"
+    },
+    "file_explorer\\__pycache__\\multi_pane_explorer.cpython-313.pyc": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\__pycache__\\multi_pane_explorer.cpython-313.pyc",
+      "size": 162399,
+      "modified": "2025-09-16T16:41:01.214935",
+      "hash": "51772bbd7e24dc93954fa465aa28bfc5"
+    },
+    "file_explorer\\__pycache__\\multi_pane_explorer_repaired.cpython-313.pyc": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\__pycache__\\multi_pane_explorer_repaired.cpython-313.pyc",
+      "size": 68952,
+      "modified": "2025-09-15T16:03:01.096237",
+      "hash": "474caef0c0e5d20f2970999d7d65a847"
+    },
+    "file_explorer\\__pycache__\\__init__.cpython-313.pyc": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\__pycache__\\__init__.cpython-313.pyc",
+      "size": 1118,
+      "modified": "2025-09-13T07:29:02.546006",
+      "hash": "c602d6b3e41641ee36dfc7ed1a96c72b"
+    },
+    "file_explorer\\utils\\__pycache__\\directory_watcher.cpython-313.pyc": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\utils\\__pycache__\\directory_watcher.cpython-313.pyc",
+      "size": 45649,
+      "modified": "2025-09-13T07:29:03.499215",
+      "hash": "b1beb98240af4aeba329e2e40e390a09"
+    },
+    "file_explorer\\utils\\__pycache__\\__init__.cpython-313.pyc": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\utils\\__pycache__\\__init__.cpython-313.pyc",
+      "size": 1323,
+      "modified": "2025-09-13T07:29:03.488706",
+      "hash": "7e79f551670c83d8bc7210fed77f09c1"
+    },
+    "file_explorer\\ui\\widgets\\__init__.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\ui\\widgets\\__init__.py",
+      "size": 258,
+      "modified": "2025-09-12T22:39:53.920882",
+      "hash": "89e94c8333b82020fbd1c622095812e0"
+    },
+    "file_explorer\\ui\\__pycache__\\custom_widgets.cpython-313.pyc": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\ui\\__pycache__\\custom_widgets.cpython-313.pyc",
+      "size": 53104,
+      "modified": "2025-09-13T07:29:02.923130",
+      "hash": "2543ab67ce671d2ba6c97acd37de6a36"
+    },
+    "file_explorer\\ui\\__pycache__\\file_explorer_pane.cpython-313.pyc": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\ui\\__pycache__\\file_explorer_pane.cpython-313.pyc",
+      "size": 62903,
+      "modified": "2025-09-14T18:05:41.120519",
+      "hash": "3205f3218c2266264093e3f94c06ef67"
+    },
+    "file_explorer\\ui\\__pycache__\\pane_manager.cpython-313.pyc": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\ui\\__pycache__\\pane_manager.cpython-313.pyc",
+      "size": 56767,
+      "modified": "2025-09-13T07:29:02.907453",
+      "hash": "9943cc6ab1231c2b112e25b68eafaf37"
+    },
+    "file_explorer\\ui\\__pycache__\\widget_lifecycle_manager.cpython-313.pyc": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\ui\\__pycache__\\widget_lifecycle_manager.cpython-313.pyc",
+      "size": 21274,
+      "modified": "2025-09-13T11:33:02.309395",
+      "hash": "8b076c9f93b1bf4b4b72f799bcc4ac80"
+    },
+    "file_explorer\\ui\\__pycache__\\__init__.cpython-313.pyc": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\ui\\__pycache__\\__init__.cpython-313.pyc",
+      "size": 841,
+      "modified": "2025-09-13T07:29:02.881823",
+      "hash": "148416997b1ebe26b2c0520df1fa1253"
+    },
+    "file_explorer\\tests\\__pycache__\\conftest.cpython-313-pytest-8.3.5.pyc": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\tests\\__pycache__\\conftest.cpython-313-pytest-8.3.5.pyc",
+      "size": 25832,
+      "modified": "2025-09-13T07:29:02.322031",
+      "hash": "2b9c73658001109175aa2357f01cea07"
+    },
+    "file_explorer\\tests\\__pycache__\\test_comprehensive.cpython-313-pytest-8.3.5.pyc": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\tests\\__pycache__\\test_comprehensive.cpython-313-pytest-8.3.5.pyc",
+      "size": 79996,
+      "modified": "2025-09-13T07:29:02.533803",
+      "hash": "bf0620ef0c9e09be9db09b99de20e944"
+    },
+    "file_explorer\\tests\\__pycache__\\test_database.cpython-313-pytest-8.3.5.pyc": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\tests\\__pycache__\\test_database.cpython-313-pytest-8.3.5.pyc",
+      "size": 36251,
+      "modified": "2025-09-13T07:29:02.623261",
+      "hash": "8c87aab4fa32bc3fa5e0bba68deaeb30"
+    },
+    "file_explorer\\tests\\__pycache__\\test_performance.cpython-313-pytest-8.3.5.pyc": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\tests\\__pycache__\\test_performance.cpython-313-pytest-8.3.5.pyc",
+      "size": 31101,
+      "modified": "2025-09-13T07:29:02.651841",
+      "hash": "f0a21b2662f930ee2087a12574394713"
+    },
+    "file_explorer\\tests\\__pycache__\\test_phase3_accessibility.cpython-313-pytest-8.3.5.pyc": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\tests\\__pycache__\\test_phase3_accessibility.cpython-313-pytest-8.3.5.pyc",
+      "size": 19570,
+      "modified": "2025-09-13T08:04:59.249431",
+      "hash": "9b9bab638535badf0244ccdf5b465746"
+    },
+    "file_explorer\\tests\\__pycache__\\test_phase3_comprehensive.cpython-313-pytest-8.3.5.pyc": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\tests\\__pycache__\\test_phase3_comprehensive.cpython-313-pytest-8.3.5.pyc",
+      "size": 63583,
+      "modified": "2025-09-13T07:39:12.988932",
+      "hash": "499c6c0b764303386ab4ce77a05a1420"
+    },
+    "file_explorer\\tests\\__pycache__\\test_phase3_e2e.cpython-313-pytest-8.3.5.pyc": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\tests\\__pycache__\\test_phase3_e2e.cpython-313-pytest-8.3.5.pyc",
+      "size": 16617,
+      "modified": "2025-09-13T08:04:59.319249",
+      "hash": "c4dcdb07a7f1f257164abd27f7bbc199"
+    },
+    "file_explorer\\tests\\__pycache__\\test_phase3_performance.cpython-313-pytest-8.3.5.pyc": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\tests\\__pycache__\\test_phase3_performance.cpython-313-pytest-8.3.5.pyc",
+      "size": 19270,
+      "modified": "2025-09-13T08:04:59.339438",
+      "hash": "940448025491984af143381cead014e4"
+    },
+    "file_explorer\\tests\\__pycache__\\test_ui.cpython-313-pytest-8.3.5.pyc": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\tests\\__pycache__\\test_ui.cpython-313-pytest-8.3.5.pyc",
+      "size": 61035,
+      "modified": "2025-09-13T07:29:02.877674",
+      "hash": "58a5f887604ebfc7003651204404e45d"
+    },
+    "file_explorer\\operations\\__pycache__\\error_recovery.cpython-313.pyc": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\operations\\__pycache__\\error_recovery.cpython-313.pyc",
+      "size": 34306,
+      "modified": "2025-09-13T12:31:46.652842",
+      "hash": "6939759f880686e6897e96ef8bc87c4c"
+    },
+    "file_explorer\\operations\\__pycache__\\file_operations.cpython-313.pyc": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\operations\\__pycache__\\file_operations.cpython-313.pyc",
+      "size": 45350,
+      "modified": "2025-09-13T12:31:46.665499",
+      "hash": "06e437f604c13a758787809ff2047e77"
+    },
+    "file_explorer\\operations\\__pycache__\\operation_workers.cpython-313.pyc": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\operations\\__pycache__\\operation_workers.cpython-313.pyc",
+      "size": 32031,
+      "modified": "2025-09-13T12:31:46.680523",
+      "hash": "e867c72dd9271979aeb08645f0b4af4c"
+    },
+    "file_explorer\\operations\\__pycache__\\__init__.cpython-313.pyc": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\operations\\__pycache__\\__init__.cpython-313.pyc",
+      "size": 1655,
+      "modified": "2025-09-13T12:31:46.644670",
+      "hash": "62c5d944f91e24c35679d57732ca0418"
+    },
+    "file_explorer\\navigation\\__pycache__\\address_bar.cpython-313.pyc": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\navigation\\__pycache__\\address_bar.cpython-313.pyc",
+      "size": 27881,
+      "modified": "2025-09-13T12:31:46.785115",
+      "hash": "86f744c36d7c5ad27283bb36cbbda857"
+    },
+    "file_explorer\\navigation\\__pycache__\\__init__.cpython-313.pyc": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\navigation\\__pycache__\\__init__.cpython-313.pyc",
+      "size": 1811,
+      "modified": "2025-09-13T12:31:46.777608",
+      "hash": "138b68e11c39094e7c224e2e2ed75599"
+    },
+    "file_explorer\\models\\__pycache__\\__init__.cpython-313.pyc": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\models\\__pycache__\\__init__.cpython-313.pyc",
+      "size": 470,
+      "modified": "2025-09-13T07:29:02.740196",
+      "hash": "8befb84898abe687a26d4ae48846f0f7"
+    },
+    "file_explorer\\integration\\__pycache__\\advanced_tool_launcher.cpython-313.pyc": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\integration\\__pycache__\\advanced_tool_launcher.cpython-313.pyc",
+      "size": 40700,
+      "modified": "2025-09-13T19:02:27.490818",
+      "hash": "8f4fb1d22258ae4abaf3be752241f3de"
+    },
+    "file_explorer\\integration\\__pycache__\\keyboard_shortcuts_system.cpython-313.pyc": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\integration\\__pycache__\\keyboard_shortcuts_system.cpython-313.pyc",
+      "size": 51871,
+      "modified": "2025-09-13T19:02:27.607513",
+      "hash": "c71eb5cc3727520b6340877951496b35"
+    },
+    "file_explorer\\integration\\__pycache__\\tool_integration_framework.cpython-313.pyc": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\integration\\__pycache__\\tool_integration_framework.cpython-313.pyc",
+      "size": 50208,
+      "modified": "2025-09-16T16:19:00.169453",
+      "hash": "a287ed37e66e93e7fe78d2c794258740"
+    },
+    "file_explorer\\features\\__pycache__\\bookmark_manager.cpython-313.pyc": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\features\\__pycache__\\bookmark_manager.cpython-313.pyc",
+      "size": 69155,
+      "modified": "2025-09-13T07:39:13.014870",
+      "hash": "11ce79569665df2ca9789222e2ee8bc7"
+    },
+    "file_explorer\\features\\__pycache__\\color_scheme_manager.cpython-313.pyc": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\features\\__pycache__\\color_scheme_manager.cpython-313.pyc",
+      "size": 53690,
+      "modified": "2025-09-13T08:04:59.284537",
+      "hash": "a1238ece4157ee40b8a8784a12d7f05c"
+    },
+    "file_explorer\\features\\__pycache__\\search_engine.cpython-313.pyc": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\features\\__pycache__\\search_engine.cpython-313.pyc",
+      "size": 55138,
+      "modified": "2025-09-13T07:39:13.049541",
+      "hash": "6ca11d7b04a89b4dd9bf6b6110e02b18"
+    },
+    "file_explorer\\features\\__pycache__\\view_modes.cpython-313.pyc": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\features\\__pycache__\\view_modes.cpython-313.pyc",
+      "size": 62493,
+      "modified": "2025-09-13T07:39:13.073775",
+      "hash": "1063598bd4564b290d3a638d5d34a6a3"
+    },
+    "file_explorer\\database\\__pycache__\\cache_manager.cpython-313.pyc": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\database\\__pycache__\\cache_manager.cpython-313.pyc",
+      "size": 37676,
+      "modified": "2025-09-13T07:29:02.595086",
+      "hash": "512f7456ebee271a07295f5bdaa400e3"
+    },
+    "file_explorer\\database\\__pycache__\\migrations.cpython-313.pyc": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\database\\__pycache__\\migrations.cpython-313.pyc",
+      "size": 38412,
+      "modified": "2025-09-13T07:29:02.575555",
+      "hash": "1cb5d1cb8a1bc33604bfaf89fe3c9715"
+    },
+    "file_explorer\\database\\__pycache__\\schema.cpython-313.pyc": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\database\\__pycache__\\schema.cpython-313.pyc",
+      "size": 25310,
+      "modified": "2025-09-13T07:29:02.584566",
+      "hash": "1c341f299e992de8de45c3bb530a4bf4"
+    },
+    "file_explorer\\database\\__pycache__\\__init__.cpython-313.pyc": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\database\\__pycache__\\__init__.cpython-313.pyc",
+      "size": 875,
+      "modified": "2025-09-13T07:29:02.565531",
+      "hash": "f27a7a42fb014947b8417f9bc726cc54"
+    },
+    "file_explorer\\core\\__pycache__\\enhanced_config_manager.cpython-313.pyc": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\core\\__pycache__\\enhanced_config_manager.cpython-313.pyc",
+      "size": 25203,
+      "modified": "2025-09-13T11:33:02.269865",
+      "hash": "b9c8c51ec4cd00a9d474af12b30fa1fb"
+    },
+    "file_explorer\\core\\__pycache__\\pane_manager.cpython-313.pyc": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\core\\__pycache__\\pane_manager.cpython-313.pyc",
+      "size": 39986,
+      "modified": "2025-09-13T08:32:46.339083",
+      "hash": "49e6966bbc3df39a02079e24ebdd9576"
+    },
+    "file_explorer\\core\\__pycache__\\__init__.cpython-313.pyc": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\file_explorer\\core\\__pycache__\\__init__.cpython-313.pyc",
+      "size": 152,
+      "modified": "2025-09-13T11:33:02.263721",
+      "hash": "15496bf397a1981f7af1a8c734efbd55"
+    },
+    "database\\__pycache__\\database_manager.cpython-313.pyc": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\database\\__pycache__\\database_manager.cpython-313.pyc",
+      "size": 31825,
+      "modified": "2025-09-14T11:53:11.984248",
+      "hash": "875db386a06396a05c9b9af8f19a4fda"
+    },
+    "database\\__pycache__\\__init__.cpython-313.pyc": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\database\\__pycache__\\__init__.cpython-313.pyc",
+      "size": 335,
+      "modified": "2025-09-14T11:53:11.975250",
+      "hash": "a18368ad7494cc6c34e7745882656733"
+    },
+    "core\\directory_security\\directory_audit.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\core\\directory_security\\directory_audit.py",
+      "size": 23667,
+      "modified": "2025-09-08T18:01:54.473981",
+      "hash": "e7e45f8ce0f47f602687312c7cbede35"
+    },
+    "core\\directory_security\\directory_encryption.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\core\\directory_security\\directory_encryption.py",
+      "size": 15254,
+      "modified": "2025-09-08T18:01:54.473981",
+      "hash": "e42042c32962acd9d4011c0213b19ea5"
+    },
+    "core\\directory_security\\directory_permissions.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\core\\directory_security\\directory_permissions.py",
+      "size": 22067,
+      "modified": "2025-09-08T18:01:54.473981",
+      "hash": "b5443feca5a6de02dc76b229cba9f2ba"
+    },
+    "core\\directory_security\\directory_security_gui.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\core\\directory_security\\directory_security_gui.py",
+      "size": 42213,
+      "modified": "2025-09-08T18:01:54.476000",
+      "hash": "d3b6a67b42298910eeb044a5119f9063"
+    },
+    "core\\directory_security\\directory_security_manager.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\core\\directory_security\\directory_security_manager.py",
+      "size": 24106,
+      "modified": "2025-09-08T18:01:54.476000",
+      "hash": "dea6907d68044769eb90ea8af30f9567"
+    },
+    "core\\directory_security\\directory_validator.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\core\\directory_security\\directory_validator.py",
+      "size": 18817,
+      "modified": "2025-09-08T18:01:54.477005",
+      "hash": "858b6b88139008d569de8bc684e1b96e"
+    },
+    "core\\directory_security\\path_sanitizer.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\core\\directory_security\\path_sanitizer.py",
+      "size": 13786,
+      "modified": "2025-09-08T18:01:54.477005",
+      "hash": "849ea20b4ee1c62fcfdbf7ed99aacc2c"
+    },
+    "core\\directory_security\\pii_detector.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\core\\directory_security\\pii_detector.py",
+      "size": 16198,
+      "modified": "2025-09-08T18:01:54.478009",
+      "hash": "6f76922f969a44c3a90e9747edb6a94a"
+    },
+    "core\\file_ops\\file_handler.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\core\\file_ops\\file_handler.py",
+      "size": 3574,
+      "modified": "2025-09-08T18:01:54.479009",
+      "hash": "93f817f8afcbe82ea0546f614506e0ae"
+    },
+    "core\\file_ops\\renamer.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\core\\file_ops\\renamer.py",
+      "size": 6635,
+      "modified": "2025-09-08T18:01:54.480009",
+      "hash": "745b5620693d4110d4f370e7dcf6e324"
+    },
+    "core\\file_ops\\validation.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\core\\file_ops\\validation.py",
+      "size": 5617,
+      "modified": "2025-09-08T18:01:54.480009",
+      "hash": "510a95d88404acb81e548b8724463f3c"
+    },
+    "core\\migrations\\migration_base.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\core\\migrations\\migration_base.py",
+      "size": 9310,
+      "modified": "2025-09-08T18:01:54.482122",
+      "hash": "d1ef627455d8cd9ad1b1ed40b9844874"
+    },
+    "core\\migrations\\migration_manager.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\core\\migrations\\migration_manager.py",
+      "size": 33406,
+      "modified": "2025-09-08T18:01:54.483122",
+      "hash": "2e6546acb037be2e5c0c1ff8f58cbfa2"
+    },
+    "core\\migrations\\rollback_manager.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\core\\migrations\\rollback_manager.py",
+      "size": 17676,
+      "modified": "2025-09-08T18:01:54.485869",
+      "hash": "5149ebe27cfbb304aa716956f3c74176"
+    },
+    "core\\migrations\\schema_validator.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\core\\migrations\\schema_validator.py",
+      "size": 20700,
+      "modified": "2025-09-08T18:01:54.486869",
+      "hash": "aaa86d817fe070623445fdcbb04f71f9"
+    },
+    "core\\migrations\\__init__.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\core\\migrations\\__init__.py",
+      "size": 716,
+      "modified": "2025-09-08T18:01:54.482122",
+      "hash": "7b5cfd7b851b5ff024aa3a0f73c9d109"
+    },
+    "core\\theme_security\\phase2_integration_verification.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\core\\theme_security\\phase2_integration_verification.py",
+      "size": 27963,
+      "modified": "2025-09-08T18:01:54.487868",
+      "hash": "09e3984b63791003e3e91b6cbcaa5262"
+    },
+    "core\\theme_security\\test_theme_security.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\core\\theme_security\\test_theme_security.py",
+      "size": 23841,
+      "modified": "2025-09-08T18:01:54.487868",
+      "hash": "827d2e2cda18f48a7d7fb17ddfecb370"
+    },
+    "core\\theme_security\\theme_access_control.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\core\\theme_security\\theme_access_control.py",
+      "size": 23638,
+      "modified": "2025-09-08T18:01:54.488868",
+      "hash": "af7795a7c56b568fd30887a2eed6430f"
+    },
+    "core\\theme_security\\theme_backup.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\core\\theme_security\\theme_backup.py",
+      "size": 26814,
+      "modified": "2025-09-08T18:01:54.488868",
+      "hash": "df824b669cd4ceb44dbbb2f1a257ea96"
+    },
+    "core\\theme_security\\theme_config.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\core\\theme_security\\theme_config.py",
+      "size": 23126,
+      "modified": "2025-09-08T18:01:54.489868",
+      "hash": "909b82b599a39fe36c8da678f9747f37"
+    },
+    "core\\theme_security\\theme_encryption.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\core\\theme_security\\theme_encryption.py",
+      "size": 11294,
+      "modified": "2025-09-08T18:01:54.489868",
+      "hash": "6daaed89e4ab1f45281067ffb905c95f"
+    },
+    "core\\theme_security\\theme_recovery.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\core\\theme_security\\theme_recovery.py",
+      "size": 26091,
+      "modified": "2025-09-08T18:01:54.490869",
+      "hash": "09655f4a8b0269a8af9dc52c3e4dbf54"
+    },
+    "core\\theme_security\\theme_security_gui.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\core\\theme_security\\theme_security_gui.py",
+      "size": 27854,
+      "modified": "2025-09-08T18:01:54.490869",
+      "hash": "0a84c41c373c1a39bb7482dd56eef761"
+    },
+    "core\\theme_security\\theme_security_manager.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\core\\theme_security\\theme_security_manager.py",
+      "size": 19638,
+      "modified": "2025-09-08T18:01:54.490869",
+      "hash": "4e9c544b7a3cba8de78af1d0d546c696"
+    },
+    "core\\theme_security\\theme_validator.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\core\\theme_security\\theme_validator.py",
+      "size": 24481,
+      "modified": "2025-09-08T18:01:54.492373",
+      "hash": "3842ff5b2474edd8e68eb021eada1d1d"
+    },
+    "core\\theme_security\\__init__.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\core\\theme_security\\__init__.py",
+      "size": 770,
+      "modified": "2025-09-08T18:01:54.486869",
+      "hash": "ddca079f018cfa6c40c3bc24017a8f74"
+    },
+    "core\\__pycache__\\config_manager.cpython-313.pyc": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\core\\__pycache__\\config_manager.cpython-313.pyc",
+      "size": 21669,
+      "modified": "2025-09-08T20:10:03.276455",
+      "hash": "40b570e52b4f0d2c90c2d736752cd8c8"
+    },
+    "core\\__pycache__\\constants.cpython-313.pyc": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\core\\__pycache__\\constants.cpython-313.pyc",
+      "size": 2458,
+      "modified": "2025-09-10T20:27:26.159636",
+      "hash": "ba35ad1f92819b4f01cc2d872a9f5734"
+    },
+    "core\\__pycache__\\error_handler.cpython-313.pyc": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\core\\__pycache__\\error_handler.cpython-313.pyc",
+      "size": 4509,
+      "modified": "2025-09-08T18:22:51.686741",
+      "hash": "21e262cf3715e2a1818a66a4b4277392"
+    },
+    "core\\__pycache__\\logging_manager.cpython-313.pyc": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\core\\__pycache__\\logging_manager.cpython-313.pyc",
+      "size": 11282,
+      "modified": "2025-09-08T18:22:51.693265",
+      "hash": "b38e6acde37b81ddd5b995a7b4796e25"
+    },
+    "core\\__pycache__\\__init__.cpython-313.pyc": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\core\\__pycache__\\__init__.cpython-313.pyc",
+      "size": 331,
+      "modified": "2025-09-08T18:22:51.682744",
+      "hash": "528f52d2862bad5616d228dc3f7dbf6f"
+    },
+    "core\\migrations\\migrations\\migration_001_initial_schema.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\core\\migrations\\migrations\\migration_001_initial_schema.py",
+      "size": 6319,
+      "modified": "2025-09-08T18:01:54.483863",
+      "hash": "0e560f74a3163bd17b49a1d8f342e8fa"
+    },
+    "core\\migrations\\migrations\\migration_002_add_encryption_support.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\core\\migrations\\migrations\\migration_002_add_encryption_support.py",
+      "size": 10664,
+      "modified": "2025-09-08T18:01:54.484869",
+      "hash": "93ae327cf666539977884e69048ed47e"
+    },
+    "core\\migrations\\migrations\\migration_003_theme_security_enhancement.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\core\\migrations\\migrations\\migration_003_theme_security_enhancement.py",
+      "size": 17579,
+      "modified": "2025-09-08T18:01:54.485869",
+      "hash": "fb41a61962daa9641d436a9455d5852a"
+    },
+    "core\\migrations\\migrations\\__init__.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\core\\migrations\\migrations\\__init__.py",
+      "size": 294,
+      "modified": "2025-09-08T18:01:54.483863",
+      "hash": "9ac4ce3f8148d44e153ee704ca2a8f97"
+    },
+    "core\\directory_security\\__pycache__\\directory_security_manager.cpython-313.pyc": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\core\\directory_security\\__pycache__\\directory_security_manager.cpython-313.pyc",
+      "size": 21873,
+      "modified": "2025-09-14T11:53:09.454947",
+      "hash": "5cd4e0947c2f239b79fce391e8b08d2d"
+    },
+    "advanced_folders\\core\\advanced_filtering_system.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\advanced_folders\\core\\advanced_filtering_system.py",
+      "size": 44196,
+      "modified": "2025-09-12T16:20:26.836886",
+      "hash": "cb6a294eb0aedb18ba7f623558530244"
+    },
+    "advanced_folders\\core\\content_search_engine.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\advanced_folders\\core\\content_search_engine.py",
+      "size": 36174,
+      "modified": "2025-09-12T16:20:23.907514",
+      "hash": "b8df6073133e467d5de825fa302884fb"
+    },
+    "advanced_folders\\core\\file_system_scanner.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\advanced_folders\\core\\file_system_scanner.py",
+      "size": 43346,
+      "modified": "2025-09-11T21:33:57.061012",
+      "hash": "e45aa50e395da12682d1d496eb6be0e1"
+    },
+    "advanced_folders\\core\\metadata_indexing_system.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\advanced_folders\\core\\metadata_indexing_system.py",
+      "size": 39779,
+      "modified": "2025-09-12T16:20:24.329610",
+      "hash": "88a3b2ae6b7aaa3d9489389aef3e00e9"
+    },
+    "advanced_folders\\core\\metadata_pipeline.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\advanced_folders\\core\\metadata_pipeline.py",
+      "size": 41936,
+      "modified": "2025-09-11T21:34:00.436924",
+      "hash": "498992b180200f42cdb77150af45b206"
+    },
+    "advanced_folders\\core\\performance_monitor.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\advanced_folders\\core\\performance_monitor.py",
+      "size": 33965,
+      "modified": "2025-09-11T21:34:00.859778",
+      "hash": "81a7526c2653b3621ace98207e6172f5"
+    },
+    "advanced_folders\\core\\regex_support_system.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\advanced_folders\\core\\regex_support_system.py",
+      "size": 32281,
+      "modified": "2025-09-12T16:20:25.338886",
+      "hash": "66187a9f05fb463789d9e16666ea5a1b"
+    },
+    "advanced_folders\\core\\search_cache.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\advanced_folders\\core\\search_cache.py",
+      "size": 32928,
+      "modified": "2025-09-11T21:33:59.557997",
+      "hash": "7f78d3c6f278e4e6c2dc50b5b8edf562"
+    },
+    "advanced_folders\\core\\search_engine.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\advanced_folders\\core\\search_engine.py",
+      "size": 42219,
+      "modified": "2025-09-11T21:33:58.944257",
+      "hash": "db2b3613f02b2dea4b686d471f1a145c"
+    },
+    "advanced_folders\\core\\search_performance_optimizer.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\advanced_folders\\core\\search_performance_optimizer.py",
+      "size": 42953,
+      "modified": "2025-09-12T16:20:28.286513",
+      "hash": "f941fd4ccae70534c01c1a66121d5de7"
+    },
+    "advanced_folders\\error_handling\\error_handler.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\advanced_folders\\error_handling\\error_handler.py",
+      "size": 19705,
+      "modified": "2025-09-11T20:49:52.506106",
+      "hash": "6dd34bb4f114b43ecfd422a5da12e577"
+    },
+    "advanced_folders\\error_handling\\__init__.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\advanced_folders\\error_handling\\__init__.py",
+      "size": 584,
+      "modified": "2025-09-11T20:49:52.801558",
+      "hash": "338a7a3d31c211adbdca37633a676096"
+    },
+    "advanced_folders\\exceptions\\advanced_folders_exceptions.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\advanced_folders\\exceptions\\advanced_folders_exceptions.py",
+      "size": 15397,
+      "modified": "2025-09-11T21:34:01.786450",
+      "hash": "138d9ae6b92cd50e71aaf9d668a3a021"
+    },
+    "advanced_folders\\exceptions\\__init__.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\advanced_folders\\exceptions\\__init__.py",
+      "size": 1139,
+      "modified": "2025-09-11T21:33:58.567081",
+      "hash": "ba7f68dee53ef0f1c6325b08769b4022"
+    },
+    "advanced_folders\\models\\folder_configuration.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\advanced_folders\\models\\folder_configuration.py",
+      "size": 25495,
+      "modified": "2025-09-11T20:49:50.231423",
+      "hash": "1f916bdb37c80de7127f7ad8549db108"
+    },
+    "advanced_folders\\models\\search_parameters.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\advanced_folders\\models\\search_parameters.py",
+      "size": 33757,
+      "modified": "2025-09-11T20:49:50.881557",
+      "hash": "5eff834f156cfc7d90a7b8da8e08160b"
+    },
+    "advanced_folders\\models\\__init__.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\advanced_folders\\models\\__init__.py",
+      "size": 1020,
+      "modified": "2025-09-11T20:49:51.296243",
+      "hash": "e27245abfda4bde69b97d92671d31f00"
+    },
+    "advanced_folders\\repository\\folder_repository.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\advanced_folders\\repository\\folder_repository.py",
+      "size": 32458,
+      "modified": "2025-09-11T20:49:51.512794",
+      "hash": "b453b41153454898cc7da59722d3227e"
+    },
+    "advanced_folders\\repository\\__init__.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\advanced_folders\\repository\\__init__.py",
+      "size": 282,
+      "modified": "2025-09-11T20:49:52.139129",
+      "hash": "269efdd2f9789175bf57ac2899c6cf70"
+    },
+    "advanced_folders\\tests\\test_advanced_folders.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\advanced_folders\\tests\\test_advanced_folders.py",
+      "size": 39669,
+      "modified": "2025-09-11T21:34:01.632468",
+      "hash": "1384a204d67c52cd96ba766e096c7e36"
+    },
+    "advanced_folders\\tests\\test_core_functionality.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\advanced_folders\\tests\\test_core_functionality.py",
+      "size": 13002,
+      "modified": "2025-09-11T21:34:02.005821",
+      "hash": "6d8fd03c02d3f7733b1f8ee81cdcfc4a"
+    },
+    "advanced_folders\\validation\\validator_framework.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\advanced_folders\\validation\\validator_framework.py",
+      "size": 8909,
+      "modified": "2025-09-11T20:49:57.255147",
+      "hash": "a1fd514a61c0894a87e625c6bf5988eb"
+    },
+    "advanced_folders\\validation\\__init__.py": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\advanced_folders\\validation\\__init__.py",
+      "size": 900,
+      "modified": "2025-09-11T20:49:50.435081",
+      "hash": "550000ef5773d9a1b4e87d56fe8df283"
+    },
+    "advanced_folders\\__pycache__\\__init__.cpython-313.pyc": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\advanced_folders\\__pycache__\\__init__.cpython-313.pyc",
+      "size": 1244,
+      "modified": "2025-09-11T21:25:24.530938",
+      "hash": "a147fec7c44eb68e52231cc624bac3c5"
+    },
+    "advanced_folders\\validation\\__pycache__\\validator_framework.cpython-313.pyc": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\advanced_folders\\validation\\__pycache__\\validator_framework.cpython-313.pyc",
+      "size": 12289,
+      "modified": "2025-09-11T20:45:13.538514",
+      "hash": "c62e5eebf4d4f57d1e9ce4d5eba94ce7"
+    },
+    "advanced_folders\\validation\\__pycache__\\__init__.cpython-313.pyc": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\advanced_folders\\validation\\__pycache__\\__init__.cpython-313.pyc",
+      "size": 664,
+      "modified": "2025-09-11T20:45:34.013978",
+      "hash": "8c5b7825b9442c8699d437075943698b"
+    },
+    "advanced_folders\\tests\\__pycache__\\test_advanced_folders.cpython-313-pytest-8.3.5.pyc": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\advanced_folders\\tests\\__pycache__\\test_advanced_folders.cpython-313-pytest-8.3.5.pyc",
+      "size": 49491,
+      "modified": "2025-09-11T21:25:24.509525",
+      "hash": "da333525b92cb769902a51f3698c252f"
+    },
+    "advanced_folders\\repository\\__pycache__\\folder_repository.cpython-313.pyc": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\advanced_folders\\repository\\__pycache__\\folder_repository.cpython-313.pyc",
+      "size": 33636,
+      "modified": "2025-09-11T20:30:06.770154",
+      "hash": "a9ddb982cd2915ee2251713864054b46"
+    },
+    "advanced_folders\\repository\\__pycache__\\__init__.cpython-313.pyc": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\advanced_folders\\repository\\__pycache__\\__init__.cpython-313.pyc",
+      "size": 379,
+      "modified": "2025-09-11T20:30:06.750926",
+      "hash": "38ee9160b0bdb479176a6eb49db1814b"
+    },
+    "advanced_folders\\models\\__pycache__\\folder_configuration.cpython-313.pyc": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\advanced_folders\\models\\__pycache__\\folder_configuration.cpython-313.pyc",
+      "size": 28418,
+      "modified": "2025-09-11T20:30:06.645197",
+      "hash": "82e1bad1a10162ba7cca3bd0d25c9d03"
+    },
+    "advanced_folders\\models\\__pycache__\\search_parameters.cpython-313.pyc": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\advanced_folders\\models\\__pycache__\\search_parameters.cpython-313.pyc",
+      "size": 38093,
+      "modified": "2025-09-11T20:30:06.737915",
+      "hash": "9701f462315fcd61391c2ffce8b4781c"
+    },
+    "advanced_folders\\models\\__pycache__\\__init__.cpython-313.pyc": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\advanced_folders\\models\\__pycache__\\__init__.cpython-313.pyc",
+      "size": 869,
+      "modified": "2025-09-11T20:30:06.630640",
+      "hash": "ea01f42ec483c414897d76e33c7124a4"
+    },
+    "advanced_folders\\exceptions\\__pycache__\\advanced_folders_exceptions.cpython-313.pyc": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\advanced_folders\\exceptions\\__pycache__\\advanced_folders_exceptions.cpython-313.pyc",
+      "size": 15874,
+      "modified": "2025-09-11T20:30:06.689853",
+      "hash": "0d640c6784e071dc8491d63a65b02b4f"
+    },
+    "advanced_folders\\exceptions\\__pycache__\\__init__.cpython-313.pyc": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\advanced_folders\\exceptions\\__pycache__\\__init__.cpython-313.pyc",
+      "size": 666,
+      "modified": "2025-09-11T20:30:06.675611",
+      "hash": "90b5c7be23b6d7deeafe00bacb6d6f9e"
+    },
+    "advanced_folders\\error_handling\\__pycache__\\error_handler.cpython-313.pyc": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\advanced_folders\\error_handling\\__pycache__\\error_handler.cpython-313.pyc",
+      "size": 20340,
+      "modified": "2025-09-11T20:30:06.800779",
+      "hash": "7b57663a8ec0a065060f90aa23a1bc73"
+    },
+    "advanced_folders\\error_handling\\__pycache__\\__init__.cpython-313.pyc": {
+      "source_path": "C:\\Users\\HP1\\1_2\\src\\rfu\\advanced_folders\\error_handling\\__pycache__\\__init__.cpython-313.pyc",
+      "size": 608,
+      "modified": "2025-09-11T20:30:06.778048",
+      "hash": "60fd5cb03c7356dc3f6bf23218f76153"
+    }
+  }
+}

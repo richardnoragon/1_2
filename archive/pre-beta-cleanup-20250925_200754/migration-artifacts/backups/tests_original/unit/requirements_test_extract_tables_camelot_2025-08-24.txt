@@ -1,0 +1,37 @@
+# Test requirements for extract_tables_camelot testing
+# Created: 2025-08-24
+
+# Core testing framework
+pytest>=7.0.0
+pytest-html>=3.1.0
+pytest-json-report>=1.5.0
+pytest-cov>=4.0.0
+pytest-mock>=3.10.0
+pytest-timeout>=2.1.0
+
+# GUI testing
+PyQt5>=5.15.0
+
+# PDF processing
+camelot-py[cv]>=0.10.1
+
+# Additional testing utilities
+coverage>=7.0.0
+mock>=4.0.0
+
+# Report generation
+jinja2>=3.0.0
+markupsafe>=2.0.0
+
+# JSON handling (usually included with Python)
+# json - built-in module
+
+# File system operations (usually included with Python)
+# pathlib - built-in module
+# tempfile - built-in module
+# shutil - built-in module
+
+# Development dependencies (optional)
+black>=22.0.0
+flake8>=5.0.0
+mypy>=1.0.0

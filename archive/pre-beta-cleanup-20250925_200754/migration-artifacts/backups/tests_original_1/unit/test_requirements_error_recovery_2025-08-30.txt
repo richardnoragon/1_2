@@ -1,0 +1,26 @@
+# Test requirements for error_recovery.py unit tests
+# Generated: 2025-08-30
+
+# Core testing framework
+pytest>=7.0.0
+pytest-html>=3.1.0
+pytest-json-report>=1.5.0
+pytest-cov>=4.0.0
+pytest-mock>=3.10.0
+pytest-qt>=4.2.0
+
+# Code coverage
+coverage>=7.0.0
+
+# Additional testing utilities
+mock>=4.0.0
+freezegun>=1.2.0
+responses>=0.23.0
+
+# PyQt5 for GUI testing (if not already installed)
+PyQt5>=5.15.0
+
+# Development utilities
+black>=23.0.0
+flake8>=6.0.0
+mypy>=1.0.0

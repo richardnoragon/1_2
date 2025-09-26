@@ -1,0 +1,32 @@
+# Testing Dependencies for check_sum.py Unit Tests
+# Created: 2025-08-24
+# Framework: pytest with comprehensive reporting
+
+# Core testing framework
+pytest>=7.0.0
+pytest-qt>=4.2.0
+pytest-cov>=4.0.0
+pytest-html>=3.1.0
+pytest-json-report>=1.5.0
+pytest-timeout>=2.1.0
+
+# Qt testing support
+PyQt5>=5.15.0
+
+# Coverage and reporting
+coverage>=7.0.0
+
+# Mock and test utilities
+pytest-mock>=3.10.0
+
+# Performance testing
+pytest-benchmark>=4.0.0
+
+# Parallel test execution (optional)
+pytest-xdist>=3.0.0
+
+# Test data generation
+Faker>=18.0.0
+
+# Additional reporting formats
+pytest-json>=0.4.0

@@ -1,0 +1,246 @@
+{
+  "execution_timestamp": "2025-09-08T22:03:13.573350",
+  "overall_success_rate": 66.66666666666667,
+  "import_validation": {
+    "total_modules": 10,
+    "successful_imports": 10,
+    "success_rate": 100.0,
+    "results": [
+      {
+        "module": "rfu",
+        "description": "RFU core package",
+        "status": "SUCCESS",
+        "file_path": "c:\\Users\\HP1\\1_2\\src\\rfu\\__init__.py",
+        "attributes": []
+      },
+      {
+        "module": "utilities",
+        "description": "Utilities package",
+        "status": "SUCCESS",
+        "file_path": "c:\\Users\\HP1\\1_2\\src\\utilities\\__init__.py",
+        "attributes": [
+          "Path",
+          "analysis",
+          "current_dir",
+          "file_management",
+          "file_operations",
+          "get_available_utilities",
+          "metadata",
+          "network",
+          "pdf_tools",
+          "privacy"
+        ]
+      },
+      {
+        "module": "core",
+        "description": "Core infrastructure",
+        "status": "SUCCESS",
+        "file_path": "c:\\Users\\HP1\\1_2\\src\\core\\__init__.py",
+        "attributes": [
+          "APP_NAME",
+          "IMPORT_ERROR",
+          "JSON_FILES_FILTER",
+          "SECURITY_TEST",
+          "SUGGESTED_SOLUTIONS_HEADER",
+          "constants",
+          "error_handler"
+        ]
+      },
+      {
+        "module": "rfu.dev_hub",
+        "description": "Development hub module",
+        "status": "SUCCESS",
+        "file_path": "c:\\Users\\HP1\\1_2\\src\\rfu\\dev_hub.py",
+        "attributes": [
+          "Any",
+          "DevHub",
+          "Dict",
+          "List",
+          "LogHandler",
+          "MAIN_HUB_AVAILABLE",
+          "Optional",
+          "PYQT5_AVAILABLE",
+          "Path",
+          "PerformanceMonitor"
+        ]
+      },
+      {
+        "module": "rfu.log_manager",
+        "description": "Log manager module",
+        "status": "SUCCESS",
+        "file_path": "c:\\Users\\HP1\\1_2\\src\\rfu\\log_manager.py",
+        "attributes": [
+          "Any",
+          "Dict",
+          "Lock",
+          "LogManager",
+          "Path",
+          "get_log_manager",
+          "get_log_manager_instance",
+          "logging",
+          "sys"
+        ]
+      },
+      {
+        "module": "utilities.system",
+        "description": "System utilities",
+        "status": "SUCCESS",
+        "file_path": "c:\\Users\\HP1\\1_2\\src\\utilities\\system\\__init__.py",
+        "attributes": []
+      },
+      {
+        "module": "utilities.network",
+        "description": "Network utilities",
+        "status": "SUCCESS",
+        "file_path": "c:\\Users\\HP1\\1_2\\src\\utilities\\network\\__init__.py",
+        "attributes": [
+          "NetworkConnectivityGUI",
+          "NetworkScannerGUI",
+          "network_connectivity",
+          "network_scanner"
+        ]
+      },
+      {
+        "module": "utilities.privacy",
+        "description": "Privacy utilities",
+        "status": "SUCCESS",
+        "file_path": "c:\\Users\\HP1\\1_2\\src\\utilities\\privacy\\__init__.py",
+        "attributes": []
+      },
+      {
+        "module": "utilities.analysis",
+        "description": "Analysis utilities",
+        "status": "SUCCESS",
+        "file_path": "c:\\Users\\HP1\\1_2\\src\\utilities\\analysis\\__init__.py",
+        "attributes": [
+          "ChecksumGUI",
+          "DuplicateFinderApp",
+          "Path",
+          "SizeAnalyzer",
+          "SizeAnalyzerConfig",
+          "SizeAnalyzerGUI",
+          "SizeAnalyzerWorker",
+          "check_sum",
+          "config",
+          "core"
+        ]
+      },
+      {
+        "module": "utilities.file_management",
+        "description": "File management utilities",
+        "status": "SUCCESS",
+        "file_path": "c:\\Users\\HP1\\1_2\\src\\utilities\\file_management\\__init__.py",
+        "attributes": []
+      }
+    ],
+    "blockers_identified": 0
+  },
+  "path_validation": {
+    "expected_paths": 3,
+    "configured_paths": 0,
+    "existing_paths": 3,
+    "results": [
+      {
+        "expected_path": "C:\\Users\\HP1\\1_2\\src",
+        "present_in_syspath": false,
+        "exists_on_filesystem": true,
+        "status": "MISSING_FROM_PATH"
+      },
+      {
+        "expected_path": "C:\\Users\\HP1\\1_2",
+        "present_in_syspath": false,
+        "exists_on_filesystem": true,
+        "status": "MISSING_FROM_PATH"
+      },
+      {
+        "expected_path": "C:\\Users\\HP1\\1_2\\tests\\unit",
+        "present_in_syspath": false,
+        "exists_on_filesystem": true,
+        "status": "MISSING_FROM_PATH"
+      }
+    ]
+  },
+  "dependency_validation": {
+    "total_dependencies": 10,
+    "available_dependencies": 10,
+    "availability_rate": 100.0,
+    "results": [
+      {
+        "dependency": "PyQt5",
+        "description": "GUI framework",
+        "status": "AVAILABLE",
+        "version": "Unknown"
+      },
+      {
+        "dependency": "PyQt5.QtWidgets",
+        "description": "Qt Widgets",
+        "status": "AVAILABLE",
+        "version": "Unknown"
+      },
+      {
+        "dependency": "PyQt5.QtCore",
+        "description": "Qt Core",
+        "status": "AVAILABLE",
+        "version": "Unknown"
+      },
+      {
+        "dependency": "pytest",
+        "description": "Testing framework",
+        "status": "AVAILABLE",
+        "version": "8.3.5"
+      },
+      {
+        "dependency": "pathlib",
+        "description": "Path utilities",
+        "status": "AVAILABLE",
+        "version": "Unknown"
+      },
+      {
+        "dependency": "sqlite3",
+        "description": "Database",
+        "status": "AVAILABLE",
+        "version": "Unknown"
+      },
+      {
+        "dependency": "json",
+        "description": "JSON processing",
+        "status": "AVAILABLE",
+        "version": "2.0.9"
+      },
+      {
+        "dependency": "os",
+        "description": "Operating system interface",
+        "status": "AVAILABLE",
+        "version": "Unknown"
+      },
+      {
+        "dependency": "sys",
+        "description": "System interface",
+        "status": "AVAILABLE",
+        "version": "Unknown"
+      },
+      {
+        "dependency": "logging",
+        "description": "Logging framework",
+        "status": "AVAILABLE",
+        "version": "0.5.1.2"
+      }
+    ]
+  },
+  "total_blockers": 3,
+  "blockers": [
+    {
+      "type": "PATH_CONFIGURATION",
+      "issue": "Required path not in sys.path: C:\\Users\\HP1\\1_2\\src"
+    },
+    {
+      "type": "PATH_CONFIGURATION",
+      "issue": "Required path not in sys.path: C:\\Users\\HP1\\1_2"
+    },
+    {
+      "type": "PATH_CONFIGURATION",
+      "issue": "Required path not in sys.path: C:\\Users\\HP1\\1_2\\tests\\unit"
+    }
+  ],
+  "warnings": []
+}

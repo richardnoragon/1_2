@@ -1,0 +1,24 @@
+# Test requirements for launch_main.py unit tests
+# Created: 2025-08-28
+
+# Core testing framework
+pytest>=7.0.0
+pytest-html>=3.0.0
+pytest-json-report>=1.5.0
+pytest-cov>=4.0.0
+pytest-mock>=3.0.0
+
+# Coverage analysis
+coverage>=6.0.0
+
+# Additional testing utilities
+pytest-xdist>=2.5.0  # Parallel test execution
+pytest-timeout>=2.1.0  # Test timeout handling
+pytest-benchmark>=4.0.0  # Performance benchmarking
+
+# Code quality
+flake8>=4.0.0
+black>=22.0.0
+
+# Documentation and reporting
+sphinx>=4.0.0

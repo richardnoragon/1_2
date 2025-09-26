@@ -1,0 +1,67 @@
+# Requirements for watermark.py Unit Testing
+# Generated on: 2025-08-24
+# Target: src/utilities/pdf_tools/pdf_enhancements/watermark.py
+
+# Core Testing Framework
+pytest>=6.0.0
+pytest-html>=3.0.0
+pytest-json-report>=1.5.0
+pytest-cov>=4.0.0
+pytest-mock>=3.10.0
+pytest-xdist>=3.0.0
+
+# Code Coverage
+coverage>=7.0.0
+
+# PyQt5 for GUI testing (if available)
+PyQt5>=5.15.0
+
+# PDF Processing (primary dependency)
+PyMuPDF>=1.20.0
+
+# Mock and Testing Utilities
+mock>=4.0.3
+unittest-mock>=1.0.1
+
+# JSON and Report Processing
+jsonschema>=4.0.0
+
+# Date and Time Utilities
+python-dateutil>=2.8.0
+
+# File and Path Utilities
+pathlib2>=2.3.0; python_version < "3.4"
+
+# Development and Testing Tools
+black>=22.0.0
+flake8>=5.0.0
+mypy>=0.991
+
+# Optional: Enhanced Testing Features
+pytest-benchmark>=4.0.0
+pytest-timeout>=2.1.0
+pytest-repeat>=0.9.1
+pytest-rerunfailures>=11.0.0
+
+# Documentation Generation
+sphinx>=5.0.0
+sphinx-rtd-theme>=1.0.0
+
+# Dependency Management
+pip-tools>=6.0.0
+pipdeptree>=2.0.0
+
+# Performance Monitoring
+memory-profiler>=0.60.0
+psutil>=5.9.0
+
+# Environment and Configuration
+python-dotenv>=0.19.0
+configparser>=5.3.0
+
+# Logging and Debugging
+colorlog>=6.7.0
+logging-tree>=1.9.0
+
+# Operating System Utilities
+pywin32>=304; sys_platform == "win32"

@@ -1,0 +1,52 @@
+{
+  "execution_info": {
+    "timestamp": "2025-08-24T18:06:02.479806",
+    "date": "2025-08-24",
+    "test_file": "C:\\Users\\HP1\\1_2\\1_2\\tests\\unit\\test_convert_html_to_pdf_minimal_2025-08-24.py",
+    "duration_seconds": 6.558497
+  },
+  "files_generated": [
+    {
+      "type": "HTML Report",
+      "path": "C:\\Users\\HP1\\1_2\\1_2\\tests\\unit\\result_convert_html_to_pdf_2025-08-24.html",
+      "size_bytes": 56275
+    },
+    {
+      "type": "JSON Report",
+      "path": "C:\\Users\\HP1\\1_2\\1_2\\tests\\unit\\result_convert_html_to_pdf_2025-08-24.json",
+      "size_bytes": 216
+    },
+    {
+      "type": "JUnit XML",
+      "path": "C:\\Users\\HP1\\1_2\\1_2\\tests\\unit\\result_convert_html_to_pdf_2025-08-24_junit.xml",
+      "size_bytes": 5109
+    },
+    {
+      "type": "Coverage HTML",
+      "path": "C:\\Users\\HP1\\1_2\\1_2\\tests\\unit\\result_convert_html_to_pdf_coverage_2025-08-24",
+      "size_bytes": 0
+    },
+    {
+      "type": "Coverage JSON",
+      "path": "C:\\Users\\HP1\\1_2\\1_2\\tests\\unit\\result_convert_html_to_pdf_coverage_2025-08-24.json",
+      "size_bytes": 7579
+    },
+    {
+      "type": "Execution Summary",
+      "path": "C:\\Users\\HP1\\1_2\\1_2\\tests\\unit\\result_convert_html_to_pdf_execution_summary_2025-08-24.txt",
+      "size_bytes": 15014
+    }
+  ],
+  "test_results": {
+    "total": 18,
+    "passed": 13,
+    "failed": 5,
+    "skipped": 0,
+    "error": 0
+  },
+  "coverage_info": {
+    "total_coverage": 25.0,
+    "lines_covered": 32,
+    "lines_missing": 82
+  }
+}

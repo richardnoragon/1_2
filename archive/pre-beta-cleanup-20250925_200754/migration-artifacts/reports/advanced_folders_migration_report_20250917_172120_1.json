@@ -1,0 +1,195 @@
+{
+  "timestamp": "20250917_172120",
+  "status": "success",
+  "phase": "completed",
+  "files_moved": [],
+  "files_updated": [
+    "C:\\Users\\HP1\\1_2\\comprehensive_advanced_folders_migration_plan.py",
+    "C:\\Users\\HP1\\1_2\\tests\\advanced_folders\\conftest.py",
+    "C:\\Users\\HP1\\1_2\\tests\\advanced_folders\\conftest_backup.py",
+    "C:\\Users\\HP1\\1_2\\tests\\advanced_folders\\conftest_new.py",
+    "C:\\Users\\HP1\\1_2\\tests\\advanced_folders\\unit\\test_error_handling.py",
+    "C:\\Users\\HP1\\1_2\\tests\\advanced_folders\\unit\\test_exceptions.py",
+    "C:\\Users\\HP1\\1_2\\tests\\advanced_folders\\unit\\test_models.py",
+    "C:\\Users\\HP1\\1_2\\tests\\advanced_folders\\unit\\test_repository.py",
+    "C:\\Users\\HP1\\1_2\\tests\\advanced_folders\\unit\\test_validation_framework.py",
+    "C:\\Users\\HP1\\1_2\\src\\advanced_folders\\tests\\test_advanced_folders.py",
+    "C:\\Users\\HP1\\1_2\\migration_backup_20250917_172120\\advanced_folders\\conftest.py",
+    "C:\\Users\\HP1\\1_2\\migration_backup_20250917_172120\\advanced_folders\\conftest_backup.py",
+    "C:\\Users\\HP1\\1_2\\migration_backup_20250917_172120\\advanced_folders\\conftest_new.py",
+    "C:\\Users\\HP1\\1_2\\migration_backup_20250917_172120\\src_advanced_folders\\tests\\test_advanced_folders.py",
+    "C:\\Users\\HP1\\1_2\\migration_backup_20250917_172120\\advanced_folders\\unit\\test_error_handling.py",
+    "C:\\Users\\HP1\\1_2\\migration_backup_20250917_172120\\advanced_folders\\unit\\test_exceptions.py",
+    "C:\\Users\\HP1\\1_2\\migration_backup_20250917_172120\\advanced_folders\\unit\\test_models.py",
+    "C:\\Users\\HP1\\1_2\\migration_backup_20250917_172120\\advanced_folders\\unit\\test_repository.py",
+    "C:\\Users\\HP1\\1_2\\migration_backup_20250917_172120\\advanced_folders\\unit\\test_validation_framework.py"
+  ],
+  "errors": [],
+  "warnings": [],
+  "rollback_available": true,
+  "migration_log": [
+    {
+      "timestamp": "2025-09-17T17:21:20.251244",
+      "action": "Environment Validation",
+      "status": "INFO",
+      "details": "Starting validation"
+    },
+    {
+      "timestamp": "2025-09-17T17:21:20.253498",
+      "action": "Environment Validation",
+      "status": "SUCCESS",
+      "details": "Environment validated"
+    },
+    {
+      "timestamp": "2025-09-17T17:21:20.253695",
+      "action": "Backup Creation",
+      "status": "INFO",
+      "details": "Creating backup at C:\\Users\\HP1\\1_2\\migration_backup_20250917_172120"
+    },
+    {
+      "timestamp": "2025-09-17T17:21:20.601172",
+      "action": "Backup Creation",
+      "status": "SUCCESS",
+      "details": "Backup created successfully"
+    },
+    {
+      "timestamp": "2025-09-17T17:21:20.603423",
+      "action": "Dependency Scanning",
+      "status": "INFO",
+      "details": "Scanning for import dependencies"
+    },
+    {
+      "timestamp": "2025-09-17T17:21:21.319231",
+      "action": "Dependency Scanning",
+      "status": "WARNING",
+      "details": "Could not scan C:\\Users\\HP1\\1_2\\src\\tools\\metadata\\office_metadata\\__init__.py: 'utf-8' codec can't decode byte 0xff in position 0: invalid start byte"
+    },
+    {
+      "timestamp": "2025-09-17T17:21:22.640034",
+      "action": "Dependency Scanning",
+      "status": "WARNING",
+      "details": "Could not scan C:\\Users\\HP1\\1_2\\MIGRATION_BACKUP_20250916_222618\\src_complete_backup\\tools\\metadata\\office_metadata\\__init__.py: 'utf-8' codec can't decode byte 0xff in position 0: invalid start byte"
+    },
+    {
+      "timestamp": "2025-09-17T17:21:23.090137",
+      "action": "Dependency Scanning",
+      "status": "WARNING",
+      "details": "Could not scan C:\\Users\\HP1\\1_2\\migration_backup_20250916_222325\\src_complete\\tools\\metadata\\office_metadata\\__init__.py: 'utf-8' codec can't decode byte 0xff in position 0: invalid start byte"
+    },
+    {
+      "timestamp": "2025-09-17T17:21:23.842953",
+      "action": "Dependency Scanning",
+      "status": "WARNING",
+      "details": "Could not scan C:\\Users\\HP1\\1_2\\migration_backup_20250916_161255\\src_original\\utilities\\office_metadata\\__init__.py: 'utf-8' codec can't decode byte 0xff in position 0: invalid start byte"
+    },
+    {
+      "timestamp": "2025-09-17T17:21:24.750913",
+      "action": "Dependency Scanning",
+      "status": "SUCCESS",
+      "details": "Found 19 files with dependencies"
+    },
+    {
+      "timestamp": "2025-09-17T17:21:24.755351",
+      "action": "Target Structure Creation",
+      "status": "INFO",
+      "details": "Creating target structure at C:\\Users\\HP1\\1_2\\src\\tools\\file_management\\advanced_folders_legacy"
+    },
+    {
+      "timestamp": "2025-09-17T17:21:24.865132",
+      "action": "Target Structure Creation",
+      "status": "SUCCESS",
+      "details": "Target structure created"
+    },
+    {
+      "timestamp": "2025-09-17T17:21:24.868600",
+      "action": "Import Updates",
+      "status": "INFO",
+      "details": "Updating import statements"
+    },
+    {
+      "timestamp": "2025-09-17T17:21:24.898418",
+      "action": "Import Updates",
+      "status": "SUCCESS",
+      "details": "Updated 19 files, 0 errors"
+    },
+    {
+      "timestamp": "2025-09-17T17:21:24.899238",
+      "action": "Internal Import Updates",
+      "status": "INFO",
+      "details": "Updating internal imports"
+    },
+    {
+      "timestamp": "2025-09-17T17:21:24.916755",
+      "action": "Internal Import Updates",
+      "status": "SUCCESS",
+      "details": "Internal imports updated"
+    },
+    {
+      "timestamp": "2025-09-17T17:21:24.919372",
+      "action": "Test Migration",
+      "status": "INFO",
+      "details": "Migrating test files"
+    },
+    {
+      "timestamp": "2025-09-17T17:21:25.012484",
+      "action": "Test Migration",
+      "status": "SUCCESS",
+      "details": "Tests migrated and updated"
+    },
+    {
+      "timestamp": "2025-09-17T17:21:25.012941",
+      "action": "Documentation Updates",
+      "status": "INFO",
+      "details": "Updating documentation"
+    },
+    {
+      "timestamp": "2025-09-17T17:21:25.671446",
+      "action": "Documentation Updates",
+      "status": "INFO",
+      "details": "Updated C:\\Users\\HP1\\1_2\\ADVANCED_FOLDERS_MIGRATION_ROLLBACK_STRATEGY.md"
+    },
+    {
+      "timestamp": "2025-09-17T17:21:25.676311",
+      "action": "Documentation Updates",
+      "status": "INFO",
+      "details": "Updated C:\\Users\\HP1\\1_2\\COMPREHENSIVE_ADVANCED_FOLDERS_MIGRATION_PLAN.md"
+    },
+    {
+      "timestamp": "2025-09-17T17:21:25.685770",
+      "action": "Documentation Updates",
+      "status": "WARNING",
+      "details": "Could not update C:\\Users\\HP1\\1_2\\MIGRATION_COMPLETION_REPORT_20250916_165945.md: 'utf-8' codec can't decode byte 0xff in position 0: invalid start byte"
+    },
+    {
+      "timestamp": "2025-09-17T17:21:25.707013",
+      "action": "Documentation Updates",
+      "status": "INFO",
+      "details": "Updated C:\\Users\\HP1\\1_2\\MIGRATION_PACKAGE_README.md"
+    },
+    {
+      "timestamp": "2025-09-17T17:21:29.762347",
+      "action": "Documentation Updates",
+      "status": "SUCCESS",
+      "details": "Documentation updated"
+    },
+    {
+      "timestamp": "2025-09-17T17:21:29.775928",
+      "action": "Rollback Script",
+      "status": "SUCCESS",
+      "details": "Rollback script created: C:\\Users\\HP1\\1_2\\rollback_migration_20250917_172120.py"
+    },
+    {
+      "timestamp": "2025-09-17T17:21:29.789969",
+      "action": "Validation",
+      "status": "INFO",
+      "details": "Running validation tests"
+    },
+    {
+      "timestamp": "2025-09-17T17:21:29.843336",
+      "action": "Validation",
+      "status": "ERROR",
+      "details": "Validation failed: source code string cannot contain null bytes"
+    }
+  ],
+  "files_scanned": 19
+}

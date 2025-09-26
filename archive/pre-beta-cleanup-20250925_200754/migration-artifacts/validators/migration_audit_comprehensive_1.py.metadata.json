@@ -1,0 +1,12 @@
+{
+  "original_path": "emergency-backup-20250925_200754\\migration_audit_comprehensive.py",
+  "archived_path": "migration-artifacts\\validators\\migration_audit_comprehensive_1.py",
+  "archived_date": "2025-09-25T20:09:31.074191",
+  "reason": "Pre-beta cleanup: migration-artifacts",
+  "safety_level": "low",
+  "retrieval_priority": "normal",
+  "last_modified": "2025-09-22T19:14:28.323497",
+  "file_size": 14849,
+  "file_type": "file",
+  "md5_hash": "1b2c9c1a3a6e392a1d8f2f31aa657ddd"
+}

@@ -1,0 +1,14 @@
+{
+  "session_info": {
+    "exit_status": 0,
+    "completion_time": "2025-09-02T11:04:17.090137",
+    "total_tests": 1
+  },
+  "test_details": [
+    {
+      "name": "test_network_module_dependencies_setup",
+      "file": "test_dependency_mocking_validation.py",
+      "timestamp": "2025-09-02T11:04:16.514411"
+    }
+  ]
+}

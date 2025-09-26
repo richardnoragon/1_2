@@ -1,0 +1,96 @@
+{
+  "execution_info": {
+    "timestamp": "2025-08-24T17:46:55.903563",
+    "date": "2025-08-24",
+    "test_target": "extract_tables_camelot.py",
+    "test_framework": "pytest",
+    "execution_status": "COMPLETED_SUCCESSFULLY"
+  },
+  "test_results": {
+    "total_tests": 14,
+    "passed": 14,
+    "failed": 0,
+    "skipped": 0,
+    "error": 0,
+    "duration_seconds": 1.9488046169281006,
+    "success_rate": "100%"
+  },
+  "test_coverage": {
+    "functions_tested": [
+      "load_config()",
+      "save_config()",
+      "extract_tables()"
+    ],
+    "test_categories": [
+      "Configuration Management",
+      "Table Extraction",
+      "Parameter Validation",
+      "Integration Testing",
+      "Error Handling"
+    ],
+    "coverage_areas": [
+      "Function success scenarios",
+      "Error handling and exceptions",
+      "Parameter validation",
+      "File I/O operations",
+      "Mock integrations"
+    ]
+  },
+  "generated_files": [
+    {
+      "type": "HTML Test Report",
+      "filename": "result_extract_tables_camelot_simple_2025-08-24.html",
+      "size_bytes": 49298,
+      "exists": true
+    },
+    {
+      "type": "JSON Test Report",
+      "filename": "result_extract_tables_camelot_simple_2025-08-24.json",
+      "size_bytes": 14210,
+      "exists": true
+    },
+    {
+      "type": "Test File",
+      "filename": "test_extract_tables_camelot_simple_2025-08-24.py",
+      "size_bytes": 9518,
+      "exists": true
+    },
+    {
+      "type": "Original Test File",
+      "filename": "test_extract_tables_camelot_2025-08-24.py",
+      "size_bytes": 25686,
+      "exists": true
+    },
+    {
+      "type": "Pytest Configuration",
+      "filename": "pytest_extract_tables_camelot_2025-08-24.ini",
+      "size_bytes": 2526,
+      "exists": true
+    },
+    {
+      "type": "Test Fixtures",
+      "filename": "conftest_extract_tables_camelot_2025-08-24.py",
+      "size_bytes": 11862,
+      "exists": true
+    },
+    {
+      "type": "Test Runner",
+      "filename": "run_extract_tables_camelot_tests_2025-08-24.py",
+      "size_bytes": 14142,
+      "exists": true
+    },
+    {
+      "type": "Requirements",
+      "filename": "requirements_test_extract_tables_camelot_2025-08-24.txt",
+      "size_bytes": 733,
+      "exists": true
+    }
+  ],
+  "compliance_info": {
+    "naming_convention": "Files follow format: [type]_extract_tables_camelot_YYYY-MM-DD.[ext]",
+    "standardized_output": true,
+    "detailed_reporting": true,
+    "timestamp_included": true,
+    "comprehensive_coverage": true
+  }
+}

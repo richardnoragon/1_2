@@ -1,0 +1,581 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>900</width>
+    <height>700</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>File Finder</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QMainWindow {
+    background-color: #f5f5f5;
+    font-size: 12pt;
+}
+QPushButton {
+    background-color: #4285f4;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 6px 12px;
+    min-height: 24px;
+    font-size: 12pt;
+}
+QPushButton:hover {
+    background-color: #3275e4;
+}
+QPushButton:pressed {
+    background-color: #2265d4;
+}
+QListView, QTableView {
+    border: 1px solid #dcdcdc;
+    border-radius: 4px;
+    background-color: white;
+    font-size: 12pt;
+}
+QCheckBox, QRadioButton {
+    spacing: 8px;
+    font-size: 12pt;
+}
+QGroupBox {
+    border: 1px solid #dcdcdc;
+    border-radius: 4px;
+    margin-top: 1ex;
+    padding-top: 1ex;
+    background-color: #ffffff;
+    font-size: 12pt;
+}
+QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top center;
+    padding: 0 5px;
+}
+QLabel {
+    font-size: 12pt;
+}
+QLineEdit {
+    font-size: 12pt;
+}
+QDateEdit {
+    font-size: 12pt;
+}</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QGridLayout" name="gridLayout">
+    <property name="leftMargin">
+     <number>12</number>
+    </property>
+    <property name="topMargin">
+     <number>12</number>
+    </property>
+    <property name="rightMargin">
+     <number>12</number>
+    </property>
+    <property name="bottomMargin">
+     <number>12</number>
+    </property>
+    <property name="spacing">
+     <number>10</number>
+    </property>
+    <item row="0" column="0" colspan="2">
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QLabel" name="directoryLabel">
+        <property name="text">
+         <string>Select Directory:</string>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>12</pointsize>
+         </font>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="directory_lineEdit">
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
+        <property name="placeholderText">
+         <string>No directory selected</string>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>12</pointsize>
+         </font>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="select_pushButton">
+        <property name="text">
+         <string>Browse...</string>
+        </property>
+        <property name="icon">
+         <iconset>
+          <normaloff>icons/folder.png</normaloff>icons/folder.png
+         </iconset>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>12</pointsize>
+         </font>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item row="1" column="0">
+     <widget class="QGroupBox" name="filesGroupBox">
+      <property name="title">
+       <string>Found Files</string>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>12</pointsize>
+       </font>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <property name="spacing">
+        <number>6</number>
+       </property>
+       <property name="leftMargin">
+        <number>10</number>
+       </property>
+       <property name="topMargin">
+        <number>10</number>
+       </property>
+       <property name="rightMargin">
+        <number>10</number>
+       </property>
+       <property name="bottomMargin">
+        <number>10</number>
+       </property>
+       <item>
+        <widget class="QListView" name="listView">
+         <property name="alternatingRowColors">
+          <bool>true</bool>
+         </property>
+         <property name="selectionMode">
+          <enum>QAbstractItemView::SingleSelection</enum>
+         </property>
+         <property name="toolTip">
+          <string>Double-click to open a file</string>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>12</pointsize>
+          </font>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="1" column="1">
+     <widget class="QGroupBox" name="metaInfoGroupBox">
+      <property name="title">
+       <string>File Metadata</string>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>12</pointsize>
+       </font>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <property name="spacing">
+        <number>6</number>
+       </property>
+       <property name="leftMargin">
+        <number>10</number>
+       </property>
+       <property name="topMargin">
+        <number>10</number>
+       </property>
+       <property name="rightMargin">
+        <number>10</number>
+       </property>
+       <property name="bottomMargin">
+        <number>10</number>
+       </property>
+       <item>
+        <widget class="QTableView" name="meta_info_tableView">
+         <property name="alternatingRowColors">
+          <bool>true</bool>
+         </property>
+         <property name="selectionMode">
+          <enum>QAbstractItemView::SingleSelection</enum>
+         </property>
+         <property name="toolTip">
+          <string>Metadata information of the selected file</string>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>12</pointsize>
+          </font>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="2" column="0" colspan="2">
+     <widget class="QGroupBox" name="searchOptionsGroupBox">
+      <property name="title">
+       <string>Search Options</string>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>12</pointsize>
+       </font>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_2">
+       <property name="leftMargin">
+        <number>10</number>
+       </property>
+       <property name="topMargin">
+        <number>10</number>
+       </property>
+       <property name="rightMargin">
+        <number>10</number>
+       </property>
+       <property name="bottomMargin">
+        <number>10</number>
+       </property>
+       <property name="spacing">
+        <number>10</number>
+       </property>
+       <item row="0" column="0" colspan="3">
+        <widget class="QLabel" name="dateFilterLabel">
+         <property name="font">
+          <font>
+           <weight>75</weight>
+           <bold>true</bold>
+           <pointsize>12</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Date Filter Options:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QRadioButton" name="created_radioButton">
+         <property name="text">
+          <string>Created</string>
+         </property>
+         <property name="toolTip">
+          <string>Filter by creation date</string>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>12</pointsize>
+          </font>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QRadioButton" name="modified_radioButton">
+         <property name="text">
+          <string>Modified</string>
+         </property>
+         <property name="toolTip">
+          <string>Filter by modification date</string>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>12</pointsize>
+          </font>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="2">
+        <widget class="QRadioButton" name="created_modified_radioButton">
+         <property name="text">
+          <string>Created or Modified</string>
+         </property>
+         <property name="toolTip">
+          <string>Filter by either creation or modification date</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>12</pointsize>
+          </font>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0" colspan="2">
+        <layout class="QFormLayout" name="formLayout">
+         <property name="horizontalSpacing">
+          <number>10</number>
+         </property>
+         <property name="verticalSpacing">
+          <number>10</number>
+         </property>
+         <item row="0" column="0">
+          <widget class="QLabel" name="fromDateLabel">
+           <property name="text">
+            <string>From Date:</string>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QDateEdit" name="from_dateEdit">
+           <property name="calendarPopup">
+            <bool>true</bool>
+           </property>
+           <property name="displayFormat">
+            <string>yyyy-MM-dd</string>
+           </property>
+           <property name="toolTip">
+            <string>Start date for filtering</string>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="tillDateLabel">
+           <property name="text">
+            <string>Till Date:</string>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QDateEdit" name="till_dateEdit">
+           <property name="calendarPopup">
+            <bool>true</bool>
+           </property>
+           <property name="displayFormat">
+            <string>yyyy-MM-dd</string>
+           </property>
+           <property name="toolTip">
+            <string>End date for filtering</string>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="2" column="2">
+        <layout class="QVBoxLayout" name="verticalLayout_3">
+         <item>
+          <widget class="QLabel" name="contentSearchLabel">
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>Content Search:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="content_search_lineEdit">
+           <property name="placeholderText">
+            <string>Enter text to search in files...</string>
+           </property>
+           <property name="toolTip">
+            <string>Enter text to search within files</string>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="fileTypeLabel">
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>File Type:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="office_checkBox">
+           <property name="text">
+            <string>Office Files (.pptx)</string>
+           </property>
+           <property name="toolTip">
+            <string>Search for Office files (PowerPoint)</string>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="media_checkBox">
+           <property name="text">
+            <string>Media Files (.avi, .mp3, .mkv)</string>
+           </property>
+           <property name="toolTip">
+            <string>Search for media files</string>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="all_checkBox">
+           <property name="text">
+            <string>All Files</string>
+           </property>
+           <property name="toolTip">
+            <string>Search for all file types</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="3" column="0" colspan="3">
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <item>
+          <spacer name="horizontalSpacer">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QPushButton" name="search_pushButton">
+           <property name="minimumSize">
+            <size>
+             <width>120</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Search Files</string>
+           </property>
+           <property name="icon">
+            <iconset>
+             <normaloff>icons/search.png</normaloff>icons/search.png
+            </iconset>
+           </property>
+           <property name="toolTip">
+            <string>Start searching for files</string>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_2">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>900</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>12</pointsize>
+     </font>
+    </property>
+    <addaction name="actionexit"/>
+   </widget>
+   <addaction name="menuFile"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionexit">
+   <property name="text">
+    <string>Exit</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>12</pointsize>
+    </font>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

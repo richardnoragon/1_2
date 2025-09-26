@@ -1,0 +1,14 @@
+CMSD Migration Backup Manifest
+Created: 2025-07-28 19:04:33
+Backup Directory: backup/cmsd_migration/2025-07-28_19-04-33
+
+Original Files Backed Up:
+- cmsd.py (Content Management System Directory main file)
+- cmsd.ui (Qt Designer UI file)
+
+Migration Plan Version: 1.0
+Rollback Procedures: Available in CMSD_ROLLBACK_PROCEDURES.md
+Migration Documentation: CMSD_COMPREHENSIVE_MIGRATION_PLAN.md
+
+Purpose: Complete migration to file_utilities_2 package structure
+Target: file_utilities_2/core/, file_utilities_2/gui/, file_utilities_2/integration/

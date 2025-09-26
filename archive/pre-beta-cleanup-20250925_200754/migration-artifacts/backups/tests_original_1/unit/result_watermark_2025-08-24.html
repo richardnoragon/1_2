@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <title id="head-title">result_watermark_2025-08-24.html</title>
+      <link href="assets\style.css" rel="stylesheet" type="text/css"/>
+  </head>
+  <body>
+    <h1 id="title">result_watermark_2025-08-24.html</h1>
+    <p>Report generated on 24-Aug-2025 at 20:33:53 by <a href="https://pypi.python.org/pypi/pytest-html">pytest-html</a>
+        v4.1.1</p>
+    <div id="environment-header">
+      <h2>Environment</h2>
+    </div>
+    <table id="environment"></table>
+    <!-- TEMPLATES -->
+      <template id="template_environment_row">
+      <tr>
+        <td></td>
+        <td></td>
+      </tr>
+    </template>
+    <template id="template_results-table__body--empty">
+      <tbody class="results-table-row">
+        <tr id="not-found-message">
+          <td colspan="4">No results found. Check the filters.</th>
+        </tr>
+    </template>
+    <template id="template_results-table__tbody">
+      <tbody class="results-table-row">
+        <tr class="collapsible">
+        </tr>
+        <tr class="extras-row">
+          <td class="extra" colspan="4">
+            <div class="extraHTML"></div>
+            <div class="media">
+              <div class="media-container">
+                  <div class="media-container__nav--left"><</div>
+                  <div class="media-container__viewport">
+                    <img src="" />
+                    <video controls>
+                      <source src="" type="video/mp4">
+                    </video>
+                  </div>
+                  <div class="media-container__nav--right">></div>
+                </div>
+                <div class="media__name"></div>
+                <div class="media__counter"></div>
+            </div>
+            <div class="logwrapper">
+              <div class="logexpander"></div>
+              <div class="log"></div>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </template>
+    <!-- END TEMPLATES -->
+    <div class="summary">
+      <div class="summary__data">
+        <h2>Summary</h2>
+        <div class="additional-summary prefix">
+        </div>
+        <p class="run-count">25 tests took 00:00:01.</p>
+        <p class="filter">(Un)check the boxes to filter the results.</p>
+        <div class="summary__reload">
+          <div class="summary__reload__button hidden" onclick="location.reload()">
+            <div>There are still tests running. <br />Reload this page to get the latest results!</div>
+          </div>
+        </div>
+        <div class="summary__spacer"></div>
+        <div class="controls">
+          <div class="filters">
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="failed" />
+            <span class="failed">11 Failed,</span>
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="passed" />
+            <span class="passed">14 Passed,</span>
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="skipped" disabled/>
+            <span class="skipped">0 Skipped,</span>
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="xfailed" disabled/>
+            <span class="xfailed">0 Expected failures,</span>
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="xpassed" disabled/>
+            <span class="xpassed">0 Unexpected passes,</span>
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="error" disabled/>
+            <span class="error">0 Errors,</span>
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="rerun" disabled/>
+            <span class="rerun">0 Reruns</span>
+          </div>
+          <div class="collapse">
+            <button id="show_all_details">Show all details</button>&nbsp;/&nbsp;<button id="hide_all_details">Hide all details</button>
+          </div>
+        </div>
+      </div>
+      <div class="additional-summary summary">
+      </div>
+      <div class="additional-summary postfix">
+      </div>
+    </div>
+    <table id="results-table">
+      <thead id="results-table-head">
+        <tr>
+          <th class="sortable" data-column-type="result">Result</th>
+          <th class="sortable" data-column-type="testId">Test</th>
+          <th class="sortable" data-column-type="duration">Duration</th>
+          <th>Links</th>
+        </tr>
+      </thead>
+    </table>
+  </body>
+  <footer>
+    <div id="data-container" data-jsonblob="{&#34;environment&#34;: {&#34;Python&#34;: &#34;3.13.5&#34;, &#34;Platform&#34;: &#34;Windows-11-10.0.26100-SP0&#34;, &#34;Packages&#34;: {&#34;pytest&#34;: &#34;8.3.5&#34;, &#34;pluggy&#34;: &#34;1.6.0&#34;}, &#34;Plugins&#34;: {&#34;Faker&#34;: &#34;37.5.3&#34;, &#34;asyncio&#34;: &#34;0.26.0&#34;, &#34;benchmark&#34;: &#34;5.1.0&#34;, &#34;cov&#34;: &#34;6.1.0&#34;, &#34;html&#34;: &#34;4.1.1&#34;, &#34;json&#34;: &#34;0.4.0&#34;, &#34;json-report&#34;: &#34;1.5.0&#34;, &#34;metadata&#34;: &#34;3.1.1&#34;, &#34;mock&#34;: &#34;3.14.1&#34;, &#34;qt&#34;: &#34;4.4.0&#34;, &#34;timeout&#34;: &#34;2.3.1&#34;, &#34;xdist&#34;: &#34;3.8.0&#34;, &#34;xvfb&#34;: &#34;3.1.1&#34;}}, &#34;tests&#34;: {&#34;test_watermark_2025-08-24.py::TestAddWatermarkFunction::test_add_watermark_basic_functionality&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_watermark_2025-08-24.py::TestAddWatermarkFunction::test_add_watermark_basic_functionality&#34;, &#34;duration&#34;: &#34;290 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_watermark_2025-08-24.py::TestAddWatermarkFunction::test_add_watermark_basic_functionality&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;290 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;---------------------------- Captured stdout setup -----------------------------\n\n--- Starting test: test_watermark_2025-08-24.py::TestAddWatermarkFunction::test_add_watermark_basic_functionality ---\n--------------------------- Captured stdout teardown ---------------------------\n\n--- Completed test: test_watermark_2025-08-24.py::TestAddWatermarkFunction::test_add_watermark_basic_functionality ---\n&#34;}], &#34;test_watermark_2025-08-24.py::TestAddWatermarkFunction::test_add_watermark_with_specific_pages&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_watermark_2025-08-24.py::TestAddWatermarkFunction::test_add_watermark_with_specific_pages&#34;, &#34;duration&#34;: &#34;32 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_watermark_2025-08-24.py::TestAddWatermarkFunction::test_add_watermark_with_specific_pages&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;32 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;---------------------------- Captured stdout setup -----------------------------\n\n--- Starting test: test_watermark_2025-08-24.py::TestAddWatermarkFunction::test_add_watermark_with_specific_pages ---\n--------------------------- Captured stdout teardown ---------------------------\n\n--- Completed test: test_watermark_2025-08-24.py::TestAddWatermarkFunction::test_add_watermark_with_specific_pages ---\n&#34;}], &#34;test_watermark_2025-08-24.py::TestAddWatermarkFunction::test_add_watermark_file_not_found&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_watermark_2025-08-24.py::TestAddWatermarkFunction::test_add_watermark_file_not_found&#34;, &#34;duration&#34;: &#34;11 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_watermark_2025-08-24.py::TestAddWatermarkFunction::test_add_watermark_file_not_found&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;11 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;---------------------------- Captured stdout setup -----------------------------\n\n--- Starting test: test_watermark_2025-08-24.py::TestAddWatermarkFunction::test_add_watermark_file_not_found ---\n--------------------------- Captured stdout teardown ---------------------------\n\n--- Completed test: test_watermark_2025-08-24.py::TestAddWatermarkFunction::test_add_watermark_file_not_found ---\n&#34;}], &#34;test_watermark_2025-08-24.py::TestAddWatermarkFunction::test_add_watermark_invalid_pages&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_watermark_2025-08-24.py::TestAddWatermarkFunction::test_add_watermark_invalid_pages&#34;, &#34;duration&#34;: &#34;46 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_watermark_2025-08-24.py::TestAddWatermarkFunction::test_add_watermark_invalid_pages&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;46 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;---------------------------- Captured stdout setup -----------------------------\n\n--- Starting test: test_watermark_2025-08-24.py::TestAddWatermarkFunction::test_add_watermark_invalid_pages ---\n--------------------------- Captured stdout teardown ---------------------------\n\n--- Completed test: test_watermark_2025-08-24.py::TestAddWatermarkFunction::test_add_watermark_invalid_pages ---\n&#34;}], &#34;test_watermark_2025-08-24.py::TestAddWatermarkFunction::test_add_watermark_opacity_edge_cases&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_watermark_2025-08-24.py::TestAddWatermarkFunction::test_add_watermark_opacity_edge_cases&#34;, &#34;duration&#34;: &#34;46 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_watermark_2025-08-24.py::TestAddWatermarkFunction::test_add_watermark_opacity_edge_cases&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;46 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;---------------------------- Captured stdout setup -----------------------------\n\n--- Starting test: test_watermark_2025-08-24.py::TestAddWatermarkFunction::test_add_watermark_opacity_edge_cases ---\n--------------------------- Captured stdout teardown ---------------------------\n\n--- Completed test: test_watermark_2025-08-24.py::TestAddWatermarkFunction::test_add_watermark_opacity_edge_cases ---\n&#34;}], &#34;test_watermark_2025-08-24.py::TestAddWatermarkFunction::test_add_watermark_empty_text&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_watermark_2025-08-24.py::TestAddWatermarkFunction::test_add_watermark_empty_text&#34;, &#34;duration&#34;: &#34;62 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_watermark_2025-08-24.py::TestAddWatermarkFunction::test_add_watermark_empty_text&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;62 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;---------------------------- Captured stdout setup -----------------------------\n\n--- Starting test: test_watermark_2025-08-24.py::TestAddWatermarkFunction::test_add_watermark_empty_text ---\n--------------------------- Captured stdout teardown ---------------------------\n\n--- Completed test: test_watermark_2025-08-24.py::TestAddWatermarkFunction::test_add_watermark_empty_text ---\n&#34;}], &#34;test_watermark_2025-08-24.py::TestAddWatermarkFunction::test_add_watermark_special_characters&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_watermark_2025-08-24.py::TestAddWatermarkFunction::test_add_watermark_special_characters&#34;, &#34;duration&#34;: &#34;50 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_watermark_2025-08-24.py::TestAddWatermarkFunction::test_add_watermark_special_characters&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;50 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;---------------------------- Captured stdout setup -----------------------------\n\n--- Starting test: test_watermark_2025-08-24.py::TestAddWatermarkFunction::test_add_watermark_special_characters ---\n--------------------------- Captured stdout teardown ---------------------------\n\n--- Completed test: test_watermark_2025-08-24.py::TestAddWatermarkFunction::test_add_watermark_special_characters ---\n&#34;}], &#34;test_watermark_2025-08-24.py::TestAddWatermarkFunction::test_add_watermark_pdf_processing_error&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_watermark_2025-08-24.py::TestAddWatermarkFunction::test_add_watermark_pdf_processing_error&#34;, &#34;duration&#34;: &#34;30 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_watermark_2025-08-24.py::TestAddWatermarkFunction::test_add_watermark_pdf_processing_error&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;30 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;---------------------------- Captured stdout setup -----------------------------\n\n--- Starting test: test_watermark_2025-08-24.py::TestAddWatermarkFunction::test_add_watermark_pdf_processing_error ---\n--------------------------- Captured stdout teardown ---------------------------\n\n--- Completed test: test_watermark_2025-08-24.py::TestAddWatermarkFunction::test_add_watermark_pdf_processing_error ---\n&#34;}], &#34;test_watermark_2025-08-24.py::TestWatermarkUI::test_watermark_ui_initialization_success&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Failed&#34;, &#34;testId&#34;: &#34;test_watermark_2025-08-24.py::TestWatermarkUI::test_watermark_ui_initialization_success&#34;, &#34;duration&#34;: &#34;103 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Failed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_watermark_2025-08-24.py::TestWatermarkUI::test_watermark_ui_initialization_success&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;103 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;self = &amp;lt;tests.unit.test_watermark_2025-08-24.TestWatermarkUI object at 0x0000020F89028550&amp;gt;\nqapp = &amp;lt;PyQt5.QtWidgets.QApplication object at 0x0000020F88CF6CC0&amp;gt;\nmock_config = {&amp;#x27;last_directory&amp;#x27;: &amp;#x27;/tmp/test&amp;#x27;, &amp;#x27;opacity&amp;#x27;: 0.5, &amp;#x27;watermark_text&amp;#x27;: &amp;#x27;Test Watermark&amp;#x27;}\nmock_ui_file = &amp;lt;MagicMock name=&amp;#x27;loadUi&amp;#x27; id=&amp;#x27;2265706727136&amp;#x27;&amp;gt;\ntemp_dir = &amp;#x27;C:\\\\Users\\\\HP1\\\\AppData\\\\Local\\\\Temp\\\\tmpx428xgcn&amp;#x27;\n\n    @pytest.mark.gui\n    @pytest.mark.watermark\n    def test_watermark_ui_initialization_success(self, qapp, mock_config,\n                                                mock_ui_file, temp_dir):\n        &amp;quot;&amp;quot;&amp;quot;Test successful WatermarkUI initialization.&amp;quot;&amp;quot;&amp;quot;\n        if not WATERMARK_MODULE_AVAILABLE or not QT_AVAILABLE:\n            pytest.skip(&amp;quot;Watermark module or PyQt5 not available&amp;quot;)\n    \n        # Change to temp directory where UI file exists\n        original_cwd = os.getcwd()\n        os.chdir(temp_dir)\n    \n        try:\n            with patch(&amp;#x27;utilities.pdf_tools.pdf_enhancements.watermark.uic.loadUi&amp;#x27;):\n                with patch(&amp;#x27;utilities.pdf_tools.pdf_enhancements.watermark.logger&amp;#x27;) as mock_logger:\n&amp;gt;                   ui = WatermarkUI(config=mock_config)\n\ntest_watermark_2025-08-24.py:248: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = &amp;lt;utilities.pdf_tools.pdf_enhancements.watermark.WatermarkUI object at 0x0000020F876D89E0&amp;gt;\nconfig = {&amp;#x27;last_directory&amp;#x27;: &amp;#x27;/tmp/test&amp;#x27;, &amp;#x27;opacity&amp;#x27;: 0.5, &amp;#x27;watermark_text&amp;#x27;: &amp;#x27;Test Watermark&amp;#x27;}\n\n    def __init__(self, config=None):\n        try:\n            super(WatermarkUI, self).__init__()\n            uic.loadUi(&amp;#x27;watermark.ui&amp;#x27;, self)\n    \n            self.config = config or {}\n    \n            # Add progress bar\n            self.progressBar = QtWidgets.QProgressBar()\n            self.statusBar().addPermanentWidget(self.progressBar)\n            self.progressBar.hide()\n    \n            # Connect signals\n&amp;gt;           self.browseButton.clicked.connect(self.browse_file)\nE           AttributeError: &amp;#x27;WatermarkUI&amp;#x27; object has no attribute &amp;#x27;browseButton&amp;#x27;\n\n..\\..\\src\\utilities\\pdf_tools\\pdf_enhancements\\watermark.py:85: AttributeError\n\n---------------------------- Captured stdout setup -----------------------------\n\n--- Starting test: test_watermark_2025-08-24.py::TestWatermarkUI::test_watermark_ui_initialization_success ---\n--------------------------- Captured stdout teardown ---------------------------\n\n--- Completed test: test_watermark_2025-08-24.py::TestWatermarkUI::test_watermark_ui_initialization_success ---\n&#34;}], &#34;test_watermark_2025-08-24.py::TestWatermarkUI::test_watermark_ui_initialization_failure&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_watermark_2025-08-24.py::TestWatermarkUI::test_watermark_ui_initialization_failure&#34;, &#34;duration&#34;: &#34;25 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_watermark_2025-08-24.py::TestWatermarkUI::test_watermark_ui_initialization_failure&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;25 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;---------------------------- Captured stdout setup -----------------------------\n\n--- Starting test: test_watermark_2025-08-24.py::TestWatermarkUI::test_watermark_ui_initialization_failure ---\n--------------------------- Captured stdout teardown ---------------------------\n\n--- Completed test: test_watermark_2025-08-24.py::TestWatermarkUI::test_watermark_ui_initialization_failure ---\n&#34;}], &#34;test_watermark_2025-08-24.py::TestWatermarkUI::test_load_settings&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Failed&#34;, &#34;testId&#34;: &#34;test_watermark_2025-08-24.py::TestWatermarkUI::test_load_settings&#34;, &#34;duration&#34;: &#34;14 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Failed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_watermark_2025-08-24.py::TestWatermarkUI::test_load_settings&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;14 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;self = &amp;lt;tests.unit.test_watermark_2025-08-24.TestWatermarkUI object at 0x0000020F88F68770&amp;gt;\nqapp = &amp;lt;PyQt5.QtWidgets.QApplication object at 0x0000020F88CF6CC0&amp;gt;\nmock_config = {&amp;#x27;last_directory&amp;#x27;: &amp;#x27;/tmp/test&amp;#x27;, &amp;#x27;opacity&amp;#x27;: 0.5, &amp;#x27;watermark_text&amp;#x27;: &amp;#x27;Test Watermark&amp;#x27;}\nmock_ui_file = &amp;lt;MagicMock name=&amp;#x27;loadUi&amp;#x27; id=&amp;#x27;2265706740240&amp;#x27;&amp;gt;\ntemp_dir = &amp;#x27;C:\\\\Users\\\\HP1\\\\AppData\\\\Local\\\\Temp\\\\tmpu4mayc0g&amp;#x27;\n\n    @pytest.mark.gui\n    @pytest.mark.watermark\n    def test_load_settings(self, qapp, mock_config, mock_ui_file, temp_dir):\n        &amp;quot;&amp;quot;&amp;quot;Test loading settings from config.&amp;quot;&amp;quot;&amp;quot;\n        if not WATERMARK_MODULE_AVAILABLE or not QT_AVAILABLE:\n            pytest.skip(&amp;quot;Watermark module or PyQt5 not available&amp;quot;)\n    \n        original_cwd = os.getcwd()\n        os.chdir(temp_dir)\n    \n        try:\n            with patch(&amp;#x27;utilities.pdf_tools.pdf_enhancements.watermark.uic.loadUi&amp;#x27;):\n                with patch(&amp;#x27;utilities.pdf_tools.pdf_enhancements.watermark.logger&amp;#x27;):\n&amp;gt;                   ui = WatermarkUI(config=mock_config)\n\ntest_watermark_2025-08-24.py:284: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = &amp;lt;utilities.pdf_tools.pdf_enhancements.watermark.WatermarkUI object at 0x0000020F89818EF0&amp;gt;\nconfig = {&amp;#x27;last_directory&amp;#x27;: &amp;#x27;/tmp/test&amp;#x27;, &amp;#x27;opacity&amp;#x27;: 0.5, &amp;#x27;watermark_text&amp;#x27;: &amp;#x27;Test Watermark&amp;#x27;}\n\n    def __init__(self, config=None):\n        try:\n            super(WatermarkUI, self).__init__()\n            uic.loadUi(&amp;#x27;watermark.ui&amp;#x27;, self)\n    \n            self.config = config or {}\n    \n            # Add progress bar\n            self.progressBar = QtWidgets.QProgressBar()\n            self.statusBar().addPermanentWidget(self.progressBar)\n            self.progressBar.hide()\n    \n            # Connect signals\n&amp;gt;           self.browseButton.clicked.connect(self.browse_file)\nE           AttributeError: &amp;#x27;WatermarkUI&amp;#x27; object has no attribute &amp;#x27;browseButton&amp;#x27;\n\n..\\..\\src\\utilities\\pdf_tools\\pdf_enhancements\\watermark.py:85: AttributeError\n\n---------------------------- Captured stdout setup -----------------------------\n\n--- Starting test: test_watermark_2025-08-24.py::TestWatermarkUI::test_load_settings ---\n--------------------------- Captured stdout teardown ---------------------------\n\n--- Completed test: test_watermark_2025-08-24.py::TestWatermarkUI::test_load_settings ---\n&#34;}], &#34;test_watermark_2025-08-24.py::TestWatermarkUI::test_save_settings&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Failed&#34;, &#34;testId&#34;: &#34;test_watermark_2025-08-24.py::TestWatermarkUI::test_save_settings&#34;, &#34;duration&#34;: &#34;12 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Failed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_watermark_2025-08-24.py::TestWatermarkUI::test_save_settings&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;12 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;self = &amp;lt;tests.unit.test_watermark_2025-08-24.TestWatermarkUI object at 0x0000020F88F682B0&amp;gt;\nqapp = &amp;lt;PyQt5.QtWidgets.QApplication object at 0x0000020F88CF6CC0&amp;gt;\nmock_config = {&amp;#x27;last_directory&amp;#x27;: &amp;#x27;/tmp/test&amp;#x27;, &amp;#x27;opacity&amp;#x27;: 0.5, &amp;#x27;watermark_text&amp;#x27;: &amp;#x27;Test Watermark&amp;#x27;}\nmock_ui_file = &amp;lt;MagicMock name=&amp;#x27;loadUi&amp;#x27; id=&amp;#x27;2265740081680&amp;#x27;&amp;gt;\ntemp_dir = &amp;#x27;C:\\\\Users\\\\HP1\\\\AppData\\\\Local\\\\Temp\\\\tmpoudblob4&amp;#x27;\n\n    @pytest.mark.gui\n    @pytest.mark.watermark\n    def test_save_settings(self, qapp, mock_config, mock_ui_file, temp_dir):\n        &amp;quot;&amp;quot;&amp;quot;Test saving settings to config.&amp;quot;&amp;quot;&amp;quot;\n        if not WATERMARK_MODULE_AVAILABLE or not QT_AVAILABLE:\n            pytest.skip(&amp;quot;Watermark module or PyQt5 not available&amp;quot;)\n    \n        original_cwd = os.getcwd()\n        os.chdir(temp_dir)\n    \n        try:\n            with patch(&amp;#x27;utilities.pdf_tools.pdf_enhancements.watermark.uic.loadUi&amp;#x27;):\n                with patch(&amp;#x27;utilities.pdf_tools.pdf_enhancements.watermark.logger&amp;#x27;):\n&amp;gt;                   with patch(&amp;#x27;utilities.pdf_tools.pdf_enhancements.watermark.ConfigManager&amp;#x27;) as mock_config_manager:\n\ntest_watermark_2025-08-24.py:310: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n..\\..\\..\\..\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\unittest\\mock.py:1497: in __enter__\n    original, local = self.get_original()\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = &amp;lt;unittest.mock._patch object at 0x0000020F89070E50&amp;gt;\n\n    def get_original(self):\n        target = self.getter()\n        name = self.attribute\n    \n        original = DEFAULT\n        local = False\n    \n        try:\n            original = target.__dict__[name]\n        except (AttributeError, KeyError):\n            original = getattr(target, name, DEFAULT)\n        else:\n            local = True\n    \n        if name in _builtins and isinstance(target, ModuleType):\n            self.create = True\n    \n        if not self.create and original is DEFAULT:\n&amp;gt;           raise AttributeError(\n                &amp;quot;%s does not have the attribute %r&amp;quot; % (target, name)\n            )\nE           AttributeError: &amp;lt;module &amp;#x27;utilities.pdf_tools.pdf_enhancements.watermark&amp;#x27; from &amp;#x27;C:\\\\Users\\\\HP1\\\\1_2\\\\1_2\\\\tests\\\\unit\\\\..\\\\..\\\\src\\\\utilities\\\\pdf_tools\\\\pdf_enhancements\\\\watermark.py&amp;#x27;&amp;gt; does not have the attribute &amp;#x27;ConfigManager&amp;#x27;\n\n..\\..\\..\\..\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\unittest\\mock.py:1467: AttributeError\n\n---------------------------- Captured stdout setup -----------------------------\n\n--- Starting test: test_watermark_2025-08-24.py::TestWatermarkUI::test_save_settings ---\n--------------------------- Captured stdout teardown ---------------------------\n\n--- Completed test: test_watermark_2025-08-24.py::TestWatermarkUI::test_save_settings ---\n&#34;}], &#34;test_watermark_2025-08-24.py::TestWatermarkUI::test_browse_file&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Failed&#34;, &#34;testId&#34;: &#34;test_watermark_2025-08-24.py::TestWatermarkUI::test_browse_file&#34;, &#34;duration&#34;: &#34;18 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Failed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_watermark_2025-08-24.py::TestWatermarkUI::test_browse_file&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;18 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;self = &amp;lt;tests.unit.test_watermark_2025-08-24.TestWatermarkUI object at 0x0000020F88FB6570&amp;gt;\nqapp = &amp;lt;PyQt5.QtWidgets.QApplication object at 0x0000020F88CF6CC0&amp;gt;\nmock_config = {&amp;#x27;last_directory&amp;#x27;: &amp;#x27;/tmp/test&amp;#x27;, &amp;#x27;opacity&amp;#x27;: 0.5, &amp;#x27;watermark_text&amp;#x27;: &amp;#x27;Test Watermark&amp;#x27;}\nmock_ui_file = &amp;lt;MagicMock name=&amp;#x27;loadUi&amp;#x27; id=&amp;#x27;2265740080000&amp;#x27;&amp;gt;\ntemp_dir = &amp;#x27;C:\\\\Users\\\\HP1\\\\AppData\\\\Local\\\\Temp\\\\tmpngexvkl7&amp;#x27;\n\n    @pytest.mark.gui\n    @pytest.mark.watermark\n    def test_browse_file(self, qapp, mock_config, mock_ui_file, temp_dir):\n        &amp;quot;&amp;quot;&amp;quot;Test file browsing functionality.&amp;quot;&amp;quot;&amp;quot;\n        if not WATERMARK_MODULE_AVAILABLE or not QT_AVAILABLE:\n            pytest.skip(&amp;quot;Watermark module or PyQt5 not available&amp;quot;)\n    \n        original_cwd = os.getcwd()\n        os.chdir(temp_dir)\n    \n        try:\n            with patch(&amp;#x27;utilities.pdf_tools.pdf_enhancements.watermark.uic.loadUi&amp;#x27;):\n                with patch(&amp;#x27;utilities.pdf_tools.pdf_enhancements.watermark.logger&amp;#x27;):\n                    with patch(&amp;#x27;utilities.pdf_tools.pdf_enhancements.watermark.QFileDialog.getOpenFileName&amp;#x27;,\n                               return_value=(&amp;quot;/test/file.pdf&amp;quot;, &amp;quot;PDF Files (*.pdf)&amp;quot;)):\n&amp;gt;                       ui = WatermarkUI(config=mock_config)\n\ntest_watermark_2025-08-24.py:341: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = &amp;lt;utilities.pdf_tools.pdf_enhancements.watermark.WatermarkUI object at 0x0000020F89819BE0&amp;gt;\nconfig = {&amp;#x27;last_directory&amp;#x27;: &amp;#x27;/tmp/test&amp;#x27;, &amp;#x27;opacity&amp;#x27;: 0.5, &amp;#x27;watermark_text&amp;#x27;: &amp;#x27;Test Watermark&amp;#x27;}\n\n    def __init__(self, config=None):\n        try:\n            super(WatermarkUI, self).__init__()\n            uic.loadUi(&amp;#x27;watermark.ui&amp;#x27;, self)\n    \n            self.config = config or {}\n    \n            # Add progress bar\n            self.progressBar = QtWidgets.QProgressBar()\n            self.statusBar().addPermanentWidget(self.progressBar)\n            self.progressBar.hide()\n    \n            # Connect signals\n&amp;gt;           self.browseButton.clicked.connect(self.browse_file)\nE           AttributeError: &amp;#x27;WatermarkUI&amp;#x27; object has no attribute &amp;#x27;browseButton&amp;#x27;\n\n..\\..\\src\\utilities\\pdf_tools\\pdf_enhancements\\watermark.py:85: AttributeError\n\n---------------------------- Captured stdout setup -----------------------------\n\n--- Starting test: test_watermark_2025-08-24.py::TestWatermarkUI::test_browse_file ---\n--------------------------- Captured stdout teardown ---------------------------\n\n--- Completed test: test_watermark_2025-08-24.py::TestWatermarkUI::test_browse_file ---\n&#34;}], &#34;test_watermark_2025-08-24.py::TestWatermarkUI::test_browse_file_cancelled&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Failed&#34;, &#34;testId&#34;: &#34;test_watermark_2025-08-24.py::TestWatermarkUI::test_browse_file_cancelled&#34;, &#34;duration&#34;: &#34;20 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Failed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_watermark_2025-08-24.py::TestWatermarkUI::test_browse_file_cancelled&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;20 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;self = &amp;lt;tests.unit.test_watermark_2025-08-24.TestWatermarkUI object at 0x0000020F88DC3CE0&amp;gt;\nqapp = &amp;lt;PyQt5.QtWidgets.QApplication object at 0x0000020F88CF6CC0&amp;gt;\nmock_config = {&amp;#x27;last_directory&amp;#x27;: &amp;#x27;/tmp/test&amp;#x27;, &amp;#x27;opacity&amp;#x27;: 0.5, &amp;#x27;watermark_text&amp;#x27;: &amp;#x27;Test Watermark&amp;#x27;}\nmock_ui_file = &amp;lt;MagicMock name=&amp;#x27;loadUi&amp;#x27; id=&amp;#x27;2265740080336&amp;#x27;&amp;gt;\ntemp_dir = &amp;#x27;C:\\\\Users\\\\HP1\\\\AppData\\\\Local\\\\Temp\\\\tmp1jnkrgrk&amp;#x27;\n\n    @pytest.mark.gui\n    @pytest.mark.watermark\n    def test_browse_file_cancelled(self, qapp, mock_config, mock_ui_file, temp_dir):\n        &amp;quot;&amp;quot;&amp;quot;Test file browsing when cancelled.&amp;quot;&amp;quot;&amp;quot;\n        if not WATERMARK_MODULE_AVAILABLE or not QT_AVAILABLE:\n            pytest.skip(&amp;quot;Watermark module or PyQt5 not available&amp;quot;)\n    \n        original_cwd = os.getcwd()\n        os.chdir(temp_dir)\n    \n        try:\n            with patch(&amp;#x27;utilities.pdf_tools.pdf_enhancements.watermark.uic.loadUi&amp;#x27;):\n                with patch(&amp;#x27;utilities.pdf_tools.pdf_enhancements.watermark.logger&amp;#x27;):\n                    with patch(&amp;#x27;utilities.pdf_tools.pdf_enhancements.watermark.QFileDialog.getOpenFileName&amp;#x27;,\n                               return_value=(&amp;quot;&amp;quot;, &amp;quot;&amp;quot;)):\n&amp;gt;                       ui = WatermarkUI(config=mock_config)\n\ntest_watermark_2025-08-24.py:368: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = &amp;lt;utilities.pdf_tools.pdf_enhancements.watermark.WatermarkUI object at 0x0000020F898196D0&amp;gt;\nconfig = {&amp;#x27;last_directory&amp;#x27;: &amp;#x27;/tmp/test&amp;#x27;, &amp;#x27;opacity&amp;#x27;: 0.5, &amp;#x27;watermark_text&amp;#x27;: &amp;#x27;Test Watermark&amp;#x27;}\n\n    def __init__(self, config=None):\n        try:\n            super(WatermarkUI, self).__init__()\n            uic.loadUi(&amp;#x27;watermark.ui&amp;#x27;, self)\n    \n            self.config = config or {}\n    \n            # Add progress bar\n            self.progressBar = QtWidgets.QProgressBar()\n            self.statusBar().addPermanentWidget(self.progressBar)\n            self.progressBar.hide()\n    \n            # Connect signals\n&amp;gt;           self.browseButton.clicked.connect(self.browse_file)\nE           AttributeError: &amp;#x27;WatermarkUI&amp;#x27; object has no attribute &amp;#x27;browseButton&amp;#x27;\n\n..\\..\\src\\utilities\\pdf_tools\\pdf_enhancements\\watermark.py:85: AttributeError\n\n---------------------------- Captured stdout setup -----------------------------\n\n--- Starting test: test_watermark_2025-08-24.py::TestWatermarkUI::test_browse_file_cancelled ---\n--------------------------- Captured stdout teardown ---------------------------\n\n--- Completed test: test_watermark_2025-08-24.py::TestWatermarkUI::test_browse_file_cancelled ---\n&#34;}], &#34;test_watermark_2025-08-24.py::TestWatermarkUI::test_apply_watermark_success&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Failed&#34;, &#34;testId&#34;: &#34;test_watermark_2025-08-24.py::TestWatermarkUI::test_apply_watermark_success&#34;, &#34;duration&#34;: &#34;27 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Failed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_watermark_2025-08-24.py::TestWatermarkUI::test_apply_watermark_success&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;27 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;self = &amp;lt;tests.unit.test_watermark_2025-08-24.TestWatermarkUI object at 0x0000020F88FF4380&amp;gt;\nqapp = &amp;lt;PyQt5.QtWidgets.QApplication object at 0x0000020F88CF6CC0&amp;gt;\nmock_config = {&amp;#x27;last_directory&amp;#x27;: &amp;#x27;/tmp/test&amp;#x27;, &amp;#x27;opacity&amp;#x27;: 0.5, &amp;#x27;watermark_text&amp;#x27;: &amp;#x27;Test Watermark&amp;#x27;}\nmock_ui_file = &amp;lt;MagicMock name=&amp;#x27;loadUi&amp;#x27; id=&amp;#x27;2265740082688&amp;#x27;&amp;gt;\ntemp_dir = &amp;#x27;C:\\\\Users\\\\HP1\\\\AppData\\\\Local\\\\Temp\\\\tmp_o2c2atm&amp;#x27;\nsample_pdf_file = &amp;#x27;C:\\\\Users\\\\HP1\\\\AppData\\\\Local\\\\Temp\\\\tmp_o2c2atm\\\\sample.pdf&amp;#x27;\n\n    @pytest.mark.gui\n    @pytest.mark.watermark\n    def test_apply_watermark_success(self, qapp, mock_config, mock_ui_file,\n                                   temp_dir, sample_pdf_file):\n        &amp;quot;&amp;quot;&amp;quot;Test successful watermark application.&amp;quot;&amp;quot;&amp;quot;\n        if not WATERMARK_MODULE_AVAILABLE or not QT_AVAILABLE:\n            pytest.skip(&amp;quot;Watermark module or PyQt5 not available&amp;quot;)\n    \n        original_cwd = os.getcwd()\n        os.chdir(temp_dir)\n    \n        try:\n            with patch(&amp;#x27;utilities.pdf_tools.pdf_enhancements.watermark.uic.loadUi&amp;#x27;):\n                with patch(&amp;#x27;utilities.pdf_tools.pdf_enhancements.watermark.logger&amp;#x27;):\n                    with patch(&amp;#x27;utilities.pdf_tools.pdf_enhancements.watermark.add_watermark&amp;#x27;,\n                               return_value=True) as mock_add:\n                        with patch(&amp;#x27;utilities.pdf_tools.pdf_enhancements.watermark.QMessageBox&amp;#x27;):\n&amp;gt;                           ui = WatermarkUI(config=mock_config)\n\ntest_watermark_2025-08-24.py:396: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = &amp;lt;utilities.pdf_tools.pdf_enhancements.watermark.WatermarkUI object at 0x0000020F89819EB0&amp;gt;\nconfig = {&amp;#x27;last_directory&amp;#x27;: &amp;#x27;/tmp/test&amp;#x27;, &amp;#x27;opacity&amp;#x27;: 0.5, &amp;#x27;watermark_text&amp;#x27;: &amp;#x27;Test Watermark&amp;#x27;}\n\n    def __init__(self, config=None):\n        try:\n            super(WatermarkUI, self).__init__()\n            uic.loadUi(&amp;#x27;watermark.ui&amp;#x27;, self)\n    \n            self.config = config or {}\n    \n            # Add progress bar\n            self.progressBar = QtWidgets.QProgressBar()\n            self.statusBar().addPermanentWidget(self.progressBar)\n            self.progressBar.hide()\n    \n            # Connect signals\n&amp;gt;           self.browseButton.clicked.connect(self.browse_file)\nE           AttributeError: &amp;#x27;WatermarkUI&amp;#x27; object has no attribute &amp;#x27;browseButton&amp;#x27;\n\n..\\..\\src\\utilities\\pdf_tools\\pdf_enhancements\\watermark.py:85: AttributeError\n\n---------------------------- Captured stdout setup -----------------------------\n\n--- Starting test: test_watermark_2025-08-24.py::TestWatermarkUI::test_apply_watermark_success ---\n--------------------------- Captured stdout teardown ---------------------------\n\n--- Completed test: test_watermark_2025-08-24.py::TestWatermarkUI::test_apply_watermark_success ---\n&#34;}], &#34;test_watermark_2025-08-24.py::TestWatermarkUI::test_apply_watermark_no_file&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Failed&#34;, &#34;testId&#34;: &#34;test_watermark_2025-08-24.py::TestWatermarkUI::test_apply_watermark_no_file&#34;, &#34;duration&#34;: &#34;12 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Failed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_watermark_2025-08-24.py::TestWatermarkUI::test_apply_watermark_no_file&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;12 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;self = &amp;lt;tests.unit.test_watermark_2025-08-24.TestWatermarkUI object at 0x0000020F88DD0950&amp;gt;\nqapp = &amp;lt;PyQt5.QtWidgets.QApplication object at 0x0000020F88CF6CC0&amp;gt;\nmock_config = {&amp;#x27;last_directory&amp;#x27;: &amp;#x27;/tmp/test&amp;#x27;, &amp;#x27;opacity&amp;#x27;: 0.5, &amp;#x27;watermark_text&amp;#x27;: &amp;#x27;Test Watermark&amp;#x27;}\nmock_ui_file = &amp;lt;MagicMock name=&amp;#x27;loadUi&amp;#x27; id=&amp;#x27;2265740082352&amp;#x27;&amp;gt;\ntemp_dir = &amp;#x27;C:\\\\Users\\\\HP1\\\\AppData\\\\Local\\\\Temp\\\\tmp1d3qptys&amp;#x27;\n\n    @pytest.mark.gui\n    @pytest.mark.watermark\n    def test_apply_watermark_no_file(self, qapp, mock_config, mock_ui_file, temp_dir):\n        &amp;quot;&amp;quot;&amp;quot;Test watermark application with no file selected.&amp;quot;&amp;quot;&amp;quot;\n        if not WATERMARK_MODULE_AVAILABLE or not QT_AVAILABLE:\n            pytest.skip(&amp;quot;Watermark module or PyQt5 not available&amp;quot;)\n    \n        original_cwd = os.getcwd()\n        os.chdir(temp_dir)\n    \n        try:\n            with patch(&amp;#x27;utilities.pdf_tools.pdf_enhancements.watermark.uic.loadUi&amp;#x27;):\n                with patch(&amp;#x27;utilities.pdf_tools.pdf_enhancements.watermark.logger&amp;#x27;):\n                    with patch(&amp;#x27;utilities.pdf_tools.pdf_enhancements.watermark.QMessageBox&amp;#x27;) as mock_msgbox:\n&amp;gt;                       ui = WatermarkUI(config=mock_config)\n\ntest_watermark_2025-08-24.py:431: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = &amp;lt;utilities.pdf_tools.pdf_enhancements.watermark.WatermarkUI object at 0x0000020F8981A2A0&amp;gt;\nconfig = {&amp;#x27;last_directory&amp;#x27;: &amp;#x27;/tmp/test&amp;#x27;, &amp;#x27;opacity&amp;#x27;: 0.5, &amp;#x27;watermark_text&amp;#x27;: &amp;#x27;Test Watermark&amp;#x27;}\n\n    def __init__(self, config=None):\n        try:\n            super(WatermarkUI, self).__init__()\n            uic.loadUi(&amp;#x27;watermark.ui&amp;#x27;, self)\n    \n            self.config = config or {}\n    \n            # Add progress bar\n            self.progressBar = QtWidgets.QProgressBar()\n            self.statusBar().addPermanentWidget(self.progressBar)\n            self.progressBar.hide()\n    \n            # Connect signals\n&amp;gt;           self.browseButton.clicked.connect(self.browse_file)\nE           AttributeError: &amp;#x27;WatermarkUI&amp;#x27; object has no attribute &amp;#x27;browseButton&amp;#x27;\n\n..\\..\\src\\utilities\\pdf_tools\\pdf_enhancements\\watermark.py:85: AttributeError\n\n---------------------------- Captured stdout setup -----------------------------\n\n--- Starting test: test_watermark_2025-08-24.py::TestWatermarkUI::test_apply_watermark_no_file ---\n--------------------------- Captured stdout teardown ---------------------------\n\n--- Completed test: test_watermark_2025-08-24.py::TestWatermarkUI::test_apply_watermark_no_file ---\n&#34;}], &#34;test_watermark_2025-08-24.py::TestWatermarkUI::test_apply_watermark_no_text&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Failed&#34;, &#34;testId&#34;: &#34;test_watermark_2025-08-24.py::TestWatermarkUI::test_apply_watermark_no_text&#34;, &#34;duration&#34;: &#34;24 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Failed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_watermark_2025-08-24.py::TestWatermarkUI::test_apply_watermark_no_text&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;24 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;self = &amp;lt;tests.unit.test_watermark_2025-08-24.TestWatermarkUI object at 0x0000020F88DD0F50&amp;gt;\nqapp = &amp;lt;PyQt5.QtWidgets.QApplication object at 0x0000020F88CF6CC0&amp;gt;\nmock_config = {&amp;#x27;last_directory&amp;#x27;: &amp;#x27;/tmp/test&amp;#x27;, &amp;#x27;opacity&amp;#x27;: 0.5, &amp;#x27;watermark_text&amp;#x27;: &amp;#x27;Test Watermark&amp;#x27;}\nmock_ui_file = &amp;lt;MagicMock name=&amp;#x27;loadUi&amp;#x27; id=&amp;#x27;2265740079664&amp;#x27;&amp;gt;\ntemp_dir = &amp;#x27;C:\\\\Users\\\\HP1\\\\AppData\\\\Local\\\\Temp\\\\tmppl73v5c8&amp;#x27;\nsample_pdf_file = &amp;#x27;C:\\\\Users\\\\HP1\\\\AppData\\\\Local\\\\Temp\\\\tmppl73v5c8\\\\sample.pdf&amp;#x27;\n\n    @pytest.mark.gui\n    @pytest.mark.watermark\n    def test_apply_watermark_no_text(self, qapp, mock_config, mock_ui_file,\n                                   temp_dir, sample_pdf_file):\n        &amp;quot;&amp;quot;&amp;quot;Test watermark application with no watermark text.&amp;quot;&amp;quot;&amp;quot;\n        if not WATERMARK_MODULE_AVAILABLE or not QT_AVAILABLE:\n            pytest.skip(&amp;quot;Watermark module or PyQt5 not available&amp;quot;)\n    \n        original_cwd = os.getcwd()\n        os.chdir(temp_dir)\n    \n        try:\n            with patch(&amp;#x27;utilities.pdf_tools.pdf_enhancements.watermark.uic.loadUi&amp;#x27;):\n                with patch(&amp;#x27;utilities.pdf_tools.pdf_enhancements.watermark.logger&amp;#x27;):\n                    with patch(&amp;#x27;utilities.pdf_tools.pdf_enhancements.watermark.QMessageBox&amp;#x27;) as mock_msgbox:\n&amp;gt;                       ui = WatermarkUI(config=mock_config)\n\ntest_watermark_2025-08-24.py:461: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = &amp;lt;utilities.pdf_tools.pdf_enhancements.watermark.WatermarkUI object at 0x0000020F8981A840&amp;gt;\nconfig = {&amp;#x27;last_directory&amp;#x27;: &amp;#x27;/tmp/test&amp;#x27;, &amp;#x27;opacity&amp;#x27;: 0.5, &amp;#x27;watermark_text&amp;#x27;: &amp;#x27;Test Watermark&amp;#x27;}\n\n    def __init__(self, config=None):\n        try:\n            super(WatermarkUI, self).__init__()\n            uic.loadUi(&amp;#x27;watermark.ui&amp;#x27;, self)\n    \n            self.config = config or {}\n    \n            # Add progress bar\n            self.progressBar = QtWidgets.QProgressBar()\n            self.statusBar().addPermanentWidget(self.progressBar)\n            self.progressBar.hide()\n    \n            # Connect signals\n&amp;gt;           self.browseButton.clicked.connect(self.browse_file)\nE           AttributeError: &amp;#x27;WatermarkUI&amp;#x27; object has no attribute &amp;#x27;browseButton&amp;#x27;\n\n..\\..\\src\\utilities\\pdf_tools\\pdf_enhancements\\watermark.py:85: AttributeError\n\n---------------------------- Captured stdout setup -----------------------------\n\n--- Starting test: test_watermark_2025-08-24.py::TestWatermarkUI::test_apply_watermark_no_text ---\n--------------------------- Captured stdout teardown ---------------------------\n\n--- Completed test: test_watermark_2025-08-24.py::TestWatermarkUI::test_apply_watermark_no_text ---\n&#34;}], &#34;test_watermark_2025-08-24.py::TestWatermarkUI::test_apply_watermark_with_pages&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Failed&#34;, &#34;testId&#34;: &#34;test_watermark_2025-08-24.py::TestWatermarkUI::test_apply_watermark_with_pages&#34;, &#34;duration&#34;: &#34;20 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Failed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_watermark_2025-08-24.py::TestWatermarkUI::test_apply_watermark_with_pages&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;20 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;self = &amp;lt;tests.unit.test_watermark_2025-08-24.TestWatermarkUI object at 0x0000020F887F8050&amp;gt;\nqapp = &amp;lt;PyQt5.QtWidgets.QApplication object at 0x0000020F88CF6CC0&amp;gt;\nmock_config = {&amp;#x27;last_directory&amp;#x27;: &amp;#x27;/tmp/test&amp;#x27;, &amp;#x27;opacity&amp;#x27;: 0.5, &amp;#x27;watermark_text&amp;#x27;: &amp;#x27;Test Watermark&amp;#x27;}\nmock_ui_file = &amp;lt;MagicMock name=&amp;#x27;loadUi&amp;#x27; id=&amp;#x27;2265740079328&amp;#x27;&amp;gt;\ntemp_dir = &amp;#x27;C:\\\\Users\\\\HP1\\\\AppData\\\\Local\\\\Temp\\\\tmp0316qqih&amp;#x27;\nsample_pdf_file = &amp;#x27;C:\\\\Users\\\\HP1\\\\AppData\\\\Local\\\\Temp\\\\tmp0316qqih\\\\sample.pdf&amp;#x27;\n\n    @pytest.mark.gui\n    @pytest.mark.watermark\n    def test_apply_watermark_with_pages(self, qapp, mock_config, mock_ui_file,\n                                      temp_dir, sample_pdf_file):\n        &amp;quot;&amp;quot;&amp;quot;Test watermark application with specific pages.&amp;quot;&amp;quot;&amp;quot;\n        if not WATERMARK_MODULE_AVAILABLE or not QT_AVAILABLE:\n            pytest.skip(&amp;quot;Watermark module or PyQt5 not available&amp;quot;)\n    \n        original_cwd = os.getcwd()\n        os.chdir(temp_dir)\n    \n        try:\n            with patch(&amp;#x27;utilities.pdf_tools.pdf_enhancements.watermark.uic.loadUi&amp;#x27;):\n                with patch(&amp;#x27;utilities.pdf_tools.pdf_enhancements.watermark.logger&amp;#x27;):\n                    with patch(&amp;#x27;utilities.pdf_tools.pdf_enhancements.watermark.add_watermark&amp;#x27;,\n                               return_value=True) as mock_add:\n                        with patch(&amp;#x27;utilities.pdf_tools.pdf_enhancements.watermark.QMessageBox&amp;#x27;):\n&amp;gt;                           ui = WatermarkUI(config=mock_config)\n\ntest_watermark_2025-08-24.py:493: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = &amp;lt;utilities.pdf_tools.pdf_enhancements.watermark.WatermarkUI object at 0x0000020F8981AB10&amp;gt;\nconfig = {&amp;#x27;last_directory&amp;#x27;: &amp;#x27;/tmp/test&amp;#x27;, &amp;#x27;opacity&amp;#x27;: 0.5, &amp;#x27;watermark_text&amp;#x27;: &amp;#x27;Test Watermark&amp;#x27;}\n\n    def __init__(self, config=None):\n        try:\n            super(WatermarkUI, self).__init__()\n            uic.loadUi(&amp;#x27;watermark.ui&amp;#x27;, self)\n    \n            self.config = config or {}\n    \n            # Add progress bar\n            self.progressBar = QtWidgets.QProgressBar()\n            self.statusBar().addPermanentWidget(self.progressBar)\n            self.progressBar.hide()\n    \n            # Connect signals\n&amp;gt;           self.browseButton.clicked.connect(self.browse_file)\nE           AttributeError: &amp;#x27;WatermarkUI&amp;#x27; object has no attribute &amp;#x27;browseButton&amp;#x27;\n\n..\\..\\src\\utilities\\pdf_tools\\pdf_enhancements\\watermark.py:85: AttributeError\n\n---------------------------- Captured stdout setup -----------------------------\n\n--- Starting test: test_watermark_2025-08-24.py::TestWatermarkUI::test_apply_watermark_with_pages ---\n--------------------------- Captured stdout teardown ---------------------------\n\n--- Completed test: test_watermark_2025-08-24.py::TestWatermarkUI::test_apply_watermark_with_pages ---\n&#34;}], &#34;test_watermark_2025-08-24.py::TestWatermarkUI::test_apply_watermark_invalid_pages&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Failed&#34;, &#34;testId&#34;: &#34;test_watermark_2025-08-24.py::TestWatermarkUI::test_apply_watermark_invalid_pages&#34;, &#34;duration&#34;: &#34;28 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Failed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_watermark_2025-08-24.py::TestWatermarkUI::test_apply_watermark_invalid_pages&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;28 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;self = &amp;lt;tests.unit.test_watermark_2025-08-24.TestWatermarkUI object at 0x0000020F887F9400&amp;gt;\nqapp = &amp;lt;PyQt5.QtWidgets.QApplication object at 0x0000020F88CF6CC0&amp;gt;\nmock_config = {&amp;#x27;last_directory&amp;#x27;: &amp;#x27;/tmp/test&amp;#x27;, &amp;#x27;opacity&amp;#x27;: 0.5, &amp;#x27;watermark_text&amp;#x27;: &amp;#x27;Test Watermark&amp;#x27;}\nmock_ui_file = &amp;lt;MagicMock name=&amp;#x27;loadUi&amp;#x27; id=&amp;#x27;2265740081344&amp;#x27;&amp;gt;\ntemp_dir = &amp;#x27;C:\\\\Users\\\\HP1\\\\AppData\\\\Local\\\\Temp\\\\tmpndwr80a7&amp;#x27;\nsample_pdf_file = &amp;#x27;C:\\\\Users\\\\HP1\\\\AppData\\\\Local\\\\Temp\\\\tmpndwr80a7\\\\sample.pdf&amp;#x27;\n\n    @pytest.mark.gui\n    @pytest.mark.watermark\n    def test_apply_watermark_invalid_pages(self, qapp, mock_config, mock_ui_file,\n                                         temp_dir, sample_pdf_file):\n        &amp;quot;&amp;quot;&amp;quot;Test watermark application with invalid page format.&amp;quot;&amp;quot;&amp;quot;\n        if not WATERMARK_MODULE_AVAILABLE or not QT_AVAILABLE:\n            pytest.skip(&amp;quot;Watermark module or PyQt5 not available&amp;quot;)\n    \n        original_cwd = os.getcwd()\n        os.chdir(temp_dir)\n    \n        try:\n            with patch(&amp;#x27;utilities.pdf_tools.pdf_enhancements.watermark.uic.loadUi&amp;#x27;):\n                with patch(&amp;#x27;utilities.pdf_tools.pdf_enhancements.watermark.logger&amp;#x27;):\n                    with patch(&amp;#x27;utilities.pdf_tools.pdf_enhancements.watermark.QMessageBox&amp;#x27;) as mock_msgbox:\n&amp;gt;                       ui = WatermarkUI(config=mock_config)\n\ntest_watermark_2025-08-24.py:531: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nself = &amp;lt;utilities.pdf_tools.pdf_enhancements.watermark.WatermarkUI object at 0x0000020F89819D00&amp;gt;\nconfig = {&amp;#x27;last_directory&amp;#x27;: &amp;#x27;/tmp/test&amp;#x27;, &amp;#x27;opacity&amp;#x27;: 0.5, &amp;#x27;watermark_text&amp;#x27;: &amp;#x27;Test Watermark&amp;#x27;}\n\n    def __init__(self, config=None):\n        try:\n            super(WatermarkUI, self).__init__()\n            uic.loadUi(&amp;#x27;watermark.ui&amp;#x27;, self)\n    \n            self.config = config or {}\n    \n            # Add progress bar\n            self.progressBar = QtWidgets.QProgressBar()\n            self.statusBar().addPermanentWidget(self.progressBar)\n            self.progressBar.hide()\n    \n            # Connect signals\n&amp;gt;           self.browseButton.clicked.connect(self.browse_file)\nE           AttributeError: &amp;#x27;WatermarkUI&amp;#x27; object has no attribute &amp;#x27;browseButton&amp;#x27;\n\n..\\..\\src\\utilities\\pdf_tools\\pdf_enhancements\\watermark.py:85: AttributeError\n\n---------------------------- Captured stdout setup -----------------------------\n\n--- Starting test: test_watermark_2025-08-24.py::TestWatermarkUI::test_apply_watermark_invalid_pages ---\n--------------------------- Captured stdout teardown ---------------------------\n\n--- Completed test: test_watermark_2025-08-24.py::TestWatermarkUI::test_apply_watermark_invalid_pages ---\n&#34;}], &#34;test_watermark_2025-08-24.py::TestMainFunction::test_main_function&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_watermark_2025-08-24.py::TestMainFunction::test_main_function&#34;, &#34;duration&#34;: &#34;8 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_watermark_2025-08-24.py::TestMainFunction::test_main_function&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;8 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;---------------------------- Captured stdout setup -----------------------------\n\n--- Starting test: test_watermark_2025-08-24.py::TestMainFunction::test_main_function ---\n--------------------------- Captured stdout teardown ---------------------------\n\n--- Completed test: test_watermark_2025-08-24.py::TestMainFunction::test_main_function ---\n&#34;}], &#34;test_watermark_2025-08-24.py::TestErrorHandlingAndEdgeCases::test_watermark_with_large_text&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_watermark_2025-08-24.py::TestErrorHandlingAndEdgeCases::test_watermark_with_large_text&#34;, &#34;duration&#34;: &#34;28 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_watermark_2025-08-24.py::TestErrorHandlingAndEdgeCases::test_watermark_with_large_text&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;28 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;---------------------------- Captured stdout setup -----------------------------\n\n--- Starting test: test_watermark_2025-08-24.py::TestErrorHandlingAndEdgeCases::test_watermark_with_large_text ---\n--------------------------- Captured stdout teardown ---------------------------\n\n--- Completed test: test_watermark_2025-08-24.py::TestErrorHandlingAndEdgeCases::test_watermark_with_large_text ---\n&#34;}], &#34;test_watermark_2025-08-24.py::TestErrorHandlingAndEdgeCases::test_watermark_extreme_opacity_values&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_watermark_2025-08-24.py::TestErrorHandlingAndEdgeCases::test_watermark_extreme_opacity_values&#34;, &#34;duration&#34;: &#34;34 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_watermark_2025-08-24.py::TestErrorHandlingAndEdgeCases::test_watermark_extreme_opacity_values&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;34 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;---------------------------- Captured stdout setup -----------------------------\n\n--- Starting test: test_watermark_2025-08-24.py::TestErrorHandlingAndEdgeCases::test_watermark_extreme_opacity_values ---\n--------------------------- Captured stdout teardown ---------------------------\n\n--- Completed test: test_watermark_2025-08-24.py::TestErrorHandlingAndEdgeCases::test_watermark_extreme_opacity_values ---\n&#34;}], &#34;test_watermark_2025-08-24.py::TestErrorHandlingAndEdgeCases::test_watermark_with_none_parameters&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Failed&#34;, &#34;testId&#34;: &#34;test_watermark_2025-08-24.py::TestErrorHandlingAndEdgeCases::test_watermark_with_none_parameters&#34;, &#34;duration&#34;: &#34;24 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Failed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_watermark_2025-08-24.py::TestErrorHandlingAndEdgeCases::test_watermark_with_none_parameters&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;24 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;self = &amp;lt;tests.unit.test_watermark_2025-08-24.TestErrorHandlingAndEdgeCases object at 0x0000020F88F68640&amp;gt;\nmock_fitz = &amp;lt;Mock id=&amp;#x27;2265740080336&amp;#x27;&amp;gt;\nsample_pdf_file = &amp;#x27;C:\\\\Users\\\\HP1\\\\AppData\\\\Local\\\\Temp\\\\tmp04lbbr1w\\\\sample.pdf&amp;#x27;\nmock_logger = &amp;lt;MagicMock name=&amp;#x27;logger&amp;#x27; id=&amp;#x27;2265706728144&amp;#x27;&amp;gt;\n\n    @pytest.mark.unit\n    @pytest.mark.watermark\n    def test_watermark_with_none_parameters(self, mock_fitz, sample_pdf_file, mock_logger):\n        &amp;quot;&amp;quot;&amp;quot;Test watermark function with None parameters.&amp;quot;&amp;quot;&amp;quot;\n        if not WATERMARK_MODULE_AVAILABLE:\n            pytest.skip(&amp;quot;Watermark module not available&amp;quot;)\n    \n        with patch(&amp;#x27;utilities.pdf_tools.pdf_enhancements.watermark.logger&amp;#x27;, mock_logger):\n            with patch(&amp;#x27;utilities.pdf_tools.pdf_enhancements.watermark.fitz&amp;#x27;, mock_fitz):\n                # Test with None watermark text\n&amp;gt;               with pytest.raises(Exception):\nE               Failed: DID NOT RAISE &amp;lt;class &amp;#x27;Exception&amp;#x27;&amp;gt;\n\ntest_watermark_2025-08-24.py:626: Failed\n\n---------------------------- Captured stdout setup -----------------------------\n\n--- Starting test: test_watermark_2025-08-24.py::TestErrorHandlingAndEdgeCases::test_watermark_with_none_parameters ---\n--------------------------- Captured stdout teardown ---------------------------\n\n--- Completed test: test_watermark_2025-08-24.py::TestErrorHandlingAndEdgeCases::test_watermark_with_none_parameters ---\n&#34;}], &#34;test_watermark_2025-08-24.py::TestPerformanceAndStress::test_watermark_performance_multiple_pages&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_watermark_2025-08-24.py::TestPerformanceAndStress::test_watermark_performance_multiple_pages&#34;, &#34;duration&#34;: &#34;70 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_watermark_2025-08-24.py::TestPerformanceAndStress::test_watermark_performance_multiple_pages&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;70 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;---------------------------- Captured stdout setup -----------------------------\n\n--- Starting test: test_watermark_2025-08-24.py::TestPerformanceAndStress::test_watermark_performance_multiple_pages ---\n--------------------------- Captured stdout teardown ---------------------------\n\n--- Completed test: test_watermark_2025-08-24.py::TestPerformanceAndStress::test_watermark_performance_multiple_pages ---\n&#34;}], &#34;test_watermark_2025-08-24.py::test_execution_metadata&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;test_watermark_2025-08-24.py::test_execution_metadata&#34;, &#34;duration&#34;: &#34;5 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;test_watermark_2025-08-24.py::test_execution_metadata&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;5 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;---------------------------- Captured stdout setup -----------------------------\n\n--- Starting test: test_watermark_2025-08-24.py::test_execution_metadata ---\n--------------------------- Captured stdout teardown ---------------------------\n\n--- Completed test: test_watermark_2025-08-24.py::test_execution_metadata ---\n&#34;}]}, &#34;renderCollapsed&#34;: [&#34;passed&#34;], &#34;initialSort&#34;: &#34;result&#34;, &#34;title&#34;: &#34;result_watermark_2025-08-24.html&#34;}"></div>
+    <script>
+      (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
+const { getCollapsedCategory, setCollapsedIds } = require('./storage.js')
+
+class DataManager {
+    setManager(data) {
+        const collapsedCategories = [...getCollapsedCategory(data.renderCollapsed)]
+        const collapsedIds = []
+        const tests = Object.values(data.tests).flat().map((test, index) => {
+            const collapsed = collapsedCategories.includes(test.result.toLowerCase())
+            const id = `test_${index}`
+            if (collapsed) {
+                collapsedIds.push(id)
+            }
+            return {
+                ...test,
+                id,
+                collapsed,
+            }
+        })
+        const dataBlob = { ...data, tests }
+        this.data = { ...dataBlob }
+        this.renderData = { ...dataBlob }
+        setCollapsedIds(collapsedIds)
+    }
+
+    get allData() {
+        return { ...this.data }
+    }
+
+    resetRender() {
+        this.renderData = { ...this.data }
+    }
+
+    setRender(data) {
+        this.renderData.tests = [...data]
+    }
+
+    toggleCollapsedItem(id) {
+        this.renderData.tests = this.renderData.tests.map((test) =>
+            test.id === id ? { ...test, collapsed: !test.collapsed } : test,
+        )
+    }
+
+    set allCollapsed(collapsed) {
+        this.renderData = { ...this.renderData, tests: [...this.renderData.tests.map((test) => (
+            { ...test, collapsed }
+        ))] }
+    }
+
+    get testSubset() {
+        return [...this.renderData.tests]
+    }
+
+    get environment() {
+        return this.renderData.environment
+    }
+
+    get initialSort() {
+        return this.data.initialSort
+    }
+}
+
+module.exports = {
+    manager: new DataManager(),
+}
+
+},{"./storage.js":8}],2:[function(require,module,exports){
+const mediaViewer = require('./mediaviewer.js')
+const templateEnvRow = document.getElementById('template_environment_row')
+const templateResult = document.getElementById('template_results-table__tbody')
+
+function htmlToElements(html) {
+    const temp = document.createElement('template')
+    temp.innerHTML = html
+    return temp.content.childNodes
+}
+
+const find = (selector, elem) => {
+    if (!elem) {
+        elem = document
+    }
+    return elem.querySelector(selector)
+}
+
+const findAll = (selector, elem) => {
+    if (!elem) {
+        elem = document
+    }
+    return [...elem.querySelectorAll(selector)]
+}
+
+const dom = {
+    getStaticRow: (key, value) => {
+        const envRow = templateEnvRow.content.cloneNode(true)
+        const isObj = typeof value === 'object' && value !== null
+        const values = isObj ? Object.keys(value).map((k) => `${k}: ${value[k]}`) : null
+
+        const valuesElement = htmlToElements(
+            values ? `<ul>${values.map((val) => `<li>${val}</li>`).join('')}<ul>` : `<div>${value}</div>`)[0]
+        const td = findAll('td', envRow)
+        td[0].textContent = key
+        td[1].appendChild(valuesElement)
+
+        return envRow
+    },
+    getResultTBody: ({ testId, id, log, extras, resultsTableRow, tableHtml, result, collapsed }) => {
+        const resultBody = templateResult.content.cloneNode(true)
+        resultBody.querySelector('tbody').classList.add(result.toLowerCase())
+        resultBody.querySelector('tbody').id = testId
+        resultBody.querySelector('.collapsible').dataset.id = id
+
+        resultsTableRow.forEach((html) => {
+            const t = document.createElement('template')
+            t.innerHTML = html
+            resultBody.querySelector('.collapsible').appendChild(t.content)
+        })
+
+        if (log) {
+            // Wrap lines starting with "E" with span.error to color those lines red
+            const wrappedLog = log.replace(/^E.*$/gm, (match) => `<span class="error">${match}</span>`)
+            resultBody.querySelector('.log').innerHTML = wrappedLog
+        } else {
+            resultBody.querySelector('.log').remove()
+        }
+
+        if (collapsed) {
+            resultBody.querySelector('.collapsible > td')?.classList.add('collapsed')
+            resultBody.querySelector('.extras-row').classList.add('hidden')
+        } else {
+            resultBody.querySelector('.collapsible > td')?.classList.remove('collapsed')
+        }
+
+        const media = []
+        extras?.forEach(({ name, format_type, content }) => {
+            if (['image', 'video'].includes(format_type)) {
+                media.push({ path: content, name, format_type })
+            }
+
+            if (format_type === 'html') {
+                resultBody.querySelector('.extraHTML').insertAdjacentHTML('beforeend', `<div>${content}</div>`)
+            }
+        })
+        mediaViewer.setup(resultBody, media)
+
+        // Add custom html from the pytest_html_results_table_html hook
+        tableHtml?.forEach((item) => {
+            resultBody.querySelector('td[class="extra"]').insertAdjacentHTML('beforeend', item)
+        })
+
+        return resultBody
+    },
+}
+
+module.exports = {
+    dom,
+    htmlToElements,
+    find,
+    findAll,
+}
+
+},{"./mediaviewer.js":6}],3:[function(require,module,exports){
+const { manager } = require('./datamanager.js')
+const { doSort } = require('./sort.js')
+const storageModule = require('./storage.js')
+
+const getFilteredSubSet = (filter) =>
+    manager.allData.tests.filter(({ result }) => filter.includes(result.toLowerCase()))
+
+const doInitFilter = () => {
+    const currentFilter = storageModule.getVisible()
+    const filteredSubset = getFilteredSubSet(currentFilter)
+    manager.setRender(filteredSubset)
+}
+
+const doFilter = (type, show) => {
+    if (show) {
+        storageModule.showCategory(type)
+    } else {
+        storageModule.hideCategory(type)
+    }
+
+    const currentFilter = storageModule.getVisible()
+    const filteredSubset = getFilteredSubSet(currentFilter)
+    manager.setRender(filteredSubset)
+
+    const sortColumn = storageModule.getSort()
+    doSort(sortColumn, true)
+}
+
+module.exports = {
+    doFilter,
+    doInitFilter,
+}
+
+},{"./datamanager.js":1,"./sort.js":7,"./storage.js":8}],4:[function(require,module,exports){
+const { redraw, bindEvents, renderStatic } = require('./main.js')
+const { doInitFilter } = require('./filter.js')
+const { doInitSort } = require('./sort.js')
+const { manager } = require('./datamanager.js')
+const data = JSON.parse(document.getElementById('data-container').dataset.jsonblob)
+
+function init() {
+    manager.setManager(data)
+    doInitFilter()
+    doInitSort()
+    renderStatic()
+    redraw()
+    bindEvents()
+}
+
+init()
+
+},{"./datamanager.js":1,"./filter.js":3,"./main.js":5,"./sort.js":7}],5:[function(require,module,exports){
+const { dom, find, findAll } = require('./dom.js')
+const { manager } = require('./datamanager.js')
+const { doSort } = require('./sort.js')
+const { doFilter } = require('./filter.js')
+const {
+    getVisible,
+    getCollapsedIds,
+    setCollapsedIds,
+    getSort,
+    getSortDirection,
+    possibleFilters,
+} = require('./storage.js')
+
+const removeChildren = (node) => {
+    while (node.firstChild) {
+        node.removeChild(node.firstChild)
+    }
+}
+
+const renderStatic = () => {
+    const renderEnvironmentTable = () => {
+        const environment = manager.environment
+        const rows = Object.keys(environment).map((key) => dom.getStaticRow(key, environment[key]))
+        const table = document.getElementById('environment')
+        removeChildren(table)
+        rows.forEach((row) => table.appendChild(row))
+    }
+    renderEnvironmentTable()
+}
+
+const addItemToggleListener = (elem) => {
+    elem.addEventListener('click', ({ target }) => {
+        const id = target.parentElement.dataset.id
+        manager.toggleCollapsedItem(id)
+
+        const collapsedIds = getCollapsedIds()
+        if (collapsedIds.includes(id)) {
+            const updated = collapsedIds.filter((item) => item !== id)
+            setCollapsedIds(updated)
+        } else {
+            collapsedIds.push(id)
+            setCollapsedIds(collapsedIds)
+        }
+        redraw()
+    })
+}
+
+const renderContent = (tests) => {
+    const sortAttr = getSort(manager.initialSort)
+    const sortAsc = JSON.parse(getSortDirection())
+    const rows = tests.map(dom.getResultTBody)
+    const table = document.getElementById('results-table')
+    const tableHeader = document.getElementById('results-table-head')
+
+    const newTable = document.createElement('table')
+    newTable.id = 'results-table'
+
+    // remove all sorting classes and set the relevant
+    findAll('.sortable', tableHeader).forEach((elem) => elem.classList.remove('asc', 'desc'))
+    tableHeader.querySelector(`.sortable[data-column-type="${sortAttr}"]`)?.classList.add(sortAsc ? 'desc' : 'asc')
+    newTable.appendChild(tableHeader)
+
+    if (!rows.length) {
+        const emptyTable = document.getElementById('template_results-table__body--empty').content.cloneNode(true)
+        newTable.appendChild(emptyTable)
+    } else {
+        rows.forEach((row) => {
+            if (!!row) {
+                findAll('.collapsible td:not(.col-links', row).forEach(addItemToggleListener)
+                find('.logexpander', row).addEventListener('click',
+                    (evt) => evt.target.parentNode.classList.toggle('expanded'),
+                )
+                newTable.appendChild(row)
+            }
+        })
+    }
+
+    table.replaceWith(newTable)
+}
+
+const renderDerived = () => {
+    const currentFilter = getVisible()
+    possibleFilters.forEach((result) => {
+        const input = document.querySelector(`input[data-test-result="${result}"]`)
+        input.checked = currentFilter.includes(result)
+    })
+}
+
+const bindEvents = () => {
+    const filterColumn = (evt) => {
+        const { target: element } = evt
+        const { testResult } = element.dataset
+
+        doFilter(testResult, element.checked)
+        const collapsedIds = getCollapsedIds()
+        const updated = manager.renderData.tests.map((test) => {
+            return {
+                ...test,
+                collapsed: collapsedIds.includes(test.id),
+            }
+        })
+        manager.setRender(updated)
+        redraw()
+    }
+
+    const header = document.getElementById('environment-header')
+    header.addEventListener('click', () => {
+        const table = document.getElementById('environment')
+        table.classList.toggle('hidden')
+        header.classList.toggle('collapsed')
+    })
+
+    findAll('input[name="filter_checkbox"]').forEach((elem) => {
+        elem.addEventListener('click', filterColumn)
+    })
+
+    findAll('.sortable').forEach((elem) => {
+        elem.addEventListener('click', (evt) => {
+            const { target: element } = evt
+            const { columnType } = element.dataset
+            doSort(columnType)
+            redraw()
+        })
+    })
+
+    document.getElementById('show_all_details').addEventListener('click', () => {
+        manager.allCollapsed = false
+        setCollapsedIds([])
+        redraw()
+    })
+    document.getElementById('hide_all_details').addEventListener('click', () => {
+        manager.allCollapsed = true
+        const allIds = manager.renderData.tests.map((test) => test.id)
+        setCollapsedIds(allIds)
+        redraw()
+    })
+}
+
+const redraw = () => {
+    const { testSubset } = manager
+
+    renderContent(testSubset)
+    renderDerived()
+}
+
+module.exports = {
+    redraw,
+    bindEvents,
+    renderStatic,
+}
+
+},{"./datamanager.js":1,"./dom.js":2,"./filter.js":3,"./sort.js":7,"./storage.js":8}],6:[function(require,module,exports){
+class MediaViewer {
+    constructor(assets) {
+        this.assets = assets
+        this.index = 0
+    }
+
+    nextActive() {
+        this.index = this.index === this.assets.length - 1 ? 0 : this.index + 1
+        return [this.activeFile, this.index]
+    }
+
+    prevActive() {
+        this.index = this.index === 0 ? this.assets.length - 1 : this.index -1
+        return [this.activeFile, this.index]
+    }
+
+    get currentIndex() {
+        return this.index
+    }
+
+    get activeFile() {
+        return this.assets[this.index]
+    }
+}
+
+
+const setup = (resultBody, assets) => {
+    if (!assets.length) {
+        resultBody.querySelector('.media').classList.add('hidden')
+        return
+    }
+
+    const mediaViewer = new MediaViewer(assets)
+    const container = resultBody.querySelector('.media-container')
+    const leftArrow = resultBody.querySelector('.media-container__nav--left')
+    const rightArrow = resultBody.querySelector('.media-container__nav--right')
+    const mediaName = resultBody.querySelector('.media__name')
+    const counter = resultBody.querySelector('.media__counter')
+    const imageEl = resultBody.querySelector('img')
+    const sourceEl = resultBody.querySelector('source')
+    const videoEl = resultBody.querySelector('video')
+
+    const setImg = (media, index) => {
+        if (media?.format_type === 'image') {
+            imageEl.src = media.path
+
+            imageEl.classList.remove('hidden')
+            videoEl.classList.add('hidden')
+        } else if (media?.format_type === 'video') {
+            sourceEl.src = media.path
+
+            videoEl.classList.remove('hidden')
+            imageEl.classList.add('hidden')
+        }
+
+        mediaName.innerText = media?.name
+        counter.innerText = `${index + 1} / ${assets.length}`
+    }
+    setImg(mediaViewer.activeFile, mediaViewer.currentIndex)
+
+    const moveLeft = () => {
+        const [media, index] = mediaViewer.prevActive()
+        setImg(media, index)
+    }
+    const doRight = () => {
+        const [media, index] = mediaViewer.nextActive()
+        setImg(media, index)
+    }
+    const openImg = () => {
+        window.open(mediaViewer.activeFile.path, '_blank')
+    }
+    if (assets.length === 1) {
+        container.classList.add('media-container--fullscreen')
+    } else {
+        leftArrow.addEventListener('click', moveLeft)
+        rightArrow.addEventListener('click', doRight)
+    }
+    imageEl.addEventListener('click', openImg)
+}
+
+module.exports = {
+    setup,
+}
+
+},{}],7:[function(require,module,exports){
+const { manager } = require('./datamanager.js')
+const storageModule = require('./storage.js')
+
+const genericSort = (list, key, ascending, customOrder) => {
+    let sorted
+    if (customOrder) {
+        sorted = list.sort((a, b) => {
+            const aValue = a.result.toLowerCase()
+            const bValue = b.result.toLowerCase()
+
+            const aIndex = customOrder.findIndex((item) => item.toLowerCase() === aValue)
+            const bIndex = customOrder.findIndex((item) => item.toLowerCase() === bValue)
+
+            // Compare the indices to determine the sort order
+            return aIndex - bIndex
+        })
+    } else {
+        sorted = list.sort((a, b) => a[key] === b[key] ? 0 : a[key] > b[key] ? 1 : -1)
+    }
+
+    if (ascending) {
+        sorted.reverse()
+    }
+    return sorted
+}
+
+const durationSort = (list, ascending) => {
+    const parseDuration = (duration) => {
+        if (duration.includes(':')) {
+            // If it's in the format "HH:mm:ss"
+            const [hours, minutes, seconds] = duration.split(':').map(Number)
+            return (hours * 3600 + minutes * 60 + seconds) * 1000
+        } else {
+            // If it's in the format "nnn ms"
+            return parseInt(duration)
+        }
+    }
+    const sorted = list.sort((a, b) => parseDuration(a['duration']) - parseDuration(b['duration']))
+    if (ascending) {
+        sorted.reverse()
+    }
+    return sorted
+}
+
+const doInitSort = () => {
+    const type = storageModule.getSort(manager.initialSort)
+    const ascending = storageModule.getSortDirection()
+    const list = manager.testSubset
+    const initialOrder = ['Error', 'Failed', 'Rerun', 'XFailed', 'XPassed', 'Skipped', 'Passed']
+
+    storageModule.setSort(type)
+    storageModule.setSortDirection(ascending)
+
+    if (type?.toLowerCase() === 'original') {
+        manager.setRender(list)
+    } else {
+        let sortedList
+        switch (type) {
+        case 'duration':
+            sortedList = durationSort(list, ascending)
+            break
+        case 'result':
+            sortedList = genericSort(list, type, ascending, initialOrder)
+            break
+        default:
+            sortedList = genericSort(list, type, ascending)
+            break
+        }
+        manager.setRender(sortedList)
+    }
+}
+
+const doSort = (type, skipDirection) => {
+    const newSortType = storageModule.getSort(manager.initialSort) !== type
+    const currentAsc = storageModule.getSortDirection()
+    let ascending
+    if (skipDirection) {
+        ascending = currentAsc
+    } else {
+        ascending = newSortType ? false : !currentAsc
+    }
+    storageModule.setSort(type)
+    storageModule.setSortDirection(ascending)
+
+    const list = manager.testSubset
+    const sortedList = type === 'duration' ? durationSort(list, ascending) : genericSort(list, type, ascending)
+    manager.setRender(sortedList)
+}
+
+module.exports = {
+    doInitSort,
+    doSort,
+}
+
+},{"./datamanager.js":1,"./storage.js":8}],8:[function(require,module,exports){
+const possibleFilters = [
+    'passed',
+    'skipped',
+    'failed',
+    'error',
+    'xfailed',
+    'xpassed',
+    'rerun',
+]
+
+const getVisible = () => {
+    const url = new URL(window.location.href)
+    const settings = new URLSearchParams(url.search).get('visible')
+    const lower = (item) => {
+        const lowerItem = item.toLowerCase()
+        if (possibleFilters.includes(lowerItem)) {
+            return lowerItem
+        }
+        return null
+    }
+    return settings === null ?
+        possibleFilters :
+        [...new Set(settings?.split(',').map(lower).filter((item) => item))]
+}
+
+const hideCategory = (categoryToHide) => {
+    const url = new URL(window.location.href)
+    const visibleParams = new URLSearchParams(url.search).get('visible')
+    const currentVisible = visibleParams ? visibleParams.split(',') : [...possibleFilters]
+    const settings = [...new Set(currentVisible)].filter((f) => f !== categoryToHide).join(',')
+
+    url.searchParams.set('visible', settings)
+    window.history.pushState({}, null, unescape(url.href))
+}
+
+const showCategory = (categoryToShow) => {
+    if (typeof window === 'undefined') {
+        return
+    }
+    const url = new URL(window.location.href)
+    const currentVisible = new URLSearchParams(url.search).get('visible')?.split(',').filter(Boolean) ||
+        [...possibleFilters]
+    const settings = [...new Set([categoryToShow, ...currentVisible])]
+    const noFilter = possibleFilters.length === settings.length || !settings.length
+
+    noFilter ? url.searchParams.delete('visible') : url.searchParams.set('visible', settings.join(','))
+    window.history.pushState({}, null, unescape(url.href))
+}
+
+const getSort = (initialSort) => {
+    const url = new URL(window.location.href)
+    let sort = new URLSearchParams(url.search).get('sort')
+    if (!sort) {
+        sort = initialSort || 'result'
+    }
+    return sort
+}
+
+const setSort = (type) => {
+    const url = new URL(window.location.href)
+    url.searchParams.set('sort', type)
+    window.history.pushState({}, null, unescape(url.href))
+}
+
+const getCollapsedCategory = (renderCollapsed) => {
+    let categories
+    if (typeof window !== 'undefined') {
+        const url = new URL(window.location.href)
+        const collapsedItems = new URLSearchParams(url.search).get('collapsed')
+        switch (true) {
+        case !renderCollapsed && collapsedItems === null:
+            categories = ['passed']
+            break
+        case collapsedItems?.length === 0 || /^["']{2}$/.test(collapsedItems):
+            categories = []
+            break
+        case /^all$/.test(collapsedItems) || collapsedItems === null && /^all$/.test(renderCollapsed):
+            categories = [...possibleFilters]
+            break
+        default:
+            categories = collapsedItems?.split(',').map((item) => item.toLowerCase()) || renderCollapsed
+            break
+        }
+    } else {
+        categories = []
+    }
+    return categories
+}
+
+const getSortDirection = () => JSON.parse(sessionStorage.getItem('sortAsc')) || false
+const setSortDirection = (ascending) => sessionStorage.setItem('sortAsc', ascending)
+
+const getCollapsedIds = () => JSON.parse(sessionStorage.getItem('collapsedIds')) || []
+const setCollapsedIds = (list) => sessionStorage.setItem('collapsedIds', JSON.stringify(list))
+
+module.exports = {
+    getVisible,
+    hideCategory,
+    showCategory,
+    getCollapsedIds,
+    setCollapsedIds,
+    getSort,
+    setSort,
+    getSortDirection,
+    setSortDirection,
+    getCollapsedCategory,
+    possibleFilters,
+}
+
+},{}]},{},[4]);
+    </script>
+  </footer>
+</html>

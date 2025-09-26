@@ -1,0 +1,80 @@
+{
+  "test_execution_summary": {
+    "execution_timestamp": "2025-08-28 11:28:51",
+    "execution_date": "2025-08-28",
+    "target_module": "system_cleanup.py",
+    "target_path": "src/utilities/system/system_cleanup.py",
+    "test_framework": "pytest",
+    "python_version": "3.13.2 (tags/v3.13.2:4f8bb39, Feb  4 2025, 15:23:48) [MSC v.1942 64 bit (AMD64)]",
+    "working_directory": "C:\\Users\\richardi\\1_2\\tests\\unit"
+  },
+  "test_files_created": [
+    {
+      "filename": "test_system_cleanup_2025-08-28.py",
+      "description": "Original comprehensive unit tests with extensive mocking",
+      "status": "Created but had import issues",
+      "test_count": "~30 planned tests"
+    },
+    {
+      "filename": "test_system_cleanup_basic_2025-08-28.py",
+      "description": "Simplified unit tests with basic functionality",
+      "status": "Partially working with some import issues",
+      "test_count": "14 tests"
+    },
+    {
+      "filename": "test_system_cleanup_direct_2025-08-28.py",
+      "description": "Direct import approach avoiding package complexity",
+      "status": "Working successfully",
+      "test_count": "17 tests"
+    }
+  ],
+  "configuration_files": [
+    {
+      "filename": "system_cleanup_pytest.ini",
+      "description": "Custom pytest configuration for system cleanup tests"
+    },
+    {
+      "filename": "conftest.py",
+      "description": "Pytest fixtures and configuration"
+    },
+    {
+      "filename": "run_system_cleanup_tests_2025-08-28.py",
+      "description": "Test runner script with comprehensive reporting"
+    }
+  ],
+  "test_coverage": {
+    "target_functions": [
+      "__init__",
+      "init_cleanup_tools",
+      "customize_for_cleanup",
+      "add_cleanup_tab",
+      "run_temp_cleanup",
+      "_format_size",
+      "main"
+    ],
+    "edge_cases_tested": [
+      "PyQt5 not available",
+      "Cleanup tools not available",
+      "Exception handling",
+      "User cancellation",
+      "Successful operations",
+      "Failed operations",
+      "Partial success with errors"
+    ]
+  },
+  "test_features": {
+    "mocking": "Extensive use of unittest.mock",
+    "fixtures": "Custom pytest fixtures for test data",
+    "parametrization": "Multiple test scenarios",
+    "coverage_reporting": "HTML and JSON coverage reports",
+    "html_reporting": "Self-contained HTML test reports",
+    "json_reporting": "Machine-readable JSON results",
+    "error_handling": "Comprehensive exception testing",
+    "integration_testing": "Module-level integration tests"
+  },
+  "execution_results": {
+    "completion_time": "2025-08-28 11:28:51",
+    "final_test_file": "test_system_cleanup_direct_2025-08-28.py",
+    "status": "Completed successfully"
+  }
+}

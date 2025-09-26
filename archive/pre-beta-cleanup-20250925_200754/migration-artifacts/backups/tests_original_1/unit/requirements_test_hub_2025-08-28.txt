@@ -1,0 +1,49 @@
+# Test Requirements for Hub.py Unit Tests
+# Created: 2025-08-28
+# Target: src/rfu/hub.py
+
+# Core testing framework
+pytest>=6.0.0
+pytest-html>=3.0.0
+pytest-json-report>=1.4.0
+pytest-cov>=2.10.0
+pytest-mock>=3.6.0
+
+# Coverage analysis
+coverage>=5.0.0
+
+# Mocking and test utilities
+mock>=4.0.0
+
+# PyQt5 testing support (optional, for GUI tests)
+pytest-qt>=4.0.0
+
+# Additional testing utilities
+pytest-xdist>=2.0.0  # for parallel test execution
+pytest-timeout>=1.4.0  # for test timeout handling
+pytest-benchmark>=3.4.0  # for performance testing
+
+# Code quality and linting (optional)
+pytest-flake8>=1.0.0
+pytest-pylint>=0.18.0
+
+# Test data generation
+faker>=8.0.0
+
+# Date/time testing utilities
+freezegun>=1.0.0
+
+# Network testing utilities (for network-related tests)
+responses>=0.13.0
+
+# File system testing utilities
+pytest-tmpdir>=1.0.0
+
+# Assertion helpers
+assertpy>=1.1.0
+
+# Configuration and environment
+python-dotenv>=0.19.0
+
+# Logging and debugging
+pytest-logger>=0.5.0

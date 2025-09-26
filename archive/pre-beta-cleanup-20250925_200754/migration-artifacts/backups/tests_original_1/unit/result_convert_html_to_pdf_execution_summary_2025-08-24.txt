@@ -1,0 +1,176 @@
+
+CONVERT HTML TO PDF TEST EXECUTION SUMMARY
+==========================================
+Execution Date: 2025-08-24 18:06:02
+Test File: test_convert_html_to_pdf_minimal_2025-08-24.py
+Configuration: pytest_convert_html_to_pdf_2025-08-24.ini
+Execution Time: 6.08 seconds
+Exit Code: 1
+
+COMMAND EXECUTED:
+C:\Users\HP1\AppData\Local\Programs\Python\Python313\python.exe -m pytest C:\Users\HP1\1_2\1_2\tests\unit\test_convert_html_to_pdf_minimal_2025-08-24.py --config-file=C:\Users\HP1\1_2\1_2\tests\unit\pytest_convert_html_to_pdf_2025-08-24.ini -v --tb=short --strict-markers --strict-config --color=yes --durations=10 --html=C:\Users\HP1\1_2\1_2\tests\unit\result_convert_html_to_pdf_2025-08-24.html --self-contained-html --json-report --json-report-file=C:\Users\HP1\1_2\1_2\tests\unit\result_convert_html_to_pdf_2025-08-24.json --json-report-summary --junitxml=C:\Users\HP1\1_2\1_2\tests\unit\result_convert_html_to_pdf_2025-08-24_junit.xml --cov=convert_html_to_pdf --cov-report=html:C:\Users\HP1\1_2\1_2\tests\unit\result_convert_html_to_pdf_coverage_2025-08-24 --cov-report=json:C:\Users\HP1\1_2\1_2\tests\unit\result_convert_html_to_pdf_coverage_2025-08-24.json --cov-report=term-missing --cov-branch --cov-fail-under=0
+
+STANDARD OUTPUT:
+--------------------------------------------------
+
+=== Test Session Started at 2025-08-24 18:06:00 ===
+[1m============================= test session starts =============================[0m
+platform win32 -- Python 3.13.5, pytest-8.3.5, pluggy-1.6.0 -- C:\Users\HP1\AppData\Local\Programs\Python\Python313\python.exe
+cachedir: .pytest_cache
+benchmark: 5.1.0 (defaults: timer=time.perf_counter disable_gc=False min_rounds=5 min_time=0.000005 max_time=1.0 calibration_precision=10 warmup=False warmup_iterations=100000)
+metadata: {'Python': '3.13.5', 'Platform': 'Windows-11-10.0.26100-SP0', 'Packages': {'pytest': '8.3.5', 'pluggy': '1.6.0'}, 'Plugins': {'Faker': '37.5.3', 'asyncio': '0.26.0', 'benchmark': '5.1.0', 'cov': '6.1.0', 'html': '4.1.1', 'json': '0.4.0', 'json-report': '1.5.0', 'metadata': '3.1.1', 'mock': '3.14.1', 'qt': '4.4.0', 'timeout': '2.3.1', 'xdist': '3.8.0', 'xvfb': '3.1.1'}}
+PyQt5 5.15.11 -- Qt runtime 5.15.2 -- Qt compiled 5.15.2
+rootdir: C:\Users\HP1\1_2\1_2\tests\unit
+configfile: pytest_convert_html_to_pdf_2025-08-24.ini
+plugins: Faker-37.5.3, asyncio-0.26.0, benchmark-5.1.0, cov-6.1.0, html-4.1.1, json-0.4.0, json-report-1.5.0, metadata-3.1.1, mock-3.14.1, qt-4.4.0, timeout-2.3.1, xdist-3.8.0, xvfb-3.1.1
+asyncio: mode=Mode.STRICT, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+[1mcollecting ... [0mcollected 18 items
+
+test_convert_html_to_pdf_minimal_2025-08-24.py::TestConvertHtmlToPdfCore::test_module_import_success [31mFAILED[0m[31m [  5%][0m
+test_convert_html_to_pdf_minimal_2025-08-24.py::TestConvertHtmlToPdfCore::test_converter_class_exists [31mFAILED[0m[31m [ 11%][0m
+test_convert_html_to_pdf_minimal_2025-08-24.py::TestConvertHtmlToPdfCore::test_main_function_exists [31mFAILED[0m[31m [ 16%][0m
+test_convert_html_to_pdf_minimal_2025-08-24.py::TestPdfkitIntegration::test_pdfkit_from_url_called [32mPASSED[0m[31m [ 22%][0m
+test_convert_html_to_pdf_minimal_2025-08-24.py::TestPdfkitIntegration::test_pdfkit_from_file_called [32mPASSED[0m[31m [ 27%][0m
+test_convert_html_to_pdf_minimal_2025-08-24.py::TestPdfkitIntegration::test_pdfkit_from_string_called [32mPASSED[0m[31m [ 33%][0m
+test_convert_html_to_pdf_minimal_2025-08-24.py::TestErrorHandling::test_import_error_recovery [31mFAILED[0m[31m [ 38%][0m
+test_convert_html_to_pdf_minimal_2025-08-24.py::TestErrorHandling::test_pdfkit_error_simulation [32mPASSED[0m[31m [ 44%][0m
+test_convert_html_to_pdf_minimal_2025-08-24.py::TestParameterValidation::test_empty_string_validation [32mPASSED[0m[31m [ 50%][0m
+test_convert_html_to_pdf_minimal_2025-08-24.py::TestParameterValidation::test_url_format_validation [32mPASSED[0m[31m [ 55%][0m
+test_convert_html_to_pdf_minimal_2025-08-24.py::TestFileOperations::test_file_path_validation [32mPASSED[0m[31m [ 61%][0m
+test_convert_html_to_pdf_minimal_2025-08-24.py::TestFileOperations::test_output_file_validation [32mPASSED[0m[31m [ 66%][0m
+test_convert_html_to_pdf_minimal_2025-08-24.py::TestIntegrationScenarios::test_url_to_pdf_workflow [32mPASSED[0m[31m [ 72%][0m
+test_convert_html_to_pdf_minimal_2025-08-24.py::TestIntegrationScenarios::test_file_to_pdf_workflow [32mPASSED[0m[31m [ 77%][0m
+test_convert_html_to_pdf_minimal_2025-08-24.py::TestIntegrationScenarios::test_html_string_to_pdf_workflow [32mPASSED[0m[31m [ 83%][0m
+test_convert_html_to_pdf_minimal_2025-08-24.py::TestApplicationLifecycle::test_application_creation [31mFAILED[0m[31m [ 88%][0m
+test_convert_html_to_pdf_minimal_2025-08-24.py::TestApplicationLifecycle::test_application_execution [32mPASSED[0m[31m [ 94%][0m
+test_convert_html_to_pdf_minimal_2025-08-24.py::test_execution_summary [32mPASSED[0m[31m [100%][0m[31m[1m
+WARNING: Failed to generate report: No data to report.
+
+[0m
+=== Test Session Finished at 2025-08-24 18:06:02 ===
+Exit status: 1
+
+
+================================== FAILURES ===================================
+[31m[1m_____________ TestConvertHtmlToPdfCore.test_module_import_success _____________[0m
+[1m[31mtest_convert_html_to_pdf_minimal_2025-08-24.py[0m:68: in test_module_import_success
+    [0m[94mimport[39;49;00m[90m [39;49;00m[04m[96mconvert_html_to_pdf[39;49;00m[90m[39;49;00m
+[1m[31mE   ModuleNotFoundError: No module named 'convert_html_to_pdf'[0m
+
+[33mDuring handling of the above exception, another exception occurred:[0m
+[1m[31mtest_convert_html_to_pdf_minimal_2025-08-24.py[0m:72: in test_module_import_success
+    [0mpytest.fail([33mf[39;49;00m[33m"[39;49;00m[33mFailed to import convert_html_to_pdf: [39;49;00m[33m{[39;49;00me[33m}[39;49;00m[33m"[39;49;00m)[90m[39;49;00m
+[1m[31mE   Failed: Failed to import convert_html_to_pdf: No module named 'convert_html_to_pdf'[0m
+---------------------------- Captured stdout setup ----------------------------
+
+--- Starting test: test_convert_html_to_pdf_minimal_2025-08-24.py::TestConvertHtmlToPdfCore::test_module_import_success ---
+-------------------------- Captured stdout teardown ---------------------------
+
+--- Completed test: test_convert_html_to_pdf_minimal_2025-08-24.py::TestConvertHtmlToPdfCore::test_module_import_success ---
+[31m[1m____________ TestConvertHtmlToPdfCore.test_converter_class_exists _____________[0m
+[1m[31mtest_convert_html_to_pdf_minimal_2025-08-24.py[0m:76: in test_converter_class_exists
+    [0m[94mimport[39;49;00m[90m [39;49;00m[04m[96mconvert_html_to_pdf[39;49;00m[90m[39;49;00m
+[1m[31mE   ModuleNotFoundError: No module named 'convert_html_to_pdf'[0m
+---------------------------- Captured stdout setup ----------------------------
+
+--- Starting test: test_convert_html_to_pdf_minimal_2025-08-24.py::TestConvertHtmlToPdfCore::test_converter_class_exists ---
+-------------------------- Captured stdout teardown ---------------------------
+
+--- Completed test: test_convert_html_to_pdf_minimal_2025-08-24.py::TestConvertHtmlToPdfCore::test_converter_class_exists ---
+[31m[1m_____________ TestConvertHtmlToPdfCore.test_main_function_exists ______________[0m
+[1m[31mtest_convert_html_to_pdf_minimal_2025-08-24.py[0m:85: in test_main_function_exists
+    [0m[94mimport[39;49;00m[90m [39;49;00m[04m[96mconvert_html_to_pdf[39;49;00m[90m[39;49;00m
+[1m[31mE   ModuleNotFoundError: No module named 'convert_html_to_pdf'[0m
+---------------------------- Captured stdout setup ----------------------------
+
+--- Starting test: test_convert_html_to_pdf_minimal_2025-08-24.py::TestConvertHtmlToPdfCore::test_main_function_exists ---
+-------------------------- Captured stdout teardown ---------------------------
+
+--- Completed test: test_convert_html_to_pdf_minimal_2025-08-24.py::TestConvertHtmlToPdfCore::test_main_function_exists ---
+[31m[1m________________ TestErrorHandling.test_import_error_recovery _________________[0m
+[1m[31mtest_convert_html_to_pdf_minimal_2025-08-24.py[0m:156: in test_import_error_recovery
+    [0m[94mimport[39;49;00m[90m [39;49;00m[04m[96mconvert_html_to_pdf[39;49;00m[90m[39;49;00m
+[1m[31mE   ModuleNotFoundError: No module named 'convert_html_to_pdf'[0m
+
+[33mDuring handling of the above exception, another exception occurred:[0m
+[1m[31mtest_convert_html_to_pdf_minimal_2025-08-24.py[0m:161: in test_import_error_recovery
+    [0mpytest.fail([33mf[39;49;00m[33m"[39;49;00m[33mUnexpected import error: [39;49;00m[33m{[39;49;00me[33m}[39;49;00m[33m"[39;49;00m)[90m[39;49;00m
+[1m[31mE   Failed: Unexpected import error: No module named 'convert_html_to_pdf'[0m
+---------------------------- Captured stdout setup ----------------------------
+
+--- Starting test: test_convert_html_to_pdf_minimal_2025-08-24.py::TestErrorHandling::test_import_error_recovery ---
+-------------------------- Captured stdout teardown ---------------------------
+
+--- Completed test: test_convert_html_to_pdf_minimal_2025-08-24.py::TestErrorHandling::test_import_error_recovery ---
+[31m[1m_____________ TestApplicationLifecycle.test_application_creation ______________[0m
+[1m[31m..\..\..\..\AppData\Local\Programs\Python\Python313\Lib\unittest\mock.py[0m:970: in assert_called_with
+    [0m[94mraise[39;49;00m [96mAssertionError[39;49;00m(error_message)[90m[39;49;00m
+[1m[31mE   AssertionError: expected call not found.[0m
+[1m[31mE   Expected: QApplication([])[0m
+[1m[31mE     Actual: not called.[0m
+
+[33mDuring handling of the above exception, another exception occurred:[0m
+[1m[31mtest_convert_html_to_pdf_minimal_2025-08-24.py[0m:364: in test_application_creation
+    [0m[96mself[39;49;00m.mock_qtwidgets.QApplication.assert_called_with([])[90m[39;49;00m
+[1m[31mE   AssertionError: expected call not found.[0m
+[1m[31mE   Expected: QApplication([])[0m
+[1m[31mE     Actual: not called.[0m
+---------------------------- Captured stdout setup ----------------------------
+
+--- Starting test: test_convert_html_to_pdf_minimal_2025-08-24.py::TestApplicationLifecycle::test_application_creation ---
+-------------------------- Captured stdout teardown ---------------------------
+
+--- Completed test: test_convert_html_to_pdf_minimal_2025-08-24.py::TestApplicationLifecycle::test_application_creation ---
+- generated xml file: C:\Users\HP1\1_2\1_2\tests\unit\result_convert_html_to_pdf_2025-08-24_junit.xml -
+--------------------------------- JSON report ---------------------------------
+report saved to: C:\Users\HP1\1_2\1_2\tests\unit\result_convert_html_to_pdf_2025-08-24.json
+=============================== tests coverage ================================
+_______________ coverage: platform win32, python 3.13.5-final-0 _______________
+
+============================ slowest 10 durations =============================
+0.33s setup    test_convert_html_to_pdf_minimal_2025-08-24.py::TestConvertHtmlToPdfCore::test_module_import_success
+0.04s call     test_convert_html_to_pdf_minimal_2025-08-24.py::TestApplicationLifecycle::test_application_creation
+0.01s call     test_convert_html_to_pdf_minimal_2025-08-24.py::TestConvertHtmlToPdfCore::test_module_import_success
+0.01s setup    test_convert_html_to_pdf_minimal_2025-08-24.py::TestConvertHtmlToPdfCore::test_main_function_exists
+0.01s teardown test_convert_html_to_pdf_minimal_2025-08-24.py::TestApplicationLifecycle::test_application_creation
+
+(5 durations < 0.005s hidden.  Use -vv to show these durations.)
+- Generated html report: file:///C:/Users/HP1/1_2/1_2/tests/unit/result_convert_html_to_pdf_2025-08-24.html -
+[36m[1m=========================== short test summary info ===========================[0m
+[31mFAILED[0m test_convert_html_to_pdf_minimal_2025-08-24.py::[1mTestConvertHtmlToPdfCore::test_module_import_success[0m - Failed: Failed to import convert_html_to_pdf: No module named 'convert_html...
+[31mFAILED[0m test_convert_html_to_pdf_minimal_2025-08-24.py::[1mTestConvertHtmlToPdfCore::test_converter_class_exists[0m - ModuleNotFoundError: No module named 'convert_html_to_pdf'
+[31mFAILED[0m test_convert_html_to_pdf_minimal_2025-08-24.py::[1mTestConvertHtmlToPdfCore::test_main_function_exists[0m - ModuleNotFoundError: No module named 'convert_html_to_pdf'
+[31mFAILED[0m test_convert_html_to_pdf_minimal_2025-08-24.py::[1mTestErrorHandling::test_import_error_recovery[0m - Failed: Unexpected import error: No module named 'convert_html_to_pdf'
+[31mFAILED[0m test_convert_html_to_pdf_minimal_2025-08-24.py::[1mTestApplicationLifecycle::test_application_creation[0m - AssertionError: expected call not found.
+[31m======================== [31m[1m5 failed[0m, [32m13 passed[0m[31m in 1.53s[0m[31m =========================[0m
+
+
+STANDARD ERROR:
+--------------------------------------------------
+C:\Users\HP1\AppData\Local\Programs\Python\Python313\Lib\site-packages\pytest_asyncio\plugin.py:217: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+C:\Users\HP1\AppData\Local\Programs\Python\Python313\Lib\site-packages\coverage\inorout.py:509: CoverageWarning: Module convert_html_to_pdf was never imported. (module-not-imported)
+  self.warn(f"Module {pkg} was never imported.", slug="module-not-imported")
+C:\Users\HP1\AppData\Local\Programs\Python\Python313\Lib\site-packages\coverage\control.py:915: CoverageWarning: No data was collected. (no-data-collected)
+  self._warn("No data was collected.", slug="no-data-collected")
+C:\Users\HP1\AppData\Local\Programs\Python\Python313\Lib\site-packages\pytest_cov\plugin.py:336: CovReportWarning: Failed to generate report: No data to report.
+
+  warnings.warn(CovReportWarning(message), stacklevel=1)
+
+
+OUTPUT FILES GENERATED:
+--------------------------------------------------
+- HTML Report: result_convert_html_to_pdf_2025-08-24.html
+- JSON Report: result_convert_html_to_pdf_2025-08-24.json
+- JUnit XML: result_convert_html_to_pdf_2025-08-24_junit.xml
+- Coverage HTML: result_convert_html_to_pdf_coverage_2025-08-24/
+- Coverage JSON: result_convert_html_to_pdf_coverage_2025-08-24.json
+- Execution Summary: result_convert_html_to_pdf_execution_summary_2025-08-24.txt
+
+TEST STATUS:
+--------------------------------------------------
+FAILED/ERROR
+
+END OF SUMMARY

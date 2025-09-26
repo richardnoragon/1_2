@@ -1,0 +1,53 @@
+{
+  "mock_settings": {
+    "enable_socket_mocking": true,
+    "enable_dns_mocking": true,
+    "simulate_network_delays": false,
+    "default_timeout": 5.0
+  },
+  "network_responses": {
+    "22": {
+      "banner": "SSH-2.0-OpenSSH_8.0",
+      "service": "SSH"
+    },
+    "80": {
+      "banner": "Apache/2.4.41 (Ubuntu)",
+      "service": "HTTP"
+    },
+    "443": {
+      "banner": "nginx/1.18.0",
+      "service": "HTTPS"
+    },
+    "21": {
+      "banner": "vsftpd 3.0.3",
+      "service": "FTP"
+    },
+    "25": {
+      "banner": "Postfix smtpd",
+      "service": "SMTP"
+    },
+    "53": {
+      "banner": "BIND 9.16.1",
+      "service": "DNS"
+    },
+    "3389": {
+      "banner": "Microsoft Terminal Services",
+      "service": "RDP"
+    },
+    "5900": {
+      "banner": "RealVNC 6.0",
+      "service": "VNC"
+    }
+  },
+  "test_networks": [
+    "192.168.1.0/24",
+    "10.0.0.0/24",
+    "172.16.0.0/24"
+  ],
+  "test_targets": [
+    "8.8.8.8",
+    "google.com",
+    "bing.com",
+    "cloudflare.com"
+  ]
+}

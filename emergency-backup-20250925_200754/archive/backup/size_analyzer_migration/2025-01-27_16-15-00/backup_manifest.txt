@@ -1,0 +1,17 @@
+Size Analyzer Migration Backup
+Created: 2025-01-27 16:15:00
+Migration Phase: 1 - Core Logic Separation
+
+Original Files Backed Up:
+- size_analyzer.py (543 lines) - Original monolithic implementation
+- size_analyzer.ui (337 lines) - Original UI definition
+
+Migration Target:
+- file_utilities_2/core/size_analyzer_logic.py - Core logic with SizeAnalyzer class
+- file_utilities_2/gui/size_analyzer_gui.py - Modern GUI with SizeAnalyzerGUI class
+- file_utilities_2/gui/size_analyzer.ui - Migrated UI file
+
+Notes:
+- Tests expect SizeAnalyzer class with analyze_directory(), format_size(), export_analysis() methods
+- Need comprehensive PyQt5 progress tracking signals
+- Must inherit from StandardWindow and integrate with ThemeManager

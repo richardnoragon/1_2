@@ -1,0 +1,337 @@
+"""
+Standardized Checksum Utility with consistent styling.
+"""
+
+import sys
+import os
+import hashlib
+from PyQt5.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout,
+                             QHBoxLayout, QPushButton, QLabel, QLineEdit,
+                             QComboBox, QTextEdit, QFileDialog, QProgressBar,
+                             QGroupBox, QStatusBar)
+from PyQt5.QtCore import Qt, QThread, pyqtSignal
+from PyQt5.QtGui import QFont
+from gui.themes import ThemeManager, Colors, Fonts
+from check_sum import ChecksumLogic, VALID_ALGORITHMS
+
+
+class ChecksumWindow(QMainWindow):
+    """Standardized checksum utility window."""
+    
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("Checksum Utility")
+        self.setMinimumSize(600, 500)
+        self.resize(700, 600)
+        
+        # Apply standard theme
+        self.setStyleSheet(f"""
+            QMainWindow {{
+                background-color: {Colors.WINDOW_BACKGROUND};
+                color: {Colors.TEXT_PRIMARY};
+            }}
+        """)
+        
+        self._setup_ui()
+        self.checksum_thread = None
+    
+    def _setup_ui(self):
+        """Setup the user interface with standardized styling."""
+        # Central widget
+        central_widget = QWidget()
+        self.setCentralWidget(central_widget)
+        
+        # Main layout
+        main_layout = QVBoxLayout()
+        main_layout.setContentsMargins(20, 20, 20, 20)
+        main_layout.setSpacing(15)
+        central_widget.setLayout(main_layout)
+        
+        # Header
+        header = QLabel("Checksum Utility")
+        header_font = Fonts.get_font(Fonts.TITLE_SIZE, Fonts.BOLD)
+        header.setFont(header_font)
+        header.setAlignment(Qt.AlignCenter)
+        header.setStyleSheet(f"color: {Colors.PRIMARY}; margin-bottom: 10px;")
+        main_layout.addWidget(header)
+        
+        # File selection group
+        file_group = QGroupBox("File Selection")
+        ThemeManager.style_group_box(file_group)
+        file_layout = QVBoxLayout()
+        file_layout.setSpacing(10)
+        file_group.setLayout(file_layout)
+        
+        # File path input
+        file_path_layout = QHBoxLayout()
+        file_path_layout.setSpacing(10)
+        
+        self.file_path_input = QLineEdit()
+        ThemeManager.style_input_field(self.file_path_input)
+        self.file_path_input.setPlaceholderText("Select file or directory...")
+        
+        browse_btn = QPushButton("Browse")
+        ThemeManager.style_primary_button(browse_btn)
+        browse_btn.clicked.connect(self.browse_file)
+        
+        file_path_layout.addWidget(self.file_path_input)
+        file_path_layout.addWidget(browse_btn)
+        file_layout.addLayout(file_path_layout)
+        
+        main_layout.addWidget(file_group)
+        
+        # Algorithm selection group
+        algo_group = QGroupBox("Algorithm")
+        ThemeManager.style_group_box(algo_group)
+        algo_layout = QVBoxLayout()
+        algo_layout.setSpacing(10)
+        algo_group.setLayout(algo_layout)
+        
+        self.algorithm_combo = QComboBox()
+        ThemeManager.style_input_field(self.algorithm_combo)
+        self.algorithm_combo.addItems(VALID_ALGORITHMS)
+        self.algorithm_combo.setCurrentText("sha256")
+        
+        algo_layout.addWidget(QLabel("Select algorithm:"))
+        algo_layout.addWidget(self.algorithm_combo)
+        
+        main_layout.addWidget(algo_group)
+        
+        # Checksum input group
+        checksum_group = QGroupBox("Checksum")
+        ThemeManager.style_group_box(checksum_group)
+        checksum_layout = QVBoxLayout()
+        checksum_layout.setSpacing(10)
+        checksum_group.setLayout(checksum_layout)
+        
+        self.checksum_input = QLineEdit()
+        ThemeManager.style_input_field(self.checksum_input)
+        self.checksum_input.setPlaceholderText("Enter expected checksum (optional)...")
+        
+        checksum_layout.addWidget(QLabel("Expected checksum (for verification):"))
+        checksum_layout.addWidget(self.checksum_input)
+        
+        main_layout.addWidget(checksum_group)
+        
+        # Results group
+        results_group = QGroupBox("Results")
+        ThemeManager.style_group_box(results_group)
+        results_layout = QVBoxLayout()
+        results_layout.setSpacing(10)
+        results_group.setLayout(results_layout)
+        
+        self.results_text = QTextEdit()
+        ThemeManager.style_input_field(self.results_text)
+        self.results_text.setReadOnly(True)
+        self.results_text.setMaximumHeight(150)
+        
+        results_layout.addWidget(QLabel("Checksum results:"))
+        results_layout.addWidget(self.results_text)
+        
+        main_layout.addWidget(results_group)
+        
+        # Progress bar
+        self.progress_bar = QProgressBar()
+        ThemeManager.style_progress_bar(self.progress_bar)
+        self.progress_bar.setVisible(False)
+        main_layout.addWidget(self.progress_bar)
+        
+        # Action buttons
+        button_layout = QHBoxLayout()
+        button_layout.setSpacing(10)
+        
+        calculate_btn = QPushButton("Calculate Checksum")
+        ThemeManager.style_primary_button(calculate_btn)
+        calculate_btn.clicked.connect(self.calculate_checksum)
+        
+        verify_btn = QPushButton("Verify Checksum")
+        ThemeManager.style_secondary_button(verify_btn)
+        verify_btn.clicked.connect(self.verify_checksum)
+        
+        clear_btn = QPushButton("Clear")
+        ThemeManager.style_secondary_button(clear_btn)
+        clear_btn.clicked.connect(self.clear_results)
+        
+        button_layout.addWidget(calculate_btn)
+        button_layout.addWidget(verify_btn)
+        button_layout.addWidget(clear_btn)
+        
+        main_layout.addLayout(button_layout)
+        
+        # Status bar
+        self.status_bar = QStatusBar()
+        self.setStatusBar(self.status_bar)
+        self.status_bar.showMessage("Ready")
+    
+    def browse_file(self):
+        """Browse for file or directory."""
+        file_path, _ = QFileDialog.getOpenFileName(
+            self, "Select File", "", "All Files (*)"
+        )
+        if file_path:
+            self.file_path_input.setText(file_path)
+    
+    def calculate_checksum(self):
+        """Calculate checksum for selected file."""
+        file_path = self.file_path_input.text()
+        if not file_path or not os.path.exists(file_path):
+            self.status_bar.showMessage("Please select a valid file", 3000)
+            return
+        
+        algorithm = self.algorithm_combo.currentText()
+        
+        # Disable UI during calculation
+        self.progress_bar.setVisible(True)
+        self.progress_bar.setRange(0, 0)  # Indeterminate progress
+        self.status_bar.showMessage("Calculating checksum...")
+        
+        # Create and start checksum thread
+        self.checksum_thread = ChecksumThread(file_path, algorithm)
+        self.checksum_thread.result_ready.connect(self.on_checksum_calculated)
+        self.checksum_thread.error_occurred.connect(self.on_error)
+        self.checksum_thread.start()
+    
+    def verify_checksum(self):
+        """Verify checksum against expected value."""
+        file_path = self.file_path_input.text()
+        expected_checksum = self.checksum_input.text()
+        
+        if not file_path or not os.path.exists(file_path):
+            self.status_bar.showMessage("Please select a valid file", 3000)
+            return
+        
+        if not expected_checksum:
+            self.status_bar.showMessage("Please enter expected checksum", 3000)
+            return
+        
+        algorithm = self.algorithm_combo.currentText()
+        
+        # Disable UI during verification
+        self.progress_bar.setVisible(True)
+        self.progress_bar.setRange(0, 0)
+        self.status_bar.showMessage("Verifying checksum...")
+        
+        # Create and start checksum thread
+        self.checksum_thread = ChecksumThread(file_path, algorithm, expected_checksum)
+        self.checksum_thread.result_ready.connect(self.on_checksum_verified)
+        self.checksum_thread.error_occurred.connect(self.on_error)
+        self.checksum_thread.start()
+    
+    def on_checksum_calculated(self, result):
+        """Handle checksum calculation result."""
+        self.progress_bar.setVisible(False)
+        
+        checksum = result.get('checksum', '')
+        self.results_text.setPlainText(f"Algorithm: {result.get('algorithm', '')}\n"
+                                     f"File: {result.get('file_path', '')}\n"
+                                     f"Checksum: {checksum}")
+        
+        self.status_bar.showMessage("Checksum calculated successfully", 3000)
+    
+    def on_checksum_verified(self, result):
+        """Handle checksum verification result."""
+        self.progress_bar.setVisible(False)
+        
+        is_valid = result.get('is_valid', False)
+        expected = result.get('expected', '')
+        actual = result.get('actual', '')
+        
+        if is_valid:
+            self.results_text.setPlainText(f"✅ Checksum verification PASSED\n"
+                                         f"Algorithm: {result.get('algorithm', '')}\n"
+                                         f"File: {result.get('file_path', '')}\n"
+                                         f"Expected: {expected}\n"
+                                         f"Actual: {actual}")
+        else:
+            self.results_text.setPlainText(f"❌ Checksum verification FAILED\n"
+                                         f"Algorithm: {result.get('algorithm', '')}\n"
+                                         f"File: {result.get('file_path', '')}\n"
+                                         f"Expected: {expected}\n"
+                                         f"Actual: {actual}")
+        
+        self.status_bar.showMessage("Checksum verification complete", 3000)
+    
+    def on_error(self, error_message):
+        """Handle errors."""
+        self.progress_bar.setVisible(False)
+        self.status_bar.showMessage(f"Error: {error_message}", 5000)
+    
+    def clear_results(self):
+        """Clear all results and inputs."""
+        self.results_text.clear()
+        self.checksum_input.clear()
+        self.progress_bar.setVisible(False)
+        self.status_bar.showMessage("Ready")
+
+
+class ChecksumThread(QThread):
+    """Thread for calculating checksums without blocking the UI."""
+    
+    result_ready = pyqtSignal(dict)
+    error_occurred = pyqtSignal(str)
+    
+    def __init__(self, file_path, algorithm, expected_checksum=None):
+        super().__init__()
+        self.file_path = file_path
+        self.algorithm = algorithm
+        self.expected_checksum = expected_checksum
+    
+    def run(self):
+        """Calculate checksum in separate thread."""
+        try:
+            if not os.path.exists(self.file_path):
+                self.error_occurred.emit("File not found")
+                return
+            
+            # Calculate checksum
+            hasher = hashlib.new(self.algorithm)
+            
+            with open(self.file_path, 'rb') as f:
+                for chunk in iter(lambda: f.read(8192), b""):
+                    hasher.update(chunk)
+            
+            checksum = hasher.hexdigest()
+            
+            result = {
+                'file_path': self.file_path,
+                'algorithm': self.algorithm,
+                'checksum': checksum
+            }
+            
+            # If expected checksum provided, verify
+            if self.expected_checksum:
+                result['is_valid'] = checksum.lower() == self.expected_checksum.lower()
+                result['expected'] = self.expected_checksum
+                result['actual'] = checksum
+            
+            self.result_ready.emit(result)
+            
+        except Exception as e:
+            self.error_occurred.emit(str(e))
+
+
+class MyGUI(ChecksumWindow):
+    """Main GUI class for checksum utility."""
+    pass
+
+
+def main():
+    """Main function to run the checksum utility."""
+    app = QApplication(sys.argv)
+    
+    # Apply application-wide stylesheet
+    app.setStyle('Fusion')
+    app.setStyleSheet(f"""
+        QApplication {{
+            font-family: {Fonts.DEFAULT_FAMILY};
+            font-size: {Fonts.BODY_SIZE}pt;
+        }}
+    """)
+    
+    window = MyGUI()
+    window.show()
+    sys.exit(app.exec_())
+
+
+if __name__ == '__main__':
+    main()
