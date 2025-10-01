@@ -1,0 +1,12 @@
+[
+  {
+    "timestamp": 1759142151,
+    "tool_name": "TestTool",
+    "operation": "test_operation",
+    "file_count": 42,
+    "size_mb": 0,
+    "duration_seconds": 0,
+    "success": true,
+    "average_sales": 420
+  }
+]

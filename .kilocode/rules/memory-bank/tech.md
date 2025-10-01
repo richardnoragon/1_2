@@ -1,8 +1,8 @@
 # Richard's File Utilities - Technology Stack
 
-**Last Updated:** September 4, 2025  
-**Tech Stack Version:** 3.0.0  
-**Environment:** Python 3.7+ with PyQt5  
+**Last Updated:** September 26, 2025
+**Tech Stack Version:** 3.1.0
+**Environment:** Python 3.7+ with PyQt5 and Dual Interface System
 
 ---
 
@@ -21,16 +21,18 @@
 
 - **PyQt5 5.15.11**: Cross-platform desktop GUI framework
   - **Components Used**: QtWidgets, QtCore, QtGui
-  - **Architecture**: Event-driven with signal/slot pattern
+  - **Architecture**: Event-driven with signal/slot pattern with dual interface support
+  - **Interface Modes**: Dialog hub (tabbed) and multi-pane explorer
   - **Customization**: Extensive CSS-like styling capabilities
   - **Integration**: Native OS integration for file operations
 
 #### Database System
 
 - **SQLite 3.35+**: Embedded relational database
-  - **Use Cases**: Configuration storage, audit trails, tool usage tracking
-  - **Features**: ACID compliance, concurrent access, schema migrations
+  - **Use Cases**: Configuration storage, tool usage tracking, interface preferences
+  - **Features**: ACID compliance, concurrent access, migration state tracking
   - **Performance**: Optimized for read-heavy workloads with indexing
+  - **Integration**: Standalone database manager with fallback handling
 
 ---
 
@@ -73,14 +75,14 @@ python -c "import src.rfu.core; print('Core modules validated')"
 
 ```json
 {
-    "python.defaultInterpreterPath": "./rfu_env/Scripts/python.exe",
-    "python.linting.enabled": true,
-    "python.linting.flake8Enabled": true,
-    "python.testing.pytestEnabled": true,
-    "python.testing.pytestPath": "./rfu_env/Scripts/pytest",
-    "files.associations": {
-        "*.ui": "xml"
-    }
+  "python.defaultInterpreterPath": "./rfu_env/Scripts/python.exe",
+  "python.linting.enabled": true,
+  "python.linting.flake8Enabled": true,
+  "python.testing.pytestEnabled": true,
+  "python.testing.pytestPath": "./rfu_env/Scripts/pytest",
+  "files.associations": {
+    "*.ui": "xml"
+  }
 }
 ```
 
@@ -109,7 +111,7 @@ pytest tests/e2e/test_file_finder_e2e.py -v
 #### GUI and Application Framework
 
 ```python
-# Essential GUI Dependencies
+# Essential GUI Dependencies (from requirements.txt)
 {
     "PyQt5": "5.15.11",           # Main GUI framework
     "PyQt5-Qt5": "5.15.2",       # Qt runtime
@@ -127,7 +129,8 @@ pytest tests/e2e/test_file_finder_e2e.py -v
     "pytest-cov": "6.1.0",          # Coverage reporting
     "pytest-timeout": "2.3.1",      # Test timeout protection
     "pytest-randomly": "3.16.0",    # Test order randomization
-    "pytest-xvfb": "3.1.1"         # GUI testing on Linux
+    "pytest-xvfb": "3.1.1",         # GUI testing on Linux
+    "pytest-asyncio": "0.26.0"      # Async testing support
 }
 ```
 
@@ -152,7 +155,10 @@ pytest tests/e2e/test_file_finder_e2e.py -v
     "Pillow": "11.1.0",            # Image processing and metadata
     "PyMuPDF": "1.25.4",          # PDF processing
     "python-docx": "1.1.2",       # Word document processing
-    "openpyxl": "3.1.5"           # Excel file processing
+    "openpyxl": "3.1.5",          # Excel file processing
+    "PyPDF2": "3.0.1",            # PDF manipulation
+    "PyPDF4": "1.27.0",           # Additional PDF support
+    "pikepdf": "9.5.2"            # PDF processing library
 }
 ```
 
@@ -175,9 +181,10 @@ pytest tests/e2e/test_file_finder_e2e.py -v
 # System Integration Stack
 {
     "psutil": "7.0.0",            # System and process monitoring
-    "watchdog": "6.0.0",          # File system event monitoring  
+    "watchdog": "6.0.0",          # File system event monitoring
     "Send2Trash": "1.8.3",        # Safe file deletion
-    "python-magic": "0.4.27"      # File type detection
+    "python-magic": "0.4.27",     # File type detection
+    "pytesseract": "0.3.13"       # OCR functionality
 }
 ```
 
@@ -189,7 +196,25 @@ pytest tests/e2e/test_file_finder_e2e.py -v
     "black": "25.1.0",            # Code formatting
     "flake8": "7.2.0",            # Linting and style checking
     "mypy": "1.15.0",             # Static type checking
-    "coverage": "7.8.0"           # Code coverage analysis
+    "coverage": "7.8.0",          # Code coverage analysis
+    "setuptools": "68.2.2",       # Package management
+    "wheel": "0.41.2"             # Distribution building
+}
+```
+
+#### Additional Specialized Dependencies
+
+```python
+# Specialized Libraries
+{
+    "opencv-python-headless": "4.11.0.86",  # Computer vision
+    "numpy": "2.2.4",                       # Numerical computing
+    "lxml": "5.3.1",                        # XML processing
+    "mutagen": "1.47.0",                     # Audio metadata
+    "piexif": "1.1.3",                      # EXIF data handling
+    "fire": "0.7.0",                        # CLI generation
+    "termcolor": "2.5.0",                   # Colored terminal output
+    "PyVirtualDisplay": "3.0"               # Virtual display for testing
 }
 ```
 
@@ -216,7 +241,7 @@ pytest tests/e2e/test_file_finder_e2e.py -v
     },
     "macos": {
         "versions": "macOS 10.15+",
-        "limitations": "Code signing required for distribution", 
+        "limitations": "Code signing required for distribution",
         "file_systems": "APFS, HFS+ supported"
     }
 }
@@ -376,7 +401,7 @@ markers =
     },
     "test_data_management": {
         "small_dataset": "100 files, 50MB, depth 3",
-        "medium_dataset": "5,000 files, 500MB, depth 5", 
+        "medium_dataset": "5,000 files, 500MB, depth 5",
         "large_dataset": "50,000 files, 5GB, depth 8",
         "enterprise_dataset": "200,000 files, 20GB, depth 12"
     }
@@ -421,7 +446,7 @@ markers =
     ],
     "hidden_imports": [
         "src.rfu.core",
-        "src.tools.file_management", 
+        "src.tools.file_management",
         "PyQt5.sip"
     ],
     "exclude_modules": ["matplotlib", "numpy.testing"]
@@ -494,24 +519,24 @@ pip install -r requirements-dev.txt  # Additional dev tools
 
 ```json
 {
-    "development": {
-        "database_path": "dev.db",
-        "logging_level": "DEBUG", 
-        "security_mode": "permissive",
-        "performance_monitoring": true
-    },
-    "testing": {
-        "database_path": ":memory:",
-        "logging_level": "INFO",
-        "security_mode": "strict", 
-        "mock_external_services": true
-    },
-    "production": {
-        "database_path": "rfu_production.db",
-        "logging_level": "WARNING",
-        "security_mode": "enterprise",
-        "audit_all_operations": true
-    }
+  "development": {
+    "database_path": "dev.db",
+    "logging_level": "DEBUG",
+    "security_mode": "permissive",
+    "performance_monitoring": true
+  },
+  "testing": {
+    "database_path": ":memory:",
+    "logging_level": "INFO",
+    "security_mode": "strict",
+    "mock_external_services": true
+  },
+  "production": {
+    "database_path": "rfu_production.db",
+    "logging_level": "WARNING",
+    "security_mode": "enterprise",
+    "audit_all_operations": true
+  }
 }
 ```
 
@@ -524,7 +549,7 @@ export RFU_DEBUG=1
 export RFU_LOG_LEVEL=DEBUG
 export RFU_ENABLE_PROFILING=1
 
-# Testing Environment  
+# Testing Environment
 export RFU_ENV=testing
 export RFU_TEST_DATA_DIR=./test_data
 export RFU_MOCK_MODE=1
@@ -537,7 +562,7 @@ export RFU_AUDIT_MODE=1
 
 ### Configuration Manager Integration
 
-**File:** [`src/rfu/core/config_manager.py`](src/rfu/core/config_manager.py) - 520 lines
+**File:** [`src/config_manager.py`](src/config_manager.py) - Configuration management with JSON persistence
 
 **Key Features:**
 
@@ -559,7 +584,7 @@ export RFU_AUDIT_MODE=1
 # Security Technology Stack
 {
     "primary_crypto": "cryptography==44.0.2",
-    "file_encryption": "pyAesCrypt==6.1.1", 
+    "file_encryption": "pyAesCrypt==6.1.1",
     "additional_algorithms": "pycryptodomex==3.22.0",
     "ssl_support": "pyOpenSSL==25.0.0"
 }
@@ -707,7 +732,7 @@ export RFU_AUDIT_MODE=1
     },
     "file_operations": {
         "windows": "os.startfile() for system integration",
-        "linux": "xdg-open for desktop integration", 
+        "linux": "xdg-open for desktop integration",
         "macos": "open command for Finder integration"
     },
     "permissions": {
@@ -742,7 +767,7 @@ export RFU_AUDIT_MODE=1
 {
     "tool_module": {
         "imports": "Standard imports at top",
-        "constants": "Tool-specific constants", 
+        "constants": "Tool-specific constants",
         "main_class": "Inherits from StandardWindow",
         "helper_methods": "Private methods with underscore prefix",
         "main_function": "Standalone execution support"
@@ -859,18 +884,21 @@ export RFU_AUDIT_MODE=1
 ```yaml
 # GitHub Actions Configuration
 {
-    "triggers": ["push", "pull_request"],
-    "jobs": {
-        "test": {
-            "os": ["ubuntu-latest", "windows-latest", "macos-latest"],
-            "python": ["3.7", "3.8", "3.9", "3.10"],
-            "steps": ["setup", "install", "lint", "test", "coverage"]
+  "triggers": ["push", "pull_request"],
+  "jobs":
+    {
+      "test":
+        {
+          "os": ["ubuntu-latest", "windows-latest", "macos-latest"],
+          "python": ["3.7", "3.8", "3.9", "3.10"],
+          "steps": ["setup", "install", "lint", "test", "coverage"],
         },
-        "build": {
-            "condition": "tags",
-            "outputs": ["executable", "installer", "source_dist"]
-        }
-    }
+      "build":
+        {
+          "condition": "tags",
+          "outputs": ["executable", "installer", "source_dist"],
+        },
+    },
 }
 ```
 
@@ -894,7 +922,7 @@ export RFU_AUDIT_MODE=1
     "python_version": {
         "current": "3.7+ compatibility",
         "future": "3.10+ minimum for performance improvements",
-        "timeline": "Q4 2025", 
+        "timeline": "Q4 2025",
         "benefits": "Pattern matching, improved error messages, speed"
     }
 }
@@ -950,17 +978,17 @@ export RFU_AUDIT_MODE=1
 
 ```json
 {
-    "required_extensions": [
-        "ms-python.python",
-        "ms-python.flake8",
-        "ms-python.black-formatter",
-        "ms-python.mypy-type-checker"
-    ],
-    "helpful_extensions": [
-        "alefragnani.project-manager",
-        "ms-vscode.test-adapter-converter",
-        "ms-python.pytest"
-    ]
+  "required_extensions": [
+    "ms-python.python",
+    "ms-python.flake8",
+    "ms-python.black-formatter",
+    "ms-python.mypy-type-checker"
+  ],
+  "helpful_extensions": [
+    "alefragnani.project-manager",
+    "ms-vscode.test-adapter-converter",
+    "ms-python.pytest"
+  ]
 }
 ```
 
@@ -968,26 +996,26 @@ export RFU_AUDIT_MODE=1
 
 ```json
 {
-    "configurations": [
-        {
-            "name": "RFU Main Application",
-            "type": "python",
-            "request": "launch",
-            "program": "${workspaceFolder}/main.py",
-            "console": "integratedTerminal",
-            "env": {
-                "RFU_DEBUG": "1",
-                "PYTHONPATH": "${workspaceFolder}"
-            }
-        },
-        {
-            "name": "Run E2E Tests",
-            "type": "python", 
-            "request": "launch",
-            "module": "pytest",
-            "args": ["tests/e2e/", "-v"]
-        }
-    ]
+  "configurations": [
+    {
+      "name": "RFU Main Application",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/main.py",
+      "console": "integratedTerminal",
+      "env": {
+        "RFU_DEBUG": "1",
+        "PYTHONPATH": "${workspaceFolder}"
+      }
+    },
+    {
+      "name": "Run E2E Tests",
+      "type": "python",
+      "request": "launch",
+      "module": "pytest",
+      "args": ["tests/e2e/", "-v"]
+    }
+  ]
 }
 ```
 

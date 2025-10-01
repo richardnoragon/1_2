@@ -1,0 +1,1892 @@
+[
+  {
+    "timestamp": 1751366178,
+    "operation": "file_copy",
+    "count": 61,
+    "size_mb": 960,
+    "average_sales": 2294
+  },
+  {
+    "timestamp": 1751366178,
+    "operation": "file_move",
+    "count": 47,
+    "size_mb": 121,
+    "average_sales": 2224
+  },
+  {
+    "timestamp": 1751366178,
+    "operation": "duplicate_scan",
+    "count": 7,
+    "size_mb": 131,
+    "average_sales": 666
+  },
+  {
+    "timestamp": 1751452578,
+    "operation": "file_copy",
+    "count": 96,
+    "size_mb": 430,
+    "average_sales": 2482
+  },
+  {
+    "timestamp": 1751452578,
+    "operation": "file_move",
+    "count": 28,
+    "size_mb": 422,
+    "average_sales": 1623
+  },
+  {
+    "timestamp": 1751452578,
+    "operation": "duplicate_scan",
+    "count": 8,
+    "size_mb": 161,
+    "average_sales": 330
+  },
+  {
+    "timestamp": 1751538978,
+    "operation": "file_copy",
+    "count": 31,
+    "size_mb": 1432,
+    "average_sales": 1769
+  },
+  {
+    "timestamp": 1751538978,
+    "operation": "file_move",
+    "count": 28,
+    "size_mb": 541,
+    "average_sales": 1937
+  },
+  {
+    "timestamp": 1751538978,
+    "operation": "duplicate_scan",
+    "count": 6,
+    "size_mb": 395,
+    "average_sales": 1415
+  },
+  {
+    "timestamp": 1751625378,
+    "operation": "file_copy",
+    "count": 69,
+    "size_mb": 376,
+    "average_sales": 2184
+  },
+  {
+    "timestamp": 1751625378,
+    "operation": "file_move",
+    "count": 16,
+    "size_mb": 363,
+    "average_sales": 521
+  },
+  {
+    "timestamp": 1751625378,
+    "operation": "duplicate_scan",
+    "count": 12,
+    "size_mb": 354,
+    "average_sales": 674
+  },
+  {
+    "timestamp": 1751711778,
+    "operation": "file_copy",
+    "count": 68,
+    "size_mb": 610,
+    "average_sales": 4753
+  },
+  {
+    "timestamp": 1751711778,
+    "operation": "file_move",
+    "count": 32,
+    "size_mb": 749,
+    "average_sales": 1475
+  },
+  {
+    "timestamp": 1751711778,
+    "operation": "duplicate_scan",
+    "count": 15,
+    "size_mb": 199,
+    "average_sales": 1157
+  },
+  {
+    "timestamp": 1751798178,
+    "operation": "file_copy",
+    "count": 56,
+    "size_mb": 1057,
+    "average_sales": 1562
+  },
+  {
+    "timestamp": 1751798178,
+    "operation": "file_move",
+    "count": 48,
+    "size_mb": 616,
+    "average_sales": 1767
+  },
+  {
+    "timestamp": 1751798178,
+    "operation": "duplicate_scan",
+    "count": 3,
+    "size_mb": 494,
+    "average_sales": 846
+  },
+  {
+    "timestamp": 1751884578,
+    "operation": "file_copy",
+    "count": 30,
+    "size_mb": 940,
+    "average_sales": 3214
+  },
+  {
+    "timestamp": 1751884578,
+    "operation": "file_move",
+    "count": 22,
+    "size_mb": 437,
+    "average_sales": 1100
+  },
+  {
+    "timestamp": 1751884578,
+    "operation": "duplicate_scan",
+    "count": 14,
+    "size_mb": 251,
+    "average_sales": 976
+  },
+  {
+    "timestamp": 1751970978,
+    "operation": "file_copy",
+    "count": 99,
+    "size_mb": 664,
+    "average_sales": 3945
+  },
+  {
+    "timestamp": 1751970978,
+    "operation": "file_move",
+    "count": 24,
+    "size_mb": 141,
+    "average_sales": 1890
+  },
+  {
+    "timestamp": 1751970978,
+    "operation": "duplicate_scan",
+    "count": 7,
+    "size_mb": 437,
+    "average_sales": 708
+  },
+  {
+    "timestamp": 1752057378,
+    "operation": "file_copy",
+    "count": 17,
+    "size_mb": 134,
+    "average_sales": 3253
+  },
+  {
+    "timestamp": 1752057378,
+    "operation": "file_move",
+    "count": 21,
+    "size_mb": 981,
+    "average_sales": 2085
+  },
+  {
+    "timestamp": 1752057378,
+    "operation": "duplicate_scan",
+    "count": 8,
+    "size_mb": 397,
+    "average_sales": 1225
+  },
+  {
+    "timestamp": 1752143778,
+    "operation": "file_copy",
+    "count": 15,
+    "size_mb": 665,
+    "average_sales": 2129
+  },
+  {
+    "timestamp": 1752143778,
+    "operation": "file_move",
+    "count": 8,
+    "size_mb": 871,
+    "average_sales": 2000
+  },
+  {
+    "timestamp": 1752143778,
+    "operation": "duplicate_scan",
+    "count": 18,
+    "size_mb": 227,
+    "average_sales": 361
+  },
+  {
+    "timestamp": 1752230178,
+    "operation": "file_copy",
+    "count": 83,
+    "size_mb": 1095,
+    "average_sales": 3317
+  },
+  {
+    "timestamp": 1752230178,
+    "operation": "file_move",
+    "count": 35,
+    "size_mb": 865,
+    "average_sales": 1794
+  },
+  {
+    "timestamp": 1752230178,
+    "operation": "duplicate_scan",
+    "count": 8,
+    "size_mb": 471,
+    "average_sales": 1475
+  },
+  {
+    "timestamp": 1752316578,
+    "operation": "file_copy",
+    "count": 71,
+    "size_mb": 395,
+    "average_sales": 4796
+  },
+  {
+    "timestamp": 1752316578,
+    "operation": "file_move",
+    "count": 20,
+    "size_mb": 798,
+    "average_sales": 837
+  },
+  {
+    "timestamp": 1752316578,
+    "operation": "duplicate_scan",
+    "count": 15,
+    "size_mb": 62,
+    "average_sales": 991
+  },
+  {
+    "timestamp": 1752402978,
+    "operation": "file_copy",
+    "count": 35,
+    "size_mb": 316,
+    "average_sales": 1763
+  },
+  {
+    "timestamp": 1752402978,
+    "operation": "file_move",
+    "count": 49,
+    "size_mb": 90,
+    "average_sales": 1680
+  },
+  {
+    "timestamp": 1752402978,
+    "operation": "duplicate_scan",
+    "count": 15,
+    "size_mb": 310,
+    "average_sales": 264
+  },
+  {
+    "timestamp": 1752489378,
+    "operation": "file_copy",
+    "count": 98,
+    "size_mb": 1962,
+    "average_sales": 3568
+  },
+  {
+    "timestamp": 1752489378,
+    "operation": "file_move",
+    "count": 28,
+    "size_mb": 178,
+    "average_sales": 1147
+  },
+  {
+    "timestamp": 1752489378,
+    "operation": "duplicate_scan",
+    "count": 11,
+    "size_mb": 90,
+    "average_sales": 591
+  },
+  {
+    "timestamp": 1752575778,
+    "operation": "file_copy",
+    "count": 44,
+    "size_mb": 518,
+    "average_sales": 3336
+  },
+  {
+    "timestamp": 1752575778,
+    "operation": "file_move",
+    "count": 9,
+    "size_mb": 539,
+    "average_sales": 730
+  },
+  {
+    "timestamp": 1752575778,
+    "operation": "duplicate_scan",
+    "count": 9,
+    "size_mb": 37,
+    "average_sales": 334
+  },
+  {
+    "timestamp": 1752662178,
+    "operation": "file_copy",
+    "count": 82,
+    "size_mb": 1963,
+    "average_sales": 1779
+  },
+  {
+    "timestamp": 1752662178,
+    "operation": "file_move",
+    "count": 38,
+    "size_mb": 82,
+    "average_sales": 1571
+  },
+  {
+    "timestamp": 1752662178,
+    "operation": "duplicate_scan",
+    "count": 5,
+    "size_mb": 108,
+    "average_sales": 883
+  },
+  {
+    "timestamp": 1752748578,
+    "operation": "file_copy",
+    "count": 95,
+    "size_mb": 1670,
+    "average_sales": 1960
+  },
+  {
+    "timestamp": 1752748578,
+    "operation": "file_move",
+    "count": 39,
+    "size_mb": 662,
+    "average_sales": 2466
+  },
+  {
+    "timestamp": 1752748578,
+    "operation": "duplicate_scan",
+    "count": 14,
+    "size_mb": 140,
+    "average_sales": 1228
+  },
+  {
+    "timestamp": 1752834978,
+    "operation": "file_copy",
+    "count": 99,
+    "size_mb": 602,
+    "average_sales": 3814
+  },
+  {
+    "timestamp": 1752834978,
+    "operation": "file_move",
+    "count": 18,
+    "size_mb": 920,
+    "average_sales": 1294
+  },
+  {
+    "timestamp": 1752834978,
+    "operation": "duplicate_scan",
+    "count": 9,
+    "size_mb": 216,
+    "average_sales": 1238
+  },
+  {
+    "timestamp": 1752921378,
+    "operation": "file_copy",
+    "count": 99,
+    "size_mb": 1677,
+    "average_sales": 3939
+  },
+  {
+    "timestamp": 1752921378,
+    "operation": "file_move",
+    "count": 17,
+    "size_mb": 740,
+    "average_sales": 2098
+  },
+  {
+    "timestamp": 1752921378,
+    "operation": "duplicate_scan",
+    "count": 7,
+    "size_mb": 250,
+    "average_sales": 763
+  },
+  {
+    "timestamp": 1753007778,
+    "operation": "file_copy",
+    "count": 13,
+    "size_mb": 1857,
+    "average_sales": 3532
+  },
+  {
+    "timestamp": 1753007778,
+    "operation": "file_move",
+    "count": 27,
+    "size_mb": 280,
+    "average_sales": 1248
+  },
+  {
+    "timestamp": 1753007778,
+    "operation": "duplicate_scan",
+    "count": 15,
+    "size_mb": 180,
+    "average_sales": 740
+  },
+  {
+    "timestamp": 1753094178,
+    "operation": "file_copy",
+    "count": 45,
+    "size_mb": 624,
+    "average_sales": 2183
+  },
+  {
+    "timestamp": 1753094178,
+    "operation": "file_move",
+    "count": 11,
+    "size_mb": 748,
+    "average_sales": 1766
+  },
+  {
+    "timestamp": 1753094178,
+    "operation": "duplicate_scan",
+    "count": 2,
+    "size_mb": 179,
+    "average_sales": 756
+  },
+  {
+    "timestamp": 1753180578,
+    "operation": "file_copy",
+    "count": 71,
+    "size_mb": 1112,
+    "average_sales": 3693
+  },
+  {
+    "timestamp": 1753180578,
+    "operation": "file_move",
+    "count": 32,
+    "size_mb": 77,
+    "average_sales": 2143
+  },
+  {
+    "timestamp": 1753180578,
+    "operation": "duplicate_scan",
+    "count": 12,
+    "size_mb": 349,
+    "average_sales": 1454
+  },
+  {
+    "timestamp": 1753266978,
+    "operation": "file_copy",
+    "count": 71,
+    "size_mb": 1348,
+    "average_sales": 2408
+  },
+  {
+    "timestamp": 1753266978,
+    "operation": "file_move",
+    "count": 31,
+    "size_mb": 682,
+    "average_sales": 1127
+  },
+  {
+    "timestamp": 1753266978,
+    "operation": "duplicate_scan",
+    "count": 13,
+    "size_mb": 242,
+    "average_sales": 1482
+  },
+  {
+    "timestamp": 1753353378,
+    "operation": "file_copy",
+    "count": 79,
+    "size_mb": 1579,
+    "average_sales": 2434
+  },
+  {
+    "timestamp": 1753353378,
+    "operation": "file_move",
+    "count": 13,
+    "size_mb": 367,
+    "average_sales": 2200
+  },
+  {
+    "timestamp": 1753353378,
+    "operation": "duplicate_scan",
+    "count": 1,
+    "size_mb": 316,
+    "average_sales": 1457
+  },
+  {
+    "timestamp": 1753439778,
+    "operation": "file_copy",
+    "count": 53,
+    "size_mb": 763,
+    "average_sales": 2998
+  },
+  {
+    "timestamp": 1753439778,
+    "operation": "file_move",
+    "count": 36,
+    "size_mb": 657,
+    "average_sales": 1995
+  },
+  {
+    "timestamp": 1753439778,
+    "operation": "duplicate_scan",
+    "count": 9,
+    "size_mb": 189,
+    "average_sales": 1336
+  },
+  {
+    "timestamp": 1753526178,
+    "operation": "file_copy",
+    "count": 71,
+    "size_mb": 1620,
+    "average_sales": 3489
+  },
+  {
+    "timestamp": 1753526178,
+    "operation": "file_move",
+    "count": 16,
+    "size_mb": 559,
+    "average_sales": 2330
+  },
+  {
+    "timestamp": 1753526178,
+    "operation": "duplicate_scan",
+    "count": 2,
+    "size_mb": 396,
+    "average_sales": 1336
+  },
+  {
+    "timestamp": 1753612578,
+    "operation": "file_copy",
+    "count": 65,
+    "size_mb": 1204,
+    "average_sales": 1698
+  },
+  {
+    "timestamp": 1753612578,
+    "operation": "file_move",
+    "count": 6,
+    "size_mb": 691,
+    "average_sales": 719
+  },
+  {
+    "timestamp": 1753612578,
+    "operation": "duplicate_scan",
+    "count": 5,
+    "size_mb": 233,
+    "average_sales": 1448
+  },
+  {
+    "timestamp": 1753698978,
+    "operation": "file_copy",
+    "count": 10,
+    "size_mb": 1526,
+    "average_sales": 2661
+  },
+  {
+    "timestamp": 1753698978,
+    "operation": "file_move",
+    "count": 6,
+    "size_mb": 102,
+    "average_sales": 2207
+  },
+  {
+    "timestamp": 1753698978,
+    "operation": "duplicate_scan",
+    "count": 6,
+    "size_mb": 425,
+    "average_sales": 446
+  },
+  {
+    "timestamp": 1753785378,
+    "operation": "file_copy",
+    "count": 77,
+    "size_mb": 1562,
+    "average_sales": 1202
+  },
+  {
+    "timestamp": 1753785378,
+    "operation": "file_move",
+    "count": 21,
+    "size_mb": 816,
+    "average_sales": 793
+  },
+  {
+    "timestamp": 1753785378,
+    "operation": "duplicate_scan",
+    "count": 5,
+    "size_mb": 381,
+    "average_sales": 397
+  },
+  {
+    "timestamp": 1753871778,
+    "operation": "file_copy",
+    "count": 95,
+    "size_mb": 1634,
+    "average_sales": 3799
+  },
+  {
+    "timestamp": 1753871778,
+    "operation": "file_move",
+    "count": 20,
+    "size_mb": 658,
+    "average_sales": 1724
+  },
+  {
+    "timestamp": 1753871778,
+    "operation": "duplicate_scan",
+    "count": 6,
+    "size_mb": 473,
+    "average_sales": 859
+  },
+  {
+    "timestamp": 1753958178,
+    "operation": "file_copy",
+    "count": 68,
+    "size_mb": 502,
+    "average_sales": 2369
+  },
+  {
+    "timestamp": 1753958178,
+    "operation": "file_move",
+    "count": 7,
+    "size_mb": 560,
+    "average_sales": 646
+  },
+  {
+    "timestamp": 1753958178,
+    "operation": "duplicate_scan",
+    "count": 7,
+    "size_mb": 317,
+    "average_sales": 688
+  },
+  {
+    "timestamp": 1754044578,
+    "operation": "file_copy",
+    "count": 42,
+    "size_mb": 1763,
+    "average_sales": 3598
+  },
+  {
+    "timestamp": 1754044578,
+    "operation": "file_move",
+    "count": 22,
+    "size_mb": 921,
+    "average_sales": 1140
+  },
+  {
+    "timestamp": 1754044578,
+    "operation": "duplicate_scan",
+    "count": 11,
+    "size_mb": 485,
+    "average_sales": 672
+  },
+  {
+    "timestamp": 1754130978,
+    "operation": "file_copy",
+    "count": 59,
+    "size_mb": 250,
+    "average_sales": 2438
+  },
+  {
+    "timestamp": 1754130978,
+    "operation": "file_move",
+    "count": 34,
+    "size_mb": 347,
+    "average_sales": 2134
+  },
+  {
+    "timestamp": 1754130978,
+    "operation": "duplicate_scan",
+    "count": 7,
+    "size_mb": 261,
+    "average_sales": 343
+  },
+  {
+    "timestamp": 1754217378,
+    "operation": "file_copy",
+    "count": 99,
+    "size_mb": 723,
+    "average_sales": 2016
+  },
+  {
+    "timestamp": 1754217378,
+    "operation": "file_move",
+    "count": 6,
+    "size_mb": 946,
+    "average_sales": 1827
+  },
+  {
+    "timestamp": 1754217378,
+    "operation": "duplicate_scan",
+    "count": 12,
+    "size_mb": 462,
+    "average_sales": 1260
+  },
+  {
+    "timestamp": 1754303778,
+    "operation": "file_copy",
+    "count": 41,
+    "size_mb": 1114,
+    "average_sales": 3056
+  },
+  {
+    "timestamp": 1754303778,
+    "operation": "file_move",
+    "count": 45,
+    "size_mb": 148,
+    "average_sales": 2182
+  },
+  {
+    "timestamp": 1754303778,
+    "operation": "duplicate_scan",
+    "count": 16,
+    "size_mb": 217,
+    "average_sales": 1354
+  },
+  {
+    "timestamp": 1754390178,
+    "operation": "file_copy",
+    "count": 29,
+    "size_mb": 251,
+    "average_sales": 3101
+  },
+  {
+    "timestamp": 1754390178,
+    "operation": "file_move",
+    "count": 37,
+    "size_mb": 969,
+    "average_sales": 1127
+  },
+  {
+    "timestamp": 1754390178,
+    "operation": "duplicate_scan",
+    "count": 11,
+    "size_mb": 122,
+    "average_sales": 303
+  },
+  {
+    "timestamp": 1754476578,
+    "operation": "file_copy",
+    "count": 93,
+    "size_mb": 353,
+    "average_sales": 4298
+  },
+  {
+    "timestamp": 1754476578,
+    "operation": "file_move",
+    "count": 29,
+    "size_mb": 148,
+    "average_sales": 652
+  },
+  {
+    "timestamp": 1754476578,
+    "operation": "duplicate_scan",
+    "count": 18,
+    "size_mb": 393,
+    "average_sales": 1077
+  },
+  {
+    "timestamp": 1754562978,
+    "operation": "file_copy",
+    "count": 91,
+    "size_mb": 1829,
+    "average_sales": 3869
+  },
+  {
+    "timestamp": 1754562978,
+    "operation": "file_move",
+    "count": 39,
+    "size_mb": 769,
+    "average_sales": 1456
+  },
+  {
+    "timestamp": 1754562978,
+    "operation": "duplicate_scan",
+    "count": 9,
+    "size_mb": 493,
+    "average_sales": 360
+  },
+  {
+    "timestamp": 1754649378,
+    "operation": "file_copy",
+    "count": 77,
+    "size_mb": 900,
+    "average_sales": 1397
+  },
+  {
+    "timestamp": 1754649378,
+    "operation": "file_move",
+    "count": 25,
+    "size_mb": 865,
+    "average_sales": 2439
+  },
+  {
+    "timestamp": 1754649378,
+    "operation": "duplicate_scan",
+    "count": 8,
+    "size_mb": 144,
+    "average_sales": 1418
+  },
+  {
+    "timestamp": 1754735778,
+    "operation": "file_copy",
+    "count": 26,
+    "size_mb": 739,
+    "average_sales": 4104
+  },
+  {
+    "timestamp": 1754735778,
+    "operation": "file_move",
+    "count": 16,
+    "size_mb": 932,
+    "average_sales": 969
+  },
+  {
+    "timestamp": 1754735778,
+    "operation": "duplicate_scan",
+    "count": 14,
+    "size_mb": 167,
+    "average_sales": 237
+  },
+  {
+    "timestamp": 1754822178,
+    "operation": "file_copy",
+    "count": 60,
+    "size_mb": 537,
+    "average_sales": 2799
+  },
+  {
+    "timestamp": 1754822178,
+    "operation": "file_move",
+    "count": 31,
+    "size_mb": 76,
+    "average_sales": 725
+  },
+  {
+    "timestamp": 1754822178,
+    "operation": "duplicate_scan",
+    "count": 1,
+    "size_mb": 293,
+    "average_sales": 1078
+  },
+  {
+    "timestamp": 1754908578,
+    "operation": "file_copy",
+    "count": 73,
+    "size_mb": 1604,
+    "average_sales": 1452
+  },
+  {
+    "timestamp": 1754908578,
+    "operation": "file_move",
+    "count": 23,
+    "size_mb": 565,
+    "average_sales": 1046
+  },
+  {
+    "timestamp": 1754908578,
+    "operation": "duplicate_scan",
+    "count": 17,
+    "size_mb": 26,
+    "average_sales": 1395
+  },
+  {
+    "timestamp": 1754994978,
+    "operation": "file_copy",
+    "count": 39,
+    "size_mb": 576,
+    "average_sales": 2069
+  },
+  {
+    "timestamp": 1754994978,
+    "operation": "file_move",
+    "count": 10,
+    "size_mb": 148,
+    "average_sales": 2415
+  },
+  {
+    "timestamp": 1754994978,
+    "operation": "duplicate_scan",
+    "count": 9,
+    "size_mb": 46,
+    "average_sales": 479
+  },
+  {
+    "timestamp": 1755081378,
+    "operation": "file_copy",
+    "count": 55,
+    "size_mb": 280,
+    "average_sales": 1606
+  },
+  {
+    "timestamp": 1755081378,
+    "operation": "file_move",
+    "count": 39,
+    "size_mb": 749,
+    "average_sales": 1492
+  },
+  {
+    "timestamp": 1755081378,
+    "operation": "duplicate_scan",
+    "count": 1,
+    "size_mb": 265,
+    "average_sales": 327
+  },
+  {
+    "timestamp": 1755167778,
+    "operation": "file_copy",
+    "count": 27,
+    "size_mb": 1916,
+    "average_sales": 2758
+  },
+  {
+    "timestamp": 1755167778,
+    "operation": "file_move",
+    "count": 7,
+    "size_mb": 921,
+    "average_sales": 1185
+  },
+  {
+    "timestamp": 1755167778,
+    "operation": "duplicate_scan",
+    "count": 18,
+    "size_mb": 297,
+    "average_sales": 1053
+  },
+  {
+    "timestamp": 1755254178,
+    "operation": "file_copy",
+    "count": 32,
+    "size_mb": 1061,
+    "average_sales": 4710
+  },
+  {
+    "timestamp": 1755254178,
+    "operation": "file_move",
+    "count": 31,
+    "size_mb": 539,
+    "average_sales": 1909
+  },
+  {
+    "timestamp": 1755254178,
+    "operation": "duplicate_scan",
+    "count": 17,
+    "size_mb": 113,
+    "average_sales": 445
+  },
+  {
+    "timestamp": 1755340578,
+    "operation": "file_copy",
+    "count": 57,
+    "size_mb": 1162,
+    "average_sales": 2500
+  },
+  {
+    "timestamp": 1755340578,
+    "operation": "file_move",
+    "count": 46,
+    "size_mb": 808,
+    "average_sales": 1037
+  },
+  {
+    "timestamp": 1755340578,
+    "operation": "duplicate_scan",
+    "count": 3,
+    "size_mb": 315,
+    "average_sales": 1120
+  },
+  {
+    "timestamp": 1755426978,
+    "operation": "file_copy",
+    "count": 33,
+    "size_mb": 624,
+    "average_sales": 3875
+  },
+  {
+    "timestamp": 1755426978,
+    "operation": "file_move",
+    "count": 11,
+    "size_mb": 874,
+    "average_sales": 535
+  },
+  {
+    "timestamp": 1755426978,
+    "operation": "duplicate_scan",
+    "count": 13,
+    "size_mb": 29,
+    "average_sales": 520
+  },
+  {
+    "timestamp": 1755513378,
+    "operation": "file_copy",
+    "count": 17,
+    "size_mb": 611,
+    "average_sales": 1399
+  },
+  {
+    "timestamp": 1755513378,
+    "operation": "file_move",
+    "count": 18,
+    "size_mb": 932,
+    "average_sales": 970
+  },
+  {
+    "timestamp": 1755513378,
+    "operation": "duplicate_scan",
+    "count": 15,
+    "size_mb": 101,
+    "average_sales": 1033
+  },
+  {
+    "timestamp": 1755599778,
+    "operation": "file_copy",
+    "count": 41,
+    "size_mb": 826,
+    "average_sales": 2982
+  },
+  {
+    "timestamp": 1755599778,
+    "operation": "file_move",
+    "count": 26,
+    "size_mb": 100,
+    "average_sales": 2188
+  },
+  {
+    "timestamp": 1755599778,
+    "operation": "duplicate_scan",
+    "count": 17,
+    "size_mb": 189,
+    "average_sales": 881
+  },
+  {
+    "timestamp": 1755686178,
+    "operation": "file_copy",
+    "count": 79,
+    "size_mb": 1906,
+    "average_sales": 2077
+  },
+  {
+    "timestamp": 1755686178,
+    "operation": "file_move",
+    "count": 47,
+    "size_mb": 493,
+    "average_sales": 1112
+  },
+  {
+    "timestamp": 1755686178,
+    "operation": "duplicate_scan",
+    "count": 1,
+    "size_mb": 273,
+    "average_sales": 1276
+  },
+  {
+    "timestamp": 1755772578,
+    "operation": "file_copy",
+    "count": 69,
+    "size_mb": 1103,
+    "average_sales": 4691
+  },
+  {
+    "timestamp": 1755772578,
+    "operation": "file_move",
+    "count": 9,
+    "size_mb": 152,
+    "average_sales": 1719
+  },
+  {
+    "timestamp": 1755772578,
+    "operation": "duplicate_scan",
+    "count": 6,
+    "size_mb": 374,
+    "average_sales": 1191
+  },
+  {
+    "timestamp": 1755858978,
+    "operation": "file_copy",
+    "count": 56,
+    "size_mb": 966,
+    "average_sales": 3870
+  },
+  {
+    "timestamp": 1755858978,
+    "operation": "file_move",
+    "count": 44,
+    "size_mb": 869,
+    "average_sales": 1155
+  },
+  {
+    "timestamp": 1755858978,
+    "operation": "duplicate_scan",
+    "count": 13,
+    "size_mb": 379,
+    "average_sales": 835
+  },
+  {
+    "timestamp": 1755945378,
+    "operation": "file_copy",
+    "count": 39,
+    "size_mb": 1782,
+    "average_sales": 1656
+  },
+  {
+    "timestamp": 1755945378,
+    "operation": "file_move",
+    "count": 23,
+    "size_mb": 653,
+    "average_sales": 1581
+  },
+  {
+    "timestamp": 1755945378,
+    "operation": "duplicate_scan",
+    "count": 5,
+    "size_mb": 483,
+    "average_sales": 316
+  },
+  {
+    "timestamp": 1756031778,
+    "operation": "file_copy",
+    "count": 71,
+    "size_mb": 890,
+    "average_sales": 2150
+  },
+  {
+    "timestamp": 1756031778,
+    "operation": "file_move",
+    "count": 13,
+    "size_mb": 957,
+    "average_sales": 1512
+  },
+  {
+    "timestamp": 1756031778,
+    "operation": "duplicate_scan",
+    "count": 1,
+    "size_mb": 67,
+    "average_sales": 833
+  },
+  {
+    "timestamp": 1756118178,
+    "operation": "file_copy",
+    "count": 10,
+    "size_mb": 1874,
+    "average_sales": 3849
+  },
+  {
+    "timestamp": 1756118178,
+    "operation": "file_move",
+    "count": 36,
+    "size_mb": 687,
+    "average_sales": 1641
+  },
+  {
+    "timestamp": 1756118178,
+    "operation": "duplicate_scan",
+    "count": 16,
+    "size_mb": 98,
+    "average_sales": 687
+  },
+  {
+    "timestamp": 1756204578,
+    "operation": "file_copy",
+    "count": 10,
+    "size_mb": 1395,
+    "average_sales": 2212
+  },
+  {
+    "timestamp": 1756204578,
+    "operation": "file_move",
+    "count": 43,
+    "size_mb": 753,
+    "average_sales": 1970
+  },
+  {
+    "timestamp": 1756204578,
+    "operation": "duplicate_scan",
+    "count": 5,
+    "size_mb": 287,
+    "average_sales": 1060
+  },
+  {
+    "timestamp": 1756290978,
+    "operation": "file_copy",
+    "count": 76,
+    "size_mb": 1199,
+    "average_sales": 1153
+  },
+  {
+    "timestamp": 1756290978,
+    "operation": "file_move",
+    "count": 20,
+    "size_mb": 484,
+    "average_sales": 1496
+  },
+  {
+    "timestamp": 1756290978,
+    "operation": "duplicate_scan",
+    "count": 14,
+    "size_mb": 229,
+    "average_sales": 1292
+  },
+  {
+    "timestamp": 1756377378,
+    "operation": "file_copy",
+    "count": 56,
+    "size_mb": 1108,
+    "average_sales": 3141
+  },
+  {
+    "timestamp": 1756377378,
+    "operation": "file_move",
+    "count": 9,
+    "size_mb": 253,
+    "average_sales": 1411
+  },
+  {
+    "timestamp": 1756377378,
+    "operation": "duplicate_scan",
+    "count": 16,
+    "size_mb": 350,
+    "average_sales": 750
+  },
+  {
+    "timestamp": 1756463778,
+    "operation": "file_copy",
+    "count": 42,
+    "size_mb": 1377,
+    "average_sales": 2757
+  },
+  {
+    "timestamp": 1756463778,
+    "operation": "file_move",
+    "count": 41,
+    "size_mb": 72,
+    "average_sales": 2285
+  },
+  {
+    "timestamp": 1756463778,
+    "operation": "duplicate_scan",
+    "count": 10,
+    "size_mb": 255,
+    "average_sales": 1323
+  },
+  {
+    "timestamp": 1756550178,
+    "operation": "file_copy",
+    "count": 43,
+    "size_mb": 1303,
+    "average_sales": 4294
+  },
+  {
+    "timestamp": 1756550178,
+    "operation": "file_move",
+    "count": 14,
+    "size_mb": 811,
+    "average_sales": 2182
+  },
+  {
+    "timestamp": 1756550178,
+    "operation": "duplicate_scan",
+    "count": 1,
+    "size_mb": 334,
+    "average_sales": 715
+  },
+  {
+    "timestamp": 1756636578,
+    "operation": "file_copy",
+    "count": 25,
+    "size_mb": 891,
+    "average_sales": 1335
+  },
+  {
+    "timestamp": 1756636578,
+    "operation": "file_move",
+    "count": 6,
+    "size_mb": 546,
+    "average_sales": 1395
+  },
+  {
+    "timestamp": 1756636578,
+    "operation": "duplicate_scan",
+    "count": 12,
+    "size_mb": 187,
+    "average_sales": 579
+  },
+  {
+    "timestamp": 1756722978,
+    "operation": "file_copy",
+    "count": 42,
+    "size_mb": 1056,
+    "average_sales": 3738
+  },
+  {
+    "timestamp": 1756722978,
+    "operation": "file_move",
+    "count": 47,
+    "size_mb": 662,
+    "average_sales": 1791
+  },
+  {
+    "timestamp": 1756722978,
+    "operation": "duplicate_scan",
+    "count": 3,
+    "size_mb": 74,
+    "average_sales": 1391
+  },
+  {
+    "timestamp": 1756809378,
+    "operation": "file_copy",
+    "count": 83,
+    "size_mb": 1166,
+    "average_sales": 4627
+  },
+  {
+    "timestamp": 1756809378,
+    "operation": "file_move",
+    "count": 33,
+    "size_mb": 446,
+    "average_sales": 511
+  },
+  {
+    "timestamp": 1756809378,
+    "operation": "duplicate_scan",
+    "count": 14,
+    "size_mb": 395,
+    "average_sales": 1476
+  },
+  {
+    "timestamp": 1756895778,
+    "operation": "file_copy",
+    "count": 44,
+    "size_mb": 826,
+    "average_sales": 3896
+  },
+  {
+    "timestamp": 1756895778,
+    "operation": "file_move",
+    "count": 30,
+    "size_mb": 825,
+    "average_sales": 1104
+  },
+  {
+    "timestamp": 1756895778,
+    "operation": "duplicate_scan",
+    "count": 10,
+    "size_mb": 99,
+    "average_sales": 1221
+  },
+  {
+    "timestamp": 1756982178,
+    "operation": "file_copy",
+    "count": 43,
+    "size_mb": 214,
+    "average_sales": 1616
+  },
+  {
+    "timestamp": 1756982178,
+    "operation": "file_move",
+    "count": 11,
+    "size_mb": 245,
+    "average_sales": 1325
+  },
+  {
+    "timestamp": 1756982178,
+    "operation": "duplicate_scan",
+    "count": 18,
+    "size_mb": 84,
+    "average_sales": 612
+  },
+  {
+    "timestamp": 1757068578,
+    "operation": "file_copy",
+    "count": 45,
+    "size_mb": 828,
+    "average_sales": 4348
+  },
+  {
+    "timestamp": 1757068578,
+    "operation": "file_move",
+    "count": 40,
+    "size_mb": 443,
+    "average_sales": 2392
+  },
+  {
+    "timestamp": 1757068578,
+    "operation": "duplicate_scan",
+    "count": 9,
+    "size_mb": 417,
+    "average_sales": 391
+  },
+  {
+    "timestamp": 1757154978,
+    "operation": "file_copy",
+    "count": 58,
+    "size_mb": 1222,
+    "average_sales": 2571
+  },
+  {
+    "timestamp": 1757154978,
+    "operation": "file_move",
+    "count": 22,
+    "size_mb": 145,
+    "average_sales": 2187
+  },
+  {
+    "timestamp": 1757154978,
+    "operation": "duplicate_scan",
+    "count": 5,
+    "size_mb": 277,
+    "average_sales": 478
+  },
+  {
+    "timestamp": 1757241378,
+    "operation": "file_copy",
+    "count": 98,
+    "size_mb": 966,
+    "average_sales": 1872
+  },
+  {
+    "timestamp": 1757241378,
+    "operation": "file_move",
+    "count": 34,
+    "size_mb": 322,
+    "average_sales": 2404
+  },
+  {
+    "timestamp": 1757241378,
+    "operation": "duplicate_scan",
+    "count": 16,
+    "size_mb": 226,
+    "average_sales": 596
+  },
+  {
+    "timestamp": 1757327778,
+    "operation": "file_copy",
+    "count": 68,
+    "size_mb": 1142,
+    "average_sales": 3224
+  },
+  {
+    "timestamp": 1757327778,
+    "operation": "file_move",
+    "count": 40,
+    "size_mb": 445,
+    "average_sales": 944
+  },
+  {
+    "timestamp": 1757327778,
+    "operation": "duplicate_scan",
+    "count": 9,
+    "size_mb": 412,
+    "average_sales": 275
+  },
+  {
+    "timestamp": 1757414178,
+    "operation": "file_copy",
+    "count": 18,
+    "size_mb": 554,
+    "average_sales": 2819
+  },
+  {
+    "timestamp": 1757414178,
+    "operation": "file_move",
+    "count": 18,
+    "size_mb": 784,
+    "average_sales": 1907
+  },
+  {
+    "timestamp": 1757414178,
+    "operation": "duplicate_scan",
+    "count": 19,
+    "size_mb": 376,
+    "average_sales": 343
+  },
+  {
+    "timestamp": 1757500578,
+    "operation": "file_copy",
+    "count": 78,
+    "size_mb": 1222,
+    "average_sales": 1395
+  },
+  {
+    "timestamp": 1757500578,
+    "operation": "file_move",
+    "count": 29,
+    "size_mb": 997,
+    "average_sales": 1390
+  },
+  {
+    "timestamp": 1757500578,
+    "operation": "duplicate_scan",
+    "count": 4,
+    "size_mb": 62,
+    "average_sales": 1374
+  },
+  {
+    "timestamp": 1757586978,
+    "operation": "file_copy",
+    "count": 25,
+    "size_mb": 668,
+    "average_sales": 2062
+  },
+  {
+    "timestamp": 1757586978,
+    "operation": "file_move",
+    "count": 49,
+    "size_mb": 742,
+    "average_sales": 1565
+  },
+  {
+    "timestamp": 1757586978,
+    "operation": "duplicate_scan",
+    "count": 7,
+    "size_mb": 407,
+    "average_sales": 1446
+  },
+  {
+    "timestamp": 1757673378,
+    "operation": "file_copy",
+    "count": 14,
+    "size_mb": 1286,
+    "average_sales": 2238
+  },
+  {
+    "timestamp": 1757673378,
+    "operation": "file_move",
+    "count": 33,
+    "size_mb": 284,
+    "average_sales": 2366
+  },
+  {
+    "timestamp": 1757673378,
+    "operation": "duplicate_scan",
+    "count": 18,
+    "size_mb": 248,
+    "average_sales": 787
+  },
+  {
+    "timestamp": 1757759778,
+    "operation": "file_copy",
+    "count": 18,
+    "size_mb": 1197,
+    "average_sales": 1953
+  },
+  {
+    "timestamp": 1757759778,
+    "operation": "file_move",
+    "count": 48,
+    "size_mb": 962,
+    "average_sales": 1776
+  },
+  {
+    "timestamp": 1757759778,
+    "operation": "duplicate_scan",
+    "count": 6,
+    "size_mb": 16,
+    "average_sales": 1397
+  },
+  {
+    "timestamp": 1757846178,
+    "operation": "file_copy",
+    "count": 22,
+    "size_mb": 1291,
+    "average_sales": 3217
+  },
+  {
+    "timestamp": 1757846178,
+    "operation": "file_move",
+    "count": 13,
+    "size_mb": 995,
+    "average_sales": 1294
+  },
+  {
+    "timestamp": 1757846178,
+    "operation": "duplicate_scan",
+    "count": 2,
+    "size_mb": 14,
+    "average_sales": 228
+  },
+  {
+    "timestamp": 1757932578,
+    "operation": "file_copy",
+    "count": 46,
+    "size_mb": 1545,
+    "average_sales": 3386
+  },
+  {
+    "timestamp": 1757932578,
+    "operation": "file_move",
+    "count": 12,
+    "size_mb": 545,
+    "average_sales": 1888
+  },
+  {
+    "timestamp": 1757932578,
+    "operation": "duplicate_scan",
+    "count": 1,
+    "size_mb": 351,
+    "average_sales": 699
+  },
+  {
+    "timestamp": 1758018978,
+    "operation": "file_copy",
+    "count": 26,
+    "size_mb": 610,
+    "average_sales": 4398
+  },
+  {
+    "timestamp": 1758018978,
+    "operation": "file_move",
+    "count": 29,
+    "size_mb": 350,
+    "average_sales": 1655
+  },
+  {
+    "timestamp": 1758018978,
+    "operation": "duplicate_scan",
+    "count": 4,
+    "size_mb": 79,
+    "average_sales": 1475
+  },
+  {
+    "timestamp": 1758105378,
+    "operation": "file_copy",
+    "count": 40,
+    "size_mb": 1910,
+    "average_sales": 3492
+  },
+  {
+    "timestamp": 1758105378,
+    "operation": "file_move",
+    "count": 48,
+    "size_mb": 231,
+    "average_sales": 666
+  },
+  {
+    "timestamp": 1758105378,
+    "operation": "duplicate_scan",
+    "count": 10,
+    "size_mb": 355,
+    "average_sales": 238
+  },
+  {
+    "timestamp": 1758191778,
+    "operation": "file_copy",
+    "count": 76,
+    "size_mb": 272,
+    "average_sales": 1652
+  },
+  {
+    "timestamp": 1758191778,
+    "operation": "file_move",
+    "count": 32,
+    "size_mb": 687,
+    "average_sales": 1581
+  },
+  {
+    "timestamp": 1758191778,
+    "operation": "duplicate_scan",
+    "count": 8,
+    "size_mb": 326,
+    "average_sales": 1094
+  },
+  {
+    "timestamp": 1758278178,
+    "operation": "file_copy",
+    "count": 48,
+    "size_mb": 1124,
+    "average_sales": 3434
+  },
+  {
+    "timestamp": 1758278178,
+    "operation": "file_move",
+    "count": 17,
+    "size_mb": 397,
+    "average_sales": 689
+  },
+  {
+    "timestamp": 1758278178,
+    "operation": "duplicate_scan",
+    "count": 17,
+    "size_mb": 418,
+    "average_sales": 1023
+  },
+  {
+    "timestamp": 1758364578,
+    "operation": "file_copy",
+    "count": 42,
+    "size_mb": 1033,
+    "average_sales": 2140
+  },
+  {
+    "timestamp": 1758364578,
+    "operation": "file_move",
+    "count": 10,
+    "size_mb": 107,
+    "average_sales": 2079
+  },
+  {
+    "timestamp": 1758364578,
+    "operation": "duplicate_scan",
+    "count": 13,
+    "size_mb": 169,
+    "average_sales": 372
+  },
+  {
+    "timestamp": 1758450978,
+    "operation": "file_copy",
+    "count": 70,
+    "size_mb": 914,
+    "average_sales": 2172
+  },
+  {
+    "timestamp": 1758450978,
+    "operation": "file_move",
+    "count": 20,
+    "size_mb": 935,
+    "average_sales": 1736
+  },
+  {
+    "timestamp": 1758450978,
+    "operation": "duplicate_scan",
+    "count": 11,
+    "size_mb": 261,
+    "average_sales": 1452
+  },
+  {
+    "timestamp": 1758537378,
+    "operation": "file_copy",
+    "count": 45,
+    "size_mb": 1350,
+    "average_sales": 2682
+  },
+  {
+    "timestamp": 1758537378,
+    "operation": "file_move",
+    "count": 24,
+    "size_mb": 490,
+    "average_sales": 1925
+  },
+  {
+    "timestamp": 1758537378,
+    "operation": "duplicate_scan",
+    "count": 15,
+    "size_mb": 242,
+    "average_sales": 1366
+  },
+  {
+    "timestamp": 1758623778,
+    "operation": "file_copy",
+    "count": 40,
+    "size_mb": 1636,
+    "average_sales": 2396
+  },
+  {
+    "timestamp": 1758623778,
+    "operation": "file_move",
+    "count": 7,
+    "size_mb": 705,
+    "average_sales": 970
+  },
+  {
+    "timestamp": 1758623778,
+    "operation": "duplicate_scan",
+    "count": 11,
+    "size_mb": 21,
+    "average_sales": 935
+  },
+  {
+    "timestamp": 1758710178,
+    "operation": "file_copy",
+    "count": 25,
+    "size_mb": 1067,
+    "average_sales": 1357
+  },
+  {
+    "timestamp": 1758710178,
+    "operation": "file_move",
+    "count": 16,
+    "size_mb": 457,
+    "average_sales": 1167
+  },
+  {
+    "timestamp": 1758710178,
+    "operation": "duplicate_scan",
+    "count": 8,
+    "size_mb": 131,
+    "average_sales": 875
+  },
+  {
+    "timestamp": 1758796578,
+    "operation": "file_copy",
+    "count": 99,
+    "size_mb": 1771,
+    "average_sales": 3745
+  },
+  {
+    "timestamp": 1758796578,
+    "operation": "file_move",
+    "count": 32,
+    "size_mb": 781,
+    "average_sales": 1368
+  },
+  {
+    "timestamp": 1758796578,
+    "operation": "duplicate_scan",
+    "count": 9,
+    "size_mb": 237,
+    "average_sales": 701
+  },
+  {
+    "timestamp": 1758882978,
+    "operation": "file_copy",
+    "count": 72,
+    "size_mb": 1268,
+    "average_sales": 2224
+  },
+  {
+    "timestamp": 1758882978,
+    "operation": "file_move",
+    "count": 37,
+    "size_mb": 773,
+    "average_sales": 960
+  },
+  {
+    "timestamp": 1758882978,
+    "operation": "duplicate_scan",
+    "count": 16,
+    "size_mb": 422,
+    "average_sales": 1108
+  },
+  {
+    "timestamp": 1758969378,
+    "operation": "file_copy",
+    "count": 55,
+    "size_mb": 1670,
+    "average_sales": 4324
+  },
+  {
+    "timestamp": 1758969378,
+    "operation": "file_move",
+    "count": 10,
+    "size_mb": 643,
+    "average_sales": 1382
+  },
+  {
+    "timestamp": 1758969378,
+    "operation": "duplicate_scan",
+    "count": 5,
+    "size_mb": 312,
+    "average_sales": 649
+  },
+  {
+    "timestamp": 1759055778,
+    "operation": "file_copy",
+    "count": 19,
+    "size_mb": 923,
+    "average_sales": 1797
+  },
+  {
+    "timestamp": 1759055778,
+    "operation": "file_move",
+    "count": 49,
+    "size_mb": 54,
+    "average_sales": 1642
+  },
+  {
+    "timestamp": 1759055778,
+    "operation": "duplicate_scan",
+    "count": 1,
+    "size_mb": 383,
+    "average_sales": 1288
+  }
+]

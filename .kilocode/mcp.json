@@ -6,7 +6,9 @@
         "mcp-server-git",
         "--repository",
         "https://github.com/richardnoragon"
-      ]
+      ],
+      "disabled": false,
+      "alwaysAllow": []
     },
     "github": {
       "command": "docker",

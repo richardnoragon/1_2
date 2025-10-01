@@ -1,0 +1,30 @@
+refactor the multi pane explorer implementation.
+
+the multi pane explorer is one of two options
+the user can select to be the 'hub' or central
+point of the users experience with Richards File Utilities(rfu).
+
+the user will be given the option with a small button to (quick)change to the tabbed interface and back.
+
+by default multi pane explorer shall open with 4 parallel panes, no fall back.
+
+the left pane will be tabbed, 'Bookmarks', 'Recent' and 'Tools'.  
+The 'Recent' tab will be seleceted as default.
+The default may be changed by the user
+The 'Bookmarks' tab will display in the top half of the pane the 'Tools' which the user has bookmarked,
+the bottom half of the display drives, folders or network location the user has bookmarked
+The 'Recent' tab will display in the top half of the pane the last 
+The 'Tools' tab will display all the programs (only executables not the folders) of Richards File Utilities(rfu)
+
+the two center panes shall display the files, directories and network locations for the user.
+At the top the user can select with drop down button the local and attached storage
+by default the root drive will be displayed, which can be changed by the user
+the user shall be able to select between 1,2,3 and 4 panes.
+when the user selects 1 pane the layout option will be disabled
+when the user selects 2 panes, the layout option will allow horizontal and vertical arrangement of two center panes
+when the user selects 3 panes, the layout option will allow horizontal, vertical and grid arrangement of two center panes
+when the user selects 4 panes, the layout option will allow horizontal, vertical and grid arrangement of two center panes
+
+the right pane will be tabbed, 'Preview' and 'Properties'
+the right pane will display the preview of the left tab
+by default may be cahnged by the user to be either 'Preview' or 'Properties'

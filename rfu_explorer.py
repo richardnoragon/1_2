@@ -1,135 +1,155 @@
 #!/usr/bin/env python3
 """
-RFU Multi-Pane File Explorer - Main Entry Point
+RFU Multi-Pane File Explorer - Entry Point
 
-This replaces the dialog-based hub with a sophisticated file explorer interface
-similar to Total Commander but cross-platform and fully integrated with RFU tools.
+This is the standalone entry point for the RFU Multi-Pane File Explorer interface.
+It provides a comprehensive Total Commander-style file management interface
+with full integration to Richard's File Utilities tool ecosystem.
+
+Features:
+- 1-4 configurable file explorer panes
+- Tool Bookmark navigation pane (left sidebar)
+- Preview/properties information pane (right sidebar)
+- Complete application menu bar with RFU tool integration
+- Cross-platform file operations with drag-and-drop
+- Customizable layouts and responsive design
+- Advanced file operations and tool launching
 """
 
+import logging
 import os
 import sys
 from pathlib import Path
-from typing import Optional
 
-# Add the src directory to the Python path
-project_root = Path(__file__).parent
-sys.path.insert(0, str(project_root / 'src'))
-
-try:
-    from PyQt5.QtCore import QSettings, Qt
-    from PyQt5.QtGui import QIcon
-    from PyQt5.QtWidgets import QApplication, QMessageBox
-
-    # Import the multi-pane explorer
-    from src.file_explorer.multi_pane_explorer import MultiPaneFileExplorer
-    
-except ImportError as e:
-    print(f"Error importing required modules: {e}")
-    print("Please ensure PyQt5 is properly installed:")
-    print("  pip install PyQt5")
-    sys.exit(1)
+# Add the src directory to Python path for imports
+project_root = os.path.dirname(__file__)
+sys.path.insert(0, os.path.join(project_root, "src"))
 
 
-def setup_application() -> QApplication:
-    """Setup and configure the QApplication."""
-    app = QApplication(sys.argv)
-    
-    # Set application metadata
-    app.setApplicationName("RFU Multi-Pane Explorer")
-    app.setApplicationDisplayName("Richard's File Utilities - File Explorer")
-    app.setApplicationVersion("1.0.0")
-    app.setOrganizationName("RFU")
-    app.setOrganizationDomain("rfu.local")
-    
-    # Set application icon if available
-    icon_path = project_root / "assets" / "images" / "rfu_icon.png"
-    if icon_path.exists():
-        app.setWindowIcon(QIcon(str(icon_path)))
-    
-    # Enable high DPI support
-    app.setAttribute(Qt.AA_EnableHighDpiScaling, True)
-    app.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
-    
-    return app
-
-
-def check_prerequisites() -> bool:
-    """Check if all prerequisites are met."""
+def setup_logging():
+    """Setup logging for the multi-pane explorer."""
     try:
-        # Check if database is accessible
-        from scripts.maintenance.standalone_database_manager import \
-            get_database_manager
-        db_manager = get_database_manager()
-        if db_manager is None:
-            print("Warning: Database manager not available. Some features may be limited.")
-            return True  # Continue without database
-            
-        # Check if configuration system is available
-        from src.config_manager import ConfigManager
-        config_manager = ConfigManager()
-        
-        return True
-        
-    except ImportError as e:
-        print(f"Missing required components: {e}")
-        return False
+        logging.basicConfig(
+            level=logging.INFO,
+            format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+            handlers=[
+                logging.StreamHandler(),
+                logging.FileHandler("rfu_explorer.log", encoding="utf-8"),
+            ],
+        )
+        logger = logging.getLogger("RFU.Explorer")
+        logger.info("RFU Multi-Pane File Explorer logging initialized")
+        return logger
+    except Exception as e:
+        print(f"Warning: Could not setup logging: {e}")
+        return logging.getLogger("RFU.Explorer")
 
 
 def main():
-    """Main entry point for the RFU Multi-Pane File Explorer."""
-    print("Starting RFU Multi-Pane File Explorer...")
-    
-    # Check prerequisites
-    if not check_prerequisites():
-        print("Prerequisites check failed. Please ensure all components are properly installed.")
-        return 1
-    
-    # Setup application
-    app = setup_application()
-    
+    """Main entry point for RFU Multi-Pane File Explorer."""
+    logger = setup_logging()
+
     try:
-        # Create and show the main explorer window
-        explorer = MultiPaneFileExplorer()
-        explorer.show()
-        
-        # Center window on screen
-        screen_geometry = app.desktop().availableGeometry()
-        window_geometry = explorer.frameGeometry()
-        center_point = screen_geometry.center()
-        window_geometry.moveCenter(center_point)
-        explorer.move(window_geometry.topLeft())
-        
-        print("RFU Multi-Pane File Explorer started successfully.")
-        print("Features:")
-        print("  • 1-4 configurable file explorer panes")
-        print("  • Cross-platform compatibility")
-        print("  • Integrated access to all RFU tools")
-        print("  • Advanced file operations with progress tracking")
-        print("  • Customizable color schemes and layouts")
-        print("  • Bookmark and favorites management")
-        print()
-        print("Use Ctrl+1/2/3/4 to switch between pane configurations")
-        print("Use F1 for help and documentation")
-        
-        # Start the application event loop
-        return app.exec_()
-        
-    except Exception as e:
-        print(f"Error starting RFU Multi-Pane File Explorer: {e}")
-        
-        # Show error dialog if GUI is available
+        # Import PyQt5 components
+        from PyQt5.QtCore import Qt
+        from PyQt5.QtWidgets import QApplication, QMessageBox
+
+        logger.info("Starting RFU Multi-Pane File Explorer...")
+
+        # Create QApplication
+        app = QApplication(sys.argv)
+        app.setApplicationName("RFU Multi-Pane File Explorer")
+        app.setApplicationVersion("1.0.0")
+        app.setOrganizationName("Richard's File Utilities")
+
+        # Set application properties for high DPI support
+        if hasattr(Qt, "AA_EnableHighDpiScaling"):
+            app.setAttribute(Qt.AA_EnableHighDpiScaling, True)
+        if hasattr(Qt, "AA_UseHighDpiPixmaps"):
+            app.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
+
+        # Import and create the multi-pane explorer with new architecture
         try:
+            from src.file_explorer.explorer_controller import ExplorerMainWindow
+
+            # Create main window with enterprise-grade architecture
+            explorer = ExplorerMainWindow()
+
+            # Set window properties
+            explorer.setWindowTitle("RFU Multi-Pane File Explorer - Enterprise Edition")
+
+            # Show the window
+            explorer.show()
+
+            logger.info("Enterprise multi-pane explorer launched successfully")
+            logger.info("New architecture features:")
+            logger.info("  • Component Guardian protection against GUI degradation")
+            logger.info("  • Separated concerns with specialized managers")
+            logger.info("  • Robust error handling and automatic recovery")
+            logger.info("  • Clean import strategies with fallback mechanisms")
+            logger.info("  • Enterprise-grade widget lifecycle management")
+            logger.info("  • Comprehensive monitoring and health checks")
+
+            # Start the application event loop
+            return app.exec_()
+
+        except ImportError as ie:
+            logger.error(f"Failed to import ExplorerMainWindow: {ie}")
+            logger.info("Falling back to legacy multi-pane explorer")
+
+            try:
+                from src.file_explorer.multi_pane_explorer import MultiPaneFileExplorer
+
+                explorer = MultiPaneFileExplorer()
+                explorer.setWindowTitle("RFU Multi-Pane File Explorer - Legacy Mode")
+                explorer.show()
+
+                logger.warning("Using legacy explorer due to import failure")
+                return app.exec_()
+
+            except ImportError as legacy_ie:
+                QMessageBox.critical(
+                    None,
+                    "Import Error",
+                    f"Could not import explorer components:\n\n{legacy_ie}\n\n"
+                    "Please ensure all required dependencies are installed.",
+                )
+                return 1
+
+        except Exception as e:
+            logger.error(f"Error creating multi-pane explorer: {e}")
             QMessageBox.critical(
                 None,
-                "RFU Explorer Error",
-                f"Failed to start RFU Multi-Pane File Explorer:\n\n{e}\n\n"
-                f"Please check the installation and try again."
+                "Application Error",
+                f"Failed to create the multi-pane explorer:\n\n{e}\n\n"
+                "Please check the logs for more details.",
             )
-        except:
-            pass
-            
+            return 1
+
+    except ImportError as ie:
+        logger.error(f"PyQt5 import error: {ie}")
+        print("ERROR: PyQt5 is not available.")
+        print("Please install PyQt5 with: pip install PyQt5")
+        return 1
+
+    except Exception as e:
+        logger.error(f"Critical error starting application: {e}")
+        print(f"CRITICAL ERROR: {e}")
         return 1
 
 
-if __name__ == '__main__':
-    sys.exit(main())
+if __name__ == "__main__":
+    """Direct execution entry point."""
+    print("=" * 60)
+    print("RFU Multi-Pane File Explorer")
+    print("Complete interface with all components")
+    print("=" * 60)
+
+    exit_code = main()
+
+    if exit_code == 0:
+        print("RFU Multi-Pane File Explorer closed successfully.")
+    else:
+        print(f"RFU Multi-Pane File Explorer exited with code: {exit_code}")
+
+    sys.exit(exit_code)
