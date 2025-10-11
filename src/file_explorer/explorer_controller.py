@@ -42,6 +42,7 @@ class ExplorerController(QObject if QT_AVAILABLE else object):
     paneRemoved = pyqtSignal(str) if QT_AVAILABLE else None
     activePaneChanged = pyqtSignal(str) if QT_AVAILABLE else None
     pathChanged = pyqtSignal(str, str) if QT_AVAILABLE else None
+    fileSelected = pyqtSignal(str) if QT_AVAILABLE else None
 
     def __init__(self, main_window: Optional[QMainWindow] = None):
         """Initialize explorer controller."""
@@ -62,8 +63,18 @@ class ExplorerController(QObject if QT_AVAILABLE else object):
         self.layout_mode = "horizontal"
         self.is_initialized = False
 
+        # Center pane management (T042)
+        self.center_panes = {}  # pane_id -> pane widget
+        self.pane_states = {}  # pane_id -> state dict
+        self.right_pane_widget = None  # Reference to right pane
+
+        # Preference service (T043)
+        self._preference_service = None
+        self._config_dir = None
+
         # Initialize components
         self._initialize_managers()
+        self._initialize_preferences()
 
     def _initialize_managers(self):
         """Initialize component managers."""
@@ -120,6 +131,75 @@ class ExplorerController(QObject if QT_AVAILABLE else object):
         self._pane_manager = MinimalManager(self)
         self._layout_manager = MinimalManager(self)
         self._tool_integration = MinimalManager(self)
+
+    def _initialize_preferences(self, config_dir: Optional[Path] = None):
+        """
+        Initialize preference service and load user preferences (T043).
+
+        Args:
+            config_dir: Optional config directory for testing
+        """
+        try:
+            from src.file_explorer.services.preference_service import (
+                PreferenceService,
+            )
+
+            self._config_dir = config_dir
+            self._preference_service = PreferenceService(config_dir=config_dir)
+
+            # Load preferences
+            prefs = self._preference_service.load_preferences()
+
+            # Apply loaded preferences to state
+            if prefs.pane_config:
+                self.pane_count = prefs.pane_config.pane_count
+                layout_type = prefs.pane_config.layout_type
+                self.layout_mode = (
+                    "horizontal"
+                    if str(layout_type).lower() == "horizontal"
+                    else "vertical"
+                )
+
+            self.logger.info(
+                f"Preferences loaded: {self.pane_count} panes, "
+                f"{self.layout_mode} layout"
+            )
+
+        except ImportError as e:
+            self.logger.warning(f"PreferenceService not available: {e}")
+            self._preference_service = None
+        except Exception as e:
+            self.logger.error(f"Error initializing preferences: {e}")
+            self._preference_service = None
+
+    def _save_preferences(self):
+        """Save current state to preferences (T043)."""
+        try:
+            if not self._preference_service:
+                return
+
+            prefs = self._preference_service.load_preferences()
+
+            # Update pane configuration
+            from src.file_explorer.models.pane_configuration import (
+                LayoutType,
+                PaneConfiguration,
+            )
+
+            layout_type = (
+                LayoutType.HORIZONTAL
+                if self.layout_mode == "horizontal"
+                else LayoutType.VERTICAL
+            )
+            prefs.pane_config = PaneConfiguration(self.pane_count, layout_type, {})
+
+            # Save updated preferences
+            self._preference_service.save_preferences(prefs)
+
+            self.logger.debug("Preferences saved successfully")
+
+        except Exception as e:
+            self.logger.error(f"Error saving preferences: {e}")
 
     def initialize_ui(self, container_widget: QWidget) -> bool:
         """
@@ -248,9 +328,11 @@ class ExplorerController(QObject if QT_AVAILABLE else object):
                 success = self._pane_manager.set_count(count)
                 if success:
                     self.logger.info(f"Pane count changed from {old_count} to {count}")
+                    self._save_preferences()  # T043: Persist change
                 return success
             else:
                 self.logger.info(f"Pane count set to {count} (manager fallback)")
+                self._save_preferences()  # T043: Persist change
                 return True
 
         except Exception as e:
@@ -281,9 +363,11 @@ class ExplorerController(QObject if QT_AVAILABLE else object):
                 if success:
                     msg = f"Layout mode changed from {old_mode} to {mode}"
                     self.logger.info(msg)
+                    self._save_preferences()  # T043: Persist change
                 return success
             else:
                 self.logger.info(f"Layout mode set to {mode} (manager fallback)")
+                self._save_preferences()  # T043: Persist change
                 return True
 
         except Exception as e:
@@ -318,6 +402,110 @@ class ExplorerController(QObject if QT_AVAILABLE else object):
             self.logger.error(f"Error navigating to {path}: {e}")
             return False
 
+    def navigate_with_fallback(self, pane_id: str, path: Path) -> bool:
+        """
+        Navigate to path with fallback to system root if unavailable (T045).
+
+        Args:
+            pane_id: Pane identifier
+            path: Path to navigate to
+
+        Returns:
+            bool: True if navigation successful (possibly to fallback)
+        """
+        try:
+            # Check if path is available
+            if self._is_path_available(path):
+                # Path available, navigate normally
+                if self._pane_manager and hasattr(self._pane_manager, "navigate"):
+                    success = self._pane_manager.navigate(pane_id, str(path))
+                    if success and self.pathChanged:
+                        self.pathChanged.emit(pane_id, str(path))
+                    return success
+                return True
+
+            # Path unavailable, show notification and fall back
+            self._show_unavailable_notification(path)
+            fallback_path = self._get_system_root()
+
+            if self._pane_manager and hasattr(self._pane_manager, "navigate"):
+                success = self._pane_manager.navigate(pane_id, str(fallback_path))
+                if success and self.pathChanged:
+                    self.pathChanged.emit(pane_id, str(fallback_path))
+                return success
+
+            return True
+
+        except Exception as e:
+            self.logger.error(f"Error in navigate_with_fallback: {e}")
+            return False
+
+    def _is_path_available(self, path: Path) -> bool:
+        """
+        Check if path is currently accessible (T045).
+
+        Args:
+            path: Path to check
+
+        Returns:
+            bool: True if accessible
+        """
+        try:
+            # Try to import StorageDeviceService
+            from src.file_explorer.services.storage_device_service import (
+                StorageDeviceService,
+            )
+
+            storage_service = StorageDeviceService()
+            return storage_service.is_available(path)
+
+        except ImportError:
+            # Fallback: basic existence check
+            try:
+                return path.exists()
+            except (OSError, PermissionError):
+                return False
+        except Exception as e:
+            self.logger.error(f"Error checking path availability: {e}")
+            return False
+
+    def _show_unavailable_notification(self, path: Path):
+        """
+        Show notification that path is unavailable (T045).
+
+        Args:
+            path: Unavailable path
+        """
+        try:
+            from src.file_explorer.services.notification_service import (
+                NotificationService,
+            )
+
+            notification_service = NotificationService()
+            message = f"Location unavailable: {path}\n" f"Falling back to system root."
+            notification_service.show_warning(message)
+
+        except ImportError:
+            self.logger.warning(
+                f"NotificationService unavailable. Path {path} not accessible."
+            )
+        except Exception as e:
+            self.logger.error(f"Error showing notification: {e}")
+
+    def _get_system_root(self) -> Path:
+        """
+        Get system root directory (cross-platform) (T045).
+
+        Returns:
+            Path: System root (C:\\ on Windows, / on Unix)
+        """
+        import sys
+
+        if sys.platform == "win32":
+            return Path("C:\\")
+        else:
+            return Path("/")
+
     def launch_tool(self, tool_name: str, **kwargs) -> bool:
         """
         Launch integrated tool.
@@ -350,11 +538,12 @@ class ExplorerController(QObject if QT_AVAILABLE else object):
             self.logger.error(f"Error getting active pane path: {e}")
             return None
 
-    def get_selected_files(self) -> List[str]:
-        """Get list of selected files from active pane."""
+    def get_selected_files(self, pane_id: Optional[str] = None) -> List[str]:
+        """Get list of selected files from specified or active pane."""
         try:
+            target_pane = pane_id or self.active_pane_id
             if self._pane_manager and hasattr(self._pane_manager, "get_selected"):
-                return self._pane_manager.get_selected(self.active_pane_id)
+                return self._pane_manager.get_selected(target_pane)
             return []
         except Exception as e:
             self.logger.error(f"Error getting selected files: {e}")
@@ -405,6 +594,79 @@ class ExplorerController(QObject if QT_AVAILABLE else object):
                     self.active_pane_id = ""
         except Exception as e:
             self.logger.error(f"Error selecting new active pane: {e}")
+
+    def register_center_pane(self, pane_id: str, pane_widget):
+        """Register a center pane widget for management (T042)."""
+        try:
+            self.center_panes[pane_id] = pane_widget
+            self.pane_states[pane_id] = {
+                "current_path": None,
+                "selected_files": [],
+                "history": [],
+            }
+
+            # Connect selection signals
+            if hasattr(pane_widget, "fileSelected"):
+                pane_widget.fileSelected.connect(self._on_file_selected)
+
+            self.logger.info(f"Registered center pane: {pane_id}")
+
+        except Exception as e:
+            self.logger.error(f"Error registering center pane: {e}")
+
+    def unregister_center_pane(self, pane_id: str):
+        """Unregister a center pane widget (T042)."""
+        try:
+            if pane_id in self.center_panes:
+                del self.center_panes[pane_id]
+            if pane_id in self.pane_states:
+                del self.pane_states[pane_id]
+
+            self.logger.info(f"Unregistered center pane: {pane_id}")
+
+        except Exception as e:
+            self.logger.error(f"Error unregistering center pane: {e}")
+
+    def set_right_pane(self, right_pane_widget):
+        """Set reference to right pane for selection coordination (T042)."""
+        try:
+            self.right_pane_widget = right_pane_widget
+            self.logger.info("Right pane reference set")
+        except Exception as e:
+            self.logger.error(f"Error setting right pane: {e}")
+
+    def _on_file_selected(self, file_path: str):
+        """Handle file selection from center panes (T042)."""
+        try:
+            # Emit signal for external listeners
+            if self.fileSelected:
+                self.fileSelected.emit(file_path)
+
+            # Update right pane
+            if self.right_pane_widget:
+                if hasattr(self.right_pane_widget, "on_file_selected"):
+                    self.right_pane_widget.on_file_selected(file_path)
+
+            self.logger.debug(f"File selected: {file_path}")
+
+        except Exception as e:
+            self.logger.error(f"Error handling file selection: {e}")
+
+    def get_center_pane_count(self) -> int:
+        """Get number of registered center panes (T042)."""
+        return len(self.center_panes)
+
+    def get_pane_state(self, pane_id: str) -> Optional[Dict[str, Any]]:
+        """Get state for specific pane (T042)."""
+        return self.pane_states.get(pane_id)
+
+    def update_pane_state(self, pane_id: str, state_key: str, state_value: Any):
+        """Update specific state value for pane (T042)."""
+        try:
+            if pane_id in self.pane_states:
+                self.pane_states[pane_id][state_key] = state_value
+        except Exception as e:
+            self.logger.error(f"Error updating pane state: {e}")
 
     def get_status(self) -> Dict[str, Any]:
         """Get comprehensive controller status."""

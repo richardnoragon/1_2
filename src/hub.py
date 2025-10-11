@@ -182,9 +182,7 @@ class UtilityWindow(QMainWindow if PYQT5_AVAILABLE else object):
             return
 
         # Get all callbacks from parent and delegate them
-        parent_callbacks = getattr(
-            self.parent_hub.menu_manager, "callbacks", {}
-        )
+        parent_callbacks = getattr(self.parent_hub.menu_manager, "callbacks", {})
         for callback_name, callback_func in parent_callbacks.items():
             self.menu_manager.register_callback(callback_name, callback_func)
 
@@ -235,6 +233,10 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
             "disk": {"available": True, "allocated_to": None},
         }
 
+        # Multi-Pane Explorer support (Phase 3.5 Integration)
+        self.multi_pane_explorer = None
+        self.current_hub_mode = None  # Will be set in _setup_gui
+
         # Check for PyQt5 availability (from rfuhub.py)
         if not PYQT5_AVAILABLE:
             self.logger.warning(
@@ -278,6 +280,12 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
         main_layout.setContentsMargins(20, 20, 20, 20)
         main_layout.setSpacing(15)
 
+        # Header with title and interface toggle button
+        self.header_widget = QWidget()
+        header_layout = QHBoxLayout(self.header_widget)
+        header_layout.setContentsMargins(0, 0, 0, 0)
+        header_layout.setSpacing(10)
+
         # Title with professional styling
         title_label = QLabel("Richard's File Utilities")
         title_label.setAlignment(Qt.AlignCenter)
@@ -298,7 +306,18 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
             }}
         """
         )
-        main_layout.addWidget(title_label)
+        header_layout.addWidget(title_label, 1)
+
+        # Add interface toggle button
+        self._create_interface_toggle_button(header_layout)
+
+        main_layout.addWidget(self.header_widget)
+
+        # Create stacked widget to hold both interfaces
+        from PyQt5.QtWidgets import QStackedWidget
+
+        self.interface_stack = QStackedWidget()
+        main_layout.addWidget(self.interface_stack)
 
         # Create tab widget with professional styling
         self.tab_widget = QTabWidget()
@@ -344,6 +363,15 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
         self.create_system_tab()
         self.create_logs_tab()
 
+        # Add tabbed interface to stacked widget
+        self.interface_stack.addWidget(self.tab_widget)
+
+        # Create Multi-Pane Explorer interface
+        self._create_multi_pane_interface()
+
+        # Load and set initial interface mode
+        self._load_and_set_interface_mode()
+
         # Status bar with professional styling
         self.status_bar = QStatusBar()
         self.setStatusBar(self.status_bar)
@@ -358,6 +386,9 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
         )
         self.status_bar.showMessage("RFU Hub initialized successfully")
 
+        # Apply startup mode that focuses solely on the tab interface
+        self._apply_startup_focus_mode()
+
     def _setup_hub_integration(self):
         """Setup hub integration components (from hub.py)."""
         if not PYQT5_AVAILABLE:
@@ -371,12 +402,129 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
             self.tool_status_changed.connect(self._on_tool_status_changed)
             self.hub_event_broadcast.connect(self._on_hub_event_broadcast)
 
+    def _create_interface_toggle_button(self, header_layout):
+        """Create and configure the interface toggle button."""
+        try:
+            from src.file_explorer.features.hub_interface_toggle import (
+                HubInterfaceToggle,
+            )
+
+            self.interface_toggle = HubInterfaceToggle()
+            self.interface_toggle.mode_changed.connect(self._on_interface_mode_changed)
+            header_layout.addWidget(self.interface_toggle)
+
+        except Exception as e:
+            self.logger.error(f"Failed to create interface toggle: {e}")
+
+    def _create_multi_pane_interface(self):
+        """Create the Multi-Pane Explorer interface."""
+        try:
+            from src.file_explorer.multi_pane_explorer_simple import (
+                MultiPaneExplorer,
+            )
+
+            self.multi_pane_explorer = MultiPaneExplorer()
+            self.interface_stack.addWidget(self.multi_pane_explorer)
+
+            self.logger.info("Multi-Pane Explorer interface created")
+
+        except Exception as e:
+            self.logger.error(f"Failed to create multi-pane interface: {e}")
+            # Add placeholder
+            placeholder = QWidget()
+            placeholder_layout = QVBoxLayout(placeholder)
+            placeholder_label = QLabel("Multi-Pane Explorer unavailable")
+            placeholder_layout.addWidget(placeholder_label)
+            self.interface_stack.addWidget(placeholder)
+
+    def _load_and_set_interface_mode(self):
+        """Load saved interface mode and set initial view."""
+        try:
+            from src.file_explorer.models.hub_interface_mode import (
+                HubInterfaceMode,
+            )
+            from src.file_explorer.services.preference_service import (
+                get_preference_service,
+            )
+
+            pref_service = get_preference_service()
+            prefs = pref_service.load_preferences()
+
+            mode = prefs.hub_interface_mode
+            self.current_hub_mode = mode
+
+            # Set appropriate widget
+            if mode == HubInterfaceMode.MULTI_PANE:
+                self.interface_stack.setCurrentIndex(1)
+            else:
+                self.interface_stack.setCurrentIndex(0)
+
+            self.logger.info(f"Interface mode set to: {mode.value}")
+
+        except Exception as e:
+            self.logger.error(f"Error loading interface mode: {e}")
+            # Default to tabbed
+            self.interface_stack.setCurrentIndex(0)
+
+    def _apply_startup_focus_mode(self):
+        """Hide non-tab UI so the tabbed interface is the startup focus."""
+        if not PYQT5_AVAILABLE:
+            return
+
+        menu_bar = self.menuBar()
+        if menu_bar:
+            menu_bar.setVisible(False)
+
+        if hasattr(self, "status_bar"):
+            self.status_bar.setVisible(False)
+
+        if hasattr(self, "header_widget"):
+            self.header_widget.setVisible(False)
+
+        if hasattr(self, "interface_toggle") and self.interface_toggle:
+            self.interface_toggle.setVisible(False)
+            self.interface_toggle.setEnabled(False)
+
+        if hasattr(self, "interface_stack"):
+            self.interface_stack.setCurrentIndex(0)
+
+        if hasattr(self, "tab_widget"):
+            self.tab_widget.setFocus()
+            self.tab_widget.setFocusPolicy(Qt.StrongFocus)
+
+        try:
+            from src.file_explorer.models.hub_interface_mode import (
+                HubInterfaceMode,
+            )
+
+            self.current_hub_mode = HubInterfaceMode.TABBED
+        except Exception:
+            self.current_hub_mode = "tabbed"
+
+    def _on_interface_mode_changed(self, new_mode):
+        """Handle interface mode change from toggle button."""
+        try:
+            from src.file_explorer.models.hub_interface_mode import (
+                HubInterfaceMode,
+            )
+
+            self.current_hub_mode = new_mode
+
+            # Switch widget
+            if new_mode == HubInterfaceMode.MULTI_PANE:
+                self.interface_stack.setCurrentIndex(1)
+                self.logger.info("Switched to Multi-Pane Explorer")
+            else:
+                self.interface_stack.setCurrentIndex(0)
+                self.logger.info("Switched to Tabbed Interface")
+
+        except Exception as e:
+            self.logger.error(f"Error switching interface mode: {e}")
+
     def _get_application_icon(self):
         """Get application icon with fallback."""
         try:
-            icon_path = os.path.join(
-                os.path.dirname(__file__), "icons", "app_icon.png"
-            )
+            icon_path = os.path.join(os.path.dirname(__file__), "icons", "app_icon.png")
             if os.path.exists(icon_path):
                 return QIcon(icon_path)
         except Exception:
@@ -428,12 +576,8 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
         self.menu_manager.register_callback("save_as_file", self.save_as_file)
         self.menu_manager.register_callback("export_data", self.export_data)
         self.menu_manager.register_callback("import_data", self.import_data)
-        self.menu_manager.register_callback(
-            "print_document", self.print_document
-        )
-        self.menu_manager.register_callback(
-            "show_preferences", self.show_preferences
-        )
+        self.menu_manager.register_callback("print_document", self.print_document)
+        self.menu_manager.register_callback("show_preferences", self.show_preferences)
 
         # Edit menu callbacks
         self.menu_manager.register_callback("undo", self.undo)
@@ -453,15 +597,11 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
 
         # Tools menu callbacks
         self.menu_manager.register_callback("show_options", self.show_options)
-        self.menu_manager.register_callback(
-            "show_performance", self.show_performance
-        )
+        self.menu_manager.register_callback("show_performance", self.show_performance)
 
         self.logger.info("Menu callbacks registered")
 
-    def _create_styled_tool_button(
-        self, text, tooltip, callback, primary=True
-    ):
+    def _create_styled_tool_button(self, text, tooltip, callback, primary=True):
         """Create a styled tool button with organized layout (from simple_hub.py)."""
         if not PYQT5_AVAILABLE:
             return None
@@ -548,9 +688,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
             return True
 
         except Exception as e:
-            self._update_status_bar(
-                f"Failed to register tool {tool_name}: {e}"
-            )
+            self._update_status_bar(f"Failed to register tool {tool_name}: {e}")
             self.logger.error(f"Failed to register tool {tool_name}: {e}")
             return False
 
@@ -573,15 +711,11 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
             return False
 
         except Exception as e:
-            self._update_status_bar(
-                f"Failed to unregister tool {tool_name}: {e}"
-            )
+            self._update_status_bar(f"Failed to unregister tool {tool_name}: {e}")
             self.logger.error(f"Failed to unregister tool {tool_name}: {e}")
             return False
 
-    def update_tool_progress(
-        self, tool_name: str, percentage: int, message: str = ""
-    ):
+    def update_tool_progress(self, tool_name: str, percentage: int, message: str = ""):
         """Update tool progress in hub."""
         if tool_name in self.tool_status:
             self.tool_status[tool_name].update(
@@ -596,9 +730,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
                 self.tool_progress_updated.emit(tool_name, percentage, message)
 
             if percentage < 100:
-                self._update_status_bar(
-                    f"{tool_name}: {message} ({percentage}%)"
-                )
+                self._update_status_bar(f"{tool_name}: {message} ({percentage}%)")
             else:
                 self._update_status_bar(f"{tool_name}: Completed")
 
@@ -624,9 +756,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
         """Handle tool unregistration event."""
         pass  # Additional processing if needed
 
-    def _on_tool_progress_updated(
-        self, tool_name: str, percentage: int, message: str
-    ):
+    def _on_tool_progress_updated(self, tool_name: str, percentage: int, message: str):
         """Handle tool progress update event."""
         pass  # Additional processing if needed
 
@@ -634,9 +764,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
         """Handle tool status change event."""
         pass  # Additional processing if needed
 
-    def _on_hub_event_broadcast(
-        self, sender: str, event_type: str, data: Dict
-    ):
+    def _on_hub_event_broadcast(self, sender: str, event_type: str, data: Dict):
         """Handle hub event broadcast."""
         pass  # Additional processing if needed
 
@@ -697,14 +825,10 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
                 method = getattr(self, method_name)
                 if callable(method):
                     method(*args, **kwargs)
-                    self.logger.info(
-                        f"Successfully launched tool: {tool_name}"
-                    )
+                    self.logger.info(f"Successfully launched tool: {tool_name}")
                     return True
                 else:
-                    self.logger.error(
-                        f"Tool method {method_name} is not callable"
-                    )
+                    self.logger.error(f"Tool method {method_name} is not callable")
                     return False
             else:
                 # Try alternative naming patterns
@@ -744,9 +868,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
         tools = []
 
         # Find all open_ methods
-        for name, method in inspect.getmembers(
-            self, predicate=inspect.ismethod
-        ):
+        for name, method in inspect.getmembers(self, predicate=inspect.ismethod):
             if name.startswith("open_") and name != "open_file":
                 tool_name = name[5:].replace("_", " ").title()
                 tools.append(tool_name)
@@ -1217,9 +1339,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
             self._update_status_bar("Compression Tools opened")
             self.logger.info("Compression Tools opened")
         except Exception as e:
-            self._update_status_bar(
-                f"Error opening Compression Tools: {str(e)}"
-            )
+            self._update_status_bar(f"Error opening Compression Tools: {str(e)}")
             self.logger.error(f"Error opening Compression Tools: {str(e)}")
 
     def open_duplicate_finder(self):
@@ -1234,9 +1354,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
             self._update_status_bar("Duplicate Finder opened")
             self.logger.info("Duplicate Finder tool opened")
         except Exception as e:
-            self._update_status_bar(
-                f"Error opening Duplicate Finder: {str(e)}"
-            )
+            self._update_status_bar(f"Error opening Duplicate Finder: {str(e)}")
             self.logger.error(f"Error opening Duplicate Finder: {str(e)}")
 
     def open_image_metadata(self):
@@ -1249,9 +1367,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
             self._update_status_bar("Image Metadata Editor opened")
             self.logger.info("Image Metadata Editor opened")
         except Exception as e:
-            self._update_status_bar(
-                f"Error opening Image Metadata Editor: {str(e)}"
-            )
+            self._update_status_bar(f"Error opening Image Metadata Editor: {str(e)}")
             self.logger.error(f"Error opening Image Metadata Editor: {str(e)}")
 
     def open_office_metadata(self):
@@ -1264,12 +1380,8 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
             self._update_status_bar("Office Metadata Editor opened")
             self.logger.info("Office Metadata Editor opened")
         except Exception as e:
-            self._update_status_bar(
-                f"Error opening Office Metadata Editor: {str(e)}"
-            )
-            self.logger.error(
-                f"Error opening Office Metadata Editor: {str(e)}"
-            )
+            self._update_status_bar(f"Error opening Office Metadata Editor: {str(e)}")
+            self.logger.error(f"Error opening Office Metadata Editor: {str(e)}")
 
     def open_pdf_tools(self):
         """Open PDF tools."""
@@ -1296,9 +1408,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
             self._update_status_bar("Network Transfer opened")
             self.logger.info("Network Transfer tool opened")
         except Exception as e:
-            self._update_status_bar(
-                f"Error opening Network Transfer: {str(e)}"
-            )
+            self._update_status_bar(f"Error opening Network Transfer: {str(e)}")
             self.logger.error(f"Error opening Network Transfer: {str(e)}")
 
     def open_network_scan(self):
@@ -1422,9 +1532,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
             self._update_status_bar("Password Generator opened")
             self.logger.info("Password Generator tool opened")
         except Exception as e:
-            self._update_status_bar(
-                f"Error opening Password Generator: {str(e)}"
-            )
+            self._update_status_bar(f"Error opening Password Generator: {str(e)}")
             self.logger.error(f"Error opening Password Generator: {str(e)}")
 
     def open_security_preferences(self):
@@ -1439,9 +1547,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
             self._update_status_bar("Security Preferences opened")
             self.logger.info("Security Preferences tool opened")
         except Exception as e:
-            self._update_status_bar(
-                f"Error opening Security Preferences: {str(e)}"
-            )
+            self._update_status_bar(f"Error opening Security Preferences: {str(e)}")
             self.logger.error(f"Error opening Security Preferences: {str(e)}")
 
     def open_key_manager(self):
@@ -1482,9 +1588,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
             self._update_status_bar("Clipboard Manager opened")
             self.logger.info("Clipboard Manager tool opened")
         except Exception as e:
-            self._update_status_bar(
-                f"Error opening Clipboard Manager: {str(e)}"
-            )
+            self._update_status_bar(f"Error opening Clipboard Manager: {str(e)}")
             self.logger.error(f"Error opening Clipboard Manager: {str(e)}")
 
     def open_system_monitor(self):

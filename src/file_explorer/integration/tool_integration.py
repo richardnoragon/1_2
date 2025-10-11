@@ -74,8 +74,8 @@ class ToolIntegration(QObject if QT_AVAILABLE else object):
             # Define standard tool configurations
             standard_tools = {
                 "File Finder": {
-                    "module": "src.tools.file_management.file_finder",
-                    "class": "FileFinderGUI",
+                    "module": "src.tools.file_management.finder.file_finder",
+                    "class": "FileFinderWindow",
                     "category": "File Management",
                     "description": "Search and find files",
                 },

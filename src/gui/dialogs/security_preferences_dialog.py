@@ -11,12 +11,12 @@ This dialog provides comprehensive security settings management including:
 Integrates with the RFU Hub Preferences Security Implementation.
 """
 
-import sys
-import os
-from pathlib import Path
-from typing import Dict, Any, Optional, List, Tuple
 import logging
+import os
+import sys
 from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Tuple
 
 # Security profile constants
 STANDARD_RECOMMENDED_PROFILE = "Standard (Recommended)"
@@ -25,39 +25,39 @@ STANDARD_RECOMMENDED_PROFILE = "Standard (Recommended)"
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", ".."))
 
 try:
+    from PyQt5.QtCore import QDateTime, Qt, QThread, QTimer, pyqtSignal
+    from PyQt5.QtGui import QColor, QFont, QIcon, QPalette, QPixmap
     from PyQt5.QtWidgets import (
-        QDialog,
-        QVBoxLayout,
-        QHBoxLayout,
-        QTabWidget,
-        QWidget,
-        QGroupBox,
-        QLabel,
-        QPushButton,
-        QLineEdit,
-        QSpinBox,
+        QButtonGroup,
         QCheckBox,
         QComboBox,
-        QTextEdit,
+        QDateTimeEdit,
+        QDialog,
+        QFileDialog,
+        QFormLayout,
+        QFrame,
+        QGridLayout,
+        QGroupBox,
+        QHBoxLayout,
+        QLabel,
+        QLineEdit,
+        QMessageBox,
         QProgressBar,
+        QPushButton,
+        QRadioButton,
+        QScrollArea,
+        QSlider,
+        QSpinBox,
         QSplitter,
-        QTreeWidget,
-        QTreeWidgetItem,
         QTableWidget,
         QTableWidgetItem,
-        QMessageBox,
-        QFileDialog,
-        QFrame,
-        QScrollArea,
-        QGridLayout,
-        QFormLayout,
-        QButtonGroup,
-        QRadioButton,
-        QSlider,
-        QDateTimeEdit,
+        QTabWidget,
+        QTextEdit,
+        QTreeWidget,
+        QTreeWidgetItem,
+        QVBoxLayout,
+        QWidget,
     )
-    from PyQt5.QtCore import Qt, QTimer, QThread, pyqtSignal, QDateTime
-    from PyQt5.QtGui import QFont, QIcon, QPixmap, QPalette, QColor
 
     # Import security components
     from config_manager import get_config_manager
@@ -68,9 +68,7 @@ try:
         # Signals for security operations
         migration_status_changed = pyqtSignal(str, bool)  # operation, success
         theme_encryption_changed = pyqtSignal(bool)  # enabled
-        security_audit_logged = pyqtSignal(
-            str, str, str
-        )  # level, category, message
+        security_audit_logged = pyqtSignal(str, str, str)  # level, category, message
 
         def __init__(self, parent=None):
             super().__init__(parent)
@@ -109,18 +107,14 @@ try:
             layout.addWidget(self.tab_widget)
 
             # Create tabs
-            self.tab_widget.addTab(
-                self.create_migration_tab(), "🔄 Database Migration"
-            )
+            self.tab_widget.addTab(self.create_migration_tab(), "🔄 Database Migration")
             self.tab_widget.addTab(
                 self.create_theme_security_tab(), "🎨 Theme Security"
             )
             self.tab_widget.addTab(
                 self.create_directory_security_tab(), "📁 Directory Security"
             )
-            self.tab_widget.addTab(
-                self.create_audit_logging_tab(), "📋 Security Audit"
-            )
+            self.tab_widget.addTab(self.create_audit_logging_tab(), "📋 Security Audit")
             self.tab_widget.addTab(
                 self.create_status_monitoring_tab(), "📊 Status Monitor"
             )
@@ -214,21 +208,15 @@ try:
             quick_actions_layout = QVBoxLayout()
             quick_actions_layout.addWidget(QLabel("Quick Actions:"))
 
-            self.emergency_disable_btn = QPushButton(
-                "🚨 Emergency Disable All"
-            )
+            self.emergency_disable_btn = QPushButton("🚨 Emergency Disable All")
             self.emergency_disable_btn.setStyleSheet(
                 "background-color: #dc3545; color: white;"
             )
-            self.emergency_disable_btn.clicked.connect(
-                self.emergency_disable_security
-            )
+            self.emergency_disable_btn.clicked.connect(self.emergency_disable_security)
             quick_actions_layout.addWidget(self.emergency_disable_btn)
 
             self.refresh_status_btn = QPushButton("🔄 Refresh Status")
-            self.refresh_status_btn.clicked.connect(
-                self.refresh_security_status
-            )
+            self.refresh_status_btn.clicked.connect(self.refresh_security_status)
             quick_actions_layout.addWidget(self.refresh_status_btn)
 
             layout.addLayout(quick_actions_layout)
@@ -253,14 +241,10 @@ try:
             # Target version selection
             self.target_version_combo = QComboBox()
             self.target_version_combo.addItems(["001", "002", "003", "Latest"])
-            migration_layout.addRow(
-                "Target Version:", self.target_version_combo
-            )
+            migration_layout.addRow("Target Version:", self.target_version_combo)
 
             # Migration options
-            self.backup_before_migration = QCheckBox(
-                "Create backup before migration"
-            )
+            self.backup_before_migration = QCheckBox("Create backup before migration")
             self.backup_before_migration.setChecked(True)
             migration_layout.addRow(self.backup_before_migration)
 
@@ -279,9 +263,7 @@ try:
             migration_actions.addWidget(self.execute_migration_btn)
 
             self.rollback_migration_btn = QPushButton("↩️ Rollback Migration")
-            self.rollback_migration_btn.clicked.connect(
-                self.rollback_migration
-            )
+            self.rollback_migration_btn.clicked.connect(self.rollback_migration)
             migration_actions.addWidget(self.rollback_migration_btn)
 
             self.validate_schema_btn = QPushButton("✅ Validate Schema")
@@ -300,9 +282,7 @@ try:
             self.migration_history_table.setHorizontalHeaderLabels(
                 ["Version", "Status", "Timestamp", "Duration", "Notes"]
             )
-            self.migration_history_table.horizontalHeader().setStretchLastSection(
-                True
-            )
+            self.migration_history_table.horizontalHeader().setStretchLastSection(True)
             history_layout.addWidget(self.migration_history_table)
 
             layout.addWidget(history_group)
@@ -333,9 +313,7 @@ try:
             encryption_layout = QFormLayout(encryption_group)
 
             # Enable theme encryption
-            self.enable_theme_encryption = QCheckBox(
-                "Enable theme data encryption"
-            )
+            self.enable_theme_encryption = QCheckBox("Enable theme data encryption")
             encryption_layout.addRow(self.enable_theme_encryption)
 
             # Encryption algorithm selection
@@ -361,9 +339,7 @@ try:
                     "Scrypt",
                 ]
             )
-            encryption_layout.addRow(
-                "Key Derivation:", self.key_derivation_combo
-            )
+            encryption_layout.addRow("Key Derivation:", self.key_derivation_combo)
 
             # Key derivation iterations
             self.kdf_iterations = QSpinBox()
@@ -383,9 +359,7 @@ try:
             theme_actions.addWidget(self.decrypt_themes_btn)
 
             self.test_encryption_btn = QPushButton("🧪 Test Encryption")
-            self.test_encryption_btn.clicked.connect(
-                self.test_theme_encryption
-            )
+            self.test_encryption_btn.clicked.connect(self.test_theme_encryption)
             theme_actions.addWidget(self.test_encryption_btn)
 
             encryption_layout.addRow(theme_actions)
@@ -435,15 +409,11 @@ try:
             # Corruption actions
             corruption_actions = QHBoxLayout()
             self.scan_corruption_btn = QPushButton("🔍 Scan for Corruption")
-            self.scan_corruption_btn.clicked.connect(
-                self.scan_theme_corruption
-            )
+            self.scan_corruption_btn.clicked.connect(self.scan_theme_corruption)
             corruption_actions.addWidget(self.scan_corruption_btn)
 
             self.repair_corruption_btn = QPushButton("🔧 Repair Corruption")
-            self.repair_corruption_btn.clicked.connect(
-                self.repair_theme_corruption
-            )
+            self.repair_corruption_btn.clicked.connect(self.repair_theme_corruption)
             corruption_actions.addWidget(self.repair_corruption_btn)
 
             corruption_layout.addRow(corruption_actions)
@@ -491,9 +461,7 @@ try:
             # Directory management buttons
             dir_buttons = QHBoxLayout()
             self.add_protected_dir_btn = QPushButton("➕ Add Directory")
-            self.add_protected_dir_btn.clicked.connect(
-                self.add_protected_directory
-            )
+            self.add_protected_dir_btn.clicked.connect(self.add_protected_directory)
             dir_buttons.addWidget(self.add_protected_dir_btn)
 
             self.remove_protected_dir_btn = QPushButton("➖ Remove Directory")
@@ -537,9 +505,7 @@ try:
             sensitivity_layout = QHBoxLayout()
             sensitivity_layout.addWidget(self.monitoring_sensitivity)
             sensitivity_layout.addWidget(sensitivity_label)
-            monitoring_layout.addRow(
-                "Monitoring Sensitivity:", sensitivity_layout
-            )
+            monitoring_layout.addRow("Monitoring Sensitivity:", sensitivity_layout)
 
             # Alert settings
             self.alert_on_unauthorized_access = QCheckBox(
@@ -649,9 +615,7 @@ try:
             filter_layout.addWidget(QLabel("Filter:"))
 
             self.audit_filter_category = QComboBox()
-            self.audit_filter_category.addItems(
-                ["All Categories"] + categories
-            )
+            self.audit_filter_category.addItems(["All Categories"] + categories)
             filter_layout.addWidget(self.audit_filter_category)
 
             self.audit_filter_level = QComboBox()
@@ -661,9 +625,7 @@ try:
             filter_layout.addWidget(self.audit_filter_level)
 
             self.audit_filter_date = QDateTimeEdit()
-            self.audit_filter_date.setDateTime(
-                QDateTime.currentDateTime().addDays(-7)
-            )
+            self.audit_filter_date.setDateTime(QDateTime.currentDateTime().addDays(-7))
             filter_layout.addWidget(self.audit_filter_date)
 
             self.apply_filter_btn = QPushButton("Apply Filter")
@@ -728,9 +690,7 @@ try:
             self.directory_security_status_widget = self.create_status_widget(
                 "Directory Security", "📁"
             )
-            dashboard_layout.addWidget(
-                self.directory_security_status_widget, 1, 0
-            )
+            dashboard_layout.addWidget(self.directory_security_status_widget, 1, 0)
 
             self.audit_logging_status_widget = self.create_status_widget(
                 "Audit Logging", "📋"
@@ -745,17 +705,13 @@ try:
             metrics_layout = QFormLayout(metrics_group)
 
             self.security_score_label = QLabel("Calculating...")
-            metrics_layout.addRow(
-                "Overall Security Score:", self.security_score_label
-            )
+            metrics_layout.addRow("Overall Security Score:", self.security_score_label)
 
             self.last_migration_label = QLabel("Never")
             metrics_layout.addRow("Last Migration:", self.last_migration_label)
 
             self.themes_encrypted_label = QLabel("Unknown")
-            metrics_layout.addRow(
-                "Encrypted Themes:", self.themes_encrypted_label
-            )
+            metrics_layout.addRow("Encrypted Themes:", self.themes_encrypted_label)
 
             self.protected_directories_label = QLabel("0")
             metrics_layout.addRow(
@@ -763,9 +719,7 @@ try:
             )
 
             self.audit_entries_label = QLabel("0")
-            metrics_layout.addRow(
-                "Audit Log Entries:", self.audit_entries_label
-            )
+            metrics_layout.addRow("Audit Log Entries:", self.audit_entries_label)
 
             layout.addWidget(metrics_group)
 
@@ -785,9 +739,7 @@ try:
             alerts_actions.addWidget(self.dismiss_alert_btn)
 
             self.dismiss_all_alerts_btn = QPushButton("✅ Dismiss All")
-            self.dismiss_all_alerts_btn.clicked.connect(
-                self.dismiss_all_alerts
-            )
+            self.dismiss_all_alerts_btn.clicked.connect(self.dismiss_all_alerts)
             alerts_actions.addWidget(self.dismiss_all_alerts_btn)
 
             alerts_actions.addStretch()
@@ -827,9 +779,7 @@ try:
             self.profile_description = QTextEdit()
             self.profile_description.setMaximumHeight(80)
             self.profile_description.setReadOnly(True)
-            profiles_layout.addRow(
-                "Profile Description:", self.profile_description
-            )
+            profiles_layout.addRow("Profile Description:", self.profile_description)
 
             layout.addWidget(profiles_group)
 
@@ -856,14 +806,10 @@ try:
                     "Manual only",
                 ]
             )
-            advanced_layout.addRow(
-                "Validation Frequency:", self.validation_frequency
-            )
+            advanced_layout.addRow("Validation Frequency:", self.validation_frequency)
 
             # Memory security
-            self.secure_memory_wiping = QCheckBox(
-                "Enable secure memory wiping"
-            )
+            self.secure_memory_wiping = QCheckBox("Enable secure memory wiping")
             self.secure_memory_wiping.setChecked(True)
             advanced_layout.addRow(self.secure_memory_wiping)
 
@@ -877,16 +823,12 @@ try:
             emergency_group = QGroupBox("Emergency Procedures")
             emergency_layout = QVBoxLayout(emergency_group)
 
-            emergency_layout.addWidget(
-                QLabel("Emergency security procedures:")
-            )
+            emergency_layout.addWidget(QLabel("Emergency security procedures:"))
 
             emergency_buttons = QGridLayout()
 
             self.lockdown_btn = QPushButton("🔒 Security Lockdown")
-            self.lockdown_btn.setStyleSheet(
-                "background-color: #dc3545; color: white;"
-            )
+            self.lockdown_btn.setStyleSheet("background-color: #dc3545; color: white;")
             self.lockdown_btn.clicked.connect(self.security_lockdown)
             emergency_buttons.addWidget(self.lockdown_btn, 0, 0)
 
@@ -898,9 +840,7 @@ try:
             self.reset_security_btn.setStyleSheet(
                 "background-color: #fd7e14; color: white;"
             )
-            self.reset_security_btn.clicked.connect(
-                self.reset_security_settings
-            )
+            self.reset_security_btn.clicked.connect(self.reset_security_settings)
             emergency_buttons.addWidget(self.reset_security_btn, 1, 0)
 
             self.security_audit_btn = QPushButton("🔍 Security Audit")
@@ -1190,9 +1130,7 @@ try:
                 audit_ok = self.check_audit_logging_status()
 
                 # Calculate overall status
-                components_ok = sum(
-                    [migration_ok, theme_ok, directory_ok, audit_ok]
-                )
+                components_ok = sum([migration_ok, theme_ok, directory_ok, audit_ok])
 
                 if components_ok == 4:
                     return "✅ All Systems Operational"
@@ -1212,15 +1150,22 @@ try:
             try:
                 # Lazy load migration manager
                 if self._migration_manager is None:
-                    from src.core.migrations.migration_manager import (
+                    from src.core_rfu.database_manager import (
+                        get_database_manager,
+                    )
+                    from src.core_rfu.migrations.migration_manager import (
                         DatabaseMigrationManager,
                     )
 
-                    self._migration_manager = DatabaseMigrationManager()
+                    database_manager = get_database_manager()
+                    self._migration_manager = DatabaseMigrationManager(database_manager)
 
                 # Check if migration system is healthy
                 status = self._migration_manager.get_migration_status()
-                return status.get("healthy", False)
+                healthy = status.current_version not in {"", "error"}
+                healthy = healthy and not status.database_locked
+                healthy = healthy and not bool(status.pending_migrations)
+                return healthy
 
             except Exception as e:
                 self.logger.debug(f"Migration status check failed: {e}")
@@ -1231,14 +1176,14 @@ try:
             try:
                 # Lazy load theme encryption
                 if self._theme_encryption is None:
-                    from src.core.theme_security.theme_encryption import (
+                    from src.core_rfu.theme_security.theme_encryption import (
                         ThemeDataEncryption,
                     )
 
                     self._theme_encryption = ThemeDataEncryption()
 
-                # Check if theme security is operational
-                return self._theme_encryption.is_operational()
+                encryption_info = self._theme_encryption.get_encryption_info()
+                return encryption_info.get("encryption_enabled", False)
 
             except Exception as e:
                 self.logger.debug(f"Theme security status check failed: {e}")
@@ -1254,9 +1199,7 @@ try:
                 return enabled  # Simplified check for now
 
             except Exception as e:
-                self.logger.debug(
-                    f"Directory security status check failed: {e}"
-                )
+                self.logger.debug(f"Directory security status check failed: {e}")
                 return False
 
         def check_audit_logging_status(self) -> bool:
@@ -1335,9 +1278,7 @@ try:
 
                 # Update directory security status widget
                 directory_ok = self.check_directory_security_status()
-                self.directory_security_status_widget.status_indicator.setText(
-                    "●"
-                )
+                self.directory_security_status_widget.status_indicator.setText("●")
                 self.directory_security_status_widget.status_indicator.setStyleSheet(
                     f"color: {'green' if directory_ok else 'red'}; font-size: 16px;"
                 )
@@ -1367,9 +1308,7 @@ try:
                 directory_ok = self.check_directory_security_status()
                 audit_ok = self.check_audit_logging_status()
 
-                score = (
-                    sum([migration_ok, theme_ok, directory_ok, audit_ok]) * 25
-                )
+                score = sum([migration_ok, theme_ok, directory_ok, audit_ok]) * 25
                 self.security_score_label.setText(f"{score}/100")
 
                 # Update other metrics (placeholder values for now)

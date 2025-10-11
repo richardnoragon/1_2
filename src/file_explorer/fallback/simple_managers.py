@@ -222,9 +222,11 @@ class SimpleToolIntegration(QObject if QT_AVAILABLE else object):
     def _launch_file_finder(self) -> bool:
         """Launch file finder tool."""
         try:
-            from src.tools.file_management.file_finder import FileFinderGUI
+            from src.tools.file_management.finder.file_finder import (
+                FileFinderWindow,
+            )
 
-            tool = FileFinderGUI()
+            tool = FileFinderWindow()
             tool.show()
             return True
         except ImportError:

@@ -1,12 +1,21 @@
-"""
-File Rename Operations Package
+"""File rename operations package."""
 
-This package provides comprehensive file renaming functionality with both
-logic and GUI components, migrated from the tools directory as part of
-the consolidation effort.
-"""
-
+from .gui import (
+    FileRenameWindow,
+)
+from .gui import RenameWindow as EnhancedRenameWindow
+from .rename import RenameWindow as _SimpleRenameWindow
+from .rename import main as _simple_main
 from .rename_logic import FileRenamer, RenameOperation
-from .gui import RenameWindow
 
-__all__ = ["FileRenamer", "RenameOperation", "RenameWindow"]
+RenameWindow = _SimpleRenameWindow
+main = _simple_main
+
+__all__ = [
+    "FileRenamer",
+    "RenameOperation",
+    "FileRenameWindow",
+    "EnhancedRenameWindow",
+    "RenameWindow",
+    "main",
+]

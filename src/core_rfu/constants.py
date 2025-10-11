@@ -1,14 +1,14 @@
-"""
-Constants module for Richard's File Utilities
-Centralizes repeated string literals to improve maintainability and reduce duplication.
-"""
+"""Central repository for RFU constants."""
 
-# Application Constants
+# Application Identity
 APP_NAME = "Richard's File Utilities"
 APP_TITLE = "Richard's File Utilities"
+APP_VERSION = "3.0.0"
+APP_ORGANIZATION = "Richard's File Utilities"
 
 # File Types and Filters
-JSON_FILES_FILTER = "JSON Files (*.json)"
+JSON_FILES_FILTER = "JSON Files (*.json);;All Files (*)"
+JSON_FILES_FILTER_SIMPLE = "JSON Files (*.json)"
 TEXT_FILES_FILTER = "Text Files (*.txt)"
 ALL_FILES_FILTER = "All Files (*.*)"
 
@@ -30,11 +30,14 @@ PLEASE_SELECT_COLLECTION = "Please select a collection."
 CONNECTION_ERROR = "Connection Error"
 TRANSFER_COMPLETE = "Transfer Complete"
 
-# UI Constants
+# UI Categories
 PDF_TOOLS = "PDF Tools"
 FILE_TOOLS = "File Tools"
 ANALYSIS_TOOLS = "Analysis Tools"
 NETWORK_TOOLS = "Network Tools"
+PRIVACY_TOOLS = "Privacy Tools"
+UTILITIES_TOOLS = "Utilities"
+SETTINGS_TOOLS = "Settings"
 
 # Common UI Messages
 OPERATION_COMPLETE = "Operation Complete"
@@ -49,14 +52,9 @@ SUBTITLE_STYLE_COLOR = "color: #7f8c8d; margin-bottom: 15px;"
 DESCRIPTION_STYLE = "color: #7f8c8d; margin-bottom: 15px; font-size: 10px;"
 SECTION_MARGIN_STYLE = "color: #2c3e50; margin: 10px 0px;"
 
-# Additional UI Constants for simple_hub.py
-PRIVACY_TOOLS = "Privacy Tools"
-ANALYSIS_TOOLS = "Analysis Tools"
-UTILITIES_TOOLS = "Utilities"
-SETTINGS_TOOLS = "Settings"
-
 # Help and Documentation
 SUGGESTED_SOLUTIONS_HEADER = "\n🔧 Suggested Solutions:\n"
+SUGGESTED_SOLUTIONS_HEADER_PLAIN = "Suggested Solutions"
 USER_GUIDE_TITLE = "User Guide"
 PREFERENCES_TITLE = "Preferences"
 ABOUT_TITLE = "About"

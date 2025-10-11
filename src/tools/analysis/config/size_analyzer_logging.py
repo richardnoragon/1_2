@@ -11,7 +11,7 @@ import os
 from pathlib import Path
 from typing import Any, Dict, Optional
 
-from src.core.logging_manager import LogManager
+from src.core_rfu.logging_manager import LogManager
 
 from .size_analyzer_config import SizeAnalyzerConfig
 
@@ -54,9 +54,7 @@ class SizeAnalyzerLogger:
 
         except Exception as e:
             # Fall back to main logger
-            self.main_logger.error(
-                f"Error setting up Size Analyzer logging: {e}"
-            )
+            self.main_logger.error(f"Error setting up Size Analyzer logging: {e}")
 
     def _ensure_log_directory(self) -> str:
         """Ensure the log directory exists and return its path."""
@@ -76,9 +74,7 @@ class SizeAnalyzerLogger:
         """Configure the main Size Analyzer logger."""
         try:
             # Get log level
-            log_level = getattr(
-                logging, config.get("log_level", "INFO").upper()
-            )
+            log_level = getattr(logging, config.get("log_level", "INFO").upper())
 
             # Configure main logger
             self.main_logger.setLevel(log_level)
@@ -110,9 +106,7 @@ class SizeAnalyzerLogger:
         except Exception as e:
             print(f"Error configuring main logger: {e}")
 
-    def _configure_category_loggers(
-        self, log_dir: str, config: Dict[str, Any]
-    ):
+    def _configure_category_loggers(self, log_dir: str, config: Dict[str, Any]):
         """Configure category-specific loggers."""
         try:
             log_categories = config.get("log_categories", {})
@@ -191,16 +185,12 @@ class SizeAnalyzerLogger:
 
     def log_analysis_start(self, directory: str, settings: Dict[str, Any]):
         """Log analysis start event."""
-        self.log_core_logic(
-            "info", f"Starting analysis of directory: {directory}"
-        )
+        self.log_core_logic("info", f"Starting analysis of directory: {directory}")
         self.log_performance("debug", f"Analysis settings: {settings}")
 
     def log_analysis_progress(self, percentage: int, message: str):
         """Log analysis progress."""
-        self.log_core_logic(
-            "debug", f"Analysis progress: {percentage}% - {message}"
-        )
+        self.log_core_logic("debug", f"Analysis progress: {percentage}% - {message}")
 
     def log_analysis_complete(self, directory: str, results: Dict[str, Any]):
         """Log analysis completion."""
@@ -222,9 +212,7 @@ class SizeAnalyzerLogger:
                 f"{metrics.get('bytes_per_second', 0):.2f} bytes/sec",
             )
 
-    def log_export_event(
-        self, export_path: str, format_type: str, success: bool
-    ):
+    def log_export_event(self, export_path: str, format_type: str, success: bool):
         """Log export events."""
         if success:
             self.log_core_logic(
@@ -238,18 +226,14 @@ class SizeAnalyzerLogger:
         """Log hub integration events."""
         self.log_hub_integration("info", f"Hub event: {event_type} - {data}")
 
-    def log_configuration_change(
-        self, setting: str, old_value: Any, new_value: Any
-    ):
+    def log_configuration_change(self, setting: str, old_value: Any, new_value: Any):
         """Log configuration changes."""
         self.log_core_logic(
             "info",
             f"Configuration changed: {setting} from {old_value} to {new_value}",
         )
 
-    def log_resource_usage(
-        self, cpu_percent: float, memory_mb: float, disk_io: float
-    ):
+    def log_resource_usage(self, cpu_percent: float, memory_mb: float, disk_io: float):
         """Log resource usage metrics."""
         self.log_performance(
             "debug",

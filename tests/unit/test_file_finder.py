@@ -2,10 +2,11 @@
 """
 Test script to verify File Finder works correctly.
 """
-
 import sys
+
 from PyQt5.QtWidgets import QApplication
-from file_finder import FileFinderGUI
+
+from src.tools.file_management.finder import FileFinderWindow
 
 def test_file_finder():
     """Test launching File Finder."""
@@ -13,8 +14,8 @@ def test_file_finder():
         print("Creating QApplication...")
         app = QApplication(sys.argv)
         
-        print("Creating FileFinderGUI...")
-        window = FileFinderGUI()
+    print("Creating FileFinderWindow...")
+    window = FileFinderWindow()
         
         print("✅ File Finder created successfully!")
         print("Showing window...")

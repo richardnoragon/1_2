@@ -2516,8 +2516,8 @@ class MultiPaneFileExplorer(QMainWindow):
         """Launch File Finder tool."""
         self._launch_tool(
             TOOL_NAMES["FILE_FINDER"],
-            "src.tools.file_management.file_finder",
-            "FileFinderGUI",
+            "src.tools.file_management.finder.file_finder",
+            "FileFinderWindow",
         )
 
     def launch_size_analyzer(self):
@@ -2553,7 +2553,9 @@ class MultiPaneFileExplorer(QMainWindow):
     def launch_organize(self):
         """Launch Organize tool."""
         self._launch_tool(
-            "Organize", "src.tools.file_management.organize", "OrganizeWindow"
+            "Organize",
+            "src.tools.file_management.organizer.organize",
+            "OrganizeWindow",
         )
 
     def launch_checksum(self):
@@ -3687,14 +3689,14 @@ class MultiPaneFileExplorer(QMainWindow):
                 {
                     "name": "file_finder",
                     "display_name": "File Finder",
-                    "module_path": "src.tools.file_management.file_finder",
-                    "class_name": "FileFinderGUI",
+                    "module_path": "src.tools.file_management.finder.file_finder",
+                    "class_name": "FileFinderWindow",
                     "icon": "🔍",
                 },
                 {
                     "name": "catalog",
                     "display_name": "File Catalog",
-                    "module_path": "src.tools.file_management.catalog_tool",
+                    "module_path": "src.tools.file_management.advanced_catalog.catalog_tool",
                     "class_name": "CatalogWindow",
                     "icon": "📋",
                 },

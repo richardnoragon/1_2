@@ -8,7 +8,7 @@
 
 The issue was in the `StandardWindow` base class and how child classes were handling the central widget layout:
 
-1. **StandardWindow._create_central_widget()** was properly creating a central widget and setting up a main layout using `ThemeManager.create_standard_layout()`
+1. **StandardWindow.\_create_central_widget()** was properly creating a central widget and setting up a main layout using `ThemeManager.create_standard_layout()`
 2. **Child tool classes** (FileFinder, Catalog, Rename) were attempting to create **additional layouts** on the same central widget in their `init_ui()` methods
 3. **PyQt5 Layout Conflict**: In PyQt, a widget can only have ONE layout. When child classes called `QVBoxLayout(self.central_widget)`, it conflicted with the existing layout, causing the content to not display
 
@@ -17,6 +17,7 @@ The issue was in the `StandardWindow` base class and how child classes were hand
 Modified the `init_ui()` methods in all affected tool classes to use the existing `main_layout` from StandardWindow instead of creating new layouts:
 
 ### Before (Problematic):
+
 ```python
 def init_ui(self):
     """Initialize the user interface."""
@@ -25,6 +26,7 @@ def init_ui(self):
 ```
 
 ### After (Fixed):
+
 ```python
 def init_ui(self):
     """Initialize the user interface."""
@@ -36,16 +38,15 @@ def init_ui(self):
 
 1. **src/rfu/tools/file_management/file_finder.py**
    - Fixed FileFinderGUI.init_ui() layout initialization
-   
 2. **src/rfu/tools/file_management/catalog.py**
    - Fixed CatalogWindow.init_ui() layout initialization
-   
-3. **src/rfu/tools/file_management/rename.py**
+3. **src/tools/file_operations/rename/rename.py**
    - Fixed RenameWindow.init_ui() layout initialization
 
 ## Verification Results
 
 All three tools now display correctly with:
+
 - ✅ Functional menu bars (File/Edit/View/Tools/Help)
 - ✅ Visible content areas with all UI elements
 - ✅ Proper window sizing (800x650)
@@ -55,7 +56,7 @@ All three tools now display correctly with:
 ## Technical Details
 
 - **StandardWindow** creates a central widget with a QVBoxLayout via `ThemeManager.create_standard_layout()`
-- **Child classes** now add their UI elements to the existing `self.main_layout` 
+- **Child classes** now add their UI elements to the existing `self.main_layout`
 - **Menu integration** remains fully functional with all callbacks working
 - **Theme application** continues to work properly
 - **Window management** (sizing, icons, status bars) unaffected

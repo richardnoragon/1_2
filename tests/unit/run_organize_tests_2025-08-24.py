@@ -73,6 +73,13 @@ def run_tests(project_root, test_output_dir):
         return False
 
     # Build pytest command with all reporting options
+    html_report = test_output_dir / "result_organize_2025-08-24.html"
+    json_report = test_output_dir / "result_organize_2025-08-24.json"
+    coverage_base = test_output_dir / "result_organize_coverage_2025-08-24"
+    coverage_dir = coverage_base
+    coverage_json = coverage_base.with_suffix(".json")
+    junit_report = test_output_dir / "result_organize_2025-08-24_junit.xml"
+
     pytest_cmd = [
         sys.executable,
         "-m",
@@ -82,14 +89,14 @@ def run_tests(project_root, test_output_dir):
         "--tb=short",
         "--color=yes",
         "--durations=10",
-        f"--html={test_output_dir}/result_organize_2025-08-24.html",
+        f"--html={html_report}",
         "--self-contained-html",
-        f"--json-report-file={test_output_dir}/result_organize_2025-08-24.json",
-        f"--cov=src.utilities.file_operations.organize.organize",
-        f"--cov-report=html:{test_output_dir}/result_organize_coverage_2025-08-24",
-        f"--cov-report=json:{test_output_dir}/result_organize_coverage_2025-08-24.json",
+        f"--json-report-file={json_report}",
+        f"--cov=src.tools.file_management.organizer.organize",
+        f"--cov-report=html:{coverage_dir}",
+        f"--cov-report=json:{coverage_json}",
         "--cov-report=term-missing",
-        f"--junit-xml={test_output_dir}/result_organize_2025-08-24_junit.xml",
+        f"--junit-xml={junit_report}",
     ]
 
     print("Running tests...")
@@ -169,9 +176,7 @@ def generate_summary_report(test_output_dir):
                     "file": report_file,
                     "exists": True,
                     "size_bytes": (
-                        report_path.stat().st_size
-                        if report_path.is_file()
-                        else 0
+                        report_path.stat().st_size if report_path.is_file() else 0
                     ),
                 }
             )
@@ -192,23 +197,17 @@ def generate_summary_report(test_output_dir):
             with open(json_report_path, "r") as f:
                 test_data = json.load(f)
                 summary["test_results"] = {
-                    "total_tests": test_data.get("summary", {}).get(
-                        "total", 0
-                    ),
+                    "total_tests": test_data.get("summary", {}).get("total", 0),
                     "passed": test_data.get("summary", {}).get("passed", 0),
                     "failed": test_data.get("summary", {}).get("failed", 0),
                     "skipped": test_data.get("summary", {}).get("skipped", 0),
                     "duration": test_data.get("duration", 0),
                 }
         except Exception as e:
-            summary["test_results"][
-                "error"
-            ] = f"Could not parse test results: {e}"
+            summary["test_results"]["error"] = f"Could not parse test results: {e}"
 
     # Try to read coverage data
-    coverage_json_path = (
-        test_output_dir / "result_organize_coverage_2025-08-24.json"
-    )
+    coverage_json_path = test_output_dir / "result_organize_coverage_2025-08-24.json"
     if coverage_json_path.exists():
         try:
             with open(coverage_json_path, "r") as f:
@@ -218,9 +217,7 @@ def generate_summary_report(test_output_dir):
                         "lines_covered": coverage_data["totals"].get(
                             "covered_lines", 0
                         ),
-                        "lines_total": coverage_data["totals"].get(
-                            "num_statements", 0
-                        ),
+                        "lines_total": coverage_data["totals"].get("num_statements", 0),
                         "coverage_percent": coverage_data["totals"].get(
                             "percent_covered", 0
                         ),
@@ -235,9 +232,7 @@ def generate_summary_report(test_output_dir):
                         ),
                     }
         except Exception as e:
-            summary["coverage"][
-                "error"
-            ] = f"Could not parse coverage data: {e}"
+            summary["coverage"]["error"] = f"Could not parse coverage data: {e}"
 
     # Write summary report
     try:
@@ -301,14 +296,12 @@ def main():
     print(f"Test Output: {test_output_dir}")
 
     # Check for requirements file and install dependencies
-    requirements_file = (
-        test_output_dir / "test_requirements_organize_2025-08-24.txt"
-    )
+    requirements_file = test_output_dir / "test_requirements_organize_2025-08-24.txt"
     if requirements_file.exists():
         if not install_dependencies(requirements_file):
-            print("✗ Failed to install dependencies. Continuing anyway...")
+            print("✗ Failed to install dependencies. " "Continuing anyway...")
     else:
-        print("ℹ No requirements file found, skipping dependency installation")
+        print("ℹ No requirements file found, " "skipping dependency installation")
 
     # Run tests
     success = run_tests(project_root, test_output_dir)

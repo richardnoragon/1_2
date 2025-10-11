@@ -26,7 +26,7 @@ sys.path.insert(0, os.path.join(project_root, "scripts", "maintenance"))
 sys.path.insert(0, os.path.join(project_root, "scripts", "development", "demos"))
 
 # Import constants for string literals
-from src.core.constants import (
+from src.core_rfu.constants import (
     APP_NAME,
     IMPORT_ERROR,
     JSON_FILES_FILTER,
@@ -1442,26 +1442,26 @@ try:
                 # Create or reuse the multi-pane explorer widget with new architecture
                 if not self.multi_pane_explorer:
                     try:
-                        # Try to import and create the enterprise multi-pane explorer
+                        # Try to import and create the simplified multi-pane explorer (new architecture)
                         try:
-                            from src.file_explorer.explorer_controller import (
-                                ExplorerMainWindow,
+                            from src.file_explorer.multi_pane_explorer_simple import (
+                                MultiPaneExplorer,
                             )
 
-                            # Create enterprise explorer as embedded widget
-                            self.multi_pane_explorer = ExplorerMainWindow()
+                            # Create simplified explorer as embedded widget
+                            self.multi_pane_explorer = MultiPaneExplorer()
 
                             # Embed properly in main window
                             if hasattr(self.multi_pane_explorer, "setWindowFlags"):
                                 self.multi_pane_explorer.setWindowFlags(Qt.Widget)
 
                             self.logger.info(
-                                "Enterprise multi-pane explorer created successfully"
+                                "Simplified multi-pane explorer created successfully"
                             )
                         except ImportError:
-                            # Fall back to legacy explorer if new architecture fails
+                            # Fall back to full explorer if simplified version fails
                             self.logger.warning(
-                                "New architecture not available, using legacy explorer"
+                                "Simplified explorer not available, trying full version"
                             )
                             try:
                                 from src.file_explorer.multi_pane_explorer import (
@@ -1470,7 +1470,7 @@ try:
 
                                 self.multi_pane_explorer = MultiPaneFileExplorer()
                                 self.multi_pane_explorer.setWindowFlags(Qt.Widget)
-                                self.logger.info("Legacy multi-pane explorer created")
+                                self.logger.info("Full multi-pane explorer created")
                             except ImportError:
                                 # Final fallback to simplified widget
                                 self.multi_pane_explorer = (
@@ -2325,24 +2325,28 @@ try:
         # File Management Tool Launch Methods
         def open_file_finder(self):
             self.launch_tool(
-                "File Finder", "src.tools.file_management.file_finder", "FileFinderGUI"
+                "File Finder",
+                "src.tools.file_management.finder.file_finder",
+                "FileFinderWindow",
             )
 
         def open_catalog(self):
             self.launch_tool(
                 "Catalog Files",
-                "src.tools.file_management.catalog_tool",
+                "src.tools.file_management.advanced_catalog.catalog_tool",
                 "CatalogWindow",
             )
 
         def open_rename(self):
             self.launch_tool(
-                "Rename Files", "src.tools.file_management.rename", "RenameWindow"
+                "Rename Files", "src.tools.file_operations.rename", "RenameWindow"
             )
 
         def open_organize(self):
             self.launch_tool(
-                "Organize Files", "src.tools.file_management.organize", "OrganizeWindow"
+                "Organize Files",
+                "src.tools.file_management.organizer.organize",
+                "OrganizeWindow",
             )
 
         def open_advanced_folders(self):

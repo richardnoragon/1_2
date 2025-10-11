@@ -1,14 +1,15 @@
 """Linux-specific filesystem implementation with ext2/3/4 and fsck support."""
 
-import os
-import subprocess
 import logging
+import os
 import re
+import subprocess
 from datetime import datetime
-from typing import Dict, Any, List, Optional
+from typing import Any, Dict, List, Optional
+
+from src.core_rfu.error_handler import error_handler
 
 from ....core.platform_detector import get_platform_detector
-from src.core.error_handler import error_handler
 
 
 class LinuxFilesystemImpl:
@@ -25,9 +26,7 @@ class LinuxFilesystemImpl:
 
     def __init__(self):
         """Initialize Linux filesystem implementation."""
-        self.logger = logging.getLogger(
-            "RFU.DiagnosticsMonitoring.LinuxFilesystem"
-        )
+        self.logger = logging.getLogger("RFU.DiagnosticsMonitoring.LinuxFilesystem")
         self.platform_detector = get_platform_detector()
 
         # Linux-specific tools
@@ -124,9 +123,7 @@ class LinuxFilesystemImpl:
                 "lvm_info": {},
                 "system_info": {},
                 "supported_filesystems": self.supported_filesystems.copy(),
-                "tools_available": {
-                    k: v is not None for k, v in self.tools.items()
-                },
+                "tools_available": {k: v is not None for k, v in self.tools.items()},
             }
 
             # Get filesystem information
@@ -148,9 +145,7 @@ class LinuxFilesystemImpl:
 
         except Exception as e:
             self.logger.error(f"Error getting filesystem info: {e}")
-            error_handler.handle_error(
-                e, "LinuxFilesystemImpl.get_filesystem_info"
-            )
+            error_handler.handle_error(e, "LinuxFilesystemImpl.get_filesystem_info")
             return {"error": str(e), "platform": "linux"}
 
     def _get_filesystem_info(self) -> List[Dict[str, Any]]:
@@ -234,15 +229,11 @@ class LinuxFilesystemImpl:
 
             # Get filesystem-specific information
             if fstype in self.supported_filesystems:
-                detailed_info = self._get_filesystem_detailed_info(
-                    source, fstype
-                )
+                detailed_info = self._get_filesystem_detailed_info(source, fstype)
                 fs_info["filesystem_info"] = detailed_info
 
             # Check filesystem health
-            fs_info["health_status"] = self._check_filesystem_health(
-                source, fstype
-            )
+            fs_info["health_status"] = self._check_filesystem_health(source, fstype)
 
             return fs_info
 
@@ -293,14 +284,10 @@ class LinuxFilesystemImpl:
             return space_info
 
         except Exception as e:
-            self.logger.error(
-                f"Error getting space usage for {mount_point}: {e}"
-            )
+            self.logger.error(f"Error getting space usage for {mount_point}: {e}")
             return space_info
 
-    def _get_filesystem_detailed_info(
-        self, device: str, fstype: str
-    ) -> Dict[str, Any]:
+    def _get_filesystem_detailed_info(self, device: str, fstype: str) -> Dict[str, Any]:
         """Get detailed filesystem information.
 
         Args:
@@ -383,9 +370,7 @@ class LinuxFilesystemImpl:
                                 ext_info[key] = int(value)
 
                     # Parse filesystem features
-                    features_match = re.search(
-                        r"Filesystem features:\s*(.+)", output
-                    )
+                    features_match = re.search(r"Filesystem features:\s*(.+)", output)
                     if features_match:
                         features = features_match.group(1).strip().split()
                         ext_info["features"] = features
@@ -393,9 +378,7 @@ class LinuxFilesystemImpl:
             return ext_info
 
         except Exception as e:
-            self.logger.error(
-                f"Error getting ext filesystem info for {device}: {e}"
-            )
+            self.logger.error(f"Error getting ext filesystem info for {device}: {e}")
             return ext_info
 
     def _get_xfs_filesystem_info(self, device: str) -> Dict[str, Any]:
@@ -445,9 +428,7 @@ class LinuxFilesystemImpl:
             return xfs_info
 
         except Exception as e:
-            self.logger.error(
-                f"Error getting XFS filesystem info for {device}: {e}"
-            )
+            self.logger.error(f"Error getting XFS filesystem info for {device}: {e}")
             return xfs_info
 
     def _get_btrfs_filesystem_info(self, device: str) -> Dict[str, Any]:
@@ -492,9 +473,7 @@ class LinuxFilesystemImpl:
             return btrfs_info
 
         except Exception as e:
-            self.logger.error(
-                f"Error getting Btrfs filesystem info for {device}: {e}"
-            )
+            self.logger.error(f"Error getting Btrfs filesystem info for {device}: {e}")
             return btrfs_info
 
     def _check_filesystem_health(self, device: str, fstype: str) -> str:
@@ -509,9 +488,7 @@ class LinuxFilesystemImpl:
         """
         try:
             # Use appropriate fsck tool
-            fsck_tool = self.supported_filesystems.get(fstype, {}).get(
-                "fsck_tool"
-            )
+            fsck_tool = self.supported_filesystems.get(fstype, {}).get("fsck_tool")
             if not fsck_tool or not self.tools.get(fsck_tool):
                 return "unknown"
 
@@ -537,9 +514,7 @@ class LinuxFilesystemImpl:
         except subprocess.TimeoutExpired:
             return "check_timeout"
         except Exception as e:
-            self.logger.error(
-                f"Error checking filesystem health for {device}: {e}"
-            )
+            self.logger.error(f"Error checking filesystem health for {device}: {e}")
             return "unknown"
 
     def _get_block_devices(self) -> List[Dict[str, Any]]:
@@ -586,9 +561,7 @@ class LinuxFilesystemImpl:
             self.logger.error(f"Error getting block devices: {e}")
             return []
 
-    def _process_block_device(
-        self, device: Dict[str, Any]
-    ) -> Optional[Dict[str, Any]]:
+    def _process_block_device(self, device: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         """Process a block device entry.
 
         Args:
@@ -660,9 +633,7 @@ class LinuxFilesystemImpl:
                                             "mount_point": mount_point,
                                             "fstype": fstype,
                                             "options": (
-                                                options.split(",")
-                                                if options
-                                                else []
+                                                options.split(",") if options else []
                                             ),
                                         }
                                     )
@@ -702,9 +673,9 @@ class LinuxFilesystemImpl:
 
                 try:
                     vgs_data = json.loads(result.stdout)
-                    lvm_info["volume_groups"] = vgs_data.get("report", [{}])[
-                        0
-                    ].get("vg", [])
+                    lvm_info["volume_groups"] = vgs_data.get("report", [{}])[0].get(
+                        "vg", []
+                    )
                 except json.JSONDecodeError:
                     pass
 
@@ -721,9 +692,9 @@ class LinuxFilesystemImpl:
 
                 try:
                     lvs_data = json.loads(result.stdout)
-                    lvm_info["logical_volumes"] = lvs_data.get("report", [{}])[
-                        0
-                    ].get("lv", [])
+                    lvm_info["logical_volumes"] = lvs_data.get("report", [{}])[0].get(
+                        "lv", []
+                    )
                 except json.JSONDecodeError:
                     pass
 
@@ -740,9 +711,9 @@ class LinuxFilesystemImpl:
 
                 try:
                     pvs_data = json.loads(result.stdout)
-                    lvm_info["physical_volumes"] = pvs_data.get(
-                        "report", [{}]
-                    )[0].get("pv", [])
+                    lvm_info["physical_volumes"] = pvs_data.get("report", [{}])[0].get(
+                        "pv", []
+                    )
                 except json.JSONDecodeError:
                     pass
 
@@ -779,9 +750,7 @@ class LinuxFilesystemImpl:
                 with open("/etc/os-release", "r") as f:
                     for line in f:
                         if line.startswith("PRETTY_NAME="):
-                            system_info["distribution"] = line.split("=")[
-                                1
-                            ].strip('"')
+                            system_info["distribution"] = line.split("=")[1].strip('"')
                             break
 
             # Get root filesystem
@@ -831,9 +800,7 @@ class LinuxFilesystemImpl:
         """
         try:
             # Get appropriate fsck tool
-            fsck_tool = self.supported_filesystems.get(fstype, {}).get(
-                "fsck_tool"
-            )
+            fsck_tool = self.supported_filesystems.get(fstype, {}).get("fsck_tool")
             if not fsck_tool or not self.tools.get(fsck_tool):
                 return {
                     "success": False,
@@ -862,8 +829,7 @@ class LinuxFilesystemImpl:
             )
 
             return {
-                "success": result.returncode
-                in [0, 1],  # 0=clean, 1=errors corrected
+                "success": result.returncode in [0, 1],  # 0=clean, 1=errors corrected
                 "returncode": result.returncode,
                 "stdout": result.stdout,
                 "stderr": result.stderr,
@@ -902,15 +868,15 @@ class LinuxFilesystemImpl:
 
             # Basic health recommendations
             if health_status == "errors_found":
-                fsck_tool = self.supported_filesystems.get(fstype, {}).get(
-                    "fsck_tool"
-                )
+                fsck_tool = self.supported_filesystems.get(fstype, {}).get("fsck_tool")
                 if fsck_tool:
                     recommendations.append(
                         {
                             "priority": "high",
                             "action": "run_fsck_repair",
-                            "description": f"Run {fsck_tool} to fix errors on {source}",
+                            "description": (
+                                f"Run {fsck_tool} to fix errors on {source}"
+                            ),
                             "command": f"{fsck_tool} -y {source}",
                             "requires_admin": True,
                             "requires_unmount": target != "/",
@@ -922,7 +888,9 @@ class LinuxFilesystemImpl:
                     {
                         "priority": "critical",
                         "action": "emergency_repair",
-                        "description": f"Critical errors on {source} - manual intervention needed",
+                        "description": (
+                            f"Critical errors on {source} - manual intervention needed"
+                        ),
                         "command": f"fsck -f {source}",
                         "requires_admin": True,
                         "requires_unmount": True,
@@ -935,16 +903,16 @@ class LinuxFilesystemImpl:
                 mount_count = fs_info.get("mount_count", 0)
                 max_mount_count = fs_info.get("max_mount_count", 0)
 
-                if (
-                    max_mount_count > 0
-                    and mount_count >= max_mount_count * 0.9
-                ):
+                if max_mount_count > 0 and mount_count >= max_mount_count * 0.9:
                     new_max = max_mount_count + 10
                     recommendations.append(
                         {
                             "priority": "medium",
                             "action": "schedule_fsck",
-                            "description": f"Approaching max mount count ({mount_count}/{max_mount_count})",
+                            "description": (
+                                "Approaching max mount count "
+                                f"({mount_count}/{max_mount_count})"
+                            ),
                             "command": f"tune2fs -c {new_max} {source}",
                             "requires_admin": True,
                             "requires_unmount": False,
@@ -958,7 +926,7 @@ class LinuxFilesystemImpl:
                     {
                         "priority": "high",
                         "action": "free_space",
-                        "description": f"Filesystem {target} is {use_percent}% full",
+                        "description": (f"Filesystem {target} is {use_percent}% full"),
                         "command": f"df -h {target}",
                         "requires_admin": False,
                         "requires_unmount": False,

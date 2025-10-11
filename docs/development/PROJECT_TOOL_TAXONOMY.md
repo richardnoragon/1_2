@@ -8,24 +8,24 @@
 **Architecture:** PyQt5-based GUI Application  
 **Total Tools:** 40+ Specialized Utilities  
 **Categories:** 9 Major Tool Categories  
-**Framework:** Modular Design with Enhanced Integration  
+**Framework:** Modular Design with Enhanced Integration
 
 ---
 
 ## 📈 **Tool Distribution Statistics**
 
-| Category | Tool Count | Percentage | Primary Focus |
-|----------|------------|------------|---------------|
-| 📁 **File Management** | 4 | 10.0% | Organization & Discovery |
-| ⚙️ **File Operations** | 4 | 10.0% | Core File Manipulation |
-| 🔍 **Analysis Tools** | 4 | 10.0% | Data Analysis & Insights |
-| 🔐 **Security Tools** | 4 | 10.0% | Protection & Encryption |
-| 📝 **Metadata Tools** | 3 | 7.5% | Information Management |
-| 📄 **PDF Tools** | 6+ | 15.0% | Document Processing |
-| 🌐 **Network Tools** | 4 | 10.0% | Connectivity & Transfer |
-| 🔒 **Privacy Tools** | 2 | 5.0% | Data Protection |
-| 🖥️ **System Tools** | 4 | 10.0% | System Maintenance |
-| **Enhanced Features** | 9+ | 22.5% | Advanced Integrations |
+| Category               | Tool Count | Percentage | Primary Focus            |
+| ---------------------- | ---------- | ---------- | ------------------------ |
+| 📁 **File Management** | 4          | 10.0%      | Organization & Discovery |
+| ⚙️ **File Operations** | 4          | 10.0%      | Core File Manipulation   |
+| 🔍 **Analysis Tools**  | 4          | 10.0%      | Data Analysis & Insights |
+| 🔐 **Security Tools**  | 4          | 10.0%      | Protection & Encryption  |
+| 📝 **Metadata Tools**  | 3          | 7.5%       | Information Management   |
+| 📄 **PDF Tools**       | 6+         | 15.0%      | Document Processing      |
+| 🌐 **Network Tools**   | 4          | 10.0%      | Connectivity & Transfer  |
+| 🔒 **Privacy Tools**   | 2          | 5.0%       | Data Protection          |
+| 🖥️ **System Tools**    | 4          | 10.0%      | System Maintenance       |
+| **Enhanced Features**  | 9+         | 22.5%      | Advanced Integrations    |
 
 **Total Estimated Tools:** **40+**
 
@@ -202,17 +202,17 @@ Richard's File Utilities v3.0.0
 
 ### **Core Dependencies**
 
-| Tool Category | Primary Dependencies | Secondary Dependencies | Integration Points |
-|---------------|---------------------|------------------------|-------------------|
-| **File Management** | PyQt5, pathlib | os, shutil | Database, Logging |
-| **File Operations** | PyQt5, shutil | threading, queue | Progress Tracking |
-| **Analysis Tools** | PyQt5, hashlib | sqlite3, pandas | Reporting, Export |
-| **Security Tools** | cryptography, PyQt5 | sqlite3, logging | Database Migration |
-| **Metadata Tools** | piexif, python-docx | PyQt5, pathlib | File Operations |
-| **PDF Tools** | PyMuPDF, PyQt5 | pikepdf, reportlab | Analysis, Security |
-| **Network Tools** | socket, requests | PyQt5, threading | File Transfer |
-| **Privacy Tools** | PyQt5, shutil | cryptography | Security Tools |
-| **System Tools** | psutil, PyQt5 | subprocess, threading | Diagnostics |
+| Tool Category       | Primary Dependencies | Secondary Dependencies | Integration Points |
+| ------------------- | -------------------- | ---------------------- | ------------------ |
+| **File Management** | PyQt5, pathlib       | os, shutil             | Database, Logging  |
+| **File Operations** | PyQt5, shutil        | threading, queue       | Progress Tracking  |
+| **Analysis Tools**  | PyQt5, hashlib       | sqlite3, pandas        | Reporting, Export  |
+| **Security Tools**  | cryptography, PyQt5  | sqlite3, logging       | Database Migration |
+| **Metadata Tools**  | piexif, python-docx  | PyQt5, pathlib         | File Operations    |
+| **PDF Tools**       | PyMuPDF, PyQt5       | pikepdf, reportlab     | Analysis, Security |
+| **Network Tools**   | socket, requests     | PyQt5, threading       | File Transfer      |
+| **Privacy Tools**   | PyQt5, shutil        | cryptography           | Security Tools     |
+| **System Tools**    | psutil, PyQt5        | subprocess, threading  | Diagnostics        |
 
 ### **Inter-Tool Relationships**
 
@@ -237,6 +237,7 @@ graph TD
 ### 📁 **File Management Category**
 
 #### 🔍 **File Finder**
+
 - **Purpose:** Advanced file search and discovery
 - **Key Features:**
   - Multi-criteria search (name, size, date, content)
@@ -247,6 +248,7 @@ graph TD
 - **Class:** `FileFinderGUI`
 
 #### 📋 **Catalog Files**
+
 - **Purpose:** Create comprehensive file inventories
 - **Key Features:**
   - Database-driven cataloging
@@ -257,6 +259,7 @@ graph TD
 - **Class:** `CatalogWindow`
 
 #### 🏷️ **Rename Files**
+
 - **Purpose:** Batch file and folder renaming
 - **Key Features:**
   - Pattern-based renaming
@@ -267,6 +270,7 @@ graph TD
 - **Class:** `RenameWindow`
 
 #### 📂 **Organize Files**
+
 - **Purpose:** Automated file organization
 - **Key Features:**
   - Rule-based organization
@@ -281,6 +285,7 @@ graph TD
 ### ⚙️ **File Operations Category**
 
 #### 🔄 **Copy/Move/Sync/Delete (CMSD)**
+
 - **Purpose:** Advanced file operations with progress tracking
 - **Key Features:**
   - Batch operations
@@ -291,6 +296,7 @@ graph TD
 - **Class:** `CopyMoveSyncDeleteWindow`
 
 #### 🗜️ **Compress/Decompress**
+
 - **Purpose:** Archive creation and extraction
 - **Key Features:**
   - Multiple format support (ZIP, 7Z, TAR, etc.)
@@ -301,6 +307,7 @@ graph TD
 - **Class:** `CompressDecompressApp`
 
 #### ✂️ **Split/Join Files**
+
 - **Purpose:** File splitting and joining operations
 - **Key Features:**
   - Size-based splitting
@@ -311,13 +318,14 @@ graph TD
 - **Class:** `FileSplitJoinGUI`
 
 #### 🔄 **Synchronize**
+
 - **Purpose:** Directory synchronization
 - **Key Features:**
   - Bidirectional sync
   - Conflict resolution
   - Scheduled operations
   - Sync reporting
-- **Module:** `src.utilities.file_operations.synchronization_backup.sync`
+- **Module:** `src.tools.file_management.synchronization_backup.sync`
 - **Class:** `SyncWindow`
 
 ---
@@ -325,6 +333,7 @@ graph TD
 ### 🔍 **Analysis Tools Category**
 
 #### 📊 **Size Analyzer**
+
 - **Purpose:** Disk space usage analysis
 - **Key Features:**
   - Visual tree representation
@@ -335,6 +344,7 @@ graph TD
 - **Class:** `SizeAnalyzerGUI`
 
 #### 👥 **Duplicate Finder**
+
 - **Purpose:** Identify and manage duplicate files
 - **Key Features:**
   - Content-based comparison
@@ -345,6 +355,7 @@ graph TD
 - **Class:** `DuplicateFinderApp`
 
 #### 🔐 **File Checksum**
+
 - **Purpose:** File integrity verification
 - **Key Features:**
   - Multiple hash algorithms (MD5, SHA1, SHA256)
@@ -355,6 +366,7 @@ graph TD
 - **Class:** `ChecksumGUI`
 
 #### 📁 **Empty Folders**
+
 - **Purpose:** Find and clean empty directories
 - **Key Features:**
   - Deep recursive scanning
@@ -369,6 +381,7 @@ graph TD
 ### 🔐 **Security Tools Category**
 
 #### 🛡️ **Security Preferences**
+
 - **Purpose:** Comprehensive security configuration
 - **Key Features:**
   - Database migration system with rollback
@@ -380,6 +393,7 @@ graph TD
 - **Class:** `SecurityPreferencesDialog`
 
 #### 🔒 **Encrypt/Decrypt**
+
 - **Purpose:** File encryption and decryption
 - **Key Features:**
   - AES-256 encryption
@@ -390,6 +404,7 @@ graph TD
 - **Class:** `EnAndDecryptGUI`
 
 #### 🗑️ **Secure Delete**
+
 - **Purpose:** Permanent file deletion
 - **Key Features:**
   - Multi-pass overwriting
@@ -400,6 +415,7 @@ graph TD
 - **Class:** `SecureDeleteGUI`
 
 #### 👤 **Permissions Editor**
+
 - **Purpose:** File and folder permission management
 - **Key Features:**
   - Advanced ACL editing
@@ -414,6 +430,7 @@ graph TD
 ### 📝 **Metadata Tools Category**
 
 #### 🖼️ **Edit Image Metadata**
+
 - **Purpose:** Image metadata viewing and editing
 - **Key Features:**
   - EXIF data management
@@ -424,6 +441,7 @@ graph TD
 - **Class:** `ImageMetadataEditorGUI`
 
 #### 📄 **Office Metadata Editor**
+
 - **Purpose:** Document metadata management
 - **Key Features:**
   - Office document properties
@@ -434,6 +452,7 @@ graph TD
 - **Class:** `OfficeMetaDataEditorGUI`
 
 #### ⏰ **File Touch**
+
 - **Purpose:** File timestamp modification
 - **Key Features:**
   - Creation, modification, access time editing
@@ -448,6 +467,7 @@ graph TD
 ### 📄 **PDF Tools Category (Enhanced Suite)**
 
 #### 🔍 **PDF Analysis Engine**
+
 - **Purpose:** Comprehensive PDF analysis
 - **Key Features:**
   - Document structure analysis
@@ -457,6 +477,7 @@ graph TD
 - **Module:** `src.rfu.tools.pdf.engines.analysis_engine`
 
 #### 🔄 **PDF Conversion Engine**
+
 - **Purpose:** PDF format conversion
 - **Key Features:**
   - Multiple output formats
@@ -466,6 +487,7 @@ graph TD
 - **Module:** `src.rfu.tools.pdf.engines.conversion_engine`
 
 #### ✨ **PDF Enhancement Engine**
+
 - **Purpose:** PDF quality improvement
 - **Key Features:**
   - Image enhancement
@@ -475,6 +497,7 @@ graph TD
 - **Module:** `src.rfu.tools.pdf.engines.enhancement_engine`
 
 #### 📤 **PDF Extraction Engine**
+
 - **Purpose:** Content extraction from PDFs
 - **Key Features:**
   - Text extraction with formatting
@@ -484,6 +507,7 @@ graph TD
 - **Module:** `src.rfu.tools.pdf.engines.extraction_engine`
 
 #### ⚙️ **PDF Operation Engine**
+
 - **Purpose:** PDF manipulation operations
 - **Key Features:**
   - Merge and split operations
@@ -493,6 +517,7 @@ graph TD
 - **Module:** `src.rfu.tools.pdf.engines.operation_engine`
 
 #### 🔐 **PDF Security Engine**
+
 - **Purpose:** PDF security management
 - **Key Features:**
   - Password protection
@@ -506,6 +531,7 @@ graph TD
 ### 🌐 **Network Tools Category**
 
 #### 🔗 **Network Connectivity**
+
 - **Purpose:** Network connection testing and diagnostics
 - **Key Features:**
   - Ping and traceroute
@@ -516,6 +542,7 @@ graph TD
 - **Class:** `NetworkConnectivityGUI`
 
 #### 📡 **Network Scanner**
+
 - **Purpose:** Network device and service discovery
 - **Key Features:**
   - IP range scanning
@@ -526,6 +553,7 @@ graph TD
 - **Class:** `NetworkScannerGUI`
 
 #### 📤 **Network Transfer**
+
 - **Purpose:** File and configuration transfer
 - **Key Features:**
   - Secure file transfer
@@ -536,6 +564,7 @@ graph TD
 - **Class:** `NetworkTransferGUI`
 
 #### 🔖 **Bookmark Manager**
+
 - **Purpose:** Cross-platform bookmark management
 - **Key Features:**
   - Browser bookmark import/export
@@ -550,6 +579,7 @@ graph TD
 ### 🔒 **Privacy Tools Category**
 
 #### 🧹 **Privacy Cleaner**
+
 - **Purpose:** Privacy-sensitive data cleaning
 - **Key Features:**
   - Browser data cleaning
@@ -560,6 +590,7 @@ graph TD
 - **Class:** `PrivacyCleanerGUI`
 
 #### 🎭 **Data Anonymizer**
+
 - **Purpose:** Sensitive data anonymization
 - **Key Features:**
   - Personal data masking
@@ -574,6 +605,7 @@ graph TD
 ### 🖥️ **System Tools Category**
 
 #### 📋 **Enhanced Clipboard Manager**
+
 - **Purpose:** Advanced clipboard management
 - **Key Features:**
   - History management
@@ -584,6 +616,7 @@ graph TD
 - **Class:** `EnhancedClipboardGUI`
 
 #### 🔧 **System Diagnostics**
+
 - **Purpose:** System health monitoring
 - **Key Features:**
   - Performance monitoring
@@ -594,6 +627,7 @@ graph TD
 - **Class:** `SystemDiagnosticsGUI`
 
 #### 🧹 **System Cleanup**
+
 - **Purpose:** System maintenance and cleanup
 - **Key Features:**
   - Temporary file removal
@@ -604,6 +638,7 @@ graph TD
 - **Class:** `SystemCleanupGUI`
 
 #### 🔄 **Software Maintenance**
+
 - **Purpose:** Software update and maintenance
 - **Key Features:**
   - Update management
@@ -645,14 +680,14 @@ src/
 
 ### **Integration Points**
 
-| Component | Integration Type | Description |
-|-----------|------------------|-------------|
-| **Database Manager** | Core Integration | SQLite-based settings and logging |
-| **Security System** | Cross-cutting | AES-256 encryption, access controls |
-| **Menu Manager** | UI Integration | Comprehensive menu system |
-| **Progress Tracking** | Operational | Real-time operation monitoring |
-| **Error Handling** | System-wide | Comprehensive error management |
-| **Logging System** | Infrastructure | Centralized logging and auditing |
+| Component             | Integration Type | Description                         |
+| --------------------- | ---------------- | ----------------------------------- |
+| **Database Manager**  | Core Integration | SQLite-based settings and logging   |
+| **Security System**   | Cross-cutting    | AES-256 encryption, access controls |
+| **Menu Manager**      | UI Integration   | Comprehensive menu system           |
+| **Progress Tracking** | Operational      | Real-time operation monitoring      |
+| **Error Handling**    | System-wide      | Comprehensive error management      |
+| **Logging System**    | Infrastructure   | Centralized logging and auditing    |
 
 ---
 
@@ -660,37 +695,38 @@ src/
 
 ### **Dependencies Summary**
 
-| Category | Primary Libraries | Count |
-|----------|------------------|-------|
-| **GUI Framework** | PyQt5, PyQt5-Qt5, PyQt5_sip | 3 |
-| **File Operations** | pathlib, shutil, Send2Trash | 3 |
-| **Compression** | py7zr, Brotli, pyzstd | 3 |
-| **Cryptography** | cryptography, pycryptodomex, pyAesCrypt | 3 |
-| **PDF Processing** | PyMuPDF, pikepdf, PyPDF2, PyPDF4 | 4 |
-| **Image Processing** | Pillow, piexif, opencv-python-headless | 3 |
-| **Data Analysis** | pandas, numpy | 2 |
-| **Document Processing** | python-docx, openpyxl, lxml | 3 |
-| **System Utilities** | psutil, watchdog | 2 |
-| **Testing** | pytest, pytest-qt, pytest-cov | 3 |
-| **Development** | black, flake8, mypy | 3 |
+| Category                | Primary Libraries                       | Count |
+| ----------------------- | --------------------------------------- | ----- |
+| **GUI Framework**       | PyQt5, PyQt5-Qt5, PyQt5_sip             | 3     |
+| **File Operations**     | pathlib, shutil, Send2Trash             | 3     |
+| **Compression**         | py7zr, Brotli, pyzstd                   | 3     |
+| **Cryptography**        | cryptography, pycryptodomex, pyAesCrypt | 3     |
+| **PDF Processing**      | PyMuPDF, pikepdf, PyPDF2, PyPDF4        | 4     |
+| **Image Processing**    | Pillow, piexif, opencv-python-headless  | 3     |
+| **Data Analysis**       | pandas, numpy                           | 2     |
+| **Document Processing** | python-docx, openpyxl, lxml             | 3     |
+| **System Utilities**    | psutil, watchdog                        | 2     |
+| **Testing**             | pytest, pytest-qt, pytest-cov           | 3     |
+| **Development**         | black, flake8, mypy                     | 3     |
 
 **Total Dependencies:** 79 packages
 
 ### **Performance Metrics**
 
-| Metric | Value | Notes |
-|--------|-------|-------|
-| **Startup Time** | < 3 seconds | Cold start with all modules |
-| **Memory Usage** | 50-150 MB | Varies by active tools |
-| **Tool Launch Time** | < 1 second | Individual tool initialization |
-| **File Processing** | Variable | Depends on operation and file size |
-| **Database Operations** | < 100ms | SQLite-based operations |
+| Metric                  | Value       | Notes                              |
+| ----------------------- | ----------- | ---------------------------------- |
+| **Startup Time**        | < 3 seconds | Cold start with all modules        |
+| **Memory Usage**        | 50-150 MB   | Varies by active tools             |
+| **Tool Launch Time**    | < 1 second  | Individual tool initialization     |
+| **File Processing**     | Variable    | Depends on operation and file size |
+| **Database Operations** | < 100ms     | SQLite-based operations            |
 
 ---
 
 ## 🔄 **Workflow Integration Examples**
 
 ### **Example 1: File Organization Workflow**
+
 ```
 File Finder → Duplicate Finder → Organize Files → Size Analyzer
      ↓              ↓               ↓              ↓
@@ -698,6 +734,7 @@ File Finder → Duplicate Finder → Organize Files → Size Analyzer
 ```
 
 ### **Example 2: Security Workflow**
+
 ```
 File Checksum → Encrypt/Decrypt → Secure Delete → Security Audit
       ↓              ↓               ↓              ↓
@@ -705,6 +742,7 @@ File Checksum → Encrypt/Decrypt → Secure Delete → Security Audit
 ```
 
 ### **Example 3: PDF Processing Workflow**
+
 ```
 PDF Analysis → PDF Enhancement → PDF Security → PDF Export
      ↓              ↓               ↓              ↓
@@ -717,13 +755,13 @@ PDF Analysis → PDF Enhancement → PDF Security → PDF Export
 
 ### **Planned Features**
 
-| Priority | Feature | Category | Timeline |
-|----------|---------|----------|----------|
-| **High** | Cloud Integration | Network Tools | Q2 2025 |
-| **High** | AI-powered Organization | File Management | Q2 2025 |
-| **Medium** | Advanced OCR | PDF Tools | Q3 2025 |
-| **Medium** | Blockchain Verification | Security Tools | Q3 2025 |
-| **Low** | Mobile Companion App | System Tools | Q4 2025 |
+| Priority   | Feature                 | Category        | Timeline |
+| ---------- | ----------------------- | --------------- | -------- |
+| **High**   | Cloud Integration       | Network Tools   | Q2 2025  |
+| **High**   | AI-powered Organization | File Management | Q2 2025  |
+| **Medium** | Advanced OCR            | PDF Tools       | Q3 2025  |
+| **Medium** | Blockchain Verification | Security Tools  | Q3 2025  |
+| **Low**    | Mobile Companion App    | System Tools    | Q4 2025  |
 
 ### **Architecture Improvements**
 
@@ -755,4 +793,4 @@ PDF Analysis → PDF Enhancement → PDF Security → PDF Export
 
 ---
 
-*This documentation provides a comprehensive overview of the Richard's File Utilities tool ecosystem. For detailed implementation information, refer to the individual module documentation and source code.*
+_This documentation provides a comprehensive overview of the Richard's File Utilities tool ecosystem. For detailed implementation information, refer to the individual module documentation and source code._

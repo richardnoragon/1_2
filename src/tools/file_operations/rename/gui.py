@@ -111,9 +111,7 @@ class RenameWorkerThread(QThread):
                         filename, True, "Renamed successfully"
                     )
                 else:
-                    self.operation_completed.emit(
-                        filename, False, result.error_message
-                    )
+                    self.operation_completed.emit(filename, False, result.error_message)
 
                 # Update progress
                 progress = int((i + 1) / total_count * 100)
@@ -482,9 +480,7 @@ class FileRenameWindow(StandardWindow):
             "change_extension",
         ]
 
-        text_provided = (
-            bool(self.edit_text.text().strip()) or not text_required
-        )
+        text_provided = bool(self.edit_text.text().strip()) or not text_required
 
         self.btn_preview.setEnabled(has_files and text_provided)
         self.btn_rename.setEnabled(has_files and text_provided)
@@ -510,9 +506,7 @@ class FileRenameWindow(StandardWindow):
                 )
 
                 # Validate rename
-                is_valid, error_msg = self.renamer.validate_rename(
-                    file_path, new_name
-                )
+                is_valid, error_msg = self.renamer.validate_rename(file_path, new_name)
 
                 preview = RenamePreview(
                     original_name=filename,
@@ -543,9 +537,7 @@ class FileRenameWindow(StandardWindow):
 
         for row, preview in enumerate(self.preview_data):
             # Original name
-            self.table_preview.setItem(
-                row, 0, QTableWidgetItem(preview.original_name)
-            )
+            self.table_preview.setItem(row, 0, QTableWidgetItem(preview.original_name))
 
             # New name
             new_name_item = QTableWidgetItem(preview.new_name)
@@ -561,9 +553,7 @@ class FileRenameWindow(StandardWindow):
             self.table_preview.setItem(row, 2, status_item)
 
             # Path
-            self.table_preview.setItem(
-                row, 3, QTableWidgetItem(preview.file_path)
-            )
+            self.table_preview.setItem(row, 3, QTableWidgetItem(preview.file_path))
 
     def clear_preview(self):
         """Clear preview data."""
@@ -615,9 +605,7 @@ class FileRenameWindow(StandardWindow):
 
         # Connect signals
         self.worker_thread.progress_updated.connect(self.on_progress_updated)
-        self.worker_thread.operation_completed.connect(
-            self.on_operation_completed
-        )
+        self.worker_thread.operation_completed.connect(self.on_operation_completed)
         self.worker_thread.batch_completed.connect(self.on_batch_completed)
         self.worker_thread.error_occurred.connect(self.on_error_occurred)
 
@@ -636,9 +624,7 @@ class FileRenameWindow(StandardWindow):
         self.progress_bar.setValue(progress)
         self.lbl_status.setText(status)
 
-    def on_operation_completed(
-        self, filename: str, success: bool, message: str
-    ):
+    def on_operation_completed(self, filename: str, success: bool, message: str):
         """Handle individual operation completion."""
         status = "SUCCESS" if success else "FAILED"
         result_text = f"[{status}] {filename}: {message}\n"
@@ -652,16 +638,25 @@ class FileRenameWindow(StandardWindow):
 
         # Show summary
         failed = total - successful
-        summary = f"\nRename completed: {successful} successful, {failed} failed out of {total} total"
+        summary = (
+            f"\nRename completed: {successful} successful, "
+            f"{failed} failed out of {total} total"
+        )
         self.text_results.append(summary)
 
         # Switch to results tab
         self.tab_widget.setCurrentIndex(2)
 
+        details = (
+            "Rename operation completed.\n"
+            f"{successful} files renamed successfully.\n"
+            f"{failed} files failed."
+        )
+
         QMessageBox.information(
             self,
             "Rename Completed",
-            f"Rename operation completed.\n{successful} files renamed successfully.\n{failed} files failed.",
+            details,
         )
 
     def on_error_occurred(self, error_message: str):
@@ -737,8 +732,8 @@ def main():
     sys.exit(app.exec_())
 
 
-# Alias for backward compatibility and import resolution
-RenameWindow = FileRenameWindow
+# Alias for referencing the enhanced UI implementation
+EnhancedRenameWindow = FileRenameWindow
 
 
 if __name__ == "__main__":

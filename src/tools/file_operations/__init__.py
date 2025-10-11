@@ -11,6 +11,8 @@ This package contains utilities for file operations including:
 # Import warnings for optional imports
 import warnings
 
+__all__ = []
+
 # Core file operations
 try:
     from .catalog import *
@@ -57,7 +59,9 @@ try:
 except ImportError as e:
     warnings.warn(f"Could not import synchronization_backup: {e}")
 
-__all__ = [
-    # Export all imported symbols
-    # This will be populated by the imported modules
-]
+try:
+    from .enhanced_editor import EnhancedEditor  # noqa: F401
+
+    __all__.append("EnhancedEditor")
+except ImportError as e:
+    warnings.warn(f"Could not import enhanced_editor: {e}")

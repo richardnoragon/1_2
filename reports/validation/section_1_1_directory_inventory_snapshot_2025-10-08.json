@@ -1,0 +1,32 @@
+{
+  "generated_on": "2025-10-08T01:10:30Z",
+  "directory_count": 26,
+  "directories": [
+    "src/",
+    "tests/",
+    "docs/",
+    "scripts/",
+    "config/",
+    "core/",
+    "resources/",
+    "reports/",
+    "assets/",
+    "logs/",
+    "results/",
+    "rfu_reports/",
+    "RFU_Hub_Preferences_Security_Implementation_Plan/",
+    "archive/",
+    "backups/",
+    "src_backup/",
+    "emergency-backup-20250925_200754/",
+    "data/",
+    "gui/",
+    "migrations/",
+    "specs/",
+    "venv/",
+    ".benchmarks/",
+    ".roo/",
+    ".specify/",
+    ".vscode/"
+  ]
+}

@@ -1,0 +1,79 @@
+{
+  "generated_on": "2025-10-08T14:58:57Z",
+  "roadmap_source": "docs\\roadmap\\roadmap_rfu_summary.md",
+  "columns": [
+    "Milestone",
+    "Status",
+    "Completed On",
+    "Validation (Metric Snapshot)",
+    "Risk (ID / Level)",
+    "Dependencies (ID / Notes)",
+    "Progress Notes"
+  ],
+  "milestones": [
+    {
+      "Milestone": "Top-level directory inventory baseline established",
+      "Status": "Complete",
+      "Completed On": "2025-10-08T01:10:30Z",
+      "Validation (Metric Snapshot)": "TC-1 (directory_count=26; variance=0) \u2014 [Validation (v1.0.0)](../enterprise_documentation/v1.0.0/validation_artifacts/section_1_1_validation_results_v1.0.0.md)",
+      "Risk (ID / Level)": "RISK-SEC1-1-001 (Low)",
+      "Dependencies (ID / Notes)": "DEP-SEC1-1-001; CL-2025-10-08-001",
+      "Progress Notes": "Dashboard automation generated via [`generate_section_1_1_dashboard.py`](../../scripts/status_dashboard/generate_section_1_1_dashboard.py); audit hashes captured in [`section_1_1_document_audit_log.csv`](../../reports/audit_trail/section_1_1_document_audit_log.csv)."
+    },
+    {
+      "Milestone": "Legacy and duplicate locations confirmed",
+      "Status": "Complete",
+      "Completed On": "2025-10-08T01:11:05Z",
+      "Validation (Metric Snapshot)": "TC-2 (legacy_directories=3; compliance=pass) \u2014 [Validation (v1.0.0)](../enterprise_documentation/v1.0.0/validation_artifacts/section_1_1_validation_results_v1.0.0.md)",
+      "Risk (ID / Level)": "RISK-SEC1-1-002 (Medium)",
+      "Dependencies (ID / Notes)": "DEP-SEC1-1-001; CL-2025-10-08-002",
+      "Progress Notes": "Legacy verification notes stored in [`section_1_1_legacy_verification_notes_2025-10-08.md`](../../reports/validation/section_1_1_legacy_verification_notes_2025-10-08.md); traceability maintained via [`TRC-SEC1-1-001`](../enterprise_documentation/v1.0.0/traceability_matrices/section_1_1_traceability_matrix_v1.0.0.md)."
+    },
+    {
+      "Milestone": "GUI entry points catalogued",
+      "Status": "Complete",
+      "Completed On": "2025-10-08T01:12:45Z",
+      "Validation (Metric Snapshot)": "TC-3 (launch_success=true; avg_startup=2.7s) \u2014 [Validation (v1.0.0)](../enterprise_documentation/v1.0.0/validation_artifacts/section_1_1_validation_results_v1.0.0.md)",
+      "Risk (ID / Level)": "RISK-SEC1-1-003 (Medium)",
+      "Dependencies (ID / Notes)": "DEP-SEC1-1-001; CL-2025-10-08-002; CL-2025-10-08-003",
+      "Progress Notes": "Launch logs archived at [`section_1_1_gui_entry_point_launch_log_2025-10-08.txt`](../../reports/validation/section_1_1_gui_entry_point_launch_log_2025-10-08.txt); implementation guidance in [`IMP-SEC1-1-001`](../enterprise_documentation/v1.0.0/implementation_guides/section_1_1_execution_playbook_v1.0.0.md)."
+    },
+    {
+      "Milestone": "Configuration artifacts audited",
+      "Status": "Complete",
+      "Completed On": "2025-10-08T01:13:50Z",
+      "Validation (Metric Snapshot)": "TC-4 (artifacts_verified=2; cache_issues=0) \u2014 [Validation (v1.0.0)](../enterprise_documentation/v1.0.0/validation_artifacts/section_1_1_validation_results_v1.0.0.md)",
+      "Risk (ID / Level)": "RISK-SEC1-1-004 (Low)",
+      "Dependencies (ID / Notes)": "DEP-SEC1-1-001; CL-2025-10-08-002; SEC-VC-001 compliance mapping",
+      "Progress Notes": "Configuration checklist logged in [`section_1_1_configuration_audit_checklist_2025-10-08.csv`](../../reports/validation/section_1_1_configuration_audit_checklist_2025-10-08.csv); compliance summary tracked in [`CMP-SEC1-1-001`](../enterprise_documentation/v1.0.0/compliance/section_1_1_compliance_alignment_v1.0.0.md)."
+    }
+  ],
+  "top_level_directories": [
+    "src/",
+    "tests/",
+    "docs/",
+    "scripts/",
+    "config/",
+    "core/",
+    "resources/",
+    "reports/",
+    "assets/",
+    "logs/",
+    "results/",
+    "rfu_reports/",
+    "RFU_Hub_Preferences_Security_Implementation_Plan/",
+    "archive/",
+    "backups/",
+    "src_backup/",
+    "emergency-backup-20250925_200754/",
+    ".benchmarks/",
+    ".roo/",
+    ".specify/",
+    ".vscode/",
+    "data/",
+    "gui/",
+    "migrations/",
+    "specs/",
+    "venv/"
+  ]
+}

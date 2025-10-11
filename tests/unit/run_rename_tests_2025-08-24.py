@@ -25,10 +25,8 @@ def run_tests():
     print("=" * 80)
     print("RENAME.PY MODULE - COMPREHENSIVE TEST EXECUTION")
     print("=" * 80)
-    print(
-        f"Test execution started at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
-    )
-    print(f"Target module: src.utilities.file_management.rename")
+    print(f"Test execution started at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    print("Target module: src.tools.file_operations.rename")
     print(f"Test file: test_rename_2025-08-24.py")
     print("-" * 80)
 
@@ -44,7 +42,7 @@ def run_tests():
         "tests/unit/test_rename_2025-08-24.py",
         "-v",
         "--tb=short",
-        f"--cov=src.utilities.file_management.rename",
+        f"--cov=src.tools.file_operations.rename",
         f"--cov-report=html:tests/unit/htmlcov_rename_2025-08-24",
         f"--cov-report=json:tests/unit/coverage_rename_2025-08-24.json",
         "--cov-report=term-missing",
@@ -95,7 +93,7 @@ def run_tests():
                 "timestamp": datetime.now().isoformat(),
                 "exit_code": result.returncode,
                 "test_file": "test_rename_2025-08-24.py",
-                "target_module": "src.tools.file_management.rename",
+                "target_module": "src.tools.file_operations.rename",
                 "framework": "pytest",
                 "success": result.returncode == 0,
             },
@@ -121,17 +119,13 @@ def run_tests():
         print(f"Success: {'✓' if result.returncode == 0 else '✗'}")
 
         if coverage_summary:
-            print(
-                f"Coverage: {coverage_summary.get('percent_covered', 0):.1f}%"
-            )
+            print(f"Coverage: {coverage_summary.get('percent_covered', 0):.1f}%")
             print(f"Statements: {coverage_summary.get('num_statements', 0)}")
             print(f"Covered Lines: {coverage_summary.get('covered_lines', 0)}")
             print(f"Missing Lines: {coverage_summary.get('missing_lines', 0)}")
 
         print("\nGenerated Reports:")
-        print(
-            f"- HTML Coverage: {test_dir}/htmlcov_rename_2025-08-24/index.html"
-        )
+        print(f"- HTML Coverage: {test_dir}/htmlcov_rename_2025-08-24/index.html")
         print(f"- JSON Coverage: {test_dir}/coverage_rename_2025-08-24.json")
         print(f"- JUnit XML: {test_dir}/junit_rename_2025-08-24.xml")
         print(f"- Summary: {test_dir}/result_rename_2025-08-24.json")

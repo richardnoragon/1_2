@@ -170,9 +170,7 @@ class RecentTabWidget(QWidget):
 
         # Directory tree widget
         self.directories_tree = QTreeWidget()
-        self.directories_tree.setHeaderLabels(
-            ["Path", "Last Accessed", "Access Count"]
-        )
+        self.directories_tree.setHeaderLabels(["Path", "Last Accessed", "Access Count"])
         self.directories_tree.setAlternatingRowColors(True)
         self.directories_tree.setSortingEnabled(True)
         self.directories_tree.setRootIsDecorated(False)
@@ -185,9 +183,7 @@ class RecentTabWidget(QWidget):
         header.setStretchLastSection(False)
 
         # Connect signals
-        self.directories_tree.itemDoubleClicked.connect(
-            self._on_directory_activated
-        )
+        self.directories_tree.itemDoubleClicked.connect(self._on_directory_activated)
         self.directories_tree.itemEntered.connect(self._show_directory_tooltip)
 
         # Enable custom context menu
@@ -276,9 +272,7 @@ class RecentTabWidget(QWidget):
 
         # Enable custom context menu
         self.tools_tree.setContextMenuPolicy(Qt.CustomContextMenu)
-        self.tools_tree.customContextMenuRequested.connect(
-            self._show_tool_context_menu
-        )
+        self.tools_tree.customContextMenuRequested.connect(self._show_tool_context_menu)
 
         layout.addWidget(self.tools_tree, 1)
 
@@ -346,20 +340,14 @@ class RecentTabWidget(QWidget):
         """Load configuration settings."""
         if self.config_manager:
             try:
-                recent_config = (
-                    self.config_manager.get_section("recent_tab") or {}
-                )
+                recent_config = self.config_manager.get_section("recent_tab") or {}
 
-                self.max_recent_directories = recent_config.get(
-                    "max_directories", 50
-                )
+                self.max_recent_directories = recent_config.get("max_directories", 50)
                 self.max_recent_tools = recent_config.get("max_tools", 30)
                 self.cleanup_interval_hours = recent_config.get(
                     "cleanup_interval_hours", 24
                 )
-                self.max_item_age_days = recent_config.get(
-                    "max_item_age_days", 30
-                )
+                self.max_item_age_days = recent_config.get("max_item_age_days", 30)
 
                 self.logger.info(
                     f"Configuration loaded: max_dirs={self.max_recent_directories}, max_tools={self.max_recent_tools}"
@@ -426,9 +414,7 @@ class RecentTabWidget(QWidget):
 
     def _get_data_directory(self) -> Path:
         """Get the data directory for storing recent data."""
-        if self.config_manager and hasattr(
-            self.config_manager, "get_config_dir"
-        ):
+        if self.config_manager and hasattr(self.config_manager, "get_config_dir"):
             config_dir = Path(self.config_manager.get_config_dir())
         else:
             # Fallback to user config directory
@@ -462,16 +448,12 @@ class RecentTabWidget(QWidget):
                         continue
 
                     # Check age
-                    last_accessed = datetime.fromisoformat(
-                        dir_data["last_accessed"]
-                    )
+                    last_accessed = datetime.fromisoformat(dir_data["last_accessed"])
                     if (
                         last_accessed < cutoff_time
                         and dir_data["path"] not in self.pinned_directories
                     ):
-                        self.logger.debug(
-                            f"Removing old directory: {dir_data['path']}"
-                        )
+                        self.logger.debug(f"Removing old directory: {dir_data['path']}")
                         continue
 
                     cleaned_dirs.append(dir_data)
@@ -491,9 +473,7 @@ class RecentTabWidget(QWidget):
                         last_used < cutoff_time
                         and tool_data["name"] not in self.pinned_tools
                     ):
-                        self.logger.debug(
-                            f"Removing old tool: {tool_data['name']}"
-                        )
+                        self.logger.debug(f"Removing old tool: {tool_data['name']}")
                         continue
 
                     cleaned_tools.append(tool_data)
@@ -567,9 +547,7 @@ class RecentTabWidget(QWidget):
                     item
                     for item in self.recent_directories
                     if item["path"] in self.pinned_directories
-                ][
-                    : self.max_recent_directories // 2
-                ] + self.recent_directories[
+                ][: self.max_recent_directories // 2] + self.recent_directories[
                     : self.max_recent_directories // 2
                 ]
 
@@ -659,9 +637,7 @@ class RecentTabWidget(QWidget):
                 try:
                     path = dir_data["path"]
                     name = dir_data["name"]
-                    last_accessed = datetime.fromisoformat(
-                        dir_data["last_accessed"]
-                    )
+                    last_accessed = datetime.fromisoformat(dir_data["last_accessed"])
                     access_count = dir_data["access_count"]
 
                     # Format last accessed time
@@ -685,9 +661,7 @@ class RecentTabWidget(QWidget):
                     if path in self.pinned_directories:
                         item.setIcon(
                             0,
-                            self.style().standardIcon(
-                                self.style().SP_DialogSaveButton
-                            ),
+                            self.style().standardIcon(self.style().SP_DialogSaveButton),
                         )
                         for col in range(3):
                             item.setForeground(col, Qt.blue)
@@ -755,9 +729,7 @@ class RecentTabWidget(QWidget):
                         time_str = last_used.strftime("%Y-%m-%d")
 
                     # Create tree item
-                    item = QTreeWidgetItem(
-                        [name, category, time_str, str(usage_count)]
-                    )
+                    item = QTreeWidgetItem([name, category, time_str, str(usage_count)])
 
                     # Store tool data in item
                     item.setData(
@@ -776,9 +748,7 @@ class RecentTabWidget(QWidget):
                     if name in self.pinned_tools:
                         item.setIcon(
                             0,
-                            self.style().standardIcon(
-                                self.style().SP_DialogSaveButton
-                            ),
+                            self.style().standardIcon(self.style().SP_DialogSaveButton),
                         )
                         for col in range(4):
                             item.setForeground(col, Qt.blue)
@@ -787,23 +757,17 @@ class RecentTabWidget(QWidget):
                         if "file" in category.lower():
                             item.setIcon(
                                 0,
-                                self.style().standardIcon(
-                                    self.style().SP_FileIcon
-                                ),
+                                self.style().standardIcon(self.style().SP_FileIcon),
                             )
                         elif "security" in category.lower():
                             item.setIcon(
                                 0,
-                                self.style().standardIcon(
-                                    self.style().SP_VistaShield
-                                ),
+                                self.style().standardIcon(self.style().SP_VistaShield),
                             )
                         else:
                             item.setIcon(
                                 0,
-                                self.style().standardIcon(
-                                    self.style().SP_ComputerIcon
-                                ),
+                                self.style().standardIcon(self.style().SP_ComputerIcon),
                             )
 
                     # Set tooltip
@@ -818,9 +782,7 @@ class RecentTabWidget(QWidget):
                     self.logger.warning(f"Error adding tool item: {e}")
                     continue
 
-            self.logger.debug(
-                f"Refreshed tools display with {len(sorted_tools)} items"
-            )
+            self.logger.debug(f"Refreshed tools display with {len(sorted_tools)} items")
 
         except Exception as e:
             self.logger.error(f"Error refreshing tools display: {e}")
@@ -901,9 +863,7 @@ class RecentTabWidget(QWidget):
             is_pinned = path in self.pinned_directories
             if is_pinned:
                 pin_action = QAction("📌 Unpin", self)
-                pin_action.triggered.connect(
-                    lambda: self._unpin_directory(path)
-                )
+                pin_action.triggered.connect(lambda: self._unpin_directory(path))
             else:
                 pin_action = QAction("📍 Pin", self)
                 pin_action.triggered.connect(lambda: self._pin_directory(path))
@@ -913,16 +873,12 @@ class RecentTabWidget(QWidget):
 
             # Remove action
             remove_action = QAction("🗑️ Remove from Recent", self)
-            remove_action.triggered.connect(
-                lambda: self._remove_directory(path)
-            )
+            remove_action.triggered.connect(lambda: self._remove_directory(path))
             menu.addAction(remove_action)
 
             # Show file explorer action
             explore_action = QAction("🔍 Show in Explorer", self)
-            explore_action.triggered.connect(
-                lambda: self._show_in_explorer(path)
-            )
+            explore_action.triggered.connect(lambda: self._show_in_explorer(path))
             menu.addAction(explore_action)
 
             menu.exec_(self.directories_tree.mapToGlobal(position))
@@ -947,9 +903,7 @@ class RecentTabWidget(QWidget):
 
             # Launch action
             launch_action = QAction("🚀 Launch Tool", self)
-            launch_action.triggered.connect(
-                lambda: self._on_tool_activated(item, 0)
-            )
+            launch_action.triggered.connect(lambda: self._on_tool_activated(item, 0))
             menu.addAction(launch_action)
 
             menu.addSeparator()
@@ -958,9 +912,7 @@ class RecentTabWidget(QWidget):
             is_pinned = tool_name in self.pinned_tools
             if is_pinned:
                 pin_action = QAction("📌 Unpin", self)
-                pin_action.triggered.connect(
-                    lambda: self._unpin_tool(tool_name)
-                )
+                pin_action.triggered.connect(lambda: self._unpin_tool(tool_name))
             else:
                 pin_action = QAction("📍 Pin", self)
                 pin_action.triggered.connect(lambda: self._pin_tool(tool_name))
@@ -970,9 +922,7 @@ class RecentTabWidget(QWidget):
 
             # Remove action
             remove_action = QAction("🗑️ Remove from Recent", self)
-            remove_action.triggered.connect(
-                lambda: self._remove_tool(tool_name)
-            )
+            remove_action.triggered.connect(lambda: self._remove_tool(tool_name))
             menu.addAction(remove_action)
 
             menu.exec_(self.tools_tree.mapToGlobal(position))
@@ -1029,9 +979,7 @@ class RecentTabWidget(QWidget):
 
     def _remove_tool(self, tool_name: str):
         """Remove a tool from the recent list."""
-        self.recent_tools = [
-            t for t in self.recent_tools if t["name"] != tool_name
-        ]
+        self.recent_tools = [t for t in self.recent_tools if t["name"] != tool_name]
         if tool_name in self.pinned_tools:
             self.pinned_tools.remove(tool_name)
         self._save_recent_data()
@@ -1056,9 +1004,7 @@ class RecentTabWidget(QWidget):
 
         except Exception as e:
             self.logger.error(f"Error opening in explorer: {e}")
-            QMessageBox.warning(
-                self, "Error", f"Could not open in file explorer:\n{e}"
-            )
+            QMessageBox.warning(self, "Error", f"Could not open in file explorer:\n{e}")
 
     def _clear_recent_directories(self):
         """Clear all recent directories (except pinned)."""
@@ -1140,7 +1086,7 @@ if __name__ == "__main__":
     widget.add_recent_tool(
         "File Finder",
         "File Management",
-        "src.tools.file_management.file_finder",
+        "src.tools.file_management.finder.file_finder",
     )
     widget.add_recent_tool(
         "Duplicate Finder", "Analysis", "src.tools.analysis.duplicate_finder"

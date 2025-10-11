@@ -13,13 +13,14 @@ Features:
 
 from .advanced_catalog_window import AdvancedCatalogWindow
 from .catalog_data_model import (
-    FileEntry,
     CatalogData,
-    SortCriteria,
     ColorScheme,
+    FileEntry,
+    SortCriteria,
 )
-from .sorting_engine import SortingEngine
+from .catalog_tool import CatalogWindow
 from .color_coding_engine import ColorCodingEngine
+from .sorting_engine import SortingEngine
 
 __version__ = "1.0.0"
 __author__ = "Richard's File Utilities"
@@ -32,4 +33,5 @@ __all__ = [
     "ColorScheme",
     "SortingEngine",
     "ColorCodingEngine",
+    "CatalogWindow",
 ]

@@ -25,7 +25,7 @@ from urllib.parse import urlparse
 
 # Import centralized logging manager
 try:
-    from src.core.log_manager import LogManager
+    from src.core_rfu.log_manager import LogManager
 
     LOGGING_AVAILABLE = True
 except ImportError:
@@ -306,16 +306,12 @@ class BookmarkModel:
         except sqlite3.Error as e:
             error_msg = f"Database error adding bookmark: {e}"
             self.logger.error(error_msg)
-            self.logger.error(
-                f"Bookmark details: title='{title}', url='{url}'"
-            )
+            self.logger.error(f"Bookmark details: title='{title}', url='{url}'")
             return False, error_msg
         except Exception as e:
             error_msg = f"Unexpected error adding bookmark: {e}"
             self.logger.critical(error_msg)
-            self.logger.critical(
-                f"Bookmark details: title='{title}', url='{url}'"
-            )
+            self.logger.critical(f"Bookmark details: title='{title}', url='{url}'")
             return False, error_msg
 
     def update_bookmark(
@@ -355,15 +351,11 @@ class BookmarkModel:
             self.logger.info(f"Successfully updated bookmark ID {bookmark_id}")
             return True
         except sqlite3.Error as e:
-            error_msg = (
-                f"Database error updating bookmark ID {bookmark_id}: {e}"
-            )
+            error_msg = f"Database error updating bookmark ID {bookmark_id}: {e}"
             self.logger.error(error_msg)
             return False
         except Exception as e:
-            error_msg = (
-                f"Unexpected error updating bookmark ID {bookmark_id}: {e}"
-            )
+            error_msg = f"Unexpected error updating bookmark ID {bookmark_id}: {e}"
             self.logger.critical(error_msg)
             return False
 
@@ -380,15 +372,11 @@ class BookmarkModel:
             self.logger.info(f"Successfully deleted bookmark ID {bookmark_id}")
             return True
         except sqlite3.Error as e:
-            error_msg = (
-                f"Database error deleting bookmark ID {bookmark_id}: {e}"
-            )
+            error_msg = f"Database error deleting bookmark ID {bookmark_id}: {e}"
             self.logger.error(error_msg)
             return False
         except Exception as e:
-            error_msg = (
-                f"Unexpected error deleting bookmark ID {bookmark_id}: {e}"
-            )
+            error_msg = f"Unexpected error deleting bookmark ID {bookmark_id}: {e}"
             self.logger.critical(error_msg)
             return False
 
@@ -443,17 +431,11 @@ class BookmarkModel:
             query = f"%{query}%"
 
             if field == "title":
-                cursor.execute(
-                    "SELECT * FROM bookmarks WHERE title LIKE ?", (query,)
-                )
+                cursor.execute("SELECT * FROM bookmarks WHERE title LIKE ?", (query,))
             elif field == "url":
-                cursor.execute(
-                    "SELECT * FROM bookmarks WHERE url LIKE ?", (query,)
-                )
+                cursor.execute("SELECT * FROM bookmarks WHERE url LIKE ?", (query,))
             elif field == "tags":
-                cursor.execute(
-                    "SELECT * FROM bookmarks WHERE tags LIKE ?", (query,)
-                )
+                cursor.execute("SELECT * FROM bookmarks WHERE tags LIKE ?", (query,))
             elif field == "description":
                 cursor.execute(
                     "SELECT * FROM bookmarks WHERE description LIKE ?",
@@ -491,15 +473,11 @@ class BookmarkModel:
             )
             return bookmarks
         except sqlite3.Error as e:
-            error_msg = (
-                f"Database error searching bookmarks for '{query}': {e}"
-            )
+            error_msg = f"Database error searching bookmarks for '{query}': {e}"
             self.logger.error(error_msg)
             return []
         except Exception as e:
-            error_msg = (
-                f"Unexpected error searching bookmarks for '{query}': {e}"
-            )
+            error_msg = f"Unexpected error searching bookmarks for '{query}': {e}"
             self.logger.critical(error_msg)
             return []
 
@@ -626,9 +604,7 @@ class BookmarkImporter:
         """Process JSON list format bookmarks"""
         for item in data:
             if BookmarkImporter._is_valid_bookmark_item(item):
-                bookmark = BookmarkImporter._create_bookmark_from_item(
-                    item, "Imported"
-                )
+                bookmark = BookmarkImporter._create_bookmark_from_item(item, "Imported")
                 bookmarks.append(bookmark)
 
     @staticmethod
@@ -638,9 +614,7 @@ class BookmarkImporter:
         """Recursively extract bookmarks from nested JSON structure"""
         if isinstance(obj, dict):
             if BookmarkImporter._is_valid_bookmark_item(obj):
-                bookmark = BookmarkImporter._create_bookmark_from_item(
-                    obj, folder
-                )
+                bookmark = BookmarkImporter._create_bookmark_from_item(obj, folder)
                 bookmarks.append(bookmark)
             else:
                 for key, value in obj.items():
@@ -650,9 +624,7 @@ class BookmarkImporter:
                         )
         elif isinstance(obj, list):
             for item in obj:
-                BookmarkImporter._extract_bookmarks_recursive(
-                    item, bookmarks, folder
-                )
+                BookmarkImporter._extract_bookmarks_recursive(item, bookmarks, folder)
 
     @staticmethod
     def _is_valid_bookmark_item(item: Dict) -> bool:
@@ -686,9 +658,7 @@ class BookmarkImporter:
                                 "description", row.get("Description", "")
                             ),
                             "tags": row.get("tags", row.get("Tags", "")),
-                            "folder": row.get(
-                                "folder", row.get("Folder", "Imported")
-                            ),
+                            "folder": row.get("folder", row.get("Folder", "Imported")),
                         }
                     )
         except Exception as e:
@@ -729,9 +699,7 @@ class BookmarkExporter:
                     for bookmark in folder_bookmarks:
                         title = html.escape(bookmark["title"])
                         url = html.escape(bookmark["url"])
-                        file.write(
-                            f'        <DT><A HREF="{url}">{title}</A>\n'
-                        )
+                        file.write(f'        <DT><A HREF="{url}">{title}</A>\n')
 
                     if folder != "Default":
                         file.write("    </DL><p>\n")
@@ -798,9 +766,7 @@ class BookmarkDialog(QDialog):
         self.init_ui()
 
     def init_ui(self):
-        self.setWindowTitle(
-            "Add Bookmark" if not self.bookmark else "Edit Bookmark"
-        )
+        self.setWindowTitle("Add Bookmark" if not self.bookmark else "Edit Bookmark")
         self.setModal(True)
         self.resize(500, 400)
 
@@ -840,9 +806,7 @@ class BookmarkDialog(QDialog):
         layout.addLayout(form_layout)
 
         # Buttons
-        buttons = QDialogButtonBox(
-            QDialogButtonBox.Ok | QDialogButtonBox.Cancel
-        )
+        buttons = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
         buttons.accepted.connect(self.accept)
         buttons.rejected.connect(self.reject)
         layout.addWidget(buttons)
@@ -851,9 +815,7 @@ class BookmarkDialog(QDialog):
         if self.bookmark:
             self.title_edit.setText(self.bookmark.get("title", ""))
             self.url_edit.setText(self.bookmark.get("url", ""))
-            self.description_edit.setPlainText(
-                self.bookmark.get("description", "")
-            )
+            self.description_edit.setPlainText(self.bookmark.get("description", ""))
             self.tags_edit.setText(self.bookmark.get("tags", ""))
             self.folder_edit.setText(self.bookmark.get("folder", "Default"))
 
@@ -912,12 +874,8 @@ class BookmarkManagerGUI(QMainWindow):
                 "show_preferences", self.show_preferences
             )
             self.menu_manager.register_callback("refresh", self.refresh_view)
-            self.menu_manager.register_callback(
-                "export_data", self.export_bookmarks
-            )
-            self.menu_manager.register_callback(
-                "import_data", self.import_bookmarks
-            )
+            self.menu_manager.register_callback("export_data", self.export_bookmarks)
+            self.menu_manager.register_callback("import_data", self.import_bookmarks)
 
     def show_preferences(self):
         """Show Bookmark Manager preferences."""
@@ -1085,9 +1043,7 @@ class BookmarkManagerGUI(QMainWindow):
         self.current_bookmarks = self.model.get_all_bookmarks()
         self.populate_table(self.current_bookmarks)
         self.update_filters()
-        self.status_bar.showMessage(
-            f"Loaded {len(self.current_bookmarks)} bookmarks"
-        )
+        self.status_bar.showMessage(f"Loaded {len(self.current_bookmarks)} bookmarks")
 
     def populate_table(self, bookmarks):
         """Populate the bookmark table with data"""
@@ -1100,25 +1056,17 @@ class BookmarkManagerGUI(QMainWindow):
             self.bookmark_table.setItem(row, 0, title_item)
 
             # URL
-            self.bookmark_table.setItem(
-                row, 1, QTableWidgetItem(bookmark["url"])
-            )
+            self.bookmark_table.setItem(row, 1, QTableWidgetItem(bookmark["url"]))
 
             # Tags
-            self.bookmark_table.setItem(
-                row, 2, QTableWidgetItem(bookmark["tags"])
-            )
+            self.bookmark_table.setItem(row, 2, QTableWidgetItem(bookmark["tags"]))
 
             # Folder
-            self.bookmark_table.setItem(
-                row, 3, QTableWidgetItem(bookmark["folder"])
-            )
+            self.bookmark_table.setItem(row, 3, QTableWidgetItem(bookmark["folder"]))
 
             # Created date
             created_date = (
-                bookmark["created_date"][:10]
-                if bookmark["created_date"]
-                else ""
+                bookmark["created_date"][:10] if bookmark["created_date"] else ""
             )
             self.bookmark_table.setItem(row, 4, QTableWidgetItem(created_date))
 
@@ -1151,13 +1099,9 @@ class BookmarkManagerGUI(QMainWindow):
                     self.load_bookmarks()
                     self.status_bar.showMessage("Bookmark added successfully")
                 else:
-                    QMessageBox.warning(
-                        self, "Error", "Failed to add bookmark"
-                    )
+                    QMessageBox.warning(self, "Error", "Failed to add bookmark")
             else:
-                QMessageBox.warning(
-                    self, "Error", "Title and URL are required"
-                )
+                QMessageBox.warning(self, "Error", "Title and URL are required")
 
     def edit_bookmark(self):
         """Edit selected bookmark"""
@@ -1165,9 +1109,7 @@ class BookmarkManagerGUI(QMainWindow):
         if current_row < 0:
             return
 
-        bookmark_id = self.bookmark_table.item(current_row, 0).data(
-            Qt.UserRole
-        )
+        bookmark_id = self.bookmark_table.item(current_row, 0).data(Qt.UserRole)
         bookmark = self._find_bookmark_by_id(bookmark_id)
 
         if bookmark:
@@ -1175,9 +1117,7 @@ class BookmarkManagerGUI(QMainWindow):
 
     def _find_bookmark_by_id(self, bookmark_id: int) -> Optional[Dict]:
         """Find bookmark in current list by ID"""
-        return next(
-            (b for b in self.current_bookmarks if b["id"] == bookmark_id), None
-        )
+        return next((b for b in self.current_bookmarks if b["id"] == bookmark_id), None)
 
     def _show_edit_dialog(self, bookmark: Dict, bookmark_id: int) -> None:
         """Show edit dialog and handle bookmark update"""
@@ -1206,9 +1146,7 @@ class BookmarkManagerGUI(QMainWindow):
         """Delete selected bookmark"""
         current_row = self.bookmark_table.currentRow()
         if current_row >= 0:
-            bookmark_id = self.bookmark_table.item(current_row, 0).data(
-                Qt.UserRole
-            )
+            bookmark_id = self.bookmark_table.item(current_row, 0).data(Qt.UserRole)
             bookmark_title = self.bookmark_table.item(current_row, 0).text()
 
             reply = QMessageBox.question(
@@ -1221,13 +1159,9 @@ class BookmarkManagerGUI(QMainWindow):
             if reply == QMessageBox.Yes:
                 if self.model.delete_bookmark(bookmark_id):
                     self.load_bookmarks()
-                    self.status_bar.showMessage(
-                        "Bookmark deleted successfully"
-                    )
+                    self.status_bar.showMessage("Bookmark deleted successfully")
                 else:
-                    QMessageBox.warning(
-                        self, "Error", "Failed to delete bookmark"
-                    )
+                    QMessageBox.warning(self, "Error", "Failed to delete bookmark")
 
     def search_bookmarks(self):
         """Search bookmarks based on search box input"""
@@ -1243,9 +1177,7 @@ class BookmarkManagerGUI(QMainWindow):
             field = field_map.get(self.search_field_combo.currentText(), "all")
             bookmarks = self.model.search_bookmarks(query, field)
             self.populate_table(bookmarks)
-            self.status_bar.showMessage(
-                f"Found {len(bookmarks)} matching bookmarks"
-            )
+            self.status_bar.showMessage(f"Found {len(bookmarks)} matching bookmarks")
         else:
             self.load_bookmarks()
 
@@ -1255,9 +1187,7 @@ class BookmarkManagerGUI(QMainWindow):
         if folder == "All Folders":
             self.load_bookmarks()
         else:
-            bookmarks = [
-                b for b in self.current_bookmarks if b["folder"] == folder
-            ]
+            bookmarks = [b for b in self.current_bookmarks if b["folder"] == folder]
             self.populate_table(bookmarks)
             self.status_bar.showMessage(
                 f"Showing {len(bookmarks)} bookmarks in '{folder}'"
@@ -1270,9 +1200,7 @@ class BookmarkManagerGUI(QMainWindow):
             self.load_bookmarks()
         else:
             bookmarks = [
-                b
-                for b in self.current_bookmarks
-                if tag in (b["tags"] or "").split(",")
+                b for b in self.current_bookmarks if tag in (b["tags"] or "").split(",")
             ]
             self.populate_table(bookmarks)
             self.status_bar.showMessage(
@@ -1306,9 +1234,7 @@ class BookmarkManagerGUI(QMainWindow):
         )
         return file_path if file_path else None
 
-    def _load_bookmarks_from_file(
-        self, file_path: str
-    ) -> Optional[List[Dict]]:
+    def _load_bookmarks_from_file(self, file_path: str) -> Optional[List[Dict]]:
         """Load bookmarks from file based on extension"""
         if file_path.endswith(".html"):
             return BookmarkImporter.import_from_html(file_path)
@@ -1360,22 +1286,14 @@ class BookmarkManagerGUI(QMainWindow):
 
                 success = False
                 if file_type.startswith("HTML"):
-                    success = BookmarkExporter.export_to_html(
-                        bookmarks, file_path
-                    )
+                    success = BookmarkExporter.export_to_html(bookmarks, file_path)
                 elif file_type.startswith("JSON"):
-                    success = BookmarkExporter.export_to_json(
-                        bookmarks, file_path
-                    )
+                    success = BookmarkExporter.export_to_json(bookmarks, file_path)
                 elif file_type.startswith("CSV"):
-                    success = BookmarkExporter.export_to_csv(
-                        bookmarks, file_path
-                    )
+                    success = BookmarkExporter.export_to_csv(bookmarks, file_path)
 
                 if success:
-                    self.status_bar.showMessage(
-                        f"Exported {len(bookmarks)} bookmarks"
-                    )
+                    self.status_bar.showMessage(f"Exported {len(bookmarks)} bookmarks")
                     QMessageBox.information(
                         self,
                         "Export Complete",

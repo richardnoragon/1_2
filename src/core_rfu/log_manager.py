@@ -11,12 +11,12 @@ import logging.handlers
 import sys
 import uuid
 from pathlib import Path
-from typing import Dict, Any, Optional
 from threading import Lock
+from typing import Any, Dict, Optional
 
 # Import database logging support
 try:
-    from src.core.database_logging import DatabaseLogHandler
+    from .database_logging import DatabaseLogHandler
 
     DATABASE_LOGGING_AVAILABLE = True
 except ImportError:
@@ -201,15 +201,11 @@ class LogManager:
             log_level = getattr(logging, level.upper())
             if self.console_handler:
                 self.console_handler.setLevel(log_level)
-            self.root_logger.info(
-                f"Console logging level set to {level.upper()}"
-            )
+            self.root_logger.info(f"Console logging level set to {level.upper()}")
         except AttributeError:
             self.root_logger.error(f"Invalid console logging level: {level}")
 
-    def add_file_handler(
-        self, name: str, filename: str, level: str = "INFO"
-    ) -> bool:
+    def add_file_handler(self, name: str, filename: str, level: str = "INFO") -> bool:
         """
         Add a separate file handler for a specific component.
 
@@ -244,9 +240,7 @@ class LogManager:
             self.root_logger.error(f"Failed to add file handler '{name}': {e}")
             return False
 
-    def log_structured(
-        self, level: str, component: str, message: str, **kwargs
-    ):
+    def log_structured(self, level: str, component: str, message: str, **kwargs):
         """
         Log a structured message with additional context.
 

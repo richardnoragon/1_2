@@ -1,0 +1,96 @@
+{
+  "generated_at": "2025-10-07T17:24:27+00:00",
+  "checks": [
+    {
+      "name": "top_level_directories",
+      "status": "complete",
+      "details": {
+        "expected_present": [
+          ".benchmarks",
+          ".roo",
+          ".specify",
+          ".vscode",
+          "RFU_Hub_Preferences_Security_Implementation_Plan",
+          "archive",
+          "assets",
+          "backups",
+          "config",
+          "core",
+          "docs",
+          "emergency-backup-20250925_200754",
+          "logs",
+          "reports",
+          "resources",
+          "results",
+          "rfu_reports",
+          "scripts",
+          "src",
+          "src_backup",
+          "tests"
+        ],
+        "missing": [],
+        "unexpected": [
+          ".kilocode",
+          ".mypy_cache",
+          ".pytest_cache",
+          "__pycache__",
+          "data",
+          "gui",
+          "migrations",
+          "specs",
+          "venv"
+        ]
+      },
+      "notes": [
+        "Additional directories detected; review change log for required updates."
+      ]
+    },
+    {
+      "name": "legacy_code_locations",
+      "status": "complete",
+      "details": {
+        "legacy_locations_present": [
+          "RFU_Hub_Preferences_Security_Implementation_Plan",
+          "archive",
+          "src_backup"
+        ],
+        "legacy_locations_missing": [],
+        "unexpected_legacy_files": []
+      },
+      "notes": []
+    },
+    {
+      "name": "gui_entry_points",
+      "status": "complete",
+      "details": {
+        "expected_present": [
+          "demo_pyvisualizer.py",
+          "main.py",
+          "rfu_explorer.py",
+          "simple_pyvisualizer_demo.py",
+          "src/main.py"
+        ],
+        "missing": [],
+        "retired_present": []
+      },
+      "notes": []
+    },
+    {
+      "name": "configuration_artifacts",
+      "status": "complete",
+      "details": {
+        "expected_present": [
+          ".env",
+          ".mypy_cache",
+          ".pytest_cache",
+          "config/rfu_config.json",
+          "reports",
+          "results"
+        ],
+        "missing": []
+      },
+      "notes": []
+    }
+  ],
+  "overall_status": "complete"
+}

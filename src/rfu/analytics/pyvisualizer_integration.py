@@ -262,7 +262,9 @@ class RFUAnalyticsLogger:
 
         Usage in RFU tools:
         logger = RFUAnalyticsLogger()
-        logger.log_operation("FileFinderGUI", "search", file_count=150, success=True)
+        logger.log_operation(
+            "FileFinderWindow", "search", file_count=150, success=True
+        )
         """
 
         log_entry = {

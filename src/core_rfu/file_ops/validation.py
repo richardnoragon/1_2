@@ -2,9 +2,9 @@
 
 import os
 from pathlib import Path
-from typing import Union, List, Optional
+from typing import List, Optional, Union
 
-from src.core.error_handler import error_handler
+from ..error_handler import error_handler
 
 
 class FileValidationError(Exception):
@@ -55,9 +55,7 @@ def validate_dir_exists(path: Union[str, Path], throw: bool = True) -> bool:
     return exists
 
 
-def validate_path_writeable(
-    path: Union[str, Path], throw: bool = True
-) -> bool:
+def validate_path_writeable(path: Union[str, Path], throw: bool = True) -> bool:
     """
     Validate that a path is writeable.
 
@@ -104,9 +102,7 @@ def validate_path_readable(path: Union[str, Path], throw: bool = True) -> bool:
     return readable
 
 
-def validate_path_executable(
-    path: Union[str, Path], throw: bool = True
-) -> bool:
+def validate_path_executable(path: Union[str, Path], throw: bool = True) -> bool:
     """
     Validate that a path is executable.
 

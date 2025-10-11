@@ -10,6 +10,7 @@ Features:
 - Advanced search and replace with regex support
 - File encoding detection and conversion
 - Text transformation tools
+- Integrated file finder for locating resources
 - Plugin architecture for extensibility
 - Integration with StandardWindow for consistent UI
 """
@@ -256,9 +257,7 @@ class SyntaxHighlighter(QSyntaxHighlighter):
             )
 
             # Comments
-            self.highlighting_rules.append(
-                (re.compile(r"#[^\n]*"), comment_format)
-            )
+            self.highlighting_rules.append((re.compile(r"#[^\n]*"), comment_format))
 
         elif self.language == DocumentType.JAVASCRIPT:
             keywords = [
@@ -485,9 +484,7 @@ class TextEditor(QPlainTextEdit):
         font.setFixedPitch(True)
         self.setFont(font)
 
-        self.setTabStopWidth(
-            self.settings.tab_width * QFontMetrics(font).width(" ")
-        )
+        self.setTabStopWidth(self.settings.tab_width * QFontMetrics(font).width(" "))
         self.setLineWrapMode(
             QPlainTextEdit.WidgetWidth
             if self.settings.word_wrap
@@ -531,9 +528,7 @@ class TextEditor(QPlainTextEdit):
         super().resizeEvent(event)
         cr = self.contentsRect()
         self.line_number_area.setGeometry(
-            QRect(
-                cr.left(), cr.top(), self.line_number_area_width(), cr.height()
-            )
+            QRect(cr.left(), cr.top(), self.line_number_area_width(), cr.height())
         )
 
     def highlight_current_line(self):
@@ -566,9 +561,7 @@ class TextEditor(QPlainTextEdit):
         block = self.firstVisibleBlock()
         block_number = block.blockNumber()
         top = int(
-            self.blockBoundingGeometry(block)
-            .translated(self.contentOffset())
-            .top()
+            self.blockBoundingGeometry(block).translated(self.contentOffset()).top()
         )
         bottom = top + int(self.blockBoundingRect(block).height())
 
@@ -729,6 +722,43 @@ class EnhancedEditor(StandardWindow):
         panel = QWidget()
         layout = QVBoxLayout(panel)
 
+        # File finder tools
+        finder_group = QGroupBox("File Finder")
+        finder_layout = QVBoxLayout(finder_group)
+
+        pattern_layout = QHBoxLayout()
+        pattern_layout.addWidget(QLabel("Pattern:"))
+        self.file_search_pattern = QLineEdit()
+        self.file_search_pattern.setPlaceholderText("*.py")
+        pattern_layout.addWidget(self.file_search_pattern)
+        finder_layout.addLayout(pattern_layout)
+
+        directory_layout = QHBoxLayout()
+        directory_layout.addWidget(QLabel("Directory:"))
+        self.file_search_directory = QLineEdit()
+        self.file_search_directory.setText(str(Path.cwd()))
+        directory_layout.addWidget(self.file_search_directory)
+        browse_button = QPushButton("Browse")
+        browse_button.clicked.connect(self.choose_file_search_directory)
+        directory_layout.addWidget(browse_button)
+        finder_layout.addLayout(directory_layout)
+
+        options_layout = QHBoxLayout()
+        self.file_search_recursive = QCheckBox("Recursive")
+        self.file_search_recursive.setChecked(True)
+        options_layout.addWidget(self.file_search_recursive)
+        finder_layout.addLayout(options_layout)
+
+        self.file_search_button = QPushButton("Search Files")
+        self.file_search_button.clicked.connect(self.perform_file_search)
+        finder_layout.addWidget(self.file_search_button)
+
+        self.file_search_results = QListWidget()
+        self.file_search_results.itemDoubleClicked.connect(self.open_file_from_search)
+        finder_layout.addWidget(self.file_search_results)
+
+        layout.addWidget(finder_group)
+
         # Search results
         search_group = QGroupBox("Search Results")
         search_layout = QVBoxLayout(search_group)
@@ -756,6 +786,95 @@ class EnhancedEditor(StandardWindow):
         layout.addWidget(props_group)
 
         return panel
+
+    def choose_file_search_directory(self):
+        """Select a directory for file searches."""
+        if not hasattr(self, "file_search_directory"):
+            return
+
+        start_dir = self.file_search_directory.text() or str(Path.cwd())
+        directory = QFileDialog.getExistingDirectory(
+            self, "Select Directory", start_dir
+        )
+        if directory:
+            self.file_search_directory.setText(directory)
+
+    def perform_file_search(self):
+        """Search for files matching the user pattern."""
+        if not hasattr(self, "file_search_results"):
+            return
+
+        directory_text = (self.file_search_directory.text() or "").strip()
+        if not directory_text:
+            directory_text = str(Path.cwd())
+
+        directory_path = Path(directory_text).expanduser()
+        if not directory_path.exists():
+            QMessageBox.warning(
+                self,
+                "Invalid Directory",
+                f"Directory does not exist:\n{directory_path}",
+            )
+            return
+
+        pattern = (self.file_search_pattern.text() or "").strip() or "*"
+        recursive = (
+            self.file_search_recursive.isChecked()
+            if hasattr(self, "file_search_recursive")
+            else True
+        )
+
+        try:
+            iterator = (
+                directory_path.rglob(pattern)
+                if recursive
+                else directory_path.glob(pattern)
+            )
+
+            matches = []
+            for path in iterator:
+                if path.is_file():
+                    matches.append(path)
+                if len(matches) >= 500:
+                    break
+        except (OSError, ValueError) as exc:
+            QMessageBox.critical(
+                self,
+                "Search Error",
+                f"Could not complete search:\n{exc}",
+            )
+            return
+
+        self.file_search_results.clear()
+        for path in matches:
+            item = QListWidgetItem(path.name)
+            item.setData(Qt.UserRole, str(path))
+            item.setToolTip(str(path))
+            self.file_search_results.addItem(item)
+
+        if matches:
+            limited = " (showing first 500 results)" if len(matches) >= 500 else ""
+            self.show_status_message(f"Found {len(matches)} file(s){limited}", 3000)
+        else:
+            self.show_status_message("No files found", 3000)
+
+    def open_file_from_search(self, item: QListWidgetItem):
+        """Open a file selected from the search results."""
+        file_path = item.data(Qt.UserRole)
+        if file_path and os.path.exists(file_path):
+            self.open_document(file_path)
+        else:
+            QMessageBox.warning(
+                self,
+                "File Unavailable",
+                f"The file could not be located:\n{file_path}",
+            )
+
+    def set_file_search_directory(self, file_path: Optional[str]):
+        """Update default file search directory based on a document path."""
+        if file_path and hasattr(self, "file_search_directory"):
+            directory = Path(file_path).resolve().parent
+            self.file_search_directory.setText(str(directory))
 
     def create_toolbar(self):
         """Create the main toolbar."""
@@ -801,15 +920,9 @@ class EnhancedEditor(StandardWindow):
         if hasattr(self, "menu_manager"):
             # File menu callbacks
             self.menu_manager.register_callback("new_file", self.new_document)
-            self.menu_manager.register_callback(
-                "open_file", self.open_document
-            )
-            self.menu_manager.register_callback(
-                "save_file", self.save_document
-            )
-            self.menu_manager.register_callback(
-                "save_as_file", self.save_document_as
-            )
+            self.menu_manager.register_callback("open_file", self.open_document)
+            self.menu_manager.register_callback("save_file", self.save_document)
+            self.menu_manager.register_callback("save_as_file", self.save_document_as)
 
             # Edit menu callbacks
             self.menu_manager.register_callback("undo", self.undo)
@@ -818,12 +931,8 @@ class EnhancedEditor(StandardWindow):
             self.menu_manager.register_callback("copy", self.copy)
             self.menu_manager.register_callback("paste", self.paste)
             self.menu_manager.register_callback("select_all", self.select_all)
-            self.menu_manager.register_callback(
-                "find", self.show_search_dialog
-            )
-            self.menu_manager.register_callback(
-                "replace", self.show_replace_dialog
-            )
+            self.menu_manager.register_callback("find", self.show_search_dialog)
+            self.menu_manager.register_callback("replace", self.show_replace_dialog)
 
             # View menu callbacks
             self.menu_manager.register_callback("zoom_in", self.zoom_in)
@@ -850,9 +959,7 @@ class EnhancedEditor(StandardWindow):
         # Create editor widget
         editor = TextEditor()
         editor.setPlainText(content)
-        editor.content_changed.connect(
-            lambda: self.mark_document_modified(doc_id)
-        )
+        editor.content_changed.connect(lambda: self.mark_document_modified(doc_id))
         editor.cursor_position_changed.connect(self.update_cursor_position)
 
         # Set document type and syntax highlighting
@@ -867,6 +974,9 @@ class EnhancedEditor(StandardWindow):
 
         # Store doc_id mapping
         self.tab_to_doc_mapping[tab_index] = doc_id
+
+        if file_path:
+            self.set_file_search_directory(file_path)
 
         self.update_status_bar()
         return doc_id
@@ -926,6 +1036,7 @@ class EnhancedEditor(StandardWindow):
 
         self.document_manager.add_to_recent_files(file_path)
         self.update_recent_files_list()
+        self.set_file_search_directory(file_path)
         self.show_status_message(f"Opened: {os.path.basename(file_path)}")
 
     def _handle_file_opening_error(self, file_path, error):
@@ -963,14 +1074,11 @@ class EnhancedEditor(StandardWindow):
                     f.write(content)
 
                 # Update document properties
-                self.document_manager.update_document(
-                    doc_id, is_modified=False
-                )
+                self.document_manager.update_document(doc_id, is_modified=False)
                 self.update_tab_title(doc_id)
+                self.set_file_search_directory(file_path)
 
-                self.show_status_message(
-                    f"Saved: {os.path.basename(file_path)}"
-                )
+                self.show_status_message(f"Saved: {os.path.basename(file_path)}")
                 return True
 
         except Exception as e:
@@ -1013,9 +1121,7 @@ class EnhancedEditor(StandardWindow):
 
             # Update document type based on new extension
             doc_type = self.document_manager._detect_document_type(file_path)
-            self.document_manager.update_document(
-                doc_id, document_type=doc_type
-            )
+            self.document_manager.update_document(doc_id, document_type=doc_type)
 
             # Update syntax highlighting
             editor = self.get_editor_for_document(doc_id)
@@ -1030,9 +1136,7 @@ class EnhancedEditor(StandardWindow):
     def close_document_tab(self, tab_index: int):
         """Close a document tab."""
         doc_id = self.tab_to_doc_mapping.get(tab_index)
-        document = (
-            self.document_manager.get_document(doc_id) if doc_id else None
-        )
+        document = self.document_manager.get_document(doc_id) if doc_id else None
 
         if document and document.get("is_modified", False):
             reply = QMessageBox.question(
@@ -1132,15 +1236,9 @@ class EnhancedEditor(StandardWindow):
         if not self.search_dialog:
             self.search_dialog = SearchDialog(self)
             self.search_dialog.find_next_btn.clicked.connect(self.find_next)
-            self.search_dialog.find_prev_btn.clicked.connect(
-                self.find_previous
-            )
-            self.search_dialog.replace_btn.clicked.connect(
-                self.replace_current
-            )
-            self.search_dialog.replace_all_btn.clicked.connect(
-                self.replace_all
-            )
+            self.search_dialog.find_prev_btn.clicked.connect(self.find_previous)
+            self.search_dialog.replace_btn.clicked.connect(self.replace_current)
+            self.search_dialog.replace_all_btn.clicked.connect(self.replace_all)
 
         self.search_dialog.show()
         self.search_dialog.search_edit.setFocus()
@@ -1192,9 +1290,7 @@ class EnhancedEditor(StandardWindow):
         cursor = editor.textCursor()
 
         if options.use_regex:
-            return self._perform_regex_search(
-                editor, search_text, options, forward
-            )
+            return self._perform_regex_search(editor, search_text, options, forward)
         else:
             return self._perform_standard_search(
                 editor, search_text, options, forward, cursor
@@ -1243,9 +1339,7 @@ class EnhancedEditor(StandardWindow):
             return True
         return False
 
-    def _perform_standard_search(
-        self, editor, search_text, options, forward, cursor
-    ):
+    def _perform_standard_search(self, editor, search_text, options, forward, cursor):
         """Perform standard text search."""
         flags = self._get_search_flags(options, forward)
 
@@ -1255,9 +1349,7 @@ class EnhancedEditor(StandardWindow):
             editor.setTextCursor(found_cursor)
             return True
         elif options.wrap_around:
-            return self._try_standard_wrap_around(
-                editor, search_text, flags, forward
-            )
+            return self._try_standard_wrap_around(editor, search_text, flags, forward)
 
         self._show_not_found_message()
         return False
@@ -1341,13 +1433,9 @@ class EnhancedEditor(StandardWindow):
         text = editor.toPlainText()
 
         if options.use_regex:
-            return self._replace_all_regex(
-                text, search_text, replace_text, options
-            )
+            return self._replace_all_regex(text, search_text, replace_text, options)
         else:
-            return self._replace_all_standard(
-                text, search_text, replace_text, options
-            )
+            return self._replace_all_standard(text, search_text, replace_text, options)
 
     def _replace_all_regex(self, text, search_text, replace_text, options):
         """Perform regex-based replace all."""
@@ -1386,9 +1474,7 @@ class EnhancedEditor(StandardWindow):
                     f"Replaced {replacements} occurrences.",
                 )
             else:
-                QMessageBox.information(
-                    self, "Replace All", "No occurrences found."
-                )
+                QMessageBox.information(self, "Replace All", "No occurrences found.")
         else:
             replacements = result
             if replacements > 0:
@@ -1398,9 +1484,7 @@ class EnhancedEditor(StandardWindow):
                     f"Replaced {replacements} occurrences.",
                 )
             else:
-                QMessageBox.information(
-                    self, "Replace All", "No occurrences found."
-                )
+                QMessageBox.information(self, "Replace All", "No occurrences found.")
 
     # Standard edit operations
     def undo(self):
@@ -1514,9 +1598,7 @@ class EnhancedEditor(StandardWindow):
         if file_path and os.path.exists(file_path):
             self.open_document(file_path)
         else:
-            QMessageBox.warning(
-                self, "File Not Found", f"File not found: {file_path}"
-            )
+            QMessageBox.warning(self, "File Not Found", f"File not found: {file_path}")
 
     def goto_search_result(self, item: QListWidgetItem):
         """Go to search result location."""
@@ -1534,9 +1616,7 @@ class EnhancedEditor(StandardWindow):
 
         if document:
             self.encoding_label.setText(document.get("encoding", "UTF-8"))
-            self.line_ending_label.setText(
-                document.get("line_ending", "LF").upper()
-            )
+            self.line_ending_label.setText(document.get("line_ending", "LF").upper())
             self.doc_type_label.setText(
                 document.get("document_type", DocumentType.TEXT).value.title()
             )
@@ -1612,9 +1692,7 @@ class EnhancedEditor(StandardWindow):
         settings.setValue("use_spaces", self.settings.use_spaces)
         settings.setValue("word_wrap", self.settings.word_wrap)
         settings.setValue("line_numbers", self.settings.line_numbers)
-        settings.setValue(
-            "syntax_highlighting", self.settings.syntax_highlighting
-        )
+        settings.setValue("syntax_highlighting", self.settings.syntax_highlighting)
 
         # Save recent files
         settings.setValue("recent_files", self.document_manager.recent_files)
@@ -1708,9 +1786,7 @@ class PreferencesDialog(QDialog):
         tab_widget.addTab(advanced_tab, "Advanced")
 
         # Button box
-        button_box = QDialogButtonBox(
-            QDialogButtonBox.Ok | QDialogButtonBox.Cancel
-        )
+        button_box = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
         button_box.accepted.connect(self.accept)
         button_box.rejected.connect(self.reject)
         layout.addWidget(button_box)
@@ -1779,9 +1855,7 @@ class PreferencesDialog(QDialog):
         syntax_group = QGroupBox("Syntax Highlighting")
         syntax_layout = QVBoxLayout(syntax_group)
 
-        self.syntax_highlighting_check = QCheckBox(
-            "Enable syntax highlighting"
-        )
+        self.syntax_highlighting_check = QCheckBox("Enable syntax highlighting")
         syntax_layout.addWidget(self.syntax_highlighting_check)
 
         layout.addWidget(syntax_group)
@@ -1794,9 +1868,7 @@ class PreferencesDialog(QDialog):
         layout = QFormLayout(tab)
 
         # Advanced settings placeholder
-        info_label = QLabel(
-            "Advanced settings will be available in future versions."
-        )
+        info_label = QLabel("Advanced settings will be available in future versions.")
         layout.addWidget(info_label)
 
         return tab
@@ -1809,9 +1881,7 @@ class PreferencesDialog(QDialog):
         self.use_spaces_check.setChecked(self.settings.use_spaces)
         self.word_wrap_check.setChecked(self.settings.word_wrap)
         self.line_numbers_check.setChecked(self.settings.line_numbers)
-        self.syntax_highlighting_check.setChecked(
-            self.settings.syntax_highlighting
-        )
+        self.syntax_highlighting_check.setChecked(self.settings.syntax_highlighting)
         self.show_whitespace_check.setChecked(self.settings.show_whitespace)
 
     def get_settings(self) -> EditorSettings:

@@ -8,33 +8,38 @@ import os
 import sys
 
 # Add the project root directory to the Python path
-project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+project_root = os.path.dirname(
+    os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+)
 sys.path.insert(0, project_root)
 
 
 def test_catalog_imports():
     """Test that both catalog implementations can be imported."""
     print("Testing catalog imports...")
-    
+
     try:
         # Test simple catalog
-        from src.tools.file_operations.catalog.catalog import CatalogWindow
+        from src.tools.file_management.catalog.catalog import CatalogWindow
+
         print("✓ Simple catalog import successful")
         simple_ok = True
     except ImportError as e:
         print(f"✗ Simple catalog import failed: {e}")
         simple_ok = False
-    
+
     try:
         # Test advanced catalog
-        from src.tools.file_management.advanced_catalog.advanced_catalog_window import \
-            AdvancedCatalogWindow
+        from src.tools.file_management.advanced_catalog.advanced_catalog_window import (
+            AdvancedCatalogWindow,
+        )
+
         print("✓ Advanced catalog import successful")
         advanced_ok = True
     except ImportError as e:
         print(f"✗ Advanced catalog import failed: {e}")
         advanced_ok = False
-    
+
     return simple_ok and advanced_ok
 
 
@@ -42,13 +47,13 @@ def main():
     """Run import tests."""
     print("File Catalog Button Fix - Import Test")
     print("=" * 50)
-    
+
     # Test imports
     imports_ok = test_catalog_imports()
-    
+
     print("\n" + "=" * 50)
     print(f"Import Test: {'PASS' if imports_ok else 'FAIL'}")
-    
+
     if imports_ok:
         print("\n✓ All imports successful! File Catalog button should work.")
         print("\nTo test the button:")

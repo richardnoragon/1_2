@@ -7,12 +7,14 @@ The comprehensive menu bar integration across all Richard's File Utilities appli
 ## 🎯 Key Achievements
 
 ### 1. Core Infrastructure Complete
+
 - ✅ **MenuManager System**: Centralized menu creation and management (`gui/menu_manager.py`)
 - ✅ **StandardWindow Base Class**: Enhanced base class with automatic menu integration (`src/rfu/gui/standard_window.py`)
 - ✅ **ThemeManager Integration**: Comprehensive styling with menu support (`gui/themes.py`)
 - ✅ **Callback System**: Flexible registration system for tool-specific menu actions
 
 ### 2. Enhanced Main Application
+
 - ✅ **Enhanced Main Hub**: New `enhanced_main_with_comprehensive_menus.py` with full menu integration
 - ✅ **Tool Categorization**: Organized tools into logical categories (File Management, Analysis, Security, etc.)
 - ✅ **Active Tool Management**: Tracks and manages open tool windows
@@ -21,25 +23,29 @@ The comprehensive menu bar integration across all Richard's File Utilities appli
 ### 3. Tool Integration Status
 
 #### ✅ FULLY INTEGRATED TOOLS:
+
 - **File Finder** (`src/rfu/tools/file_management/file_finder.py`)
+
   - StandardWindow inheritance ✅
   - Menu callbacks for search operations ✅
   - Save/Export functionality ✅
   - Tool-specific preferences ✅
 
 - **Catalog Files** (`src/rfu/tools/file_management/catalog.py`)
+
   - StandardWindow inheritance ✅
   - Menu callbacks for catalog operations ✅
   - Settings export/import ✅
   - Directory management ✅
 
-- **Rename Files** (`src/rfu/tools/file_management/rename.py`)
+- **Rename Files** (`src/tools/file_operations/rename/rename.py`)
   - StandardWindow inheritance ✅
   - Menu callbacks for rename operations ✅
   - Settings save/load functionality ✅
   - Preview export capabilities ✅
 
 #### 🔄 READY FOR INTEGRATION:
+
 - **Enhanced Secure Delete** (`enhanced_secure_delete_with_menu.py`)
   - Complete menu system integration ✅
   - Security-specific menu options ✅
@@ -48,6 +54,7 @@ The comprehensive menu bar integration across all Richard's File Utilities appli
 ### 4. Menu System Features
 
 #### Standard Menu Structure:
+
 ```
 📋 File Menu (New, Open, Save, Export, Import, Preferences, Exit)
 ✏️ Edit Menu (Undo, Redo, Cut, Copy, Paste, Find)
@@ -57,6 +64,7 @@ The comprehensive menu bar integration across all Richard's File Utilities appli
 ```
 
 #### Keyboard Shortcuts:
+
 - `Ctrl+N`: New operation/Clear state
 - `Ctrl+O`: Open file/project
 - `Ctrl+S`: Save current work
@@ -66,6 +74,7 @@ The comprehensive menu bar integration across all Richard's File Utilities appli
 - `Ctrl+F`: Find/Search
 
 #### Built-in Dialogs:
+
 - ✅ **Help System**: Comprehensive help documentation
 - ✅ **About Dialog**: Application information with version details
 - ✅ **System Information**: Detailed system and environment info
@@ -76,12 +85,15 @@ The comprehensive menu bar integration across all Richard's File Utilities appli
 ## 🚀 Testing Results
 
 ### Successful Application Launches:
+
 1. **Enhanced Main Application**: `python enhanced_main_with_comprehensive_menus.py` ✅
+
    - Full menu system active
    - Tool categorization working
    - Professional UI with tool grid
 
 2. **File Finder with Menus**: Individual tool launch ✅
+
    - StandardWindow integration working
    - Menu callbacks functional
    - No critical errors
@@ -92,6 +104,7 @@ The comprehensive menu bar integration across all Richard's File Utilities appli
    - Keyboard shortcuts active
 
 ### Expected Warnings (Non-Critical):
+
 - Import warnings for optional utilities modules
 - CSS transform property warnings (cosmetic only)
 - Layout warnings for existing UI components
@@ -99,6 +112,7 @@ The comprehensive menu bar integration across all Richard's File Utilities appli
 ## 📋 Implementation Architecture
 
 ### File Structure:
+
 ```
 📁 Enhanced Menu System Files:
 ├── 🔧 gui/menu_manager.py (Core menu management)
@@ -112,6 +126,7 @@ The comprehensive menu bar integration across all Richard's File Utilities appli
 ```
 
 ### Integration Pattern:
+
 1. **Inherit from StandardWindow** instead of QMainWindow
 2. **Add menu callback setup** in tool initialization
 3. **Register tool-specific callbacks** for menu actions
@@ -121,7 +136,9 @@ The comprehensive menu bar integration across all Richard's File Utilities appli
 ## 💡 Usage Instructions
 
 ### For End Users:
+
 1. **Launch Enhanced Application**:
+
    ```bash
    python enhanced_main_with_comprehensive_menus.py
    ```
@@ -132,14 +149,16 @@ The comprehensive menu bar integration across all Richard's File Utilities appli
 5. **Help System**: Press F1 or use Help menu for assistance
 
 ### For Developers:
+
 1. **Integrate New Tools**: Use comprehensive_menu_integration.py script
-2. **Add Tool-Specific Menus**: Register callbacks in _setup_menu_callbacks()
+2. **Add Tool-Specific Menus**: Register callbacks in \_setup_menu_callbacks()
 3. **Extend Menu System**: Modify MenuManager for new categories
 4. **Custom Shortcuts**: Define tool-specific keyboard shortcuts
 
 ## 🔮 Future Enhancements Ready
 
 ### Architecture Supports:
+
 - **Plugin System**: Dynamic menu extension for plugins
 - **Workflow Integration**: Cross-tool workflow support
 - **Custom Themes**: Extended theming options
@@ -147,6 +166,7 @@ The comprehensive menu bar integration across all Richard's File Utilities appli
 - **Context-Aware Menus**: Dynamic menu content based on state
 
 ### Easy Extensions:
+
 - Additional tool categories
 - More keyboard shortcuts
 - Enhanced help system
@@ -156,12 +176,14 @@ The comprehensive menu bar integration across all Richard's File Utilities appli
 ## 📊 Performance Impact
 
 ### Minimal Overhead:
+
 - Menu system adds <50ms to startup time
 - Memory footprint increase <2MB
 - No impact on tool-specific functionality
 - Graceful fallback for legacy components
 
 ### Resource Efficiency:
+
 - Shared menu components across tools
 - Lazy loading of heavy menu features
 - Efficient callback management
@@ -170,12 +192,14 @@ The comprehensive menu bar integration across all Richard's File Utilities appli
 ## ✨ Success Metrics
 
 ### User Experience:
+
 - ✅ **Consistent Navigation**: Same menu structure in all tools
 - ✅ **Professional Interface**: Platform-appropriate design
 - ✅ **Keyboard Efficiency**: Standard shortcuts throughout
 - ✅ **Feature Discoverability**: All features accessible via menus
 
 ### Technical Excellence:
+
 - ✅ **Maintainable Code**: Centralized menu management
 - ✅ **Extensible Architecture**: Easy to add new tools
 - ✅ **Error Resilience**: Graceful fallback mechanisms
@@ -186,6 +210,7 @@ The comprehensive menu bar integration across all Richard's File Utilities appli
 The comprehensive menu bar integration has been fully implemented and tested across all specified application components. Richard's File Utilities now provides a unified, professional interface with consistent navigation and functionality access throughout the entire project ecosystem.
 
 **All user requirements have been met:**
+
 - ✅ Comprehensive menu system implemented
 - ✅ File menu with Exit option (Ctrl+Q) working
 - ✅ Help menu with assistance options available

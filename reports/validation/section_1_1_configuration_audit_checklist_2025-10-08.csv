@@ -1,0 +1,5 @@
+item,description,status,owner
+config/rfu_config.json,Verified presence and integrity,pass,configuration_team
+.env,Verified presence and encrypted storage policy,pass,security_team
+.mypy_cache/,Cache cleared prior to audit,pass,devops_team
+.pytest_cache/,Cache cleared prior to audit,pass,devops_team

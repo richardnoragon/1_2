@@ -28,7 +28,7 @@ from urllib.parse import urlparse
 
 # Import centralized logging manager
 try:
-    from src.core.log_manager import LogManager
+    from src.core_rfu.log_manager import LogManager
 
     LOGGING_AVAILABLE = True
 except ImportError:
@@ -107,9 +107,7 @@ class BookmarkManagerGUI(QMainWindow):
             self.logger = logging.getLogger(self.__class__.__name__)
             if not self.logger.handlers:
                 handler = logging.StreamHandler()
-                formatter = logging.Formatter(
-                    "%(name)s - %(levelname)s - %(message)s"
-                )
+                formatter = logging.Formatter("%(name)s - %(levelname)s - %(message)s")
                 handler.setFormatter(formatter)
                 self.logger.addHandler(handler)
                 self.logger.setLevel(logging.INFO)
@@ -286,9 +284,7 @@ class BookmarkManagerGUI(QMainWindow):
         self.results_text.append(f"Title: {title}")
         self.results_text.append(f"URL: {url}")
         self.results_text.append(f"Category: {category}")
-        self.results_text.append(
-            "Bookmark added successfully to local collection!"
-        )
+        self.results_text.append("Bookmark added successfully to local collection!")
 
         # Clear inputs
         self.title_input.clear()
@@ -305,9 +301,7 @@ class BookmarkManagerGUI(QMainWindow):
     def import_bookmarks(self):
         """Import bookmarks from file."""
         self.results_text.append("\n=== Import Bookmarks ===")
-        self.results_text.append(
-            "Import functionality ready for implementation."
-        )
+        self.results_text.append("Import functionality ready for implementation.")
         self.results_text.append("This tool will support:")
         self.results_text.append("• Import from browser HTML exports")
         self.results_text.append("• Import from JSON bookmark files")
@@ -328,13 +322,9 @@ class BookmarkManagerGUI(QMainWindow):
     def export_bookmarks(self):
         """Export bookmarks to file."""
         self.results_text.append("\n=== Export Bookmarks ===")
-        self.results_text.append(
-            "Export functionality ready for implementation."
-        )
+        self.results_text.append("Export functionality ready for implementation.")
         self.results_text.append("This tool will support:")
-        self.results_text.append(
-            "• Export to HTML format (browser compatible)"
-        )
+        self.results_text.append("• Export to HTML format (browser compatible)")
         self.results_text.append("• Export to JSON format")
         self.results_text.append("• Export to CSV format")
         self.results_text.append("• Category-based filtering")
@@ -353,9 +343,7 @@ class BookmarkManagerGUI(QMainWindow):
     def search_bookmarks(self):
         """Search through bookmarks."""
         self.results_text.append("\n=== Search Bookmarks ===")
-        self.results_text.append(
-            "Search functionality ready for implementation."
-        )
+        self.results_text.append("Search functionality ready for implementation.")
         self.results_text.append("This tool will provide:")
         self.results_text.append("• Full-text search across titles and URLs")
         self.results_text.append("• Category-based filtering")
@@ -377,9 +365,7 @@ class BookmarkManagerGUI(QMainWindow):
     def organize_bookmarks(self):
         """Organize bookmarks by categories and tags."""
         self.results_text.append("\n=== Organize Bookmarks ===")
-        self.results_text.append(
-            "Organization functionality ready for implementation."
-        )
+        self.results_text.append("Organization functionality ready for implementation.")
         self.results_text.append("This tool will provide:")
         self.results_text.append("• Automatic category detection")
         self.results_text.append("• Tag-based organization")
