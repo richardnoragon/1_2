@@ -1303,10 +1303,10 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
         """Open file splitter tool."""
         try:
             from ..utilities.file_operations.file_splitter import (
-                FileSplitterGUI,
+                FileSplitJoinGUI,
             )
 
-            tool = FileSplitterGUI()
+            tool = FileSplitJoinGUI()
             tool.show()
             self._update_status_bar("File Splitter opened")
             self.logger.info("File Splitter tool opened")
@@ -1401,7 +1401,9 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
     def open_network_transfer(self):
         """Open network transfer tool."""
         try:
-            from ..utilities.network.network_transfer import NetworkTransferGUI
+            from src.tools.network.transfer.network_transfer import (
+                NetworkTransferGUI,
+            )
 
             tool = NetworkTransferGUI()
             tool.show()
@@ -1414,7 +1416,9 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
     def open_network_scan(self):
         """Open network scan tool."""
         try:
-            from ..utilities.network.network_scanner import NetworkScannerGUI
+            from ..tools.network.scanner.network_scanner import (
+                NetworkScannerGUI,
+            )
 
             tool = NetworkScannerGUI()
             tool.show()

@@ -84,7 +84,7 @@ def main():
         ("Network Scanner", "src.tools.network.network_scanner", "NetworkScannerGUI"),
         (
             "Network Transfer",
-            "src.tools.network.network_transfer",
+            "src.tools.network.transfer.network_transfer",
             "NetworkTransferGUI",
         ),
         # PDF Tools (testing a few key ones)

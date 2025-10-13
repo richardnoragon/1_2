@@ -18,9 +18,7 @@ def generate_test_summary():
     timestamp = datetime.now().isoformat()
 
     # Read JSON test results
-    json_report_path = (
-        "tests/unit/result_network_scanner_simplified_2025-08-24.json"
-    )
+    json_report_path = "tests/unit/result_network_scanner_simplified_2025-08-24.json"
 
     summary_data = {
         "execution_timestamp": timestamp,
@@ -39,18 +37,10 @@ def generate_test_summary():
 
             summary_data.update(
                 {
-                    "total_tests": test_data.get("summary", {}).get(
-                        "total", 0
-                    ),
-                    "passed_tests": test_data.get("summary", {}).get(
-                        "passed", 0
-                    ),
-                    "failed_tests": test_data.get("summary", {}).get(
-                        "failed", 0
-                    ),
-                    "skipped_tests": test_data.get("summary", {}).get(
-                        "skipped", 0
-                    ),
+                    "total_tests": test_data.get("summary", {}).get("total", 0),
+                    "passed_tests": test_data.get("summary", {}).get("passed", 0),
+                    "failed_tests": test_data.get("summary", {}).get("failed", 0),
+                    "skipped_tests": test_data.get("summary", {}).get("skipped", 0),
                     "execution_duration": test_data.get("duration", 0),
                     "test_outcome": test_data.get("summary", {}).get(
                         "outcome", "unknown"
@@ -163,7 +153,7 @@ python -m pytest tests/unit/test_network_scanner_simplified_2025-08-24.py \\
     --self-contained-html \\
     --json-report \\
     --json-report-file=tests/unit/result_network_scanner_simplified_2025-08-24.json \\
-    --cov=src.utilities.network.network_scanner \\
+    --cov=src.tools.network.scanner.network_scanner \\
     --cov-report=html:tests/unit/result_network_scanner_coverage_simplified_2025-08-24 \\
     --cov-report=term-missing \\
     --durations=5
@@ -192,9 +182,7 @@ def main():
     report_content = create_detailed_report()
 
     # Save the report
-    report_path = (
-        "tests/unit/result_network_scanner_test_summary_2025-08-24.md"
-    )
+    report_path = "tests/unit/result_network_scanner_test_summary_2025-08-24.md"
 
     with open(report_path, "w", encoding="utf-8") as f:
         f.write(report_content)

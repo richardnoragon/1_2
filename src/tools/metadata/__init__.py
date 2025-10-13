@@ -12,16 +12,10 @@ import warnings
 
 # Core metadata utilities
 try:
-    from .image_metadata import *
+    from . import image_metadata as _image_metadata
+    from .image_metadata import *  # noqa: F401,F403
 except ImportError as e:
     warnings.warn(f"Could not import image_metadata: {e}")
-
-try:
-    from .image_metadata_logic import *
-except ImportError as e:
-    warnings.warn(f"Could not import image_metadata_logic: {e}")
-
-__all__ = [
-    # Export all imported symbols
-    # This will be populated by the imported modules
-]
+    __all__ = []
+else:
+    __all__ = getattr(_image_metadata, "__all__", [])

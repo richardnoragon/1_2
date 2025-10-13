@@ -48,7 +48,10 @@ def test_network_transfer() -> bool:
     """Test Network Transfer import."""
 
     return _attempt_import(
-        ("src.tools.network.network_transfer", "NetworkTransferGUI"),
+        (
+            "src.tools.network.transfer.network_transfer",
+            "NetworkTransferGUI",
+        ),
         "Network Transfer",
     )
 

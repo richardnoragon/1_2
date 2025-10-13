@@ -104,7 +104,7 @@ class ToolIntegration(QObject if QT_AVAILABLE else object):
                     "description": "Secure file deletion",
                 },
                 "Network Scanner": {
-                    "module": "src.tools.network.network_scanner",
+                    "module": "src.tools.network.scanner.network_scanner",
                     "class": "NetworkScannerGUI",
                     "category": "Network",
                     "description": "Scan network devices",

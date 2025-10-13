@@ -16,7 +16,7 @@ sys.path.insert(0, str(src_path))
 def create_sample_bookmarks():
     """Create sample bookmarks for demonstration"""
     try:
-        from src.tools.network.bookmark_manager import BookmarkModel
+    from src.tools.network.bookmarks.bookmark_manager import BookmarkModel
 
         model = BookmarkModel()
 
@@ -112,8 +112,8 @@ def create_sample_bookmarks():
 def launch_bookmark_manager():
     """Launch the bookmark manager GUI"""
     try:
-        from PyQt5.QtWidgets import QApplication
-        from src.tools.network.bookmark_manager import BookmarkManagerGUI
+    from PyQt5.QtWidgets import QApplication
+    from src.tools.network.bookmarks.bookmark_manager import BookmarkManagerGUI
 
         # Create application
         app = QApplication.instance()

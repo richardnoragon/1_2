@@ -27,7 +27,7 @@ from pathlib import Path
 # Test configuration
 TEST_CONFIG = {
     "test_file": "test_office_meta_data_editor_2025-08-24.py",
-    "target_module": "src.tools.metadata.office_meta_data_editor",
+    "target_module": "src.tools.metadata.office_metadata.office_meta_data_editor",
     "output_dir": "tests/unit",
     "coverage_threshold": 85,
     "timeout": 300,  # 5 minutes
@@ -106,9 +106,7 @@ def run_tests():
     start_time = time.time()
 
     # Construct pytest command
-    test_file = os.path.join(
-        TEST_CONFIG["output_dir"], TEST_CONFIG["test_file"]
-    )
+    test_file = os.path.join(TEST_CONFIG["output_dir"], TEST_CONFIG["test_file"])
 
     pytest_args = [
         sys.executable,
@@ -203,9 +201,7 @@ def parse_test_results():
             print(f"  ✓ Parsed JSON report: {results_summary['tests']}")
 
         except Exception as e:
-            results_summary["errors"].append(
-                f"Failed to parse JSON report: {e}"
-            )
+            results_summary["errors"].append(f"Failed to parse JSON report: {e}")
             print(f"  ✗ JSON report parsing error: {e}")
 
     # Parse coverage report if available
@@ -226,9 +222,7 @@ def parse_test_results():
                 "coverage_percent": totals.get("percent_covered", 0),
                 "branches_covered": totals.get("covered_branches", 0),
                 "branches_total": totals.get("num_branches", 0),
-                "branch_coverage_percent": totals.get(
-                    "percent_covered_branches", 0
-                ),
+                "branch_coverage_percent": totals.get("percent_covered_branches", 0),
             }
 
             print(
@@ -236,9 +230,7 @@ def parse_test_results():
             )
 
         except Exception as e:
-            results_summary["errors"].append(
-                f"Failed to parse coverage report: {e}"
-            )
+            results_summary["errors"].append(f"Failed to parse coverage report: {e}")
             print(f"  ✗ Coverage report parsing error: {e}")
 
     return results_summary
@@ -258,9 +250,7 @@ def generate_summary_report(test_results, results_summary):
             f.write("OFFICE METADATA EDITOR UNIT TEST EXECUTION SUMMARY\n")
             f.write("=" * 80 + "\n\n")
 
-            f.write(
-                f"Test Execution Timestamp: {results_summary['timestamp']}\n"
-            )
+            f.write(f"Test Execution Timestamp: {results_summary['timestamp']}\n")
             f.write(f"Test File: {TEST_CONFIG['test_file']}\n")
             f.write(f"Target Module: {TEST_CONFIG['target_module']}\n")
             f.write(f"Test Framework: pytest with comprehensive reporting\n\n")
@@ -308,19 +298,14 @@ def generate_summary_report(test_results, results_summary):
                 f.write("-" * 50 + "\n")
                 f.write(f"Lines Covered: {coverage['lines_covered']}\n")
                 f.write(f"Total Lines: {coverage['lines_total']}\n")
-                f.write(
-                    f"Line Coverage: {coverage['coverage_percent']:.1f}%\n"
-                )
+                f.write(f"Line Coverage: {coverage['coverage_percent']:.1f}%\n")
                 f.write(f"Branches Covered: {coverage['branches_covered']}\n")
                 f.write(f"Total Branches: {coverage['branches_total']}\n")
                 f.write(
                     f"Branch Coverage: {coverage['branch_coverage_percent']:.1f}%\n"
                 )
 
-                if (
-                    coverage["coverage_percent"]
-                    >= TEST_CONFIG["coverage_threshold"]
-                ):
+                if coverage["coverage_percent"] >= TEST_CONFIG["coverage_threshold"]:
                     f.write("Coverage Status: ✅ MEETS THRESHOLD\n")
                 else:
                     f.write("Coverage Status: ⚠️ BELOW THRESHOLD\n")

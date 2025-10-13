@@ -1,32 +1,21 @@
-"""
-File Splitter GUI Wrapper
+"""Graphical interface for RFU file splitter and joiner.
 
-This module provides a GUI wrapper for the enhanced file splitter l    def __init__(self):
-        try:
-            super().__init__(
-                title="File Split & Join - Richard's File Utilities",
-                window_type="file_operations"
-            )
-        except TypeError:
-            super().__init__()
-            self.setWindowTitle("File Split & Join - Richard's File Utilities")
-maintaining compatibility with the existing tools interface while using
-the comprehensive utilities implementation.
+Provides the enhanced Qt-based interface for splitting large files into
+manageable chunks and joining them back together while integrating with the
+shared StandardWindow framework, logging, and configuration helpers.
 """
 
 import os
 import sys
-from pathlib import Path
 from typing import Optional
 
 try:
-    from PyQt5.QtCore import Qt, QThread, pyqtSignal
+    from PyQt5.QtCore import QThread, pyqtSignal
     from PyQt5.QtWidgets import (
         QApplication,
         QFileDialog,
         QGridLayout,
         QGroupBox,
-        QHBoxLayout,
         QLabel,
         QLineEdit,
         QMessageBox,
@@ -50,7 +39,10 @@ if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
 # Import enhanced file splitter logic
-from ..file_splitter_logic import FileSplitterError, FileSplitterLogic
+from .file_splitter_logic import (  # noqa: E402
+    FileSplitterError,
+    FileSplitterLogic,
+)
 
 # Import GUI framework
 try:
@@ -138,9 +130,7 @@ class FileSplitJoinGUI(StandardWindow):
         """Setup tool-specific menu callbacks."""
         if hasattr(self, "menu_manager"):
             # Register tool-specific callbacks
-            self.menu_manager.register_callback(
-                "new_operation", self.reset_form
-            )
+            self.menu_manager.register_callback("new_operation", self.reset_form)
             self.menu_manager.register_callback("show_help", self.show_help)
 
     def init_ui(self):
@@ -210,9 +200,7 @@ class FileSplitJoinGUI(StandardWindow):
         split_layout.addWidget(self.split_output_edit, 2, 1)
 
         self.browse_split_output_button = QPushButton("Browse")
-        self.browse_split_output_button.clicked.connect(
-            self.browse_split_output
-        )
+        self.browse_split_output_button.clicked.connect(self.browse_split_output)
         split_layout.addWidget(self.browse_split_output_button, 2, 2)
 
         # Split button
@@ -248,9 +236,7 @@ class FileSplitJoinGUI(StandardWindow):
         # First part file selection
         join_layout.addWidget(QLabel("First Part File:"), 0, 0)
         self.join_file_edit = QLineEdit()
-        self.join_file_edit.setPlaceholderText(
-            "Select first part file (.part001)..."
-        )
+        self.join_file_edit.setPlaceholderText("Select first part file (.part001)...")
         join_layout.addWidget(self.join_file_edit, 0, 1)
 
         self.browse_join_button = QPushButton("Browse")
@@ -320,9 +306,7 @@ class FileSplitJoinGUI(StandardWindow):
 
     def browse_split_output(self):
         """Browse for split output directory."""
-        directory = QFileDialog.getExistingDirectory(
-            self, "Select Output Directory"
-        )
+        directory = QFileDialog.getExistingDirectory(self, "Select Output Directory")
         if directory:
             self.split_output_edit.setText(directory)
 
@@ -349,9 +333,7 @@ class FileSplitJoinGUI(StandardWindow):
         """Start file splitting operation."""
         input_file = self.split_file_edit.text().strip()
         if not input_file or not os.path.exists(input_file):
-            QMessageBox.warning(
-                self, "Error", "Please select a valid input file."
-            )
+            QMessageBox.warning(self, "Error", "Please select a valid input file.")
             return
 
         chunk_size = self.chunk_size_spin.value()
@@ -380,9 +362,7 @@ class FileSplitJoinGUI(StandardWindow):
         """Start file joining operation."""
         first_part = self.join_file_edit.text().strip()
         if not first_part or not os.path.exists(first_part):
-            QMessageBox.warning(
-                self, "Error", "Please select a valid first part file."
-            )
+            QMessageBox.warning(self, "Error", "Please select a valid first part file.")
             return
 
         output_file = self.join_output_edit.text().strip() or None

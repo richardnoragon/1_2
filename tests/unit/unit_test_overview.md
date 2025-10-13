@@ -563,7 +563,7 @@
 
 ## Metadata Utilities
 
-#### [`image_metadata_logic.py`](../../src/utilities/metadata/image_metadata_logic.py)
+#### [`image_metadata_logic.py`](../../src/tools/metadata/image_metadata/image_metadata_logic.py)
 
 **Status:** ✅ **Testing Available**  
 **Test File:** [`test_edit_image_metadata.py`](../test_edit_image_metadata.py)  

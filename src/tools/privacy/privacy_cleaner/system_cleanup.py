@@ -126,7 +126,9 @@ class SystemCleanupGUI(SystemDiagnosticsGUI):
                 if TempFilesCleaner:
                     self.cleanup_tools["temp_files"] = TempFilesCleaner()
 
-                self.logger.info(f"Initialized {len(self.cleanup_tools)} cleanup tools")
+                self.logger.info(
+                    f"Initialized {len(self.cleanup_tools)} cleanup tools"
+                )
             else:
                 self.logger.warning("Cleanup tools not available")
 
@@ -203,7 +205,9 @@ class SystemCleanupGUI(SystemDiagnosticsGUI):
             self.results_text = QTextEdit()
             self.results_text.setReadOnly(True)
             self.results_text.setMaximumHeight(200)
-            self.results_text.setPlainText("No cleanup operations performed yet.")
+            self.results_text.setPlainText(
+                "No cleanup operations performed yet."
+            )
             results_layout.addWidget(self.results_text)
 
             layout.addWidget(results_group)
@@ -240,7 +244,9 @@ class SystemCleanupGUI(SystemDiagnosticsGUI):
                 return
 
             # Update results
-            self.results_text.setPlainText("Starting temporary files cleanup...")
+            self.results_text.setPlainText(
+                "Starting temporary files cleanup..."
+            )
 
             # Get the temp cleaner tool
             temp_tool = self.cleanup_tools["temp_files"]
@@ -259,7 +265,9 @@ class SystemCleanupGUI(SystemDiagnosticsGUI):
 
             # Display results
             if result.success:
-                results_text = f"Temporary files cleanup completed successfully!\n\n"
+                results_text = (
+                    f"Temporary files cleanup completed successfully!\n\n"
+                )
                 results_text += f"Files deleted: {result.items_processed}\n"
                 results_text += (
                     f"Space freed: {self._format_size(result.space_freed)}\n"
@@ -271,7 +279,9 @@ class SystemCleanupGUI(SystemDiagnosticsGUI):
                     for error in result.errors:
                         results_text += f"• {error}\n"
             else:
-                results_text = f"Temporary files cleanup failed:\n{result.message}\n\n"
+                results_text = (
+                    f"Temporary files cleanup failed:\n{result.message}\n\n"
+                )
                 if result.errors:
                     results_text += "Errors:\n"
                     for error in result.errors:

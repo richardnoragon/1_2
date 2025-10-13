@@ -69,7 +69,9 @@ def test_office_metadata_editor():
     """Test Office Metadata Editor menu integration."""
     print("📄 Testing Office Metadata Editor...")
     try:
-        from src.utilities.metadata.office_meta_data_editor import OfficeMetaDataEditorGUI
+        from src.tools.metadata.office_metadata.office_meta_data_editor import (
+            OfficeMetaDataEditorGUI,
+        )
         
         app = QApplication.instance()
         if app is None:
@@ -316,7 +318,9 @@ def create_demo_launcher():
                 
         def launch_metadata_editor(self):
             try:
-                from src.utilities.metadata.office_meta_data_editor import OfficeMetaDataEditorGUI
+                from src.tools.metadata.office_metadata.office_meta_data_editor import (
+                    OfficeMetaDataEditorGUI,
+                )
                 self.metadata_tool = OfficeMetaDataEditorGUI()
                 self.metadata_tool.show()
             except Exception as e:

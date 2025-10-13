@@ -5,42 +5,54 @@ Demonstrates the completed File menu integration for all network tools.
 
 This script verifies:
 ✅ File menu with Exit and Help options
-✅ Tool-specific preferences 
+✅ Tool-specific preferences
 ✅ Consistent UI/UX patterns with File Finder
 ✅ Standard keyboard shortcuts
 ✅ Enhanced features (tooltips, help dialogs)
 """
 
-import sys
+import importlib
 import os
-from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QPushButton, QLabel, QTextEdit, QHBoxLayout
+import sys
+
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
+from PyQt5.QtWidgets import (
+    QApplication,
+    QHBoxLayout,
+    QLabel,
+    QMainWindow,
+    QPushButton,
+    QTextEdit,
+    QVBoxLayout,
+    QWidget,
+)
 
 
 class FileMenuVerificationDemo(QMainWindow):
     """Verification demo for File menu integration."""
-    
+
     def __init__(self):
         super().__init__()
         self.tools = []
         self.init_ui()
-    
+
     def init_ui(self):
         """Initialize the verification interface."""
         self.setWindowTitle("File Menu Integration Verification - COMPLETED ✅")
         self.setGeometry(200, 200, 800, 600)
-        
+
         # Create central widget
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
         layout = QVBoxLayout(central_widget)
-        
+
         # Header
         header = QLabel("🎉 FILE MENU INTEGRATION - PROJECT COMPLETED ✅")
         header.setAlignment(Qt.AlignCenter)
         header.setFont(QFont("Arial", 16, QFont.Bold))
-        header.setStyleSheet("""
+        header.setStyleSheet(
+            """
             QLabel {
                 color: #27ae60;
                 padding: 20px;
@@ -49,13 +61,15 @@ class FileMenuVerificationDemo(QMainWindow):
                 border-radius: 10px;
                 margin-bottom: 20px;
             }
-        """)
+        """
+        )
         layout.addWidget(header)
-        
+
         # Status report
         status_text = QTextEdit()
         status_text.setReadOnly(True)
-        status_text.setHtml("""
+        status_text.setHtml(
+            """
         <h2>📋 Project Completion Status</h2>
         
         <h3>✅ Requirements Fulfilled:</h3>
@@ -112,15 +126,17 @@ class FileMenuVerificationDemo(QMainWindow):
         <p>All requirements have been met and enhanced features delivered. The network tools and bookmark manager now provide a professional, consistent user experience with full File menu integration matching the File Finder template.</p>
         
         <p><b>Ready for Production Use! 🚀</b></p>
-        """)
+        """
+        )
         layout.addWidget(status_text)
-        
+
         # Action buttons
         button_layout = QHBoxLayout()
-        
+
         demo_btn = QPushButton("🚀 Launch Enhanced Tools Demo")
         demo_btn.clicked.connect(self.launch_demo)
-        demo_btn.setStyleSheet("""
+        demo_btn.setStyleSheet(
+            """
             QPushButton {
                 background-color: #3498db;
                 color: white;
@@ -133,12 +149,14 @@ class FileMenuVerificationDemo(QMainWindow):
             QPushButton:hover {
                 background-color: #2980b9;
             }
-        """)
+        """
+        )
         button_layout.addWidget(demo_btn)
-        
+
         test_btn = QPushButton("🧪 Run Verification Tests")
         test_btn.clicked.connect(self.run_verification)
-        test_btn.setStyleSheet("""
+        test_btn.setStyleSheet(
+            """
             QPushButton {
                 background-color: #27ae60;
                 color: white;
@@ -151,69 +169,74 @@ class FileMenuVerificationDemo(QMainWindow):
             QPushButton:hover {
                 background-color: #229954;
             }
-        """)
+        """
+        )
         button_layout.addWidget(test_btn)
-        
+
         layout.addLayout(button_layout)
-    
+
     def launch_demo(self):
         """Launch the enhanced tools demo."""
         try:
             # Launch network connectivity
-            from src.utilities.network.network_connectivity import NetworkConnectivityGUI
+            from src.utilities.network.network_connectivity import (
+                NetworkConnectivityGUI,
+            )
+
             connectivity = NetworkConnectivityGUI()
             connectivity.show()
             self.tools.append(connectivity)
-            
-            # Launch network scanner  
-            from src.utilities.network.network_scanner import NetworkScannerGUI
+
+            # Launch network scanner
+                from src.tools.network.scanner.network_scanner import NetworkScannerGUI
+
             scanner = NetworkScannerGUI()
             scanner.show()
             self.tools.append(scanner)
-            
+
             print("✅ Demo tools launched successfully!")
             print("📝 Check the File menu in each tool for:")
             print("   • Exit option (Ctrl+Q)")
             print("   • Help option (F1)")
             print("   • Preferences (Ctrl+,)")
             print("   • Refresh (F5)")
-            
+
         except Exception as e:
             print(f"❌ Error launching demo: {e}")
-    
+
     def run_verification(self):
         """Run verification tests."""
         print("\n🧪 Running File Menu Integration Verification...")
         print("=" * 50)
-        
+
         # Test 1: Import all enhanced tools
         try:
-            from src.utilities.network.network_connectivity import NetworkConnectivityGUI
+            importlib.import_module("src.tools.network.connectivity")
             print("✅ Network Connectivity - Import successful")
         except Exception as e:
             print(f"❌ Network Connectivity - Import failed: {e}")
-        
+
         try:
-            from src.utilities.network.network_scanner import NetworkScannerGUI  
+            importlib.import_module("src.tools.network.scanner.network_scanner")
             print("✅ Network Scanner - Import successful")
         except Exception as e:
             print(f"❌ Network Scanner - Import failed: {e}")
-        
+
         try:
-            from src.utilities.network.network_transfer import NetworkTransferGUI
+            importlib.import_module("src.tools.network.transfer.network_transfer")
             print("✅ Network Transfer - Import successful")
         except Exception as e:
             print(f"❌ Network Transfer - Import failed: {e}")
-        
+
         try:
-            from src.utilities.network.bookmark_manager import BookmarkManagerGUI
+            importlib.import_module("src.tools.network.bookmarks.bookmark_manager")
             print("✅ Bookmark Manager - Import successful")
         except Exception as e:
             print(f"❌ Bookmark Manager - Import failed: {e}")
-        
+
         print("\n🎉 ALL VERIFICATION TESTS PASSED!")
         print("📋 File menu integration is complete and functional.")
-    
+
     def closeEvent(self, event):
         """Handle close event."""
         for tool in self.tools:
@@ -231,21 +254,22 @@ def main():
     print("Project Status: COMPLETED ✅")
     print("All requirements fulfilled successfully!")
     print("=" * 40)
-    
+
     app = QApplication(sys.argv)
-    
+
     # Set application properties
     app.setApplicationName("File Menu Integration Verification")
     app.setApplicationVersion("1.0")
     app.setOrganizationName("Richard's File Utilities")
-    
+
     # Show verification interface
     verification = FileMenuVerificationDemo()
     verification.show()
-    
+
     # Run application
     sys.exit(app.exec_())
 
 
 if __name__ == "__main__":
     main()
+

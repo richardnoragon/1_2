@@ -10,29 +10,39 @@ This demo showcases:
 - Menu-driven access to functionality
 """
 
-import sys
+import importlib
 import os
-from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QPushButton, QLabel, QMessageBox
+import sys
+from PyQt5.QtWidgets import (
+    QApplication,
+    QMainWindow,
+    QVBoxLayout,
+    QWidget,
+    QPushButton,
+    QLabel,
+    QMessageBox,
+)
 from PyQt5.QtCore import Qt
 
 
 def demo_network_connectivity():
     """Demo the enhanced Network Connectivity tool."""
     try:
-        from src.utilities.network.network_connectivity import NetworkConnectivityGUI
-        
+    module = importlib.import_module("src.tools.network.connectivity")
+        NetworkConnectivityGUI = getattr(module, "NetworkConnectivityGUI")
+
         app = QApplication.instance()
         if app is None:
             app = QApplication(sys.argv)
-        
+
         # Create and show the tool
-        tool = NetworkConnectivityGUI()
-        tool.show()
-        
+    tool = NetworkConnectivityGUI()
+    tool.show()
+
         # Show demo message
         QMessageBox.information(
-            tool, 
-            "Network Connectivity Demo", 
+            tool,
+            "Network Connectivity Demo",
             "Enhanced Network Connectivity Tool Features:\n\n"
             "✓ File menu with Exit and Help options\n"
             "✓ Preferences accessible via File → Preferences\n"
@@ -43,10 +53,10 @@ def demo_network_connectivity():
             "• Ctrl+Q to exit\n"
             "• F5 to refresh\n"
             "• File → Preferences for settings"
-        )
-        
-        return tool
-        
+    )
+
+    return tool
+
     except Exception as e:
         print(f"Error launching Network Connectivity: {e}")
         return None
@@ -55,20 +65,23 @@ def demo_network_connectivity():
 def demo_network_scanner():
     """Demo the enhanced Network Scanner tool."""
     try:
-        from src.utilities.network.network_scanner import NetworkScannerGUI
-        
+        module = importlib.import_module(
+            "src.tools.network.scanner.network_scanner"
+        )
+        NetworkScannerGUI = getattr(module, "NetworkScannerGUI")
+
         app = QApplication.instance()
         if app is None:
             app = QApplication(sys.argv)
-        
+
         # Create and show the tool
-        tool = NetworkScannerGUI()
-        tool.show()
-        
+    tool = NetworkScannerGUI()
+    tool.show()
+
         # Show demo message
         QMessageBox.information(
-            tool, 
-            "Network Scanner Demo", 
+            tool,
+            "Network Scanner Demo",
             "Enhanced Network Scanner Tool Features:\n\n"
             "✓ File menu with Exit and Help options\n"
             "✓ Preferences accessible via File → Preferences\n"
@@ -80,10 +93,10 @@ def demo_network_scanner():
             "• F5 to refresh\n"
             "• File → Preferences for settings\n"
             "• Quick scan presets for common tasks"
-        )
-        
-        return tool
-        
+    )
+
+    return tool
+
     except Exception as e:
         print(f"Error launching Network Scanner: {e}")
         return None
@@ -92,20 +105,21 @@ def demo_network_scanner():
 def demo_network_transfer():
     """Demo the enhanced Network Transfer tool."""
     try:
-        from src.utilities.network.network_transfer import NetworkTransferGUI
-        
+        module = importlib.import_module("src.tools.network.transfer.network_transfer")
+        NetworkTransferGUI = getattr(module, "NetworkTransferGUI")
+
         app = QApplication.instance()
         if app is None:
             app = QApplication(sys.argv)
-        
+
         # Create and show the tool
-        tool = NetworkTransferGUI()
-        tool.show()
-        
+    tool = NetworkTransferGUI()
+    tool.show()
+
         # Show demo message
         QMessageBox.information(
-            tool, 
-            "Network Transfer Demo", 
+            tool,
+            "Network Transfer Demo",
             "Enhanced Network Transfer Tool Features:\n\n"
             "✓ File menu with Exit and Help options\n"
             "✓ Preferences accessible via File → Preferences\n"
@@ -118,10 +132,10 @@ def demo_network_transfer():
             "• F5 to refresh\n"
             "• File → Preferences for settings\n"
             "• File → Export/Import for settings transfer"
-        )
-        
-        return tool
-        
+    )
+
+    return tool
+
     except Exception as e:
         print(f"Error launching Network Transfer: {e}")
         return None
@@ -130,20 +144,23 @@ def demo_network_transfer():
 def demo_bookmark_manager():
     """Demo the enhanced Bookmark Manager tool."""
     try:
-        from src.utilities.network.bookmark_manager import BookmarkManagerGUI
-        
+        module = importlib.import_module(
+            "src.tools.network.bookmarks.bookmark_manager"
+        )
+        BookmarkManagerGUI = getattr(module, "BookmarkManagerGUI")
+
         app = QApplication.instance()
         if app is None:
             app = QApplication(sys.argv)
-        
+
         # Create and show the tool
-        tool = BookmarkManagerGUI()
-        tool.show()
-        
+    tool = BookmarkManagerGUI()
+    tool.show()
+
         # Show demo message
         QMessageBox.information(
-            tool, 
-            "Bookmark Manager Demo", 
+            tool,
+            "Bookmark Manager Demo",
             "Enhanced Bookmark Manager Tool Features:\n\n"
             "✓ File menu with Exit and Help options\n"
             "✓ Preferences accessible via File → Preferences\n"
@@ -156,10 +173,10 @@ def demo_bookmark_manager():
             "• F5 to refresh\n"
             "• File → Preferences for settings\n"
             "• File → Export/Import for bookmark transfer"
-        )
-        
-        return tool
-        
+    )
+
+    return tool
+
     except Exception as e:
         print(f"Error launching Bookmark Manager: {e}")
         return None
@@ -308,3 +325,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

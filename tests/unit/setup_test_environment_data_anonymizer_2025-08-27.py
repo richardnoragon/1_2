@@ -186,7 +186,7 @@ class TestEnvironmentSetup:
         # Try to import the module
         try:
             sys.path.insert(0, str(self.project_root))
-            import src.tools.privacy.data_anonymizer
+            import src.tools.privacy.anonymizer.data_anonymizer
 
             print("✓ Target module can be imported")
             return True
@@ -228,7 +228,7 @@ def run_tests():
         '--self-contained-html',
         '--json-report',
         '--json-report-file=result_data_anonymizer_report_2025-08-27.json',
-        '--cov=src.utilities.privacy.data_anonymizer',
+        '--cov=src.tools.privacy.anonymizer.data_anonymizer',
         '--cov-report=html:result_data_anonymizer_coverage_2025-08-27',
         '--cov-report=json:result_data_anonymizer_coverage_2025-08-27.json'
     ]

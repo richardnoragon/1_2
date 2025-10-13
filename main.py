@@ -2456,7 +2456,7 @@ try:
         def open_office_metadata(self):
             self.launch_tool(
                 "Office Metadata Editor",
-                "src.tools.metadata.office_meta_data_editor",
+                "src.tools.metadata.office_metadata.office_meta_data_editor",
                 "OfficeMetaDataEditorGUI",
             )
 
@@ -2502,21 +2502,21 @@ try:
         def open_network_scanner(self):
             self.launch_tool(
                 "Network Scanner",
-                "src.tools.network.network_scanner",
+                "src.tools.network.scanner.network_scanner",
                 "NetworkScannerGUI",
             )
 
         def open_network_transfer(self):
             self.launch_tool(
                 "Network Transfer",
-                "src.tools.network.network_transfer",
+                "src.tools.network.transfer.network_transfer",
                 "NetworkTransferGUI",
             )
 
         def open_bookmark_manager(self):
             self.launch_tool(
                 "Bookmark Manager",
-                "src.tools.network.bookmarks",
+                "src.tools.network.bookmarks.bookmark_manager",
                 "BookmarkManagerGUI",
             )
 
@@ -2532,7 +2532,7 @@ try:
         def open_data_anonymizer(self):
             self.launch_tool(
                 "Data Anonymizer",
-                "src.tools.privacy.data_anonymizer",
+                "src.tools.privacy.anonymizer.data_anonymizer",
                 "DataAnonymizerGUI",
             )
 
@@ -2555,7 +2555,7 @@ try:
         def open_system_cleanup(self):
             self.launch_tool(
                 "System Cleanup",
-                "src.tools.system.system_cleanup",
+                "src.tools.privacy.privacy_cleaner.system_cleanup",
                 "SystemCleanupGUI",
             )
 

@@ -28,7 +28,7 @@ class TestDataAnonymizerModule:
     def test_module_exists(self):
         """Test that the data_anonymizer module can be imported."""
         try:
-            import src.tools.privacy.data_anonymizer as data_anonymizer
+            import src.tools.privacy.anonymizer.data_anonymizer as data_anonymizer
             assert data_anonymizer is not None
         except ImportError as e:
             pytest.skip(f"Module import failed: {e}")
@@ -36,7 +36,7 @@ class TestDataAnonymizerModule:
     def test_module_has_main_function(self):
         """Test that the module has a main function."""
         try:
-            import src.tools.privacy.data_anonymizer as data_anonymizer
+            import src.tools.privacy.anonymizer.data_anonymizer as data_anonymizer
             assert hasattr(data_anonymizer, 'main')
             assert callable(data_anonymizer.main)
         except ImportError as e:
@@ -45,7 +45,7 @@ class TestDataAnonymizerModule:
     def test_module_has_docstring(self):
         """Test that the module has a proper docstring."""
         try:
-            import src.tools.privacy.data_anonymizer as data_anonymizer
+            import src.tools.privacy.anonymizer.data_anonymizer as data_anonymizer
             assert data_anonymizer.__doc__ is not None
             assert len(data_anonymizer.__doc__.strip()) > 0
             assert "Data Anonymizer" in data_anonymizer.__doc__
@@ -55,7 +55,7 @@ class TestDataAnonymizerModule:
     def test_module_has_data_anonymizer_gui(self):
         """Test that the module has DataAnonymizerGUI available."""
         try:
-            import src.tools.privacy.data_anonymizer as data_anonymizer
+            import src.tools.privacy.anonymizer.data_anonymizer as data_anonymizer
             assert hasattr(data_anonymizer, 'DataAnonymizerGUI')
         except ImportError as e:
             pytest.skip(f"Module import failed: {e}")
@@ -67,7 +67,7 @@ class TestDataAnonymizerGUI:
     def test_data_anonymizer_gui_instantiation(self):
         """Test that DataAnonymizerGUI can be instantiated."""
         try:
-            import src.tools.privacy.data_anonymizer as data_anonymizer
+            import src.tools.privacy.anonymizer.data_anonymizer as data_anonymizer
             gui = data_anonymizer.DataAnonymizerGUI()
             assert gui is not None
         except ImportError as e:
@@ -79,7 +79,7 @@ class TestDataAnonymizerGUI:
     def test_data_anonymizer_gui_has_show_method(self):
         """Test that DataAnonymizerGUI has a show method."""
         try:
-            import src.tools.privacy.data_anonymizer as data_anonymizer
+            import src.tools.privacy.anonymizer.data_anonymizer as data_anonymizer
             gui = data_anonymizer.DataAnonymizerGUI()
             assert hasattr(gui, 'show')
             assert callable(gui.show)
@@ -96,7 +96,7 @@ class TestMainFunction:
     def test_main_function_exists(self):
         """Test that main function exists and is callable."""
         try:
-            import src.tools.privacy.data_anonymizer as data_anonymizer
+            import src.tools.privacy.anonymizer.data_anonymizer as data_anonymizer
             assert hasattr(data_anonymizer, 'main')
             assert callable(data_anonymizer.main)
         except ImportError as e:
@@ -105,7 +105,7 @@ class TestMainFunction:
     def test_main_function_with_import_error(self):
         """Test main function behavior when PyQt5 is not available."""
         try:
-            import src.tools.privacy.data_anonymizer as data_anonymizer
+            import src.tools.privacy.anonymizer.data_anonymizer as data_anonymizer
 
             # Mock sys.argv to avoid issues
             original_argv = sys.argv
@@ -133,7 +133,7 @@ class TestImportMechanisms:
     def test_privacy_tools_import_attempt(self):
         """Test that the module attempts to import privacy tools."""
         try:
-            import src.tools.privacy.data_anonymizer as data_anonymizer
+            import src.tools.privacy.anonymizer.data_anonymizer as data_anonymizer
 
             # The module should have attempted imports and have DataAnonymizerGUI defined
             assert hasattr(data_anonymizer, 'DataAnonymizerGUI')
@@ -144,7 +144,7 @@ class TestImportMechanisms:
         """Test that the module handles import errors gracefully."""
         # This test verifies that the module can be imported even when dependencies are missing
         try:
-            import src.tools.privacy.data_anonymizer as data_anonymizer
+            import src.tools.privacy.anonymizer.data_anonymizer as data_anonymizer
 
             # If we get here, the module handled import errors gracefully
             assert True
@@ -159,7 +159,7 @@ class TestErrorHandling:
     def test_module_handles_missing_dependencies(self):
         """Test that the module handles missing dependencies properly."""
         try:
-            import src.tools.privacy.data_anonymizer as data_anonymizer
+            import src.tools.privacy.anonymizer.data_anonymizer as data_anonymizer
 
             # Try to create GUI instance - should handle missing dependencies
             try:

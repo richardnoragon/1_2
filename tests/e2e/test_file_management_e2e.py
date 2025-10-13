@@ -31,10 +31,11 @@ try:
     from src.tools.file_management.advanced_catalog.catalog_tool import (
         CatalogWindow,
     )
-    from src.tools.file_management.file_finder import FileFinderGUI
+    from src.tools.file_management.finder.file_finder import FileFinderWindow
     from src.tools.file_management.organizer.organize import OrganizeWindow
     from src.tools.file_operations.rename import RenameWindow
 
+    FileFinderGUI = FileFinderWindow
     IMPORTS_SUCCESSFUL = True
 except ImportError as e:
     print(f"Import error: {e}")

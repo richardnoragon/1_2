@@ -2977,7 +2977,7 @@ class MultiPaneFileExplorer(QMainWindow):
     def _try_legacy_imports(self, tool_name, class_name):
         """Try legacy import paths based on tool name."""
         legacy_mappings = {
-            "File Finder": "src.utilities.file_management.file_finder",
+            "File Finder": "src.tools.file_management.finder.file_finder",
             "Size Analyzer": "src.utilities.analysis.size_analyzer",
             "Duplicate Finder": "src.utilities.analysis.duplicate_finder_app",
             "Encrypt/Decrypt": "src.utilities.security.en_and_decrypt",

@@ -28,9 +28,7 @@ def run_network_scanner_tests():
     html_report = "tests/unit/result_network_scanner_2025-08-24.html"
     json_report = "tests/unit/result_network_scanner_2025-08-24.json"
     coverage_html = "tests/unit/result_network_scanner_coverage_2025-08-24"
-    coverage_json = (
-        "tests/unit/result_network_scanner_coverage_2025-08-24.json"
-    )
+    coverage_json = "tests/unit/result_network_scanner_coverage_2025-08-24.json"
     text_report = "tests/unit/result_network_scanner_2025-08-24.txt"
 
     print(f"=== Network Scanner Test Execution ===")
@@ -40,6 +38,8 @@ def run_network_scanner_tests():
     print("=" * 50)
 
     # Pytest command with comprehensive reporting
+    coverage_target = "src.tools.network.scanner.network_scanner"
+
     pytest_cmd = [
         sys.executable,
         "-m",
@@ -51,7 +51,7 @@ def run_network_scanner_tests():
         "--self-contained-html",
         "--json-report",
         f"--json-report-file={json_report}",
-        "--cov=src.utilities.network.network_scanner",
+        f"--cov={coverage_target}",
         f"--cov-report=html:{coverage_html}",
         "--cov-report=term-missing",
         f"--cov-report=json:{coverage_json}",
@@ -73,7 +73,7 @@ def run_network_scanner_tests():
 
         # Write detailed text report
         with open(text_report, "w", encoding="utf-8") as f:
-            f.write(f"Network Scanner Test Execution Report\n")
+            f.write("Network Scanner Test Execution Report\n")
             f.write(f"Generated: {timestamp}\n")
             f.write("=" * 60 + "\n\n")
 
@@ -116,23 +116,22 @@ def run_network_scanner_tests():
                 with open(json_report, "r") as f:
                     json_data = json.load(f)
 
-                print(f"\nTEST SUMMARY:")
-                print(
-                    f"Total Tests: {json_data.get('summary', {}).get('total', 'N/A')}"
-                )
-                print(
-                    f"Passed: {json_data.get('summary', {}).get('passed', 'N/A')}"
-                )
-                print(
-                    f"Failed: {json_data.get('summary', {}).get('failed', 'N/A')}"
-                )
+                print("\nTEST SUMMARY:")
+                summary = json_data.get("summary", {})
+                total_tests = summary.get("total", "N/A")
+                passed_tests = summary.get("passed", "N/A")
+                failed_tests = summary.get("failed", "N/A")
+
+                print(f"Total Tests: {total_tests}")
+                print(f"Passed: {passed_tests}")
+                print(f"Failed: {failed_tests}")
                 print(f"Duration: {json_data.get('duration', 'N/A')} seconds")
 
             except json.JSONDecodeError:
                 print("Warning: Could not parse JSON report")
 
         # Report file locations
-        print(f"\nREPORT FILES GENERATED:")
+        print("\nREPORT FILES GENERATED:")
         print(f"HTML Report: {html_report}")
         print(f"JSON Report: {json_report}")
         print(f"Text Report: {text_report}")

@@ -1,11 +1,23 @@
-"""
-Image Metadata Editor GUI Package
+"""Image metadata integration package.
 
-This package provides a comprehensive GUI wrapper for image metadata
-operations, using the enhanced utilities logic while maintaining
-compatibility with the existing tools interface.
+Exports both the interactive GUI and the core logic module from a single
+location to keep imports consistent across the codebase.
 """
 
 from .gui import ImageMetadataEditorGUI
+from .image_metadata_logic import (
+    ImageMetadataLogic,
+    ImageMetadataWorker,
+    format_exif_value,
+    get_tag_name,
+    parse_exif_value,
+)
 
-__all__ = ["ImageMetadataEditorGUI"]
+__all__ = [
+    "ImageMetadataEditorGUI",
+    "ImageMetadataLogic",
+    "ImageMetadataWorker",
+    "format_exif_value",
+    "get_tag_name",
+    "parse_exif_value",
+]

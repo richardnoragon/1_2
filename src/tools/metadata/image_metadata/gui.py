@@ -56,7 +56,7 @@ except ImportError:
     HAS_STANDARD_WINDOW = False
 
 # Import enhanced image metadata logic
-from ..image_metadata_logic import ImageMetadataLogic, format_exif_value
+from .image_metadata_logic import ImageMetadataLogic, format_exif_value  # noqa: E402
 
 
 class ImageMetadataWorkerThread(QThread):
@@ -132,14 +132,10 @@ class ImageMetadataEditorGUI(StandardWindow):
     def __init__(self):
         # Initialize with proper window title based on available base class
         if HAS_STANDARD_WINDOW:
-            super().__init__(
-                title="Image Metadata Editor - Richard's File Utilities"
-            )
+            super().__init__(title="Image Metadata Editor - Richard's File Utilities")
         else:
             super().__init__()
-            self.setWindowTitle(
-                "Image Metadata Editor - Richard's File Utilities"
-            )
+            self.setWindowTitle("Image Metadata Editor - Richard's File Utilities")
 
         # Initialize instance variables
         self.worker: Optional[ImageMetadataWorkerThread] = None
@@ -157,9 +153,7 @@ class ImageMetadataEditorGUI(StandardWindow):
         """Setup tool-specific menu callbacks."""
         if hasattr(self, "menu_manager"):
             # Register tool-specific callbacks
-            self.menu_manager.register_callback(
-                "open_files", self.browse_files
-            )
+            self.menu_manager.register_callback("open_files", self.browse_files)
             self.menu_manager.register_callback(
                 "save_metadata", self.save_current_metadata
             )
@@ -170,9 +164,7 @@ class ImageMetadataEditorGUI(StandardWindow):
         self.metadata_logic.metadata_loaded.connect(self._on_metadata_loaded)
         self.metadata_logic.metadata_saved.connect(self._on_metadata_saved)
         self.metadata_logic.error_occurred.connect(self._on_error)
-        self.metadata_logic.progress_percentage.connect(
-            self._on_progress_update
-        )
+        self.metadata_logic.progress_percentage.connect(self._on_progress_update)
 
     def init_ui(self):
         """Initialize the user interface."""
@@ -517,8 +509,7 @@ class ImageMetadataEditorGUI(StandardWindow):
             self,
             "Select Image Files",
             "",
-            "Image Files (*.jpg *.jpeg *.png *.tiff *.tif *.bmp);;"
-            "All Files (*)",
+            "Image Files (*.jpg *.jpeg *.png *.tiff *.tif *.bmp);;" "All Files (*)",
         )
 
         if file_paths:
@@ -579,9 +570,7 @@ class ImageMetadataEditorGUI(StandardWindow):
 
         # Load metadata using the logic
         try:
-            metadata = self.metadata_logic.load_image_metadata(
-                self.current_file_path
-            )
+            metadata = self.metadata_logic.load_image_metadata(self.current_file_path)
             self._on_metadata_loaded(metadata)
         except Exception as e:
             self._on_error(f"Failed to load metadata: {str(e)}")
@@ -767,9 +756,7 @@ class ImageMetadataEditorGUI(StandardWindow):
         self.progress_bar.setVisible(True)
         self.cancel_button.setVisible(True)
 
-        self.worker = ImageMetadataWorkerThread(
-            files, operation, metadata_updates
-        )
+        self.worker = ImageMetadataWorkerThread(files, operation, metadata_updates)
         self.worker.progress_updated.connect(self.progress_bar.setValue)
         self.worker.file_processed.connect(self._on_file_processed)
         self.worker.operation_completed.connect(self._on_batch_completed)
@@ -824,16 +811,10 @@ class ImageMetadataEditorGUI(StandardWindow):
         """Enable/disable UI controls during operations."""
         self.browse_button.setEnabled(enabled)
         self.load_metadata_button.setEnabled(enabled)
-        self.save_button.setEnabled(
-            enabled and hasattr(self, "current_file_path")
-        )
+        self.save_button.setEnabled(enabled and hasattr(self, "current_file_path"))
         self.clear_button.setEnabled(enabled)
-        self.refresh_button.setEnabled(
-            enabled and hasattr(self, "current_file_path")
-        )
-        self.batch_process_button.setEnabled(
-            enabled and len(self.selected_files) > 1
-        )
+        self.refresh_button.setEnabled(enabled and hasattr(self, "current_file_path"))
+        self.batch_process_button.setEnabled(enabled and len(self.selected_files) > 1)
 
         # Enable/disable metadata fields
         for widget in self.exif_fields.values():

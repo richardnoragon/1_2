@@ -3,7 +3,7 @@
 **Generated:** 2025-09-04  
 **Implementation Type:** Comprehensive E2E Testing Strategy  
 **Target:** Metadata Tools (Image Metadata, Office Metadata, File Touch)  
-**Current Coverage:** 0% → Target: 95%  
+**Current Coverage:** 0% → Target: 95%
 
 ---
 
@@ -23,14 +23,16 @@ Based on comprehensive analysis of existing E2E test patterns in File Management
 
 **Metadata Tools Analysis:**
 
-1. **Image Metadata Tool** ([`src/utilities/metadata/image_metadata_logic.py`](src/utilities/metadata/image_metadata_logic.py))
+1. **Image Metadata Tool** ([`src/tools/metadata/image_metadata/image_metadata_logic.py`](src/tools/metadata/image_metadata/image_metadata_logic.py))
+
    - 531 lines of sophisticated EXIF processing logic
-   - PyQt5 signal integration with [`progress_updated`](src/utilities/metadata/image_metadata_logic.py:184), [`metadata_loaded`](src/utilities/metadata/image_metadata_logic.py:192), [`error_occurred`](src/utilities/metadata/image_metadata_logic.py:196)
+   - PyQt5 signal integration with [`progress_updated`](src/tools/metadata/image_metadata/image_metadata_logic.py:184), [`metadata_loaded`](src/tools/metadata/image_metadata/image_metadata_logic.py:192), [`error_occurred`](src/tools/metadata/image_metadata/image_metadata_logic.py:196)
    - Comprehensive EXIF data extraction with piexif integration
    - GPS coordinate processing and geolocation support
    - Batch processing capabilities with worker thread architecture
 
 2. **Office Metadata Tools** ([`src/utilities/metadata/office_meta_data_editor.py`](src/utilities/metadata/office_meta_data_editor.py), [`src/tools/metadata/office_metadata/office_metadata_gui.py`](src/tools/metadata/office_metadata/office_metadata_gui.py))
+
    - 1,062 + 886 lines of comprehensive office document processing
    - OOXML format support (DOCX, XLSX, PPTX) with XML parsing
    - Document property management (core, application, custom properties)
@@ -96,20 +98,20 @@ class MetadataToolsTestDataFactory:
 
 **Metadata Tools Performance Matrix:**
 
-| Component | Operation | Target Time | Memory Limit | Dataset Coverage |
-|-----------|-----------|-------------|--------------|------------------|
-| **Image Metadata** | EXIF Extraction | < 20 seconds | < 150MB | 100 images |
-| | Batch Processing | < 60 seconds | < 300MB | 500 images |
-| | GPS Processing | < 15 seconds | < 100MB | GPS-enabled images |
-| | Format Conversion | < 30 seconds | < 200MB | Multiple formats |
-| **Office Metadata** | Property Extraction | < 25 seconds | < 100MB | 50 documents |
-| | Batch Processing | < 90 seconds | < 400MB | 200 documents |
-| | Privacy Scrubbing | < 45 seconds | < 250MB | Sensitive documents |
-| | Template Application | < 35 seconds | < 150MB | Template workflows |
-| **File Touch** | Timestamp Reading | < 5 seconds | < 50MB | 100 files |
-| | Batch Modification | < 30 seconds | < 100MB | 500 files |
-| | Profile Application | < 20 seconds | < 75MB | Profile workflows |
-| | Cross-Platform Tests | < 15 seconds | < 50MB | OS compatibility |
+| Component           | Operation            | Target Time  | Memory Limit | Dataset Coverage    |
+| ------------------- | -------------------- | ------------ | ------------ | ------------------- |
+| **Image Metadata**  | EXIF Extraction      | < 20 seconds | < 150MB      | 100 images          |
+|                     | Batch Processing     | < 60 seconds | < 300MB      | 500 images          |
+|                     | GPS Processing       | < 15 seconds | < 100MB      | GPS-enabled images  |
+|                     | Format Conversion    | < 30 seconds | < 200MB      | Multiple formats    |
+| **Office Metadata** | Property Extraction  | < 25 seconds | < 100MB      | 50 documents        |
+|                     | Batch Processing     | < 90 seconds | < 400MB      | 200 documents       |
+|                     | Privacy Scrubbing    | < 45 seconds | < 250MB      | Sensitive documents |
+|                     | Template Application | < 35 seconds | < 150MB      | Template workflows  |
+| **File Touch**      | Timestamp Reading    | < 5 seconds  | < 50MB       | 100 files           |
+|                     | Batch Modification   | < 30 seconds | < 100MB      | 500 files           |
+|                     | Profile Application  | < 20 seconds | < 75MB       | Profile workflows   |
+|                     | Cross-Platform Tests | < 15 seconds | < 50MB       | OS compatibility    |
 
 ---
 
@@ -411,12 +413,14 @@ class TestMetadataToolsPerformanceRegression:
 **Deliverables:**
 
 1. **metadata_tools_test_utilities.py**
+
    - [`MockMetadataToolBase`](tests/e2e/metadata_tools_test_utilities.py:60) with PyQt5 integration
    - [`MetadataToolsTestDataFactory`](tests/e2e/metadata_tools_test_utilities.py:400) with specialized datasets
    - [`MetadataToolsPerformanceMonitor`](tests/e2e/metadata_tools_test_utilities.py:600) with benchmarking
    - [`MetadataToolsSignalTracker`](tests/e2e/metadata_tools_test_utilities.py:700) for workflow validation
 
 2. **Mock Tool Implementations**
+
    - [`MockImageMetadataTool`](tests/e2e/metadata_tools_test_utilities.py:150) with EXIF simulation
    - [`MockOfficeMetadataTool`](tests/e2e/metadata_tools_test_utilities.py:250) with document processing
    - [`MockFileTouchTool`](tests/e2e/metadata_tools_test_utilities.py:350) with timestamp operations
@@ -542,13 +546,13 @@ class TestMetadataToolsPerformanceRegression:
 **Identified Risks:**
 
 1. **External Dependencies**: EXIF and office document libraries
-   - *Mitigation*: Mock-based testing eliminates external dependencies
+   - _Mitigation_: Mock-based testing eliminates external dependencies
 2. **Cross-Platform Compatibility**: Different OS timestamp behavior
-   - *Mitigation*: Platform-specific test scenarios and validation
+   - _Mitigation_: Platform-specific test scenarios and validation
 3. **Performance Scalability**: Large dataset processing
-   - *Mitigation*: Graduated dataset sizes with performance monitoring
+   - _Mitigation_: Graduated dataset sizes with performance monitoring
 4. **Integration Complexity**: Cross-tool workflow coordination
-   - *Mitigation*: Incremental integration testing approach
+   - _Mitigation_: Incremental integration testing approach
 
 ### 2. Quality Assurance Measures
 

@@ -33,17 +33,17 @@ def test_tool_imports():
         ),
         (
             "Network Scanner",
-            "src.tools.network.network_scanner",
+            "src.tools.network.scanner.network_scanner",
             "NetworkScannerGUI",
         ),
         (
             "Network Transfer",
-            "src.tools.network.network_transfer",
+            "src.tools.network.transfer.network_transfer",
             "NetworkTransferGUI",
         ),
         (
             "Bookmark Manager",
-            "src.tools.network.bookmarks",
+            "src.tools.network.bookmarks.bookmark_manager",
             "BookmarkManagerGUI",
         ),
         (

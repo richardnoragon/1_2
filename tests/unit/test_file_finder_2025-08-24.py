@@ -21,6 +21,9 @@ from PyQt5.QtWidgets import QApplication
 # Add src to Python path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "src"))
 
+MODULE_PATH = "src.tools.file_management.finder.file_finder"
+
+
 try:
     from src.tools.file_management.finder.file_finder import FileFinderWindow
 except ImportError as e:
@@ -40,7 +43,7 @@ def qapp():
 @pytest.fixture
 def file_finder_window(qapp):
     """Create FileFinderWindow instance for testing."""
-    with patch("src.tools.file_management.finder.file_finder.StandardWindow"):
+    with patch(f"{MODULE_PATH}.BaseWindow"):
         window = FileFinderWindow()
         yield window
         if hasattr(window, "close"):
@@ -106,7 +109,7 @@ def temp_directory():
 @pytest.fixture
 def mock_file_dialog():
     """Mock file dialog responses."""
-    file_dialog_path = "src.tools.file_management.file_finder.QFileDialog"
+    file_dialog_path = f"{MODULE_PATH}.QFileDialog"
     with patch(file_dialog_path) as mock:
         yield mock
 
@@ -114,7 +117,7 @@ def mock_file_dialog():
 @pytest.fixture
 def mock_message_box():
     """Mock message box responses."""
-    message_box_path = "src.tools.file_management.file_finder.QMessageBox"
+    message_box_path = f"{MODULE_PATH}.QMessageBox"
     with patch(message_box_path) as mock:
         yield mock
 
@@ -122,8 +125,8 @@ def mock_message_box():
 @pytest.fixture
 def mock_os_operations():
     """Mock operating system operations."""
-    startfile_path = "src.tools.file_management.file_finder.os.startfile"
-    system_path = "src.tools.file_management.file_finder.os.system"
+    startfile_path = f"{MODULE_PATH}.os.startfile"
+    system_path = f"{MODULE_PATH}.os.system"
     with patch(startfile_path) as mock_startfile, patch(system_path) as mock_system:
         yield {"startfile": mock_startfile, "system": mock_system}
 
@@ -340,7 +343,7 @@ class TestFileFinderWindow:
         test_file = os.path.join(temp_directory, "document.txt")
         item.text.return_value = test_file
 
-        with patch("src.tools.file_management.file_finder.sys.platform", "win32"):
+        with patch(f"{MODULE_PATH}.sys.platform", "win32"):
             file_finder_window.open_file(item)
 
         mock_os_operations["startfile"].assert_called_with(test_file)
@@ -355,7 +358,7 @@ class TestFileFinderWindow:
         item.text.return_value = test_file
         file_finder_window.results_list.currentItem.return_value = item
 
-        with patch("src.tools.file_management.file_finder.sys.platform", "win32"):
+        with patch(f"{MODULE_PATH}.sys.platform", "win32"):
             file_finder_window.open_selected_file()
 
         mock_os_operations["startfile"].assert_called_with(test_file)
@@ -381,7 +384,7 @@ class TestFileFinderWindow:
         item.text.return_value = test_file
         file_finder_window.results_list.currentItem.return_value = item
 
-        with patch("src.tools.file_management.file_finder.sys.platform", "win32"):
+        with patch(f"{MODULE_PATH}.sys.platform", "win32"):
             file_finder_window.open_file_folder()
 
         mock_os_operations["startfile"].assert_called_with(temp_directory)
@@ -392,7 +395,7 @@ class TestFileFinderWindow:
         """Test opening file on Windows platform."""
         test_file = os.path.join(temp_directory, "document.txt")
 
-        with patch("src.tools.file_management.file_finder.sys.platform", "win32"):
+        with patch(f"{MODULE_PATH}.sys.platform", "win32"):
             file_finder_window.open_file_with_system(test_file)
 
         mock_os_operations["startfile"].assert_called_with(test_file)
@@ -403,7 +406,7 @@ class TestFileFinderWindow:
         """Test opening file on macOS platform."""
         test_file = os.path.join(temp_directory, "document.txt")
 
-        with patch("src.tools.file_management.file_finder.sys.platform", "darwin"):
+        with patch(f"{MODULE_PATH}.sys.platform", "darwin"):
             file_finder_window.open_file_with_system(test_file)
 
         expected_command = f'open "{test_file}"'
@@ -415,7 +418,7 @@ class TestFileFinderWindow:
         """Test opening file on Linux platform."""
         test_file = os.path.join(temp_directory, "document.txt")
 
-        with patch("src.tools.file_management.file_finder.sys.platform", "linux"):
+        with patch(f"{MODULE_PATH}.sys.platform", "linux"):
             file_finder_window.open_file_with_system(test_file)
 
         expected_command = f'xdg-open "{test_file}"'
@@ -427,7 +430,7 @@ class TestFileFinderWindow:
         """Test file opening error handling."""
         mock_os_operations["startfile"].side_effect = Exception("File not found")
 
-        with patch("src.tools.file_management.file_finder.sys.platform", "win32"):
+        with patch(f"{MODULE_PATH}.sys.platform", "win32"):
             file_finder_window.open_file_with_system("/nonexistent/file.txt")
 
         mock_message_box.warning.assert_called()
@@ -671,14 +674,14 @@ class TestFileFinderWindow:
 class TestMainFunction:
     """Test cases for main function and standalone execution."""
 
-    @patch("src.tools.file_management.file_finder.QApplication")
-    @patch("src.tools.file_management.finder.file_finder.FileFinderWindow")
-    @patch("src.tools.file_management.file_finder.sys.exit")
+    @patch(f"{MODULE_PATH}.QApplication")
+    @patch(f"{MODULE_PATH}.FileFinderWindow")
+    @patch(f"{MODULE_PATH}.sys.exit")
     def test_main_function_execution(
         self, mock_exit, mock_window_class, mock_app_class
     ):
         """Test main function execution flow."""
-        from src.tools.file_management.file_finder import main
+        from src.tools.file_management.finder.file_finder import main
 
         mock_app = Mock()
         mock_app.exec_.return_value = 0

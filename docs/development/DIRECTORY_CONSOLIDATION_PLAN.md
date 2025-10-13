@@ -105,7 +105,7 @@ from src.rfu.tools.metadata.office_meta_data_editor import OfficeMetaDataEditorG
 # NEW
 from src.tools.file_management.catalog.catalog import CatalogWindow
 from src.tools.file_management.organizer.organize import OrganizeWindow
-from src.tools.metadata.office_meta_data_editor import OfficeMetaDataEditorGUI
+from src.tools.metadata.office_metadata.office_meta_data_editor import OfficeMetaDataEditorGUI
 ```
 
 ## Risk Assessment

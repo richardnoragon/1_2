@@ -28,7 +28,7 @@ try:
 except ImportError:
     # Alternative import path
     sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
-    import src.tools.privacy.data_anonymizer as data_anonymizer
+    import src.tools.privacy.anonymizer.data_anonymizer as data_anonymizer
 
 
 class TestDataAnonymizerImports:
@@ -44,7 +44,7 @@ class TestDataAnonymizerImports:
         sys.modules.clear()
         sys.modules.update(self.original_modules)
     
-    @patch('src.tools.privacy.data_anonymizer.PrivacyCleanerGUI')
+    @patch('src.tools.privacy.anonymizer.data_anonymizer.PrivacyCleanerGUI')
     def test_successful_privacy_tools_import(self, mock_privacy_gui):
         """Test successful import of PrivacyCleanerGUI."""
         # Reload the module to test import behavior
@@ -53,8 +53,8 @@ class TestDataAnonymizerImports:
         # Verify that the import was attempted
         assert hasattr(data_anonymizer, 'DataAnonymizerGUI')
     
-    @patch('src.tools.privacy.data_anonymizer.PrivacyCleanerGUI', side_effect=ImportError("Privacy tools not found"))
-    @patch('src.tools.privacy.data_anonymizer.SimplePrivacyHub')
+    @patch('src.tools.privacy.anonymizer.data_anonymizer.PrivacyCleanerGUI', side_effect=ImportError("Privacy tools not found"))
+    @patch('src.tools.privacy.anonymizer.data_anonymizer.SimplePrivacyHub')
     def test_fallback_to_simple_privacy_hub(self, mock_simple_hub, mock_privacy_gui):
         """Test fallback to SimplePrivacyHub when PrivacyCleanerGUI fails."""
         # Reload the module to test fallback behavior
@@ -62,8 +62,8 @@ class TestDataAnonymizerImports:
         
         assert hasattr(data_anonymizer, 'DataAnonymizerGUI')
     
-    @patch('src.tools.privacy.data_anonymizer.PrivacyCleanerGUI', side_effect=ImportError("Privacy tools not found"))
-    @patch('src.tools.privacy.data_anonymizer.SimplePrivacyHub', side_effect=ImportError("Simple hub not found"))
+    @patch('src.tools.privacy.anonymizer.data_anonymizer.PrivacyCleanerGUI', side_effect=ImportError("Privacy tools not found"))
+    @patch('src.tools.privacy.anonymizer.data_anonymizer.SimplePrivacyHub', side_effect=ImportError("Simple hub not found"))
     @patch('builtins.print')
     def test_fallback_to_error_dialog(self, mock_print, mock_simple_hub, mock_privacy_gui):
         """Test fallback to error dialog when both imports fail."""
@@ -74,10 +74,10 @@ class TestDataAnonymizerImports:
         mock_print.assert_any_call("Error: Privacy tools are not available.")
         mock_print.assert_any_call("Please check your installation and dependencies.")
     
-    @patch('src.tools.privacy.data_anonymizer.PrivacyCleanerGUI', side_effect=ImportError("Privacy tools not found"))
-    @patch('src.tools.privacy.data_anonymizer.SimplePrivacyHub', side_effect=ImportError("Simple hub not found"))
-    @patch('src.tools.privacy.data_anonymizer.QApplication')
-    @patch('src.tools.privacy.data_anonymizer.QMessageBox')
+    @patch('src.tools.privacy.anonymizer.data_anonymizer.PrivacyCleanerGUI', side_effect=ImportError("Privacy tools not found"))
+    @patch('src.tools.privacy.anonymizer.data_anonymizer.SimplePrivacyHub', side_effect=ImportError("Simple hub not found"))
+    @patch('src.tools.privacy.anonymizer.data_anonymizer.QApplication')
+    @patch('src.tools.privacy.anonymizer.data_anonymizer.QMessageBox')
     def test_pyqt5_error_dialog_creation(self, mock_message_box, mock_qapp, mock_simple_hub, mock_privacy_gui):
         """Test PyQt5 error dialog creation in fallback scenario."""
         # Reload the module to test PyQt5 dialog creation
@@ -90,9 +90,9 @@ class TestDataAnonymizerImports:
         assert gui_instance is not None
         assert hasattr(gui_instance, 'show')
     
-    @patch('src.tools.privacy.data_anonymizer.PrivacyCleanerGUI', side_effect=ImportError("Privacy tools not found"))
-    @patch('src.tools.privacy.data_anonymizer.SimplePrivacyHub', side_effect=ImportError("Simple hub not found"))
-    @patch('src.tools.privacy.data_anonymizer.QApplication', side_effect=ImportError("PyQt5 not available"))
+    @patch('src.tools.privacy.anonymizer.data_anonymizer.PrivacyCleanerGUI', side_effect=ImportError("Privacy tools not found"))
+    @patch('src.tools.privacy.anonymizer.data_anonymizer.SimplePrivacyHub', side_effect=ImportError("Simple hub not found"))
+    @patch('src.tools.privacy.anonymizer.data_anonymizer.QApplication', side_effect=ImportError("PyQt5 not available"))
     @patch('builtins.print')
     def test_no_pyqt5_fallback(self, mock_print, mock_qapp, mock_simple_hub, mock_privacy_gui):
         """Test fallback when PyQt5 is not available."""
@@ -116,13 +116,13 @@ class TestDataAnonymizerGUIErrorDialog:
         self.mock_qapp = Mock()
         self.mock_message_box = Mock()
         
-    @patch('src.tools.privacy.data_anonymizer.QApplication')
-    @patch('src.tools.privacy.data_anonymizer.QMessageBox')
+    @patch('src.tools.privacy.anonymizer.data_anonymizer.QApplication')
+    @patch('src.tools.privacy.anonymizer.data_anonymizer.QMessageBox')
     def test_error_dialog_initialization(self, mock_message_box, mock_qapp):
         """Test initialization of error dialog version of DataAnonymizerGUI."""
         # Mock the import failures to trigger error dialog creation
-        with patch('src.tools.privacy.data_anonymizer.PrivacyCleanerGUI', side_effect=ImportError()):
-            with patch('src.tools.privacy.data_anonymizer.SimplePrivacyHub', side_effect=ImportError()):
+        with patch('src.tools.privacy.anonymizer.data_anonymizer.PrivacyCleanerGUI', side_effect=ImportError()):
+            with patch('src.tools.privacy.anonymizer.data_anonymizer.SimplePrivacyHub', side_effect=ImportError()):
                 importlib.reload(data_anonymizer)
                 
                 # Create instance
@@ -131,12 +131,12 @@ class TestDataAnonymizerGUIErrorDialog:
                 # Verify initialization completed
                 assert gui is not None
     
-    @patch('src.tools.privacy.data_anonymizer.QApplication')
-    @patch('src.tools.privacy.data_anonymizer.QMessageBox')
+    @patch('src.tools.privacy.anonymizer.data_anonymizer.QApplication')
+    @patch('src.tools.privacy.anonymizer.data_anonymizer.QMessageBox')
     def test_error_dialog_show_method(self, mock_message_box, mock_qapp):
         """Test show method of error dialog DataAnonymizerGUI."""
-        with patch('src.tools.privacy.data_anonymizer.PrivacyCleanerGUI', side_effect=ImportError()):
-            with patch('src.tools.privacy.data_anonymizer.SimplePrivacyHub', side_effect=ImportError()):
+        with patch('src.tools.privacy.anonymizer.data_anonymizer.PrivacyCleanerGUI', side_effect=ImportError()):
+            with patch('src.tools.privacy.anonymizer.data_anonymizer.SimplePrivacyHub', side_effect=ImportError()):
                 importlib.reload(data_anonymizer)
                 
                 gui = data_anonymizer.DataAnonymizerGUI()
@@ -145,12 +145,12 @@ class TestDataAnonymizerGUIErrorDialog:
                 result = gui.show()
                 assert result is None
     
-    @patch('src.tools.privacy.data_anonymizer.QApplication')
-    @patch('src.tools.privacy.data_anonymizer.QMessageBox')
+    @patch('src.tools.privacy.anonymizer.data_anonymizer.QApplication')
+    @patch('src.tools.privacy.anonymizer.data_anonymizer.QMessageBox')
     def test_error_dialog_message_content(self, mock_message_box, mock_qapp):
         """Test the content of the error dialog message."""
-        with patch('src.tools.privacy.data_anonymizer.PrivacyCleanerGUI', side_effect=ImportError()):
-            with patch('src.tools.privacy.data_anonymizer.SimplePrivacyHub', side_effect=ImportError()):
+        with patch('src.tools.privacy.anonymizer.data_anonymizer.PrivacyCleanerGUI', side_effect=ImportError()):
+            with patch('src.tools.privacy.anonymizer.data_anonymizer.SimplePrivacyHub', side_effect=ImportError()):
                 importlib.reload(data_anonymizer)
                 
                 # Create instance (triggers show_error)
@@ -173,9 +173,9 @@ class TestDataAnonymizerGUIErrorDialog:
 class TestDataAnonymizerGUINoQt:
     """Test class for DataAnonymizerGUI when PyQt5 is not available."""
     
-    @patch('src.tools.privacy.data_anonymizer.PrivacyCleanerGUI', side_effect=ImportError())
-    @patch('src.tools.privacy.data_anonymizer.SimplePrivacyHub', side_effect=ImportError())
-    @patch('src.tools.privacy.data_anonymizer.QApplication', side_effect=ImportError("No PyQt5"))
+    @patch('src.tools.privacy.anonymizer.data_anonymizer.PrivacyCleanerGUI', side_effect=ImportError())
+    @patch('src.tools.privacy.anonymizer.data_anonymizer.SimplePrivacyHub', side_effect=ImportError())
+    @patch('src.tools.privacy.anonymizer.data_anonymizer.QApplication', side_effect=ImportError("No PyQt5"))
     @patch('builtins.print')
     def test_no_qt_initialization(self, mock_print, mock_qapp, mock_simple, mock_privacy):
         """Test DataAnonymizerGUI initialization when PyQt5 is unavailable."""
@@ -187,9 +187,9 @@ class TestDataAnonymizerGUINoQt:
         mock_print.assert_any_call("Data Anonymizer: PyQt5 not available")
         assert gui is not None
     
-    @patch('src.tools.privacy.data_anonymizer.PrivacyCleanerGUI', side_effect=ImportError())
-    @patch('src.tools.privacy.data_anonymizer.SimplePrivacyHub', side_effect=ImportError())
-    @patch('src.tools.privacy.data_anonymizer.QApplication', side_effect=ImportError("No PyQt5"))
+    @patch('src.tools.privacy.anonymizer.data_anonymizer.PrivacyCleanerGUI', side_effect=ImportError())
+    @patch('src.tools.privacy.anonymizer.data_anonymizer.SimplePrivacyHub', side_effect=ImportError())
+    @patch('src.tools.privacy.anonymizer.data_anonymizer.QApplication', side_effect=ImportError("No PyQt5"))
     @patch('builtins.print')
     def test_no_qt_show_method(self, mock_print, mock_qapp, mock_simple, mock_privacy):
         """Test show method when PyQt5 is unavailable."""
@@ -210,8 +210,8 @@ class TestMainFunction:
         self.mock_app = Mock()
         self.mock_window = Mock()
     
-    @patch('src.tools.privacy.data_anonymizer.QApplication')
-    @patch('src.tools.privacy.data_anonymizer.DataAnonymizerGUI')
+    @patch('src.tools.privacy.anonymizer.data_anonymizer.QApplication')
+    @patch('src.tools.privacy.anonymizer.data_anonymizer.DataAnonymizerGUI')
     @patch('sys.exit')
     def test_main_successful_execution(self, mock_exit, mock_gui_class, mock_qapp_class):
         """Test successful execution of main function."""
@@ -241,8 +241,8 @@ class TestMainFunction:
         # Verify sys.exit was called with app.exec_() return value
         mock_exit.assert_called_once_with(0)
     
-    @patch('src.tools.privacy.data_anonymizer.QApplication')
-    @patch('src.tools.privacy.data_anonymizer.DataAnonymizerGUI')
+    @patch('src.tools.privacy.anonymizer.data_anonymizer.QApplication')
+    @patch('src.tools.privacy.anonymizer.data_anonymizer.DataAnonymizerGUI')
     @patch('sys.exit')
     def test_main_with_window_title(self, mock_exit, mock_gui_class, mock_qapp_class):
         """Test main function sets window title when available."""
@@ -261,7 +261,7 @@ class TestMainFunction:
         # Verify window title was set
         mock_window.setWindowTitle.assert_called_once_with("Data Anonymizer - Richard's File Utilities")
     
-    @patch('src.tools.privacy.data_anonymizer.QApplication', side_effect=ImportError("PyQt5 not found"))
+    @patch('src.tools.privacy.anonymizer.data_anonymizer.QApplication', side_effect=ImportError("PyQt5 not found"))
     @patch('builtins.print')
     @patch('sys.exit')
     def test_main_pyqt5_import_error(self, mock_exit, mock_print, mock_qapp):
@@ -276,8 +276,8 @@ class TestMainFunction:
         # Verify sys.exit was called with error code
         mock_exit.assert_called_once_with(1)
     
-    @patch('src.tools.privacy.data_anonymizer.QApplication')
-    @patch('src.tools.privacy.data_anonymizer.DataAnonymizerGUI', side_effect=Exception("Test exception"))
+    @patch('src.tools.privacy.anonymizer.data_anonymizer.QApplication')
+    @patch('src.tools.privacy.anonymizer.data_anonymizer.DataAnonymizerGUI', side_effect=Exception("Test exception"))
     @patch('builtins.print')
     @patch('sys.exit')
     def test_main_general_exception(self, mock_exit, mock_print, mock_gui, mock_qapp):
@@ -291,8 +291,8 @@ class TestMainFunction:
         # Verify sys.exit was called with error code
         mock_exit.assert_called_once_with(1)
     
-    @patch('src.tools.privacy.data_anonymizer.QApplication')
-    @patch('src.tools.privacy.data_anonymizer.DataAnonymizerGUI')
+    @patch('src.tools.privacy.anonymizer.data_anonymizer.QApplication')
+    @patch('src.tools.privacy.anonymizer.data_anonymizer.DataAnonymizerGUI')
     def test_main_app_exec_return_value(self, mock_gui_class, mock_qapp_class):
         """Test main function with different app.exec_() return values."""
         # Setup mocks
@@ -314,11 +314,11 @@ class TestMainFunction:
 class TestModuleStandaloneExecution:
     """Test class for module standalone execution (__name__ == "__main__")."""
     
-    @patch('src.tools.privacy.data_anonymizer.main')
+    @patch('src.tools.privacy.anonymizer.data_anonymizer.main')
     def test_standalone_execution(self, mock_main):
         """Test that main() is called when module is executed standalone."""
         # Simulate module being run as main
-        with patch('src.tools.privacy.data_anonymizer.__name__', '__main__'):
+        with patch('src.tools.privacy.anonymizer.data_anonymizer.__name__', '__main__'):
             # This would normally trigger the if __name__ == "__main__": block
             # Since we can't easily test this directly, we'll verify the logic
             pass
@@ -348,8 +348,8 @@ class TestEdgeCasesAndErrorConditions:
             # Modify sys.argv for testing
             sys.argv = ['test_script.py', '--test-arg']
             
-            with patch('src.tools.privacy.data_anonymizer.QApplication') as mock_qapp:
-                with patch('src.tools.privacy.data_anonymizer.DataAnonymizerGUI'):
+            with patch('src.tools.privacy.anonymizer.data_anonymizer.QApplication') as mock_qapp:
+                with patch('src.tools.privacy.anonymizer.data_anonymizer.DataAnonymizerGUI'):
                     with patch('sys.exit'):
                         data_anonymizer.main()
                         
@@ -359,7 +359,7 @@ class TestEdgeCasesAndErrorConditions:
             # Restore original sys.argv
             sys.argv = original_argv
     
-    @patch('src.tools.privacy.data_anonymizer.QApplication')
+    @patch('src.tools.privacy.anonymizer.data_anonymizer.QApplication')
     @patch('builtins.print')
     @patch('sys.exit')
     def test_keyboard_interrupt_handling(self, mock_exit, mock_print, mock_qapp):
@@ -379,7 +379,7 @@ class TestEdgeCasesAndErrorConditions:
 class TestIntegrationScenarios:
     """Test class for integration scenarios."""
     
-    @patch('src.tools.privacy.data_anonymizer.PrivacyCleanerGUI')
+    @patch('src.tools.privacy.anonymizer.data_anonymizer.PrivacyCleanerGUI')
     def test_full_success_scenario(self, mock_privacy_gui):
         """Test full success scenario with all components available."""
         # Setup successful mock
@@ -412,7 +412,7 @@ class TestIntegrationScenarios:
 @pytest.fixture
 def mock_qapplication():
     """Fixture providing a mocked QApplication."""
-    with patch('src.tools.privacy.data_anonymizer.QApplication') as mock:
+    with patch('src.tools.privacy.anonymizer.data_anonymizer.QApplication') as mock:
         mock_app = Mock()
         mock.return_value = mock_app
         mock_app.exec_.return_value = 0
@@ -422,7 +422,7 @@ def mock_qapplication():
 @pytest.fixture
 def mock_data_anonymizer_gui():
     """Fixture providing a mocked DataAnonymizerGUI."""
-    with patch('src.tools.privacy.data_anonymizer.DataAnonymizerGUI') as mock:
+    with patch('src.tools.privacy.anonymizer.data_anonymizer.DataAnonymizerGUI') as mock:
         mock_window = Mock()
         mock.return_value = mock_window
         yield mock

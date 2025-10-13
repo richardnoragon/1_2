@@ -29,7 +29,7 @@ from pathlib import Path
 TEST_TARGET = "network_transfer"
 TEST_DATE = "2025-08-24"
 TEST_FILE = f"test_{TEST_TARGET}_{TEST_DATE}.py"
-COVERAGE_TARGET = "src.tools.network.network_transfer"
+COVERAGE_TARGET = "src.tools.network.transfer.network_transfer"
 
 # Paths
 SCRIPT_DIR = Path(__file__).parent
@@ -96,9 +96,7 @@ def run_tests():
     html_report = RESULTS_DIR / f"result_{TEST_TARGET}_{TEST_DATE}.html"
     json_report = RESULTS_DIR / f"result_{TEST_TARGET}_{TEST_DATE}.json"
     coverage_html = RESULTS_DIR / f"result_{TEST_TARGET}_coverage_{TEST_DATE}"
-    coverage_json = (
-        RESULTS_DIR / f"result_{TEST_TARGET}_coverage_{TEST_DATE}.json"
-    )
+    coverage_json = RESULTS_DIR / f"result_{TEST_TARGET}_coverage_{TEST_DATE}.json"
     junit_xml = RESULTS_DIR / f"result_{TEST_TARGET}_{TEST_DATE}_junit.xml"
     summary_file = (
         RESULTS_DIR / f"result_{TEST_TARGET}_execution_summary_{TEST_DATE}.txt"

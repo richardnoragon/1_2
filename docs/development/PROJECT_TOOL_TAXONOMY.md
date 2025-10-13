@@ -448,7 +448,7 @@ graph TD
   - Author and creation info
   - Custom field editing
   - Batch processing
-- **Module:** `src.utilities.metadata.office_meta_data_editor`
+- **Module:** `src.tools.metadata.office_metadata.office_meta_data_editor`
 - **Class:** `OfficeMetaDataEditorGUI`
 
 #### ⏰ **File Touch**

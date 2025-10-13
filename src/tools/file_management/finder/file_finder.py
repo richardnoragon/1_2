@@ -20,17 +20,10 @@ from PyQt5.QtGui import (
 )
 from PyQt5.QtWidgets import QApplication, QDialog, QHeaderView, QLineEdit
 
-# Add parent directories to path for imports
-current_dir = os.path.dirname(os.path.abspath(__file__))
-project_root = os.path.dirname(
-    os.path.dirname(os.path.dirname(os.path.dirname(current_dir)))
-)
-sys.path.append(project_root)
-
-from src.gui.common.base_window import BaseWindow
-from src.gui.common.dialogs import get_existing_directory, show_error_dialog
-from src.gui.common.widgets import ProgressWidget
-from src.log_manager import LogManager
+from ....gui.common.base_window import BaseWindow
+from ....gui.common.dialogs import get_existing_directory, show_error_dialog
+from ....gui.common.widgets import ProgressWidget
+from ....log_manager import LogManager
 
 
 class FileFinderWindow(BaseWindow):
@@ -669,16 +662,19 @@ class FileFinder(QDialog):
         return super().close()
 
 
+def main() -> int:
+    """Application entry point for launching the File Finder GUI."""
+    app = QApplication(sys.argv)
+    window = FileFinderWindow()
+    window.show()
+    return app.exec_()
+
+
 if __name__ == "__main__":
     try:
         print("Starting File Finder...")
-        app = QApplication(sys.argv)
-        print("QApplication created...")
-        gui = FileFinderWindow()
-        print("GUI instance created...")
-        gui.show()
-        print("GUI shown...")
-        sys.exit(app.exec_())
+        exit_code = main()
+        sys.exit(exit_code)
     except Exception as e:
         print(f"Error: {str(e)}")
         traceback.print_exc()

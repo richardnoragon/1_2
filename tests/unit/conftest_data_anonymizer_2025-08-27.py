@@ -73,10 +73,10 @@ def mock_pyqt5():
 def mock_data_anonymizer_imports():
     """Fixture for mocking data_anonymizer imports."""
     with patch(
-        "src.tools.privacy.data_anonymizer.PrivacyCleanerGUI"
+        "src.tools.privacy.anonymizer.data_anonymizer.PrivacyCleanerGUI"
     ) as mock_privacy:
         with patch(
-            "src.tools.privacy.data_anonymizer.SimplePrivacyHub"
+            "src.tools.privacy.anonymizer.data_anonymizer.SimplePrivacyHub"
         ) as mock_simple:
             yield {
                 "PrivacyCleanerGUI": mock_privacy,

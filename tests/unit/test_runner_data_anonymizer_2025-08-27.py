@@ -100,7 +100,7 @@ class DataAnonymizerTestRunner:
             '--self-contained-html',
             '--json-report',
             f'--json-report-file={self.json_report}',
-            f'--cov=src.utilities.privacy.data_anonymizer',
+            f'--cov=src.tools.privacy.anonymizer.data_anonymizer',
             f'--cov-report=html:{self.coverage_html}',
             f'--cov-report=json:{self.coverage_json}',
             '--cov-report=term-missing',

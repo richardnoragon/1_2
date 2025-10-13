@@ -7,29 +7,29 @@ standardized theme system with consistent styling and layout.
 """
 
 import os
-import sys
 import shutil
+import sys
 from pathlib import Path
 
 # List of utilities to migrate
 UTILITIES_TO_MIGRATE = [
-    'file_utilities_1/catalog.py',
-    'cmsd.py',
-    'edit_image_metadata.py',
-    'empty_folders.py',
-    'file_finder.py',
-    'find_duplicate_files.py',
-    'log_manager.py',
-    'office_meta_data_editor.py',
-    'organize.py',
-    'permissions_editor.py',
-    'file_utilities_2/gui/rename_gui.py',
-    'settings_dialog.py',
-    'size_analyzer.py',
-    'synchronization_backup/sync.py',
-    'tag_viewer_editor.py',
-    'tree_map.py',
-    'secure_delete.py'
+    "file_utilities_1/catalog.py",
+    "cmsd.py",
+    "edit_image_metadata.py",
+    "empty_folders.py",
+    "file_finder.py",
+    "find_duplicate_files.py",
+    "log_manager.py",
+    "src/tools/metadata/office_metadata/office_meta_data_editor.py",
+    "organize.py",
+    "permissions_editor.py",
+    "file_utilities_2/gui/rename_gui.py",
+    "settings_dialog.py",
+    "size_analyzer.py",
+    "synchronization_backup/sync.py",
+    "tag_viewer_editor.py",
+    "tree_map.py",
+    "secure_delete.py",
 ]
 
 # Template for standardized utility
@@ -83,6 +83,7 @@ if __name__ == "__main__":
     main()
 '''
 
+
 def create_backup(original_file):
     """Create a backup of the original file."""
     backup_path = f"{original_file}.backup"
@@ -90,74 +91,76 @@ def create_backup(original_file):
     print(f"Created backup: {backup_path}")
     return backup_path
 
+
 def needs_migration(file_path):
     """Check if a file needs standardized styling migration."""
-    with open(file_path, 'r', encoding='utf-8') as f:
+    with open(file_path, "r", encoding="utf-8") as f:
         content = f.read()
-        
+
     # Check if it already uses StandardWindow
-    if 'StandardWindow' in content:
+    if "StandardWindow" in content:
         return False
-        
+
     # Check if it's a GUI utility
-    if 'QApplication' in content and 'QMainWindow' in content:
+    if "QApplication" in content and "QMainWindow" in content:
         return True
-        
+
     return False
+
 
 def migrate_utility(utility_file):
     """Migrate a single utility to use standardized styling."""
     file_path = os.path.join(os.getcwd(), utility_file)
-    
+
     if not os.path.exists(file_path):
         print(f"File not found: {utility_file}")
         return False
-        
+
     if not needs_migration(file_path):
         print(f"Already migrated or not a GUI utility: {utility_file}")
         return False
-        
+
     # Create backup
     backup_path = create_backup(file_path)
-    
+
     # Get utility name and class name
-    utility_name = utility_file.replace('.py', '').replace('_', ' ').title()
-    class_name = utility_file.replace('.py', '').replace('_', '').title() + 'GUI'
-    
+    utility_name = utility_file.replace(".py", "").replace("_", " ").title()
+    class_name = utility_file.replace(".py", "").replace("_", "").title() + "GUI"
+
     # Create new standardized version
     new_content = STANDARDIZED_TEMPLATE.format(
-        utility_name=utility_name,
-        class_name=class_name
+        utility_name=utility_name, class_name=class_name
     )
-    
+
     # Write new content
-    with open(file_path, 'w', encoding='utf-8') as f:
+    with open(file_path, "w", encoding="utf-8") as f:
         f.write(new_content)
-        
+
     print(f"Migrated: {utility_file}")
     return True
+
 
 def main():
     """Main migration function."""
     print("Starting standardized styling migration...")
     print("=" * 50)
-    
+
     migrated_count = 0
-    
+
     for utility in UTILITIES_TO_MIGRATE:
         try:
             if migrate_utility(utility):
                 migrated_count += 1
         except Exception as e:
             print(f"Error migrating {utility}: {str(e)}")
-            
+
     print("=" * 50)
     print(f"Migration complete. {migrated_count} utilities migrated.")
     print("Backups created with .backup extension")
-    
+
     # Create migration report
     report_path = "migration_report.txt"
-    with open(report_path, 'w') as f:
+    with open(report_path, "w") as f:
         f.write("Standardized Styling Migration Report\n")
         f.write("=" * 40 + "\n")
         f.write(f"Date: {__import__('datetime').datetime.now()}\n")
@@ -165,8 +168,9 @@ def main():
         f.write("\nMigrated utilities:\n")
         for utility in UTILITIES_TO_MIGRATE:
             f.write(f"- {utility}\n")
-            
+
     print(f"Migration report saved to: {report_path}")
+
 
 if __name__ == "__main__":
     main()

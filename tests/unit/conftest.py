@@ -52,9 +52,7 @@ sys.path.insert(0, metrics_src_path)
 try:
     from rfu import dev_hub
 except ImportError:
-    dev_hub_path = os.path.join(
-        os.path.dirname(__file__), "..", "..", "src", "rfu"
-    )
+    dev_hub_path = os.path.join(os.path.dirname(__file__), "..", "..", "src", "rfu")
     sys.path.insert(0, dev_hub_path)
     try:
         import dev_hub
@@ -82,9 +80,7 @@ def setup_network_visualization_mocks():
     if NETWORK_MOCKS_AVAILABLE and setup_visualization_mocks:
         try:
             mocks = setup_visualization_mocks()
-            print(
-                "[SUCCESS] Network visualization mocks automatically enabled"
-            )
+            print("[SUCCESS] Network visualization mocks automatically enabled")
             return mocks
         except Exception as e:
             print(f"[WARNING] Failed to setup visualization mocks: {e}")
@@ -345,9 +341,7 @@ def pytest_runtest_teardown(item):
     try:
         print(f"Completed test: {test_name}")
     except UnicodeEncodeError:
-        print(
-            f"Completed test: {test_name.encode('ascii', 'replace').decode('ascii')}"
-        )
+        print(f"Completed test: {test_name.encode('ascii', 'replace').decode('ascii')}")
 
 
 def pytest_runtest_makereport(item, call):
@@ -522,16 +516,8 @@ def mock_pyqt5_dev_hub():
         mock_qtwidgets.QSplitter = Mock()
 
         with (
-            (
-                patch.object(dev_hub, "QtCore", mock_qtcore)
-                if dev_hub
-                else Mock()
-            ),
-            (
-                patch.object(dev_hub, "QtWidgets", mock_qtwidgets)
-                if dev_hub
-                else Mock()
-            ),
+            patch.object(dev_hub, "QtCore", mock_qtcore) if dev_hub else Mock(),
+            patch.object(dev_hub, "QtWidgets", mock_qtwidgets) if dev_hub else Mock(),
         ):
             yield {"QtCore": mock_qtcore, "QtWidgets": mock_qtwidgets}
 
@@ -780,9 +766,7 @@ def error_recovery_instance():
 @pytest.fixture
 def temp_log_file_error_recovery():
     """Create a temporary log file for error recovery testing."""
-    with tempfile.NamedTemporaryFile(
-        mode="w", delete=False, suffix=".log"
-    ) as f:
+    with tempfile.NamedTemporaryFile(mode="w", delete=False, suffix=".log") as f:
         yield f.name
     # Cleanup
     if os.path.exists(f.name):
@@ -812,27 +796,17 @@ def sample_errors_error_recovery():
     return {
         "import_error": ImportError("No module named 'test_module'"),
         "module_not_found": ModuleNotFoundError("No module named 'PyQt5'"),
-        "attribute_error": AttributeError(
-            "'NoneType' object has no attribute 'test'"
-        ),
-        "type_error": TypeError(
-            "unsupported operand type(s) for +: 'int' and 'str'"
-        ),
+        "attribute_error": AttributeError("'NoneType' object has no attribute 'test'"),
+        "type_error": TypeError("unsupported operand type(s) for +: 'int' and 'str'"),
         "runtime_error": RuntimeError("Something went wrong at runtime"),
         "value_error": ValueError("invalid literal for int() with base 10"),
-        "metaclass_attribute_error": AttributeError(
-            "metaclass conflict detected"
-        ),
+        "metaclass_attribute_error": AttributeError("metaclass conflict detected"),
         "metaclass_type_error": TypeError(
             "metaclass conflict: the metaclass of a derived class"
         ),
-        "privacy_tools_import_error": ImportError(
-            "No module named 'privacy_tools'"
-        ),
+        "privacy_tools_import_error": ImportError("No module named 'privacy_tools'"),
         "gui_themes_import_error": ImportError("No module named 'gui.themes'"),
-        "standard_window_import_error": ImportError(
-            "No module named 'StandardWindow'"
-        ),
+        "standard_window_import_error": ImportError("No module named 'StandardWindow'"),
     }
 
 

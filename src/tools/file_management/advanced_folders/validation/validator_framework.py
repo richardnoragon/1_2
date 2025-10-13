@@ -118,7 +118,7 @@ class RequiredValidator(BaseValidator):
     ) -> ValidationResult:
         """Check if value is provided and not empty."""
         is_valid = value is not None and (
-            not isinstance(value, str) or value.strip()
+            not isinstance(value, str) or bool(value.strip())
         )
 
         result = ValidationResult(is_valid=is_valid, field=field_name or "")

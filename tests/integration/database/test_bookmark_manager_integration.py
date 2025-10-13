@@ -16,7 +16,10 @@ sys.path.insert(0, str(src_path))
 def test_bookmark_manager_import():
     """Test importing the bookmark manager module"""
     try:
-        from src.tools.network.bookmark_manager import BookmarkManagerGUI, BookmarkModel
+        from src.tools.network.bookmarks.bookmark_manager import (
+            BookmarkManagerGUI,
+            BookmarkModel,
+        )
         print("✅ Successfully imported BookmarkManagerGUI and BookmarkModel")
         return True
     except ImportError as e:
@@ -26,7 +29,7 @@ def test_bookmark_manager_import():
 def test_bookmark_model_functionality():
     """Test basic bookmark model functionality"""
     try:
-        from src.tools.network.bookmark_manager import BookmarkModel
+        from src.tools.network.bookmarks.bookmark_manager import BookmarkModel
         
         # Create test database
         model = BookmarkModel("test_bookmarks.db")
@@ -81,8 +84,8 @@ def test_bookmark_model_functionality():
 def test_bookmark_gui_creation():
     """Test creating the bookmark manager GUI"""
     try:
-        from PyQt5.QtWidgets import QApplication
-        from src.tools.network.bookmark_manager import BookmarkManagerGUI
+    from PyQt5.QtWidgets import QApplication
+    from src.tools.network.bookmarks.bookmark_manager import BookmarkManagerGUI
         
         # Create QApplication if it doesn't exist
         app = QApplication.instance()
@@ -119,7 +122,10 @@ def test_bookmark_gui_creation():
 def test_import_export_functionality():
     """Test bookmark import/export functionality"""
     try:
-        from src.tools.network.bookmark_manager import BookmarkImporter, BookmarkExporter
+        from src.tools.network.bookmarks.bookmark_manager import (
+            BookmarkExporter,
+            BookmarkImporter,
+        )
         
         # Test creating sample data
         sample_bookmarks = [
