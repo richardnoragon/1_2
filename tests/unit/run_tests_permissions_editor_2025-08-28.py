@@ -28,9 +28,7 @@ from datetime import datetime
 from pathlib import Path
 
 # Add project root to path
-project_root = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), "..", "..")
-)
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 sys.path.insert(0, project_root)
 
 
@@ -114,7 +112,7 @@ class PermissionsEditorTestRunner:
 
         # Check target module
         try:
-            from src.tools.system.permissions_editor import (
+            from src.tools.system.permissions.permissions_editor import (
                 PermissionsEditorGUI,
             )
 
@@ -144,9 +142,7 @@ class PermissionsEditorTestRunner:
         os.makedirs(test_data_dir, exist_ok=True)
 
         # Create temporary test files
-        temp_test_file = os.path.join(
-            test_data_dir, "temp_permissions_test.txt"
-        )
+        temp_test_file = os.path.join(test_data_dir, "temp_permissions_test.txt")
         with open(temp_test_file, "w") as f:
             f.write("Temporary test file for permissions testing")
 
@@ -210,9 +206,7 @@ class PermissionsEditorTestRunner:
             self.end_time = time.time()
 
             print(f"   Exit code: {result.returncode}")
-            print(
-                f"   Execution time: {self.end_time - self.start_time:.2f} seconds"
-            )
+            print(f"   Execution time: {self.end_time - self.start_time:.2f} seconds")
 
             if result.stdout:
                 print("   STDOUT:")
@@ -271,14 +265,10 @@ class PermissionsEditorTestRunner:
                     "skipped_tests": skipped_tests,
                     "error_tests": error_tests,
                     "pass_rate": (
-                        (passed_tests / total_tests * 100)
-                        if total_tests > 0
-                        else 0
+                        (passed_tests / total_tests * 100) if total_tests > 0 else 0
                     ),
                     "failure_rate": (
-                        (failed_tests / total_tests * 100)
-                        if total_tests > 0
-                        else 0
+                        (failed_tests / total_tests * 100) if total_tests > 0 else 0
                     ),
                 }
 
@@ -287,9 +277,7 @@ class PermissionsEditorTestRunner:
                 print(f"   ❌ Failed: {failed_tests}")
                 print(f"   ⏭️ Skipped: {skipped_tests}")
                 print(f"   🚫 Errors: {error_tests}")
-                print(
-                    f"   📊 Pass rate: {self.results['metrics']['pass_rate']:.1f}%"
-                )
+                print(f"   📊 Pass rate: {self.results['metrics']['pass_rate']:.1f}%")
 
             except Exception as e:
                 print(f"   ⚠️ Error parsing JSON report: {e}")
@@ -306,9 +294,7 @@ class PermissionsEditorTestRunner:
                 coverage_elem = root.find(".//coverage")
                 if coverage_elem is not None:
                     line_rate = float(coverage_elem.get("line-rate", 0)) * 100
-                    branch_rate = (
-                        float(coverage_elem.get("branch-rate", 0)) * 100
-                    )
+                    branch_rate = float(coverage_elem.get("branch-rate", 0)) * 100
 
                     self.results["coverage"] = {
                         "line_coverage": line_rate,
@@ -443,9 +429,7 @@ class PermissionsEditorTestRunner:
 
         if "tests" in self.results:
             failed_tests = [
-                test
-                for test in self.results["tests"]
-                if test["outcome"] == "failed"
+                test for test in self.results["tests"] if test["outcome"] == "failed"
             ]
             if failed_tests:
                 report_content += f"""
@@ -453,9 +437,7 @@ class PermissionsEditorTestRunner:
 ## Failed Tests Analysis
 
 """
-                for test in failed_tests[
-                    :10
-                ]:  # Limit to first 10 failed tests
+                for test in failed_tests[:10]:  # Limit to first 10 failed tests
                     report_content += f"""
 ### {test['nodeid']}
 - **Outcome:** {test['outcome']}
@@ -507,9 +489,7 @@ class PermissionsEditorTestRunner:
         with open(self.comprehensive_report, "w", encoding="utf-8") as f:
             f.write(report_content)
 
-        print(
-            f"   ✅ Comprehensive report saved to: {self.comprehensive_report}"
-        )
+        print(f"   ✅ Comprehensive report saved to: {self.comprehensive_report}")
         print("✅ Comprehensive report generation completed\n")
 
     def validate_reports(self):
@@ -537,11 +517,7 @@ class PermissionsEditorTestRunner:
         # Check coverage directory
         if os.path.exists(self.coverage_dir):
             coverage_files = len(
-                [
-                    f
-                    for f in os.listdir(self.coverage_dir)
-                    if f.endswith(".html")
-                ]
+                [f for f in os.listdir(self.coverage_dir) if f.endswith(".html")]
             )
             print(f"   ✅ Coverage HTML: {coverage_files} files")
         else:
@@ -618,9 +594,7 @@ class PermissionsEditorTestRunner:
 
             if "coverage" in self.results:
                 coverage = self.results["coverage"]
-                print(
-                    f"📊 Code Coverage: {coverage['line_coverage']:.1f}% lines"
-                )
+                print(f"📊 Code Coverage: {coverage['line_coverage']:.1f}% lines")
 
             print(
                 f"⏱️ Total Execution Time: {getattr(self, 'end_time', 0) - getattr(self, 'start_time', 0):.2f} seconds"

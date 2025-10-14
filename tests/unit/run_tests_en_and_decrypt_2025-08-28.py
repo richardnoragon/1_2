@@ -13,10 +13,10 @@ This script:
 5. Creates execution summary
 """
 
-import sys
+import json
 import os
 import subprocess
-import json
+import sys
 import time
 from datetime import datetime
 from pathlib import Path
@@ -52,9 +52,7 @@ def ensure_dependencies():
         except ImportError:
             print(f"⚠️  {package} - Installing...")
             try:
-                subprocess.check_call(
-                    [sys.executable, "-m", "pip", "install", package]
-                )
+                subprocess.check_call([sys.executable, "-m", "pip", "install", package])
                 print(f"✅ {package} - Installed successfully")
             except subprocess.CalledProcessError:
                 print(f"❌ {package} - Installation failed")
@@ -69,9 +67,7 @@ def setup_test_environment():
     output_dir.mkdir(parents=True, exist_ok=True)
 
     # Create coverage directory
-    coverage_dir = (
-        output_dir / f"coverage_en_and_decrypt_{TEST_CONFIG['date_suffix']}"
-    )
+    coverage_dir = output_dir / f"coverage_en_and_decrypt_{TEST_CONFIG['date_suffix']}"
     coverage_dir.mkdir(exist_ok=True)
 
     print(f"📁 Test output directory: {output_dir}")
@@ -102,7 +98,7 @@ def run_tests(output_dir, coverage_dir):
         f"--junitxml={output_dir}/result_en_and_decrypt_{TEST_CONFIG['date_suffix']}.xml",
         "--json-report",
         f"--json-report-file={output_dir}/result_en_and_decrypt_{TEST_CONFIG['date_suffix']}.json",
-        "--cov=src.utilities.security.en_and_decrypt",
+        "--cov=src.tools.security.encryption.en_and_decrypt",
         f"--cov-report=html:{coverage_dir}",
         f"--cov-report=json:{output_dir}/coverage_en_and_decrypt_{TEST_CONFIG['date_suffix']}.json",
         "--cov-report=term-missing",
@@ -203,8 +199,7 @@ def generate_execution_summary(output_dir, test_result, execution_time):
 
     # Save summary
     summary_file = (
-        output_dir
-        / f"result_en_and_decrypt_{TEST_CONFIG['date_suffix']}_summary.json"
+        output_dir / f"result_en_and_decrypt_{TEST_CONFIG['date_suffix']}_summary.json"
     )
     with open(summary_file, "w", encoding="utf-8") as f:
         json.dump(summary, f, indent=2, ensure_ascii=False)
@@ -225,9 +220,7 @@ def print_final_report(summary, output_dir):
     print(f"🎯 Target Module: {exec_summary['target_module']}")
     print(f"📄 Test File: {exec_summary['test_file']}")
     print(f"⚡ Framework: {exec_summary['framework']}")
-    print(
-        f"⏱️  Execution Time: {exec_summary['execution_time_seconds']:.2f} seconds"
-    )
+    print(f"⏱️  Execution Time: {exec_summary['execution_time_seconds']:.2f} seconds")
     print(f"✅ Success: {'Yes' if exec_summary['success'] else 'No'}")
     print(f"🏁 Return Code: {exec_summary['return_code']}")
 
@@ -267,9 +260,7 @@ def main():
         test_result, execution_time = run_tests(output_dir, coverage_dir)
 
         # Step 4: Generate summary
-        summary = generate_execution_summary(
-            output_dir, test_result, execution_time
-        )
+        summary = generate_execution_summary(output_dir, test_result, execution_time)
 
         # Step 5: Print final report
         print_final_report(summary, output_dir)

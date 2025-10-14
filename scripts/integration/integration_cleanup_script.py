@@ -213,7 +213,11 @@ def update_main_py():
         # System Tools
         def open_system_diagnostics(self):
             """Open System Diagnostics tool."""
-            self.launch_tool("System Diagnostics", "src.utilities.system.diagnostics_monitoring", "SystemDiagnosticsGUI")
+            self.launch_tool(
+                "System Diagnostics",
+                "src.tools.system.diagnostics_monitoring",
+                "SystemDiagnosticsGUI",
+            )
         
         def open_system_cleanup(self):
             """Open System Cleanup tool."""

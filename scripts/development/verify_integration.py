@@ -59,7 +59,7 @@ def main():
         ("src.utilities.privacy.privacy_tools", "PrivacyCleanerGUI"),
         ("src.tools.privacy.anonymizer.data_anonymizer", "DataAnonymizerGUI"),
         # New system tools
-        ("src.utilities.system.diagnostics_monitoring", "SystemDiagnosticsGUI"),
+        ("src.tools.system.diagnostics_monitoring", "SystemDiagnosticsGUI"),
         ("src.utilities.system.system_cleanup", "SystemCleanupGUI"),
         ("src.utilities.system.software_maintenance", "SoftwareMaintenanceGUI"),
     ]

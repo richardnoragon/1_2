@@ -19,7 +19,7 @@ The original issue where the System Diagnostics tool failed to launch has been *
 
 ```
 System Diagnostics Tool Structure:
-├── src/utilities/system/diagnostics_monitoring/
+├── src/tools/system/diagnostics_monitoring/
 │   ├── __init__.py (Updated with proper exports)
 │   ├── system_diagnostics_gui.py (NEW - Main GUI class)
 │   ├── gui/ (Individual widget components)
@@ -38,11 +38,13 @@ System Diagnostics Tool Structure:
 **Problem**: `Failed to import System Diagnostics: Module src.utilities.system.diagnostics_monitoring`
 
 **Solution**: ✅ **FIXED**
+
 - Updated `__init__.py` to properly export `SystemDiagnosticsGUI`
 - Created comprehensive main GUI class
 - Added proper error handling for missing dependencies
 
 **Verification**:
+
 ```python
 from src.tools.system.diagnostics_monitoring import SystemDiagnosticsGUI
 print("Import successful!")
@@ -55,17 +57,21 @@ print("Import successful!")
 **Solutions**:
 
 #### Option A: Install PyQt5
+
 ```bash
 pip install PyQt5
 ```
 
 #### Option B: Use Alternative GUI Framework
+
 ```bash
 pip install PySide2  # Alternative to PyQt5
 ```
 
 #### Option C: Command Line Mode
+
 If GUI is not available, use command-line diagnostics:
+
 ```bash
 python -m src.utilities.system.diagnostics_monitoring.system_diagnostics_gui
 ```
@@ -75,6 +81,7 @@ python -m src.utilities.system.diagnostics_monitoring.system_diagnostics_gui
 **Problem**: Individual diagnostic widgets not loading
 
 **Diagnosis**:
+
 ```python
 from src.tools.system.diagnostics_monitoring import (
     GUI_WIDGETS_AVAILABLE,
@@ -87,6 +94,7 @@ print(f"Main GUI: {MAIN_GUI_AVAILABLE}")
 ```
 
 **Solutions**:
+
 - **Widgets Unavailable**: Install missing dependencies (psutil, matplotlib)
 - **Core Unavailable**: Check platform-specific monitoring libraries
 - **Main GUI Unavailable**: Install PyQt5 or PySide2
@@ -96,11 +104,13 @@ print(f"Main GUI: {MAIN_GUI_AVAILABLE}")
 **Problem**: Tool not appearing in main hub or failing to launch
 
 **Solution**: ✅ **FIXED**
+
 - Added `open_system_diagnostics()` method to hub
 - Integrated with hub's tool registration system
 - Added fallback message for dependency issues
 
 **Verification**:
+
 1. Launch RFU Hub
 2. Look for "System Diagnostics" button
 3. Click to launch tool
@@ -112,18 +122,21 @@ print(f"Main GUI: {MAIN_GUI_AVAILABLE}")
 **Solutions**:
 
 #### Windows:
+
 ```bash
 # Run as Administrator
 runas /user:Administrator "python -m src.rfu.main"
 ```
 
 #### Linux/macOS:
+
 ```bash
 # Run with sudo for system access
 sudo python -m src.rfu.main
 ```
 
 #### Alternative: User-level monitoring
+
 The tool gracefully degrades to user-accessible metrics when system-level access is unavailable.
 
 ## Alternative Access Methods
@@ -132,7 +145,7 @@ The tool gracefully degrades to user-accessible metrics when system-level access
 
 ```bash
 # Launch System Diagnostics directly
-python src/utilities/system/diagnostics_monitoring/system_diagnostics_gui.py
+python src/tools/system/diagnostics_monitoring/system_diagnostics_gui.py
 ```
 
 ### 2. Command Line Interface
@@ -168,11 +181,11 @@ else:
 python -c "
 import os
 files = [
-    'src/utilities/system/diagnostics_monitoring/__init__.py',
-    'src/utilities/system/diagnostics_monitoring/system_diagnostics_gui.py',
-    'src/utilities/system/diagnostics_monitoring/gui/disk_health_widget.py',
-    'src/utilities/system/diagnostics_monitoring/gui/performance_widget.py',
-    'src/utilities/system/diagnostics_monitoring/gui/battery_health_widget.py'
+    'src/tools/system/diagnostics_monitoring/__init__.py',
+    'src/tools/system/diagnostics_monitoring/system_diagnostics_gui.py',
+    'src/tools/system/diagnostics_monitoring/gui/disk_health_widget.py',
+    'src/tools/system/diagnostics_monitoring/gui/performance_widget.py',
+    'src/tools/system/diagnostics_monitoring/gui/battery_health_widget.py'
 ]
 for f in files:
     status = '✓' if os.path.exists(f) else '✗'
@@ -201,16 +214,19 @@ for dep in deps:
 ### Required Services
 
 #### Windows:
+
 - **Windows Management Instrumentation (WMI)**: For system information
 - **Performance Logs and Alerts**: For performance monitoring
 - **Windows Event Log**: For system events
 
 #### Linux:
+
 - **systemd**: For service monitoring
 - **proc filesystem**: For system statistics
 - **sysfs**: For hardware information
 
 #### macOS:
+
 - **Activity Monitor**: For process information
 - **System Information**: For hardware details
 - **IOKit**: For device monitoring
@@ -220,6 +236,7 @@ for dep in deps:
 #### If monitoring stops working:
 
 1. **Restart Monitoring**:
+
    ```python
    # In the GUI, click "Stop Monitoring" then "Start Monitoring"
    # Or programmatically:
@@ -228,6 +245,7 @@ for dep in deps:
    ```
 
 2. **Reset Tool**:
+
    ```python
    # Close and reopen the diagnostics tool
    gui.close()
@@ -247,6 +265,7 @@ for dep in deps:
 **Cause**: Trying to create GUI without QApplication instance
 
 **Solution**:
+
 ```python
 from PyQt5.QtWidgets import QApplication
 import sys
@@ -260,6 +279,7 @@ sys.exit(app.exec_())
 ### Error: "No module named 'psutil'"
 
 **Solution**:
+
 ```bash
 pip install psutil
 ```
@@ -267,6 +287,7 @@ pip install psutil
 ### Error: "Permission denied accessing system information"
 
 **Solutions**:
+
 1. Run with elevated privileges
 2. Use user-level monitoring mode
 3. Check system security settings
@@ -282,10 +303,12 @@ pip install psutil
 ### Reduce Resource Usage
 
 1. **Increase Update Interval**:
+
    - Default: 5 seconds
    - Recommended for low-end systems: 30+ seconds
 
 2. **Disable Unused Widgets**:
+
    ```python
    # Disable specific monitoring components
    gui.performance_widget.stop_auto_refresh()
@@ -353,12 +376,14 @@ python test_system_diagnostics.py
 ### Log Files
 
 Check these locations for diagnostic logs:
+
 - **Windows**: `%APPDATA%/RFU/logs/`
 - **Linux/macOS**: `~/.rfu/logs/`
 
 ### Debug Mode
 
 Enable debug logging:
+
 ```python
 import logging
 logging.basicConfig(level=logging.DEBUG)
@@ -367,6 +392,7 @@ logging.basicConfig(level=logging.DEBUG)
 ### Reporting Issues
 
 When reporting issues, include:
+
 1. Operating system and version
 2. Python version
 3. Installed dependencies (`pip list`)

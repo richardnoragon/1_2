@@ -68,7 +68,10 @@ def run_tests():
 
         pytest_cmd.extend(
             [
-                "--cov=src.utilities.system.diagnostics_monitoring.gui.battery_health_widget",
+                (
+                    "--cov=src.tools.system."
+                    "diagnostics_monitoring.gui.battery_health_widget"
+                ),
                 f"--cov-report=html:{OUTPUT_PREFIX}_coverage.html",
                 f"--cov-report=json:{OUTPUT_PREFIX}_coverage.json",
                 "--cov-report=term-missing",
@@ -90,9 +93,7 @@ def run_tests():
         )
         print("JSON reporting enabled")
     except ImportError:
-        print(
-            "JSON reporting not available (pytest-json-report not installed)"
-        )
+        print("JSON reporting not available (pytest-json-report not installed)")
 
     print(f"Running command: {' '.join(pytest_cmd)}")
     print("-" * 80)
@@ -191,9 +192,7 @@ def generate_summary_report(
         f"{OUTPUT_PREFIX}_detailed.json",
     ]:
         if Path(file_pattern).exists():
-            summary["test_configuration"]["reports_generated"].append(
-                file_pattern
-            )
+            summary["test_configuration"]["reports_generated"].append(file_pattern)
 
     # Parse test results from stdout if available
     if stdout:
@@ -223,10 +222,7 @@ def parse_test_results(stdout):
     lines = stdout.split("\n")
     for line in lines:
         if "::" in line and (
-            "PASSED" in line
-            or "FAILED" in line
-            or "SKIPPED" in line
-            or "ERROR" in line
+            "PASSED" in line or "FAILED" in line or "SKIPPED" in line or "ERROR" in line
         ):
             results["test_details"].append(line.strip())
 
@@ -240,10 +236,7 @@ def parse_test_results(stdout):
                 results["errors"] += 1
 
     results["total_tests"] = (
-        results["passed"]
-        + results["failed"]
-        + results["skipped"]
-        + results["errors"]
+        results["passed"] + results["failed"] + results["skipped"] + results["errors"]
     )
 
     return results

@@ -1000,7 +1000,6 @@ class MultiPaneFileExplorer(QMainWindow):
         preferences_action.triggered.connect(self.open_preferences)
         tools_menu.addAction(preferences_action)
 
-        # Help menu
         help_menu = menubar.addMenu("&Help")
 
         about_action = QAction("&About", self)
@@ -2540,7 +2539,7 @@ class MultiPaneFileExplorer(QMainWindow):
         """Launch Encrypt/Decrypt tool."""
         self._launch_tool(
             TOOL_NAMES["ENCRYPT_DECRYPT"],
-            "src.tools.security.en_and_decrypt",
+            "src.tools.security.encryption.en_and_decrypt",
             "EnAndDecryptGUI",
         )
 
@@ -2573,7 +2572,9 @@ class MultiPaneFileExplorer(QMainWindow):
     def launch_permissions(self):
         """Launch Permissions Editor tool."""
         self._launch_tool(
-            "Permissions", "src.tools.system.permissions_editor", "PermissionsEditorGUI"
+            "Permissions",
+            "src.tools.system.permissions.permissions_editor",
+            "PermissionsEditorGUI",
         )
 
     def _launch_tool(self, tool_name: str, module_name: str, class_name: str):
@@ -2980,8 +2981,8 @@ class MultiPaneFileExplorer(QMainWindow):
             "File Finder": "src.tools.file_management.finder.file_finder",
             "Size Analyzer": "src.utilities.analysis.size_analyzer",
             "Duplicate Finder": "src.utilities.analysis.duplicate_finder_app",
-            "Encrypt/Decrypt": "src.utilities.security.en_and_decrypt",
-            "Secure Delete": "src.utilities.security.secure_delete",
+            "Encrypt/Decrypt": "src.tools.security.encryption.en_and_decrypt",
+            "Secure Delete": "src.tools.security.secure_delete",
             "File Catalog": "src.utilities.file_management.catalog_window",
         }
 
@@ -3721,7 +3722,7 @@ class MultiPaneFileExplorer(QMainWindow):
                 {
                     "name": "encrypt_decrypt",
                     "display_name": "Encrypt/Decrypt",
-                    "module_path": "src.tools.security.en_and_decrypt",
+                    "module_path": "src.tools.security.encryption.en_and_decrypt",
                     "class_name": "EnAndDecryptGUI",
                     "icon": "🔒",
                 },
@@ -3752,7 +3753,7 @@ class MultiPaneFileExplorer(QMainWindow):
         """Launch Permissions Editor."""
         self._launch_tool(
             "Permission Editor",
-            "src.tools.system.permissions_editor",
+            "src.tools.system.permissions.permissions_editor",
             "PermissionsEditorGUI",
         )
 

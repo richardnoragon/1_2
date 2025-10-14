@@ -56,13 +56,8 @@ try:
     )
     DIAGNOSTICS_GUI_AVAILABLE = True
 except ImportError:
-    try:
-        from src.tools.system.diagnostics_monitoring import SystemDiagnosticsGUI
-
-        DIAGNOSTICS_GUI_AVAILABLE = True
-    except ImportError:
-        DIAGNOSTICS_GUI_AVAILABLE = False
-        SystemDiagnosticsGUI = QMainWindow
+    DIAGNOSTICS_GUI_AVAILABLE = False
+    SystemDiagnosticsGUI = QMainWindow
 
 # Import cleanup tools
 try:

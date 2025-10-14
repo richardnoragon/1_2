@@ -6,32 +6,32 @@ This module provides a comprehensive system cleanup interface that integrates
 with the existing diagnostics framework while providing cleanup-specific functionality.
 """
 
-import sys
-import os
 import logging
-from typing import Optional, Dict, Any
+import os
+import sys
 from pathlib import Path
+from typing import Any, Dict, Optional
 
 try:
-    from PyQt5.QtWidgets import (
-        QMainWindow,
-        QWidget,
-        QVBoxLayout,
-        QHBoxLayout,
-        QTabWidget,
-        QLabel,
-        QPushButton,
-        QMessageBox,
-        QGroupBox,
-        QGridLayout,
-        QProgressBar,
-        QTextEdit,
-        QCheckBox,
-        QSpinBox,
-        QApplication,
-    )
     from PyQt5.QtCore import Qt, pyqtSignal
     from PyQt5.QtGui import QFont
+    from PyQt5.QtWidgets import (
+        QApplication,
+        QCheckBox,
+        QGridLayout,
+        QGroupBox,
+        QHBoxLayout,
+        QLabel,
+        QMainWindow,
+        QMessageBox,
+        QProgressBar,
+        QPushButton,
+        QSpinBox,
+        QTabWidget,
+        QTextEdit,
+        QVBoxLayout,
+        QWidget,
+    )
 
     PYQT5_AVAILABLE = True
 except ImportError:
@@ -46,27 +46,22 @@ try:
 
     DIAGNOSTICS_GUI_AVAILABLE = True
 except ImportError:
-    try:
-        from src.tools.system.diagnostics_monitoring import SystemDiagnosticsGUI
-
-        DIAGNOSTICS_GUI_AVAILABLE = True
-    except ImportError:
-        DIAGNOSTICS_GUI_AVAILABLE = False
-        if PYQT5_AVAILABLE:
-            SystemDiagnosticsGUI = QMainWindow
-        else:
-            SystemDiagnosticsGUI = object
+    DIAGNOSTICS_GUI_AVAILABLE = False
+    if PYQT5_AVAILABLE:
+        SystemDiagnosticsGUI = QMainWindow
+    else:
+        SystemDiagnosticsGUI = object
 
 # Import cleanup tools
 try:
-    from src.tools.system.system_cleanup.tools.temp_cleaner import (
-        TempFilesCleaner,
-    )
     from src.tools.system.system_cleanup.core.cleanup_base import (
         CleanupOperationResult,
     )
     from src.tools.system.system_cleanup.core.safety_manager import SafetyManager
     from src.tools.system.system_cleanup.core.windows_utils import WindowsUtils
+    from src.tools.system.system_cleanup.tools.temp_cleaner import (
+        TempFilesCleaner,
+    )
 
     CLEANUP_TOOLS_AVAILABLE = True
 except ImportError:

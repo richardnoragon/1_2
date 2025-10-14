@@ -3,22 +3,23 @@
 Enhanced Permissions Editor GUI for Richard's File Utilities
 """
 
-import sys
 import os
 import stat
+import sys
+
 from PyQt5.QtWidgets import (
-    QWidget,
-    QVBoxLayout,
+    QApplication,
+    QCheckBox,
+    QFileDialog,
+    QGroupBox,
     QHBoxLayout,
-    QPushButton,
     QLabel,
     QListWidget,
-    QCheckBox,
-    QApplication,
-    QMessageBox,
-    QGroupBox,
-    QFileDialog,
     QMainWindow,
+    QMessageBox,
+    QPushButton,
+    QVBoxLayout,
+    QWidget,
 )
 
 # Import StandardWindow for menu integration
@@ -43,9 +44,7 @@ class PermissionsEditorGUI(StandardWindow):
             )
         else:
             super().__init__()
-            self.setWindowTitle(
-                "Permissions Editor - Richard's File Utilities"
-            )
+            self.setWindowTitle("Permissions Editor - Richard's File Utilities")
             self.setGeometry(100, 100, 800, 600)
 
         self.selected_path = None
@@ -57,12 +56,8 @@ class PermissionsEditorGUI(StandardWindow):
         """Setup tool-specific menu callbacks."""
         if hasattr(self, "menu_manager"):
             # Register tool-specific callbacks
-            self.menu_manager.register_callback(
-                "new_permissions", self.clear_selection
-            )
-            self.menu_manager.register_callback(
-                "help_permissions", self.show_help
-            )
+            self.menu_manager.register_callback("new_permissions", self.clear_selection)
+            self.menu_manager.register_callback("help_permissions", self.show_help)
 
     def show_help(self):
         """Show comprehensive help for Permissions Editor."""
@@ -253,15 +248,11 @@ class PermissionsEditorGUI(StandardWindow):
         perms_group = QGroupBox("Permissions")
         perms_layout = QVBoxLayout(perms_group)
 
-        self.read_check = QCheckBox(
-            "Read (r) - View file contents or list directory"
-        )
+        self.read_check = QCheckBox("Read (r) - View file contents or list directory")
         self.write_check = QCheckBox(
             "Write (w) - Modify file contents or directory structure"
         )
-        self.execute_check = QCheckBox(
-            "Execute (x) - Run file or access directory"
-        )
+        self.execute_check = QCheckBox("Execute (x) - Run file or access directory")
 
         for checkbox in [
             self.read_check,
@@ -341,9 +332,7 @@ class PermissionsEditorGUI(StandardWindow):
         if file_path:
             self.selected_path = file_path
             self.file_label.setText(f"Selected: {file_path}")
-            self.status_list.addItem(
-                f"File selected: {os.path.basename(file_path)}"
-            )
+            self.status_list.addItem(f"File selected: {os.path.basename(file_path)}")
 
     def select_directory(self):
         """Select a directory."""
@@ -378,9 +367,7 @@ class PermissionsEditorGUI(StandardWindow):
             )
 
         except Exception as e:
-            QMessageBox.critical(
-                self, "Error", f"Failed to load permissions: {e}"
-            )
+            QMessageBox.critical(self, "Error", f"Failed to load permissions: {e}")
             self.status_list.addItem(f"Error loading permissions: {e}")
 
     def apply_permissions(self):
@@ -424,9 +411,7 @@ class PermissionsEditorGUI(StandardWindow):
                 )
 
         except Exception as e:
-            QMessageBox.critical(
-                self, "Error", f"Failed to apply permissions: {e}"
-            )
+            QMessageBox.critical(self, "Error", f"Failed to apply permissions: {e}")
             self.status_list.addItem(f"Error applying permissions: {e}")
 
 

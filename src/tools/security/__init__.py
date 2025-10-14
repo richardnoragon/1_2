@@ -1,3 +1,5 @@
 """Richard's File Utilities - Security Tools"""
 
-# Available modules: en_and_decrypt, secure_delete
+# Available modules:
+# - encryption.en_and_decrypt: File encryption and decryption
+# - secure_delete: Secure file deletion

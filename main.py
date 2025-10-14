@@ -2426,7 +2426,7 @@ try:
         def open_encrypt_decrypt(self):
             self.launch_tool(
                 "Encrypt/Decrypt",
-                "src.tools.security.en_and_decrypt",
+                "src.tools.security.encryption.en_and_decrypt",
                 "EnAndDecryptGUI",
             )
 
@@ -2440,7 +2440,7 @@ try:
         def open_permissions(self):
             self.launch_tool(
                 "Permissions Editor",
-                "src.tools.system.permissions_editor",
+                "src.tools.system.permissions.permissions_editor",
                 "PermissionsEditorGUI",
             )
 

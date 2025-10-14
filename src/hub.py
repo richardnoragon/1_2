@@ -1501,9 +1501,11 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
     def open_encrypt_decrypt(self):
         """Open encrypt/decrypt tool."""
         try:
-            from ..utilities.security.encrypt_decrypt import EncryptDecryptGUI
+            from src.tools.security.encryption.en_and_decrypt import (
+                EnAndDecryptGUI,
+            )
 
-            tool = EncryptDecryptGUI()
+            tool = EnAndDecryptGUI()
             tool.show()
             self._update_status_bar("Encrypt/Decrypt opened")
             self.logger.info("Encrypt/Decrypt tool opened")

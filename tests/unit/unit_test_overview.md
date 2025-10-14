@@ -591,7 +591,7 @@
 
 #### System Health Widgets
 
-##### [`disk_health_widget.py`](../../src/utilities/system/diagnostics_monitoring/widgets/disk_health_widget.py)
+##### [`disk_health_widget.py`](../../src/tools/system/diagnostics_monitoring/widgets/disk_health_widget.py)
 
 **Status:** ✅ **Comprehensive Testing Complete - August 29, 2025**  
 **Test Files:** Multiple variants with comprehensive coverage  
@@ -600,7 +600,7 @@
 **Features:** Disk space analysis, health status indicators, auto-refresh, detailed reporting  
 **Test Coverage:** 50+ test cases, 100% success rate (19/19 clean tests), comprehensive mocking
 
-##### [`battery_health_widget.py`](../../src/utilities/system/diagnostics_monitoring/widgets/battery_health_widget.py)
+##### [`battery_health_widget.py`](../../src/tools/system/diagnostics_monitoring/widgets/battery_health_widget.py)
 
 **Status:** ✅ **Testing Complete - August 29, 2025**  
 **Test Files:** [`test_battery_health_widget_2025-08-29.py`](test_battery_health_widget_2025-08-29.py)  
@@ -608,7 +608,7 @@
 **Purpose:** Battery health monitoring and power management analysis  
 **Features:** Battery level tracking, health indicators, charging state monitoring
 
-##### [`filesystem_integrity_widget.py`](../../src/utilities/system/diagnostics_monitoring/widgets/filesystem_integrity_widget.py)
+##### [`filesystem_integrity_widget.py`](../../src/tools/system/diagnostics_monitoring/widgets/filesystem_integrity_widget.py)
 
 **Status:** ✅ **Testing Available - August 29, 2025**  
 **Test Files:** [`test_filesystem_integrity_widget_2025-08-29.py`](test_filesystem_integrity_widget_2025-08-29.py)  
@@ -616,7 +616,7 @@
 **Purpose:** File system integrity checking and validation  
 **Features:** Checksum verification, corruption detection, repair recommendations
 
-#### [`gui_components.py`](../../src/utilities/system/diagnostics_monitoring/gui/)
+#### [`gui_components.py`](../../src/tools/system/diagnostics_monitoring/gui/)
 
 **Status:** ✅ **Testing Available**  
 **Test Files:** [`test_gui_components.py`](../test_gui_components.py)  

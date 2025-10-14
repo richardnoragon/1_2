@@ -158,7 +158,7 @@ Control Owner: [Responsible Person/Team]
 #### A.8.6 Capacity Management
 
 **Implementation Status:** ✅ **IMPLEMENTED**  
-**Evidence Location:** [`src/utilities/system/diagnostics_monitoring/`](../../src/utilities/system/diagnostics_monitoring/)  
+**Evidence Location:** [`src/tools/system/diagnostics_monitoring/`](../../src/tools/system/diagnostics_monitoring/)  
 **Technical Implementation:** Comprehensive system monitoring and capacity management  
 **Compliance Level:** 🟢 **FULLY COMPLIANT**
 
@@ -298,7 +298,7 @@ Control Owner: [Responsible Person/Team]
 #### A.8.16 Monitoring Activities
 
 **Implementation Status:** ✅ **IMPLEMENTED**  
-**Evidence Location:** [`src/utilities/system/diagnostics_monitoring/`](../../src/utilities/system/diagnostics_monitoring/)  
+**Evidence Location:** [`src/tools/system/diagnostics_monitoring/`](../../src/tools/system/diagnostics_monitoring/)  
 **Technical Implementation:** Real-time monitoring with comprehensive dashboards  
 **Compliance Level:** 🟢 **FULLY COMPLIANT**
 

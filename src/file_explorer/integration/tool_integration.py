@@ -92,7 +92,7 @@ class ToolIntegration(QObject if QT_AVAILABLE else object):
                     "description": "Find and remove duplicates",
                 },
                 "Encrypt/Decrypt": {
-                    "module": "src.tools.security.en_and_decrypt",
+                    "module": "src.tools.security.encryption.en_and_decrypt",
                     "class": "EnAndDecryptGUI",
                     "category": "Security",
                     "description": "File encryption/decryption",

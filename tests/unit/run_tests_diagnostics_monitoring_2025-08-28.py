@@ -73,7 +73,7 @@ def run_pytest_with_reports():
         "--self-contained-html",
         "--json-report",
         f'--json-report-file={RESULTS_DIR / REPORT_FILES["json"]}',
-        f'--cov={PROJECT_ROOT / "src" / "utilities" / "system" / "diagnostics_monitoring"}',
+        f'--cov={PROJECT_ROOT / "src" / "tools" / "system" / "diagnostics_monitoring"}',
         f'--cov-report=html:{RESULTS_DIR / REPORT_FILES["coverage_html"]}',
         f'--cov-report=xml:{RESULTS_DIR / REPORT_FILES["coverage_xml"]}',
         "--cov-report=term-missing",
@@ -207,9 +207,7 @@ def generate_summary_report(pytest_success, pytest_result, individual_results):
             summary["reports_generated"][report_type] = {
                 "path": str(report_path),
                 "exists": report_path.exists(),
-                "size": (
-                    report_path.stat().st_size if report_path.exists() else 0
-                ),
+                "size": (report_path.stat().st_size if report_path.exists() else 0),
                 "type": "file",
             }
 
@@ -238,9 +236,7 @@ def generate_summary_report(pytest_success, pytest_result, individual_results):
         "skipped_test_files": skipped_tests,
         "error_test_files": error_tests,
         "timeout_test_files": timeout_tests,
-        "success_rate": (
-            (passed_tests / total_tests * 100) if total_tests > 0 else 0
-        ),
+        "success_rate": ((passed_tests / total_tests * 100) if total_tests > 0 else 0),
     }
 
     # Print summary to console
@@ -252,9 +248,7 @@ def generate_summary_report(pytest_success, pytest_result, individual_results):
     print(f"Skipped: {skipped_tests}")
     print(f"Errors: {error_tests}")
     print(f"Timeouts: {timeout_tests}")
-    print(
-        f"Success Rate: {summary['summary_statistics']['success_rate']:.1f}%"
-    )
+    print(f"Success Rate: {summary['summary_statistics']['success_rate']:.1f}%")
 
     print("\nGenerated Reports:")
     for report_type, info in summary["reports_generated"].items():
@@ -320,9 +314,7 @@ def cleanup_and_finalize():
             print(f"  {file.name}/ ({file_count} files)")
 
     print(f"\nAll reports saved to: {RESULTS_DIR}")
-    print(
-        f"Test execution timestamp: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
-    )
+    print(f"Test execution timestamp: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
 
 def main():
