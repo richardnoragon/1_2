@@ -1,8 +1,8 @@
 # Simple Security Scanner - Comprehensive Testing Documentation
 
 **Generated:** 2025-08-28  
-**Target Module:** `src/utilities/security/simple_security_scanner.py`  
-**Test Framework:** pytest  
+**Target Module:** `src/tools/security/security_scanner/security_scanner.py`  
+**Test Framework:** pytest
 
 ## Overview
 
@@ -192,12 +192,12 @@ pytest tests/unit/test_simple_security_scanner_2025-08-28.py -m "not slow"
 
 ```bash
 # HTML coverage report
-pytest --cov=src.utilities.security.simple_security_scanner \
+pytest --cov=tools.security.security_scanner.security_scanner \
        --cov-report=html:coverage_html \
        tests/unit/test_simple_security_scanner_2025-08-28.py
 
 # Terminal coverage
-pytest --cov=src.utilities.security.simple_security_scanner \
+pytest --cov=tools.security.security_scanner.security_scanner \
        --cov-report=term-missing \
        tests/unit/test_simple_security_scanner_2025-08-28.py
 ```
@@ -353,7 +353,7 @@ def validate_system_info_result(result):
     """Validate system information scan output format."""
     required_fields = [
         "Operating System:",
-        "Machine Type:", 
+        "Machine Type:",
         "Python Version:",
         "Hostname:"
     ]
@@ -449,17 +449,17 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.9
-    - name: Install dependencies
-      run: |
-        pip install -r tests/unit/requirements_simple_security_scanner_2025-08-28.txt
-    - name: Run tests
-      run: |
-        python tests/unit/run_simple_security_scanner_tests_2025-08-28.py
+      - uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+      - name: Install dependencies
+        run: |
+          pip install -r tests/unit/requirements_simple_security_scanner_2025-08-28.txt
+      - name: Run tests
+        run: |
+          python tests/unit/run_simple_security_scanner_tests_2025-08-28.py
 ```
 
 ### Jenkins Integration

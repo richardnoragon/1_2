@@ -37,8 +37,7 @@ from typing import Any, Dict, List, Optional
 
 # Configure enterprise-grade logging with comprehensive traceability
 log_filename = (
-    f"enterprise_integration_test_"
-    f'{datetime.now().strftime("%Y%m%d_%H%M%S")}.log'
+    f"enterprise_integration_test_" f'{datetime.now().strftime("%Y%m%d_%H%M%S")}.log'
 )
 
 # Create logs directory if it doesn't exist
@@ -202,7 +201,7 @@ class EnterpriseTestFramework:
 
         # CRITICAL: Test hub class import (THE MAIN BLOCKER)
         try:
-            from src.hub import RFUHub
+            from tabbed_hub import RFUHub
 
             import_results["hub_class_available"] = True
             successful_imports += 1
@@ -243,9 +242,7 @@ class EnterpriseTestFramework:
             )
 
         # Calculate success rate
-        import_results["success_rate"] = (
-            successful_imports / total_imports
-        ) * 100.0
+        import_results["success_rate"] = (successful_imports / total_imports) * 100.0
 
         # Enterprise quality gate validation
         if (
@@ -293,9 +290,7 @@ class EnterpriseTestFramework:
                 successful_checks += 1
                 logger.info("✅ Main module import: SUCCESS")
             except ImportError as e:
-                test_results["errors"].append(
-                    f"Main module import failed: {e}"
-                )
+                test_results["errors"].append(f"Main module import failed: {e}")
                 logger.error(f"❌ Main module import: FAILED - {e}")
                 self.record_deployment_blocker(
                     "main_module_import",
@@ -305,7 +300,7 @@ class EnterpriseTestFramework:
 
             # Test hub instantiation (critical for tool launcher)
             try:
-                from src.hub import RFUHub
+                from tabbed_hub import RFUHub
 
                 # Test instantiation in non-GUI mode if possible
                 logger.info("Testing RFUHub instantiation capability...")
@@ -326,11 +321,9 @@ class EnterpriseTestFramework:
                 # Check if the hub has tool launching methods
                 import inspect
 
-                from src.hub import RFUHub
+                from tabbed_hub import RFUHub
 
-                hub_methods = inspect.getmembers(
-                    RFUHub, predicate=inspect.ismethod
-                )
+                hub_methods = inspect.getmembers(RFUHub, predicate=inspect.ismethod)
                 launch_methods = [
                     m
                     for m in hub_methods
@@ -369,9 +362,7 @@ class EnterpriseTestFramework:
                 logger.error(f"❌ Error handling framework: FAILED - {e}")
 
         except Exception as e:
-            logger.error(
-                f"Critical error in tool launcher framework test: {e}"
-            )
+            logger.error(f"Critical error in tool launcher framework test: {e}")
             test_results["errors"].append(f"Critical test failure: {e}")
             self.record_deployment_blocker(
                 "tool_launcher_critical_failure",
@@ -381,9 +372,7 @@ class EnterpriseTestFramework:
 
         test_end = time.time()
         test_results["execution_time"] = test_end - test_start
-        test_results["success_rate"] = (
-            successful_checks / total_checks
-        ) * 100.0
+        test_results["success_rate"] = (successful_checks / total_checks) * 100.0
 
         # Quality gate validation
         if (
@@ -433,9 +422,7 @@ class EnterpriseTestFramework:
 
         try:
             # Create temporary database for testing
-            with tempfile.NamedTemporaryFile(
-                suffix=".db", delete=False
-            ) as tmp_file:
+            with tempfile.NamedTemporaryFile(suffix=".db", delete=False) as tmp_file:
                 temp_db_path = tmp_file.name
 
             logger.info(f"Created temporary database: {temp_db_path}")
@@ -446,9 +433,7 @@ class EnterpriseTestFramework:
                 conn.execute(
                     "CREATE TABLE test_table (id INTEGER PRIMARY KEY, data TEXT)"
                 )
-                conn.execute(
-                    "INSERT INTO test_table (data) VALUES ('test_data')"
-                )
+                conn.execute("INSERT INTO test_table (data) VALUES ('test_data')")
                 conn.commit()
 
                 # Verify data was committed
@@ -468,18 +453,14 @@ class EnterpriseTestFramework:
 
                 conn.close()
             except Exception as e:
-                test_results["errors"].append(
-                    f"Transaction commit test failed: {e}"
-                )
+                test_results["errors"].append(f"Transaction commit test failed: {e}")
                 logger.error(f"❌ Transaction commit: FAILED - {e}")
 
             # Test transaction rollback (CRITICAL BLOCKER #3)
             try:
                 conn = sqlite3.connect(temp_db_path)
                 conn.execute("BEGIN TRANSACTION")
-                conn.execute(
-                    "INSERT INTO test_table (data) VALUES ('rollback_test')"
-                )
+                conn.execute("INSERT INTO test_table (data) VALUES ('rollback_test')")
 
                 # Verify data is in transaction but not committed
                 cursor = conn.execute("SELECT COUNT(*) FROM test_table")
@@ -492,9 +473,7 @@ class EnterpriseTestFramework:
                 cursor = conn.execute("SELECT COUNT(*) FROM test_table")
                 count_after_rollback = cursor.fetchone()[0]
 
-                if (
-                    count_after_rollback == 1
-                ):  # Should still have original row only
+                if count_after_rollback == 1:  # Should still have original row only
                     test_results["transaction_rollback"] = True
                     successful_checks += 1
                     logger.info("✅ Transaction rollback: SUCCESS")
@@ -513,9 +492,7 @@ class EnterpriseTestFramework:
 
                 conn.close()
             except Exception as e:
-                test_results["errors"].append(
-                    f"Transaction rollback test failed: {e}"
-                )
+                test_results["errors"].append(f"Transaction rollback test failed: {e}")
                 logger.error(f"❌ Transaction rollback: FAILED - {e}")
                 self.record_deployment_blocker(
                     "database_rollback_critical",
@@ -535,9 +512,7 @@ class EnterpriseTestFramework:
 
                 # Simulate concurrent read
                 conn2 = sqlite3.connect(temp_db_path)
-                cursor2 = conn2.execute(
-                    "SELECT data FROM test_table WHERE id = 1"
-                )
+                cursor2 = conn2.execute("SELECT data FROM test_table WHERE id = 1")
                 concurrent_data = cursor2.fetchone()[0]
 
                 # Data should still be original until commit
@@ -557,9 +532,7 @@ class EnterpriseTestFramework:
                 conn.close()
                 conn2.close()
             except Exception as e:
-                test_results["errors"].append(
-                    f"Data consistency test failed: {e}"
-                )
+                test_results["errors"].append(f"Data consistency test failed: {e}")
                 logger.error(f"❌ Data consistency: FAILED - {e}")
 
             # Test error recovery
@@ -567,9 +540,7 @@ class EnterpriseTestFramework:
                 conn = sqlite3.connect(temp_db_path)
                 try:
                     conn.execute("BEGIN TRANSACTION")
-                    conn.execute(
-                        "INSERT INTO test_table (data) VALUES ('error_test')"
-                    )
+                    conn.execute("INSERT INTO test_table (data) VALUES ('error_test')")
                     # Force an error
                     conn.execute(
                         "INSERT INTO nonexistent_table (data) VALUES ('error')"
@@ -595,16 +566,12 @@ class EnterpriseTestFramework:
 
                 conn.close()
             except Exception as e:
-                test_results["errors"].append(
-                    f"Error recovery test failed: {e}"
-                )
+                test_results["errors"].append(f"Error recovery test failed: {e}")
                 logger.error(f"❌ Error recovery: FAILED - {e}")
 
         except Exception as e:
             logger.error(f"Critical error in database transaction test: {e}")
-            test_results["errors"].append(
-                f"Critical database test failure: {e}"
-            )
+            test_results["errors"].append(f"Critical database test failure: {e}")
             self.record_deployment_blocker(
                 "database_transaction_critical_failure",
                 f"Database transaction test critical failure: {e}",
@@ -615,19 +582,13 @@ class EnterpriseTestFramework:
             if temp_db_path and os.path.exists(temp_db_path):
                 try:
                     os.unlink(temp_db_path)
-                    logger.info(
-                        f"Cleaned up temporary database: {temp_db_path}"
-                    )
+                    logger.info(f"Cleaned up temporary database: {temp_db_path}")
                 except Exception as e:
-                    logger.warning(
-                        f"Failed to clean up temporary database: {e}"
-                    )
+                    logger.warning(f"Failed to clean up temporary database: {e}")
 
         test_end = time.time()
         test_results["execution_time"] = test_end - test_start
-        test_results["success_rate"] = (
-            successful_checks / total_checks
-        ) * 100.0
+        test_results["success_rate"] = (successful_checks / total_checks) * 100.0
 
         # Quality gate validation (100% required for database integrity)
         if (
@@ -714,12 +675,8 @@ class EnterpriseTestFramework:
                             f"File reading content mismatch: {content}"
                         )
                 else:
-                    logger.error(
-                        "❌ File reading: FAILED - Test file doesn't exist"
-                    )
-                    test_results["errors"].append(
-                        "File reading failed - no test file"
-                    )
+                    logger.error("❌ File reading: FAILED - Test file doesn't exist")
+                    test_results["errors"].append("File reading failed - no test file")
             except Exception as e:
                 test_results["errors"].append(f"File reading failed: {e}")
                 logger.error(f"❌ File reading: FAILED - {e}")
@@ -765,16 +722,12 @@ class EnterpriseTestFramework:
                     )
                     test_results["errors"].append("Directory creation failed")
             except Exception as e:
-                test_results["errors"].append(
-                    f"Directory operations failed: {e}"
-                )
+                test_results["errors"].append(f"Directory operations failed: {e}")
                 logger.error(f"❌ Directory operations: FAILED - {e}")
 
             # Test path handling
             try:
-                test_path = (
-                    Path(test_dir) / "path_test" / "nested" / "file.txt"
-                )
+                test_path = Path(test_dir) / "path_test" / "nested" / "file.txt"
                 test_path.parent.mkdir(parents=True, exist_ok=True)
                 test_path.write_text("path test", encoding="utf-8")
                 if test_path.exists():
@@ -799,27 +752,19 @@ class EnterpriseTestFramework:
                         successful_checks += 1
                         logger.info("✅ File deletion: SUCCESS")
                     else:
-                        logger.error(
-                            "❌ File deletion: FAILED - File still exists"
-                        )
+                        logger.error("❌ File deletion: FAILED - File still exists")
                         test_results["errors"].append(
                             "File deletion failed - file still exists"
                         )
                 else:
-                    logger.warning(
-                        "⚠️ File deletion: SKIPPED - No test file to delete"
-                    )
+                    logger.warning("⚠️ File deletion: SKIPPED - No test file to delete")
             except Exception as e:
                 test_results["errors"].append(f"File deletion failed: {e}")
                 logger.error(f"❌ File deletion: FAILED - {e}")
 
         except Exception as e:
-            logger.error(
-                f"Critical error in cross-platform file operations test: {e}"
-            )
-            test_results["errors"].append(
-                f"Critical cross-platform test failure: {e}"
-            )
+            logger.error(f"Critical error in cross-platform file operations test: {e}")
+            test_results["errors"].append(f"Critical cross-platform test failure: {e}")
             self.record_deployment_blocker(
                 "cross_platform_critical_failure",
                 f"Cross-platform file operations test critical failure: {e}",
@@ -836,9 +781,7 @@ class EnterpriseTestFramework:
 
         test_end = time.time()
         test_results["execution_time"] = test_end - test_start
-        test_results["success_rate"] = (
-            successful_checks / total_checks
-        ) * 100.0
+        test_results["success_rate"] = (successful_checks / total_checks) * 100.0
 
         # Quality gate validation
         if (
@@ -875,9 +818,7 @@ class EnterpriseTestFramework:
 
         # Calculate overall success rates
         overall_success_rate = (
-            (successful_tests / total_tests * 100.0)
-            if total_tests > 0
-            else 0.0
+            (successful_tests / total_tests * 100.0) if total_tests > 0 else 0.0
         )
 
         # Enterprise compliance assessment
@@ -887,12 +828,8 @@ class EnterpriseTestFramework:
         for gate_name, threshold in self.quality_gates.items():
             # Check if corresponding test meets threshold
             gate_met = True  # Default assumption
-            for test_name, test_data in self.metrics[
-                "execution_times"
-            ].items():
-                if gate_name.replace("_threshold", "") in test_name.replace(
-                    "_", ""
-                ):
+            for test_name, test_data in self.metrics["execution_times"].items():
+                if gate_name.replace("_threshold", "") in test_name.replace("_", ""):
                     if not test_data.get("success", False):
                         gate_met = False
                         break
@@ -934,9 +871,7 @@ class EnterpriseTestFramework:
                 "zero_tolerance_policy_enforced": True,
                 "deployment_blocking_authority": deployment_blocked,
                 "enterprise_principal_engineer_authority": True,
-                "deployment_status": (
-                    "BLOCKED" if deployment_blocked else "APPROVED"
-                ),
+                "deployment_status": ("BLOCKED" if deployment_blocked else "APPROVED"),
                 "requires_resolution": deployment_blocked,
             },
             "platform_info": {
@@ -996,9 +931,7 @@ def execute_enterprise_integration_tests():
 
         # Save comprehensive test results
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        report_filename = (
-            f"enterprise_integration_test_report_{timestamp}.json"
-        )
+        report_filename = f"enterprise_integration_test_report_{timestamp}.json"
 
         # Save to results directory
         results_dir = Path(__file__).parent.parent.parent / "results"
@@ -1018,16 +951,12 @@ def execute_enterprise_integration_tests():
         compliance = enterprise_report["enterprise_compliance"]
         summary = enterprise_report["integration_test_summary"]
 
-        logger.info(
-            f"Overall Success Rate: {summary['overall_success_rate']:.1f}%"
-        )
+        logger.info(f"Overall Success Rate: {summary['overall_success_rate']:.1f}%")
         logger.info(
             f"Quality Gates Passed: {summary['quality_gates_passed']}/{summary['quality_gates_total']} ({summary['quality_gate_pass_rate']:.1f}%)"
         )
         logger.info(f"Critical Issues: {summary['critical_issues_count']}")
-        logger.info(
-            f"Deployment Blockers: {summary['deployment_blockers_count']}"
-        )
+        logger.info(f"Deployment Blockers: {summary['deployment_blockers_count']}")
         logger.info(f"Deployment Status: {compliance['deployment_status']}")
 
         if compliance["deployment_blocking_authority"]:
@@ -1043,9 +972,7 @@ def execute_enterprise_integration_tests():
         return enterprise_report
 
     except Exception as e:
-        logger.critical(
-            f"CRITICAL FAILURE in enterprise integration testing: {e}"
-        )
+        logger.critical(f"CRITICAL FAILURE in enterprise integration testing: {e}")
         logger.critical(f"Traceback: {traceback.format_exc()}")
 
         # Create emergency failure report

@@ -202,7 +202,7 @@ class EnterpriseTestFramework:
 
         # CRITICAL: Test hub class import (THE MAIN BLOCKER)
         try:
-            from src.hub import RFUHub
+            from tabbed_hub import RFUHub
 
             import_results["hub_class_available"] = True
             successful_imports += 1
@@ -305,7 +305,7 @@ class EnterpriseTestFramework:
 
             # Test hub instantiation (critical for tool launcher)
             try:
-                from src.hub import RFUHub
+                from tabbed_hub import RFUHub
 
                 # Test instantiation in non-GUI mode if possible
                 logger.info("Testing RFUHub instantiation capability...")
@@ -326,7 +326,7 @@ class EnterpriseTestFramework:
                 # Check if the hub has tool launching methods
                 import inspect
 
-                from src.hub import RFUHub
+                from tabbed_hub import RFUHub
 
                 hub_methods = inspect.getmembers(
                     RFUHub, predicate=inspect.ismethod

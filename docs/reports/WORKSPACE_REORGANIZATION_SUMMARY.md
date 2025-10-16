@@ -86,8 +86,8 @@ Richards_File_Utilities/
 
 - **File Management Tools**: `src/rfu/tools/file_management/`
   - catalog.py, file_finder.py, organize.py, rename.py
-- **File Operations Tools**: `src/rfu/tools/file_operations/`
-  - cmsd.py, compress_decompress.py, file_splitter_joiner.py, sync.py
+- **File Operations Tools**: `src/rfu/tools/file_operations/` & `file_utilities_2/gui/`
+  - file_utilities_2/gui/cmsd_gui.py, compress_decompress.py, file_splitter_joiner.py, sync.py
 - **Analysis Tools**: `src/rfu/tools/analysis/`
   - empty_folders.py
 - **Metadata Tools**: `src/rfu/tools/metadata/`

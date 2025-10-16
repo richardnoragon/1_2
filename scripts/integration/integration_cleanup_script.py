@@ -20,7 +20,8 @@ DUPLICATE_TOOLS = {
     "find_duplicate_files.py": "src/utilities/analysis/find_duplicate_files.py",
     "size_analyzer.py": "src/utilities/analysis/",  # needs to be moved to analysis
     "en_and_decrypt.py": "src/utilities/security/",  # needs to be moved to security
-    "secure_delete.py": "src/utilities/security/",  # needs to be moved to security
+    # relocated to file operations
+    "secure_delete.py": "src/tools/file_operations/secure_delete/",
     "permissions_editor.py": "src/utilities/system/permissions_editor.py",
 }
 
@@ -28,7 +29,7 @@ DUPLICATE_TOOLS = {
 TOOLS_TO_MOVE = {
     "size_analyzer.py": "src/utilities/analysis/size_analyzer.py",
     "en_and_decrypt.py": "src/utilities/security/en_and_decrypt.py",
-    "secure_delete.py": "src/utilities/security/secure_delete.py",
+    "secure_delete.py": ("src/tools/file_operations/secure_delete/secure_delete.py"),
 }
 
 
@@ -96,6 +97,7 @@ def create_init_files():
         "src/utilities/system",
         "src/utilities/metadata",
         "src/utilities/file_operations",
+        "src/tools/file_operations/secure_delete",
         "src/tools/pdf_tools",
     ]
 
@@ -129,8 +131,8 @@ def update_main_py():
     import_updates = {
         # Analysis tools
         '"size_analyzer"': '"src.utilities.analysis.size_analyzer"',
-        '"find_duplicate_files"': '"src.utilities.analysis.find_duplicate_files"',
-        '"check_sum"': '"src.utilities.analysis.check_sum"',
+        '"find_duplicate_files"': '"src.tools.analysis.duplicate_finder.find_duplicate_files"',
+        '"check_sum"': '"src.tools.analysis.checksum.check_sum"',
         # Security tools
         '"en_and_decrypt"': '"src.utilities.security.en_and_decrypt"',
         '"secure_delete"': '"src.utilities.security.secure_delete"',

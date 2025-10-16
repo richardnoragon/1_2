@@ -86,7 +86,7 @@ class ToolIntegration(QObject if QT_AVAILABLE else object):
                     "description": "Analyze disk space usage",
                 },
                 "Duplicate Finder": {
-                    "module": "src.tools.analysis.find_duplicate_files",
+                    "module": "src.tools.analysis.duplicate_finder.find_duplicate_files",
                     "class": "DuplicateFinderApp",
                     "category": "Analysis",
                     "description": "Find and remove duplicates",
@@ -98,9 +98,9 @@ class ToolIntegration(QObject if QT_AVAILABLE else object):
                     "description": "File encryption/decryption",
                 },
                 "Secure Delete": {
-                    "module": "src.tools.security.secure_delete",
+                    "module": "src.tools.file_operations.secure_delete.secure_delete",
                     "class": "SecureDeleteGUI",
-                    "category": "Security",
+                    "category": "File Operations",
                     "description": "Secure file deletion",
                 },
                 "Network Scanner": {

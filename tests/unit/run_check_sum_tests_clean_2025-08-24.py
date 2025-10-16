@@ -5,10 +5,10 @@ Created: 2025-08-24
 Generates comprehensive test reports with timestamps and detailed results.
 """
 
-import os
-import sys
-import subprocess
 import datetime
+import os
+import subprocess
+import sys
 from pathlib import Path
 
 
@@ -77,7 +77,7 @@ def run_checksum_tests():
         "--self-contained-html",
         "--json-report",
         "--json-report-file=tests/unit/result_check_sum_2025-08-24.json",
-        "--cov=src.utilities.analysis.check_sum",
+        "--cov=src.tools.analysis.checksum.check_sum",
         "--cov-report=html:tests/unit/result_check_sum_coverage_2025-08-24",
         "--cov-report=term-missing",
         "--cov-report=json:" + cov_json,
@@ -85,9 +85,7 @@ def run_checksum_tests():
 
     try:
         print(f"Executing: {' '.join(cmd)}")
-        result = subprocess.run(
-            cmd, capture_output=True, text=True, timeout=300
-        )
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
 
         print(f"\n{'='*40} TEST EXECUTION OUTPUT {'='*40}")
         print(result.stdout)
@@ -117,8 +115,7 @@ def run_checksum_tests():
 def generate_test_summary(success):
     """Generate a comprehensive test execution summary."""
     summary_file = (
-        Path("tests/unit")
-        / "result_check_sum_execution_summary_2025-08-24.txt"
+        Path("tests/unit") / "result_check_sum_execution_summary_2025-08-24.txt"
     )
 
     summary_content = f"""
@@ -129,7 +126,7 @@ Execution Details:
 - Test Date: {datetime.datetime.now().strftime('%Y-%m-%d')}
 - Execution Time: {datetime.datetime.now().strftime('%H:%M:%S')}
 - Test Framework: pytest
-- Target Module: src.utilities.analysis.check_sum
+- Target Module: src.tools.analysis.checksum.check_sum
 - Test Status: {'PASSED' if success else 'FAILED'}
 
 Generated Reports:

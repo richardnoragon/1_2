@@ -1092,7 +1092,9 @@ if __name__ == "__main__":
         "Duplicate Finder", "Analysis", "src.tools.analysis.duplicate_finder"
     )
     widget.add_recent_tool(
-        "Secure Delete", "Security", "src.tools.security.secure_delete"
+        "Secure Delete",
+        "File Operations",
+        "src.tools.file_operations.secure_delete.secure_delete",
     )
 
     sys.exit(app.exec_())

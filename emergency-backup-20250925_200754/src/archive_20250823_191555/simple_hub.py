@@ -5,28 +5,29 @@ This is a simplified version of the RFU Hub that focuses on basic functionality
 while avoiding import issues.
 """
 
-import sys
 import os
-from PyQt5.QtWidgets import (
-    QMainWindow,
-    QWidget,
-    QVBoxLayout,
-    QHBoxLayout,
-    QPushButton,
-    QLabel,
-    QTabWidget,
-    QTextEdit,
-    QStatusBar,
-    QApplication,
-    QGridLayout,
-    QSizePolicy,
-    QMessageBox,
-)
+import sys
+
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont, QIcon
+from PyQt5.QtWidgets import (
+    QApplication,
+    QGridLayout,
+    QHBoxLayout,
+    QLabel,
+    QMainWindow,
+    QMessageBox,
+    QPushButton,
+    QSizePolicy,
+    QStatusBar,
+    QTabWidget,
+    QTextEdit,
+    QVBoxLayout,
+    QWidget,
+)
 
-from .log_manager import get_log_manager
 from .config_manager import get_config_manager
+from .log_manager import get_log_manager
 
 # CSS Color Constants
 PRIMARY_BLUE = "#3498db"
@@ -45,15 +46,15 @@ TITLE_HEADER_STYLE = f"color: {TEXT_DARK}; margin: 10px 0px;"
 
 # Import constants for string literals
 from core.constants import (
-    PDF_TOOLS,
-    SEGOE_UI_FONT,
-    TITLE_STYLE_COLOR,
-    SUBTITLE_STYLE_COLOR,
-    SECTION_MARGIN_STYLE,
-    PRIVACY_TOOLS,
     ANALYSIS_TOOLS,
-    UTILITIES_TOOLS,
+    PDF_TOOLS,
+    PRIVACY_TOOLS,
+    SECTION_MARGIN_STYLE,
+    SEGOE_UI_FONT,
     SETTINGS_TOOLS,
+    SUBTITLE_STYLE_COLOR,
+    TITLE_STYLE_COLOR,
+    UTILITIES_TOOLS,
 )
 
 # Import the simplified menu system
@@ -1266,8 +1267,8 @@ class SimpleRFUHub(QMainWindow):
         """Open checksum verification tool."""
         try:
             # Import and launch the checksum tool
-            import sys
             import os
+            import sys
 
             # Add src directory to path for imports
             current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -1276,7 +1277,7 @@ class SimpleRFUHub(QMainWindow):
             if src_dir not in sys.path:
                 sys.path.insert(0, src_dir)
 
-            from tools.analysis.check_sum import ChecksumGUI
+            from tools.analysis.checksum.check_sum import ChecksumGUI
 
             # Use the new window manager
             utility_window = self._create_utility_window(
@@ -1305,8 +1306,8 @@ class SimpleRFUHub(QMainWindow):
         """Open duplicate file finder."""
         try:
             # Import and launch the duplicate finder tool
-            import sys
             import os
+            import sys
 
             # Add src directory to path for imports
             current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -1315,7 +1316,9 @@ class SimpleRFUHub(QMainWindow):
             if src_dir not in sys.path:
                 sys.path.insert(0, src_dir)
 
-            from tools.analysis.find_duplicate_files import DuplicateFinderApp
+            from tools.analysis.duplicate_finder.find_duplicate_files import (
+                DuplicateFinderApp,
+            )
 
             # Use the new window manager
             utility_window = self._create_utility_window(
@@ -1344,8 +1347,8 @@ class SimpleRFUHub(QMainWindow):
         """Open size analyzer."""
         try:
             # Import and launch the size analyzer tool
-            import sys
             import os
+            import sys
 
             # Add src directory to path for imports
             current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -1386,8 +1389,8 @@ class SimpleRFUHub(QMainWindow):
         """Open empty folders finder."""
         try:
             # Import and launch the empty folders tool
-            import sys
             import os
+            import sys
 
             # Add src directory to path for imports
             current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -1425,8 +1428,8 @@ class SimpleRFUHub(QMainWindow):
         """Open file catalog generator."""
         try:
             # Import and launch the catalog tool
-            import sys
             import os
+            import sys
 
             # Add src directory to path for imports
             current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -1465,8 +1468,8 @@ class SimpleRFUHub(QMainWindow):
         """Open file splitter."""
         try:
             # Import and launch the file splitter tool
-            import sys
             import os
+            import sys
 
             # Add src directory to path for imports
             current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -1506,8 +1509,8 @@ class SimpleRFUHub(QMainWindow):
         """Open CMSD logic tool."""
         try:
             # Import and launch the CMSD (Copy/Move/Sync/Delete) tool
-            import sys
             import os
+            import sys
 
             # Add src directory to path for imports
             current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -1542,8 +1545,8 @@ class SimpleRFUHub(QMainWindow):
         """Open synchronization and backup."""
         try:
             # Import and launch the sync/backup tool
-            import sys
             import os
+            import sys
 
             # Add src directory to path for imports
             current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -1591,8 +1594,8 @@ class SimpleRFUHub(QMainWindow):
         """Open file touch operations."""
         try:
             # Import and launch the enhanced file touch tool
-            import sys
             import os
+            import sys
 
             # Add root directory to path for imports
             root_dir = os.path.dirname(
@@ -1628,8 +1631,8 @@ class SimpleRFUHub(QMainWindow):
         """Open file organization tool."""
         try:
             # Import and launch the file organization tool
-            import sys
             import os
+            import sys
 
             # Add src directory to path for imports
             current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -1671,8 +1674,8 @@ class SimpleRFUHub(QMainWindow):
         """Open batch rename tool."""
         try:
             # Import and launch the batch rename tool
-            import sys
             import os
+            import sys
 
             # Add src directory to path for imports
             current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -1711,8 +1714,8 @@ class SimpleRFUHub(QMainWindow):
         """Open image metadata editor."""
         try:
             # Import and launch the enhanced image metadata editor
-            import sys
             import os
+            import sys
 
             # Add root directory to path for imports
             root_dir = os.path.dirname(
@@ -1756,8 +1759,8 @@ class SimpleRFUHub(QMainWindow):
         """Open office document metadata."""
         try:
             # Import and launch the enhanced office metadata editor
-            import sys
             import os
+            import sys
 
             # Add root directory to path for imports
             root_dir = os.path.dirname(
@@ -1922,10 +1925,10 @@ class SimpleRFUHub(QMainWindow):
     def open_bandwidth_monitor(self):
         """Open bandwidth monitor."""
         try:
+            from src.gui.standard_window import StandardWindow
             from src.tools.network.network_connectivity_complex.gui.widgets.bandwidth_monitor_widget import (
                 BandwidthMonitorWidget,
             )
-            from src.gui.standard_window import StandardWindow
 
             # Create a standalone window for the bandwidth monitor
             class BandwidthMonitorWindow(StandardWindow):
@@ -2161,7 +2164,7 @@ class SimpleRFUHub(QMainWindow):
     def open_password_generator(self):
         """Open password generator."""
         try:
-            from src.tools.security.simple_password_generator import (
+            from tools.security.password_generator.password_generator import (
                 SimplePasswordGeneratorGUI,
             )
 
@@ -2181,7 +2184,7 @@ class SimpleRFUHub(QMainWindow):
     def open_security_scan(self):
         """Open security scan."""
         try:
-            from src.tools.security.simple_security_scanner import (
+            from tools.security.security_scanner.security_scanner import (
                 SimpleSecurityScannerGUI,
             )
 
@@ -2288,7 +2291,7 @@ class SimpleRFUHub(QMainWindow):
     def open_process_monitor(self):
         """Open process monitor."""
         try:
-            from src.tools.system.simple_process_monitor import (
+            from tools.system.process_monitor.simple_process_monitor import (
                 SimpleProcessMonitorGUI,
             )
 

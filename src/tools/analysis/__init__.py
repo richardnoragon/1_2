@@ -23,20 +23,20 @@ except ImportError as e:
     SizeAnalyzerGUI = None
 
 try:
-    from .find_duplicate_files import DuplicateFinderApp
+    from .duplicate_finder.find_duplicate_files import DuplicateFinderApp
 except ImportError as e:
     print(f"Warning: Could not import DuplicateFinderApp: {e}")
     DuplicateFinderApp = None
 
 try:
-    from .check_sum import ChecksumGUI
+    from .checksum.check_sum import ChecksumGUI
 except ImportError as e:
     print(f"Warning: Could not import ChecksumGUI: {e}")
     ChecksumGUI = None
 
 # Import core logic classes with error handling
 try:
-    from .core.size_analyzer_logic import SizeAnalyzer, SizeAnalyzerWorker
+    from .size_analyzer.size_analyzer_logic import SizeAnalyzer, SizeAnalyzerWorker
 except ImportError as e:
     print(f"Warning: Could not import core logic classes: {e}")
     SizeAnalyzer = None
@@ -44,7 +44,7 @@ except ImportError as e:
 
 # Import configuration classes with error handling
 try:
-    from .config.size_analyzer_config import SizeAnalyzerConfig
+    from .size_analyzer.size_analyzer_config import SizeAnalyzerConfig
 except ImportError as e:
     print(f"Warning: Could not import configuration classes: {e}")
     SizeAnalyzerConfig = None

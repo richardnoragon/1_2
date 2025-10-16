@@ -1,28 +1,26 @@
-"""
-Standardized base window class for all GUI utilities.
-Provides consistent styling, layout, and behavior across all windows.
-"""
+"""Standardized base window class for all GUI utilities."""
 
-import sys
 import os
+from typing import Optional
+
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import (
-    QMainWindow,
+    QAction,
     QDialog,
-    QWidget,
-    QVBoxLayout,
-    QHBoxLayout,
-    QPushButton,
-    QLabel,
-    QGroupBox,
-    QProgressBar,
-    QMessageBox,
     QFileDialog,
+    QGroupBox,
+    QLabel,
+    QMainWindow,
+    QMessageBox,
+    QProgressBar,
+    QPushButton,
     QStatusBar,
+    QWidget,
 )
-from PyQt5.QtCore import Qt, QTimer, pyqtSignal
-from PyQt5.QtGui import QIcon, QFont
-from gui.themes import ThemeManager, Colors, Fonts, Spacing, Dimensions
+
 from gui.menu_manager import MenuManager
+from gui.themes import Colors, Dimensions, ThemeManager
 
 
 class StandardWindow(QMainWindow):
@@ -54,6 +52,8 @@ class StandardWindow(QMainWindow):
 
         self._create_status_bar()
         self._apply_theme()
+        if self.enable_menu:
+            self.ensure_exit_action_reference()
 
     def _setup_window(self):
         """Setup basic window properties."""
@@ -79,28 +79,18 @@ class StandardWindow(QMainWindow):
             self.menu_manager.register_callback(
                 "show_preferences", self.show_preferences
             )
-            self.menu_manager.register_callback(
-                "show_options", self.show_options
-            )
+            self.menu_manager.register_callback("show_options", self.show_options)
             self.menu_manager.register_callback("refresh", self.refresh_view)
 
             # Register file operations if implemented
             if hasattr(self, "save_data"):
-                self.menu_manager.register_callback(
-                    "save_file", self.save_data
-                )
+                self.menu_manager.register_callback("save_file", self.save_data)
             if hasattr(self, "load_data"):
-                self.menu_manager.register_callback(
-                    "open_file", self.load_data
-                )
+                self.menu_manager.register_callback("open_file", self.load_data)
             if hasattr(self, "export_data"):
-                self.menu_manager.register_callback(
-                    "export_data", self.export_data
-                )
+                self.menu_manager.register_callback("export_data", self.export_data)
             if hasattr(self, "import_data"):
-                self.menu_manager.register_callback(
-                    "import_data", self.import_data
-                )
+                self.menu_manager.register_callback("import_data", self.import_data)
 
     def show_preferences(self):
         """Show preferences dialog - can be overridden by subclasses."""
@@ -118,22 +108,22 @@ class StandardWindow(QMainWindow):
 
     def refresh_view(self):
         """Refresh the current view - can be overridden by subclasses."""
-        if hasattr(self, "statusBar"):
-            self.statusBar().showMessage("Refreshed", 2000)
+        status_bar = self.statusBar() if hasattr(self, "statusBar") else None
+        if status_bar is not None:
+            status_bar.showMessage("Refreshed", 2000)
 
     def _create_central_widget(self):
         """Create central widget with standard layout."""
         self.central_widget = QWidget()
         self.setCentralWidget(self.central_widget)
 
-        self.main_layout = ThemeManager.create_standard_layout(
-            self.central_widget
-        )
+        self.main_layout = ThemeManager.create_standard_layout(self.central_widget)
         self.central_widget.setLayout(self.main_layout)
 
     def ensure_menu_bar(self):
         """Ensure menu bar exists - fallback method for tools."""
-        if not self.menuBar() or not self.menuBar().actions():
+        menubar = self.menuBar() if hasattr(self, "menuBar") else None
+        if menubar is None or not menubar.actions():
             # Menu bar doesn't exist or is empty, create it
             if not hasattr(self, "menu_manager"):
                 self.menu_manager = MenuManager(self)
@@ -143,9 +133,7 @@ class StandardWindow(QMainWindow):
             self.menu_manager.register_callback(
                 "show_preferences", self.show_preferences
             )
-            self.menu_manager.register_callback(
-                "show_options", self.show_options
-            )
+            self.menu_manager.register_callback("show_options", self.show_options)
             self.menu_manager.register_callback("refresh", self.refresh_view)
 
     def _create_status_bar(self):
@@ -160,9 +148,7 @@ class StandardWindow(QMainWindow):
 
     def _get_default_icon(self):
         """Get default application icon."""
-        return os.path.join(
-            os.path.dirname(__file__), "..", "icons", "app_icon.png"
-        )
+        return os.path.join(os.path.dirname(__file__), "..", "icons", "app_icon.png")
 
     def create_header(self, text):
         """Create a standard header label."""
@@ -200,6 +186,73 @@ class StandardWindow(QMainWindow):
         """Show status message with optional timeout."""
         self.status_bar.showMessage(message, timeout)
 
+    # ------------------------------------------------------------------
+    #  Exit action helpers
+    # ------------------------------------------------------------------
+    def ensure_exit_action_reference(self) -> Optional[QAction]:
+        """Expose both legacy (actionexit) and modern (actionExit) handles."""
+        menubar = self.menuBar() if hasattr(self, "menuBar") else None
+        if not menubar:
+            return None
+
+        exit_action = getattr(self, "actionExit", None)
+        if exit_action is None:
+            exit_action = self.findChild(QAction, "actionExit")
+        if exit_action is None:
+            exit_action = self.findChild(QAction, "actionexit")
+        if exit_action is None:
+            exit_action = self._find_exit_action_by_text(menubar)
+
+        if exit_action is None:
+            file_menu = self._resolve_file_menu(menubar)
+            if file_menu is None:
+                return None
+
+            exit_action = QAction("E&xit", self)
+            exit_action.setObjectName("actionExit")
+            exit_action.setShortcut("Ctrl+Q")
+            exit_action.setStatusTip("Exit the tool")
+            exit_action.triggered.connect(self._handle_exit_trigger)
+            file_menu.addAction(exit_action)
+
+        if exit_action and not hasattr(self, "actionExit"):
+            setattr(self, "actionExit", exit_action)
+        if exit_action and not hasattr(self, "actionexit"):
+            setattr(self, "actionexit", exit_action)
+
+        return exit_action
+
+    def _find_exit_action_by_text(self, menubar) -> Optional[QAction]:
+        for top_action in menubar.actions():
+            menu = top_action.menu()
+            if menu is None:
+                continue
+            for action in menu.actions():
+                if action.isSeparator():
+                    continue
+                normalized = self._normalize_action_text(action.text())
+                if normalized in {"exit", "quit"}:
+                    return action
+        return None
+
+    def _resolve_file_menu(self, menubar):
+        for top_action in menubar.actions():
+            menu = top_action.menu()
+            if menu is None:
+                continue
+            label = self._normalize_action_text(top_action.text())
+            if label in {"file", "exit"}:
+                return menu
+        return menubar.addMenu("&File")
+
+    @staticmethod
+    def _normalize_action_text(label: str) -> str:
+        return (label or "").replace("&", "").strip().lower()
+
+    def _handle_exit_trigger(self) -> None:
+        """Close the window in response to an exit action."""
+        self.close()
+
     def show_error_dialog(self, title, message):
         """Show error dialog with standard styling."""
         msg_box = QMessageBox()
@@ -235,9 +288,7 @@ class StandardWindow(QMainWindow):
         """Show directory selection dialog with standard styling."""
         return QFileDialog.getExistingDirectory(self, title)
 
-    def get_save_file_path(
-        self, title="Save File", file_filter="All Files (*)"
-    ):
+    def get_save_file_path(self, title="Save File", file_filter="All Files (*)"):
         """Show save file dialog with standard styling."""
         return QFileDialog.getSaveFileName(self, title, "", file_filter)[0]
 
@@ -320,11 +371,13 @@ class StandardUtilityWidget(QWidget):
 
     def _apply_theme(self):
         """Apply standard theme to the widget."""
+        window_bg = getattr(Colors, "WINDOW_BACKGROUND", "#2b2b2b")
+        text_primary = getattr(Colors, "TEXT_PRIMARY", "#f0f0f0")
         self.setStyleSheet(
             f"""
             QWidget {{
-                background-color: {Colors.WINDOW_BACKGROUND};
-                color: {Colors.TEXT_PRIMARY};
+                background-color: {window_bg};
+                color: {text_primary};
             }}
         """
         )
@@ -333,7 +386,7 @@ class StandardUtilityWidget(QWidget):
         """Create a standard header label."""
         header = QLabel(text)
         ThemeManager.style_label(header, is_header=True)
-        header.setAlignment(Qt.AlignCenter)
+        header.setAlignment(Qt.AlignmentFlag.AlignCenter)
         return header
 
     def create_button(self, text, callback=None, primary=True):

@@ -249,12 +249,6 @@
 
 ### Specialized File Operations
 
-#### [`cmsd_logic.py`](../../src/utilities/file_operations/cmsd_logic.py)
-
-**Status:** ✅ **Testing Available**  
-**Test File:** [`test_cmsd.py`](../test_cmsd.py)  
-**Purpose:** Content Management System for Document organization and workflow
-
 #### [`file_splitter_logic.py`](../../src/utilities/file_operations/file_splitter_logic.py)
 
 **Status:** ✅ **COMPREHENSIVE TESTING COMPLETE - September 1, 2025**

@@ -21,7 +21,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
 # Import the module under test
 try:
-    from src.hub import (
+    from tabbed_hub import (
         DARK_BLUE,
         DARK_GRAY,
         DARKER_BLUE,
@@ -914,7 +914,7 @@ class TestRFUHubEdgeCases:
     def test_import_fallbacks(self):
         """Test import fallback mechanisms."""
         # Test that fallback functions work when imports fail
-        from src.hub import error_handler, get_config_manager, get_log_manager
+        from tabbed_hub import error_handler, get_config_manager, get_log_manager
 
         # These should be the fallback implementations
         logger = get_log_manager()

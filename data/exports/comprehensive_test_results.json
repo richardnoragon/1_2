@@ -269,7 +269,7 @@
     },
     "check_sum": {
       "tool_name": "check_sum",
-      "module": "check_sum",
+      "module": "src.tools.analysis.checksum.check_sum",
       "class": "ChecksumGUI",
       "category": "Analysis Tools",
       "status": "needs_creation",

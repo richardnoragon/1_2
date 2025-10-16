@@ -11,12 +11,10 @@ from PyQt5.QtWidgets import (
     QApplication,
     QFileDialog,
     QGroupBox,
-    QHBoxLayout,
     QLabel,
     QListWidget,
     QMainWindow,
     QMessageBox,
-    QProgressBar,
     QPushButton,
     QVBoxLayout,
     QWidget,
@@ -24,31 +22,32 @@ from PyQt5.QtWidgets import (
 
 # Import SafeStandardWindow for reliable menu integration
 try:
-    # Add the correct path for imports
-    sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
-    from src.gui.safe_standard_window import (
-        SafeStandardWindow as StandardWindow,
-    )
+    from src.gui.safe_standard_window import SafeStandardWindow as StandardWindow
 
     STANDARD_WINDOW_AVAILABLE = True
-except ImportError as e:
-    print(f"SafeStandardWindow not available: {e}")
-    # Try original StandardWindow as fallback
+except ImportError as safe_window_error:
+    print(f"SafeStandardWindow not available: {safe_window_error}")
     try:
         from src.gui.standard_window import StandardWindow
 
         STANDARD_WINDOW_AVAILABLE = True
     except ImportError:
-        # Final fallback - minimal implementation
+
         class StandardWindow(QMainWindow):
+            """Fallback window with minimal functionality."""
+
             def __init__(
-                self, title="Window", window_type="utility", parent=None
+                self,
+                title="Window",
+                window_type="utility",
+                parent=None,
             ):
                 super().__init__(parent)
                 self.setWindowTitle(title)
 
             def ensure_menu_bar(self):
-                pass  # No-op for fallback
+                # Menu bar not available in fallback mode
+                pass
 
         STANDARD_WINDOW_AVAILABLE = False
 
@@ -75,13 +74,9 @@ class ChecksumGUI(StandardWindow):
         """Setup tool-specific menu callbacks."""
         if hasattr(self, "menu_manager"):
             # Register tool-specific callbacks
-            self.menu_manager.register_callback(
-                "new_checksum", self.clear_results
-            )
+            self.menu_manager.register_callback("new_checksum", self.clear_results)
             # Override the standard help with our tool-specific help
-            self.menu_manager.register_callback(
-                "show_user_guide", self.show_help
-            )
+            self.menu_manager.register_callback("show_user_guide", self.show_help)
             self.menu_manager.register_callback(
                 "show_preferences", self.show_preferences
             )
@@ -99,10 +94,12 @@ class ChecksumGUI(StandardWindow):
         
         <h3>How to Calculate Checksums:</h3>
         <ul>
-        <li><b>Select Files:</b> Choose one or more files to calculate checksums</li>
+        <li><b>Select Files:</b> Choose one or more files to calculate
+            checksums</li>
         <li><b>Choose Algorithm:</b> Pick MD5, SHA1, or SHA256 algorithm</li>
         <li><b>Calculate:</b> Click to generate checksums for selected files</li>
-        <li><b>Copy Results:</b> Copy checksums to clipboard for verification</li>
+        <li><b>Copy Results:</b> Copy checksums to clipboard for
+            verification</li>
         </ul>
         
         <h3>Checksum Algorithms:</h3>
@@ -116,15 +113,18 @@ class ChecksumGUI(StandardWindow):
         <h3>Use Cases:</h3>
         <ul>
         <li><b>File Integrity:</b> Verify files haven't been corrupted</li>
-        <li><b>Download Verification:</b> Confirm downloaded files are intact</li>
+        <li><b>Download Verification:</b> Confirm downloaded files are
+            intact</li>
         <li><b>Change Detection:</b> Detect if files have been modified</li>
-        <li><b>Duplicate Detection:</b> Compare checksums to find duplicates</li>
+        <li><b>Duplicate Detection:</b> Compare checksums to find
+            duplicates</li>
         </ul>
         
         <h3>Best Practices:</h3>
         <ul>
         <li><b>Use SHA256:</b> Most balanced option for security and speed</li>
-        <li><b>Save Results:</b> Keep checksum records for later verification</li>
+        <li><b>Save Results:</b> Keep checksum records for later
+            verification</li>
         <li><b>Batch Processing:</b> Calculate multiple files at once</li>
         <li><b>Regular Checks:</b> Verify important files periodically</li>
         </ul>
@@ -234,9 +234,7 @@ class ChecksumGUI(StandardWindow):
             self.results_list.addItem(result)
 
         except Exception as e:
-            QMessageBox.critical(
-                self, "Error", f"Failed to calculate checksum: {e}"
-            )
+            QMessageBox.critical(self, "Error", f"Failed to calculate checksum: {e}")
 
 
 def main():

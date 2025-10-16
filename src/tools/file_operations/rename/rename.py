@@ -71,6 +71,7 @@ class RenameWindow(StandardWindow):
         self.selected_files = []
         self.init_ui()
         self._setup_menu_callbacks()
+        self.ensure_exit_action_reference()
 
     def _setup_menu_callbacks(self):
         """Setup tool-specific menu callbacks."""
@@ -116,7 +117,11 @@ class RenameWindow(StandardWindow):
                     self, "Success", f"Settings saved to {file_path}"
                 )
             except OSError as error:
-                QMessageBox.warning(self, "Error", f"Failed to save settings: {error}")
+                QMessageBox.warning(
+                    self,
+                    "Error",
+                    f"Failed to save settings: {error}",
+                )
 
     def load_rename_settings(self):
         """Load rename settings from file."""
@@ -147,12 +152,20 @@ class RenameWindow(StandardWindow):
                     self, "Success", f"Settings loaded from {file_path}"
                 )
             except (OSError, json.JSONDecodeError) as error:
-                QMessageBox.warning(self, "Error", f"Failed to load settings: {error}")
+                QMessageBox.warning(
+                    self,
+                    "Error",
+                    f"Failed to load settings: {error}",
+                )
 
     def export_rename_results(self):
         """Export rename preview results."""
         if not self.selected_files:
-            QMessageBox.information(self, "No Files", NO_FILES_SELECTED_MESSAGE)
+            QMessageBox.information(
+                self,
+                "No Files",
+                NO_FILES_SELECTED_MESSAGE,
+            )
             return
 
         file_path, _ = QFileDialog.getSaveFileName(
@@ -167,7 +180,8 @@ class RenameWindow(StandardWindow):
                 with open(file_path, "w", encoding="utf-8") as f:
                     f.write("Rename Preview Results\n")
                     f.write(f"Directory: {self.current_directory}\n")
-                    f.write(f"Rename Mode: {self._get_current_rename_mode()}\n")
+                    mode = self._get_current_rename_mode()
+                    f.write(f"Rename Mode: {mode}\n")
                     f.write(f"Total Files: {len(self.selected_files)}\n\n")
 
                     for i, filename in enumerate(self.selected_files):
@@ -178,7 +192,11 @@ class RenameWindow(StandardWindow):
                     self, "Success", f"Results exported to {file_path}"
                 )
             except OSError as error:
-                QMessageBox.warning(self, "Error", f"Failed to export results: {error}")
+                QMessageBox.warning(
+                    self,
+                    "Error",
+                    f"Failed to export results: {error}",
+                )
 
     def _get_current_rename_mode(self):
         """Get the currently selected rename mode."""
@@ -426,13 +444,29 @@ class RenameWindow(StandardWindow):
         if not self.current_directory:
             return
 
+        if not os.path.isdir(self.current_directory):
+            QMessageBox.warning(
+                self,
+                "Directory Error",
+                "The selected directory could not be found.\n"
+                "Please verify it still exists before trying again.",
+            )
+            self.current_directory = ""
+            self.directory_edit.clear()
+            return
+
         try:
             for filename in sorted(os.listdir(self.current_directory)):
                 file_path = os.path.join(self.current_directory, filename)
                 if os.path.isfile(file_path):
-                    self.available_files_list.addItem(QListWidgetItem(filename))
+                    item = QListWidgetItem(filename)
+                    self.available_files_list.addItem(item)
         except OSError as error:
-            QMessageBox.warning(self, "Error", f"Could not load directory: {error}")
+            QMessageBox.warning(
+                self,
+                "Error",
+                f"Could not load directory: {error}",
+            )
 
     def add_selected_files(self):
         """Add selected files to rename list."""

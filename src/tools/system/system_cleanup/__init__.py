@@ -28,12 +28,10 @@ from .core.safety_manager import SafetyManager
 from .core.windows_utils import WindowsUtils
 
 try:
-    from src.tools.privacy.privacy_cleaner.system_cleanup import (
-        SystemCleanupGUI,
-    )
+    from .system_cleanup import SystemCleanupGUI  # type: ignore[F401]
 
     SYSTEM_CLEANUP_GUI_AVAILABLE = True
-except Exception as exc:  # pragma: no cover - availability diagnostic
+except ImportError as exc:  # pragma: no cover - availability diagnostic
     SystemCleanupGUI = None
     SYSTEM_CLEANUP_GUI_AVAILABLE = False
     print(f"Warning: Could not import SystemCleanupGUI: {exc}")

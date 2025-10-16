@@ -44,9 +44,7 @@
     },
     "src\\rfu\\archive_20250823_191555\\rfuhub.py": {
       "module_name": "rfuhub",
-      "test_files": [
-        "tests\\test_rfuhub.py"
-      ],
+      "test_files": ["tests\\test_rfuhub.py"],
       "test_count": 1,
       "test_analyses": [
         {
@@ -146,9 +144,7 @@
     },
     "src\\rfu\\core\\file_ops\\validation.py": {
       "module_name": "validation",
-      "test_files": [
-        "tests\\test_system_cleanup_validation.py"
-      ],
+      "test_files": ["tests\\test_system_cleanup_validation.py"],
       "test_count": 1,
       "test_analyses": [
         {
@@ -209,9 +205,7 @@
     },
     "src\\rfu\\dev_hub.py": {
       "module_name": "dev_hub",
-      "test_files": [
-        "tests\\unit\\test_dev_hub_2025-08-28.py"
-      ],
+      "test_files": ["tests\\unit\\test_dev_hub_2025-08-28.py"],
       "test_count": 1,
       "test_analyses": [
         {
@@ -233,9 +227,7 @@
     },
     "src\\rfu\\gui\\common\\settings.py": {
       "module_name": "settings",
-      "test_files": [
-        "tests\\test_settings_dialog.py"
-      ],
+      "test_files": ["tests\\test_settings_dialog.py"],
       "test_count": 1,
       "test_analyses": [
         {
@@ -257,9 +249,7 @@
     },
     "src\\rfu\\gui\\settings_dialog.py": {
       "module_name": "settings_dialog",
-      "test_files": [
-        "tests\\test_settings_dialog.py"
-      ],
+      "test_files": ["tests\\test_settings_dialog.py"],
       "test_count": 1,
       "test_analyses": [
         {
@@ -440,9 +430,7 @@
     },
     "src\\rfu\\launch_main.py": {
       "module_name": "launch_main",
-      "test_files": [
-        "tests\\unit\\test_launch_main_2025-08-28.py"
-      ],
+      "test_files": ["tests\\unit\\test_launch_main_2025-08-28.py"],
       "test_count": 1,
       "test_analyses": [
         {
@@ -632,9 +620,7 @@
     },
     "src\\utilities\\analysis\\check_sum.py": {
       "module_name": "check_sum",
-      "test_files": [
-        "tests\\unit\\test_check_sum_2025-08-24.py"
-      ],
+      "test_files": ["tests\\unit\\test_check_sum_2025-08-24.py"],
       "test_count": 1,
       "test_analyses": [
         {
@@ -824,9 +810,7 @@
     },
     "src\\utilities\\analysis\\find_duplicate_files.py": {
       "module_name": "find_duplicate_files",
-      "test_files": [
-        "tests\\unit\\test_find_duplicate_files_2025-08-24.py"
-      ],
+      "test_files": ["tests\\unit\\test_find_duplicate_files_2025-08-24.py"],
       "test_count": 1,
       "test_analyses": [
         {
@@ -848,9 +832,7 @@
     },
     "src\\utilities\\analysis\\import_validator.py": {
       "module_name": "import_validator",
-      "test_files": [
-        "tests\\unit\\test_import_validator_2025-08-24.py"
-      ],
+      "test_files": ["tests\\unit\\test_import_validator_2025-08-24.py"],
       "test_count": 1,
       "test_analyses": [
         {
@@ -2516,9 +2498,7 @@
     },
     "src\\utilities\\file_operations\\file_splitter_logic.py": {
       "module_name": "file_splitter_logic",
-      "test_files": [
-        "tests\\unit\\test_file_splitter_logic_corrected.py"
-      ],
+      "test_files": ["tests\\unit\\test_file_splitter_logic_corrected.py"],
       "test_count": 1,
       "test_analyses": [
         {
@@ -2540,9 +2520,7 @@
     },
     "src\\utilities\\file_operations\\file_touch\\file_touch.py": {
       "module_name": "file_touch",
-      "test_files": [
-        "tests\\test_file_touch.py"
-      ],
+      "test_files": ["tests\\test_file_touch.py"],
       "test_count": 1,
       "test_analyses": [
         {
@@ -4205,9 +4183,7 @@
     },
     "src\\utilities\\network\\network_connectivity_complex\\core\\security_validator.py": {
       "module_name": "security_validator",
-      "test_files": [
-        "tests\\unit\\test_security_validator_2025-08-30.py"
-      ],
+      "test_files": ["tests\\unit\\test_security_validator_2025-08-30.py"],
       "test_count": 1,
       "test_analyses": [
         {
@@ -4544,9 +4520,7 @@
     },
     "src\\utilities\\office_metadata\\office_metadata_gui.py": {
       "module_name": "office_metadata_gui",
-      "test_files": [
-        "tests\\unit\\test_office_metadata_gui_2025-08-29.py"
-      ],
+      "test_files": ["tests\\unit\\test_office_metadata_gui_2025-08-29.py"],
       "test_count": 1,
       "test_analyses": [
         {
@@ -5435,9 +5409,7 @@
     },
     "src\\utilities\\pdf_tools\\pdf_content_extraction\\extract_image_cli.py": {
       "module_name": "extract_image_cli",
-      "test_files": [
-        "tests\\unit\\test_extract_image_cli_2025-08-24.py"
-      ],
+      "test_files": ["tests\\unit\\test_extract_image_cli_2025-08-24.py"],
       "test_count": 1,
       "test_analyses": [
         {
@@ -5498,9 +5470,7 @@
     },
     "src\\utilities\\pdf_tools\\pdf_content_extraction\\extract_metadata.py": {
       "module_name": "extract_metadata",
-      "test_files": [
-        "tests\\unit\\test_extract_metadata_2025-08-24.py"
-      ],
+      "test_files": ["tests\\unit\\test_extract_metadata_2025-08-24.py"],
       "test_count": 1,
       "test_analyses": [
         {
@@ -5654,9 +5624,7 @@
     },
     "src\\utilities\\pdf_tools\\pdf_conversion\\convert_to_docx.py": {
       "module_name": "convert_to_docx",
-      "test_files": [
-        "tests\\unit\\test_convert_to_docx_2025-08-24.py"
-      ],
+      "test_files": ["tests\\unit\\test_convert_to_docx_2025-08-24.py"],
       "test_count": 1,
       "test_analyses": [
         {
@@ -5678,9 +5646,7 @@
     },
     "src\\utilities\\pdf_tools\\pdf_conversion\\convert_to_image.py": {
       "module_name": "convert_to_image",
-      "test_files": [
-        "tests\\unit\\test_convert_to_image_2025-08-24.py"
-      ],
+      "test_files": ["tests\\unit\\test_convert_to_image_2025-08-24.py"],
       "test_count": 1,
       "test_analyses": [
         {
@@ -5825,9 +5791,7 @@
     },
     "src\\utilities\\pdf_tools\\pdf_enhancements\\watermark.py": {
       "module_name": "watermark",
-      "test_files": [
-        "tests\\unit\\test_watermark_2025-08-24.py"
-      ],
+      "test_files": ["tests\\unit\\test_watermark_2025-08-24.py"],
       "test_count": 1,
       "test_analyses": [
         {
@@ -6398,9 +6362,7 @@
     },
     "src\\utilities\\privacy\\privacy_tools\\core\\data_locations.py": {
       "module_name": "data_locations",
-      "test_files": [
-        "tests\\unit\\test_data_locations_2025-08-30.py"
-      ],
+      "test_files": ["tests\\unit\\test_data_locations_2025-08-30.py"],
       "test_count": 1,
       "test_analyses": [
         {
@@ -6422,9 +6384,7 @@
     },
     "src\\utilities\\privacy\\privacy_tools\\core\\platform_utils.py": {
       "module_name": "platform_utils",
-      "test_files": [
-        "tests\\unit\\test_platform_utils_2025-08-30.py"
-      ],
+      "test_files": ["tests\\unit\\test_platform_utils_2025-08-30.py"],
       "test_count": 1,
       "test_analyses": [
         {
@@ -6446,9 +6406,7 @@
     },
     "src\\utilities\\privacy\\privacy_tools\\core\\privacy_base.py": {
       "module_name": "privacy_base",
-      "test_files": [
-        "tests\\unit\\test_privacy_base_2025-08-30.py"
-      ],
+      "test_files": ["tests\\unit\\test_privacy_base_2025-08-30.py"],
       "test_count": 1,
       "test_analyses": [
         {
@@ -6563,9 +6521,7 @@
     },
     "src\\utilities\\privacy\\privacy_tools_simple.py": {
       "module_name": "privacy_tools_simple",
-      "test_files": [
-        "tests\\unit\\test_privacy_tools_simple_2025-08-30.py"
-      ],
+      "test_files": ["tests\\unit\\test_privacy_tools_simple_2025-08-30.py"],
       "test_count": 1,
       "test_analyses": [
         {
@@ -6719,9 +6675,7 @@
     },
     "src\\utilities\\security\\simple_security_scanner.py": {
       "module_name": "simple_security_scanner",
-      "test_files": [
-        "tests\\unit\\test_simple_security_scanner_2025-08-28.py"
-      ],
+      "test_files": ["tests\\unit\\test_simple_security_scanner_2025-08-28.py"],
       "test_count": 1,
       "test_analyses": [
         {
@@ -7145,9 +7099,7 @@
     },
     "src\\utilities\\system\\software_maintenance.py": {
       "module_name": "software_maintenance",
-      "test_files": [
-        "tests\\unit\\test_software_maintenance_2025-08-28.py"
-      ],
+      "test_files": ["tests\\unit\\test_software_maintenance_2025-08-28.py"],
       "test_count": 1,
       "test_analyses": [
         {
@@ -7859,8 +7811,8 @@
       "module_name": "system_diagnostics_gui",
       "needs_tests": true
     },
-    "src\\utilities\\system\\simple_process_monitor.py": {
-      "module_name": "simple_process_monitor",
+    "src\\tools\\system\\process_monitor\\process_monitor.py": {
+      "module_name": "process_monitor.process_monitor",
       "needs_tests": true
     },
     "src\\utilities\\system\\simple_system_info.py": {

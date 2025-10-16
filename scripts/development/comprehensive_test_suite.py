@@ -56,13 +56,7 @@ class ToolTestSuite:
                 "category": "File Management",
                 "status": "working",
             },
-            # File Operations Tools (4/4 - Recently Fixed)
-            "cmsd": {
-                "module": "cmsd",
-                "class": "CopyMoveSyncDeleteWindow",
-                "category": "File Operations",
-                "status": "recently_fixed",
-            },
+            # File Operations Tools (3/3 - Recently Fixed)
             "compress_decompress": {
                 "module": "compress_decompress",
                 "class": "CompressDecompressApp",
@@ -95,7 +89,7 @@ class ToolTestSuite:
                 "status": "recently_fixed",
             },
             "check_sum": {
-                "module": "check_sum",
+                "module": "src.tools.analysis.checksum.check_sum",
                 "class": "ChecksumGUI",
                 "category": "Analysis Tools",
                 "status": "needs_creation",

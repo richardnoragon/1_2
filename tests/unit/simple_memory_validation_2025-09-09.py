@@ -45,7 +45,7 @@ def test_original_analyzer():
     print("Testing original SizeAnalyzer...")
 
     try:
-        from src.tools.analysis.core.size_analyzer_logic import SizeAnalyzer
+        from tools.analysis.size_analyzer.size_analyzer_logic import SizeAnalyzer
 
         analyzer = SizeAnalyzer()
     except ImportError as e:
@@ -113,9 +113,7 @@ def test_optimized_analyzer():
         # Import memory-optimized analyzer
         exec(open("memory_optimized_size_analyzer_2025-09-09.py").read())
         # Get the create function from global namespace
-        create_memory_optimized_analyzer = globals()[
-            "create_memory_optimized_analyzer"
-        ]
+        create_memory_optimized_analyzer = globals()["create_memory_optimized_analyzer"]
         analyzer = create_memory_optimized_analyzer(collect_file_details=False)
     except Exception as e:
         print(f"Could not import memory-optimized analyzer: {e}")
@@ -298,9 +296,7 @@ def main():
         # Final recommendation
         if criteria_met >= 3:
             print(f"\n🎉 MEMORY LEAK FIX VALIDATION: PASSED")
-            print(
-                f"   The memory-optimized analyzer shows significant improvement!"
-            )
+            print(f"   The memory-optimized analyzer shows significant improvement!")
         else:
             print(f"\n⚠️  MEMORY LEAK FIX VALIDATION: NEEDS IMPROVEMENT")
             print(f"   Additional optimization may be required.")

@@ -49,7 +49,7 @@ import pytest
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
 
 try:
-    from src.tools.analysis.core.size_analyzer_logic import SizeAnalyzer
+    from tools.analysis.size_analyzer.size_analyzer_logic import SizeAnalyzer
 
     SizeAnalyzer_available = True
 except ImportError as e:
@@ -145,12 +145,8 @@ class AdvancedMemoryProfiler:
                         "cpu_percent": cpu_percent,
                         "python_current": current,
                         "python_peak": peak,
-                        "gc_collections": [
-                            stats["collections"] for stats in gc_stats
-                        ],
-                        "gc_collected": [
-                            stats["collected"] for stats in gc_stats
-                        ],
+                        "gc_collections": [stats["collections"] for stats in gc_stats],
+                        "gc_collected": [stats["collected"] for stats in gc_stats],
                         "gc_uncollectable": [
                             stats["uncollectable"] for stats in gc_stats
                         ],
@@ -159,9 +155,7 @@ class AdvancedMemoryProfiler:
                     # Object tracking every 10 samples to reduce overhead
                     if track_objects and sample_count % 10 == 0:
                         sample["object_counts"] = self._get_object_counts()
-                        sample["reference_analysis"] = (
-                            self._analyze_references()
-                        )
+                        sample["reference_analysis"] = self._analyze_references()
 
                     self.memory_samples.append(sample)
 
@@ -171,9 +165,7 @@ class AdvancedMemoryProfiler:
 
                     # Real-time leak detection
                     if len(self.memory_samples) >= self.leak_detection_window:
-                        leak_detected, leak_rate = (
-                            self._detect_real_time_leak()
-                        )
+                        leak_detected, leak_rate = self._detect_real_time_leak()
                         if leak_detected:
                             sample["leak_detected"] = True
                             sample["leak_rate_mb_per_min"] = leak_rate
@@ -188,9 +180,7 @@ class AdvancedMemoryProfiler:
                     print(f"Monitoring error: {e}")
                     break
 
-        self.monitor_thread = threading.Thread(
-            target=advanced_monitor, daemon=True
-        )
+        self.monitor_thread = threading.Thread(target=advanced_monitor, daemon=True)
         self.monitor_thread.start()
 
     def stop_advanced_monitoring(self) -> Dict[str, Any]:
@@ -239,9 +229,7 @@ class AdvancedMemoryProfiler:
             return False, 0.0
 
         # Get recent samples
-        recent_samples = list(self.memory_samples)[
-            -self.leak_detection_window :
-        ]
+        recent_samples = list(self.memory_samples)[-self.leak_detection_window :]
         timestamps = [s["timestamp"] for s in recent_samples]
         memory_values = [s["rss"] for s in recent_samples]
 
@@ -254,9 +242,7 @@ class AdvancedMemoryProfiler:
         x_mean = sum(range(n)) / n
         y_mean = sum(memory_values) / n
 
-        numerator = sum(
-            (i - x_mean) * (memory_values[i] - y_mean) for i in range(n)
-        )
+        numerator = sum((i - x_mean) * (memory_values[i] - y_mean) for i in range(n))
         denominator = sum((i - x_mean) ** 2 for i in range(n))
 
         if denominator == 0:
@@ -268,9 +254,7 @@ class AdvancedMemoryProfiler:
         sample_duration = (timestamps[-1] - timestamps[0]) / (
             n - 1
         )  # seconds per sample
-        samples_per_minute = (
-            60.0 / sample_duration if sample_duration > 0 else 0
-        )
+        samples_per_minute = 60.0 / sample_duration if sample_duration > 0 else 0
         leak_rate_mb_per_min = (slope * samples_per_minute) / (1024 * 1024)
 
         leak_detected = leak_rate_mb_per_min > self.leak_threshold_mb_per_min
@@ -293,15 +277,10 @@ class AdvancedMemoryProfiler:
             "memory_increase_mb": (memory_values[-1] - self.baseline_memory)
             / 1024
             / 1024,
-            "avg_memory_mb": sum(memory_values)
-            / len(memory_values)
-            / 1024
-            / 1024,
+            "avg_memory_mb": sum(memory_values) / len(memory_values) / 1024 / 1024,
             "total_samples": len(samples),
             "monitoring_duration_seconds": timestamps[-1] - timestamps[0],
-            "memory_leak_analysis": self._analyze_memory_leak_patterns(
-                samples
-            ),
+            "memory_leak_analysis": self._analyze_memory_leak_patterns(samples),
             "object_analysis": self._analyze_object_patterns(samples),
             "performance_impact": self._analyze_performance_impact(samples),
             "recommendations": self._generate_recommendations(samples),
@@ -309,9 +288,7 @@ class AdvancedMemoryProfiler:
 
         return analysis
 
-    def _analyze_memory_leak_patterns(
-        self, samples: List[Dict]
-    ) -> Dict[str, Any]:
+    def _analyze_memory_leak_patterns(self, samples: List[Dict]) -> Dict[str, Any]:
         """Analyze memory leak patterns from samples."""
         memory_values = [s["rss"] for s in samples]
         timestamps = [s["timestamp"] for s in samples]
@@ -325,9 +302,7 @@ class AdvancedMemoryProfiler:
         x_mean = sum(range(n)) / n
         y_mean = sum(memory_values) / n
 
-        numerator = sum(
-            (i - x_mean) * (memory_values[i] - y_mean) for i in range(n)
-        )
+        numerator = sum((i - x_mean) * (memory_values[i] - y_mean) for i in range(n))
         denominator = sum((i - x_mean) ** 2 for i in range(n))
 
         if denominator == 0:
@@ -347,19 +322,12 @@ class AdvancedMemoryProfiler:
         # Analyze patterns
         leak_patterns = {
             "overall_trend": (
-                "increasing"
-                if slope > 0
-                else "stable" if slope == 0 else "decreasing"
+                "increasing" if slope > 0 else "stable" if slope == 0 else "decreasing"
             ),
             "leak_rate_mb_per_min": leak_rate_mb_per_min,
-            "leak_detected": abs(leak_rate_mb_per_min)
-            > self.leak_threshold_mb_per_min,
-            "leak_severity": self._classify_leak_severity(
-                leak_rate_mb_per_min
-            ),
-            "memory_stability": self._calculate_memory_stability(
-                memory_values
-            ),
+            "leak_detected": abs(leak_rate_mb_per_min) > self.leak_threshold_mb_per_min,
+            "leak_severity": self._classify_leak_severity(leak_rate_mb_per_min),
+            "memory_stability": self._calculate_memory_stability(memory_values),
             "leak_acceleration": self._detect_leak_acceleration(samples),
         }
 
@@ -405,17 +373,13 @@ class AdvancedMemoryProfiler:
             ),
         }
 
-    def _analyze_performance_impact(
-        self, samples: List[Dict]
-    ) -> Dict[str, Any]:
+    def _analyze_performance_impact(self, samples: List[Dict]) -> Dict[str, Any]:
         """Analyze performance impact of memory usage."""
         cpu_values = [s.get("cpu_percent", 0) for s in samples]
         memory_values = [s["rss"] for s in samples]
 
         return {
-            "avg_cpu_percent": (
-                sum(cpu_values) / len(cpu_values) if cpu_values else 0
-            ),
+            "avg_cpu_percent": (sum(cpu_values) / len(cpu_values) if cpu_values else 0),
             "max_cpu_percent": max(cpu_values) if cpu_values else 0,
             "cpu_memory_correlation": self._calculate_correlation(
                 cpu_values, memory_values
@@ -467,9 +431,9 @@ class AdvancedMemoryProfiler:
             return 0.0
 
         mean_memory = sum(memory_values) / len(memory_values)
-        variance = sum(
-            (value - mean_memory) ** 2 for value in memory_values
-        ) / len(memory_values)
+        variance = sum((value - mean_memory) ** 2 for value in memory_values) / len(
+            memory_values
+        )
         std_deviation = variance**0.5
 
         return (std_deviation / mean_memory) * 100 if mean_memory > 0 else 0.0
@@ -484,12 +448,8 @@ class AdvancedMemoryProfiler:
         early_samples = samples[:mid_point]
         late_samples = samples[mid_point:]
 
-        early_leak_rate = self._calculate_leak_rate(
-            [s["rss"] for s in early_samples]
-        )
-        late_leak_rate = self._calculate_leak_rate(
-            [s["rss"] for s in late_samples]
-        )
+        early_leak_rate = self._calculate_leak_rate([s["rss"] for s in early_samples])
+        late_leak_rate = self._calculate_leak_rate([s["rss"] for s in late_samples])
 
         acceleration = late_leak_rate - early_leak_rate
 
@@ -510,9 +470,7 @@ class AdvancedMemoryProfiler:
         x_mean = (n - 1) / 2
         y_mean = sum(memory_values) / n
 
-        numerator = sum(
-            (i - x_mean) * (memory_values[i] - y_mean) for i in range(n)
-        )
+        numerator = sum((i - x_mean) * (memory_values[i] - y_mean) for i in range(n))
         denominator = sum((i - x_mean) ** 2 for i in range(n))
 
         if denominator == 0:
@@ -556,9 +514,7 @@ class AdvancedMemoryProfiler:
         # Performance recommendations
         cpu_values = [s.get("cpu_percent", 0) for s in samples]
         if cpu_values and max(cpu_values) > 80:
-            recommendations.append(
-                "Optimize CPU usage - high utilization detected"
-            )
+            recommendations.append("Optimize CPU usage - high utilization detected")
 
         recommendations.extend(
             [
@@ -592,14 +548,10 @@ class SizeAnalyzerDebugWrapper:
         self.operation_count = 0
 
     @contextmanager
-    def debug_operation(
-        self, operation_name: str, operation_data: Dict = None
-    ):
+    def debug_operation(self, operation_name: str, operation_data: Dict = None):
         """Context manager for debugging individual operations."""
         self.operation_count += 1
-        operation_id = (
-            f"{operation_name}_{self.operation_count}_{int(time.time())}"
-        )
+        operation_id = f"{operation_name}_{self.operation_count}_{int(time.time())}"
 
         # Pre-operation state
         pre_state = {
@@ -625,12 +577,9 @@ class SizeAnalyzerDebugWrapper:
 
             # Calculate changes
             memory_change = (
-                post_state["memory_info"]["rss"]
-                - pre_state["memory_info"]["rss"]
+                post_state["memory_info"]["rss"] - pre_state["memory_info"]["rss"]
             )
-            object_change = (
-                post_state["object_count"] - pre_state["object_count"]
-            )
+            object_change = post_state["object_count"] - pre_state["object_count"]
             duration = post_state["timestamp"] - pre_state["timestamp"]
 
             operation_summary = {
@@ -673,9 +622,7 @@ class SizeAnalyzerDebugWrapper:
 
             raise
 
-    def analyze_directory_debug(
-        self, directory_path: str, **kwargs
-    ) -> Dict[str, Any]:
+    def analyze_directory_debug(self, directory_path: str, **kwargs) -> Dict[str, Any]:
         """Analyze directory with comprehensive debugging."""
         with self.debug_operation(
             "analyze_directory", {"path": directory_path, "kwargs": kwargs}
@@ -737,21 +684,15 @@ class SizeAnalyzerDebugWrapper:
             "memory_analysis": {
                 "total_memory_change_mb": total_memory_change,
                 "avg_memory_change_mb": avg_memory_change,
-                "max_memory_change_mb": (
-                    max(memory_changes) if memory_changes else 0
-                ),
-                "min_memory_change_mb": (
-                    min(memory_changes) if memory_changes else 0
-                ),
+                "max_memory_change_mb": (max(memory_changes) if memory_changes else 0),
+                "min_memory_change_mb": (min(memory_changes) if memory_changes else 0),
                 "memory_leak_detected": avg_memory_change
                 > 1.0,  # >1MB average increase
             },
             "object_analysis": {
                 "total_object_change": total_object_change,
                 "avg_object_change": avg_object_change,
-                "max_object_change": (
-                    max(object_changes) if object_changes else 0
-                ),
+                "max_object_change": (max(object_changes) if object_changes else 0),
                 "object_leak_detected": avg_object_change
                 > 100,  # >100 objects average increase
             },
@@ -760,9 +701,7 @@ class SizeAnalyzerDebugWrapper:
                 "avg_duration_seconds": avg_duration,
                 "max_duration_seconds": max(durations) if durations else 0,
                 "operations_per_second": (
-                    total_operations / total_duration
-                    if total_duration > 0
-                    else 0
+                    total_operations / total_duration if total_duration > 0 else 0
                 ),
             },
             "error_analysis": {
@@ -799,9 +738,7 @@ class MemoryLeakDetectionTestSuite:
         )
         perf_module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(perf_module)
-        ProductionScaleDatasetGenerator = (
-            perf_module.ProductionScaleDatasetGenerator
-        )
+        ProductionScaleDatasetGenerator = perf_module.ProductionScaleDatasetGenerator
 
         generator = ProductionScaleDatasetGenerator()
 
@@ -892,9 +829,7 @@ class MemoryLeakDetectionTestSuite:
                     "memory_state": "tracked_by_wrapper",
                 }
 
-                debug_scenario_results["operation_results"].append(
-                    operation_result
-                )
+                debug_scenario_results["operation_results"].append(operation_result)
                 debug_scenario_results["operations_completed"] += 1
 
                 # Small delay between operations
@@ -909,9 +844,7 @@ class MemoryLeakDetectionTestSuite:
                     "error_type": type(e).__name__,
                 }
 
-                debug_scenario_results["operation_results"].append(
-                    error_result
-                )
+                debug_scenario_results["operation_results"].append(error_result)
                 debug_scenario_results["operations_failed"] += 1
 
                 print(f"Debug operation {i+1} failed: {e}")
@@ -934,9 +867,7 @@ class MemoryLeakDetectionTestSuite:
         leak_analysis = memory_analysis.get("memory_leak_analysis", {})
         if leak_analysis.get("leak_detected", False):
             diagnosis["leak_confirmed"] = True
-            diagnosis["leak_severity"] = leak_analysis.get(
-                "leak_severity", "unknown"
-            )
+            diagnosis["leak_severity"] = leak_analysis.get("leak_severity", "unknown")
 
         # Analyze object patterns
         object_analysis = memory_analysis.get("object_analysis", {})
@@ -952,10 +883,7 @@ class MemoryLeakDetectionTestSuite:
             diagnosis["diagnostic_confidence"] = 0.8
 
             # Determine leak mechanism
-            if (
-                "dict" in max_growth_type.lower()
-                or "cache" in max_growth_type.lower()
-            ):
+            if "dict" in max_growth_type.lower() or "cache" in max_growth_type.lower():
                 diagnosis["leak_mechanism"] = "cache_accumulation"
             elif "list" in max_growth_type.lower():
                 diagnosis["leak_mechanism"] = "list_accumulation"
@@ -973,13 +901,8 @@ class MemoryLeakDetectionTestSuite:
                 "avg_memory_increase_per_operation": memory_info.get(
                     "avg_memory_change_mb", 0
                 ),
-                "total_memory_increase": memory_info.get(
-                    "total_memory_change_mb", 0
-                ),
-                "leak_per_operation": memory_info.get(
-                    "avg_memory_change_mb", 0
-                )
-                > 0.5,
+                "total_memory_increase": memory_info.get("total_memory_change_mb", 0),
+                "leak_per_operation": memory_info.get("avg_memory_change_mb", 0) > 0.5,
             }
 
         return diagnosis
@@ -1049,9 +972,7 @@ class MemoryLeakDetectionTestSuite:
 
 if __name__ == "__main__":
     print("=" * 80)
-    print(
-        "Phase 2B-DEBUG: Memory Leak Resolution - Advanced Diagnostic System"
-    )
+    print("Phase 2B-DEBUG: Memory Leak Resolution - Advanced Diagnostic System")
     print("=" * 80)
 
     if not SizeAnalyzer_available:
@@ -1072,18 +993,12 @@ if __name__ == "__main__":
     memory_analysis = debug_results.get("memory_analysis", {})
     leak_analysis = memory_analysis.get("memory_leak_analysis", {})
 
-    print(
-        f"Memory Leak Detected: {leak_analysis.get('leak_detected', 'Unknown')}"
-    )
-    print(
-        f"Leak Rate: {leak_analysis.get('leak_rate_mb_per_min', 0):.2f} MB/min"
-    )
+    print(f"Memory Leak Detected: {leak_analysis.get('leak_detected', 'Unknown')}")
+    print(f"Leak Rate: {leak_analysis.get('leak_rate_mb_per_min', 0):.2f} MB/min")
     print(f"Leak Severity: {leak_analysis.get('leak_severity', 'Unknown')}")
 
     object_analysis = memory_analysis.get("object_analysis", {})
-    print(
-        f"Growing Object Types: {object_analysis.get('growing_object_types', 0)}"
-    )
+    print(f"Growing Object Types: {object_analysis.get('growing_object_types', 0)}")
 
     diagnosis = debug_results.get("leak_diagnosis", {})
     print(f"Leak Source: {diagnosis.get('leak_source', 'Unknown')}")

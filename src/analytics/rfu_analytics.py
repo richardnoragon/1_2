@@ -261,7 +261,6 @@ class RFUAnalytics:
         # Generate sample tool usage
         tools = [
             "FileFinderWindow",
-            "CopyMoveSyncDeleteWindow",
             "SizeAnalyzerGUI",
             "DuplicateFinderApp",
             "EnAndDecryptGUI",

@@ -47,7 +47,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
 
 try:
     # Import actual RFU components - NO MOCKING
-    from src.tools.analysis.core.size_analyzer_logic import SizeAnalyzer
+    from tools.analysis.size_analyzer.size_analyzer_logic import SizeAnalyzer
 
     SizeAnalyzer_available = True
 except ImportError as e:
@@ -91,9 +91,7 @@ class ProductionScaleDatasetGenerator:
 
     def __init__(self, base_dir: str = None):
         """Initialize with production-scale parameters."""
-        self.base_dir = base_dir or tempfile.mkdtemp(
-            prefix="rfu_production_scale_"
-        )
+        self.base_dir = base_dir or tempfile.mkdtemp(prefix="rfu_production_scale_")
         self.datasets_created = []
         self.complexity_scenarios = [
             "simple_uniform",
@@ -153,9 +151,7 @@ class ProductionScaleDatasetGenerator:
         for i in range(file_count):
             file_path = os.path.join(base_dir, f"uniform_file_{i:06d}.txt")
             with open(file_path, "w", encoding="utf-8") as f:
-                content = f"Production data file {i}\n" + "x" * (
-                    file_size - 50
-                )
+                content = f"Production data file {i}\n" + "x" * (file_size - 50)
                 f.write(content)
 
     def _create_mixed_sizes_dataset(self, base_dir: str, scale_factor: int):
@@ -170,16 +166,12 @@ class ProductionScaleDatasetGenerator:
 
         for size, count, category in size_categories:
             for i in range(count):
-                file_path = os.path.join(
-                    base_dir, f"{category}_file_{i:06d}.dat"
-                )
+                file_path = os.path.join(base_dir, f"{category}_file_{i:06d}.dat")
                 with open(file_path, "wb") as f:
                     # Create realistic data patterns
                     data = bytearray(size)
                     for j in range(0, size, 1024):
-                        chunk_data = f"CHUNK_{j//1024:06d}_DATA".encode(
-                            "utf-8"
-                        )
+                        chunk_data = f"CHUNK_{j//1024:06d}_DATA".encode("utf-8")
                         data[j : j + len(chunk_data)] = chunk_data
                     f.write(data)
 
@@ -239,31 +231,23 @@ class ProductionScaleDatasetGenerator:
 
         for size, count, category in file_sizes:
             for i in range(count):
-                file_path = os.path.join(
-                    base_dir, f"{category}_file_{i:02d}.dat"
-                )
+                file_path = os.path.join(base_dir, f"{category}_file_{i:02d}.dat")
 
                 # Create large files in chunks to avoid memory issues
                 with open(file_path, "wb") as f:
                     chunk_size = 1048576  # 1MB chunks
                     written = 0
-                    chunk_pattern = (
-                        b"LARGE_FILE_DATA_CHUNK_" + str(i).encode() + b"_"
-                    )
+                    chunk_pattern = b"LARGE_FILE_DATA_CHUNK_" + str(i).encode() + b"_"
 
                     while written < size:
-                        chunk_data = chunk_pattern * (
-                            chunk_size // len(chunk_pattern)
-                        )
+                        chunk_data = chunk_pattern * (chunk_size // len(chunk_pattern))
                         remaining = size - written
                         if remaining < len(chunk_data):
                             chunk_data = chunk_data[:remaining]
                         f.write(chunk_data)
                         written += len(chunk_data)
 
-    def _create_many_small_files_dataset(
-        self, base_dir: str, scale_factor: int
-    ):
+    def _create_many_small_files_dataset(self, base_dir: str, scale_factor: int):
         """Create many small files - I/O stress testing."""
         file_count = 50000 * scale_factor  # Production scale: 50K files
 
@@ -277,9 +261,7 @@ class ProductionScaleDatasetGenerator:
             os.makedirs(sub_dir, exist_ok=True)
 
             for file_i in range(min(files_per_dir, file_count - file_index)):
-                file_path = os.path.join(
-                    sub_dir, f"small_{file_index:06d}.txt"
-                )
+                file_path = os.path.join(sub_dir, f"small_{file_index:06d}.txt")
                 with open(file_path, "w", encoding="utf-8") as f:
                     f.write(f"Small file {file_index} content")
                 file_index += 1
@@ -307,9 +289,7 @@ class ProductionScaleDatasetGenerator:
 
         for binary_type, header, count in binary_types:
             for i in range(count):
-                file_path = os.path.join(
-                    base_dir, f"{binary_type}_{i:04d}.bin"
-                )
+                file_path = os.path.join(base_dir, f"{binary_type}_{i:04d}.bin")
                 file_size = 10240 + (i * 1024)  # Varying sizes
 
                 with open(file_path, "wb") as f:
@@ -347,13 +327,9 @@ class ProductionScaleDatasetGenerator:
 
         except OSError:
             # Fallback for filesystems that don't support sparse files
-            print(
-                "Warning: Sparse files not supported, creating regular files"
-            )
+            print("Warning: Sparse files not supported, creating regular files")
             for i in range(sparse_count):
-                file_path = os.path.join(
-                    base_dir, f"regular_large_{i:02d}.dat"
-                )
+                file_path = os.path.join(base_dir, f"regular_large_{i:02d}.dat")
                 with open(file_path, "wb") as f:
                     f.write(b"REGULAR_FILE_DATA\n" * 1000)
 
@@ -404,13 +380,11 @@ class ProductionScaleDatasetGenerator:
         stats["complexity_indicators"] = {
             "avg_files_per_directory": stats["total_files"]
             / max(stats["total_directories"], 1),
-            "avg_file_size": stats["total_size_bytes"]
-            / max(stats["total_files"], 1),
+            "avg_file_size": stats["total_size_bytes"] / max(stats["total_files"], 1),
             "size_distribution_entropy": self._calculate_entropy(
                 stats["file_size_distribution"]
             ),
-            "depth_complexity": stats["max_depth"]
-            / max(stats["total_directories"], 1),
+            "depth_complexity": stats["max_depth"] / max(stats["total_directories"], 1),
         }
 
         return stats
@@ -476,9 +450,7 @@ class MemoryProfiler:
                 except (psutil.NoSuchProcess, psutil.AccessDenied):
                     break
 
-        self.monitor_thread = threading.Thread(
-            target=monitor_memory, daemon=True
-        )
+        self.monitor_thread = threading.Thread(target=monitor_memory, daemon=True)
         self.monitor_thread.start()
 
     def stop_monitoring(self) -> Dict[str, Any]:
@@ -498,10 +470,7 @@ class MemoryProfiler:
             "memory_increase_mb": (self.peak_memory - self.baseline_memory)
             / 1024
             / 1024,
-            "avg_memory_mb": sum(memory_values)
-            / len(memory_values)
-            / 1024
-            / 1024,
+            "avg_memory_mb": sum(memory_values) / len(memory_values) / 1024 / 1024,
             "total_samples": len(self.memory_samples),
             "monitoring_duration": self.memory_samples[-1]["timestamp"]
             - self.memory_samples[0]["timestamp"],
@@ -527,8 +496,7 @@ class MemoryProfiler:
         y_mean = sum(memory_values) / n
 
         numerator = sum(
-            (x_values[i] - x_mean) * (memory_values[i] - y_mean)
-            for i in range(n)
+            (x_values[i] - x_mean) * (memory_values[i] - y_mean) for i in range(n)
         )
         denominator = sum((x_values[i] - x_mean) ** 2 for i in range(n))
 
@@ -549,9 +517,9 @@ class MemoryProfiler:
         memory_values = [sample["rss"] for sample in self.memory_samples]
         mean_memory = sum(memory_values) / len(memory_values)
 
-        variance = sum(
-            (value - mean_memory) ** 2 for value in memory_values
-        ) / len(memory_values)
+        variance = sum((value - mean_memory) ** 2 for value in memory_values) / len(
+            memory_values
+        )
         std_deviation = variance**0.5
 
         # Return coefficient of variation (normalized)
@@ -587,10 +555,8 @@ class NoCompromisePerformanceTestSuite:
         test_datasets = {}
         for scenario in self.dataset_generator.complexity_scenarios:
             print(f"Creating production dataset: {scenario}")
-            dataset_path = (
-                self.dataset_generator.create_production_scale_dataset(
-                    scenario, scale_factor=1
-                )
+            dataset_path = self.dataset_generator.create_production_scale_dataset(
+                scenario, scale_factor=1
             )
             stats = self.dataset_generator.get_dataset_statistics(dataset_path)
             test_datasets[scenario] = {
@@ -626,9 +592,7 @@ class TestProductionScaleDatasetProcessing:
         dataset_path = dataset_info["path"]
         dataset_stats = dataset_info["statistics"]
 
-        print(
-            f"Testing simple uniform dataset: {dataset_stats['total_files']} files"
-        )
+        print(f"Testing simple uniform dataset: {dataset_stats['total_files']} files")
 
         # Start memory monitoring
         self.test_suite.memory_profiler.start_monitoring(0.1)
@@ -653,9 +617,7 @@ class TestProductionScaleDatasetProcessing:
             # Performance thresholds - NO COMPROMISE
             assert (
                 analysis_time
-                < self.test_suite.performance_thresholds[
-                    "max_analysis_time_seconds"
-                ]
+                < self.test_suite.performance_thresholds["max_analysis_time_seconds"]
             ), f"Analysis too slow: {analysis_time}s > {self.test_suite.performance_thresholds['max_analysis_time_seconds']}s"
 
             assert (
@@ -739,9 +701,7 @@ class TestProductionScaleDatasetProcessing:
             # Performance validation
             assert (
                 analysis_time
-                < self.test_suite.performance_thresholds[
-                    "max_analysis_time_seconds"
-                ]
+                < self.test_suite.performance_thresholds["max_analysis_time_seconds"]
             ), f"Analysis too slow: {analysis_time}s"
 
             assert (
@@ -751,17 +711,13 @@ class TestProductionScaleDatasetProcessing:
 
             assert (
                 cpu_usage
-                < self.test_suite.performance_thresholds[
-                    "max_cpu_usage_percent"
-                ]
+                < self.test_suite.performance_thresholds["max_cpu_usage_percent"]
             ), f"CPU usage too high: {cpu_usage}%"
 
             # Memory stability check for complex processing
             assert (
                 memory_analysis["memory_stability"]
-                < self.test_suite.performance_thresholds[
-                    "memory_stability_threshold"
-                ]
+                < self.test_suite.performance_thresholds["memory_stability_threshold"]
             ), f"Memory usage unstable: {memory_analysis['memory_stability']}% variation"
 
             # Store comprehensive results
@@ -790,9 +746,7 @@ class TestProductionScaleDatasetProcessing:
         dataset_path = dataset_info["path"]
         dataset_stats = dataset_info["statistics"]
 
-        print(
-            f"Testing deep nesting dataset: {dataset_stats['max_depth']} levels deep"
-        )
+        print(f"Testing deep nesting dataset: {dataset_stats['max_depth']} levels deep")
 
         self.test_suite.memory_profiler.start_monitoring(0.1)
 
@@ -813,9 +767,7 @@ class TestProductionScaleDatasetProcessing:
             # Performance validation for deep traversal
             assert (
                 analysis_time
-                < self.test_suite.performance_thresholds[
-                    "max_analysis_time_seconds"
-                ]
+                < self.test_suite.performance_thresholds["max_analysis_time_seconds"]
             ), f"Deep nesting analysis too slow: {analysis_time}s"
 
             # Memory should not grow excessively with depth
@@ -826,8 +778,7 @@ class TestProductionScaleDatasetProcessing:
 
             # Check for stack overflow protection
             depth_memory_ratio = (
-                memory_analysis["memory_increase_mb"]
-                / dataset_stats["max_depth"]
+                memory_analysis["memory_increase_mb"] / dataset_stats["max_depth"]
             )
             assert (
                 depth_memory_ratio < 1.0
@@ -894,9 +845,7 @@ class TestSustainedLoadScenarios:
                 dataset_name = datasets_to_test[
                     operations_completed % len(datasets_to_test)
                 ]
-                dataset_path = self.test_suite.test_datasets[dataset_name][
-                    "path"
-                ]
+                dataset_path = self.test_suite.test_datasets[dataset_name]["path"]
 
                 try:
                     result = analyzer.analyze_directory(dataset_path)
@@ -927,14 +876,11 @@ class TestSustainedLoadScenarios:
 
             # NO-COMPROMISE sustained load validation
             error_rate = (
-                operations_failed
-                / max(operations_completed + operations_failed, 1)
+                operations_failed / max(operations_completed + operations_failed, 1)
             ) * 100
             assert (
                 error_rate
-                < self.test_suite.performance_thresholds[
-                    "max_error_rate_percent"
-                ]
+                < self.test_suite.performance_thresholds["max_error_rate_percent"]
             ), f"Error rate too high during sustained load: {error_rate}%"
 
             # Memory leak detection over sustained period
@@ -954,9 +900,7 @@ class TestSustainedLoadScenarios:
 
             # Performance consistency
             if operation_times:
-                avg_operation_time = sum(operation_times) / len(
-                    operation_times
-                )
+                avg_operation_time = sum(operation_times) / len(operation_times)
                 max_operation_time = max(operation_times)
                 performance_consistency = (
                     (max_operation_time / avg_operation_time)
@@ -974,9 +918,7 @@ class TestSustainedLoadScenarios:
                 "operations_failed": operations_failed,
                 "error_rate_percent": error_rate,
                 "memory_analysis": memory_analysis,
-                "avg_operation_time": (
-                    avg_operation_time if operation_times else 0
-                ),
+                "avg_operation_time": (avg_operation_time if operation_times else 0),
                 "performance_consistency": (
                     performance_consistency if operation_times else 0
                 ),
@@ -1031,12 +973,8 @@ class TestConcurrentUserSimulation:
             for operation in range(operations_per_user):
                 try:
                     # Select dataset for this operation
-                    dataset_name = datasets[
-                        (user_id + operation) % len(datasets)
-                    ]
-                    dataset_path = self.test_suite.test_datasets[dataset_name][
-                        "path"
-                    ]
+                    dataset_name = datasets[(user_id + operation) % len(datasets)]
+                    dataset_path = self.test_suite.test_datasets[dataset_name]["path"]
 
                     operation_start = time.time()
                     result = analyzer.analyze_directory(dataset_path)
@@ -1053,9 +991,7 @@ class TestConcurrentUserSimulation:
 
                 except Exception as e:
                     user_results["operations_failed"] += 1
-                    user_results["errors"].append(
-                        f"Operation {operation}: {str(e)}"
-                    )
+                    user_results["errors"].append(f"Operation {operation}: {str(e)}")
 
             return user_results
 
@@ -1068,9 +1004,7 @@ class TestConcurrentUserSimulation:
                 for user_id in range(concurrent_users)
             ]
 
-            concurrent_results = [
-                future.result() for future in as_completed(futures)
-            ]
+            concurrent_results = [future.result() for future in as_completed(futures)]
 
         total_test_time = time.time() - start_time
         memory_analysis = self.test_suite.memory_profiler.stop_monitoring()
@@ -1080,9 +1014,7 @@ class TestConcurrentUserSimulation:
             r["operations_completed"] + r["operations_failed"]
             for r in concurrent_results
         )
-        total_successful = sum(
-            r["operations_completed"] for r in concurrent_results
-        )
+        total_successful = sum(r["operations_completed"] for r in concurrent_results)
         total_failed = sum(r["operations_failed"] for r in concurrent_results)
 
         # Error rate validation
@@ -1099,17 +1031,13 @@ class TestConcurrentUserSimulation:
         ), f"Concurrent user memory usage too high: {memory_analysis['peak_memory_mb']}MB"
 
         # Performance validation
-        total_analysis_time = sum(
-            r["total_analysis_time"] for r in concurrent_results
-        )
+        total_analysis_time = sum(r["total_analysis_time"] for r in concurrent_results)
         avg_operation_time = total_analysis_time / max(total_successful, 1)
         throughput = total_successful / total_test_time
 
         assert (
             throughput
-            >= self.test_suite.performance_thresholds[
-                "min_throughput_files_per_second"
-            ]
+            >= self.test_suite.performance_thresholds["min_throughput_files_per_second"]
             / 10
         ), f"Concurrent throughput too low: {throughput} ops/sec"
 
@@ -1230,9 +1158,7 @@ def generate_phase2b_comprehensive_report() -> Dict[str, Any]:
 if __name__ == "__main__":
     # Execute Phase 2B NO-COMPROMISE performance testing
     print("=" * 80)
-    print(
-        "PHASE 2B PERFORMANCE AND LOAD TESTING - NO-COMPROMISE IMPLEMENTATION"
-    )
+    print("PHASE 2B PERFORMANCE AND LOAD TESTING - NO-COMPROMISE IMPLEMENTATION")
     print("=" * 80)
 
     # Generate and display comprehensive report

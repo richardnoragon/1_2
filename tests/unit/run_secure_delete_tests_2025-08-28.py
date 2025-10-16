@@ -51,9 +51,7 @@ class SecureDeleteTestRunner:
                 missing_packages.append(package)
 
         if missing_packages:
-            print(
-                f"📦 Installing missing packages: {', '.join(missing_packages)}"
-            )
+            print(f"📦 Installing missing packages: {', '.join(missing_packages)}")
             for package in missing_packages:
                 try:
                     subprocess.run(
@@ -72,9 +70,7 @@ class SecureDeleteTestRunner:
     def run_tests(self):
         """Execute the unit tests with comprehensive reporting."""
         print("\n🧪 Running comprehensive unit tests for secure_delete.py...")
-        print(
-            f"📅 Execution started: {self.start_time.strftime('%Y-%m-%d %H:%M:%S')}"
-        )
+        print(f"📅 Execution started: {self.start_time.strftime('%Y-%m-%d %H:%M:%S')}")
 
         # Construct pytest command
         test_file = self.test_dir / "test_secure_delete_2025-08-28.py"
@@ -134,9 +130,7 @@ class SecureDeleteTestRunner:
 
     def parse_coverage_results(self):
         """Parse coverage results from JSON report."""
-        coverage_file = (
-            self.test_dir / "result_secure_delete_coverage_2025-08-28.json"
-        )
+        coverage_file = self.test_dir / "result_secure_delete_coverage_2025-08-28.json"
 
         if coverage_file.exists():
             try:
@@ -267,16 +261,12 @@ END OF SUMMARY
 """
 
         # Save summary to file
-        summary_file = (
-            self.test_dir / "result_secure_delete_summary_2025-08-28.txt"
-        )
+        summary_file = self.test_dir / "result_secure_delete_summary_2025-08-28.txt"
         with open(summary_file, "w", encoding="utf-8") as f:
             f.write(summary)
 
         # Save JSON results
-        json_file = (
-            self.test_dir / "result_secure_delete_summary_2025-08-28.json"
-        )
+        json_file = self.test_dir / "result_secure_delete_summary_2025-08-28.json"
         with open(json_file, "w", encoding="utf-8") as f:
             json.dump(self.test_results, f, indent=2, default=str)
 

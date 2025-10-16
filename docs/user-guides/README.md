@@ -7,22 +7,26 @@ A comprehensive Python GUI application for file management, analysis, and operat
 RFU now includes a comprehensive onboarding and documentation system designed to get you productive quickly, regardless of your experience level:
 
 ### 🚀 **Quick Start** (5 minutes)
+
 - **[Getting Started](docs/onboarding/01_foundation/GETTING_STARTED.md)**: Install and complete your first file operation in 5 minutes
 - **[Hub Overview](docs/onboarding/01_foundation/HUB_OVERVIEW.md)**: Master the interface in 3-5 minutes
 - **[Quick Wins](docs/onboarding/01_foundation/QUICK_WINS.md)**: Seven scenarios showing immediate value (2-5 minutes each)
 
 ### 📖 **Learn by User Type**
+
 - **[Content Creators](docs/onboarding/04_personas/CONTENT_CREATOR.md)**: Photographers, designers, content producers
 - **[Enterprise Admins](docs/onboarding/04_personas/ENTERPRISE_ADMIN.md)**: IT administrators and system managers
 - **[Developers](docs/onboarding/04_personas/DEVELOPER.md)**: Software developers and technical professionals
 - **[Migration Guide](docs/onboarding/04_personas/MIGRATION_GUIDE.md)**: Transitioning from Total Commander, Directory Opus, Beyond Compare
 
 ### 🔧 **Core Workflows**
+
 - **[File Management](docs/onboarding/02_core_workflows/FILE_MANAGEMENT.md)**: Professional file operations
 - **[Security Basics](docs/onboarding/02_core_workflows/SECURITY_BASICS.md)**: Enterprise-grade security configuration
 - **[Workflow Patterns](docs/onboarding/02_core_workflows/WORKFLOW_PATTERNS.md)**: Common use cases and solutions
 
 ### 📋 **Quick Reference**
+
 - **[Keyboard Shortcuts](docs/onboarding/01_foundation/KEYBOARD_SHORTCUTS.md)**: Complete navigation reference
 - **[Troubleshooting](docs/onboarding/01_foundation/TROUBLESHOOTING.md)**: Solve common issues quickly
 
@@ -67,10 +71,10 @@ Richards_File_Utilities/
 │   │       │   └── rename.py
 │   │       ├── file_operations/    # File operation tools
 │   │       │   ├── __init__.py
-│   │       │   ├── cmsd.py
 │   │       │   ├── compress_decompress.py
 │   │       │   ├── file_splitter_joiner.py
-│   │       │   └── sync.py
+│   │       │   ├── sync.py
+│   │       │   └── (Copy/Move/Sync/Delete now in file_utilities_2/gui/cmsd_gui.py)
 │   │       ├── analysis/           # Analysis tools
 │   │       │   ├── __init__.py
 │   │       │   └── empty_folders.py
@@ -179,46 +183,55 @@ Richards_File_Utilities/
 ## Features
 
 ### File Management Tools
+
 - **File Finder**: Search and find files based on various criteria
 - **Catalog Files**: Create and manage file catalogs
 - **Rename Files**: Batch rename files and folders
 - **Organize Files**: Automatically organize files by type/date
 
 ### File Operations Tools
+
 - **Copy/Move/Sync/Delete**: Advanced file operations
 - **Compress/Decompress**: Archive and extract files
 - **Split/Join Files**: Split large files or join parts
 - **Synchronize**: Synchronize directories
 
 ### Analysis Tools
+
 - **Size Analyzer**: Analyze disk space usage
 - **Duplicate Finder**: Find and remove duplicate files
 - **File Checksum**: Calculate and verify checksums
 - **Empty Folders**: Find and clean empty folders
 
 ### Security Tools
+
 - **Encrypt/Decrypt**: Secure file encryption and decryption
 - **Secure Delete**: Permanently delete sensitive files
 - **Permissions Editor**: Manage file and folder permissions
 
 ### Metadata Tools
+
 - **Edit Image Metadata**: View and edit image metadata
 - **Office Metadata Editor**: Edit document metadata
 - **File Touch**: Modify file timestamps
 
 ### PDF Tools
+
 - **Comprehensive PDF Suite**: Analysis, conversion, enhancement, extraction, operations, and security
 - **Enhanced PDF Widget**: Tabbed interface for all PDF operations
 
 ### Network Tools
+
 - **Network Connectivity**: Check network connectivity and diagnostics
 - **Network Scanner**: Scan network for devices and services
 
 ### Privacy Tools
+
 - **Privacy Cleaner**: Clean privacy-sensitive data
 - **Data Anonymizer**: Anonymize sensitive file data
 
 ### System Tools
+
 - **System Diagnostics**: Run system diagnostics and monitoring
 - **System Cleanup**: Clean system temporary files
 - **Software Maintenance**: Maintain and update software
@@ -226,12 +239,14 @@ Richards_File_Utilities/
 ## Installation
 
 1. **Clone the repository**:
+
    ```bash
    git clone <repository-url>
    cd Richards_File_Utilities
    ```
 
 2. **Create and activate virtual environment**:
+
    ```bash
    python -m venv rfuvenv
    # On Windows:
@@ -256,17 +271,20 @@ python main.py
 ### Development
 
 #### Running Tests
+
 ```bash
 pytest
 ```
 
 #### Development Scripts
+
 - **Analyze Dependencies**: `python scripts/development/analyze_deps.py`
 - **Check Virtual Environment**: `python scripts/development/check_venv.py`
 - **Comprehensive Test Suite**: `python scripts/development/comprehensive_test_suite.py`
 - **Verify Integration**: `python scripts/development/verify_integration.py`
 
 #### Maintenance Scripts
+
 - **Automated Tool Corrector**: `python scripts/maintenance/automated_tool_corrector.py`
 - **Diagnostic Repair**: `python scripts/maintenance/diagnostic_repair_script.py`
 - **System Cleanup Diagnostic**: `python scripts/maintenance/system_cleanup_diagnostic.py`
@@ -274,7 +292,9 @@ pytest
 ## Architecture
 
 ### Import Structure
+
 The application uses a hierarchical import structure:
+
 - `src.utilities.file_management.*` - File management tools
 - `src.rfu.tools.file_operations.*` - File operation tools
 - `src.rfu.tools.analysis.*` - Analysis tools
@@ -284,7 +304,9 @@ The application uses a hierarchical import structure:
 - `src.rfu.core.*` - Core system components
 
 ### Tool Integration
+
 Each tool is designed as a modular component that can be:
+
 - Launched independently
 - Integrated into the main hub
 - Tested in isolation
@@ -307,24 +329,28 @@ Each tool is designed as a modular component that can be:
 ## 🎯 What Makes RFU Special
 
 ### Enterprise-Grade Security
+
 - **AES-256-GCM Encryption**: Military-grade file protection
 - **Comprehensive Audit Logging**: Complete operation tracking for compliance
 - **Role-Based Access Control**: Enterprise user management
 - **Directory Security**: Granular access controls and monitoring
 
 ### Performance at Scale
+
 - **50,000+ File Processing**: Optimized for large datasets
 - **Multi-threaded Operations**: Parallel processing for speed
 - **Intelligent Caching**: Smart performance optimization
 - **Progress Tracking**: Real-time operation monitoring
 
 ### Professional Workflows
+
 - **9 Tool Categories**: Complete file management ecosystem
 - **Cross-Platform**: Windows, macOS, Linux support
 - **API Integration**: Scriptable and automatable
 - **Enterprise Deployment**: Ready for organizational use
 
 ### User-Centric Design
+
 - **Progressive Learning**: 5-minute first success to expert mastery
 - **Persona-Specific Paths**: Tailored workflows for your role
 - **Professional Documentation**: Enterprise-grade guidance
@@ -334,6 +360,6 @@ Each tool is designed as a modular component that can be:
 
 **Documentation Portfolio**: 7,859+ lines across 38 professional documents  
 **Persona Coverage**: Content creators, enterprise admins, developers, migrating users  
-**Learning Path**: 5-minute quick start to advanced enterprise deployment  
+**Learning Path**: 5-minute quick start to advanced enterprise deployment
 
 ---

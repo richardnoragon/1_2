@@ -19,7 +19,7 @@ sys.path.insert(0, str(src_dir))
 try:
     from .hub import RFUHub
 except ImportError:
-    from hub import RFUHub
+    from tabbed_hub import RFUHub
 
 
 def main():

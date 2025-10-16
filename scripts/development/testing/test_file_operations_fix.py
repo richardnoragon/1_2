@@ -28,17 +28,6 @@ def test_file_operations_imports():
         print(f"✗ File Splitter import failed: {e}")
         results["file_splitter"] = False
 
-    # Test CMSD (Copy/Move/Sync/Delete)
-    try:
-        from src.utilities.file_operations.cmsd import CopyMoveSyncDeleteWindow
-
-        _ = CopyMoveSyncDeleteWindow
-        print("✓ Copy/Move/Sync/Delete import successful")
-        results["cmsd"] = True
-    except ImportError as e:
-        print(f"✗ Copy/Move/Sync/Delete import failed: {e}")
-        results["cmsd"] = False
-
     # Test Sync & Backup
     try:
         from src.utilities.file_operations.synchronization_backup.sync import SyncWindow
@@ -89,7 +78,6 @@ def test_hub_integration():
         # Test method existence
         methods = [
             ("open_file_splitter", "File Splitter"),
-            ("open_cmsd_logic", "Copy/Move/Sync/Delete"),
             ("open_sync_backup", "Sync & Backup"),
             ("open_organize_files", "Organize Files"),
             ("open_batch_rename", "Batch Rename"),
@@ -148,8 +136,7 @@ def generate_test_report(import_results, method_results):
         print("2. Go to the File Operations tab")
         print("3. Click each button to verify it opens the correct tool:")
         print("   • 📂 File Splitter")
-        print("   • 📋 Copy/Move/Sync")
-        print("   • 🔄 Sync & Backup")
+        print("   •  Sync & Backup")
         print("   • 📁 Organize Files")
         print("   • 🗂️ Batch Rename")
     else:

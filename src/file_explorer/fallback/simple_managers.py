@@ -254,7 +254,9 @@ class SimpleToolIntegration(QObject if QT_AVAILABLE else object):
     def _launch_duplicate_finder(self) -> bool:
         """Launch duplicate finder tool."""
         try:
-            from src.tools.analysis.find_duplicate_files import DuplicateFinderApp
+            from src.tools.analysis.duplicate_finder.find_duplicate_files import (
+                DuplicateFinderApp,
+            )
 
             tool = DuplicateFinderApp()
             tool.show()

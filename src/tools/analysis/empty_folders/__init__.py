@@ -1,31 +1,26 @@
-"""
-src.tools.analysis.empty_folders package
-"""
+"""Convenience exports for the Empty Folders analysis tool."""
 
-import os
+from importlib import import_module
 
-# Import the main class from the parent module's empty_folders.py file
-import sys
-
-# Add parent directory to path to import the empty_folders.py file
-parent_dir = os.path.dirname(os.path.dirname(__file__))
-sys.path.insert(0, parent_dir)
+_import_error = None
 
 try:
-    from empty_folders import EmptyFoldersGUI
+    _module = import_module(".empty_folders", package=__name__)
+    EmptyFoldersGUI = getattr(_module, "EmptyFoldersGUI")
+except Exception as exc:  # pragma: no cover - defensive guard
+    _import_error = exc
+    EmptyFoldersGUI = None
 
-    __all__ = ["EmptyFoldersGUI"]
-except ImportError:
-    # Fallback import strategy
-    import importlib.util
 
-    spec = importlib.util.spec_from_file_location(
-        "empty_folders_module", os.path.join(parent_dir, "empty_folders.py")
-    )
-    if spec and spec.loader:
-        empty_folders_module = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(empty_folders_module)
-        EmptyFoldersGUI = empty_folders_module.EmptyFoldersGUI
-        __all__ = ["EmptyFoldersGUI"]
-    else:
-        __all__ = []
+if EmptyFoldersGUI is None:  # pragma: no cover - only used when imports fail
+
+    class EmptyFoldersGUI:
+        """Placeholder that surfaces the original import error when instantiated."""
+
+        def __init__(self, *args, **kwargs):
+            raise ImportError(
+                "The Empty Folders GUI could not be imported."
+            ) from _import_error
+
+
+__all__ = ["EmptyFoldersGUI"]

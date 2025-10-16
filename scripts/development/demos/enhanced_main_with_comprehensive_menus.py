@@ -168,8 +168,7 @@ class EnhancedRFUMainWindow(QMainWindow):
         file_tools_menu.addAction("✂️ Split/Join Files").triggered.connect(
             self.open_file_splitter
         )
-        file_tools_menu.addAction("🔄 Copy/Move/Sync").triggered.connect(self.open_cmsd)
-        file_tools_menu.addAction("🗑️ Secure Delete").triggered.connect(
+        file_tools_menu.addAction("️ Secure Delete").triggered.connect(
             self.open_secure_delete
         )
 
@@ -385,12 +384,7 @@ class EnhancedRFUMainWindow(QMainWindow):
                 self.open_file_splitter,
             ),
             (
-                "🔄 Copy/Move/Sync",
-                "Advanced file copy, move, and sync operations",
-                self.open_cmsd,
-            ),
-            (
-                "🗑️ Secure Delete",
+                "️ Secure Delete",
                 "Securely delete files beyond recovery",
                 self.open_secure_delete,
             ),
@@ -574,12 +568,6 @@ class EnhancedRFUMainWindow(QMainWindow):
             "FileSplitJoinGUI",
         )
 
-    def open_cmsd(self):
-        """Open Copy/Move/Sync/Delete tool."""
-        self.launch_tool(
-            "CMSD", "src.utilities.file_operations.cmsd", "CopyMoveSyncDeleteWindow"
-        )
-
     def open_secure_delete(self):
         """Open Enhanced Secure Delete tool."""
         try:
@@ -610,7 +598,7 @@ class EnhancedRFUMainWindow(QMainWindow):
         """Open Duplicate Finder tool."""
         self.launch_tool(
             "Duplicate Finder",
-            "src.utilities.analysis.find_duplicate_files",
+            "src.tools.analysis.duplicate_finder.find_duplicate_files",
             "DuplicateFinderApp",
         )
 
@@ -622,7 +610,11 @@ class EnhancedRFUMainWindow(QMainWindow):
 
     def open_checksum(self):
         """Open Checksum tool."""
-        self.launch_tool("Checksum", "src.utilities.analysis.check_sum", "ChecksumGUI")
+        self.launch_tool(
+            "Checksum",
+            "src.tools.analysis.checksum.check_sum",
+            "ChecksumGUI",
+        )
 
     # PDF Tools
     def open_pdf_manager(self):

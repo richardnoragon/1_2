@@ -6,7 +6,7 @@ Execution Details:
 - Test Date: 2025-08-24
 - Execution Time: 12:35:48
 - Test Framework: pytest
-- Target Module: src.utilities.analysis.find_duplicate_files
+- Target Module: src.tools.analysis.duplicate_finder.find_duplicate_files
 - Test Status: PASSED
 
 Generated Reports:

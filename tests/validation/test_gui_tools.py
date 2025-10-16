@@ -3,9 +3,6 @@ import os
 import subprocess
 import sys
 import time
-from datetime import datetime
-
-from core.error_handler import error_handler
 
 # Set up logging
 logging.basicConfig(
@@ -64,7 +61,6 @@ def main():
         ],
         "Organization": [
             ("Organize Files", "organize.py"),
-            ("Copy/Move/Sync/Delete", "cmsd.py"),
             ("Synchronize", "synchronization_backup/sync.py"),
             ("Find Empty Folders", "empty_folders.py"),
         ],
@@ -84,7 +80,7 @@ def main():
         "Metadata": [
             (
                 "Office Metadata",
-                "src/tools/metadata/office_metadata/office_meta_data_editor.py",
+                "src/tools/metadata/office_metadata/" "office_meta_data_editor.py",
             ),
             ("Media Tags", "tag_viewer_editor.py"),
         ],

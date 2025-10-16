@@ -5,11 +5,11 @@ This module provides comprehensive import validation and debugging
 capabilities for the Size Analyzer and related modules.
 """
 
-import sys
-import os
 import importlib
+import os
+import sys
 from pathlib import Path
-from typing import Dict, List, Any, Optional
+from typing import Any, Dict, List, Optional
 
 
 class ImportValidator:
@@ -34,13 +34,31 @@ class ImportValidator:
         # Define modules to validate
         modules_to_check = [
             ("src.tools.analysis.size_analyzer", "SizeAnalyzerGUI"),
-            ("src.tools.analysis.core.size_analyzer_logic", "SizeAnalyzer"),
+            ("tools.analysis.size_analyzer", "SizeAnalyzerGUI"),
             (
-                "src.tools.analysis.config.size_analyzer_config",
+                "src.tools.analysis.size_analyzer.size_analyzer_logic",
+                "SizeAnalyzer",
+            ),
+            (
+                "tools.analysis.size_analyzer.size_analyzer_logic",
+                "SizeAnalyzer",
+            ),
+            (
+                "src.tools.analysis.size_analyzer.size_analyzer_config",
                 "SizeAnalyzerConfig",
             ),
-            ("utilities.analysis.size_analyzer", "SizeAnalyzerGUI"),
-            ("utilities.analysis", "SizeAnalyzerGUI"),
+            (
+                "tools.analysis.size_analyzer.size_analyzer_config",
+                "SizeAnalyzerConfig",
+            ),
+            (
+                "src.tools.analysis.size_analyzer.size_analyzer_logging",
+                "SizeAnalyzerLogger",
+            ),
+            (
+                "tools.analysis.size_analyzer.size_analyzer_logging",
+                "SizeAnalyzerLogger",
+            ),
         ]
 
         for module_path, class_name in modules_to_check:
@@ -49,12 +67,13 @@ class ImportValidator:
 
             if not status["importable"]:
                 results["success"] = False
-                error_msg = f"Cannot import {class_name} from {module_path}: {status['error']}"
+                error_msg = (
+                    f"Cannot import {class_name} from {module_path}: "
+                    f"{status['error']}"
+                )
                 results["errors"].append(error_msg)
             else:
-                info_msg = (
-                    f"Successfully imported {class_name} from {module_path}"
-                )
+                info_msg = f"Successfully imported {class_name} from {module_path}"
                 results["info"].append(info_msg)
 
         # Validate Python path configuration
@@ -107,11 +126,10 @@ class ImportValidator:
                     # For GUI classes, we can't always instantiate
                     # without QApplication
                     if "GUI" in class_name or "Window" in class_name:
-                        status["instantiable"] = (
-                            True  # Assume it's instantiable
-                        )
+                        # GUI classes require QApplication, assume ready here
+                        status["instantiable"] = True
                     else:
-                        test_instance = class_obj()
+                        class_obj()
                         status["instantiable"] = True
                 except Exception as e:
                     status["error"] = f"Instantiation failed: {str(e)}"
@@ -190,9 +208,8 @@ class ImportValidator:
         try:
             # Check if config module imports from core modules that might
             # import back
-            config_module_path = (
-                "src.tools.analysis.config.size_analyzer_config"
-            )
+            config_module_path = "src.tools.analysis.size_analyzer.size_analyzer_config"
+            status["dependencies"]["config_module"] = config_module_path
 
             # Try to detect if there are circular dependencies
             # This is a basic implementation - could be enhanced
@@ -204,52 +221,69 @@ class ImportValidator:
 
         return status
 
+    def _render_module_status(
+        self, module_status: Dict[str, Dict[str, Any]]
+    ) -> List[str]:
+        """Render module status details for the diagnostic report."""
+        lines = ["## Module Import Status", ""]
+        for module_path, status in module_status.items():
+            icon = "✓" if status.get("importable") else "✗"
+            lines.append(f"- {icon} `{module_path}`")
+            if status.get("error"):
+                lines.append(f"  - Error: {status['error']}")
+            if status.get("file_exists"):
+                lines.append(f"  - File: {status['path_resolved']}")
+        lines.append("")
+        return lines
+
+    def _render_message_section(
+        self, title: str, messages: List[str], icon: str
+    ) -> List[str]:
+        """Render a generic message section when messages are available."""
+        if not messages:
+            return []
+
+        lines = [f"## {title}", ""]
+        for message in messages:
+            lines.append(f"- {icon} {message}")
+        lines.append("")
+        return lines
+
+    def _render_python_path_status(self, path_status: Dict[str, Any]) -> List[str]:
+        """Render Python path diagnostics."""
+        lines = ["## Python Path Configuration", ""]
+        if path_status.get("valid"):
+            lines.append("✓ Python path configuration is valid")
+        else:
+            lines.append("✗ Python path configuration has issues:")
+            for issue in path_status.get("issues", []):
+                lines.append(f"  - {issue}")
+        lines.append("")
+        return lines
+
     def generate_diagnostic_report(self) -> str:
         """Generate a comprehensive diagnostic report."""
         results = self.validate_size_analyzer_imports()
-
         report = "# Size Analyzer Import Diagnostic Report\n\n"
-        report += f"**Overall Status:** {'✓ PASS' if results['success'] else '✗ FAIL'}\n\n"
+        overall_status = "✓ PASS" if results["success"] else "✗ FAIL"
+        report += f"**Overall Status:** {overall_status}\n\n"
 
-        # Module Status
-        report += "## Module Import Status\n\n"
-        for module_path, status in results["module_status"].items():
-            icon = "✓" if status["importable"] else "✗"
-            report += f"- {icon} `{module_path}`\n"
-            if status["error"]:
-                report += f"  - Error: {status['error']}\n"
-            if status["file_exists"]:
-                report += f"  - File: {status['path_resolved']}\n"
-
-        # Errors
-        if results["errors"]:
-            report += "\n## Errors\n\n"
-            for error in results["errors"]:
-                report += f"- ❌ {error}\n"
-
-        # Warnings
-        if results["warnings"]:
-            report += "\n## Warnings\n\n"
-            for warning in results["warnings"]:
-                report += f"- ⚠️ {warning}\n"
-
-        # Python Path Status
-        report += "\n## Python Path Configuration\n\n"
-        path_status = results["python_path_status"]
-        if path_status["valid"]:
-            report += "✓ Python path configuration is valid\n"
-        else:
-            report += "✗ Python path configuration has issues:\n"
-            for issue in path_status["issues"]:
-                report += f"  - {issue}\n"
+        report += "\n".join(self._render_module_status(results["module_status"]))
+        report += "\n".join(
+            self._render_message_section("Errors", results["errors"], "❌")
+        )
+        report += "\n".join(
+            self._render_message_section("Warnings", results["warnings"], "⚠️")
+        )
+        report += "\n".join(
+            self._render_python_path_status(results["python_path_status"])
+        )
 
         # Recommendations
         report += "\n## Recommendations\n\n"
         if not results["success"]:
             report += "1. Fix the import errors listed above\n"
-            report += (
-                "2. Ensure all required files exist in the correct locations\n"
-            )
+            report += "2. Ensure all required files exist in the correct " "locations\n"
             report += "3. Verify Python path includes the src directory\n"
             report += "4. Check for circular import dependencies\n"
             report += "5. Run the automated tool corrector\n"
@@ -267,17 +301,13 @@ class ImportValidator:
             src_dir = str(Path.cwd() / "src")
             if src_dir not in sys.path and os.path.exists(src_dir):
                 sys.path.insert(0, src_dir)
-                fixes_applied["fixes"].append(
-                    f"Added {src_dir} to Python path"
-                )
+                fixes_applied["fixes"].append(f"Added {src_dir} to Python path")
 
             # Fix 2: Ensure current directory is in Python path
             current_dir = str(Path.cwd())
             if current_dir not in sys.path:
                 sys.path.insert(0, current_dir)
-                fixes_applied["fixes"].append(
-                    f"Added {current_dir} to Python path"
-                )
+                fixes_applied["fixes"].append(f"Added {current_dir} to Python path")
 
             # Fix 3: Create missing __init__.py files
             init_files_created = self._create_missing_init_files()
@@ -296,11 +326,9 @@ class ImportValidator:
         # Define directories that should have __init__.py files
         directories_to_check = [
             "src",
-            "src/utilities",
-            "src/utilities/analysis",
-            "src/utilities/analysis/core",
-            "src/utilities/analysis/config",
-            "src/utilities/analysis/gui",
+            "src/tools",
+            "src/tools/analysis",
+            "src/tools/analysis/size_analyzer",
         ]
 
         for directory in directories_to_check:
@@ -309,9 +337,7 @@ class ImportValidator:
                 init_file = dir_path / "__init__.py"
                 if not init_file.exists():
                     try:
-                        init_file.write_text(
-                            '"""Package initialization file."""\n'
-                        )
+                        init_file.write_text('"""Package initialization file."""\n')
                         created_files.append(f"Created {init_file}")
                     except Exception as e:
                         print(f"Could not create {init_file}: {e}")

@@ -31,7 +31,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
 
 # Import SizeAnalyzer
 try:
-    from src.tools.analysis.core.size_analyzer_logic import SizeAnalyzer
+    from tools.analysis.size_analyzer.size_analyzer_logic import SizeAnalyzer
 
     ANALYZER_AVAILABLE = True
 except ImportError as e:
@@ -48,9 +48,7 @@ class Phase6ConcurrentUserSimulation:
         self.lock = threading.Lock()
         self.memory_samples = []
 
-    def create_shared_dataset(
-        self, dataset_id: str, size: str = "medium"
-    ) -> str:
+    def create_shared_dataset(self, dataset_id: str, size: str = "medium") -> str:
         """Create shared test dataset for concurrent access."""
         test_dir = tempfile.mkdtemp(prefix=f"phase6_concurrent_{dataset_id}_")
 
@@ -64,9 +62,7 @@ class Phase6ConcurrentUserSimulation:
             file_count = 1200
             subdir_count = 25
 
-        print(
-            f"Creating {size} shared dataset {dataset_id}: {file_count} files..."
-        )
+        print(f"Creating {size} shared dataset {dataset_id}: {file_count} files...")
 
         # Create main directory files
         for i in range(file_count):
@@ -84,9 +80,7 @@ class Phase6ConcurrentUserSimulation:
             os.makedirs(subdir, exist_ok=True)
 
             for j in range(25):
-                file_path = os.path.join(
-                    subdir, f"concurrent_file_{j:03d}.data"
-                )
+                file_path = os.path.join(subdir, f"concurrent_file_{j:03d}.data")
                 with open(file_path, "w", encoding="utf-8") as f:
                     content_size = 400 + (j % 1500)
                     f.write(f"Concurrent access file {i}-{j}\n")
@@ -123,9 +117,7 @@ class Phase6ConcurrentUserSimulation:
 
                 try:
                     # Simulate realistic user behavior with brief pauses
-                    time.sleep(
-                        0.05 + (user_id * 0.01)
-                    )  # Staggered start times
+                    time.sleep(0.05 + (user_id * 0.01))  # Staggered start times
 
                     result = analyzer.analyze_directory(dataset_path)
 
@@ -140,9 +132,7 @@ class Phase6ConcurrentUserSimulation:
                             result.get("file_count", 0) if result else 0
                         ),
                         "total_size_mb": (
-                            (result.get("total_size", 0) / 1024 / 1024)
-                            if result
-                            else 0
+                            (result.get("total_size", 0) / 1024 / 1024) if result else 0
                         ),
                         "timestamp": datetime.now().isoformat(),
                     }
@@ -205,9 +195,7 @@ class Phase6ConcurrentUserSimulation:
         datasets = {}
         for i in range(min(3, concurrent_users)):  # Up to 3 shared datasets
             dataset_id = f"dataset_{i+1}"
-            datasets[dataset_id] = self.create_shared_dataset(
-                dataset_id, dataset_size
-            )
+            datasets[dataset_id] = self.create_shared_dataset(dataset_id, dataset_size)
 
         try:
             # Start memory tracking
@@ -273,9 +261,7 @@ class Phase6ConcurrentUserSimulation:
 
             # Calculate comprehensive statistics
             total_duration_minutes = (test_end_time - test_start_time) / 60
-            total_memory_change_mb = (
-                (final_memory - baseline_memory) / 1024 / 1024
-            )
+            total_memory_change_mb = (final_memory - baseline_memory) / 1024 / 1024
             memory_leak_rate_mb_per_min = (
                 total_memory_change_mb / total_duration_minutes
                 if total_duration_minutes > 0
@@ -287,9 +273,7 @@ class Phase6ConcurrentUserSimulation:
                 r["successful_operations"] + r["failed_operations"]
                 for r in user_results
             )
-            total_successful = sum(
-                r["successful_operations"] for r in user_results
-            )
+            total_successful = sum(r["successful_operations"] for r in user_results)
             total_failed = sum(r["failed_operations"] for r in user_results)
 
             successful_user_results = [
@@ -415,9 +399,7 @@ class Phase6ConcurrentUserSimulation:
             threshold["threshold_met"]
             and threshold["safety_margin_percent"] is not None
         ):
-            lines.append(
-                f"- Safety Margin: {threshold['safety_margin_percent']:.1f}%"
-            )
+            lines.append(f"- Safety Margin: {threshold['safety_margin_percent']:.1f}%")
 
         # User performance breakdown
         user_results = results["detailed_user_results"]
@@ -438,10 +420,7 @@ class Phase6ConcurrentUserSimulation:
             for user in successful_users[:10]:  # Show first 10 users
                 success_rate = (
                     user["successful_operations"]
-                    / (
-                        user["successful_operations"]
-                        + user["failed_operations"]
-                    )
+                    / (user["successful_operations"] + user["failed_operations"])
                 ) * 100
                 lines.append(
                     f"- User {user['user_id']:2d}: {user['successful_operations']} ops, "
@@ -462,20 +441,14 @@ class Phase6ConcurrentUserSimulation:
         ):
             if memory["memory_leak_rate_mb_per_min"] < 2.0:
                 assessment = "EXCELLENT - Production Ready for Concurrent Use"
-                recommendation = (
-                    "Safe for high-concurrency production deployment"
-                )
+                recommendation = "Safe for high-concurrency production deployment"
             elif memory["memory_leak_rate_mb_per_min"] < 5.0:
-                assessment = (
-                    "GOOD - Production Ready with Concurrent Monitoring"
-                )
+                assessment = "GOOD - Production Ready with Concurrent Monitoring"
                 recommendation = (
                     "Suitable for production with concurrent load monitoring"
                 )
             else:
-                assessment = (
-                    "ACCEPTABLE - Production Ready with Concurrent Limits"
-                )
+                assessment = "ACCEPTABLE - Production Ready with Concurrent Limits"
                 recommendation = (
                     "Production ready but monitor concurrent resource usage"
                 )
@@ -486,9 +459,7 @@ class Phase6ConcurrentUserSimulation:
             )
         else:
             assessment = "REQUIRES OPTIMIZATION"
-            recommendation = (
-                "Concurrent load causes memory threshold violations"
-            )
+            recommendation = "Concurrent load causes memory threshold violations"
 
         lines.extend(
             [
@@ -538,12 +509,8 @@ def main():
     # Executive summary for decision making
     if "threshold_compliance" in results:
         threshold_met = results["threshold_compliance"]["threshold_met"]
-        leak_rate = results["threshold_compliance"][
-            "actual_leak_rate_mb_per_min"
-        ]
-        success_rate = results["performance_analysis"][
-            "overall_success_rate_percent"
-        ]
+        leak_rate = results["threshold_compliance"]["actual_leak_rate_mb_per_min"]
+        success_rate = results["performance_analysis"]["overall_success_rate_percent"]
 
         print("\n" + "=" * 70)
         print("PHASE 6 EXECUTIVE SUMMARY:")
@@ -551,18 +518,14 @@ def main():
             f"Concurrent Memory Leak Rate: {leak_rate:.6f} MB/min (Threshold: <10.0 MB/min)"
         )
         print(f"Concurrent Success Rate: {success_rate:.1f}%")
-        print(
-            f"Threshold Compliance: {'✅ PASSED' if threshold_met else '❌ FAILED'}"
-        )
+        print(f"Threshold Compliance: {'✅ PASSED' if threshold_met else '❌ FAILED'}")
 
         if threshold_met and success_rate >= 95:
             print("🎉 PHASE 6 RESULT: CONCURRENT PRODUCTION READY")
             print("   SizeAnalyzer handles concurrent users successfully!")
         elif threshold_met:
             print("⚠️  PHASE 6 RESULT: CONCURRENT PERFORMANCE NEEDS ATTENTION")
-            print(
-                "   Memory compliant but concurrent reliability could improve."
-            )
+            print("   Memory compliant but concurrent reliability could improve.")
         else:
             print("❌ PHASE 6 RESULT: CONCURRENT OPTIMIZATION REQUIRED")
             print("   Concurrent load causes memory threshold violations.")

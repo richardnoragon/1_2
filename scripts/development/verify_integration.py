@@ -44,9 +44,12 @@ def main():
     # Test tools that were reorganized
     tools_to_test = [
         # Analysis tools (moved/cleaned)
-        ("src.utilities.analysis.check_sum", "ChecksumGUI"),
-        ("src.utilities.analysis.find_duplicate_files", "DuplicateFinderApp"),
-        ("src.utilities.analysis.size_analyzer", "SizeAnalyzerGUI"),
+        ("src.tools.analysis.checksum.check_sum", "ChecksumGUI"),
+        (
+            "src.tools.analysis.duplicate_finder.find_duplicate_files",
+            "DuplicateFinderApp",
+        ),
+        ("src.tools.analysis.size_analyzer", "SizeAnalyzerGUI"),
         # Security tools (moved)
         ("src.utilities.security.en_and_decrypt", "EnAndDecryptGUI"),
         ("src.utilities.security.secure_delete", "SecureDeleteGUI"),

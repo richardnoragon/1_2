@@ -125,7 +125,8 @@ src/tools/security/
 ├── secure_delete.py
 ├── security_preferences.py
 ├── simple_password_generator.py
-└── simple_security_scanner.py
+└── security_scanner/
+   └── security_scanner.py
 ```
 
 ## Verification Commands

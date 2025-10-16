@@ -340,7 +340,7 @@ graph TD
   - Storage optimization suggestions
   - Export capabilities
   - Historical tracking
-- **Module:** `src.utilities.analysis.size_analyzer`
+- **Module:** `src.tools.analysis.size_analyzer`
 - **Class:** `SizeAnalyzerGUI`
 
 #### 👥 **Duplicate Finder**
@@ -351,7 +351,7 @@ graph TD
   - Smart filtering options
   - Batch removal
   - Space savings calculation
-- **Module:** `src.utilities.analysis.find_duplicate_files`
+- **Module:** `src.tools.analysis.duplicate_finder.find_duplicate_files`
 - **Class:** `DuplicateFinderApp`
 
 #### 🔐 **File Checksum**
@@ -362,7 +362,7 @@ graph TD
   - Batch processing
   - Verification reports
   - Database storage
-- **Module:** `src.utilities.analysis.check_sum`
+- **Module:** `src.tools.analysis.checksum.check_sum`
 - **Class:** `ChecksumGUI`
 
 #### 📁 **Empty Folders**

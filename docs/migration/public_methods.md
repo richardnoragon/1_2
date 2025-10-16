@@ -5,28 +5,33 @@
 ### Classes and Public Methods:
 
 #### StyledButton ✅
+
 - [x] `__init__(self, text: str, icon_name: Optional[str] = None, primary: bool = True) -> None`
 - [x] `_get_icon_path(self, icon_name: str) -> str`
 
 #### StandardUtilityWindow ✅
+
 - [x] `__init__(self, title: str, width: int = 500, height: int = 400) -> None`
 - [x] `create_header(self, text: str) -> QLabel`
 - [x] `create_button_row(self, buttons: List[QPushButton]) -> QHBoxLayout`
 - [x] `show_status_message(self, message: str, timeout: int = 3000) -> None`
 
 #### RenameWindow ✅
+
 - [x] `__init__(self) -> None`
 - [x] `_setup_ui(self) -> None`
 - [x] `select_files(self) -> None`
 - [x] `rename_files(self) -> None`
 
 #### CatalogWindow ✅
+
 - [x] `__init__(self) -> None`
 - [x] `_setup_ui(self) -> None`
 - [x] `scan_directory(self) -> None`
 - [x] `generate_catalog(self) -> None`
 
 #### CopyMoveSyncDeleteWindow ✅
+
 - [x] `__init__(self) -> None`
 - [x] `_setup_ui(self) -> None`
 - [x] `copy_files(self) -> None`
@@ -35,12 +40,14 @@
 - [x] `delete_files(self) -> None`
 
 #### OrganizeWindow ✅
+
 - [x] `__init__(self) -> None`
 - [x] `_setup_ui(self) -> None`
 - [x] `organize_files(self) -> None`
 - [x] `manage_rules(self) -> None`
 
 #### MyGUI ✅
+
 - [x] `__init__(self) -> None`
 - [x] `_setup_ui(self) -> None`
 - [x] `open_encrypt_decrypt(self) -> None`
@@ -66,9 +73,11 @@
 - [x] `open_settings_dialog(self) -> None`
 
 #### RFUHub ✅
+
 - [x] `__init__(self) -> None`
 
 #### Module Functions ✅
+
 - [x] `main() -> None`
 
 ## Module: en_and_decrypt.py ✅ **COMPLETED**
@@ -76,6 +85,7 @@
 ### Classes and Public Methods:
 
 #### EnAndDecryptGUI ✅
+
 - [x] `__init__(self) -> None`
 - [x] `load_file(self) -> None`
 - [x] `load_directory(self) -> None`
@@ -86,6 +96,7 @@
 - [x] `add_message(self, message: str) -> None`
 
 #### Module Functions ✅
+
 - [x] `main() -> None`
 
 ## Module: file_finder.py ✅ **COMPLETED**
@@ -93,6 +104,7 @@
 ### Classes and Public Methods:
 
 #### FileFinderGUI ✅
+
 - [x] `__init__(self) -> None`
 - [x] `select_directory(self) -> None`
 - [x] `open_file(self, index: QModelIndex) -> None`
@@ -112,6 +124,7 @@
 - [x] `close(self) -> None`
 
 ### Required Imports Added:
+
 ```python
 from typing import List, Any
 from PyQt5.QtCore import QDate, QModelIndex
@@ -119,6 +132,7 @@ import subprocess
 ```
 
 ## Next Modules to Process:
+
 1. **permissions_editor.py** - Next priority
 2. sync.py
 3. office_meta_data_editor.py
@@ -134,6 +148,7 @@ import subprocess
 13. settings_dialog.py
 
 ## Progress Summary:
+
 - **Completed Modules**: 4/17 (rfuhub.py, en_and_decrypt.py, file_finder.py, size_analyzer.py)
 - **Current Focus**: permissions_editor.py
 - **Overall Progress**: 23.5% complete
@@ -143,10 +158,12 @@ import subprocess
 ## ✅ **COMPLETED MODULES**
 
 ### 1. rfuhub.py ✅ **COMPLETE**
+
 **Status**: All public methods have type hints
 **Classes**: 6 classes, 35 methods total
+
 - StyledButton: 2 methods
-- StandardUtilityWindow: 4 methods  
+- StandardUtilityWindow: 4 methods
 - RenameWindow: 4 methods
 - CatalogWindow: 4 methods
 - CopyMoveSyncDeleteWindow: 6 methods
@@ -155,91 +172,119 @@ import subprocess
 - RFUHub: 1 method
 - Module Functions: 1 method
 
-### 2. en_and_decrypt.py ✅ **COMPLETE** 
+### 2. en_and_decrypt.py ✅ **COMPLETE**
+
 **Status**: Already had comprehensive type hints
 **Classes**: 1 class, 8 methods total
+
 - EnAndDecryptGUI: 7 methods
 - Module Functions: 1 method
 
 ### 3. file_finder.py ✅ **COMPLETE**
+
 **Status**: All public methods now have type hints
 **Classes**: 1 class, 16 methods total
+
 - FileFinderGUI: 15 methods
 - Module Functions: 1 method
 
 ### 4. size_analyzer.py ✅ **COMPLETE**
+
 **Status**: Already has comprehensive type hints
 **Classes**: 1 class, 20 methods total
+
 - SizeAnalyzerWindow: 19 methods
 - Module Functions: 1 method
 
 ### 5. permissions_editor.py ✅ **COMPLETE**
+
 **Status**: All public methods have type hints
 **Classes**: 1 class, 7 methods total
+
 - PermissionsEditorGUI: 7 methods
 - Module Functions: 1 method
 
 ### 6. sync.py ✅ **COMPLETE**
+
 **Status**: All public methods have type hints
 **Classes**: 1 class, 18 methods total
+
 - SyncWindow: 18 methods
 - Module Functions: 1 method
 
 ### 7. office_meta_data_editor.py ✅ **COMPLETE**
+
 **Status**: All public methods have type hints
 **Classes**: 1 class, 4 methods total
+
 - OfficeMetaDataEditorGUI: 4 methods
 - Module Functions: 1 method
 
 ### 8. find_duplicate_files.py ✅ **COMPLETE**
+
 **Status**: All public methods have type hints
 **Classes**: 1 class, 15 methods total
+
 - DuplicateFinderApp: 13 methods
 - Module Functions: 1 method
 
 ### 9. compress_decompress.py ✅ **COMPLETE**
+
 **Status**: All public methods have type hints
 **Classes**: 1 class, 12 methods total
+
 - CompressDecompressApp: 12 methods
 - Module Functions: 1 method
 
 ### 10. tag_viewer_editor.py ✅ **COMPLETE**
+
 **Status**: All public methods have type hints
 **Classes**: 1 class, 8 methods total
+
 - TagViewerEditor: 8 methods
 - Module Functions: 1 method
 
 ### 11. check_sum_gui.py ✅ **COMPLETE**
+
 **Status**: All public methods have type hints
 **Classes**: 1 class, 10 methods total
+
 - ChecksumGUI: 10 methods
 - Module Functions: 1 method
 
 ### 12. tree_map.py ✅ **COMPLETE**
+
 **Status**: All public methods have type hints
 **Classes**: 1 class, 15 methods total
+
 - TreeMapLogic: 4 methods
 - TreeMapView: 1 method
 - TreeMapGUI: 10 methods
 - Module Functions: 1 method
 
 ### 13. empty_folders.py ✅ **COMPLETE**
+
 **Status**: All public methods have type hints
 **Classes**: 1 class, 10 methods total
+
 - EmptyFolderLogic: 4 methods
 - EmptyFoldersGUI: 6 methods
 - Module Functions: 1 method
 
 ### 14. file_touch.py ✅ **COMPLETE**
+
 **Status**: All public methods have type hints
 **Classes**: 1 class, 12 methods total
+
 - FileTouchLogic: 2 methods
 - FileTouchGUI: 10 methods
 - Module Functions: 1 method
 
 ### 15. file_splitter_joiner.py ✅ **COMPLETE**
+
 **Status**: All public methods have type hints
 **Classes**: 1 class, 12 methods total
+
 - FileOperationLogic: 3 methods
 - FileSplitJoinGUI: 9 methods
 - Module Functions: 1 method
@@ -316,53 +361,59 @@ import subprocess
 ## 🔄 **NEXT MODULES TO PROCESS**
 
 ### 19. organize.py 🔄 **READY**
+
 **Estimated Methods**: ~10-12 methods
 **Classes**: OrganizeWindow
 **Priority**: Low
 
 ### 20. sync.py 🔄 **READY**
+
 **Estimated Methods**: ~10-12 methods
 **Classes**: SyncWindow
 **Priority**: Low
 
-### 21. cmsd.py 🔄 **READY**
+### 21. file_utilities_2/gui/cmsd_gui.py 🔄 **READY**
+
 **Estimated Methods**: ~10-12 methods
-**Classes**: MyGUI
+**Classes**: CMSDWindow
 **Priority**: Low
 
 ## 📊 **IMPLEMENTATION SUMMARY**
 
-| Module | Status | Methods | Notes |
-|--------|--------|---------|-------|
-| rfuhub.py | ✅ Complete | 35 | Full type hints added |
-| en_and_decrypt.py | ✅ Complete | 8 | Already had type hints |
-| file_finder.py | ✅ Complete | 16 | Full type hints added |
-| size_analyzer.py | ✅ Complete | 20 | Already had type hints |
-| permissions_editor.py | ✅ Complete | 7 | Full type hints added |
-| sync.py | ✅ Complete | 18 | Full type hints added |
-| office_meta_data_editor.py | ✅ Complete | 4 | Full type hints added |
-| find_duplicate_files.py | ✅ Complete | 15 | Full type hints added |
-| compress_decompress.py | ✅ Complete | 12 | Full type hints added |
-| tag_viewer_editor.py | ✅ Complete | 8 | Full type hints added |
-| check_sum_gui | ✅ Complete | 10 | Full type hints added |
-| tree_map.py | ✅ Complete | 15 | Full type hints added |
-| empty_folders.py | ✅ Complete | 10 | Full type hints added |
-| file_touch.py | ✅ Complete | 12 | Full type hints added |
-| file_splitter_joiner.py | ✅ Complete | 12 | Full type hints added |
-| secure_delete.py | ✅ Complete | 10 | Full type hints added |
-| settings_dialog.py | ✅ Complete | 8 | Full type hints added |
-| file_utilities_1/catalog.py | ✅ Complete | 17 | Full type hints added |
-| **TOTAL COMPLETED** | **18/21** | **238** | **85.2% complete** |
+| Module                      | Status      | Methods | Notes                  |
+| --------------------------- | ----------- | ------- | ---------------------- |
+| rfuhub.py                   | ✅ Complete | 35      | Full type hints added  |
+| en_and_decrypt.py           | ✅ Complete | 8       | Already had type hints |
+| file_finder.py              | ✅ Complete | 16      | Full type hints added  |
+| size_analyzer.py            | ✅ Complete | 20      | Already had type hints |
+| permissions_editor.py       | ✅ Complete | 7       | Full type hints added  |
+| sync.py                     | ✅ Complete | 18      | Full type hints added  |
+| office_meta_data_editor.py  | ✅ Complete | 4       | Full type hints added  |
+| find_duplicate_files.py     | ✅ Complete | 15      | Full type hints added  |
+| compress_decompress.py      | ✅ Complete | 12      | Full type hints added  |
+| tag_viewer_editor.py        | ✅ Complete | 8       | Full type hints added  |
+| check_sum_gui               | ✅ Complete | 10      | Full type hints added  |
+| tree_map.py                 | ✅ Complete | 15      | Full type hints added  |
+| empty_folders.py            | ✅ Complete | 10      | Full type hints added  |
+| file_touch.py               | ✅ Complete | 12      | Full type hints added  |
+| file_splitter_joiner.py     | ✅ Complete | 12      | Full type hints added  |
+| secure_delete.py            | ✅ Complete | 10      | Full type hints added  |
+| settings_dialog.py          | ✅ Complete | 8       | Full type hints added  |
+| file_utilities_1/catalog.py | ✅ Complete | 17      | Full type hints added  |
+| **TOTAL COMPLETED**         | **18/21**   | **238** | **85.2% complete**     |
 
 ## 🎯 **NEXT STEPS**
 
 ### **Immediate Priority** (Next 3 modules):
+
 1. **organize.py** - Start immediately
 2. **sync.py** - Follow organize.py
-3. **cmsd.py** - Follow sync.py
+3. **file_utilities_2/gui/cmsd_gui.py** - Follow sync.py
 
 ### **Implementation Pattern**:
+
 For each module, we will:
+
 1. Identify all public methods
 2. Add missing type hints
 3. Add required imports (typing, Qt types)
@@ -370,6 +421,7 @@ For each module, we will:
 5. Update this tracking document
 
 ### **Type Hint Standards**:
+
 - **Parameter types**: `str`, `int`, `bool`, `datetime.date`, Qt types
 - **Return types**: `None`, `bool`, `List[str]`, custom Qt return types
 - **Complex types**: `Optional[str]`, `List[Type]`, `Dict[str, Any]`
@@ -387,9 +439,11 @@ For each module, we will:
 ## Completed Modules
 
 ### 1. main.py ✅
+
 - `main() -> None`
 
 ### 2. file_finder.py ✅
+
 - `__init__() -> None`
 - `_setup_ui() -> None`
 - `_connect_signals() -> None`
@@ -403,6 +457,7 @@ For each module, we will:
 - `_show_context_menu() -> None`
 
 ### 3. find_duplicate_files.py ✅
+
 - `__init__() -> None`
 - `_setup_ui() -> None`
 - `_connect_signals() -> None`
@@ -414,6 +469,7 @@ For each module, we will:
 - `_show_context_menu() -> None`
 
 ### 4. compress_decompress.py ✅
+
 - `__init__() -> None`
 - `_setup_ui() -> None`
 - `_connect_signals() -> None`
@@ -425,6 +481,7 @@ For each module, we will:
 - `_clear_results() -> None`
 
 ### 5. en_and_decrypt.py ✅
+
 - `__init__() -> None`
 - `_setup_ui() -> None`
 - `_connect_signals() -> None`
@@ -436,6 +493,7 @@ For each module, we will:
 - `_clear_results() -> None`
 
 ### 6. secure_delete.py ✅
+
 - `__init__() -> None`
 - `_setup_ui() -> None`
 - `_connect_signals() -> None`
@@ -445,6 +503,7 @@ For each module, we will:
 - `_clear_results() -> None`
 
 ### 7. file_splitter_joiner.py ✅
+
 - `__init__() -> None`
 - `_setup_ui() -> None`
 - `_connect_signals() -> None`
@@ -456,6 +515,7 @@ For each module, we will:
 - `_clear_results() -> None`
 
 ### 8. file_touch.py ✅
+
 - `__init__() -> None`
 - `_setup_ui() -> None`
 - `_connect_signals() -> None`
@@ -465,6 +525,7 @@ For each module, we will:
 - `_clear_results() -> None`
 
 ### 9. empty_folders.py ✅
+
 - `__init__() -> None`
 - `_setup_ui() -> None`
 - `_connect_signals() -> None`
@@ -475,6 +536,7 @@ For each module, we will:
 - `_clear_results() -> None`
 
 ### 10. rename.py ✅
+
 - `__init__() -> None`
 - `_setup_ui() -> None`
 - `_connect_signals() -> None`
@@ -485,6 +547,7 @@ For each module, we will:
 - `_clear_results() -> None`
 
 ### 11. size_analyzer.py ✅
+
 - `__init__() -> None`
 - `_setup_ui() -> None`
 - `_connect_signals() -> None`
@@ -494,6 +557,7 @@ For each module, we will:
 - `_clear_results() -> None`
 
 ### 12. tree_map.py ✅
+
 - `__init__() -> None`
 - `_setup_ui() -> None`
 - `_connect_signals() -> None`
@@ -503,6 +567,7 @@ For each module, we will:
 - `_clear_results() -> None`
 
 ### 13. permissions_editor.py ✅
+
 - `__init__() -> None`
 - `_setup_ui() -> None`
 - `_connect_signals() -> None`
@@ -513,6 +578,7 @@ For each module, we will:
 - `_clear_results() -> None`
 
 ### 14. office_meta_data_editor.py ✅
+
 - `__init__() -> None`
 - `_setup_ui() -> None`
 - `_connect_signals() -> None`
@@ -523,6 +589,7 @@ For each module, we will:
 - `_clear_results() -> None`
 
 ### 15. tag_viewer_editor.py ✅
+
 - `__init__() -> None`
 - `_setup_ui() -> None`
 - `_connect_signals() -> None`
@@ -533,6 +600,7 @@ For each module, we will:
 - `_clear_results() -> None`
 
 ### 16. edit_image_metadata.py ✅
+
 - `__init__() -> None`
 - `_setup_ui() -> None`
 - `_connect_signals() -> None`
@@ -543,6 +611,7 @@ For each module, we will:
 - `_clear_results() -> None`
 
 ### 17. log_manager.py ✅
+
 - `__init__() -> None`
 - `_setup_ui() -> None`
 - `_connect_signals() -> None`
@@ -552,6 +621,7 @@ For each module, we will:
 - `_update_results() -> None`
 
 ### 18. file_utilities_1/catalog.py ✅
+
 - `__init__() -> None`
 - `_init_models() -> None`
 - `_setup_ui() -> None`
@@ -574,6 +644,7 @@ For each module, we will:
 - `main() -> None`
 
 ### 19. organize.py ✅
+
 - `__init__() -> None`
 - `_init_models() -> None`
 - `_setup_ui() -> None`
@@ -593,6 +664,7 @@ For each module, we will:
 - `main() -> None`
 
 ### 20. sync.py ✅
+
 - `__init__() -> None`
 - `backup_file(file_path: str) -> None`
 - `should_copy_file(src_path: str, tgt_path: str) -> Tuple[bool, str]`
@@ -615,7 +687,8 @@ For each module, we will:
 - `handle_error(error_msg: str) -> None`
 - `main() -> None`
 
-### 21. cmsd.py ✅
+### 21. file_utilities_2/gui/cmsd_gui.py ✅
+
 - `__init__() -> None`
 - `_setup_ui() -> None`
 - `_init_models() -> None`
@@ -642,12 +715,14 @@ For each module, we will:
 **All 21 modules have been successfully updated with comprehensive type hints!**
 
 ### Summary Statistics:
+
 - **Total Modules**: 21/21 ✅ (100% Complete)
 - **Total Public Methods**: 250+ with type hints
 - **Type Safety**: Full PEP 484 compliance
 - **Code Quality**: All linting issues resolved
 
 ### Type Hint Coverage:
+
 - ✅ All public methods have complete type annotations
 - ✅ All parameters have explicit type hints
 - ✅ All return types are specified
@@ -657,6 +732,7 @@ For each module, we will:
 - ✅ List, Dict, Tuple types use proper generic syntax
 
 ### Key Improvements:
+
 - **Type Safety**: Eliminated type-related runtime errors
 - **IDE Support**: Enhanced autocomplete and error detection
 - **Documentation**: Self-documenting code with type hints

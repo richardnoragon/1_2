@@ -29,7 +29,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
 
 # Import SizeAnalyzer
 try:
-    from src.tools.analysis.core.size_analyzer_logic import SizeAnalyzer
+    from tools.analysis.size_analyzer.size_analyzer_logic import SizeAnalyzer
 
     ANALYZER_AVAILABLE = True
 except ImportError as e:
@@ -94,9 +94,7 @@ class Phase5SustainedLoadTestingSuite:
                     f.write(f"Archived file {k}\n" + "z" * 200)
 
         self.test_datasets[size] = test_dir
-        total_files = file_count + (
-            subdir_count * 60
-        )  # Main + subdirs + nested
+        total_files = file_count + (subdir_count * 60)  # Main + subdirs + nested
         print(f"Created dataset with {total_files} total files at: {test_dir}")
 
         return test_dir
@@ -150,9 +148,7 @@ class Phase5SustainedLoadTestingSuite:
 
                     success = True
                     error = None
-                    files_analyzed = (
-                        result.get("file_count", 0) if result else 0
-                    )
+                    files_analyzed = result.get("file_count", 0) if result else 0
                     analysis_duration = end_time - start_time
 
                 except Exception as e:
@@ -237,20 +233,14 @@ class Phase5SustainedLoadTestingSuite:
             # Calculate comprehensive statistics
             successful_ops = [op for op in operation_results if op["success"]]
             total_duration_minutes = (final_time - baseline_time) / 60
-            total_memory_change_mb = (
-                (final_memory - baseline_memory) / 1024 / 1024
-            )
+            total_memory_change_mb = (final_memory - baseline_memory) / 1024 / 1024
 
             if successful_ops:
                 avg_memory_change = sum(
                     op["memory_change_mb"] for op in successful_ops
                 ) / len(successful_ops)
-                max_memory_change = max(
-                    op["memory_change_mb"] for op in successful_ops
-                )
-                min_memory_change = min(
-                    op["memory_change_mb"] for op in successful_ops
-                )
+                max_memory_change = max(op["memory_change_mb"] for op in successful_ops)
+                min_memory_change = min(op["memory_change_mb"] for op in successful_ops)
                 avg_analysis_time = sum(
                     op["analysis_duration_sec"] for op in successful_ops
                 ) / len(successful_ops)
@@ -285,9 +275,7 @@ class Phase5SustainedLoadTestingSuite:
                 "performance_analysis": {
                     "total_operations": operations_count,
                     "successful_operations": len(successful_ops),
-                    "success_rate_percent": (
-                        len(successful_ops) / operations_count
-                    )
+                    "success_rate_percent": (len(successful_ops) / operations_count)
                     * 100,
                     "avg_analysis_duration_sec": avg_analysis_time,
                     "performance_metrics": performance_metrics,
@@ -367,9 +355,7 @@ class Phase5SustainedLoadTestingSuite:
             threshold["threshold_met"]
             and threshold["safety_margin_percent"] is not None
         ):
-            lines.append(
-                f"- Safety Margin: {threshold['safety_margin_percent']:.1f}%"
-            )
+            lines.append(f"- Safety Margin: {threshold['safety_margin_percent']:.1f}%")
 
         lines.extend(
             [
@@ -387,12 +373,12 @@ class Phase5SustainedLoadTestingSuite:
             first_5_ops = successful_ops[:5]
             last_5_ops = successful_ops[-5:]
 
-            avg_first_5 = sum(
-                op["memory_change_mb"] for op in first_5_ops
-            ) / len(first_5_ops)
-            avg_last_5 = sum(
-                op["memory_change_mb"] for op in last_5_ops
-            ) / len(last_5_ops)
+            avg_first_5 = sum(op["memory_change_mb"] for op in first_5_ops) / len(
+                first_5_ops
+            )
+            avg_last_5 = sum(op["memory_change_mb"] for op in last_5_ops) / len(
+                last_5_ops
+            )
 
             lines.extend(
                 [
@@ -418,19 +404,13 @@ class Phase5SustainedLoadTestingSuite:
                 )
             elif memory["memory_leak_rate_mb_per_min"] < 5.0:
                 assessment = "GOOD - Production Ready with Monitoring"
-                recommendation = (
-                    "Suitable for production with memory monitoring"
-                )
+                recommendation = "Suitable for production with memory monitoring"
             else:
                 assessment = "ACCEPTABLE - Production Ready with Limits"
-                recommendation = (
-                    "Production ready but monitor for extended operations"
-                )
+                recommendation = "Production ready but monitor for extended operations"
         else:
             assessment = "REQUIRES OPTIMIZATION"
-            recommendation = (
-                "Additional memory optimization required before production"
-            )
+            recommendation = "Additional memory optimization required before production"
 
         lines.extend(
             [
@@ -479,27 +459,19 @@ def main():
     # Quick summary for decision making
     if "threshold_compliance" in results:
         threshold_met = results["threshold_compliance"]["threshold_met"]
-        leak_rate = results["threshold_compliance"][
-            "actual_leak_rate_mb_per_min"
-        ]
+        leak_rate = results["threshold_compliance"]["actual_leak_rate_mb_per_min"]
 
         print("\n" + "=" * 70)
         print("PHASE 5 EXECUTIVE SUMMARY:")
-        print(
-            f"Memory Leak Rate: {leak_rate:.6f} MB/min (Threshold: <10.0 MB/min)"
-        )
-        print(
-            f"Threshold Compliance: {'✅ PASSED' if threshold_met else '❌ FAILED'}"
-        )
+        print(f"Memory Leak Rate: {leak_rate:.6f} MB/min (Threshold: <10.0 MB/min)")
+        print(f"Threshold Compliance: {'✅ PASSED' if threshold_met else '❌ FAILED'}")
 
         if threshold_met:
             print("🎉 PHASE 5 RESULT: PRODUCTION READY")
             print("   SizeAnalyzer meets sustained operation requirements!")
         else:
             print("⚠️  PHASE 5 RESULT: REQUIRES OPTIMIZATION")
-            print(
-                "   Additional memory optimization needed for production deployment."
-            )
+            print("   Additional memory optimization needed for production deployment.")
 
         print("=" * 70)
 

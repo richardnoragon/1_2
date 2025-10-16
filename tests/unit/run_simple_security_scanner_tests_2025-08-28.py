@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-Test Runner for simple_security_scanner.py Unit Tests
+Test Runner for security_scanner.py Unit Tests
 Generated: 2025-08-28
 
-This script runs comprehensive unit tests for simple_security_scanner.py and generates
+This script runs comprehensive unit tests for security_scanner.py and generates
 detailed reports including HTML coverage, JSON results, and execution summaries.
 """
 
@@ -17,7 +17,7 @@ from pathlib import Path
 
 
 class SimpleSecurityScannerTestRunner:
-    """Test runner for simple_security_scanner.py unit tests."""
+    """Test runner for security_scanner.py unit tests."""
 
     def __init__(self):
         self.test_dir = Path(__file__).parent
@@ -26,7 +26,7 @@ class SimpleSecurityScannerTestRunner:
         self.test_results = {
             "execution_timestamp": self.start_time.isoformat(),
             "test_file": "test_simple_security_scanner_2025-08-28.py",
-            "target_module": "src/utilities/security/simple_security_scanner.py",
+            "target_module": "src/tools/security/security_scanner/security_scanner.py",
             "framework": "pytest",
             "results": {},
         }
@@ -72,7 +72,7 @@ class SimpleSecurityScannerTestRunner:
     def run_tests(self):
         """Execute the unit tests with comprehensive reporting."""
         print(
-            "\nRunning comprehensive unit tests for simple_security_scanner.py..."
+            "\nRunning comprehensive unit tests for security_scanner.py..."
         )
         print(
             f"Execution started: {self.start_time.strftime('%Y-%m-%d %H:%M:%S')}"
@@ -98,7 +98,7 @@ class SimpleSecurityScannerTestRunner:
             f"--html={self.test_dir}/result_simple_security_scanner_report_2025-08-28.html",
             "--self-contained-html",
             f"--junitxml={self.test_dir}/result_simple_security_scanner_junit_2025-08-28.xml",
-            f"--cov=src.utilities.security.simple_security_scanner",
+            f"--cov=tools.security.security_scanner.security_scanner",
             f"--cov-report=html:{self.test_dir}/result_simple_security_scanner_coverage_2025-08-28",
             f"--cov-report=json:{self.test_dir}/result_simple_security_scanner_coverage_2025-08-28.json",
             f"--cov-report=xml:{self.test_dir}/result_simple_security_scanner_coverage_2025-08-28.xml",
@@ -207,7 +207,7 @@ SIMPLE SECURITY SCANNER UNIT TESTS - EXECUTION SUMMARY
 {'='*75}
 
 📊 EXECUTION DETAILS
-Target File: simple_security_scanner.py
+Target File: security_scanner.py
 Test File: test_simple_security_scanner_2025-08-28.py
 Framework: pytest
 Start Time: {self.start_time.strftime('%Y-%m-%d %H:%M:%S')}
@@ -342,7 +342,7 @@ END OF SUMMARY
         """Run the complete test suite with setup, execution, and reporting."""
         print("Starting Simple Security Scanner Unit Test Suite")
         print(f"Working Directory: {os.getcwd()}")
-        print(f"Target: src/utilities/security/simple_security_scanner.py")
+    print(f"Target: src/tools/security/security_scanner/security_scanner.py")
         print(f"Date: {datetime.now().strftime('%Y-%m-%d')}")
 
         # Setup environment

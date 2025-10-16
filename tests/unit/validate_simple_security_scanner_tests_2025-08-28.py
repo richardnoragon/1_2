@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
-Test Validation Script for simple_security_scanner.py Unit Tests
+Test Validation Script for security_scanner.py Unit Tests
 Generated: 2025-08-28
 
 This script validates the structure, syntax, and completeness of the unit test suite
-for simple_security_scanner.py, ensuring all components are properly configured.
+for security_scanner.py, ensuring all components are properly configured.
 """
 
 import ast
@@ -17,14 +17,14 @@ from typing import Any, Dict, List, Tuple
 
 
 class SimpleSecurityScannerTestValidator:
-    """Validator for simple_security_scanner.py test suite."""
+    """Validator for security_scanner.py test suite."""
 
     def __init__(self):
         self.test_dir = Path(__file__).parent
         self.project_root = self.test_dir.parent.parent
         self.validation_results = {
             "timestamp": datetime.now().isoformat(),
-            "target_module": "simple_security_scanner.py",
+            "target_module": "security_scanner.py",
             "test_files": {},
             "validation_summary": {},
             "errors": [],
@@ -58,14 +58,10 @@ class SimpleSecurityScannerTestValidator:
             }
 
             if exists:
-                print(
-                    f"  ✅ {filename} - Found ({file_path.stat().st_size} bytes)"
-                )
+                print(f"  ✅ {filename} - Found ({file_path.stat().st_size} bytes)")
             else:
                 print(f"  ❌ {filename} - Missing")
-                self.validation_results["errors"].append(
-                    f"Missing file: {filename}"
-                )
+                self.validation_results["errors"].append(f"Missing file: {filename}")
                 all_files_exist = False
 
         return all_files_exist
@@ -182,9 +178,9 @@ class SimpleSecurityScannerTestValidator:
             for node in ast.walk(tree):
                 if isinstance(node, ast.ClassDef):
                     found_classes.append(node.name)
-                elif isinstance(
-                    node, ast.FunctionDef
-                ) and node.name.startswith("test_"):
+                elif isinstance(node, ast.FunctionDef) and node.name.startswith(
+                    "test_"
+                ):
                     test_methods.append(node.name)
 
             # Validate expected classes
@@ -204,9 +200,7 @@ class SimpleSecurityScannerTestValidator:
             min_expected_tests = 30  # Minimum expected test methods
 
             if test_count >= min_expected_tests:
-                print(
-                    f"  ✅ Found {test_count} test methods (≥ {min_expected_tests})"
-                )
+                print(f"  ✅ Found {test_count} test methods (≥ {min_expected_tests})")
             else:
                 print(
                     f"  ❌ Found only {test_count} test methods (< {min_expected_tests})"
@@ -270,10 +264,7 @@ class SimpleSecurityScannerTestValidator:
                     imports_valid = False
 
             # Check for PyQt5 mocking fixture
-            if (
-                "@pytest.fixture(autouse=True)" in content
-                and "mock_pyqt5" in content
-            ):
+            if "@pytest.fixture(autouse=True)" in content and "mock_pyqt5" in content:
                 print("  ✅ Found PyQt5 mocking fixture")
             else:
                 print("  ❌ Missing or incorrect PyQt5 mocking fixture")
@@ -305,9 +296,7 @@ class SimpleSecurityScannerTestValidator:
 
         except Exception as e:
             print(f"  ❌ Error validating imports: {e}")
-            self.validation_results["errors"].append(
-                f"Error validating imports: {e}"
-            )
+            self.validation_results["errors"].append(f"Error validating imports: {e}")
             return False
 
     def validate_configuration_files(self) -> bool:
@@ -351,9 +340,7 @@ class SimpleSecurityScannerTestValidator:
             config_valid = False
 
         # Validate requirements.txt
-        req_file_path = (
-            self.test_dir / self.expected_files["requirements_file"]
-        )
+        req_file_path = self.test_dir / self.expected_files["requirements_file"]
         if req_file_path.exists():
             try:
                 with open(req_file_path, "r", encoding="utf-8") as f:
@@ -435,9 +422,7 @@ class SimpleSecurityScannerTestValidator:
         """Validate the testing documentation."""
         print("\n📚 Validating documentation...")
 
-        doc_file_path = (
-            self.test_dir / self.expected_files["documentation_file"]
-        )
+        doc_file_path = self.test_dir / self.expected_files["documentation_file"]
         if not doc_file_path.exists():
             print("  ❌ Documentation file does not exist")
             return False
@@ -500,9 +485,7 @@ class SimpleSecurityScannerTestValidator:
 
         # Calculate validation score
         total_validations = 6  # Number of validation categories
-        passed_validations = total_validations - min(
-            total_errors, total_validations
-        )
+        passed_validations = total_validations - min(total_errors, total_validations)
         validation_score = (passed_validations / total_validations) * 100
 
         report = f"""
@@ -512,7 +495,7 @@ SIMPLE SECURITY SCANNER TEST SUITE VALIDATION REPORT
 
 📊 VALIDATION SUMMARY
 Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
-Target Module: simple_security_scanner.py
+        Target Module: security_scanner.py
 Validation Score: {validation_score:.1f}% ({passed_validations}/{total_validations} categories passed)
 
 Total Errors: {total_errors}
@@ -522,9 +505,7 @@ Overall Status: {'✅ PASSED' if total_errors == 0 else '❌ FAILED'}
 📋 FILE VALIDATION
 """
 
-        for file_type, file_info in self.validation_results[
-            "test_files"
-        ].items():
+        for file_type, file_info in self.validation_results["test_files"].items():
             status = "✅" if file_info["exists"] else "❌"
             report += f"{status} {file_info['filename']} ({file_info['size']} bytes)\n"
 
@@ -548,9 +529,7 @@ Minimum Required: {struct['min_expected_tests']}
             report += f"""
 ⚠️ WARNINGS ({total_warnings}):
 """
-            for i, warning in enumerate(
-                self.validation_results["warnings"], 1
-            ):
+            for i, warning in enumerate(self.validation_results["warnings"], 1):
                 report += f"  {i}. {warning}\n"
 
         report += f"""
@@ -583,9 +562,7 @@ END OF VALIDATION REPORT
         print("Starting Simple Security Scanner Test Suite Validation")
         print(f"Working Directory: {os.getcwd()}")
         print(f"Test Directory: {self.test_dir}")
-        print(
-            f"Validation Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
-        )
+        print(f"Validation Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
         validation_results = []
 
@@ -604,8 +581,7 @@ END OF VALIDATION REPORT
 
         # Save validation report
         report_file = (
-            self.test_dir
-            / "result_simple_security_scanner_validation_2025-08-28.txt"
+            self.test_dir / "result_simple_security_scanner_validation_2025-08-28.txt"
         )
         with open(report_file, "w", encoding="utf-8") as f:
             f.write(report)

@@ -125,7 +125,7 @@
 
 #### File Operations Tools
 
-1. **Copy/Move/Sync/Delete** - [`CopyMoveSyncDeleteWindow`](src/rfu/tools/file_operations/cmsd.py:30)
+1. **Copy/Move/Sync/Delete** - [`CMSDWindow`](file_utilities_2/gui/cmsd_gui.py:21)
 
    - Advanced file operations with progress tracking
    - Conflict resolution and error handling

@@ -1,9 +1,9 @@
 """File rename operations package."""
 
 from .gui import (
+    EnhancedRenameWindow,
     FileRenameWindow,
 )
-from .gui import RenameWindow as EnhancedRenameWindow
 from .rename import RenameWindow as _SimpleRenameWindow
 from .rename import main as _simple_main
 from .rename_logic import FileRenamer, RenameOperation

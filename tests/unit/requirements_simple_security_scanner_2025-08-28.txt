@@ -1,8 +1,8 @@
-# Test Requirements for simple_security_scanner.py Unit Tests
+# Test Requirements for security_scanner.py Unit Tests
 # Generated: 2025-08-28
 # 
 # This file contains all the dependencies required to run the comprehensive
-# unit tests for simple_security_scanner.py
+# unit tests for security_scanner.py
 
 # Core testing framework
 pytest>=7.0.0
@@ -54,6 +54,6 @@ sphinx-rtd-theme>=1.2.0
 # Minimal installation (core testing only):
 # pip install pytest pytest-cov pytest-html pytest-mock
 
-# Note: The simple_security_scanner.py module itself requires PyQt5
+# Note: The security_scanner.py module itself requires PyQt5
 # for GUI functionality, but the tests use comprehensive mocking
 # to avoid GUI dependencies during testing.

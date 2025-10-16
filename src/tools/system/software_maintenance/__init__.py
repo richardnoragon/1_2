@@ -18,17 +18,16 @@ __version__ = "1.0.0"
 __author__ = "Richard's File Utilities"
 
 from .core.maintenance_base import MaintenanceToolBase
-from .core.software_detector import SoftwareDetector
 from .core.security_manager import SecurityManager
+from .core.software_detector import SoftwareDetector
 
-# Import the GUI class for external access
+# Import the GUI class for external access before pulling in the launcher to
+# avoid circular import issues during package initialization.
 try:
-    from .gui.maintenance_hub import (
-        SoftwareMaintenanceHub as SoftwareMaintenanceGUI,
-    )
+    from .gui.maintenance_hub import SoftwareMaintenanceHub as SoftwareMaintenanceGUI
 except ImportError:
     # Fallback placeholder if GUI dependencies are missing
-    from PyQt5.QtWidgets import QMainWindow, QLabel, QVBoxLayout, QWidget
+    from PyQt5.QtWidgets import QLabel, QMainWindow, QVBoxLayout, QWidget
 
     class SoftwareMaintenanceGUI(QMainWindow):
         """Placeholder class when GUI dependencies are missing."""
@@ -50,9 +49,12 @@ except ImportError:
             layout.addWidget(label)
 
 
+from .software_maintenance import main
+
 __all__ = [
     "MaintenanceToolBase",
     "SoftwareDetector",
     "SecurityManager",
     "SoftwareMaintenanceGUI",
+    "main",
 ]

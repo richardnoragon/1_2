@@ -12,6 +12,7 @@ from typing import Any, Dict, List
 
 from PyQt5.QtCore import QMutex, QMutexLocker, Qt, QThread, pyqtSignal
 from PyQt5.QtWidgets import (
+    QAction,
     QApplication,
     QCheckBox,
     QComboBox,
@@ -23,6 +24,7 @@ from PyQt5.QtWidgets import (
     QLabel,
     QLineEdit,
     QListWidget,
+    QMainWindow,
     QMessageBox,
     QProgressBar,
     QPushButton,
@@ -38,10 +40,12 @@ from PyQt5.QtWidgets import (
 
 # Import the standard window framework
 try:
-    from ....gui.standard_window import StandardWindow
+    from src.gui.standard_window import StandardWindow
 except ImportError:
-    # Fallback for development
-    StandardWindow = QWidget
+    try:
+        from ....gui.standard_window import StandardWindow
+    except ImportError:
+        StandardWindow = QMainWindow
 
 # Import rename logic
 from .rename_logic import FileRenamer
@@ -144,6 +148,7 @@ class FileRenameWindow(StandardWindow):
 
         self.init_ui()
         self.connect_signals()
+        self._ensure_exit_action_reference()
 
     def init_ui(self):
         """Initialize the user interface."""
@@ -638,25 +643,16 @@ class FileRenameWindow(StandardWindow):
 
         # Show summary
         failed = total - successful
-        summary = (
-            f"\nRename completed: {successful} successful, "
-            f"{failed} failed out of {total} total"
-        )
+        summary = f"\nRename completed: {successful} successful, {failed} failed out of {total} total"
         self.text_results.append(summary)
 
         # Switch to results tab
         self.tab_widget.setCurrentIndex(2)
 
-        details = (
-            "Rename operation completed.\n"
-            f"{successful} files renamed successfully.\n"
-            f"{failed} files failed."
-        )
-
         QMessageBox.information(
             self,
             "Rename Completed",
-            details,
+            f"Rename operation completed.\n{successful} files renamed successfully.\n{failed} files failed.",
         )
 
     def on_error_occurred(self, error_message: str):
@@ -699,6 +695,65 @@ class FileRenameWindow(StandardWindow):
         self.lbl_status.setText("Ready")
         self.text_results.clear()
 
+    def _ensure_exit_action_reference(self):
+        """Ensure the window exposes standard exit actions."""
+        if hasattr(self, "actionexit"):
+            return
+
+        menubar = self.menuBar() if hasattr(self, "menuBar") else None
+        if menubar is None:
+            return
+
+        exit_action = self._find_exit_action(menubar)
+        if exit_action is None:
+            exit_action = self._create_exit_action(menubar)
+
+        if exit_action is not None:
+            setattr(self, "actionexit", exit_action)
+            if not hasattr(self, "actionExit"):
+                setattr(self, "actionExit", exit_action)
+
+    def _find_exit_action(self, menubar):
+        """Search for an existing exit action in the menu bar."""
+        for top_action in menubar.actions():
+            menu = top_action.menu()
+            if menu is None:
+                continue
+
+            for action in menu.actions():
+                label = self._normalize_action_text(action.text())
+                if label in {"exit", "quit"}:
+                    return action
+
+        return None
+
+    def _create_exit_action(self, menubar):
+        """Create a fallback exit action when none exists."""
+        file_menu = self._resolve_file_menu(menubar)
+        if file_menu is None:
+            return None
+
+        exit_action = QAction("E&xit", self)
+        exit_action.setShortcut("Ctrl+Q")
+        exit_action.setStatusTip("Close Rename Files")
+        exit_action.triggered.connect(self.close)
+        file_menu.addAction(exit_action)
+        return exit_action
+
+    def _resolve_file_menu(self, menubar):
+        """Return the File menu, creating it when required."""
+        for action in menubar.actions():
+            label = self._normalize_action_text(action.text())
+            if label == "file":
+                return action.menu()
+
+        return menubar.addMenu("&File")
+
+    @staticmethod
+    def _normalize_action_text(label: str) -> str:
+        """Normalize menu text for comparisons."""
+        return label.replace("&", "").strip().lower()
+
     def closeEvent(self, event):
         """Handle window close event."""
         if self.worker_thread and self.worker_thread.isRunning():
@@ -732,7 +787,7 @@ def main():
     sys.exit(app.exec_())
 
 
-# Alias for referencing the enhanced UI implementation
+# Alias for backward compatibility and import resolution
 EnhancedRenameWindow = FileRenameWindow
 
 

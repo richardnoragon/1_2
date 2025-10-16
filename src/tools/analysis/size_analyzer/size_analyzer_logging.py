@@ -11,7 +11,13 @@ import os
 from pathlib import Path
 from typing import Any, Dict, Optional
 
-from src.core_rfu.logging_manager import LogManager
+try:
+    from src.log_manager import get_log_manager
+except ImportError:
+    try:
+        from log_manager import get_log_manager
+    except ImportError:
+        get_log_manager = None
 
 from .size_analyzer_config import SizeAnalyzerConfig
 
@@ -26,7 +32,11 @@ class SizeAnalyzerLogger:
         """Initialize the Size Analyzer logging manager."""
         self.config = config or SizeAnalyzerConfig()
         self.loggers: Dict[str, logging.Logger] = {}
-        self.main_logger = LogManager.get_logger("SizeAnalyzer")
+        self.log_manager = get_log_manager() if get_log_manager else None
+        if self.log_manager:
+            self.main_logger = self.log_manager.get_logger("SizeAnalyzer")
+        else:
+            self.main_logger = logging.getLogger("SizeAnalyzer")
 
         # Initialize logging configuration
         self._setup_logging()
@@ -113,7 +123,10 @@ class SizeAnalyzerLogger:
 
             for category, level_name in log_categories.items():
                 logger_name = f"SizeAnalyzer.{category}"
-                logger = LogManager.get_logger(logger_name)
+                if self.log_manager:
+                    logger = self.log_manager.get_logger(logger_name)
+                else:
+                    logger = logging.getLogger(logger_name)
 
                 # Set log level
                 try:

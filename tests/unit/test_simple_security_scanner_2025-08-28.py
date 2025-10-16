@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Comprehensive Unit Tests for simple_security_scanner.py
+Comprehensive Unit Tests for security_scanner.py
 Generated on: 2025-08-28
 Test Framework: pytest
 
@@ -74,7 +74,7 @@ class TestSecurityScanWorker:
     @pytest.fixture
     def security_scan_worker(self, mock_pyqt5):
         """Create a SecurityScanWorker instance for testing."""
-        from src.tools.security.simple_security_scanner import \
+        from tools.security.security_scanner.security_scanner import \
             SecurityScanWorker
         scan_types = ["system_info", "network_ports", "file_permissions", "running_processes"]
         return SecurityScanWorker(scan_types)
@@ -86,19 +86,19 @@ class TestSecurityScanWorker:
     
     def test_init_with_empty_scan_types(self, mock_pyqt5):
         """Test SecurityScanWorker initialization with empty scan types."""
-        from src.tools.security.simple_security_scanner import \
+        from tools.security.security_scanner.security_scanner import \
             SecurityScanWorker
         worker = SecurityScanWorker([])
         assert worker.scan_types == []
     
     def test_init_with_single_scan_type(self, mock_pyqt5):
         """Test SecurityScanWorker initialization with single scan type."""
-        from src.tools.security.simple_security_scanner import \
+        from tools.security.security_scanner.security_scanner import \
             SecurityScanWorker
         worker = SecurityScanWorker(["system_info"])
         assert worker.scan_types == ["system_info"]
     
-    @patch('src.tools.security.simple_security_scanner.platform')
+    @patch('tools.security.security_scanner.security_scanner.platform')
     def test_scan_system_info_success(self, mock_platform, security_scan_worker):
         """Test successful system information scanning."""
         # Mock platform module
@@ -108,7 +108,7 @@ class TestSecurityScanWorker:
         mock_platform.python_version.return_value = "3.9.0"
         
         # Mock socket.gethostname
-        with patch('src.tools.security.simple_security_scanner.socket.gethostname', return_value="TestHost"):
+        with patch('tools.security.security_scanner.security_scanner.socket.gethostname', return_value="TestHost"):
             result = security_scan_worker.scan_system_info()
         
         # Verify result contains expected information
@@ -119,7 +119,7 @@ class TestSecurityScanWorker:
         assert "Hostname: TestHost" in result
         assert "Windows Defender Status" in result
     
-    @patch('src.tools.security.simple_security_scanner.platform')
+    @patch('tools.security.security_scanner.security_scanner.platform')
     def test_scan_system_info_linux(self, mock_platform, security_scan_worker):
         """Test system information scanning on Linux."""
         # Mock platform module for Linux
@@ -128,13 +128,13 @@ class TestSecurityScanWorker:
         mock_platform.machine.return_value = "x86_64"
         mock_platform.python_version.return_value = "3.8.5"
         
-        with patch('src.tools.security.simple_security_scanner.socket.gethostname', return_value="LinuxHost"):
+    with patch('tools.security.security_scanner.security_scanner.socket.gethostname', return_value="LinuxHost"):
             result = security_scan_worker.scan_system_info()
         
         assert "Operating System: Linux 5.4.0" in result
         assert "Windows Defender Status" not in result
     
-    @patch('src.tools.security.simple_security_scanner.platform')
+    @patch('tools.security.security_scanner.security_scanner.platform')
     def test_scan_system_info_exception_handling(self, mock_platform, security_scan_worker):
         """Test system information scanning with exception."""
         # Mock platform to raise exception
@@ -143,7 +143,7 @@ class TestSecurityScanWorker:
         result = security_scan_worker.scan_system_info()
         assert "System info scan error: Platform error" in result
     
-    @patch('src.tools.security.simple_security_scanner.socket')
+    @patch('tools.security.security_scanner.security_scanner.socket')
     def test_scan_network_ports_success(self, mock_socket, security_scan_worker):
         """Test successful network port scanning."""
         # Mock socket operations
@@ -167,7 +167,7 @@ class TestSecurityScanWorker:
         assert mock_sock.settimeout.call_count >= 1
         assert mock_sock.close.call_count >= 1
     
-    @patch('src.tools.security.simple_security_scanner.socket')
+    @patch('tools.security.security_scanner.security_scanner.socket')
     def test_scan_network_ports_no_open_ports(self, mock_socket, security_scan_worker):
         """Test network port scanning with no open ports."""
         # Mock socket operations
@@ -184,7 +184,7 @@ class TestSecurityScanWorker:
         assert "=== NETWORK PORT SCAN ===" in result
         assert "✅ No common ports found open on localhost" in result
     
-    @patch('src.tools.security.simple_security_scanner.socket')
+    @patch('tools.security.security_scanner.security_scanner.socket')
     def test_scan_network_ports_exception_handling(self, mock_socket, security_scan_worker):
         """Test network port scanning with exception."""
         # Mock socket to raise exception
@@ -193,8 +193,8 @@ class TestSecurityScanWorker:
         result = security_scan_worker.scan_network_ports()
         assert "Network scan error: Network error" in result
     
-    @patch('src.tools.security.simple_security_scanner.platform')
-    @patch('src.tools.security.simple_security_scanner.os')
+    @patch('tools.security.security_scanner.security_scanner.platform')
+    @patch('tools.security.security_scanner.security_scanner.os')
     def test_scan_file_permissions_windows(self, mock_os, mock_platform, security_scan_worker):
         """Test file permissions scanning on Windows."""
         # Mock platform
@@ -218,8 +218,8 @@ class TestSecurityScanWorker:
         assert "C:\\Windows\\System32: RWX" in result
         assert "✅ File permission scan completed" in result
     
-    @patch('src.tools.security.simple_security_scanner.platform')
-    @patch('src.tools.security.simple_security_scanner.os')
+    @patch('tools.security.security_scanner.security_scanner.platform')
+    @patch('tools.security.security_scanner.security_scanner.os')
     def test_scan_file_permissions_unix(self, mock_os, mock_platform, security_scan_worker):
         """Test file permissions scanning on Unix-like systems."""
         # Mock platform
@@ -251,8 +251,8 @@ class TestSecurityScanWorker:
         assert "/etc: RX" in result
         assert "/var: RX" in result
     
-    @patch('src.tools.security.simple_security_scanner.platform')
-    @patch('src.tools.security.simple_security_scanner.os')
+    @patch('tools.security.security_scanner.security_scanner.platform')
+    @patch('tools.security.security_scanner.security_scanner.os')
     def test_scan_file_permissions_nonexistent_directory(self, mock_os, mock_platform, security_scan_worker):
         """Test file permissions scanning with nonexistent directory."""
         # Mock platform
@@ -267,8 +267,8 @@ class TestSecurityScanWorker:
         assert "=== FILE PERMISSIONS CHECK ===" in result
         assert "✅ File permission scan completed" in result
     
-    @patch('src.tools.security.simple_security_scanner.platform')
-    @patch('src.tools.security.simple_security_scanner.os')
+    @patch('tools.security.security_scanner.security_scanner.platform')
+    @patch('tools.security.security_scanner.security_scanner.os')
     def test_scan_file_permissions_access_error(self, mock_os, mock_platform, security_scan_worker):
         """Test file permissions scanning with access error."""
         # Mock platform
@@ -285,8 +285,8 @@ class TestSecurityScanWorker:
         
         assert "Error checking permissions - Access denied" in result
     
-    @patch('src.tools.security.simple_security_scanner.platform')
-    @patch('src.tools.security.simple_security_scanner.subprocess')
+    @patch('tools.security.security_scanner.security_scanner.platform')
+    @patch('tools.security.security_scanner.security_scanner.subprocess')
     def test_scan_running_processes_windows(self, mock_subprocess, mock_platform, security_scan_worker):
         """Test running processes scanning on Windows."""
         # Mock platform
@@ -313,8 +313,8 @@ csrss.exe                      456 Services                   0      2,345 K"""
         # Verify subprocess was called with correct command
         mock_subprocess.check_output.assert_called_with(['tasklist'], universal_newlines=True)
     
-    @patch('src.tools.security.simple_security_scanner.platform')
-    @patch('src.tools.security.simple_security_scanner.subprocess')
+    @patch('tools.security.security_scanner.security_scanner.platform')
+    @patch('tools.security.security_scanner.security_scanner.subprocess')
     def test_scan_running_processes_unix(self, mock_subprocess, mock_platform, security_scan_worker):
         """Test running processes scanning on Unix-like systems."""
         # Mock platform
@@ -339,8 +339,8 @@ root         3  0.0  0.0      0     0 ?        S    08:00   0:00 [ksoftirqd/0]""
         # Verify subprocess was called with correct command
         mock_subprocess.check_output.assert_called_with(['ps', 'aux'], universal_newlines=True)
     
-    @patch('src.tools.security.simple_security_scanner.platform')
-    @patch('src.tools.security.simple_security_scanner.subprocess')
+    @patch('tools.security.security_scanner.security_scanner.platform')
+    @patch('tools.security.security_scanner.security_scanner.subprocess')
     def test_scan_running_processes_exception(self, mock_subprocess, mock_platform, security_scan_worker):
         """Test running processes scanning with subprocess exception."""
         # Mock platform
@@ -353,7 +353,7 @@ root         3  0.0  0.0      0     0 ?        S    08:00   0:00 [ksoftirqd/0]""
         
         assert "Could not retrieve process list" in result
     
-    @patch('src.tools.security.simple_security_scanner.platform')
+    @patch('tools.security.security_scanner.security_scanner.platform')
     def test_scan_running_processes_exception_handling(self, mock_platform, security_scan_worker):
         """Test running processes scanning with general exception."""
         # Mock platform to raise exception
@@ -390,7 +390,7 @@ root         3  0.0  0.0      0     0 ?        S    08:00   0:00 [ksoftirqd/0]""
     
     def test_run_method_unknown_scan_type(self, mock_pyqt5):
         """Test the run method with unknown scan type."""
-        from src.tools.security.simple_security_scanner import \
+        from tools.security.security_scanner.security_scanner import \
             SecurityScanWorker
         worker = SecurityScanWorker(["unknown_scan"])
         
@@ -413,7 +413,7 @@ class TestSimpleSecurityScannerGUI:
     @pytest.fixture
     def security_scanner_gui(self, mock_pyqt5):
         """Create a SimpleSecurityScannerGUI instance for testing."""
-        from src.tools.security.simple_security_scanner import \
+        from tools.security.security_scanner.security_scanner import \
             SimpleSecurityScannerGUI
         return SimpleSecurityScannerGUI()
     
@@ -464,7 +464,7 @@ class TestSimpleSecurityScannerGUI:
         security_scanner_gui.running_processes_check.isChecked.return_value = True
         
         # Mock SecurityScanWorker
-        with patch('src.tools.security.simple_security_scanner.SecurityScanWorker') as mock_worker_class:
+        with patch('tools.security.security_scanner.security_scanner.SecurityScanWorker') as mock_worker_class:
             mock_worker = MagicMock()
             mock_worker_class.return_value = mock_worker
             
@@ -496,7 +496,7 @@ class TestSimpleSecurityScannerGUI:
         security_scanner_gui.file_permissions_check.isChecked.return_value = False
         security_scanner_gui.running_processes_check.isChecked.return_value = False
         
-        with patch('src.tools.security.simple_security_scanner.SecurityScanWorker') as mock_worker_class:
+        with patch('tools.security.security_scanner.security_scanner.SecurityScanWorker') as mock_worker_class:
             security_scanner_gui.start_scan()
             
             # Verify worker was created with correct scan types
@@ -577,14 +577,14 @@ class TestSimpleSecurityScannerEdgeCases:
     @pytest.fixture
     def worker_single_scan(self, mock_pyqt5):
         """Create a SecurityScanWorker instance for testing."""
-        from src.tools.security.simple_security_scanner import \
+        from tools.security.security_scanner.security_scanner import \
             SecurityScanWorker
         return SecurityScanWorker(["system_info"])
     
     def test_empty_subprocess_output(self, mock_pyqt5, worker_single_scan):
         """Test handling of empty subprocess output."""
-        with patch('src.tools.security.simple_security_scanner.platform.system', return_value="Windows"):
-            with patch('src.tools.security.simple_security_scanner.subprocess.check_output', return_value=""):
+        with patch('tools.security.security_scanner.security_scanner.platform.system', return_value="Windows"):
+            with patch('tools.security.security_scanner.security_scanner.subprocess.check_output', return_value=""):
                 result = worker_single_scan.scan_running_processes()
                 
                 assert "=== RUNNING PROCESSES ANALYSIS ===" in result
@@ -592,7 +592,7 @@ class TestSimpleSecurityScannerEdgeCases:
     
     def test_network_timeout_simulation(self, mock_pyqt5, worker_single_scan):
         """Test network scanning with timeout simulation."""
-        with patch('src.tools.security.simple_security_scanner.socket') as mock_socket:
+        with patch('tools.security.security_scanner.security_scanner.socket') as mock_socket:
             # Simulate socket timeout
             mock_sock = MagicMock()
             mock_socket.socket.return_value = mock_sock
@@ -604,10 +604,10 @@ class TestSimpleSecurityScannerEdgeCases:
     
     def test_file_permission_with_special_characters(self, mock_pyqt5, worker_single_scan):
         """Test file permission scanning with special characters in paths."""
-        with patch('src.tools.security.simple_security_scanner.platform.system', return_value="Windows"):
-            with patch('src.tools.security.simple_security_scanner.os.path.expanduser') as mock_expanduser:
-                with patch('src.tools.security.simple_security_scanner.os.path.exists', return_value=True):
-                    with patch('src.tools.security.simple_security_scanner.os.access', return_value=True):
+        with patch('tools.security.security_scanner.security_scanner.platform.system', return_value="Windows"):
+            with patch('tools.security.security_scanner.security_scanner.os.path.expanduser') as mock_expanduser:
+                with patch('tools.security.security_scanner.security_scanner.os.path.exists', return_value=True):
+                    with patch('tools.security.security_scanner.security_scanner.os.access', return_value=True):
                         # Test path with special characters
                         mock_expanduser.return_value = "C:\\Users\\Test (Special)\\Documents"
                         
@@ -621,7 +621,7 @@ class TestSimpleSecurityScannerIntegration:
     @pytest.fixture
     def gui_for_integration(self, mock_pyqt5):
         """Create a SimpleSecurityScannerGUI instance for testing."""
-        from src.tools.security.simple_security_scanner import \
+        from tools.security.security_scanner.security_scanner import \
             SimpleSecurityScannerGUI
         return SimpleSecurityScannerGUI()
     
@@ -644,7 +644,7 @@ class TestSimpleSecurityScannerIntegration:
         gui_for_integration.running_processes_check.isChecked.return_value = False
         
         # Mock worker and its methods
-        with patch('src.tools.security.simple_security_scanner.SecurityScanWorker') as mock_worker_class:
+        with patch('tools.security.security_scanner.security_scanner.SecurityScanWorker') as mock_worker_class:
             mock_worker = MagicMock()
             mock_worker_class.return_value = mock_worker
             
@@ -685,17 +685,17 @@ class TestSimpleSecurityScannerErrorHandling:
                 with patch('sys.exit') as mock_exit:
                     try:
                         # Force module reload to trigger import error
-                        if 'src.tools.security.simple_security_scanner' in sys.modules:
-                            del sys.modules['src.tools.security.simple_security_scanner']
+                        if 'tools.security.security_scanner.security_scanner' in sys.modules:
+                            del sys.modules['tools.security.security_scanner.security_scanner']
                         
                         # This should trigger the import error handling
-                        import src.tools.security.simple_security_scanner
+                        import tools.security.security_scanner.security_scanner
                     except SystemExit:
                         # Expected behavior when PyQt5 is not available
                         pass
     
-    @patch('src.tools.security.simple_security_scanner.QApplication')
-    @patch('src.tools.security.simple_security_scanner.SimpleSecurityScannerGUI')
+    @patch('tools.security.security_scanner.security_scanner.QApplication')
+    @patch('tools.security.security_scanner.security_scanner.SimpleSecurityScannerGUI')
     def test_main_function_execution(self, mock_gui_class, mock_qapp_class):
         """Test the main function execution."""
         mock_app = MagicMock()
@@ -706,7 +706,7 @@ class TestSimpleSecurityScannerErrorHandling:
         # Mock sys.argv and sys.exit
         with patch('sys.argv', ['simple_security_scanner.py']):
             with patch('sys.exit') as mock_exit:
-                from src.tools.security.simple_security_scanner import main
+                from tools.security.security_scanner.security_scanner import main
                 main()
                 
                 # Verify application creation and execution
@@ -723,7 +723,7 @@ class TestSimpleSecurityScannerPerformance:
     @pytest.fixture
     def worker_for_performance(self, mock_pyqt5):
         """Create a SecurityScanWorker instance for testing."""
-        from src.tools.security.simple_security_scanner import \
+        from tools.security.security_scanner.security_scanner import \
             SecurityScanWorker
         return SecurityScanWorker(["network_ports"])
     
@@ -732,7 +732,7 @@ class TestSimpleSecurityScannerPerformance:
         """Test network scanning performance with many ports."""
         start_time = time.time()
         
-        with patch('src.tools.security.simple_security_scanner.socket') as mock_socket:
+        with patch('tools.security.security_scanner.security_scanner.socket') as mock_socket:
             mock_sock = MagicMock()
             mock_socket.socket.return_value = mock_sock
             mock_socket.AF_INET = socket.AF_INET
@@ -756,8 +756,8 @@ class TestSimpleSecurityScannerPerformance:
         
         start_time = time.time()
         
-        with patch('src.tools.security.simple_security_scanner.platform.system', return_value="Windows"):
-            with patch('src.tools.security.simple_security_scanner.subprocess.check_output', return_value=large_output):
+        with patch('tools.security.security_scanner.security_scanner.platform.system', return_value="Windows"):
+            with patch('tools.security.security_scanner.security_scanner.subprocess.check_output', return_value=large_output):
                 result = worker_for_performance.scan_running_processes()
         
         end_time = time.time()
@@ -774,13 +774,13 @@ class TestSimpleSecurityScannerSecurity:
     @pytest.fixture
     def worker_for_security(self, mock_pyqt5):
         """Create a SecurityScanWorker instance for testing."""
-        from src.tools.security.simple_security_scanner import \
+        from tools.security.security_scanner.security_scanner import \
             SecurityScanWorker
         return SecurityScanWorker(["network_ports"])
     
     def test_network_scan_localhost_only(self, worker_for_security):
         """Test that network scan only targets localhost."""
-        with patch('src.tools.security.simple_security_scanner.socket') as mock_socket:
+        with patch('tools.security.security_scanner.security_scanner.socket') as mock_socket:
             mock_sock = MagicMock()
             mock_socket.socket.return_value = mock_sock
             mock_socket.AF_INET = socket.AF_INET
@@ -795,10 +795,10 @@ class TestSimpleSecurityScannerSecurity:
     
     def test_file_permission_safe_directories(self, worker_for_security):
         """Test that file permission scan only checks safe directories."""
-        with patch('src.tools.security.simple_security_scanner.platform.system', return_value="Windows"):
-            with patch('src.tools.security.simple_security_scanner.os.path.expanduser') as mock_expanduser:
-                with patch('src.tools.security.simple_security_scanner.os.path.exists', return_value=True):
-                    with patch('src.tools.security.simple_security_scanner.os.access', return_value=True):
+        with patch('tools.security.security_scanner.security_scanner.platform.system', return_value="Windows"):
+            with patch('tools.security.security_scanner.security_scanner.os.path.expanduser') as mock_expanduser:
+                with patch('tools.security.security_scanner.security_scanner.os.path.exists', return_value=True):
+                    with patch('tools.security.security_scanner.security_scanner.os.access', return_value=True):
                         worker_for_security.scan_file_permissions()
                         
                         # Verify only safe directories are checked

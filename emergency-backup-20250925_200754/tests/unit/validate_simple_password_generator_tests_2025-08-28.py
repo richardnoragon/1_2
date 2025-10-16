@@ -29,7 +29,7 @@ def test_basic_functionality():
             "PyQt5.QtGui": MagicMock(),
         },
     ):
-        from tools.security.simple_password_generator import (
+        from tools.security.password_generator.password_generator import (
             SimplePasswordGeneratorGUI,
         )
 
@@ -93,7 +93,7 @@ def test_password_generation():
             "PyQt5.QtGui": MagicMock(),
         },
     ):
-        from tools.security.simple_password_generator import (
+        from tools.security.password_generator.password_generator import (
             SimplePasswordGeneratorGUI,
         )
 
@@ -141,7 +141,7 @@ def test_multiple_password_generation():
             "PyQt5.QtGui": MagicMock(),
         },
     ):
-        from tools.security.simple_password_generator import (
+        from tools.security.password_generator.password_generator import (
             SimplePasswordGeneratorGUI,
         )
 
@@ -181,7 +181,7 @@ def test_clipboard_operations():
             "PyQt5.QtGui": MagicMock(),
         },
     ):
-        from tools.security.simple_password_generator import (
+        from tools.security.password_generator.password_generator import (
             SimplePasswordGeneratorGUI,
         )
 
@@ -231,7 +231,7 @@ def test_security_aspects():
             "PyQt5.QtGui": MagicMock(),
         },
     ):
-        from tools.security.simple_password_generator import (
+        from tools.security.password_generator.password_generator import (
             SimplePasswordGeneratorGUI,
         )
 
@@ -265,7 +265,7 @@ def test_edge_cases():
             "PyQt5.QtGui": MagicMock(),
         },
     ):
-        from tools.security.simple_password_generator import (
+        from tools.security.password_generator.password_generator import (
             SimplePasswordGeneratorGUI,
         )
 

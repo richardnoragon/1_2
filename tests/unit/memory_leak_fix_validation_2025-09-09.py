@@ -26,10 +26,11 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
 
 # Import both original and fixed analyzers
 try:
-    from src.tools.analysis.core.size_analyzer_logic import SizeAnalyzer
+    from tools.analysis.size_analyzer.size_analyzer_logic import SizeAnalyzer
 except ImportError:
     print(
-        "Error: Could not import SizeAnalyzer from src.tools.analysis.core.size_analyzer_logic"
+        "Error: Could not import SizeAnalyzer from "
+        "src.tools.analysis.size_analyzer.size_analyzer_logic"
     )
     sys.exit(1)
 
@@ -82,13 +83,9 @@ class MemoryLeakFixValidationSuite:
         self.test_dataset_path = test_dir
         return test_dir
 
-    def run_memory_comparison_test(
-        self, operations_count: int = 20
-    ) -> Dict[str, Any]:
+    def run_memory_comparison_test(self, operations_count: int = 20) -> Dict[str, Any]:
         """Compare memory usage between original and fixed analyzers."""
-        print(
-            f"Running memory comparison test with {operations_count} operations..."
-        )
+        print(f"Running memory comparison test with {operations_count} operations...")
 
         test_dir = self.create_test_dataset("medium")
 
@@ -206,9 +203,7 @@ class MemoryLeakFixValidationSuite:
 
         # Calculate summary statistics
         successful_ops = [op for op in operation_results if op["success"]]
-        total_memory_change: float = (
-            (final_memory - baseline_memory) / 1024 / 1024
-        )
+        total_memory_change: float = (final_memory - baseline_memory) / 1024 / 1024
 
         if successful_ops:
             avg_memory_change = sum(
@@ -245,8 +240,7 @@ class MemoryLeakFixValidationSuite:
     ) -> Dict[str, Any]:
         """Compare memory usage results between analyzers."""
         memory_improvement = (
-            original["total_memory_change_mb"]
-            - optimized["total_memory_change_mb"]
+            original["total_memory_change_mb"] - optimized["total_memory_change_mb"]
         )
         memory_improvement_percent = (
             memory_improvement / max(original["total_memory_change_mb"], 0.001)
@@ -257,13 +251,11 @@ class MemoryLeakFixValidationSuite:
             - optimized["avg_memory_change_per_op_mb"]
         )
         avg_memory_improvement_percent = (
-            avg_memory_improvement
-            / max(original["avg_memory_change_per_op_mb"], 0.001)
+            avg_memory_improvement / max(original["avg_memory_change_per_op_mb"], 0.001)
         ) * 100
 
         object_improvement = (
-            original["avg_object_change_per_op"]
-            - optimized["avg_object_change_per_op"]
+            original["avg_object_change_per_op"] - optimized["avg_object_change_per_op"]
         )
         object_improvement_percent = (
             object_improvement / max(original["avg_object_change_per_op"], 1)
@@ -278,12 +270,8 @@ class MemoryLeakFixValidationSuite:
             "object_improvement_percent": object_improvement_percent,
             "original_total_memory_mb": original["total_memory_change_mb"],
             "optimized_total_memory_mb": optimized["total_memory_change_mb"],
-            "original_avg_memory_per_op_mb": original[
-                "avg_memory_change_per_op_mb"
-            ],
-            "optimized_avg_memory_per_op_mb": optimized[
-                "avg_memory_change_per_op_mb"
-            ],
+            "original_avg_memory_per_op_mb": original["avg_memory_change_per_op_mb"],
+            "optimized_avg_memory_per_op_mb": optimized["avg_memory_change_per_op_mb"],
         }
 
     def _validate_fix_success(self, comparison: Dict) -> Dict[str, Any]:

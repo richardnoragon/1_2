@@ -5,20 +5,16 @@ Size Analyzer Tool for Richard's File Utilities
 A streamlined size analyzer utility with essential functionality.
 """
 
-import os
 import sys
 
 try:
     from PyQt5.QtWidgets import (
         QApplication,
-        QFileDialog,
         QGroupBox,
-        QHBoxLayout,
         QLabel,
         QListWidget,
         QMainWindow,
         QMessageBox,
-        QProgressBar,
         QPushButton,
         QVBoxLayout,
         QWidget,
@@ -30,32 +26,44 @@ except ImportError:
 # Import SafeStandardWindow for reliable menu integration
 try:
     # Add the correct path for imports
-    sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
-    from src.gui.safe_standard_window import (
-        SafeStandardWindow as StandardWindow,
-    )
+    from ....gui.safe_standard_window import SafeStandardWindow as StandardWindow
 
     STANDARD_WINDOW_AVAILABLE = True
-except ImportError as e:
-    print(f"SafeStandardWindow not available: {e}")
-    # Try original StandardWindow as fallback
+except ImportError:
     try:
-        from src.gui.standard_window import StandardWindow
+        from src.gui.safe_standard_window import SafeStandardWindow as StandardWindow
 
         STANDARD_WINDOW_AVAILABLE = True
-    except ImportError:
-        # Final fallback - minimal implementation
-        class StandardWindow(QMainWindow):
-            def __init__(
-                self, title="Window", window_type="utility", parent=None
-            ):
-                super().__init__(parent)
-                self.setWindowTitle(title)
+    except ImportError as safe_error:
+        print(f"SafeStandardWindow not available: {safe_error}")
+        # Try original StandardWindow as fallback
+        try:
+            from ....gui.standard_window import StandardWindow
 
-            def ensure_menu_bar(self):
-                pass  # No-op for fallback
+            STANDARD_WINDOW_AVAILABLE = True
+        except ImportError:
+            try:
+                from src.gui.standard_window import StandardWindow
 
-        STANDARD_WINDOW_AVAILABLE = False
+                STANDARD_WINDOW_AVAILABLE = True
+            except ImportError:
+                # Final fallback - minimal implementation
+                class StandardWindow(QMainWindow):
+                    def __init__(
+                        self,
+                        title="Window",
+                        window_type="utility",
+                        parent=None,
+                    ):
+                        super().__init__(parent)
+                        self.setWindowTitle(title)
+                        self.window_type = window_type
+
+                    def ensure_menu_bar(self):
+                        """Safe no-op when full menu system is unavailable."""
+                        return None
+
+                STANDARD_WINDOW_AVAILABLE = False
 
 
 class SizeAnalyzerGUI(StandardWindow):
@@ -81,13 +89,9 @@ class SizeAnalyzerGUI(StandardWindow):
         """Setup tool-specific menu callbacks."""
         if hasattr(self, "menu_manager"):
             # Register tool-specific callbacks
-            self.menu_manager.register_callback(
-                "new_analysis", self.clear_analysis
-            )
+            self.menu_manager.register_callback("new_analysis", self.clear_analysis)
             # Override the standard help with our tool-specific help
-            self.menu_manager.register_callback(
-                "show_user_guide", self.show_help
-            )
+            self.menu_manager.register_callback("show_user_guide", self.show_help)
             self.menu_manager.register_callback(
                 "show_preferences", self.show_preferences
             )
@@ -107,8 +111,8 @@ class SizeAnalyzerGUI(StandardWindow):
         <h3>How to Analyze Directory Sizes:</h3>
         <ul>
         <li><b>Select Directory:</b> Choose the folder to analyze</li>
-        <li><b>Start Analysis:</b> Begin calculating directory and file sizes</li>
-        <li><b>View Results:</b> Browse size breakdown by folders and files</li>
+        <li><b>Start Analysis:</b> Begin scanning directories & files</li>
+        <li><b>View Results:</b> Review folder/file size breakdown</li>
         <li><b>Export Data:</b> Save analysis results to file</li>
         </ul>
         
@@ -138,9 +142,9 @@ class SizeAnalyzerGUI(StandardWindow):
         
         <h3>Best Practices:</h3>
         <ul>
-        <li><b>Regular Analysis:</b> Periodic size checks prevent space issues</li>
-        <li><b>Focus on Large Files:</b> Start cleanup with biggest space users</li>
-        <li><b>Archive Old Data:</b> Move unused large files to external storage</li>
+        <li><b>Regular Analysis:</b> Regular checks prevent space issues</li>
+        <li><b>Focus on Large Files:</b> Target the biggest space users</li>
+        <li><b>Archive Old Data:</b> Archive unused large files externally</li>
         <li><b>Monitor Growth:</b> Track how directories grow over time</li>
         </ul>
         
@@ -238,9 +242,7 @@ class SizeAnalyzerGUI(StandardWindow):
     def start_analysis(self):
         """Start the analysis process."""
         self.results_list.clear()
-        self.results_list.addItem(
-            "Analysis functionality ready for implementation"
-        )
+        self.results_list.addItem("Analysis functionality ready for implementation")
 
     def execute_action(self):
         """Main action method for this tool."""

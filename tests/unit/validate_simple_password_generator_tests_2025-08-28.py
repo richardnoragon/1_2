@@ -29,7 +29,7 @@ def test_basic_functionality():
             "PyQt5.QtGui": MagicMock(),
         },
     ):
-        from tools.security.simple_password_generator import (
+        from tools.security.password_generator.password_generator import (
             SimplePasswordGeneratorGUI,
         )
 
@@ -93,7 +93,7 @@ def test_password_generation():
             "PyQt5.QtGui": MagicMock(),
         },
     ):
-        from tools.security.simple_password_generator import (
+        from tools.security.password_generator.password_generator import (
             SimplePasswordGeneratorGUI,
         )
 
@@ -141,7 +141,7 @@ def test_multiple_password_generation():
             "PyQt5.QtGui": MagicMock(),
         },
     ):
-        from tools.security.simple_password_generator import (
+        from tools.security.password_generator.password_generator import (
             SimplePasswordGeneratorGUI,
         )
 
@@ -181,7 +181,7 @@ def test_clipboard_operations():
             "PyQt5.QtGui": MagicMock(),
         },
     ):
-        from tools.security.simple_password_generator import (
+        from tools.security.password_generator.password_generator import (
             SimplePasswordGeneratorGUI,
         )
 
@@ -201,9 +201,7 @@ def test_clipboard_operations():
                 "utilities.security.simple_password_generator.QMessageBox"
             ) as mock_msg:
                 gui.copy_password()
-                mock_clipboard.setText.assert_called_once_with(
-                    "TestPassword123"
-                )
+                mock_clipboard.setText.assert_called_once_with("TestPassword123")
                 mock_msg.information.assert_called_once()
 
         print("  [PASS] Clipboard copy - success")
@@ -231,7 +229,7 @@ def test_security_aspects():
             "PyQt5.QtGui": MagicMock(),
         },
     ):
-        from tools.security.simple_password_generator import (
+        from tools.security.password_generator.password_generator import (
             SimplePasswordGeneratorGUI,
         )
 
@@ -265,7 +263,7 @@ def test_edge_cases():
             "PyQt5.QtGui": MagicMock(),
         },
     ):
-        from tools.security.simple_password_generator import (
+        from tools.security.password_generator.password_generator import (
             SimplePasswordGeneratorGUI,
         )
 
@@ -343,21 +341,13 @@ def run_validation():
         print("* Error Handling")
         print()
         print("Test Files Created:")
-        print(
-            "* test_simple_password_generator_2025-08-28.py (25 comprehensive tests)"
-        )
+        print("* test_simple_password_generator_2025-08-28.py (25 comprehensive tests)")
         print(
             "* pytest_simple_password_generator_2025-08-28.ini (pytest configuration)"
         )
-        print(
-            "* run_simple_password_generator_tests_2025-08-28.py (test runner)"
-        )
-        print(
-            "* requirements_simple_password_generator_2025-08-28.txt (dependencies)"
-        )
-        print(
-            "* SIMPLE_PASSWORD_GENERATOR_TESTING_DOCUMENTATION_2025-08-28.md"
-        )
+        print("* run_simple_password_generator_tests_2025-08-28.py (test runner)")
+        print("* requirements_simple_password_generator_2025-08-28.txt (dependencies)")
+        print("* SIMPLE_PASSWORD_GENERATOR_TESTING_DOCUMENTATION_2025-08-28.md")
         print()
         print("Coverage Target: >90% statement and branch coverage")
         print(

@@ -1289,7 +1289,10 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
     def open_file_touch(self):
         """Open file touch tool."""
         try:
-            from ..utilities.file_operations.file_touch import FileTouchGUI
+            try:
+                from .tools.metadata.file_touch import FileTouchGUI
+            except ImportError:
+                from tools.metadata.file_touch import FileTouchGUI
 
             tool = FileTouchGUI()
             tool.show()
@@ -1317,9 +1320,10 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
     def open_secure_delete(self):
         """Open secure delete tool."""
         try:
-            from ..utilities.file_operations.secure_delete import (
-                SecureDeleteGUI,
-            )
+            try:
+                from src.tools.file_operations.secure_delete import SecureDeleteGUI
+            except ImportError:
+                from tools.file_operations.secure_delete import SecureDeleteGUI
 
             tool = SecureDeleteGUI()
             tool.show()

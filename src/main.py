@@ -17,9 +17,9 @@ sys.path.insert(0, str(src_dir))
 
 # Import with fallback for direct execution
 try:
-    from .hub import RFUHub
+    from .tabbed_hub import RFUHub
 except ImportError:
-    from hub import RFUHub
+    from tabbed_hub import RFUHub
 
 
 def main():
@@ -47,9 +47,7 @@ def main():
 
         config = get_config_manager()
         logging_level = config.get_setting("general", "logging_level", "INFO")
-        debug_enabled = config.get_setting(
-            "general", "enable_debug_logging", False
-        )
+        debug_enabled = config.get_setting("general", "enable_debug_logging", False)
 
         # Initialize network connectivity configuration
         # try:

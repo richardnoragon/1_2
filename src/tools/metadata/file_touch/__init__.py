@@ -4,6 +4,6 @@ This module provides functionality to view and modify file timestamps
 including creation, modification, and access times.
 """
 
-from .file_touch import FileTouchWindow, FileTouchLogic
+from .file_touch import FileTouchWindow, FileTouchLogic, FileTouchGUI
 
-__all__ = ["FileTouchWindow", "FileTouchLogic"]
+__all__ = ["FileTouchWindow", "FileTouchLogic", "FileTouchGUI"]

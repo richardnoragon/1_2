@@ -26,16 +26,6 @@ def test_imports():
         print(f"✗ File Splitter import failed: {e}")
         results["file_splitter"] = False
 
-    # Test CMSD (Copy/Move/Sync/Delete)
-    try:
-        from src.utilities.file_operations.cmsd import CopyMoveSyncDeleteWindow
-
-        print("✓ Copy/Move/Sync/Delete import successful")
-        results["cmsd"] = True
-    except Exception as e:
-        print(f"✗ Copy/Move/Sync/Delete import failed: {e}")
-        results["cmsd"] = False
-
     # Test Organize Files
     try:
         from src.tools.file_management.organizer.organize import OrganizeWindow
@@ -81,7 +71,7 @@ def main():
 
     print(f"\nSUMMARY: {success_count}/{total_count} imports successful")
 
-    if success_count >= 4:  # File Splitter, CMSD, Organize, Rename
+    if success_count >= 3:  # File Splitter, Organize, Rename
         print("\n✅ Most critical tools imported successfully!")
         print("\nTo test the buttons:")
         print("1. Run: python -m src.rfu.simple_hub")
@@ -90,8 +80,6 @@ def main():
         print("\nButtons that should work:")
         if results.get("file_splitter"):
             print("   • 📂 File Splitter")
-        if results.get("cmsd"):
-            print("   • 📋 Copy/Move/Sync")
         if results.get("organize"):
             print("   • 📁 Organize Files")
         if results.get("rename"):

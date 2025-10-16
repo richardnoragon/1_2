@@ -873,10 +873,99 @@ try:
         QWidget,
     )
 
+    class AlphabeticalTabWidget(QTabWidget):
+        """QTabWidget that keeps tabs sorted while honoring pinned tabs."""
+
+        def __init__(self, parent=None):
+            super().__init__(parent)
+            self._sorting = False
+
+        def addTab(self, widget, label):
+            index = super().addTab(widget, label)
+            self._register_widget(widget)
+            return index
+
+        def insertTab(self, index, widget, label):
+            index = super().insertTab(index, widget, label)
+            self._register_widget(widget)
+            return index
+
+        def removeTab(self, index):
+            super().removeTab(index)
+            self.sort_tabs()
+
+        def setTabText(self, index, label):
+            super().setTabText(index, label)
+            self.sort_tabs()
+
+        def pin_tab(self, widget, order=None):
+            if order is None:
+                order = self.count()
+            widget.setProperty("rfuPinnedTab", True)
+            widget.setProperty("rfuPinnedOrder", order)
+            self.sort_tabs()
+
+        def unpin_tab(self, widget):
+            widget.setProperty("rfuPinnedTab", False)
+            widget.setProperty("rfuPinnedOrder", None)
+            self.sort_tabs()
+
+        def sort_tabs(self):
+            if self._sorting or self.count() < 2:
+                return
+
+            tab_bar = self.tabBar()
+            if not hasattr(tab_bar, "moveTab"):
+                return
+
+            self._sorting = True
+            try:
+                current_widget = self.currentWidget()
+                current_widgets = [self.widget(i) for i in range(self.count())]
+
+                pinned_entries = []
+                movable = []
+                for position, widget in enumerate(current_widgets):
+                    label = self.tabText(self.indexOf(widget))
+                    if bool(widget.property("rfuPinnedTab")):
+                        order = widget.property("rfuPinnedOrder")
+                        if order is None:
+                            order = self.count() + position
+                        pinned_entries.append((order, position, widget))
+                    else:
+                        movable.append((label.casefold(), label, widget))
+
+                pinned_entries.sort(key=lambda item: (item[0], item[1]))
+                movable.sort(key=lambda entry: entry[0])
+
+                desired_widgets = [entry[2] for entry in pinned_entries]
+                desired_widgets.extend(entry[2] for entry in movable)
+
+                for target_index, widget in enumerate(desired_widgets):
+                    current_index = self.indexOf(widget)
+                    if current_index != -1 and current_index != target_index:
+                        tab_bar.moveTab(current_index, target_index)
+
+                if current_widget is not None:
+                    restored_index = self.indexOf(current_widget)
+                    if restored_index != -1:
+                        self.setCurrentIndex(restored_index)
+            finally:
+                self._sorting = False
+
+        def _register_widget(self, widget):
+            if (
+                bool(widget.property("rfuPinnedTab"))
+                and widget.property("rfuPinnedOrder") is None
+            ):
+                widget.setProperty("rfuPinnedOrder", self.count() - 1)
+            self.sort_tabs()
+
     class RFUMainWindow(QMainWindow):
         # Signals for communication
         interface_switched = pyqtSignal(str)
         tool_launched = pyqtSignal(str)
+        PINNED_TAB_TITLES = ("File Management", "File Operations")
 
         def __init__(self):
             super().__init__()
@@ -1961,8 +2050,8 @@ try:
             main_layout.addWidget(title_label)
 
             # Create tab widget for different tool categories
-            tab_widget = QTabWidget()
-            main_layout.addWidget(tab_widget)
+            self.tab_widget = AlphabeticalTabWidget()
+            main_layout.addWidget(self.tab_widget)
 
             # File Management Tools
             file_mgmt_tab = self.create_tool_category_tab(
@@ -1992,18 +2081,18 @@ try:
                         "Configure smart folder monitoring and search",
                         self.open_advanced_folders,
                     ),
+                    (
+                        "Synchronize",
+                        "Synchronize directories",
+                        self.open_sync,
+                    ),
                 ]
             )
-            tab_widget.addTab(file_mgmt_tab, "File Management")
+            self._register_tab(file_mgmt_tab, "File Management")
 
             # File Operations Tools
             file_ops_tab = self.create_tool_category_tab(
                 [
-                    (
-                        "Copy/Move/Sync/Delete",
-                        "Advanced file operations",
-                        self.open_cmsd,
-                    ),
                     (
                         "Compress/Decompress",
                         "Archive and extract files",
@@ -2014,7 +2103,6 @@ try:
                         "Split large files or join parts",
                         self.open_file_splitter,
                     ),
-                    ("Synchronize", "Synchronize directories", self.open_sync),
                     (
                         "Enhanced Editor",
                         "Advanced text editor with syntax highlighting",
@@ -2022,7 +2110,7 @@ try:
                     ),
                 ]
             )
-            tab_widget.addTab(file_ops_tab, "File Operations")
+            self._register_tab(file_ops_tab, "File Operations")
 
             # Analysis Tools
             analysis_tab = self.create_tool_category_tab(
@@ -2049,7 +2137,7 @@ try:
                     ),
                 ]
             )
-            tab_widget.addTab(analysis_tab, "Analysis")
+            self._register_tab(analysis_tab, "Analysis")
 
             # Security Tools
             security_tab = self.create_tool_category_tab(
@@ -2076,7 +2164,7 @@ try:
                     ),
                 ]
             )
-            tab_widget.addTab(security_tab, "Security")
+            self._register_tab(security_tab, "Security")
 
             # Metadata Tools
             metadata_tab = self.create_tool_category_tab(
@@ -2094,7 +2182,7 @@ try:
                     ("File Touch", "Modify file timestamps", self.open_file_touch),
                 ]
             )
-            tab_widget.addTab(metadata_tab, "Metadata")
+            self._register_tab(metadata_tab, "Metadata")
 
             # PDF Tools
             if ENHANCED_PDF_TOOLS_AVAILABLE:
@@ -2111,7 +2199,7 @@ try:
                         (PAGE_ADMINISTRATION, "Manage PDF pages", self.open_pdf_pages),
                     ]
                 )
-            tab_widget.addTab(pdf_tab, "PDF Tools")
+            self._register_tab(pdf_tab, "PDF Tools")
 
             # Network Tools
             network_tab = self.create_tool_category_tab(
@@ -2138,7 +2226,7 @@ try:
                     ),
                 ]
             )
-            tab_widget.addTab(network_tab, "Network Tools")
+            self._register_tab(network_tab, "Network Tools")
 
             # Privacy Tools
             privacy_tab = self.create_tool_category_tab(
@@ -2155,7 +2243,7 @@ try:
                     ),
                 ]
             )
-            tab_widget.addTab(privacy_tab, "Privacy Tools")
+            self._register_tab(privacy_tab, "Privacy Tools")
 
             # System Tools
             system_tab = self.create_tool_category_tab(
@@ -2164,6 +2252,11 @@ try:
                         "Enhanced Clipboard",
                         "Advanced clipboard management",
                         self.open_enhanced_clipboard,
+                    ),
+                    (
+                        "Process Monitor",
+                        "Monitor running processes and resource usage",
+                        self.open_process_monitor,
                     ),
                     (
                         "System Diagnostics",
@@ -2182,7 +2275,23 @@ try:
                     ),
                 ]
             )
-            tab_widget.addTab(system_tab, "System Tools")
+            self._register_tab(system_tab, "System Tools")
+
+        def _register_tab(self, widget, title, pinned=None):
+            """Add a tab to the hub and flag it as pinned when needed."""
+            if pinned is None:
+                pinned = title in self.PINNED_TAB_TITLES
+
+            order_value = None
+            if pinned:
+                try:
+                    order_value = self.PINNED_TAB_TITLES.index(title)
+                except ValueError:
+                    order_value = self.tab_widget.count()
+
+            widget.setProperty("rfuPinnedTab", bool(pinned))
+            widget.setProperty("rfuPinnedOrder", order_value)
+            self.tab_widget.addTab(widget, title)
 
         def create_tool_category_tab(self, tools):
             """Create a tab widget for a category of tools."""
@@ -2357,13 +2466,6 @@ try:
             )
 
         # File Operations Tool Launch Methods
-        def open_cmsd(self):
-            self.launch_tool(
-                "Copy/Move/Sync/Delete",
-                "src.tools.file_operations.cmsd.gui",
-                "CopyMoveSyncDeleteWindow",
-            )
-
         def open_compress(self):
             self.launch_tool(
                 "Compress/Decompress",
@@ -2381,7 +2483,7 @@ try:
         def open_sync(self):
             self.launch_tool(
                 "Synchronize",
-                "src.tools.file_operations." "synchronization_backup.sync",
+                "src.tools.file_management." "synchronization_backup.sync",
                 "SyncWindow",
             )
 
@@ -2401,13 +2503,15 @@ try:
         def open_duplicate_finder(self):
             self.launch_tool(
                 "Duplicate Finder",
-                "src.tools.analysis.find_duplicate_files",
+                "src.tools.analysis.duplicate_finder.find_duplicate_files",
                 "DuplicateFinderApp",
             )
 
         def open_checksum(self):
             self.launch_tool(
-                "File Checksum", "src.tools.analysis.check_sum", "ChecksumGUI"
+                "File Checksum",
+                "src.tools.analysis.checksum.check_sum",
+                "ChecksumGUI",
             )
 
         def open_empty_folders(self):
@@ -2433,7 +2537,7 @@ try:
         def open_secure_delete(self):
             self.launch_tool(
                 "Secure Delete",
-                "src.tools.security.secure_delete",
+                "src.tools.file_operations.secure_delete.secure_delete",
                 "SecureDeleteGUI",
             )
 
@@ -2463,7 +2567,7 @@ try:
         def open_file_touch(self):
             self.launch_tool(
                 "File Touch",
-                "src.tools.file_operations.file_touch.file_touch",
+                "src.tools.metadata.file_touch.file_touch",
                 "FileTouchGUI",
             )
 
@@ -2538,6 +2642,13 @@ try:
 
         # System Tool Launch Methods
 
+        def open_process_monitor(self):
+            self.launch_tool(
+                "Process Monitor",
+                "src.tools.system.process_monitor.process_monitor",
+                "ProcessMonitorGUI",
+            )
+
         def open_enhanced_clipboard(self):
             self.launch_tool(
                 "Enhanced Clipboard",
@@ -2555,7 +2666,7 @@ try:
         def open_system_cleanup(self):
             self.launch_tool(
                 "System Cleanup",
-                "src.tools.privacy.privacy_cleaner.system_cleanup",
+                "src.tools.system.system_cleanup.system_cleanup",
                 "SystemCleanupGUI",
             )
 
@@ -2603,11 +2714,18 @@ try:
             )
 
         def refresh_tool_list(self):
-            QMessageBox.information(
-                self,
-                "Refresh",
-                "Tool list refresh functionality would be implemented here.",
-            )
+            if hasattr(self, "tab_widget") and self.tab_widget is not None:
+                self.tab_widget.sort_tabs()
+                message = (
+                    "Tabs have been refreshed and sorted alphabetically. "
+                    "Pinned tabs stay in place."
+                )
+            else:
+                message = (
+                    "Tool list refresh functionality would be " "implemented here."
+                )
+
+            QMessageBox.information(self, "Refresh", message)
 
         def show_about_dialog(self):
             QMessageBox.about(

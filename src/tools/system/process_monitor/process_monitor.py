@@ -1,34 +1,39 @@
 #!/usr/bin/env python3
 """
-Simple Process Monitor Tool for Richard's File Utilities
+Process Monitor Tool for Richard's File Utilities
 
 A real-time process monitor with CPU and memory usage tracking.
 """
 
 import sys
-import psutil
 from datetime import datetime
 
+import psutil
+
 try:
+    from PyQt5.QtCore import Qt, QThread, QTimer, pyqtSignal
+    from PyQt5.QtGui import QFont
     from PyQt5.QtWidgets import (
-        QMainWindow,
-        QWidget,
-        QVBoxLayout,
+        QApplication,
         QHBoxLayout,
-        QPushButton,
+        QHeaderView,
         QLabel,
+        QLineEdit,
+        QMainWindow,
+        QPushButton,
         QTableWidget,
         QTableWidgetItem,
-        QApplication,
-        QMessageBox,
-        QHeaderView,
-        QLineEdit,
+        QVBoxLayout,
+        QWidget,
     )
-    from PyQt5.QtCore import Qt, QThread, pyqtSignal, QTimer
-    from PyQt5.QtGui import QFont
 except ImportError:
     print("PyQt5 not available. Please install PyQt5.")
     sys.exit(1)
+
+
+AUTO_REFRESH_LABEL = "▶️ Auto Refresh"
+STOP_AUTO_LABEL = "⏹️ Stop Auto"
+AUTO_REFRESH_STATUS = "Auto-refresh enabled (3 seconds)"
 
 
 class ProcessMonitorWorker(QThread):
@@ -39,11 +44,14 @@ class ProcessMonitorWorker(QThread):
     def __init__(self, sort_by="cpu"):
         super().__init__()
         self.sort_by = sort_by
-        self.running = True
+        self._running = True
 
     def run(self):
         """Monitor processes continuously."""
         try:
+            if not self._running:
+                return
+
             processes = []
             for proc in psutil.process_iter(
                 [
@@ -55,11 +63,23 @@ class ProcessMonitorWorker(QThread):
                     "create_time",
                 ]
             ):
+                if not self._running:
+                    break
+
                 try:
                     proc_info = proc.info
-                    proc_info["create_time"] = datetime.fromtimestamp(
-                        proc_info["create_time"]
-                    ).strftime("%H:%M:%S")
+                    create_time = proc_info.get("create_time")
+                    if create_time:
+                        proc_info["create_time"] = datetime.fromtimestamp(
+                            create_time
+                        ).strftime("%H:%M:%S")
+                    else:
+                        proc_info["create_time"] = "N/A"
+
+                    proc_info.setdefault("name", "Unknown")
+                    proc_info.setdefault("status", "unknown")
+                    proc_info.setdefault("cpu_percent", 0.0)
+                    proc_info.setdefault("memory_percent", 0.0)
                     processes.append(proc_info)
                 except (psutil.NoSuchProcess, psutil.AccessDenied):
                     pass
@@ -81,11 +101,11 @@ class ProcessMonitorWorker(QThread):
 
     def stop(self):
         """Stop the worker thread."""
-        self.running = False
+        self._running = False
 
 
-class SimpleProcessMonitorGUI(QMainWindow):
-    """Simple Process Monitor GUI."""
+class ProcessMonitorGUI(QMainWindow):
+    """Process Monitor GUI."""
 
     def __init__(self):
         super().__init__()
@@ -176,7 +196,7 @@ class SimpleProcessMonitorGUI(QMainWindow):
         self.refresh_btn.clicked.connect(self._refresh_processes)
         control_layout.addWidget(self.refresh_btn)
 
-        self.auto_refresh_btn = QPushButton("▶️ Auto Refresh")
+        self.auto_refresh_btn = QPushButton(AUTO_REFRESH_LABEL)
         self.auto_refresh_btn.clicked.connect(self._toggle_auto_refresh)
         self.auto_refresh_btn.setCheckable(True)
         control_layout.addWidget(self.auto_refresh_btn)
@@ -236,9 +256,7 @@ class SimpleProcessMonitorGUI(QMainWindow):
         header.setSectionResizeMode(2, QHeaderView.ResizeToContents)  # CPU
         header.setSectionResizeMode(3, QHeaderView.ResizeToContents)  # Memory
         header.setSectionResizeMode(4, QHeaderView.ResizeToContents)  # Status
-        header.setSectionResizeMode(
-            5, QHeaderView.ResizeToContents
-        )  # Start Time
+        header.setSectionResizeMode(5, QHeaderView.ResizeToContents)  # Start Time
 
         self.process_table.setAlternatingRowColors(True)
         self.process_table.setSelectionBehavior(QTableWidget.SelectRows)
@@ -263,6 +281,7 @@ class SimpleProcessMonitorGUI(QMainWindow):
         self.worker = ProcessMonitorWorker(self.sort_by)
         self.worker.processes_ready.connect(self._update_process_table)
         self.worker.finished.connect(self._refresh_finished)
+        self.worker.finished.connect(self.worker.deleteLater)
         self.worker.start()
 
     def _update_process_table(self, processes):
@@ -288,14 +307,10 @@ class SimpleProcessMonitorGUI(QMainWindow):
 
         for row, process in enumerate(filtered_processes):
             # PID
-            self.process_table.setItem(
-                row, 0, QTableWidgetItem(str(process["pid"]))
-            )
+            self.process_table.setItem(row, 0, QTableWidgetItem(str(process["pid"])))
 
             # Name
-            self.process_table.setItem(
-                row, 1, QTableWidgetItem(process["name"])
-            )
+            self.process_table.setItem(row, 1, QTableWidgetItem(process["name"]))
 
             # CPU %
             cpu_item = QTableWidgetItem(f"{process['cpu_percent']:.1f}%")
@@ -316,38 +331,40 @@ class SimpleProcessMonitorGUI(QMainWindow):
             self.process_table.setItem(row, 3, memory_item)
 
             # Status
-            self.process_table.setItem(
-                row, 4, QTableWidgetItem(process["status"])
-            )
+            self.process_table.setItem(row, 4, QTableWidgetItem(process["status"]))
 
             # Start Time
-            self.process_table.setItem(
-                row, 5, QTableWidgetItem(process["create_time"])
-            )
+            self.process_table.setItem(row, 5, QTableWidgetItem(process["create_time"]))
 
         process_count = len(filtered_processes)
         total_count = len(self.all_processes)
 
         if filter_text:
             self.status_bar.showMessage(
-                f"Showing {process_count} of {total_count} processes (filtered)"
+                f"Showing {process_count} of {total_count} processes " "(filtered)"
             )
         else:
             self.status_bar.showMessage(f"Showing {process_count} processes")
 
     def _refresh_finished(self):
         """Handle refresh completion."""
-        pass
+        if self.auto_refresh_btn.isChecked():
+            self.status_bar.showMessage(AUTO_REFRESH_STATUS)
+        else:
+            self.status_bar.showMessage("Process list updated")
+
+        self.worker = None
 
     def _toggle_auto_refresh(self):
         """Toggle auto-refresh timer."""
         if self.auto_refresh_btn.isChecked():
             self.timer.start(3000)  # 3 seconds
-            self.auto_refresh_btn.setText("⏹️ Stop Auto")
-            self.status_bar.showMessage("Auto-refresh enabled (3 seconds)")
+            self.auto_refresh_btn.setText(STOP_AUTO_LABEL)
+            self.status_bar.showMessage(AUTO_REFRESH_STATUS)
         else:
             self.timer.stop()
-            self.auto_refresh_btn.setText("▶️ Auto Refresh")
+            self.auto_refresh_btn.setText(AUTO_REFRESH_LABEL)
+            self.status_bar.showMessage("Auto-refresh disabled")
 
     def _set_sort(self, sort_by):
         """Set the sorting method."""
@@ -375,11 +392,21 @@ class SimpleProcessMonitorGUI(QMainWindow):
         # Refresh with new sorting
         self._refresh_processes()
 
+    def closeEvent(self, event):  # pragma: no cover - GUI lifecycle hook
+        """Ensure background tasks stop cleanly when the window closes."""
+        self.timer.stop()
+        if self.worker and self.worker.isRunning():
+            self.worker.stop()
+            self.worker.wait(1000)
+        self.auto_refresh_btn.setChecked(False)
+        self.auto_refresh_btn.setText(AUTO_REFRESH_LABEL)
+        super().closeEvent(event)
+
 
 def main():
     """Main function to run the process monitor."""
     app = QApplication(sys.argv)
-    window = SimpleProcessMonitorGUI()
+    window = ProcessMonitorGUI()
     window.show()
     sys.exit(app.exec_())
 

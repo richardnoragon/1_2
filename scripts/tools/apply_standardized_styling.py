@@ -14,7 +14,6 @@ from pathlib import Path
 # List of utilities to migrate
 UTILITIES_TO_MIGRATE = [
     "file_utilities_1/catalog.py",
-    "cmsd.py",
     "edit_image_metadata.py",
     "empty_folders.py",
     "file_finder.py",

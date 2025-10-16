@@ -13,7 +13,7 @@ Test Runner for check_sum.py     # Run pytest with comprehensive reporting
         "--self-contained-html",
         "--json-report",
         "--json-report-file=tests/unit/result_check_sum_2025-08-24.json",
-        "--cov=src.utilities.analysis.check_sum",
+    "--cov=src.tools.analysis.checksum.check_sum",
         "--cov-report=html:tests/unit/result_check_sum_coverage_2025-08-24",
         "--cov-report=term-missing",
         "--cov-report=json:" + cov_json
@@ -84,7 +84,7 @@ def run_checksum_tests():
         "--self-contained-html",
         "--json-report",
         "--json-report-file=tests/unit/result_check_sum_2025-08-24.json",
-        "--cov=src.utilities.analysis.check_sum",
+    "--cov=src.tools.analysis.checksum.check_sum",
         "--cov-report=html:tests/unit/result_check_sum_coverage_2025-08-24",
         "--cov-report=term-missing",
         "    # Run pytest with comprehensive reporting
@@ -100,7 +100,7 @@ def run_checksum_tests():
         "--self-contained-html",
         "--json-report",
         "--json-report-file=tests/unit/result_check_sum_2025-08-24.json",
-        "--cov=src.utilities.analysis.check_sum",
+    "--cov=src.tools.analysis.checksum.check_sum",
         "--cov-report=html:tests/unit/result_check_sum_coverage_2025-08-24",
         "--cov-report=term-missing",
         "--cov-report=json:" + cov_json
@@ -148,7 +148,7 @@ Execution Details:
 - Test Date: {datetime.datetime.now().strftime('%Y-%m-%d')}
 - Execution Time: {datetime.datetime.now().strftime('%H:%M:%S')}
 - Test Framework: pytest
-- Target Module: src.utilities.analysis.check_sum
+- Target Module: src.tools.analysis.checksum.check_sum
 - Test Status: {'PASSED' if success else 'FAILED'}
 
 Generated Reports:

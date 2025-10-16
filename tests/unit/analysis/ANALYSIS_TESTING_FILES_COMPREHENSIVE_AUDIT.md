@@ -11,11 +11,11 @@
 
 This comprehensive audit identifies **87 analysis-related files** across the RFU project that need to be organized into the `tests/unit/analysis/` directory structure. The Analysis tab contains 4 main tools:
 
-1. **Size Analyzer** (`src.utilities.analysis.size_analyzer`) - Most comprehensive coverage
-2. **Duplicate Finder** (`src.utilities.analysis.find_duplicate_files`) - Good coverage  
-3. **Checksum Calculator** (`src.utilities.analysis.check_sum`) - Good coverage
-4. **Empty Folders** (`src.utilities.analysis.empty_folders`) - Good coverage
-5. **Config Analyzer** (`src.utilities.analysis.config.config_analyzer`) - Emerging coverage
+1. **Size Analyzer** (`src.tools.analysis.size_analyzer`) - Most comprehensive coverage
+2. **Duplicate Finder** (`src.tools.analysis.duplicate_finder.find_duplicate_files`) - Good coverage
+3. **Checksum Calculator** (`src.tools.analysis.checksum.check_sum`) - Good coverage
+4. **Empty Folders** (`src.tools.analysis.empty_folders`) - Good coverage
+5. **Config Analyzer** (`src.tools.analysis.config.config_analyzer`) - Emerging coverage
 
 ---
 
@@ -218,9 +218,9 @@ This comprehensive audit identifies **87 analysis-related files** across the RFU
 
 ```python
 # Common patterns found:
-from src.tools.analysis.check_sum import ChecksumGUI
+from src.tools.analysis.checksum.check_sum import ChecksumGUI
 from src.tools.analysis.size_analyzer import SizeAnalyzerGUI
-from src.tools.analysis.find_duplicate_files import DuplicateFinderApp
+from src.tools.analysis.duplicate_finder.find_duplicate_files import DuplicateFinderApp
 from src.tools.analysis.empty_folders import EmptyFoldersGUI
 from src.tools.analysis.config.config_analyzer import ConfigurationAnalyzer
 ```
@@ -416,4 +416,4 @@ tests/unit/analysis/
 ---
 
 **End of Audit**  
-*This document serves as the foundation for the Analysis Tab testing file organization project.*
+_This document serves as the foundation for the Analysis Tab testing file organization project._

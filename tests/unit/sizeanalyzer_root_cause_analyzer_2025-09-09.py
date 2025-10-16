@@ -32,7 +32,7 @@ from typing import Any, Dict, List, Tuple
 # Add project root to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
 
-from src.tools.analysis.core.size_analyzer_logic import SizeAnalyzer
+from tools.analysis.size_analyzer.size_analyzer_logic import SizeAnalyzer
 
 
 class SizeAnalyzerMemoryLeakRootCauseAnalyzer:
@@ -77,9 +77,7 @@ class SizeAnalyzerMemoryLeakRootCauseAnalyzer:
             for j in range(5):
                 file_path = os.path.join(subdir, f"sub_file_{j:02d}.txt")
                 with open(file_path, "w", encoding="utf-8") as f:
-                    f.write(
-                        f"Subdirectory content {i}-{j}\n" + "y" * content_size
-                    )
+                    f.write(f"Subdirectory content {i}-{j}\n" + "y" * content_size)
 
         return test_dir
 
@@ -162,18 +160,12 @@ class SizeAnalyzerMemoryLeakRootCauseAnalyzer:
             if before_count == 0 and after_count > 0:
                 growth_analysis["new_object_types"].append(obj_type)
             elif change > 0:
-                growth_analysis["growing_object_types"].append(
-                    (obj_type, change)
-                )
+                growth_analysis["growing_object_types"].append((obj_type, change))
             elif change < 0:
-                growth_analysis["shrinking_object_types"].append(
-                    (obj_type, change)
-                )
+                growth_analysis["shrinking_object_types"].append((obj_type, change))
 
         # Sort growing types by change amount
-        growth_analysis["growing_object_types"].sort(
-            key=lambda x: x[1], reverse=True
-        )
+        growth_analysis["growing_object_types"].sort(key=lambda x: x[1], reverse=True)
         growth_analysis["shrinking_object_types"].sort(key=lambda x: x[1])
 
         return growth_analysis
@@ -241,26 +233,17 @@ class SizeAnalyzerMemoryLeakRootCauseAnalyzer:
                     "success": success,
                     "error": error,
                     "duration": end_time - start_time,
-                    "files_analyzed": (
-                        result.get("file_count", 0) if result else 0
-                    ),
+                    "files_analyzed": (result.get("file_count", 0) if result else 0),
                     "memory_change_mb": growth_analysis["memory_change_mb"],
-                    "object_count_change": growth_analysis[
-                        "total_object_change"
-                    ],
-                    "top_growing_objects": growth_analysis[
-                        "growing_object_types"
-                    ][:5],
+                    "object_count_change": growth_analysis["total_object_change"],
+                    "top_growing_objects": growth_analysis["growing_object_types"][:5],
                 }
 
                 operation_results.append(operation_result)
 
                 # Track cumulative memory growth
                 cumulative_memory_mb = (
-                    (
-                        post_snapshot["memory_rss"]
-                        - baseline_snapshot["memory_rss"]
-                    )
+                    (post_snapshot["memory_rss"] - baseline_snapshot["memory_rss"])
                     / 1024
                     / 1024
                 )
@@ -297,15 +280,11 @@ class SizeAnalyzerMemoryLeakRootCauseAnalyzer:
                     "total_duration_minutes": total_duration_minutes,
                 },
                 "memory_leak_analysis": {
-                    "total_memory_increase_mb": overall_growth[
-                        "memory_change_mb"
-                    ],
+                    "total_memory_increase_mb": overall_growth["memory_change_mb"],
                     "leak_rate_mb_per_min": leak_rate_mb_per_min,
                     "leak_detected": leak_rate_mb_per_min
                     > 1.0,  # >1 MB/min is significant
-                    "total_object_increase": overall_growth[
-                        "total_object_change"
-                    ],
+                    "total_object_increase": overall_growth["total_object_change"],
                 },
                 "operation_results": operation_results,
                 "object_growth_analysis": overall_growth,
@@ -413,18 +392,13 @@ class SizeAnalyzerMemoryLeakRootCauseAnalyzer:
                 diagnosis["evidence"].append(
                     f"Consistent memory growth: avg {avg_change:.3f} MB per operation"
                 )
-                diagnosis["confidence_level"] = max(
-                    diagnosis["confidence_level"], 0.7
-                )
+                diagnosis["confidence_level"] = max(diagnosis["confidence_level"], 0.7)
 
         # Check for specific SizeAnalyzer patterns
         for op in operation_results:
             top_growing = op.get("top_growing_objects", [])
             for obj_type, count in top_growing:
-                if (
-                    "SizeAnalyzer" in obj_type
-                    or "progress" in obj_type.lower()
-                ):
+                if "SizeAnalyzer" in obj_type or "progress" in obj_type.lower():
                     diagnosis["specific_objects_leaking"].append(obj_type)
                     diagnosis["evidence"].append(
                         f"SizeAnalyzer-related object growth: {obj_type} (+{count})"
@@ -501,9 +475,7 @@ class SizeAnalyzerMemoryLeakRootCauseAnalyzer:
             avg_memory_change = sum(
                 op["memory_change_mb"] for op in successful_ops
             ) / len(successful_ops)
-            max_memory_change = max(
-                op["memory_change_mb"] for op in successful_ops
-            )
+            max_memory_change = max(op["memory_change_mb"] for op in successful_ops)
 
             report_lines.extend(
                 [
@@ -545,9 +517,7 @@ def main():
     # Remove non-serializable objects
     for snapshot in json_results.get("memory_snapshots", []):
         if "tracemalloc_snapshot" in snapshot:
-            snapshot["tracemalloc_snapshot"] = str(
-                snapshot["tracemalloc_snapshot"]
-            )
+            snapshot["tracemalloc_snapshot"] = str(snapshot["tracemalloc_snapshot"])
 
     with open(results_file, "w") as f:
         json.dump(json_results, f, indent=2, default=str)

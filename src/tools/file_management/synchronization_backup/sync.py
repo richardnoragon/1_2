@@ -337,6 +337,8 @@ class SyncWindow(StandardWindow):
         self.actionExit = self.menuExit.addAction("Exit")
         self.actionExit.setShortcut("Ctrl+Q")
         self.actionExit.triggered.connect(self.close)
+        if hasattr(self, "ensure_exit_action_reference"):
+            self.ensure_exit_action_reference()
 
         # Connect buttons
         self.select_left_pushButton.clicked.connect(

@@ -38,9 +38,7 @@ class TestExecutionManager:
         self.test_config = setup_test_environment()
         # Set workspace root correctly - we're in tests/unit, need to go up to root
         current_dir = Path(__file__).parent.absolute()
-        self.workspace_root = (
-            current_dir.parent.parent
-        )  # Go up to C:\Users\HP1\1_2
+        self.workspace_root = current_dir.parent.parent  # Go up to C:\Users\HP1\1_2
         self.test_results: Dict = {}
         self.execution_summary: Dict = {}
         self.failed_tests: List[str] = []
@@ -63,7 +61,6 @@ class TestExecutionManager:
             "test_merg_simplified_2025-08-24.py",
             "test_privacy_hub_fixed_2025-08-31.py",
             "test_network_base_2025-08-28.py",
-            "test_cmsd_core.py",
         ]
 
         test_files = []
@@ -76,9 +73,7 @@ class TestExecutionManager:
                 logger.debug(f"Found flagged test: {test_path}")
             else:
                 # Look for alternative names or similar files
-                alternatives = list(
-                    tests_dir.glob(f"*{test_name.split('_')[1]}*")
-                )
+                alternatives = list(tests_dir.glob(f"*{test_name.split('_')[1]}*"))
                 if alternatives:
                     test_files.extend(alternatives[:1])  # Take first match
                     logger.debug(
@@ -201,14 +196,10 @@ class TestExecutionManager:
 
             if success:
                 self.successful_tests.append(test_name)
-                logger.info(
-                    f"✅ Test passed: {test_name} ({execution_time:.2f}s)"
-                )
+                logger.info(f"✅ Test passed: {test_name} ({execution_time:.2f}s)")
             else:
                 self.failed_tests.append(test_name)
-                logger.warning(
-                    f"❌ Test failed: {test_name} ({execution_time:.2f}s)"
-                )
+                logger.warning(f"❌ Test failed: {test_name} ({execution_time:.2f}s)")
                 logger.debug(f"Error output: {result.stderr[:500]}...")
 
             return {
@@ -286,9 +277,7 @@ class TestExecutionManager:
                 logger.warning("Test execution interrupted by user")
                 break
             except Exception as e:
-                logger.error(
-                    f"Unexpected error executing {test_file.name}: {e}"
-                )
+                logger.error(f"Unexpected error executing {test_file.name}: {e}")
                 suite_results.append(
                     {
                         "test_file": test_file.name,
@@ -301,14 +290,10 @@ class TestExecutionManager:
 
         # Calculate summary statistics
         total_tests = len(suite_results)
-        successful_count = sum(
-            1 for r in suite_results if r.get("success", False)
-        )
+        successful_count = sum(1 for r in suite_results if r.get("success", False))
         failed_count = total_tests - successful_count
 
-        success_rate = (
-            (successful_count / total_tests * 100) if total_tests > 0 else 0
-        )
+        success_rate = (successful_count / total_tests * 100) if total_tests > 0 else 0
 
         suite_summary = {
             "timestamp": datetime.now().isoformat(),
@@ -593,15 +578,11 @@ def main():
         elif success_rate > 50:
             print(f"\n✅ Good progress! Some issues remain to be addressed.")
         else:
-            print(
-                f"\n⚠️ Significant issues detected. Review failed tests immediately."
-            )
+            print(f"\n⚠️ Significant issues detected. Review failed tests immediately.")
 
         return True
     else:
-        print(
-            f"\n❌ Execution failed: {results.get('error', 'Unknown error')}"
-        )
+        print(f"\n❌ Execution failed: {results.get('error', 'Unknown error')}")
         return False
 
 

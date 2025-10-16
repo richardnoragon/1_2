@@ -90,7 +90,6 @@ TOOL_NAMES = {
     "SECURE_DELETE": "Secure Delete",
     "DISK_USAGE": "Disk Usage",
     "FIND_FILES": "Find Files",
-    "COPY_MOVE_SYNC": "Copy/Move/Sync",
     "FILE_INTEGRITY": "File Integrity",
     "PDF_UTILITIES": "PDF Utilities",
     "NETWORK_TEST": "Network Test",
@@ -1345,7 +1344,6 @@ class MultiPaneFileExplorer(QMainWindow):
             tools = [
                 "Find Files",
                 "Disk Usage",
-                "File Copy/Move",
                 "Duplicate Finder",
                 "Permission Editor",
                 "File Integrity Check",
@@ -1374,7 +1372,6 @@ class MultiPaneFileExplorer(QMainWindow):
             tool_map = {
                 "Find Files": self.launch_file_finder,
                 "Disk Usage": self.launch_disk_usage,
-                "File Copy/Move": self.launch_copy_move_sync,
                 "Duplicate Finder": self.launch_duplicate_finder,
                 "Permission Editor": self.launch_permissions_editor,
                 "File Integrity Check": self.launch_file_integrity,
@@ -2531,7 +2528,7 @@ class MultiPaneFileExplorer(QMainWindow):
         """Launch Duplicate Finder tool."""
         self._launch_tool(
             TOOL_NAMES["DUPLICATE_FINDER"],
-            "src.tools.analysis.find_duplicate_files",
+            "src.tools.analysis.duplicate_finder.find_duplicate_files",
             "DuplicateFinderApp",
         )
 
@@ -2559,13 +2556,17 @@ class MultiPaneFileExplorer(QMainWindow):
 
     def launch_checksum(self):
         """Launch Checksum tool."""
-        self._launch_tool("Checksum", "src.tools.analysis.check_sum", "ChecksumGUI")
+        self._launch_tool(
+            "Checksum",
+            "src.tools.analysis.checksum.check_sum",
+            "ChecksumGUI",
+        )
 
     def launch_secure_delete(self):
         """Launch Secure Delete tool."""
         self._launch_tool(
             TOOL_NAMES["SECURE_DELETE"],
-            "src.tools.security.secure_delete",
+            "src.tools.file_operations.secure_delete.secure_delete",
             "SecureDeleteGUI",
         )
 
@@ -2979,10 +2980,10 @@ class MultiPaneFileExplorer(QMainWindow):
         """Try legacy import paths based on tool name."""
         legacy_mappings = {
             "File Finder": "src.tools.file_management.finder.file_finder",
-            "Size Analyzer": "src.utilities.analysis.size_analyzer",
+            "Size Analyzer": "src.tools.analysis.size_analyzer.size_analyzer",
             "Duplicate Finder": "src.utilities.analysis.duplicate_finder_app",
             "Encrypt/Decrypt": "src.tools.security.encryption.en_and_decrypt",
-            "Secure Delete": "src.tools.security.secure_delete",
+            "Secure Delete": "src.tools.file_operations.secure_delete.secure_delete",
             "File Catalog": "src.utilities.file_management.catalog_window",
         }
 
@@ -3713,7 +3714,7 @@ class MultiPaneFileExplorer(QMainWindow):
                 {
                     "name": "duplicate_finder",
                     "display_name": "Duplicate Finder",
-                    "module_path": "src.tools.analysis.find_duplicate_files",
+                    "module_path": "src.tools.analysis.duplicate_finder.find_duplicate_files",
                     "class_name": "DuplicateFinderApp",
                     "icon": "🔍",
                 },
@@ -3729,7 +3730,7 @@ class MultiPaneFileExplorer(QMainWindow):
                 {
                     "name": "secure_delete",
                     "display_name": "Secure Delete",
-                    "module_path": "src.tools.security.secure_delete",
+                    "module_path": "src.tools.file_operations.secure_delete.secure_delete",
                     "class_name": "SecureDeleteGUI",
                     "icon": "🗑️",
                 },
@@ -3737,14 +3738,6 @@ class MultiPaneFileExplorer(QMainWindow):
         }
 
     # Additional tool launcher methods
-    def launch_copy_move_sync(self):
-        """Launch Copy/Move/Sync tool."""
-        self._launch_tool(
-            "Copy/Move/Sync",
-            "src.tools.file_operations.cmsd.gui",
-            "CopyMoveSyncDeleteWindow",
-        )
-
     def launch_disk_usage(self):
         """Launch Disk Usage analyzer."""
         self._launch_tool("Disk Usage", "src.tools.analysis.disk_usage", "DiskUsageGUI")

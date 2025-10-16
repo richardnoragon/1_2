@@ -73,6 +73,7 @@ try:
         QSlider,
         QSpinBox,
         QSplitter,
+        QStatusBar,
         QTableWidget,
         QTableWidgetItem,
         QTabWidget,
@@ -100,9 +101,7 @@ try:
     DATABASE_AVAILABLE = True
 except ImportError:
     DATABASE_AVAILABLE = False
-    print(
-        "Database manager not available. Transfer history will not be saved."
-    )
+    print("Database manager not available. Transfer history will not be saved.")
 
 # Constants for repeated strings
 NETWORK_TRANSFER_TITLE = "Network Transfer"
@@ -192,9 +191,7 @@ class SecurityManager:
             derived_key = kdf.derive(self.session_key)
         else:
             # Fallback key derivation
-            derived_key = hashlib.pbkdf2_hmac(
-                "sha256", self.session_key, salt, 100000
-            )
+            derived_key = hashlib.pbkdf2_hmac("sha256", self.session_key, salt, 100000)
 
         # XOR encryption with derived key
         key_cycle = (derived_key * ((len(message) // 32) + 1))[: len(message)]
@@ -233,23 +230,17 @@ class SecurityManager:
             derived_key = kdf.derive(self.session_key)
         else:
             # Fallback key derivation
-            derived_key = hashlib.pbkdf2_hmac(
-                "sha256", self.session_key, salt, 100000
-            )
+            derived_key = hashlib.pbkdf2_hmac("sha256", self.session_key, salt, 100000)
 
         # Verify HMAC
         hmac_key = derived_key[:16]
-        expected_mac = hmac.new(
-            hmac_key, salt + encrypted, hashlib.sha256
-        ).digest()
+        expected_mac = hmac.new(hmac_key, salt + encrypted, hashlib.sha256).digest()
 
         if not hmac.compare_digest(mac, expected_mac):
             raise ValueError("Message integrity check failed")
 
         # Decrypt
-        key_cycle = (derived_key * ((len(encrypted) // 32) + 1))[
-            : len(encrypted)
-        ]
+        key_cycle = (derived_key * ((len(encrypted) // 32) + 1))[: len(encrypted)]
         decrypted = bytes(a ^ b for a, b in zip(encrypted, key_cycle))
 
         return decrypted
@@ -340,9 +331,7 @@ class TransferServer(QThread):
             sock_family = socket.AF_INET
             sock_type = socket.SOCK_STREAM
             self.server_socket = socket.socket(sock_family, sock_type)
-            self.server_socket.setsockopt(
-                socket.SOL_SOCKET, socket.SO_REUSEADDR, 1
-            )
+            self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             # Bind to localhost only for security
             self.server_socket.bind(("127.0.0.1", self.port))
             self.server_socket.listen(5)
@@ -375,9 +364,7 @@ class TransferServer(QThread):
         except Exception as e:
             self.error_occurred.emit(f"Server error: {str(e)}")
 
-    def handle_client(
-        self, client_socket: socket.socket, address: Tuple[str, int]
-    ):
+    def handle_client(self, client_socket: socket.socket, address: Tuple[str, int]):
         """Handle incoming client connection."""
         try:
             with client_socket:
@@ -399,9 +386,7 @@ class TransferServer(QThread):
                             break
                         message_data += chunk
 
-                    message = TransferProtocol.parse_message(
-                        length_data + message_data
-                    )
+                    message = TransferProtocol.parse_message(length_data + message_data)
                     if not message:
                         continue
 
@@ -416,9 +401,7 @@ class TransferServer(QThread):
         data = message.get("data", {})
 
         if msg_type == TransferProtocol.MSG_HELLO:
-            self.transfer_started.emit(
-                "Incoming", data.get("client_name", "Unknown")
-            )
+            self.transfer_started.emit("Incoming", data.get("client_name", "Unknown"))
             # Send ACK
             response = TransferProtocol.create_message(
                 TransferProtocol.MSG_ACK, {"status": "ready"}
@@ -429,9 +412,7 @@ class TransferServer(QThread):
             # File transfer incoming
             filename = data.get("filename")
             filesize = data.get("filesize")
-            self.transfer_started.emit(
-                "File", f"{filename} ({filesize} bytes)"
-            )
+            self.transfer_started.emit("File", f"{filename} ({filesize} bytes)")
 
         elif msg_type == TransferProtocol.MSG_CONFIG_DATA:
             # Configuration transfer
@@ -456,9 +437,7 @@ class TransferServer(QThread):
             with open(config_file, "w") as f:
                 json.dump(config_data, f, indent=2)
 
-            self.transfer_completed.emit(
-                f"Configuration saved to {config_file}"
-            )
+            self.transfer_completed.emit(f"Configuration saved to {config_file}")
 
         except Exception as e:
             self.error_occurred.emit(f"Config save error: {str(e)}")
@@ -815,18 +794,24 @@ class TransferClient(QThread):
         self.progress_updated.emit(100)
 
 
-class NetworkTransferGUI(QMainWindow):
+class NetworkTransferGUI(StandardWindow):
     """Main window for Network Transfer operations."""
 
     def __init__(self):
-        super().__init__()
-        self.setWindowTitle("Network Transfer - Richard's File Utilities")
-        self.setGeometry(200, 200, 900, 700)
+        if StandardWindow is QMainWindow:
+            super().__init__()
+            self.setWindowTitle("Network Transfer - Richard's File Utilities")
+            self.resize(900, 700)
 
-        # Create central widget and main layout
-        central_widget = QWidget()
-        self.setCentralWidget(central_widget)
-        self.main_layout = QVBoxLayout(central_widget)
+            central_widget = QWidget()
+            self.setCentralWidget(central_widget)
+            self.main_layout = QVBoxLayout(central_widget)
+        else:
+            super().__init__(
+                title="Network Transfer - Richard's File Utilities",
+                window_type="network_tool",
+            )
+            self.resize(900, 700)
 
         self.logger = logging.getLogger("RFU.NetworkTransfer")
         self.db_manager = None
@@ -996,8 +981,14 @@ class NetworkTransferGUI(QMainWindow):
 
     def _create_status_bar(self) -> None:
         """Create status bar and progress indicator"""
-        # Create the standard status bar first
-        super()._create_status_bar()
+        base_create_status_bar = getattr(super(), "_create_status_bar", None)
+        if callable(base_create_status_bar):
+            base_create_status_bar()
+        else:
+            # Fallback for standalone execution without StandardWindow
+            self.status_bar = QStatusBar()
+            self.setStatusBar(self.status_bar)
+            self.status_bar.showMessage("Ready")
 
         # Create additional status widgets for the main layout
         status_widget = QWidget()
@@ -1023,9 +1014,7 @@ class NetworkTransferGUI(QMainWindow):
         target_layout = QFormLayout(target_group)
 
         self.target_host = QLineEdit()
-        self.target_host.setPlaceholderText(
-            "Enter target IP address or hostname"
-        )
+        self.target_host.setPlaceholderText("Enter target IP address or hostname")
         target_layout.addRow("Target Host:", self.target_host)
 
         self.target_port = QSpinBox()
@@ -1041,9 +1030,7 @@ class NetworkTransferGUI(QMainWindow):
 
         # Settings/Preferences transfer
         settings_layout = QHBoxLayout()
-        self.transfer_settings_btn = QPushButton(
-            "Transfer Settings & Preferences"
-        )
+        self.transfer_settings_btn = QPushButton("Transfer Settings & Preferences")
         self.transfer_settings_btn.clicked.connect(self.transfer_settings)
         settings_layout.addWidget(self.transfer_settings_btn)
 
@@ -1127,9 +1114,7 @@ class NetworkTransferGUI(QMainWindow):
         server_layout.addRow("Listen Port:", self.listen_port)
 
         self.receive_path = QLineEdit()
-        self.receive_path.setText(
-            str(Path.home() / "Downloads" / "RFU_Transfers")
-        )
+        self.receive_path.setText(str(Path.home() / "Downloads" / "RFU_Transfers"))
         server_layout.addRow("Receive Path:", self.receive_path)
 
         path_btn = QPushButton("Browse")
@@ -1242,9 +1227,7 @@ class NetworkTransferGUI(QMainWindow):
         files_actions = QHBoxLayout()
 
         self.add_files_to_collection_btn = QPushButton("Add Files")
-        self.add_files_to_collection_btn.clicked.connect(
-            self.add_files_to_collection
-        )
+        self.add_files_to_collection_btn.clicked.connect(self.add_files_to_collection)
         files_actions.addWidget(self.add_files_to_collection_btn)
 
         self.remove_file_from_collection_btn = QPushButton("Remove Selected")
@@ -1544,13 +1527,9 @@ class NetworkTransferGUI(QMainWindow):
         """
         try:
             folder_path = Path(folder)
-            self._add_folder_files_recursive(
-                folder_path, folder_path, max_depth, 0
-            )
+            self._add_folder_files_recursive(folder_path, folder_path, max_depth, 0)
         except Exception as e:
-            QMessageBox.warning(
-                self, "Error", f"Failed to add folder files: {e}"
-            )
+            QMessageBox.warning(self, "Error", f"Failed to add folder files: {e}")
 
     def _add_folder_files_recursive(
         self,
@@ -1587,9 +1566,7 @@ class NetworkTransferGUI(QMainWindow):
             current_path, base_path, max_depth, current_depth
         )
 
-    def _handle_symlink_safely(
-        self, current_path: Path, base_path: Path
-    ) -> bool:
+    def _handle_symlink_safely(self, current_path: Path, base_path: Path) -> bool:
         """Handle symbolic links safely, return False if should skip."""
         if current_path.is_symlink():
             try:
@@ -1597,14 +1574,11 @@ class NetworkTransferGUI(QMainWindow):
                 resolved_path = current_path.resolve()
                 if self._is_symlink_loop(resolved_path, base_path):
                     self.logger.warning(
-                        f"Symbolic link loop detected, skipping: "
-                        f"{current_path}"
+                        f"Symbolic link loop detected, skipping: " f"{current_path}"
                     )
                     return False
             except (OSError, RuntimeError) as e:
-                self.logger.warning(
-                    f"Failed to resolve symlink {current_path}: {e}"
-                )
+                self.logger.warning(f"Failed to resolve symlink {current_path}: {e}")
                 return False
         return True
 
@@ -1629,15 +1603,11 @@ class NetworkTransferGUI(QMainWindow):
 
         except OSError as e:
             if isinstance(e, PermissionError):
-                self.logger.warning(
-                    f"Permission denied accessing: {current_path}"
-                )
+                self.logger.warning(f"Permission denied accessing: {current_path}")
             else:
                 self.logger.warning(f"OS error accessing {current_path}: {e}")
         except Exception as e:
-            self.logger.error(
-                f"Unexpected error processing {current_path}: {e}"
-            )
+            self.logger.error(f"Unexpected error processing {current_path}: {e}")
 
     def _process_file_item(self, item: Path):
         """Process a single file item."""
@@ -1662,17 +1632,17 @@ class NetworkTransferGUI(QMainWindow):
         """
         try:
             # Check if resolved path is same as or ancestor of base path
-            return resolved_path.is_relative_to(
-                base_path
-            ) or base_path.is_relative_to(resolved_path)
+            return resolved_path.is_relative_to(base_path) or base_path.is_relative_to(
+                resolved_path
+            )
         except (ValueError, AttributeError):
             # Fallback for older Python versions or invalid paths
             try:
                 resolved_str = str(resolved_path.absolute())
                 base_str = str(base_path.absolute())
-                return resolved_str.startswith(
-                    base_str
-                ) or base_str.startswith(resolved_str)
+                return resolved_str.startswith(base_str) or base_str.startswith(
+                    resolved_str
+                )
             except Exception:
                 return False
 
@@ -1850,9 +1820,7 @@ class NetworkTransferGUI(QMainWindow):
             # Recursively sanitize nested dictionaries
             if isinstance(value, dict):
                 sanitized[key] = self._sanitize_config_content(value)
-            elif (
-                isinstance(value, str) and len(value) < 1000
-            ):  # Limit string length
+            elif isinstance(value, str) and len(value) < 1000:  # Limit string length
                 sanitized[key] = value
             elif isinstance(value, (int, float, bool)):
                 sanitized[key] = value
@@ -1884,9 +1852,7 @@ class NetworkTransferGUI(QMainWindow):
         """Transfer selected file collection."""
         collection_name = self.collection_combo.currentText()
         if not collection_name or collection_name not in self.file_collections:
-            QMessageBox.warning(
-                self, NETWORK_TRANSFER_TITLE, SELECT_COLLECTION_MSG
-            )
+            QMessageBox.warning(self, NETWORK_TRANSFER_TITLE, SELECT_COLLECTION_MSG)
             return
 
         collection = self.file_collections[collection_name]
@@ -1907,12 +1873,8 @@ class NetworkTransferGUI(QMainWindow):
         self.transfer_client.connection_established.connect(
             self.on_connection_established
         )
-        self.transfer_client.progress_updated.connect(
-            self.progress_bar.setValue
-        )
-        self.transfer_client.transfer_completed.connect(
-            self.on_transfer_completed
-        )
+        self.transfer_client.progress_updated.connect(self.progress_bar.setValue)
+        self.transfer_client.transfer_completed.connect(self.on_transfer_completed)
         self.transfer_client.error_occurred.connect(self.on_transfer_error)
         self.transfer_client.start()
 
@@ -1925,12 +1887,8 @@ class NetworkTransferGUI(QMainWindow):
 
         self.transfer_server = TransferServer(port)
         self.transfer_server.client_connected.connect(self.on_client_connected)
-        self.transfer_server.transfer_started.connect(
-            self.on_transfer_received
-        )
-        self.transfer_server.transfer_completed.connect(
-            self.on_receive_completed
-        )
+        self.transfer_server.transfer_started.connect(self.on_transfer_received)
+        self.transfer_server.transfer_completed.connect(self.on_receive_completed)
         self.transfer_server.error_occurred.connect(self.on_server_error)
         self.transfer_server.start()
 
@@ -1967,15 +1925,11 @@ class NetworkTransferGUI(QMainWindow):
         """Create a new file collection."""
         name = self.new_collection_name.text().strip()
         if not name:
-            QMessageBox.warning(
-                self, "Collection", "Please enter a collection name."
-            )
+            QMessageBox.warning(self, "Collection", "Please enter a collection name.")
             return
 
         if name in self.file_collections:
-            QMessageBox.warning(
-                self, "Collection", "Collection name already exists."
-            )
+            QMessageBox.warning(self, "Collection", "Collection name already exists.")
             return
 
         collection = {
@@ -2091,9 +2045,7 @@ class NetworkTransferGUI(QMainWindow):
         collection = self.file_collections[collection_name]
         if file_path in collection["files"]:
             collection["files"].remove(file_path)
-            self.collection_files_list.takeItem(
-                self.collection_files_list.currentRow()
-            )
+            self.collection_files_list.takeItem(self.collection_files_list.currentRow())
 
             collection["last_modified"] = datetime.now().isoformat()
             self.save_collection(collection)
@@ -2170,16 +2122,10 @@ class NetworkTransferGUI(QMainWindow):
             ) in enumerate(history):
 
                 self.history_table.setItem(row, 0, QTableWidgetItem(timestamp))
-                self.history_table.setItem(
-                    row, 1, QTableWidgetItem(transfer_type)
-                )
+                self.history_table.setItem(row, 1, QTableWidgetItem(transfer_type))
                 self.history_table.setItem(row, 2, QTableWidgetItem(direction))
-                self.history_table.setItem(
-                    row, 3, QTableWidgetItem(remote_host or "")
-                )
-                self.history_table.setItem(
-                    row, 4, QTableWidgetItem(str(file_count))
-                )
+                self.history_table.setItem(row, 3, QTableWidgetItem(remote_host or ""))
+                self.history_table.setItem(row, 4, QTableWidgetItem(str(file_count)))
                 self.history_table.setItem(
                     row, 5, QTableWidgetItem(f"{total_size} bytes")
                 )
@@ -2217,16 +2163,12 @@ class NetworkTransferGUI(QMainWindow):
             if transfer_type == "files":
                 files = transfer_data.get("files", [])
                 file_count = len(files)
-                total_size = sum(
-                    os.path.getsize(f) for f in files if os.path.exists(f)
-                )
+                total_size = sum(os.path.getsize(f) for f in files if os.path.exists(f))
             elif transfer_type == "collection":
                 collection = transfer_data.get("collection", {})
                 files = collection.get("files", [])
                 file_count = len(files)
-                total_size = sum(
-                    os.path.getsize(f) for f in files if os.path.exists(f)
-                )
+                total_size = sum(os.path.getsize(f) for f in files if os.path.exists(f))
 
             self.db_manager.execute_query(
                 """

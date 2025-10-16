@@ -31,11 +31,11 @@ Consolidate redundant directories by migrating from `src/rfu/tools/` to `src/uti
    - Utilities: Logic components only (829 lines of enhanced logic)
    - **Action**: Create GUI wrapper that uses utilities logic
 
-2. **CMSD**: `tools/file_operations/cmsd.py` vs `utilities/file_operations/cmsd_logic.py`
+2. **Copy/Move/Sync/Delete**: `file_utilities_2/gui/cmsd_gui.py` + `file_utilities_2/core/cmsd_logic.py`
 
-   - Tools: GUI implementation
-   - Utilities: Logic only (213 lines)
-   - **Action**: Create GUI wrapper that uses utilities logic
+   - GUI now lives in the file utilities package
+   - Core logic remains in `cmsd_logic`
+   - **Action**: Update remaining imports to target the new package structure
 
 3. **Image Metadata**: `tools/metadata/edit_image_metadata.py` vs `utilities/metadata/image_metadata_logic.py`
    - Tools: 1186-line comprehensive GUI
@@ -64,7 +64,7 @@ Consolidate redundant directories by migrating from `src/rfu/tools/` to `src/uti
 ### Phase 2: Create GUI Wrappers (Medium Risk)
 
 - [ ] Create `utilities/file_operations/file_splitter/gui.py` wrapper for file_splitter_logic
-- [ ] Create `utilities/file_operations/cmsd/gui.py` wrapper for cmsd_logic
+- [x] Adopt `file_utilities_2/gui/cmsd_gui.py` wrapper for CMSD logic
 - [ ] Migrate image metadata GUI to utilities structure
 
 ### Phase 3: Migrate Tools-Only Components (Medium Risk)

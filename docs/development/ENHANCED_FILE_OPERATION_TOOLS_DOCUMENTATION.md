@@ -7,6 +7,7 @@ Successfully enhanced four file operation tools with comprehensive menu integrat
 ## Enhanced Tools
 
 ### 1. Compress/Decompress Tool (`compress_decompress.py`)
+
 - **Class**: `CompressDecompressApp` (now inherits from `StandardWindow`)
 - **Window Type**: "utility"
 - **Menu Features**:
@@ -16,6 +17,7 @@ Successfully enhanced four file operation tools with comprehensive menu integrat
   - Clear fields functionality (F5)
 
 ### 2. File Splitter/Joiner Tool (`file_splitter_joiner.py`)
+
 - **Class**: `FileSplitJoinGUI` (now inherits from `StandardWindow`)
 - **Window Type**: "utility"
 - **Menu Features**:
@@ -25,6 +27,7 @@ Successfully enhanced four file operation tools with comprehensive menu integrat
   - Clear operations functionality (F5)
 
 ### 3. Synchronize Tool (`sync.py`)
+
 - **Class**: `SyncWindow` (now inherits from `StandardWindow`)
 - **Window Type**: "utility"
 - **Menu Features**:
@@ -33,18 +36,20 @@ Successfully enhanced four file operation tools with comprehensive menu integrat
   - Comprehensive sync help with directory synchronization guide
   - Clear sync operations functionality (F5)
 
-### 4. Copy/Move/Sync/Delete Tool (`cmsd.py`)
-- **Class**: `CopyMoveSyncDeleteWindow` (now inherits from `StandardWindow`)
+### 4. Copy/Move/Sync/Delete Tool (`file_utilities_2/gui/cmsd_gui.py`)
+
+- **Class**: `CMSDWindow` (inherits from `StandardWindow`)
 - **Window Type**: "utility"
 - **Menu Features**:
   - File menu with Exit (Ctrl+Q) and Help (F1) options
-  - Tool-specific callbacks: `new_operation`, `help_cmsd`
+  - Tool-specific callbacks: `new_operation`, `show_help_dialog`
   - Extensive help covering all four operation types
   - Clear operations functionality (F5)
 
 ## Implementation Details
 
 ### Menu Structure Template
+
 Following the File Finder implementation, each tool includes:
 
 ```python
@@ -63,7 +68,7 @@ class ToolClass(StandardWindow):
         )
         self.init_ui()
         self._setup_menu_callbacks()
-    
+
     def _setup_menu_callbacks(self):
         """Setup tool-specific menu callbacks."""
         if hasattr(self, 'menu_manager'):
@@ -91,21 +96,26 @@ Each enhanced tool implements:
 ## Menu Features
 
 ### File Menu
+
 - **Exit** (Ctrl+Q): Graceful application closure
 - **Help** (F1): Tool-specific comprehensive help dialog
 
 ### Edit Menu (inherited)
+
 - Standard editing operations when applicable
 
 ### View Menu (inherited)
+
 - Refresh functionality (F5)
 - Theme and display options
 
 ### Tools Menu (inherited)
+
 - Access to other RFU tools
 - Preferences and options
 
 ### Help Menu (inherited)
+
 - About dialog
 - Documentation links
 - Keyboard shortcuts reference
@@ -113,6 +123,7 @@ Each enhanced tool implements:
 ## Keyboard Shortcuts
 
 All tools now support:
+
 - **Ctrl+Q**: Exit application
 - **F1**: Show tool-specific help
 - **F5**: Clear/refresh tool operations
@@ -122,6 +133,7 @@ All tools now support:
 Each tool includes comprehensive help dialogs with:
 
 ### Content Structure
+
 - **Tool Overview**: What the tool does
 - **Operation Sections**: Step-by-step instructions for each feature
 - **Options Explained**: Detailed parameter descriptions
@@ -131,24 +143,28 @@ Each tool includes comprehensive help dialogs with:
 ### Example Help Topics
 
 **Compress/Decompress Tool**:
+
 - Compression formats (ZIP, TAR.GZ, TAR.BZ2)
 - Password protection options
 - Compression level settings
 - Decompression procedures
 
 **File Splitter/Joiner Tool**:
+
 - File splitting with size options
 - Automatic part detection for joining
 - Integrity checking with checksums
 - Progress tracking features
 
 **Synchronize Tool**:
+
 - Directory synchronization modes
 - One-way vs two-way sync
 - File exclusion patterns
 - Conflict resolution options
 
 **Copy/Move/Sync/Delete Tool**:
+
 - Four operation types explained
 - Safety features and confirmations
 - Secure deletion options
@@ -157,6 +173,7 @@ Each tool includes comprehensive help dialogs with:
 ## Testing Results ✅
 
 All four enhanced tools successfully tested:
+
 - ✅ **Menu Integration**: File menus display correctly
 - ✅ **Window Management**: Proper sizing and central widget layout
 - ✅ **Callback Registration**: Tool-specific menu callbacks working
@@ -168,20 +185,24 @@ All four enhanced tools successfully tested:
 ## Files Modified
 
 1. **`src/rfu/tools/file_operations/compress_decompress.py`**
+
    - Enhanced CompressDecompressApp with StandardWindow inheritance
    - Added menu callbacks and comprehensive help system
 
 2. **`src/rfu/tools/file_operations/file_splitter_joiner.py`**
+
    - Enhanced FileSplitJoinGUI with menu integration
    - Implemented help dialog and clear operations
 
 3. **`src/rfu/tools/file_operations/sync.py`**
+
    - Enhanced SyncWindow with StandardWindow features
    - Added sync-specific help and menu callbacks
 
-4. **`src/rfu/tools/file_operations/cmsd.py`**
-   - Enhanced CopyMoveSyncDeleteWindow with full menu integration
-   - Comprehensive help covering all four operation types
+4. **`file_utilities_2/gui/cmsd_gui.py`**
+
+- Enhanced CMSDWindow with full menu integration
+- Comprehensive help covering all four operation types
 
 5. **`test_enhanced_file_operation_tools.py`**
    - Created comprehensive test script for all enhanced tools
@@ -189,18 +210,21 @@ All four enhanced tools successfully tested:
 ## Benefits Achieved
 
 ### User Experience
+
 - **Consistent Interface**: All tools now share the same menu structure
 - **Keyboard Accessibility**: Standard shortcuts across all tools
 - **Comprehensive Help**: In-context assistance for every tool
 - **Professional Look**: Unified styling and branding
 
 ### Developer Benefits
+
 - **Code Reusability**: StandardWindow base class eliminates duplication
 - **Maintainability**: Centralized menu management system
 - **Extensibility**: Easy to add new tools with same pattern
 - **Documentation**: Self-documenting help system
 
 ### Functional Improvements
+
 - **Menu-Driven Access**: All tool functions accessible via menus
 - **Graceful Exit**: Proper application closure handling
 - **Tool Integration**: Seamless navigation between tools
@@ -209,12 +233,14 @@ All four enhanced tools successfully tested:
 ## Future Enhancements
 
 ### Suggested Additions
+
 - **Recent Actions**: Submenu for quick access to recent operations
 - **Tooltips**: Hover help for menu items and buttons
 - **Progress Integration**: Menu-accessible progress tracking
 - **Advanced Help**: Markdown/HTML help system with search
 
 ### Technical Improvements
+
 - **Icon Integration**: Tool-specific icons for menu items
 - **Context Menus**: Right-click functionality
 - **Status Bar Integration**: Real-time operation feedback
