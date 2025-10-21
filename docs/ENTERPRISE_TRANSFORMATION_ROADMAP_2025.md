@@ -39,8 +39,8 @@ Richard's File Utilities (RFU) is positioned to become the **industry-leading en
 
 **🛡️ Security Framework Excellence:**
 
-- **Advanced Encryption**: [`src/core_rfu/theme_security/`](src/core_rfu/theme_security/) with AES-256-GCM
-- **Database Security**: [`src/core_rfu/migrations/`](src/core_rfu/migrations/) with rollback capabilities
+- **Advanced Encryption**: [`src/core/theme_security/`](src/core/theme_security/) with AES-256-GCM
+- **Database Security**: [`src/core/migrations/`](src/core/migrations/) with rollback capabilities
 - **Access Control**: Theme security manager with comprehensive validation
 - **Audit Infrastructure**: Enterprise-grade logging and tracking systems
 
@@ -421,11 +421,11 @@ Breakdown Strategy:
 ```python
 # Critical Security Implementation
 Priority Areas:
-├── src/core_rfu/theme_security/theme_access_control.py
+├── src/core/theme_security/theme_access_control.py
 │   └── Replace placeholder methods with production implementations
-├── src/core_rfu/theme_security/theme_validator.py
+├── src/core/theme_security/theme_validator.py
 │   └── Complete integrity validation and corruption detection
-├── src/core_rfu/directory_security/
+├── src/core/directory_security/
 │   └── Implement comprehensive directory protection
 └── src/security/compliance/
     ├── iso27001_controls.py        # ISO 27001 security controls

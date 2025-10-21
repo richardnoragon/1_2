@@ -695,14 +695,18 @@ class FileRenameWindow(StandardWindow):
         self.lbl_status.setText("Ready")
         self.text_results.clear()
 
+    def ensure_exit_action_reference(self):
+        """Expose exit action reference for compatibility checks."""
+        return self._ensure_exit_action_reference()
+
     def _ensure_exit_action_reference(self):
         """Ensure the window exposes standard exit actions."""
         if hasattr(self, "actionexit"):
-            return
+            return getattr(self, "actionExit", None)
 
         menubar = self.menuBar() if hasattr(self, "menuBar") else None
         if menubar is None:
-            return
+            return None
 
         exit_action = self._find_exit_action(menubar)
         if exit_action is None:
@@ -712,6 +716,9 @@ class FileRenameWindow(StandardWindow):
             setattr(self, "actionexit", exit_action)
             if not hasattr(self, "actionExit"):
                 setattr(self, "actionExit", exit_action)
+            return exit_action
+
+        return getattr(self, "actionExit", None)
 
     def _find_exit_action(self, menubar):
         """Search for an existing exit action in the menu bar."""

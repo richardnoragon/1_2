@@ -7,11 +7,12 @@ RFU is a comprehensive PyQt5-based file management suite organized around **tool
 ### Key Architectural Patterns
 
 **Tool Discovery System**: Tools are auto-discovered using metadata-driven patterns. Each tool follows `{ToolName}GUI` class naming and imports through fallback strategies:
+
 ```python
 # Main pattern in launch_tool()
 import_strategies = [
     lambda: self._import_direct(module_name, class_name),
-    lambda: self._import_absolute(module_name, class_name), 
+    lambda: self._import_absolute(module_name, class_name),
     lambda: self._import_dynamic(module_name, class_name),
     lambda: self._import_legacy(module_name, class_name)
 ]
@@ -32,7 +33,7 @@ src/
 │   └── core/              # Core system components
 ├── utilities/             # Tool modules by category
 │   ├── file_management/   # FileFinderGUI, CatalogWindow, etc.
-│   ├── file_operations/   # CopyMoveSyncDeleteWindow, etc.  
+│   ├── file_operations/   # CopyMoveSyncDeleteWindow, etc.
 │   ├── analysis/          # SizeAnalyzerGUI, DuplicateFinderApp
 │   ├── pdf_tools/         # Comprehensive PDF suite
 │   ├── network/           # NetworkConnectivityGUI, etc.
@@ -44,26 +45,30 @@ src/
 ## Tool Integration Patterns
 
 ### Standard Tool Class Structure
+
 ```python
 class ToolNameGUI(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setup_ui()
-        
+
     def setup_ui(self):
         # UI initialization
-        
+
     def track_operation(self, operation_type):
         # Optional database tracking
 ```
 
 ### Tool Registration in main.py
+
 Add to appropriate category tab:
+
 ```python
 ("Tool Display Name", "Tool description", self.open_tool_function)
 ```
 
 Implement launcher method:
+
 ```python
 def open_tool_function(self):
     self.launch_tool("Tool Name", "src.tools.category.module", "ToolNameGUI")
@@ -74,6 +79,7 @@ def open_tool_function(self):
 **Engine-Based Design**: PDF functionality uses specialized engines (`analysis_engine.py`, `conversion_engine.py`, etc.) with unified interfaces.
 
 **Tool Discovery**: PDF tools use `PDFToolDiscovery` class for automatic registration and categorization:
+
 ```python
 @dataclass
 class ToolMetadata:
@@ -90,6 +96,7 @@ class ToolMetadata:
 **Test Structure**: Uses pytest with comprehensive markers (`@pytest.mark.gui`, `@pytest.mark.integration`, etc.).
 
 **Tool Validation**: Before launching, tools go through validation pipeline:
+
 ```python
 validation_result = self.validate_tool_before_launch(module_name, class_name)
 if not validation_result["success"]:
@@ -101,17 +108,22 @@ if not validation_result["success"]:
 ## Critical Development Patterns
 
 ### Database Operations
+
 Always check `DATABASE_AVAILABLE` before database operations:
+
 ```python
 if self.database_available:
     self.db_manager.execute_update(query, params)
 ```
 
 ### Security Integration
+
 Security features use comprehensive menu system with emergency controls. All security operations log through `get_log_manager()`.
 
 ### Logging System
+
 Use centralized logging via `log_manager.py`:
+
 ```python
 from log_manager import get_log_manager
 logger = get_log_manager().get_logger('ToolName')
@@ -119,9 +131,10 @@ logger = get_log_manager().get_logger('ToolName')
 
 ## Common Development Tasks
 
-**Adding New Tools**: 
+**Adding New Tools**:
+
 1. Create tool class in appropriate `src/utilities/{category}/` directory
-2. Follow `{ToolName}GUI` naming convention  
+2. Follow `{ToolName}GUI` naming convention
 3. Add launcher method to `main.py`
 4. Add to category tab in `init_ui()`
 

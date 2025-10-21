@@ -51,9 +51,9 @@ Richard's File Utilities demonstrates **solid engineering foundations** with com
 Critical Files Requiring Immediate Refactoring:
 ├── src/file_explorer/multi_pane_explorer.py    # 3,852 lines (768% over limit)
 ├── src/file_explorer/ui/pane_manager.py        # 956 lines (91% over limit)
-├── src/core_rfu/migrations/migration_manager.py # 920 lines (84% over limit)
-├── src/core_rfu/database_manager.py            # 693 lines (39% over limit)
-├── src/core_rfu/theme_security/...             # Multiple 500+ line files
+├── src/core/migrations/migration_manager.py    # 920 lines (84% over limit)
+├── src/core/database_manager.py               # 693 lines (39% over limit)
+├── src/core/theme_security/...                # Multiple 500+ line files
 └── src/tools/pdf_tools/...                     # Complex processing modules
 ```
 
@@ -200,8 +200,8 @@ File Size Compliance Report:
 Critical Violations Requiring Immediate Action:
 1. src/file_explorer/multi_pane_explorer.py - 3,852 lines 💀
 2. src/file_explorer/ui/pane_manager.py - 956 lines 🚨
-3. src/core_rfu/migrations/migration_manager.py - 920 lines 🚨
-4. src/core_rfu/database_manager.py - 693 lines ❌
+3. src/core/migrations/migration_manager.py - 920 lines 🚨
+4. src/core/database_manager.py - 693 lines ❌
 5. Additional 15+ files requiring refactoring
 ```
 
@@ -312,7 +312,7 @@ class ManufacturingFileOperation:
 Critical File Breakdown Schedule:
 ├── Day 1-3: src/file_explorer/multi_pane_explorer.py (3,852 → 8 files ≤500 lines)
 ├── Day 4-5: src/file_explorer/ui/pane_manager.py (956 → 2 files ≤500 lines)
-├── Day 6-7: src/core_rfu/migrations/migration_manager.py (920 → 2 files ≤500 lines)
+├── Day 6-7: src/core/migrations/migration_manager.py (920 → 2 files ≤500 lines)
 ├── Week 2: Remaining files >500 lines refactored to compliance
 └── Week 2: Integration testing and validation
 

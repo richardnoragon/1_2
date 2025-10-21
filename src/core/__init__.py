@@ -1,6 +1,5 @@
 """Core functionality for Richard's File Utilities."""
 
-import importlib
 import sys
 
 from .constants import (
@@ -39,6 +38,6 @@ __all__ = [
     "LogManager",
 ]
 
-# Maintain backward compatibility so existing code can still import from src.core
-if "src.core" not in sys.modules:
-    sys.modules["src.core"] = importlib.import_module("src.core_rfu")
+# Maintain module registration for fully qualified imports
+module_ref = sys.modules[__name__]
+sys.modules.setdefault("src.core", module_ref)

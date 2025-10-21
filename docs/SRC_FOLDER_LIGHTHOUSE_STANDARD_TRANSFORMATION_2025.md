@@ -313,7 +313,7 @@ class SafeExtractionEngine:
 
 Security_Fixes = {
     'eval_elimination': {
-        'file': 'src/core_rfu/directory_security/directory_permissions.py',
+        'file': 'src/core/directory_security/directory_permissions.py',
         'lines': [414, 600],
         'vulnerability': 'CODE_INJECTION',
         'fix': 'Replace eval() with secure JSON parsing',

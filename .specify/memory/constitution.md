@@ -1,14 +1,19 @@
 <!--
 Sync Impact Report
-Version change: (none prior) → 1.0.0
-Modified principles: N/A (initial ratification)
-Added sections: Core Principles; Additional Technical & Quality Constraints; Development Workflow & Quality Gates; Governance
+Version change: 1.0.0 → 1.0.1
+Modified principles: None (structural clarity only)
+Added sections: None
 Removed sections: None
+Clarified sections:
+  - Principle V: Enhanced examples for PyQt5-based tool discovery and modular patterns
+  - Additional Technical & Quality Constraints: Clarified Qt5 GUI testing expectations
+  - Development Workflow: Added tool validation to PR gates
 Templates requiring updates:
-  - .specify/templates/plan-template.md ✅ (version reference updated)
-  - .specify/templates/spec-template.md ✅ (no version reference; aligned implicitly)
+  - .specify/templates/plan-template.md ✅ (no changes needed)
+  - .specify/templates/spec-template.md ✅ (no changes needed)
   - .specify/templates/tasks-template.md ✅ (no changes needed)
-  - .specify/templates/agent-file-template.md ✅ (no constitution references yet)
+  - .specify/templates/agent-file-template.md ✅ (already reflects active project structure)
+  - .github/copilot-instructions.md ✅ (architecture guidelines aligned)
 Follow-up TODOs: None
 -->
 
@@ -59,9 +64,11 @@ Features MUST be implemented as modular, discoverable tool components with
 clear single responsibility. Public interfaces (CLI / scripted APIs) MUST be
 stable; changes require deprecation cycle (see Governance). Avoid premature
 generalization: implement minimum set that satisfies explicit requirements.
-Extension points (tool discovery, engines) MUST document contracts and failure
-modes. Rationale: Lean, modular design reduces coupling and accelerates safe
-innovation.
+Extension points (tool discovery, engines, PyQt5 GUI registration) MUST
+document contracts and failure modes with automated validation before launch.
+Rationale: Lean, modular design reduces coupling and accelerates safe
+innovation. For PyQt5-based tools: use `{ToolName}GUI` naming convention,
+auto-discovery via metadata patterns, and graceful import fallbacks.
 
 ## Additional Technical & Quality Constraints
 
@@ -74,8 +81,8 @@ innovation.
 4. Logging & Errors: No silent failures; user-facing errors MUST provide
    actionable remediation guidance. Internal stack traces logged at DEBUG+.
 5. Coverage & Gates: PRs MUST pass: lint, type check, unit + integration tests,
-   coverage ≥ threshold, GUI smoke test (launch + tool open). Failing gate →
-   reject.
+   coverage ≥ threshold, GUI smoke test (launch + tool open), and tool
+   validation (import success + instantiation check). Failing gate → reject.
 6. Performance Baselines: Duplicate scanning: ≥ 10k files/min on reference
    dataset (documented). UI main thread blocked < 100ms segments. Long-running
    tasks MUST expose cancellable progress.
@@ -95,7 +102,8 @@ innovation.
    PR. PR description MUST map changes to affected principles (checklist).
 2. TDD Flow: Write failing tests → implement → refactor with green tests.
 3. Reviews: Minimum 2 maintainer approvals for: destructive engine changes,
-   security-sensitive code, or performance-critical paths; otherwise ≥ 1.
+   security-sensitive code, tool discovery system changes, or performance-critical
+   paths; otherwise ≥ 1.
 4. Static Analysis: Lint (flake8/black), mypy, security scanning (bandit or
    equivalent) MUST pass before review request.
 5. Release Process: Semantic Versioning (SemVer). Automated CI builds assets
@@ -103,8 +111,9 @@ innovation.
 6. Documentation Gate: PR adding/changing user-visible behavior MUST update
    user guide + API reference before merge.
 7. Test Categories: Unit (fast, isolated), Integration (engines, DB, FS), GUI
-   smoke (launch + open representative tools), Performance (nightly), Security
-   (pattern scans). Critical regressions block release.
+   smoke (launch, open representative tools, validate tool class imports),
+   Performance (nightly), Security (pattern scans). Critical regressions block
+   release.
 8. Incident Handling: Production-impacting defect (data loss, security) MUST
    trigger post-mortem within 72h including root cause, principle impacts, and
    remediation tasks.
@@ -139,4 +148,4 @@ innovation.
 10. Dispute Resolution: If reviewers deadlock, escalate to maintainer vote; a
     simple majority decides within 5 business days.
 
-**Version**: 1.0.0 | **Ratified**: 2025-09-29 | **Last Amended**: 2025-09-29
+**Version**: 1.0.1 | **Ratified**: 2025-09-29 | **Last Amended**: 2025-10-18

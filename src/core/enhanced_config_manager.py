@@ -9,8 +9,8 @@ import json
 import logging
 import shutil
 from pathlib import Path
-from typing import Any, Dict, Optional, Union
 from threading import Lock
+from typing import Any, Dict, Optional, Union
 
 # Import the database manager
 try:
@@ -32,9 +32,7 @@ class EnhancedConfigManager:
         if cls._instance is None:
             with cls._lock:
                 if cls._instance is None:
-                    cls._instance = super(EnhancedConfigManager, cls).__new__(
-                        cls
-                    )
+                    cls._instance = super(EnhancedConfigManager, cls).__new__(cls)
                     cls._instance._initialized = False
         return cls._instance
 
@@ -77,9 +75,7 @@ class EnhancedConfigManager:
 
         # If database is not available, log fallback mode
         if not self.use_database:
-            self.logger.info(
-                "Enhanced ConfigManager with file support initialized"
-            )
+            self.logger.info("Enhanced ConfigManager with file support initialized")
 
         # Migration flag
         self._migrated_to_db = False
@@ -97,10 +93,7 @@ class EnhancedConfigManager:
                 ("system", "migrated_from_file"),
             )
 
-            if (
-                existing_migration
-                and existing_migration[0].get("value") == "true"
-            ):
+            if existing_migration and existing_migration[0].get("value") == "true":
                 self._migrated_to_db = True
                 self.logger.info("Configuration already migrated to database")
                 return
@@ -124,9 +117,7 @@ class EnhancedConfigManager:
             if self.config_file.exists():
                 with open(self.config_file, "r", encoding="utf-8") as f:
                     self.config = json.load(f)
-                self.logger.info(
-                    f"Configuration loaded from {self.config_file}"
-                )
+                self.logger.info(f"Configuration loaded from {self.config_file}")
             else:
                 self.config = {}
                 self._ensure_default_sections()
@@ -224,9 +215,7 @@ class EnhancedConfigManager:
 
     def _create_migration_backup(self):
         """Create backup before migration."""
-        backup_path = self.config_file.with_suffix(
-            ".json.pre_migration_backup"
-        )
+        backup_path = self.config_file.with_suffix(".json.pre_migration_backup")
         shutil.copy2(self.config_file, backup_path)
         self.logger.info(f"Created migration backup: {backup_path}")
         return backup_path
@@ -246,9 +235,7 @@ class EnhancedConfigManager:
         migration_count = 0
         for section, settings in file_config.items():
             if isinstance(settings, dict):
-                migration_count += self._migrate_section_settings(
-                    section, settings
-                )
+                migration_count += self._migrate_section_settings(section, settings)
         return migration_count
 
     def _migrate_section_settings(self, section, settings):
@@ -287,9 +274,7 @@ class EnhancedConfigManager:
 
     def _restore_migration_backup(self):
         """Restore backup if migration failed."""
-        backup_path = self.config_file.with_suffix(
-            ".json.pre_migration_backup"
-        )
+        backup_path = self.config_file.with_suffix(".json.pre_migration_backup")
         if backup_path.exists() and not self.config_file.exists():
             backup_path.rename(self.config_file)
             self.logger.info("Restored config file from backup")
@@ -374,9 +359,7 @@ class EnhancedConfigManager:
                 )
                 if result:
                     value_str, value_type = result[0]
-                    return self._convert_value_from_storage(
-                        value_str, value_type
-                    )
+                    return self._convert_value_from_storage(value_str, value_type)
                 return True  # Default value
             else:
                 # Direct config access without get_setting call
@@ -395,9 +378,7 @@ class EnhancedConfigManager:
     ) -> Any:
         """Get a configuration setting with recursion protection."""
         if not self._increment_recursion_depth():
-            self.logger.error(
-                f"Recursion limit exceeded getting {section}.{key}"
-            )
+            self.logger.error(f"Recursion limit exceeded getting {section}.{key}")
             return default
 
         try:
@@ -423,9 +404,7 @@ class EnhancedConfigManager:
 
     def _get_section_from_database(self, section: str, default: Any) -> Any:
         """Get entire section from database."""
-        query = (
-            "SELECT key, value, value_type FROM app_settings WHERE section = ?"
-        )
+        query = "SELECT key, value, value_type FROM app_settings WHERE section = ?"
         results = self.db_manager.execute_query(query, (section,))
         section_data = {}
         for row in results:
@@ -434,11 +413,11 @@ class EnhancedConfigManager:
             )
         return section_data if section_data else default
 
-    def _get_key_from_database(
-        self, section: str, key: str, default: Any
-    ) -> Any:
+    def _get_key_from_database(self, section: str, key: str, default: Any) -> Any:
         """Get specific key from database."""
-        query = "SELECT value, value_type FROM app_settings WHERE section = ? AND key = ?"
+        query = (
+            "SELECT value, value_type FROM app_settings WHERE section = ? AND key = ?"
+        )
         results = self.db_manager.execute_query(query, (section, key))
         if results:
             return self._convert_value_from_storage(
@@ -461,17 +440,13 @@ class EnhancedConfigManager:
     def set_setting(self, section: str, key: str, value: Any) -> bool:
         """Set a configuration setting with recursion protection."""
         if not self._increment_recursion_depth():
-            self.logger.error(
-                f"Recursion limit exceeded setting {section}.{key}"
-            )
+            self.logger.error(f"Recursion limit exceeded setting {section}.{key}")
             return False
 
         try:
             if self.use_database:
                 self._store_setting_in_database(section, key, value)
-                self.logger.debug(
-                    f"Set database setting {section}.{key} = {value}"
-                )
+                self.logger.debug(f"Set database setting {section}.{key} = {value}")
                 return True
             else:
                 # Fallback to file-based config
@@ -497,9 +472,7 @@ class EnhancedConfigManager:
     def remove_setting(self, section: str, key: str) -> bool:
         """Remove a configuration setting with recursion protection."""
         if not self._increment_recursion_depth():
-            self.logger.error(
-                f"Recursion limit exceeded removing {section}.{key}"
-            )
+            self.logger.error(f"Recursion limit exceeded removing {section}.{key}")
             return False
 
         try:

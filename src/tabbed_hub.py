@@ -27,12 +27,14 @@ Consolidated from:
 
 import os
 import sys
+from collections import deque
 from datetime import datetime
+from threading import Lock
 from typing import Any, Dict, List, Optional
 
 # Core PyQt5 imports with graceful fallback
 try:
-    from PyQt5.QtCore import QObject, Qt, pyqtSignal
+    from PyQt5.QtCore import QObject, Qt, pyqtSignal, pyqtSlot
     from PyQt5.QtGui import QFont, QIcon
     from PyQt5.QtWidgets import (
         QApplication,
@@ -194,6 +196,44 @@ class UtilityWindow(QMainWindow if PYQT5_AVAILABLE else object):
             event.ignore()
 
 
+if PYQT5_AVAILABLE:
+
+    class _HubValidatorNotifier:
+        """Adapter that forwards validator results to the RFU hub UI."""
+
+        def __init__(self, hub: "RFUHub") -> None:
+            self._hub = hub
+            self._logger = hub.logger
+
+        def push(
+            self,
+            *,
+            level: str,
+            message: str,
+            workflow: str,
+            details: Dict[str, object],
+        ) -> None:
+            display_message = f"[{workflow}] {message}"
+            if level == "critical":
+                self._logger.error(
+                    "Validator rejection: %s | details=%s",
+                    display_message,
+                    details,
+                )
+            elif level == "warning":
+                self._logger.warning(
+                    "Validator warning: %s | details=%s",
+                    display_message,
+                    details,
+                )
+            else:
+                self._logger.info("Validator info: %s", display_message)
+
+            self._hub._enqueue_validator_notification(
+                level, display_message, details
+            )
+
+
 class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
     """
     Richard's File Utilities Hub - Unified Main Application Interface
@@ -233,6 +273,10 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
             "disk": {"available": True, "allocated_to": None},
         }
 
+        self._validator_notification_queue = deque()
+        self._validator_notification_lock = Lock()
+        self._validator_notifier = None
+
         # Multi-Pane Explorer support (Phase 3.5 Integration)
         self.multi_pane_explorer = None
         self.current_hub_mode = None  # Will be set in _setup_gui
@@ -247,6 +291,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
         # Initialize GUI components (from simple_hub.py)
         self._setup_gui()
         self._setup_hub_integration()
+        self._setup_validator_notifications()
 
         self.logger.info("RFU Hub initialized successfully")
 
@@ -348,6 +393,12 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
                     stop:0 {LIGHT_BLUE}, stop:1 {PRIMARY_BLUE});
                 color: white;
             }}
+            QPushButton {{
+                min-height: 56px;
+                padding: 12px 18px;
+                font-family: '{SEGOE_UI_FONT}';
+                font-size: 12px;
+            }}
         """
         )
         main_layout.addWidget(self.tab_widget)
@@ -401,6 +452,126 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
             self.tool_progress_updated.connect(self._on_tool_progress_updated)
             self.tool_status_changed.connect(self._on_tool_status_changed)
             self.hub_event_broadcast.connect(self._on_hub_event_broadcast)
+
+    def _setup_validator_notifications(self) -> None:
+        """Register centralized validator notifications with the GUI hub."""
+        if not PYQT5_AVAILABLE:
+            return
+
+        try:
+            from rfu.hub import register_validator_notifier
+        except ImportError as exc:
+            self.logger.debug(
+                "Validator notifier registration skipped: %s", exc
+            )
+            return
+
+        self._validator_notifier = _HubValidatorNotifier(self)
+        register_validator_notifier(self._validator_notifier)
+
+    def _teardown_validator_notifications(self) -> None:
+        """Unregister the validator notifier when the hub closes."""
+        try:
+            from rfu.hub import unregister_validator_notifier
+        except ImportError:
+            return
+
+        if self._validator_notifier is not None:
+            unregister_validator_notifier(self._validator_notifier)
+            self._validator_notifier = None
+
+    def _enqueue_validator_notification(
+        self,
+        level: str,
+        message: str,
+        details: Dict[str, object],
+    ) -> None:
+        with self._validator_notification_lock:
+            self._validator_notification_queue.append((level, message, details))
+
+        if PYQT5_AVAILABLE:
+            QtCore.QMetaObject.invokeMethod(
+                self,
+                "_process_validator_notifications",
+                QtCore.Qt.QueuedConnection,
+            )
+
+    @pyqtSlot()
+    def _process_validator_notifications(self) -> None:
+        pending: List[tuple[str, str, Dict[str, object]]] = []
+        with self._validator_notification_lock:
+            while self._validator_notification_queue:
+                pending.append(self._validator_notification_queue.popleft())
+
+        for level, message, details in pending:
+            self._update_status_bar(message)
+            if not PYQT5_AVAILABLE:
+                continue
+
+            if level == "critical":
+                self._show_validator_message_box(
+                    QMessageBox.Critical,
+                    "File Validation Rejected",
+                    message,
+                    details,
+                )
+            elif level == "warning":
+                self._show_validator_message_box(
+                    QMessageBox.Warning,
+                    "File Validation Warning",
+                    message,
+                    details,
+                )
+
+    def _show_validator_message_box(
+        self,
+        icon: int,
+        title: str,
+        message: str,
+        details: Dict[str, object],
+    ) -> None:
+        if not PYQT5_AVAILABLE or not self.isVisible():
+            return
+
+        lines = [message, ""]
+        reason = details.get("reason")
+        if reason:
+            lines.append(f"Reason: {reason}")
+
+        detected = details.get("detected_type")
+        confidence = details.get("confidence")
+        if detected:
+            confidence_str = confidence or "unknown"
+            lines.append(
+                f"Detected type: {detected} (confidence {confidence_str})"
+            )
+
+        allowed = details.get("allowed_types")
+        if allowed:
+            lines.append(
+                "Allowed types: " + self._format_allowed_types(allowed)
+            )
+
+        text = "\n".join(lines).strip()
+
+        if icon == QMessageBox.Critical:
+            QMessageBox.critical(self, title, text)
+        elif icon == QMessageBox.Warning:
+            QMessageBox.warning(self, title, text)
+        else:
+            QMessageBox.information(self, title, text)
+
+    def _format_allowed_types(self, allowed: object) -> str:
+        if isinstance(allowed, (list, tuple, set)):
+            sequence = [str(item) for item in allowed]
+        else:
+            return str(allowed)
+
+        if len(sequence) > 8:
+            preview = ", ".join(sequence[:8])
+            return f"{preview}, …"
+
+        return ", ".join(sequence)
 
     def _create_interface_toggle_button(self, header_layout):
         """Create and configure the interface toggle button."""
@@ -1665,6 +1836,17 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
         except Exception as e:
             self._update_status_bar(f"Error opening Service Manager: {str(e)}")
             self.logger.error(f"Error opening Service Manager: {str(e)}")
+
+    def closeEvent(self, event):
+        """Ensure validator notifier is released before closing."""
+        self._teardown_validator_notifications()
+        if PYQT5_AVAILABLE:
+            super().closeEvent(event)
+        elif event is not None:
+            try:
+                event.accept()
+            except Exception:
+                pass
 
     # Log management methods
     def load_recent_logs(self):

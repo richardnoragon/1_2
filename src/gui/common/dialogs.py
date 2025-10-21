@@ -1,17 +1,18 @@
 """Common dialog utilities for the application."""
 
-from typing import Optional, Union, List, Tuple
 from pathlib import Path
-from PyQt5.QtWidgets import (
-    QMessageBox,
-    QFileDialog,
-    QDialog,
-    QWidget,
-    QInputDialog,
-)
-from PyQt5.QtCore import Qt
+from typing import List, Optional, Tuple, Union
 
-from core.error_handler import error_handler
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import (
+    QDialog,
+    QFileDialog,
+    QInputDialog,
+    QMessageBox,
+    QWidget,
+)
+
+DEFAULT_FILE_FILTER = "All Files (*.*)"
 
 
 def show_error_dialog(
@@ -80,7 +81,7 @@ def show_question_dialog(
 def get_open_file_name(
     caption: str,
     directory: Union[str, Path] = "",
-    file_filter: str = "All Files (*.*)",
+    file_filter: str = DEFAULT_FILE_FILTER,
     parent: Optional[QWidget] = None,
 ) -> Optional[Path]:
     """Get a file name for opening.
@@ -103,7 +104,7 @@ def get_open_file_name(
 def get_save_file_name(
     caption: str,
     directory: Union[str, Path] = "",
-    file_filter: str = "All Files (*.*)",
+    file_filter: str = DEFAULT_FILE_FILTER,
     parent: Optional[QWidget] = None,
 ) -> Optional[Path]:
     """Get a file name for saving.
@@ -150,7 +151,7 @@ def get_existing_directory(
 def get_open_file_names(
     caption: str,
     directory: Union[str, Path] = "",
-    file_filter: str = "All Files (*.*)",
+    file_filter: str = DEFAULT_FILE_FILTER,
     parent: Optional[QWidget] = None,
 ) -> List[Path]:
     """Get multiple file names for opening.
@@ -211,9 +212,7 @@ def get_item_input(
     Returns:
         Tuple of (selected_item, ok_pressed)
     """
-    return QInputDialog.getItem(
-        parent, title, prompt, items, current, editable
-    )
+    return QInputDialog.getItem(parent, title, prompt, items, current, editable)
 
 
 def get_int_input(
@@ -239,9 +238,7 @@ def get_int_input(
     Returns:
         Tuple of (entered_value, ok_pressed)
     """
-    return QInputDialog.getInt(
-        parent, title, prompt, default, min_val, max_val, step
-    )
+    return QInputDialog.getInt(parent, title, prompt, default, min_val, max_val, step)
 
 
 def get_double_input(

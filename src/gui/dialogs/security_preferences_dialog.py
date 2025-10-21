@@ -1150,10 +1150,10 @@ try:
             try:
                 # Lazy load migration manager
                 if self._migration_manager is None:
-                    from src.core_rfu.database_manager import (
+                    from src.core.database_manager import (
                         get_database_manager,
                     )
-                    from src.core_rfu.migrations.migration_manager import (
+                    from src.core.migrations.migration_manager import (
                         DatabaseMigrationManager,
                     )
 
@@ -1176,7 +1176,7 @@ try:
             try:
                 # Lazy load theme encryption
                 if self._theme_encryption is None:
-                    from src.core_rfu.theme_security.theme_encryption import (
+                    from src.core.theme_security.theme_encryption import (
                         ThemeDataEncryption,
                     )
 

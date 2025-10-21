@@ -1,8 +1,149 @@
 {
   "session_info": {
-    "exit_status": 3,
-    "completion_time": "2025-10-16T18:49:42.471613",
-    "total_tests": 0
+    "exit_status": 0,
+    "completion_time": "2025-10-20T16:57:09.891766",
+    "total_tests": 28
   },
-  "test_details": []
+  "test_details": [
+    {
+      "name": "test_index_file_blocks_high_risk_executable",
+      "file": "test_content_index_manager_integration.py",
+      "timestamp": "2025-10-20T16:57:09.594994"
+    },
+    {
+      "name": "test_index_file_warns_on_policy_mismatch",
+      "file": "test_content_index_manager_integration.py",
+      "timestamp": "2025-10-20T16:57:09.640961"
+    },
+    {
+      "name": "test_fixture_file_exists_with_expected_header[sample.docx]",
+      "file": "test_fixtures.py",
+      "timestamp": "2025-10-20T16:57:09.646239"
+    },
+    {
+      "name": "test_fixture_file_exists_with_expected_header[sample.exe]",
+      "file": "test_fixtures.py",
+      "timestamp": "2025-10-20T16:57:09.652086"
+    },
+    {
+      "name": "test_fixture_file_exists_with_expected_header[sample.pdf]",
+      "file": "test_fixtures.py",
+      "timestamp": "2025-10-20T16:57:09.657756"
+    },
+    {
+      "name": "test_fixture_file_exists_with_expected_header[sample.png]",
+      "file": "test_fixtures.py",
+      "timestamp": "2025-10-20T16:57:09.663048"
+    },
+    {
+      "name": "test_fixture_file_exists_with_expected_header[sample.zip]",
+      "file": "test_fixtures.py",
+      "timestamp": "2025-10-20T16:57:09.670911"
+    },
+    {
+      "name": "test_docx_fixture_contains_office_structure",
+      "file": "test_fixtures.py",
+      "timestamp": "2025-10-20T16:57:09.677831"
+    },
+    {
+      "name": "test_zip_fixture_identified_as_zip_archive",
+      "file": "test_fixtures.py",
+      "timestamp": "2025-10-20T16:57:09.683819"
+    },
+    {
+      "name": "test_validate_accepts_allowed_type_in_reject_mode",
+      "file": "test_policy.py",
+      "timestamp": "2025-10-20T16:57:09.690357"
+    },
+    {
+      "name": "test_validate_rejects_high_risk_mismatch",
+      "file": "test_policy.py",
+      "timestamp": "2025-10-20T16:57:09.697776"
+    },
+    {
+      "name": "test_validate_warn_mode_does_not_hard_fail_low_risk_mismatch",
+      "file": "test_policy.py",
+      "timestamp": "2025-10-20T16:57:09.706344"
+    },
+    {
+      "name": "test_validate_auto_mode_escalates_high_risk",
+      "file": "test_policy.py",
+      "timestamp": "2025-10-20T16:57:09.713497"
+    },
+    {
+      "name": "test_validate_auto_mode_downgrades_low_risk_mismatch",
+      "file": "test_policy.py",
+      "timestamp": "2025-10-20T16:57:09.722135"
+    },
+    {
+      "name": "test_validate_accepts_when_policy_allowlist_empty",
+      "file": "test_policy.py",
+      "timestamp": "2025-10-20T16:57:09.727405"
+    },
+    {
+      "name": "test_validate_supports_extension_allowlist_variants",
+      "file": "test_policy.py",
+      "timestamp": "2025-10-20T16:57:09.734581"
+    },
+    {
+      "name": "test_validate_raises_for_invalid_mode",
+      "file": "test_policy.py",
+      "timestamp": "2025-10-20T16:57:09.740377"
+    },
+    {
+      "name": "test_signature_detection_returns_high_confidence[sample.pdf-pdf-.pdf]",
+      "file": "test_signatures.py",
+      "timestamp": "2025-10-20T16:57:09.745692"
+    },
+    {
+      "name": "test_signature_detection_returns_high_confidence[sample.png-png-.png]",
+      "file": "test_signatures.py",
+      "timestamp": "2025-10-20T16:57:09.754082"
+    },
+    {
+      "name": "test_signature_detection_returns_high_confidence[sample.zip-zip-.zip]",
+      "file": "test_signatures.py",
+      "timestamp": "2025-10-20T16:57:09.764551"
+    },
+    {
+      "name": "test_signature_detection_returns_high_confidence[sample.docx-docx-.docx]",
+      "file": "test_signatures.py",
+      "timestamp": "2025-10-20T16:57:09.774421"
+    },
+    {
+      "name": "test_signature_detection_returns_high_confidence[sample.exe-pe-.exe]",
+      "file": "test_signatures.py",
+      "timestamp": "2025-10-20T16:57:09.783122"
+    },
+    {
+      "name": "test_detect_file_type_returns_structured_dataclass",
+      "file": "test_signatures.py",
+      "timestamp": "2025-10-20T16:57:09.795163"
+    },
+    {
+      "name": "test_detect_file_type_uses_pdf_token_heuristic",
+      "file": "test_signatures.py",
+      "timestamp": "2025-10-20T16:57:09.811748"
+    },
+    {
+      "name": "test_detect_file_type_marks_unknown_with_low_confidence",
+      "file": "test_signatures.py",
+      "timestamp": "2025-10-20T16:57:09.830119"
+    },
+    {
+      "name": "test_detect_file_type_refines_zip_container",
+      "file": "test_signatures.py",
+      "timestamp": "2025-10-20T16:57:09.845387"
+    },
+    {
+      "name": "test_detect_file_type_handles_plain_text",
+      "file": "test_signatures.py",
+      "timestamp": "2025-10-20T16:57:09.859280"
+    },
+    {
+      "name": "test_detect_file_type_reports_zip_container_metadata",
+      "file": "test_signatures.py",
+      "timestamp": "2025-10-20T16:57:09.866104"
+    }
+  ]
 }

@@ -2,7 +2,14 @@ import os
 import sys
 
 import pytest
-from PyQt5.QtWidgets import QApplication
+
+try:
+    from PyQt5.QtWidgets import QApplication  # type: ignore
+except ModuleNotFoundError:  # pragma: no cover - fallback for headless envs
+    from tests._stubs.pyqt5 import install_pyqt5_stubs
+
+    install_pyqt5_stubs()
+    from PyQt5.QtWidgets import QApplication  # type: ignore
 
 # Add the project root to Python path
 test_dir = os.path.dirname(os.path.abspath(__file__))

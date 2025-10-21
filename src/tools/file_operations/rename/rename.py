@@ -12,6 +12,7 @@ import sys
 
 try:
     from PyQt5.QtWidgets import (
+        QAction,
         QApplication,
         QButtonGroup,
         QFileDialog,
@@ -54,6 +55,49 @@ except ImportError:
             self.central_widget = QWidget()
             self.setCentralWidget(self.central_widget)
             self.main_layout = QVBoxLayout(self.central_widget)
+
+        def ensure_exit_action_reference(self):
+            """Minimal exit action helper for standalone fallback."""
+            menubar = self.menuBar() if hasattr(self, "menuBar") else None
+            if menubar is None:
+                return None
+
+            exit_action = self._find_existing_exit_action(menubar)
+            if exit_action is None:
+                exit_action = self._create_exit_action(menubar)
+
+            if exit_action is None:
+                return None
+
+            if not hasattr(self, "actionExit"):
+                setattr(self, "actionExit", exit_action)
+            if not hasattr(self, "actionexit"):
+                setattr(self, "actionexit", exit_action)
+            return exit_action
+
+        def _find_existing_exit_action(self, menubar):
+            for action in menubar.actions():
+                menu = action.menu()
+                if menu is None:
+                    continue
+                for child in menu.actions():
+                    normalized = self._normalize_action_text(child.text())
+                    if normalized in {"exit", "quit"}:
+                        return child
+            return None
+
+        def _create_exit_action(self, menubar):
+            file_menu = menubar.addMenu("&File")
+            exit_action = QAction("E&xit", self)
+            exit_action.setShortcut("Ctrl+Q")
+            exit_action.setStatusTip("Close this tool")
+            exit_action.triggered.connect(self.close)
+            file_menu.addAction(exit_action)
+            return exit_action
+
+        @staticmethod
+        def _normalize_action_text(label):
+            return (label or "").replace("&", "").strip().lower()
 
 
 NO_FILES_SELECTED_MESSAGE = "No files selected for renaming."
