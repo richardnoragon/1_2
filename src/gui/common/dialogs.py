@@ -125,16 +125,19 @@ def get_save_file_name(
 
 
 def get_existing_directory(
-    caption: str,
-    directory: Union[str, Path] = "",
     parent: Optional[QWidget] = None,
+    caption: str = "Select Directory",
+    directory: Union[str, Path] = "",
+    options: QFileDialog.Options = QFileDialog.ShowDirsOnly
+    | QFileDialog.DontResolveSymlinks,
 ) -> Optional[Path]:
     """Get an existing directory path.
 
     Args:
+        parent: Parent widget for the dialog
         caption: Dialog title
         directory: Starting directory
-        parent: Parent widget
+        options: QFile dialog options
 
     Returns:
         Selected directory path or None if cancelled
@@ -143,7 +146,7 @@ def get_existing_directory(
         parent,
         caption,
         str(directory),
-        QFileDialog.ShowDirsOnly | QFileDialog.DontResolveSymlinks,
+        options,
     )
     return Path(dir_name) if dir_name else None
 
