@@ -1,5 +1,6 @@
 """Standardized base window class for all GUI utilities."""
 
+import logging
 import os
 from typing import Optional
 
@@ -22,6 +23,21 @@ from PyQt5.QtWidgets import (
 from gui.menu_manager import MenuManager
 from gui.themes import Colors, Dimensions, ThemeManager
 
+try:  # pragma: no cover - fallback for standalone execution
+    from src.core.tool_interface_validator import (  # type: ignore
+        ToolInterfaceError,
+        validate_tool_class,
+    )
+except ImportError:  # pragma: no cover - optional fallback path
+    try:
+        from core.tool_interface_validator import (  # type: ignore
+            ToolInterfaceError,
+            validate_tool_class,
+        )
+    except ImportError:  # pragma: no cover - validation unavailable
+        ToolInterfaceError = None  # type: ignore
+        validate_tool_class = None  # type: ignore
+
 
 class StandardWindow(QMainWindow):
     """Standardized main window for utilities."""
@@ -43,6 +59,8 @@ class StandardWindow(QMainWindow):
         if self.enable_menu:
             self.menu_manager = MenuManager(self)
 
+        self._validate_tool_interface_contract()
+
         self._setup_window()
         self._create_central_widget()
 
@@ -54,6 +72,18 @@ class StandardWindow(QMainWindow):
         self._apply_theme()
         if self.enable_menu:
             self.ensure_exit_action_reference()
+
+    def _validate_tool_interface_contract(self) -> None:
+        """Validate required interface attributes before setup."""
+
+        if validate_tool_class is None:
+            return
+
+        try:
+            validate_tool_class(self.__class__)
+        except ToolInterfaceError as exc:
+            logging.getLogger(__name__).error("Tool validation failed: %s", exc)
+            raise
 
     def _setup_window(self):
         """Setup basic window properties."""

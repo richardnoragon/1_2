@@ -25,7 +25,7 @@ from urllib.parse import urlparse
 
 # Import centralized logging manager
 try:
-    from src.core_rfu.log_manager import LogManager
+    from src.core.log_manager import LogManager
 
     LOGGING_AVAILABLE = True
 except ImportError:

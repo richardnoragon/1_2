@@ -26,7 +26,7 @@ sys.path.insert(0, os.path.join(project_root, "scripts", "maintenance"))
 sys.path.insert(0, os.path.join(project_root, "scripts", "development", "demos"))
 
 # Import constants for string literals
-from src.core_rfu.constants import (
+from src.core.constants import (
     APP_NAME,
     IMPORT_ERROR,
     JSON_FILES_FILTER,
@@ -2707,11 +2707,49 @@ try:
             )
 
         def show_main_preferences(self):
-            QMessageBox.information(
-                self,
-                "Preferences",
-                "Main preferences dialog would be shown here.",
-            )
+            try:
+                from PyQt5.QtWidgets import QDialog
+
+                from src.gui.settings_dialog import SettingsDialog
+            except ImportError as exc:
+                QMessageBox.critical(
+                    self,
+                    "Preferences Error",
+                    f"Unable to load the preferences dialog.\n{exc}",
+                )
+                self.logger.error(
+                    "Failed to import SettingsDialog for main preferences: %s",
+                    exc,
+                    exc_info=True,
+                )
+                return
+
+            try:
+                dialog = SettingsDialog(self)
+                result = dialog.exec_()
+                if result == QDialog.Accepted:
+                    self.logger.info("Main preferences saved successfully")
+                    try:
+                        self.statusBar().showMessage(
+                            "Preferences updated",
+                            4000,
+                        )
+                    except Exception:
+                        # Status bar may be unavailable in some interface modes
+                        pass
+                else:
+                    self.logger.debug("Main preferences dialog closed without saving")
+            except Exception as exc:
+                QMessageBox.critical(
+                    self,
+                    "Preferences Error",
+                    f"An error occurred while opening preferences.\n{exc}",
+                )
+                self.logger.error(
+                    "Error displaying main preferences dialog: %s",
+                    exc,
+                    exc_info=True,
+                )
 
         def refresh_tool_list(self):
             if hasattr(self, "tab_widget") and self.tab_widget is not None:
@@ -2722,7 +2760,7 @@ try:
                 )
             else:
                 message = (
-                    "Tool list refresh functionality would be " "implemented here."
+                    "Tool list refresh functionality would be implemented " "here."
                 )
 
             QMessageBox.information(self, "Refresh", message)

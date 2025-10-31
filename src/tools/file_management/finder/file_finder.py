@@ -289,7 +289,9 @@ class FileFinderWindow(BaseWindow):
         - Sets the directory path in the line edit field
         """
         # Open a dialog to select a directory
-        dir_path = get_existing_directory(self, "Select Directory")
+        dir_path = get_existing_directory(
+            self, "Select Directory", directory=self.directory
+        )
         # Display the selected directory in window title and line edit
         if dir_path:
             self.directory = str(dir_path)

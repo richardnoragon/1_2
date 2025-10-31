@@ -1,7 +1,7 @@
-"""Compatibility package mapping legacy ``core`` imports to ``src.core_rfu``.
+"""Compatibility package mapping legacy ``core`` imports to ``src.core``.
 
 This module keeps legacy import paths working after the core modules were
-consolidated under ``src.core_rfu``. It mirrors the new package so existing
+consolidated under ``src.core``. It mirrors the canonical package so existing
 code can continue using ``import core`` style imports without modification.
 """
 
@@ -12,10 +12,10 @@ import sys
 from types import ModuleType
 from typing import Any
 
-_core_pkg = importlib.import_module("src.core_rfu")
+_core_pkg = importlib.import_module("src.core")
 
 # Share the submodule search locations so ``core.*`` resolves to the
-# consolidated implementation under ``src.core_rfu``.
+# consolidated implementation under ``src.core``.
 __path__ = list(getattr(_core_pkg, "__path__", []))
 
 # Expose public attributes from the consolidated package.
@@ -25,7 +25,7 @@ if hasattr(_core_pkg, "__all__"):
 
 
 def __getattr__(name: str) -> Any:
-    """Delegate attribute access to ``src.core_rfu``."""
+    """Delegate attribute access to ``src.core``."""
     return getattr(_core_pkg, name)
 
 
@@ -39,7 +39,7 @@ def _ensure_submodule(name: str) -> ModuleType:
     if full_name in sys.modules:
         return sys.modules[full_name]  # pragma: no cover
 
-    target = importlib.import_module(f"src.core_rfu.{name}")
+    target = importlib.import_module(f"src.core.{name}")
     sys.modules[full_name] = target
     return target
 
@@ -49,7 +49,7 @@ def __getattr_submodule(name: str) -> ModuleType:
 
 
 # Register a finder so ``import core.foo`` transparently resolves to
-# ``src.core_rfu.foo``. Python automatically handles this via ``__path__``
+# ``src.core.foo``. Python automatically handles this via ``__path__``
 # for actual files, but we also eagerly cache known modules used by the suite.
 for _submodule in [
     "config_manager",

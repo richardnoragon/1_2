@@ -7,7 +7,7 @@ import subprocess
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
-from src.core_rfu.error_handler import error_handler
+from src.core.error_handler import error_handler
 
 from ....core.platform_detector import get_platform_detector
 

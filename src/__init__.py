@@ -1,24 +1,20 @@
 ﻿"""Richard's File Utilities - Source Code Package."""
 
-import importlib
 import sys
 from pathlib import Path
-from typing import Any, Callable, Dict
+from typing import Any, Dict
 
 # Ensure the src directory is discoverable
 src_dir = Path(__file__).parent
 if str(src_dir) not in sys.path:
     sys.path.insert(0, str(src_dir))
 
-# Provide backward-compatible alias so `src.core` resolves to `core_rfu`
-try:
-    core_pkg = importlib.import_module("src.core_rfu")
-    sys.modules.setdefault("src.core", core_pkg)
-except Exception as exc:  # pragma: no cover - defensive fallback
-    print(f"Warning: core consolidation alias failed: {exc}")
-
-from src.core_rfu.constants import APP_NAME, APP_ORGANIZATION, APP_VERSION
-from src.core_rfu.error_handler import (
+from src.core.constants import (  # noqa: E402
+    APP_NAME,
+    APP_ORGANIZATION,
+    APP_VERSION,
+)
+from src.core.error_handler import (  # noqa: E402
     ErrorHandler,
     error_handler,
     get_error_handler,

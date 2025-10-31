@@ -1,189 +1,74 @@
-# Richard's File Utilities - Enterprise Dependencies
-# Manufacturing/Energy Fortune 500 Enterprise Requirements
-# ISO 27001 + NERC CIP Compliance Ready
-# Version: 3.1.0-enterprise
-# Last Updated: 2025-09-27
-
-# ========================================
-# CORE ENTERPRISE FRAMEWORK
-# ========================================
-
-# GUI Framework - Enterprise Grade PyQt5
-PyQt5==5.15.11                            # Primary GUI framework (LTS)
-PyQt5-Qt5==5.15.2                         # Qt5 binaries (stable)
-PyQt5-sip==12.17.0                        # SIP bindings (secure)
-
-# ========================================
-# SECURITY & CRYPTOGRAPHY (ISO 27001)
-# ========================================
-
-# Enterprise Cryptography Stack
-cryptography==44.0.2                      # FIPS 140-2 compliant encryption
-pyOpenSSL==25.0.0                         # SSL/TLS enterprise support
-pycryptodomex==3.22.0                     # Additional crypto algorithms
-pyAesCrypt==6.1.1                         # AES file encryption
-
-# ========================================
-# TESTING FRAMEWORK (95% COVERAGE MANDATORY)
-# ========================================
-
-# Core Testing Infrastructure
-pytest==8.3.5                             # Primary testing framework
-pytest-qt==4.4.0                          # PyQt5 testing support
-pytest-cov==6.1.0                         # Coverage reporting
-pytest-html==4.1.1                        # HTML test reports
-pytest-mock==3.14.0                       # Mocking framework
-pytest-asyncio==0.26.0                    # Async testing
-pytest-benchmark==4.0.0                   # Performance benchmarking
-pytest-timeout==2.3.1                     # Test timeout protection
-pytest-xdist==3.6.0                       # Parallel execution
-pytest-randomly==3.16.0                   # Test randomization
-
-# ========================================
-# DATA PROCESSING & ANALYSIS
-# ========================================
-
-# Enterprise Data Handling
-pandas==2.2.3                             # Data analysis framework
-numpy==2.2.4                              # Numerical computing
-openpyxl==3.1.5                           # Excel file processing
-python-docx==1.1.2                        # Word document processing
-
-# ========================================
-# FILE & MEDIA PROCESSING
-# ========================================
-
-# Image and Media Processing
-Pillow==11.1.0                            # Image processing
-piexif==1.1.3                             # EXIF metadata handling
-opencv-python-headless==4.11.0.86         # Computer vision (headless)
-mutagen==1.47.0                           # Audio metadata
-
-# PDF Processing Suite
-PyMuPDF==1.25.4                           # PDF manipulation
-PyPDF2==3.0.1                             # PDF processing
-PyPDF4==1.27.0                            # Enhanced PDF support
-pikepdf==9.5.2                            # Advanced PDF operations
-
-# ========================================
-# COMPRESSION & ARCHIVES
-# ========================================
-
-# Enterprise Archive Support
-py7zr==1.0.0                              # 7-Zip format
-pyzstd==0.16.2                            # Zstandard compression
-multivolumefile==0.2.3                    # Multi-volume archives
-Brotli==1.1.0                             # Brotli compression
-inflate64==1.0.1                          # Enhanced ZIP support
-
-# ========================================
-# SYSTEM INTEGRATION & MONITORING
-# ========================================
-
-# System Monitoring and Management
-psutil==7.0.0                             # System monitoring
-watchdog==6.0.0                           # File system monitoring
-Send2Trash==1.8.3                         # Safe file deletion
-python-magic==0.4.27                      # File type detection
-
-# ========================================
-# XML & WEB PROCESSING
-# ========================================
-
-# XML and Web Processing
-lxml==5.3.1                               # XML processing
-beautifulsoup4==4.12.3                    # HTML parsing
-requests==2.32.3                          # HTTP requests
-urllib3==2.2.3                            # URL handling
-
-# ========================================
-# DEVELOPMENT TOOLS (ENTERPRISE QUALITY)
-# ========================================
-
-# Code Quality Stack
-black==25.1.0                             # Code formatting
-isort==5.13.2                             # Import organization
+PyQt5==5.15.11                            # PrimaryGUIframework (LTS)
+PyQt5-Qt5==5.15.2                         # Qt5binaries (stable)
+PyQt5-sip==12.17.0                        # SIPbindings (secure)
+cryptography==44.0.2                      # FIPS140-2compliantencryption
+pyOpenSSL==25.0.0                         # SSL/TLSenterprisesupport
+pycryptodomex==3.22.0                     # Additionalcryptoalgorithms
+pyAesCrypt==6.1.1                         # AESfileencryption
+pytest==8.3.5                             # Primarytestingframework
+pytest-qt==4.4.0                          # PyQt5testingsupport
+pytest-cov==6.1.0                         # Coveragereporting
+pytest-html==4.1.1                        # HTMLtestreports
+pytest-mock==3.14.0                       # Mockingframework
+pytest-asyncio==0.26.0                    # Asynctesting
+pytest-benchmark==4.0.0                   # Performancebenchmarking
+pytest-timeout==2.3.1                     # Testtimeoutprotection
+pytest-xdist==3.6.0                       # Parallelexecution
+pytest-randomly==3.16.0                   # Testrandomization
+pandas==2.2.3                             # Dataanalysisframework
+numpy==2.2.4                              # Numericalcomputing
+openpyxl==3.1.5                           # Excelfileprocessing
+python-docx==1.1.2                        # Worddocumentprocessing
+Pillow==11.1.0                            # Imageprocessing
+piexif==1.1.3                             # EXIFmetadatahandling
+opencv-python-headless==4.11.0.86         # Computervision (headless)
+mutagen==1.47.0                           # Audiometadata
+PyMuPDF==1.25.4                           # PDFmanipulation
+PyPDF2==3.0.1                             # PDFprocessing
+PyPDF4==1.27.0                            # EnhancedPDFsupport
+pikepdf==9.5.2                            # AdvancedPDFoperations
+py7zr==1.0.0                              # 7-Zipformat
+pyzstd==0.16.2                            # Zstandardcompression
+multivolumefile==0.2.3                    # Multi-volumearchives
+Brotli==1.1.0                             # Brotlicompression
+inflate64==1.0.1                          # EnhancedZIPsupport
+psutil==7.0.0                             # Systemmonitoring
+watchdog==6.0.0                           # Filesystemmonitoring
+Send2Trash==1.8.3                         # Safefiledeletion
+python-magic==0.4.27                      # Filetypedetection
+lxml==5.3.1                               # XMLprocessing
+beautifulsoup4==4.12.3                    # HTMLparsing
+requests==2.32.3                          # HTTPrequests
+urllib3==2.2.3                            # URLhandling
+black==25.1.0                             # Codeformatting
+isort==5.13.2                             # Importorganization
 flake8==7.2.0                             # Linting
-mypy==1.15.0                              # Static type checking
-pre-commit==4.0.1                         # Pre-commit hooks
-
-# Documentation Generation
-sphinx==8.1.3                             # Documentation system
-sphinx-rtd-theme==3.0.2                   # Enterprise documentation theme
-
-# ========================================
-# PERFORMANCE & MONITORING
-# ========================================
-
-# Performance Optimization
-memory-profiler==0.61.0                   # Memory profiling
-line-profiler==4.2.0                      # Line-by-line profiling
-cProfile==1.0.0                           # Performance profiling
-
-# ========================================
-# CLI & UTILITIES
-# ========================================
-
-# Command Line and Utilities
-fire==0.7.0                               # CLI interface generation
-termcolor==2.5.0                          # Colored terminal output
-click==8.1.8                              # Command line interface
-colorama==0.4.6                           # Cross-platform colored output
-
-# ========================================
-# TESTING EXTENSIONS & MOCKS
-# ========================================
-
-# Advanced Testing Tools
-pytest-json-report==1.5.0                 # JSON test reporting
-pytest-metadata==3.1.1                    # Test metadata
-pytest-sugar==1.0.0                       # Enhanced test output
-factory-boy==3.3.1                        # Test data generation
-Faker==33.1.0                             # Fake data generation
-
-# GUI Testing Extensions
-PyVirtualDisplay==3.0                     # Virtual display for headless testing
-
-# ========================================
-# NETWORK & COMMUNICATION
-# ========================================
-
-# Network Tools
-requests==2.32.3                          # HTTP client
-paramiko==3.5.0                           # SSH client
-netifaces==0.11.0                         # Network interface info
-
-# ========================================
-# TEXT PROCESSING & NLP
-# ========================================
-
-# Text Processing
-chardet==5.2.0                            # Character encoding detection
-fuzzywuzzy==0.18.0                        # Fuzzy string matching
-python-Levenshtein==0.26.0                # String distance algorithms
-
-# ========================================
-# ENTERPRISE PLATFORM COMPATIBILITY
-# ========================================
-
-# Windows-specific (Manufacturing/Energy Windows environments)
-pywin32==308; sys_platform == "win32"     # Windows API access
-wmi==1.5.1; sys_platform == "win32"       # Windows system management
-
-# Linux-specific (Industrial Linux systems)
-python-magic-bin==0.4.14; sys_platform == "linux"  # Linux file type detection
-
-# macOS-specific (Engineering workstations)
-pyobjc-framework-Cocoa==10.3.1; sys_platform == "darwin"  # macOS integration
-
-# ========================================
-# MANUFACTURING/ENERGY COMPLIANCE NOTES
-# ========================================
-# - All dependencies verified for ISO 27001 compliance
-# - NERC CIP cybersecurity framework compatibility
-# - Industrial control system integration ready
-# - Air-gapped deployment capability
-# - Enterprise security scanning completed
-# - Performance validated for industrial datasets
-# - 99.99% uptime SLA capability
-# - Regulatory audit trail compliance
+mypy==1.15.0                              # Statictypechecking
+pre-commit==4.0.1                         # Pre-commithooks
+sphinx==8.1.3                             # Documentationsystem
+sphinx-rtd-theme==3.0.2                   # Enterprisedocumentationtheme
+memory-profiler==0.61.0                   # Memoryprofiling
+line-profiler==4.2.0                      # Line-by-lineprofiling
+cProfile==1.0.0                           # Performanceprofiling
+fire==0.7.0                               # CLIinterfacegeneration
+termcolor==2.5.0                          # Coloredterminaloutput
+click==8.1.8                              # Commandlineinterface
+colorama==0.4.6                           # Cross-platformcoloredoutput
+speckit==1.0.1                            # Spectrumkitforsignalprocessing
+control==0.10.2                           # Controlsystemslibrary
+pytest-json-report==1.5.0                 # JSONtestreporting
+pytest-metadata==3.1.1                    # Testmetadata
+pytest-sugar==1.0.0                       # Enhancedtestoutput
+factory-boy==3.3.1                        # Testdatageneration
+Faker==33.1.0                             # Fakedatageneration
+PyVirtualDisplay==3.0                     # Virtualdisplayforheadlesstesting
+requests==2.32.3                          # HTTPclient
+paramiko==3.5.0                           # SSHclient
+netifaces==0.11.0                         # Networkinterfaceinfo
+chardet==5.2.0                            # Characterencodingdetection
+fuzzywuzzy==0.18.0                        # Fuzzystringmatching
+python-Levenshtein==0.26.0                # Stringdistancealgorithms
+pywin32==308; sys_platform=="win32"     # WindowsAPIaccess
+wmi==1.5.1; sys_platform=="win32"       # Windowssystemmanagement
+python-magic-bin==0.4.14; sys_platform=="linux"  # Linuxfiletypedetection
+pyobjc-framework-Cocoa==10.3.1; sys_platform=="darwin"  # macOSintegration

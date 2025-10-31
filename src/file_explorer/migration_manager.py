@@ -29,9 +29,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 # Add project root to path
-project_root = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), "../../..")
-)
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
 sys.path.insert(0, project_root)
 
 
@@ -89,9 +87,7 @@ class MigrationManager:
         Returns:
             Migration metadata and status
         """
-        migration_id = (
-            f"{datetime.now().strftime('%Y%m%d_%H%M%S')}_{migration_name}"
-        )
+        migration_id = f"{datetime.now().strftime('%Y%m%d_%H%M%S')}_{migration_name}"
 
         migration_metadata = {
             "migration_id": migration_id,
@@ -113,9 +109,7 @@ class MigrationManager:
                 migration_metadata["error"] = backup_result["error"]
                 return migration_metadata
 
-            migration_metadata["backup_location"] = backup_result[
-                "backup_path"
-            ]
+            migration_metadata["backup_location"] = backup_result["backup_path"]
             migration_metadata["rollback_available"] = True
 
             # Save migration metadata
@@ -130,9 +124,7 @@ class MigrationManager:
             return migration_metadata
 
         except Exception as e:
-            self.logger.error(
-                f"Failed to create migration {migration_id}: {e}"
-            )
+            self.logger.error(f"Failed to create migration {migration_id}: {e}")
             migration_metadata["status"] = "creation_failed"
             migration_metadata["error"] = str(e)
             return migration_metadata
@@ -183,15 +175,11 @@ class MigrationManager:
                 migration_metadata["execution_results"] = result
 
                 # Validate migration
-                validation_result = self._validate_migration(
-                    migration_metadata
-                )
+                validation_result = self._validate_migration(migration_metadata)
                 migration_metadata["validation_results"] = validation_result
 
                 if not validation_result["valid"]:
-                    self.logger.warning(
-                        f"Migration {migration_id} validation failed"
-                    )
+                    self.logger.warning(f"Migration {migration_id} validation failed")
                     # Offer rollback option for failed validation
                     result["validation_failed"] = True
                     result["rollback_recommended"] = True
@@ -201,9 +189,7 @@ class MigrationManager:
                     json.dump(migration_metadata, f, indent=2)
 
                 self.migration_history.append(migration_metadata)
-                self.logger.info(
-                    f"Migration {migration_id} completed successfully"
-                )
+                self.logger.info(f"Migration {migration_id} completed successfully")
 
             else:
                 # Migration failed - perform automatic rollback
@@ -217,9 +203,7 @@ class MigrationManager:
             return result
 
         except Exception as e:
-            self.logger.error(
-                f"Critical error executing migration {migration_id}: {e}"
-            )
+            self.logger.error(f"Critical error executing migration {migration_id}: {e}")
             # Attempt emergency rollback
             try:
                 rollback_result = self.rollback_migration(migration_id)
@@ -270,31 +254,23 @@ class MigrationManager:
 
             # Perform rollback based on migration type
             migration_type = migration_metadata["migration_type"]
-            rollback_result = self._perform_rollback(
-                migration_type, backup_location
-            )
+            rollback_result = self._perform_rollback(migration_type, backup_location)
 
             if rollback_result["success"]:
                 # Update migration status
                 migration_metadata["status"] = "rolled_back"
-                migration_metadata["rolled_back_at"] = (
-                    datetime.now().isoformat()
-                )
+                migration_metadata["rolled_back_at"] = datetime.now().isoformat()
                 migration_metadata["rollback_results"] = rollback_result
 
                 with open(migration_file, "w") as f:
                     json.dump(migration_metadata, f, indent=2)
 
-                self.logger.info(
-                    f"Migration {migration_id} rolled back successfully"
-                )
+                self.logger.info(f"Migration {migration_id} rolled back successfully")
 
             return rollback_result
 
         except Exception as e:
-            self.logger.error(
-                f"Failed to rollback migration {migration_id}: {e}"
-            )
+            self.logger.error(f"Failed to rollback migration {migration_id}: {e}")
             return {"success": False, "error": str(e)}
 
     def list_migrations(self) -> List[Dict[str, Any]]:
@@ -307,17 +283,13 @@ class MigrationManager:
                     migration_data = json.load(f)
                 migrations.append(migration_data)
             except Exception as e:
-                self.logger.warning(
-                    f"Failed to load migration {migration_file}: {e}"
-                )
+                self.logger.warning(f"Failed to load migration {migration_file}: {e}")
 
         # Sort by creation date
         migrations.sort(key=lambda x: x.get("created_at", ""))
         return migrations
 
-    def get_migration_status(
-        self, migration_id: str
-    ) -> Optional[Dict[str, Any]]:
+    def get_migration_status(self, migration_id: str) -> Optional[Dict[str, Any]]:
         """Get detailed status of a specific migration."""
         migration_file = self.migration_dir / f"{migration_id}.json"
         if not migration_file.exists():
@@ -327,9 +299,7 @@ class MigrationManager:
             with open(migration_file, "r") as f:
                 return json.load(f)
         except Exception as e:
-            self.logger.error(
-                f"Failed to load migration status {migration_id}: {e}"
-            )
+            self.logger.error(f"Failed to load migration status {migration_id}: {e}")
             return None
 
     def cleanup_old_migrations(self, keep_days: int = 30) -> Dict[str, Any]:
@@ -373,9 +343,7 @@ class MigrationManager:
             "backup_directories": cleaned_backups,
         }
 
-    def _create_backup(
-        self, migration_id: str, migration_type: str
-    ) -> Dict[str, Any]:
+    def _create_backup(self, migration_id: str, migration_type: str) -> Dict[str, Any]:
         """Create backup before migration."""
         backup_path = self.backup_dir / migration_id
         backup_path.mkdir(parents=True, exist_ok=True)
@@ -402,9 +370,7 @@ class MigrationManager:
                 # Backup user preferences
                 prefs_dir = Path("data")
                 if prefs_dir.exists():
-                    shutil.copytree(
-                        prefs_dir, backup_path / "data", dirs_exist_ok=True
-                    )
+                    shutil.copytree(prefs_dir, backup_path / "data", dirs_exist_ok=True)
 
             if migration_type in ["tools", "full_system"]:
                 # Backup tool configurations
@@ -505,9 +471,7 @@ class MigrationManager:
         except Exception as e:
             return {"success": False, "error": str(e)}
 
-    def _migrate_database(
-        self, migration_metadata: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    def _migrate_database(self, migration_metadata: Dict[str, Any]) -> Dict[str, Any]:
         """Migrate database schema and data."""
         try:
             # Find database files
@@ -572,9 +536,7 @@ class MigrationManager:
         except Exception as e:
             return {"success": False, "error": str(e)}
 
-    def _migrate_cache_data(
-        self, migration_metadata: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    def _migrate_cache_data(self, migration_metadata: Dict[str, Any]) -> Dict[str, Any]:
         """Migrate cache data."""
         try:
             # Clear old cache data
@@ -674,9 +636,7 @@ class MigrationManager:
         except Exception as e:
             return {"success": False, "error": str(e)}
 
-    def _validate_migration(
-        self, migration_metadata: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    def _validate_migration(self, migration_metadata: Dict[str, Any]) -> Dict[str, Any]:
         """Validate migration results."""
         validation_results = {
             "valid": True,
@@ -733,17 +693,13 @@ class MigrationManager:
             validation_results["errors"].append(f"Validation error: {e}")
             return validation_results
 
-    def _transform_configuration(
-        self, config_data: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    def _transform_configuration(self, config_data: Dict[str, Any]) -> Dict[str, Any]:
         """Transform configuration data for migration."""
         # This would contain specific transformation logic
         # For now, return the config as-is
         return config_data
 
-    def _validate_configuration(
-        self, config_data: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    def _validate_configuration(self, config_data: Dict[str, Any]) -> Dict[str, Any]:
         """Validate configuration data."""
         validation_result = {"valid": True, "errors": []}
 

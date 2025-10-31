@@ -1,0 +1,846 @@
+"""
+Configuration management for Richard's File Utilities.
+
+This module provides centralized configuration management with support for
+multiple configuration sections, default values, and automatic persistence.
+"""
+
+import json
+import logging
+from pathlib import Path
+from threading import Lock
+from typing import Any, Dict, Optional, Union
+
+
+class ConfigManager:
+    """Centralized configuration manager with singleton pattern."""
+
+    _instance = None
+    _lock = Lock()
+
+    def __new__(cls):
+        """Ensure singleton pattern."""
+        if cls._instance is None:
+            with cls._lock:
+                if cls._instance is None:
+                    cls._instance = super(ConfigManager, cls).__new__(cls)
+                    cls._instance._initialized = False
+        return cls._instance
+
+    def __init__(self):
+        """Initialize the configuration manager."""
+        if not self._initialized:
+            self._setup_config()
+            self._initialized = True
+
+    def _setup_config(self):
+        """Setup configuration management."""
+        # Configuration directory and primary file
+        self.config_dir = Path("config")
+        self.config_dir.mkdir(exist_ok=True)
+        self.config_file = self.config_dir / "configuration.json"
+        self.legacy_config_file = self.config_dir / "config.json"
+
+        # Initialize configuration dictionary
+        self.config: Dict[str, Any] = {}
+
+        # Setup logging
+        self.logger = logging.getLogger("RFU.ConfigManager")
+
+        # Migrate from legacy config if needed before loading
+        self._migrate_legacy_config()
+
+        # Load existing configuration or create defaults
+        self._load_config()
+
+        # Ensure default sections exist
+        self._ensure_default_sections()
+
+        # Save to ensure file exists with defaults
+        self.save_config()
+
+        """Unified configuration management for Richard's File Utilities."""
+
+        from __future__ import annotations
+
+        import copy
+        import json
+        import logging
+        import os
+        import shutil
+        from datetime import datetime
+        from pathlib import Path
+        from threading import Lock
+        from typing import Any, Dict, Optional, Union
+
+        DEFAULT_CONFIG_FILENAMES = ("rfu_config.json", "configuration.json")
+        LEGACY_CONFIG_FILENAMES = ("config.json",)
+
+
+        def _deepcopy(data: Any) -> Any:
+            """Return a deepcopy using ``copy.deepcopy`` for readability."""
+
+            return copy.deepcopy(data)
+
+
+        DEFAULT_CONFIG_STRUCTURE: Dict[str, Any] = {
+            "general": {
+                "logging_level": "INFO",
+                "enable_debug_logging": False,
+                "auto_save_config": True,
+                "theme": "light",
+                "language": "en",
+                "check_for_updates": True,
+                "default_directory": "",
+                "recent_directories": [],
+                "max_recent_entries": 10,
+                "show_hidden": False,
+            },
+            "gui": {
+                "window_width": 900,
+                "window_height": 700,
+                "remember_window_position": True,
+                "show_status_bar": True,
+                "show_toolbar": True,
+                "font_size": 12,
+                "font_family": "Segoe UI",
+            },
+            "logging": {
+                "enable_file_logging": True,
+                "enable_console_logging": True,
+                "log_file_max_size_mb": 10,
+                "log_file_backup_count": 5,
+                "enable_tool_logging": True,
+                "log_format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+            },
+            "tools": {
+                "default_directory": str(Path.home()),
+                "remember_last_directory": True,
+                "show_hidden_files": False,
+                "confirm_destructive_operations": True,
+                "auto_refresh_file_lists": True,
+            },
+            "duplicates": {
+                "default_hash_algorithm": "sha256",
+                "min_file_size": 1024,
+                "skip_system_files": True,
+            },
+            "secure_delete": {
+                "default_passes": 3,
+                "max_passes": 35,
+            },
+            "compression": {
+                "default_format": "zip",
+                "default_compression_level": 6,
+                "use_password_protection": False,
+            },
+            "sync": {
+                "default_mode": "two_way",
+                "create_backups": True,
+                "skip_newer_files": False,
+            },
+            "catalog": {
+                "recursive_by_default": True,
+                "check_duplicates": False,
+                "show_file_sizes": True,
+                "show_dates": True,
+                "default_sort_by": "name",
+                "default_sort_order": "ascending",
+            },
+            "organize": {
+                "recursive_by_default": False,
+                "create_category_folders": True,
+                "move_files": True,
+            },
+            "network_connectivity": {
+                "general": {
+                    "default_timeout": 5000,
+                    "max_concurrent_operations": 10,
+                    "enable_logging": True,
+                    "log_level": "INFO",
+                    "auto_save_results": True,
+                    "results_retention_days": 30,
+                    "enable_notifications": True,
+                    "notification_sound": True,
+                    "data_cache_timeout": 30,
+                    "max_history_entries": 1000,
+                },
+                "bandwidth_monitor": {
+                    "monitoring_interval": 1000,
+                    "data_retention_hours": 24,
+                    "alert_threshold_mbps": 100.0,
+                    "enable_alerts": True,
+                    "monitor_interfaces": "auto",
+                    "chart_update_interval": 2000,
+                    "enable_real_time_chart": True,
+                    "show_upload_download_separate": True,
+                    "data_units": "auto",
+                    "enable_application_monitoring": False,
+                    "alert_email": "",
+                    "peak_detection_enabled": True,
+                    "baseline_calculation_hours": 168,
+                    "export_format": "csv",
+                    "auto_export_enabled": False,
+                    "auto_export_interval_hours": 24,
+                },
+                "wifi_analyzer": {
+                    "scan_interval": 30000,
+                    "signal_interval": 2000,
+                    "enable_security_analysis": True,
+                    "enable_interference_detection": True,
+                    "enable_channel_analysis": True,
+                    "data_retention_hours": 24,
+                    "max_access_points": 1000,
+                    "enable_alerts": True,
+                    "weak_signal_threshold": -70,
+                    "security_alert_level": "medium",
+                    "scan_type": "active",
+                    "bands": ["2.4GHz", "5GHz"],
+                    "channel_width_detection": True,
+                    "vendor_identification": True,
+                    "hidden_network_detection": True,
+                    "beacon_analysis": True,
+                    "probe_request_analysis": False,
+                    "monitor_mode_required": False,
+                    "auto_channel_recommendation": True,
+                    "interference_threshold": 0.7,
+                    "security_score_threshold": 0.5,
+                    "signal_history_size": 1000,
+                    "export_format": "json",
+                    "include_vendor_info": True,
+                    "include_capabilities": True,
+                    "real_time_updates": True,
+                    "update_interval": 5000,
+                },
+                "lan_file_transfer": {
+                    "discovery_port": 8765,
+                    "transfer_port": 8766,
+                    "discovery_interval": 30,
+                    "max_concurrent_transfers": 3,
+                    "default_chunk_size": 65536,
+                    "encryption_enabled": True,
+                    "compression_enabled": False,
+                    "default_compression": "gzip",
+                    "transfer_timeout": 300,
+                    "connection_timeout": 30,
+                    "enable_device_discovery": True,
+                    "auto_accept_trusted": False,
+                    "require_authentication": True,
+                    "enable_resume": True,
+                    "max_file_size_mb": 1024,
+                    "allowed_file_types": [],
+                    "blocked_file_types": [".exe", ".bat", ".cmd", ".scr"],
+                    "default_download_path": "Downloads",
+                    "enable_bandwidth_limiting": False,
+                    "max_upload_speed_mbps": 0,
+                    "max_download_speed_mbps": 0,
+                    "enable_notifications": True,
+                    "log_transfers": True,
+                    "keep_transfer_history": True,
+                    "history_retention_days": 30,
+                    "enable_security_scanning": False,
+                    "trust_local_network": True,
+                    "device_name": "",
+                    "enable_upnp": False,
+                    "firewall_auto_config": False,
+                },
+                "port_scanner": {
+                    "default_scan_type": "tcp",
+                    "common_ports": [
+                        21,
+                        22,
+                        23,
+                        25,
+                        53,
+                        80,
+                        110,
+                        135,
+                        139,
+                        143,
+                        443,
+                        993,
+                        995,
+                        1723,
+                        3306,
+                        3389,
+                        5432,
+                        5900,
+                    ],
+                    "scan_timeout": 3000,
+                    "max_threads": 50,
+                    "enable_service_detection": True,
+                    "enable_os_detection": False,
+                    "enable_vulnerability_scan": False,
+                    "scan_delay": 0,
+                    "randomize_scan_order": False,
+                    "save_scan_results": True,
+                    "export_formats": ["json", "csv", "xml"],
+                    "stealth_mode": False,
+                    "custom_port_ranges": [],
+                    "exclude_ports": [],
+                    "enable_banner_grabbing": True,
+                },
+                "security": {
+                    "require_admin_for_scans": False,
+                    "whitelist_scan_targets": [],
+                    "blacklist_scan_targets": ["127.0.0.1", "localhost", "::1"],
+                    "max_scan_rate": 1000,
+                    "enable_scan_logging": True,
+                    "alert_on_suspicious_activity": True,
+                    "encrypt_stored_data": False,
+                    "data_retention_policy": "30_days",
+                    "audit_trail_enabled": True,
+                    "security_level": "moderate",
+                },
+                "performance": {
+                    "enable_performance_monitoring": True,
+                    "max_memory_usage_mb": 512,
+                    "max_cpu_usage_percent": 25,
+                    "operation_timeout_multiplier": 1.0,
+                    "enable_background_operations": True,
+                    "priority_level": "normal",
+                    "thread_pool_size": "auto",
+                    "cache_size_mb": 64,
+                    "enable_compression": True,
+                },
+            },
+            "pdf_tools": {},
+            "privacy_tools": {},
+            "software_maintenance": {},
+        }
+
+        TOP_LEVEL_DEFAULTS: Dict[str, Any] = {
+            "profiles": {},
+        }
+
+
+        def _build_key_section_map(structure: Dict[str, Any]) -> Dict[str, str]:
+            mapping: Dict[str, str] = {}
+            for section, values in structure.items():
+                if not isinstance(values, dict):
+                    continue
+                for key, value in values.items():
+                    if isinstance(value, dict):
+                        continue
+                    mapping.setdefault(key, section)
+            return mapping
+
+
+        KEY_SECTION_MAP = _build_key_section_map(DEFAULT_CONFIG_STRUCTURE)
+
+
+        def _merge_defaults(target: Dict[str, Any], defaults: Dict[str, Any]) -> None:
+            for key, default_value in defaults.items():
+                if isinstance(default_value, dict):
+                    target.setdefault(key, {})
+                    if isinstance(target[key], dict):
+                        _merge_defaults(target[key], default_value)
+                    else:
+                        target[key] = _deepcopy(default_value)
+                elif key not in target:
+                    target[key] = _deepcopy(default_value)
+
+
+        class ConfigManager:
+            """Centralized configuration manager with singleton semantics."""
+
+            _instance: Optional["ConfigManager"] = None
+            _lock = Lock()
+
+            def __new__(
+                cls, config_file: Optional[Union[str, Path]] = None
+            ) -> "ConfigManager":
+                with cls._lock:
+                    if cls._instance is None:
+                        cls._instance = super().__new__(cls)
+                        cls._instance._initialized = False
+                        cls._instance._config_file_override = None
+                    if config_file is not None:
+                        cls._instance._pending_override = Path(config_file)
+                return cls._instance
+
+            def __init__(
+                self, config_file: Optional[Union[str, Path]] = None
+            ) -> None:
+                override = (
+                    Path(config_file)
+                    if config_file is not None
+                    else getattr(self, "_pending_override", None)
+                )
+                if override is not None:
+                    self._config_file_override = Path(override)
+                    self._pending_override = None
+                    if getattr(self, "_initialized", False):
+                        self._setup_config(reinitialize=True)
+                        return
+
+                if not getattr(self, "_initialized", False):
+                    self._setup_config()
+                    self._initialized = True
+
+            def _setup_config(self, reinitialize: bool = False) -> None:
+                self.logger = logging.getLogger("RFU.ConfigManager")
+                self._initialize_paths()
+                self.config: Dict[str, Any] = {}
+                self._migrate_legacy_config()
+                self._load_config()
+                self._ensure_default_sections()
+                self.save_config()
+                if reinitialize:
+                    self.logger.info(
+                        "ConfigManager reinitialized with custom path %s",
+                        self.config_file,
+                    )
+                else:
+                    self.logger.info("ConfigManager initialized successfully")
+
+            def _initialize_paths(self) -> None:
+                override = getattr(self, "_config_file_override", None)
+                if override is not None:
+                    config_path = Path(override).expanduser()
+                    self.config_dir = config_path.parent
+                    self.config_dir.mkdir(parents=True, exist_ok=True)
+                    self.config_file = config_path
+                else:
+                    base_dir = os.getenv("RFU_CONFIG_DIR")
+                    self.config_dir = (
+                        Path(base_dir).expanduser()
+                        if base_dir
+                        else Path("config")
+                    )
+                    self.config_dir.mkdir(parents=True, exist_ok=True)
+                    config_path: Optional[Path] = None
+                    for name in DEFAULT_CONFIG_FILENAMES:
+                        candidate = self.config_dir / name
+                        if candidate.exists():
+                            config_path = candidate
+                            break
+                    if config_path is None:
+                        config_path = self.config_dir / DEFAULT_CONFIG_FILENAMES[0]
+                    self.config_file = config_path
+                self.config_path = self.config_file
+                self.legacy_config_files = [
+                    self.config_dir / name for name in LEGACY_CONFIG_FILENAMES
+                ]
+
+            },
+            "gui": {
+                "window_width": 900,
+                "window_height": 700,
+                        with open(self.config_file, "r", encoding="utf-8") as f:
+                            data = json.load(f)
+                        if isinstance(data, dict):
+                            self.config = data
+                        else:
+                            self.logger.warning(
+                                "Configuration file %s is not a dictionary; using defaults",
+                                self.config_file,
+                            )
+                            self.config = {}
+                        self.logger.info(
+                            "Configuration loaded from %s", self.config_file
+                        )
+                "font_size": 12,
+                "font_family": "Segoe UI",
+            },
+            "logging": {
+                "enable_file_logging": True,
+                "enable_console_logging": True,
+                "log_file_max_size_mb": 10,
+                "log_file_backup_count": 5,
+                "enable_tool_logging": True,
+                if self.config_file.exists():
+                    return
+
+                for legacy_file in self.legacy_config_files:
+                    if not legacy_file.exists():
+                        continue
+                    try:
+                        with open(legacy_file, "r", encoding="utf-8") as f:
+                            legacy_config = json.load(f)
+
+                        with open(self.config_file, "w", encoding="utf-8") as f:
+                            json.dump(legacy_config, f, indent=2, ensure_ascii=False)
+
+                        try:
+                            backup = legacy_file.with_suffix(".legacy_backup")
+                            if backup.exists():
+                                backup.unlink()
+                            legacy_file.rename(backup)
+                        except Exception as rename_error:
+                            self.logger.debug(
+                                "Legacy configuration rename skipped: %s", rename_error
+                            )
+
+                        self.logger.info(
+                            "Migrated legacy configuration from %s to %s",
+                            legacy_file,
+                            self.config_file,
+                        )
+                        return
+                    except Exception as e:
+                        self.logger.error(
+                            "Failed to migrate legacy configuration from %s: %s",
+                            legacy_file,
+                            e,
+                        )
+
+        Args:
+            section: Configuration section name
+                for section, defaults in DEFAULT_CONFIG_STRUCTURE.items():
+                    if section not in self.config:
+                        self.config[section] = _deepcopy(defaults)
+                        continue
+                    if isinstance(self.config[section], dict):
+                        _merge_defaults(self.config[section], defaults)
+
+                for key, value in TOP_LEVEL_DEFAULTS.items():
+                    if key not in self.config:
+                        self.config[key] = _deepcopy(value)
+            self.logger.debug(f"Set configuration {section}.{key} = {value}")
+            return True
+
+        except Exception as e:
+            self.logger.error(f"Error setting {section}.{key}: {e}")
+            return False
+
+    def get_section(self, section: str) -> Dict[str, Any]:
+        """
+        Get an entire configuration section.
+
+        Args:
+            section: Section name
+
+        Returns:
+            Dictionary with section settings
+        """
+        return self.config.get(section, {})
+
+    def set_section(self, section: str, settings: Dict[str, Any]) -> bool:
+        """
+        Set an entire configuration section.
+
+        Args:
+            section: Section name
+            settings: Dictionary with section settings
+
+        Returns:
+            bool: True if section was saved successfully
+        """
+        try:
+            self.config[section] = settings.copy()
+
+            # Auto-save if enabled
+            if self.get_setting("general", "auto_save_config", True):
+                self.save_config()
+
+            self.logger.info(f"Set configuration section '{section}'")
+            return True
+
+        except Exception as e:
+            self.logger.error(f"Error setting section {section}: {e}")
+            return False
+
+    def remove_setting(self, section: str, key: str) -> bool:
+        """
+        Remove a configuration setting.
+
+        Args:
+            section: Configuration section name
+            key: Setting key
+
+        Returns:
+            bool: True if setting was removed successfully
+        """
+        try:
+            if section in self.config and key in self.config[section]:
+                del self.config[section][key]
+
+                # Auto-save if enabled
+                if self.get_setting("general", "auto_save_config", True):
+                    self.save_config()
+
+                self.logger.info(f"Removed configuration {section}.{key}")
+                return True
+            else:
+                self.logger.warning(
+                    f"Configuration {section}.{key} not found for removal"
+                )
+                return False
+
+        except Exception as e:
+            self.logger.error(f"Error removing {section}.{key}: {e}")
+            return False
+
+    def save_config(self) -> bool:
+        """
+        Save configuration to file.
+
+        Returns:
+            bool: True if configuration was saved successfully
+        """
+        try:
+            # Ensure directory exists
+            self.config_dir.mkdir(exist_ok=True)
+
+            # Write configuration file
+            with open(self.config_file, "w", encoding="utf-8") as f:
+                json.dump(self.config, f, indent=2, ensure_ascii=False)
+
+            self.logger.debug(f"Configuration saved to {self.config_file}")
+            return True
+
+        except Exception as e:
+            self.logger.error(f"Failed to save configuration: {e}")
+            return False
+
+    def get_profiles(self, module_name: str) -> list:
+        """Get list of saved profiles for a module.
+
+        Args:
+            module_name: Name of the module to get profiles for
+
+        Returns:
+            List of profile names for the module
+        """
+        profiles_section = f"{module_name}_profiles"
+        if profiles_section not in self.config:
+            self.config[profiles_section] = {}
+            self.save_config()
+
+        return list(self.config[profiles_section].keys())
+
+    def save_profile(
+        self, profile_name: str, module_name: str, profile_data: Dict[str, Any]
+    ) -> bool:
+        """Save a profile for a module.
+
+        Args:
+            profile_name: Name of the profile
+            module_name: Name of the module
+            profile_data: Profile configuration data
+
+        Returns:
+            True if saved successfully, False otherwise
+        """
+        try:
+            profiles_section = f"{module_name}_profiles"
+            if profiles_section not in self.config:
+                self.config[profiles_section] = {}
+
+            self.config[profiles_section][profile_name] = profile_data
+            self.save_config()
+            self.logger.info(
+                "Profile '%s' saved for module '%s'",
+                profile_name,
+                module_name,
+            )
+            return True
+        except Exception as e:
+            self.logger.error(
+                "Failed to save profile '%s' for module '%s': %s",
+                profile_name,
+                module_name,
+                e,
+            )
+            return False
+
+    def load_profile(
+        self, profile_name: str, module_name: str
+    ) -> Optional[Dict[str, Any]]:
+        """Load a profile for a module.
+
+        Args:
+            profile_name: Name of the profile
+            module_name: Name of the module
+
+        Returns:
+            Profile data if found, None otherwise
+        """
+        try:
+            profiles_section = f"{module_name}_profiles"
+            if (
+                profiles_section in self.config
+                and profile_name in self.config[profiles_section]
+            ):
+                return self.config[profiles_section][profile_name]
+            return None
+        except Exception as e:
+            self.logger.error(
+                "Failed to load profile '%s' for module '%s': %s",
+                profile_name,
+                module_name,
+                e,
+            )
+            return None
+
+    def delete_profile(self, profile_name: str, module_name: str) -> bool:
+        """Delete a profile for a module.
+
+        Args:
+            profile_name: Name of the profile
+            module_name: Name of the module
+
+        Returns:
+            True if deleted successfully, False otherwise
+        """
+        try:
+            profiles_section = f"{module_name}_profiles"
+            if (
+                profiles_section in self.config
+                and profile_name in self.config[profiles_section]
+            ):
+                del self.config[profiles_section][profile_name]
+                self.save_config()
+                self.logger.info(
+                    "Profile '%s' deleted for module '%s'",
+                    profile_name,
+                    module_name,
+                )
+                return True
+            return False
+        except Exception as e:
+            self.logger.error(
+                "Failed to delete profile '%s' for module '%s': %s",
+                profile_name,
+                module_name,
+                e,
+            )
+            return False
+
+    def load_config(self) -> bool:
+        """
+        Reload configuration from file.
+
+        Returns:
+            bool: True if configuration was loaded successfully
+        """
+        try:
+            self._load_config()
+            self._ensure_default_sections()
+            self.logger.info("Configuration reloaded successfully")
+            return True
+        except Exception as e:
+            self.logger.error(f"Failed to reload configuration: {e}")
+            return False
+
+    def reset_to_defaults(self) -> bool:
+        """
+        Reset configuration to default values.
+
+        Returns:
+            bool: True if reset was successful
+        """
+        try:
+            self.config = {}
+            self._ensure_default_sections()
+            self.save_config()
+            self.logger.info("Configuration reset to defaults")
+            return True
+        except Exception as e:
+            self.logger.error(f"Failed to reset configuration: {e}")
+            return False
+
+    def get_all_settings(self) -> Dict[str, Any]:
+        """
+        Get all configuration settings.
+
+        Returns:
+            Complete configuration dictionary
+        """
+    return _deepcopy(self.config)
+
+    def export_config(self, export_path: Union[str, Path]) -> bool:
+        """
+        Export configuration to a file.
+
+        Args:
+            export_path: Path to export file
+
+        Returns:
+            bool: True if export was successful
+        """
+        try:
+            export_file = Path(export_path)
+            export_file.parent.mkdir(parents=True, exist_ok=True)
+
+            with open(export_file, "w", encoding="utf-8") as f:
+                json.dump(self.config, f, indent=2, ensure_ascii=False)
+
+            self.logger.info(f"Configuration exported to {export_file}")
+            return True
+
+        except Exception as e:
+            self.logger.error(f"Failed to export configuration: {e}")
+            return False
+
+    def import_config(self, import_path: Union[str, Path]) -> bool:
+        """
+        Import configuration from a file.
+
+        Args:
+            import_path: Path to import file
+
+        Returns:
+            bool: True if import was successful
+        """
+        try:
+            import_file = Path(import_path)
+
+            if not import_file.exists():
+                self.logger.error(f"Import file not found: {import_file}")
+                return False
+
+            with open(import_file, "r", encoding="utf-8") as f:
+                imported_config = json.load(f)
+
+            # Validate imported configuration
+            if not isinstance(imported_config, dict):
+                self.logger.error("Invalid configuration format")
+                return False
+
+            # Merge with current configuration
+            self.config.update(imported_config)
+            self._ensure_default_sections()
+            self.save_config()
+
+            self.logger.info(f"Configuration imported from {import_file}")
+            return True
+
+        except Exception as e:
+            self.logger.error(f"Failed to import configuration: {e}")
+            return False
+
+    def get_config_info(self) -> Dict[str, Any]:
+        """
+        Get information about the configuration.
+
+        Returns:
+            Dictionary with configuration information
+        """
+        return {
+            "config_file": str(self.config_file),
+            "config_dir": str(self.config_dir),
+            "sections": list(self.config.keys()),
+            "total_settings": sum(
+                len(section)
+                for section in self.config.values()
+                if isinstance(section, dict)
+            ),
+            "file_exists": self.config_file.exists(),
+            "file_size_bytes": (
+                self.config_file.stat().st_size if self.config_file.exists() else 0
+            ),
+        }
+
+
+# Global instance
+_config_manager = None
+
+
+def get_config_manager() -> ConfigManager:
+    """Get the global ConfigManager instance."""
+    global _config_manager
+    if _config_manager is None:
+        _config_manager = ConfigManager()
+    return _config_manager

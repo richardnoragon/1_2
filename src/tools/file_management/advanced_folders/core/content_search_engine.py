@@ -29,7 +29,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Dict, Iterable, List, Optional, Set
 
 try:
     import chardet
@@ -55,11 +55,60 @@ try:
 except ImportError:
     WHOOSH_AVAILABLE = False
 
+from config.config_manager import get_config_manager
+from file_validator import detect_file_type, validate_file_type
+from file_validator.models import ValidationResult
+from file_validator.utils import canonicalise_allowed_types
+from rfu.hub import dispatch_validator_result
+
 from ..exceptions.advanced_folders_exceptions import (
     PerformanceException,
     SearchException,
 )
 from .file_system_scanner import FileInfo
+
+
+VALIDATOR_WORKFLOW_NAME = "advanced_folders.content_index"
+
+DEFAULT_VALIDATOR_ALLOWED_TYPES = {
+    "pdf",
+    "docx",
+    "pptx",
+    "xlsx",
+    "epub",
+    "zip",
+    "text",
+    "png",
+    "jpg",
+    "jpeg",
+    "gif",
+    "json",
+    "xml",
+    "csv",
+    "html",
+    "css",
+    "javascript",
+    "markdown",
+    "application/json",
+    "application/xml",
+    "application/pdf",
+    "application/zip",
+    "application/epub+zip",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "text/plain",
+    "text/html",
+    "text/xml",
+    "text/csv",
+    "text/markdown",
+    "text/x-python",
+    "text/x-c",
+    "application/javascript",
+    "image/png",
+    "image/jpeg",
+    "image/gif",
+}
 
 
 class ContentIndexingStrategy(Enum):
@@ -493,6 +542,8 @@ class ContentIndexManager:
         index_path: str,
         indexing_strategy: ContentIndexingStrategy = ContentIndexingStrategy.HYBRID,
         extractor_config: Optional[ContentExtractorConfig] = None,
+        validator_allowed_types: Optional[Iterable[str]] = None,
+        validator_mode: Optional[str] = None,
     ):
         """
         Initialize content index manager.
@@ -505,6 +556,43 @@ class ContentIndexManager:
         self.index_path = Path(index_path)
         self.indexing_strategy = indexing_strategy
         self.extractor_config = extractor_config or ContentExtractorConfig()
+
+        policy: Optional[Dict[str, Any]] = None
+        try:
+            policy = get_config_manager().get_validator_policy(
+                VALIDATOR_WORKFLOW_NAME
+            )
+        except Exception:
+            policy = None
+
+        if validator_allowed_types is None:
+            allowed_types = (
+                policy.get("allowed_types")
+                if policy and policy.get("allowed_types")
+                else DEFAULT_VALIDATOR_ALLOWED_TYPES
+            )
+        else:
+            allowed_types = validator_allowed_types
+
+        self.validator_allowed_types = canonicalise_allowed_types(
+            allowed_types
+        )
+
+        if validator_mode is None:
+            resolved_mode = (
+                policy.get("mode")
+                if policy and policy.get("mode")
+                else "auto"
+            )
+        else:
+            resolved_mode = validator_mode
+
+        self.validator_mode = resolved_mode
+        self.validator_workflow = (
+            policy.get("workflow")
+            if policy and policy.get("workflow")
+            else VALIDATOR_WORKFLOW_NAME
+        )
 
         # Create index directory
         self.index_path.mkdir(parents=True, exist_ok=True)
@@ -528,11 +616,19 @@ class ContentIndexManager:
             "successful_extractions": 0,
             "failed_extractions": 0,
             "total_extraction_time_ms": 0.0,
+            "blocked_by_validator": 0,
+            "validator_warnings": 0,
         }
 
         self.logger = logging.getLogger("RFU.ContentIndexManager")
         self.logger.info(
-            f"Content index manager initialized with strategy: {indexing_strategy.value}"
+            "Content index manager initialized with strategy %s and validator mode %s",
+            indexing_strategy.value,
+            self.validator_mode,
+        )
+        self.logger.debug(
+            "Validator allowed types for content indexing: %s",
+            sorted(self.validator_allowed_types),
         )
 
     def _init_storage_backends(self) -> None:
@@ -623,6 +719,31 @@ class ContentIndexManager:
             )
             self.whoosh_index = None
 
+    def _validate_for_index(self, file_path: str) -> Optional[ValidationResult]:
+        """Run centralized validator for the supplied file."""
+        try:
+            return validate_file_type(
+                file_path,
+                allowed_types=self.validator_allowed_types,
+                mode=self.validator_mode,
+                workflow=self.validator_workflow,
+            )
+        except Exception as exc:
+            self.logger.error(
+                "Validator execution failed for %s: %s",
+                file_path,
+                exc,
+                exc_info=True,
+            )
+            return None
+
+    def _increment_validator_stats(self, validation: ValidationResult) -> None:
+        """Update validator-related statistics."""
+        if validation.action == "reject":
+            self.extraction_stats["blocked_by_validator"] += 1
+        elif validation.action == "warn":
+            self.extraction_stats["validator_warnings"] += 1
+
     def index_file(self, file_info: FileInfo) -> ContentExtractionResult:
         """
         Index a single file's content.
@@ -647,6 +768,58 @@ class ContentIndexManager:
                     warnings=["File skipped due to indexing strategy"],
                 )
 
+            validation: Optional[ValidationResult] = None
+            validator_metadata: Optional[Dict[str, Any]] = None
+            validator_warnings: List[str] = []
+
+            if file_info.is_file:
+                validation = self._validate_for_index(file_info.path)
+                if validation:
+                    validator_metadata = validation.to_dict()
+                    if validation.action == "reject":
+                        dispatch_validator_result(
+                            validation, workflow=self.validator_workflow
+                        )
+                        self.logger.warning(
+                            "File %s rejected by validator (detected=%s, confidence=%s)",
+                            file_info.path,
+                            validation.detection.detected_type,
+                            validation.detection.confidence,
+                        )
+                        blocked_result = ContentExtractionResult(
+                            file_path=file_info.path,
+                            content_type="blocked",
+                            encoding=None,
+                            text_content="",
+                            metadata={"validator": validator_metadata},
+                            extraction_time_ms=0.0,
+                            content_hash="",
+                            error_message="Rejected by file validator",
+                            warnings=[
+                                f"Validator rejection: {validation.reason}"
+                            ],
+                        )
+                        self._increment_validator_stats(validation)
+                        self._update_extraction_stats(blocked_result)
+                        return blocked_result
+
+                    if validation.action == "warn":
+                        validator_warnings.append(
+                            "Validator warning (%s): %s"
+                            % (
+                                validation.detection.detected_type,
+                                validation.reason,
+                            )
+                        )
+                        dispatch_validator_result(
+                            validation, workflow=self.validator_workflow
+                        )
+                else:
+                    self.logger.debug(
+                        "Validator returned no decision for %s; proceeding with indexing",
+                        file_info.path,
+                    )
+
             # Find appropriate extractor
             extractor = self._find_extractor(
                 file_info.path, file_info.mime_type
@@ -656,6 +829,13 @@ class ContentIndexManager:
             result = extractor.extract_content(
                 file_info.path, self.extractor_config
             )
+
+            if validator_metadata:
+                result.metadata["validator"] = validator_metadata
+            if validator_warnings:
+                result.warnings.extend(validator_warnings)
+            if validation:
+                self._increment_validator_stats(validation)
 
             # Store in backends
             self._store_content_result(result)
@@ -1056,6 +1236,8 @@ class ContentIndexManager:
                     "successful_extractions": 0,
                     "failed_extractions": 0,
                     "total_extraction_time_ms": 0.0,
+                    "blocked_by_validator": 0,
+                    "validator_warnings": 0,
                 }
 
                 self.logger.info("Content index cleared successfully")

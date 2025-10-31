@@ -33,7 +33,12 @@ import time
 import zipfile
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Set, Tuple
+
+from file_validator import validate_file_type
+from file_validator.models import ValidationResult
+from rfu.config_manager import ValidatorPolicy, resolve_validator_policy
+from rfu.hub import dispatch_validator_result
 
 # Import cryptography for secure AES-GCM encryption
 try:
@@ -452,6 +457,9 @@ class TransferServer(QThread):
 class PathSecurity:
     """Utilities for secure path handling with comprehensive validation."""
 
+    VALIDATOR_WORKFLOW = "network_transfer"
+    logger = logging.getLogger("RFU.NetworkTransfer.PathSecurity")
+
     # Define allowed file extensions for transfers
     ALLOWED_EXTENSIONS = {
         ".txt",
@@ -579,13 +587,63 @@ class PathSecurity:
             if not PathSecurity._check_file_stats(path, result):
                 return result
 
-            # Extension and permission checks
-            if not PathSecurity._check_file_permissions(path, result):
+            policy = PathSecurity._resolve_validator_policy()
+            result["validator_policy"] = policy.as_kwargs()
+
+            policy_extensions = PathSecurity._build_extension_allowlist(policy)
+
+            # Extension and permission checks using policy-aware allowlist
+            if not PathSecurity._check_file_permissions(
+                path,
+                result,
+                allowed_extensions=policy_extensions,
+            ):
                 return result
 
-            # File passed all checks
-            result["valid"] = True
-            result["reason"] = "File is valid for transfer"
+            try:
+                validation = PathSecurity._run_validator(path, policy)
+            except Exception as exc:  # pragma: no cover - defensive logging
+                PathSecurity.logger.error(
+                    "Validator execution failed for %s: %s",
+                    file_path,
+                    exc,
+                    exc_info=True,
+                )
+                result["reason"] = "Validator execution failure"
+                return result
+
+            dispatch_validator_result(validation, workflow=policy.workflow)
+
+            result["validator"] = validation.to_dict()
+            result["valid"] = validation.action != "reject"
+
+            if validation.action == "reject":
+                PathSecurity.logger.warning(
+                    "Validator rejected %s (detected=%s, reason=%s)",
+                    file_path,
+                    validation.detection.detected_type,
+                    validation.reason,
+                )
+                result["reason"] = f"Rejected by validator: {validation.reason}"
+                result["warnings"] = []
+                return result
+
+            if validation.action == "warn":
+                warning_message = (
+                    "Validator warning "
+                    f"({validation.detection.detected_type}): "
+                    f"{validation.reason}"
+                )
+                PathSecurity.logger.info(
+                    "Validator warning for %s: %s",
+                    file_path,
+                    warning_message,
+                )
+                result["warnings"].append(warning_message)
+                result["reason"] = warning_message
+            else:
+                result["reason"] = "File is valid for transfer"
+
             return result
 
         except Exception as e:
@@ -601,6 +659,9 @@ class PathSecurity:
             "size": 0,
             "extension": "",
             "path": file_path,
+            "warnings": [],
+            "validator": None,
+            "validator_policy": None,
         }
 
     @staticmethod
@@ -636,13 +697,22 @@ class PathSecurity:
         return True
 
     @staticmethod
-    def _check_file_permissions(path: Path, result: Dict[str, Any]) -> bool:
-        """Check file extension and permissions"""
+    def _check_file_permissions(
+        path: Path,
+        result: Dict[str, Any],
+        allowed_extensions: Optional[Set[str]] = None,
+    ) -> bool:
+        """Check file extension allowlist and permissions."""
         extension = path.suffix.lower()
         result["extension"] = extension
 
-        if extension not in PathSecurity.ALLOWED_EXTENSIONS:
-            result["reason"] = f"File type not allowed: {extension}"
+        allowed_set: Set[str] = set(PathSecurity.ALLOWED_EXTENSIONS)
+        if allowed_extensions:
+            allowed_set.update(allowed_extensions)
+
+        if allowed_set and extension not in allowed_set:
+            display_ext = extension or "<none>"
+            result["reason"] = f"File type not allowed: {display_ext}"
             return False
 
         if not os.access(path, os.R_OK):
@@ -652,25 +722,78 @@ class PathSecurity:
         return True
 
     @staticmethod
+    def _resolve_validator_policy() -> ValidatorPolicy:
+        try:
+            return resolve_validator_policy(workflow=PathSecurity.VALIDATOR_WORKFLOW)
+        except Exception as exc:  # pragma: no cover - defensive logging
+            PathSecurity.logger.error(
+                "Validator policy resolution failed for workflow %s: %s",
+                PathSecurity.VALIDATOR_WORKFLOW,
+                exc,
+                exc_info=True,
+            )
+            return ValidatorPolicy(
+                name="fallback",
+                workflow=PathSecurity.VALIDATOR_WORKFLOW,
+                mode="reject",
+                allowed_types=(),
+                notify="on-mismatch",
+            )
+
+    @staticmethod
+    def _build_extension_allowlist(policy: ValidatorPolicy) -> Set[str]:
+        extensions: Set[str] = set()
+        for item in policy.allowed_types:
+            token = item.strip()
+            if not token or "/" in token:
+                continue
+            extensions.add(f".{token}")
+        return extensions
+
+    @staticmethod
+    def _run_validator(
+        path: Path,
+        policy: ValidatorPolicy,
+    ) -> ValidationResult:
+        return validate_file_type(
+            path,
+            allowed_types=policy.allowed_types,
+            mode=policy.mode,
+            workflow=policy.workflow,
+        )
+
+    @staticmethod
     def secure_file_info(file_path: str) -> Optional[Dict[str, Any]]:
         """Safely get file information without TOCTOU vulnerabilities."""
         try:
             # First validate the file
             validation = PathSecurity.validate_file_for_transfer(file_path)
             if not validation["valid"]:
+                PathSecurity.logger.warning(
+                    "Network transfer blocked for %s: %s",
+                    file_path,
+                    validation.get("reason", "Validator rejection"),
+                )
                 return None
 
             # Use file descriptor to avoid TOCTOU issues
             with open(file_path, "rb") as f:
                 fd = f.fileno()
                 stat_info = os.fstat(fd)
-                return {
+                info: Dict[str, Any] = {
                     "size": stat_info.st_size,
                     "exists": True,
                     "path": file_path,
                     "fd": fd,
                     "validation": validation,
                 }
+                if validation.get("validator") is not None:
+                    info["validator"] = validation["validator"]
+                if validation.get("validator_policy") is not None:
+                    info["validator_policy"] = validation["validator_policy"]
+                if validation.get("warnings"):
+                    info["warnings"] = list(validation["warnings"])
+                return info
         except (OSError, IOError):
             return None
 

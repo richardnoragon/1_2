@@ -1,6 +1,6 @@
 """Compatibility layer forwarding legacy ``core.error_handler`` imports."""
 
-from src.core_rfu.error_handler import (  # noqa: F401
+from src.core.error_handler import (  # noqa: F401
     ErrorHandler,
     error_handler,
     get_error_handler,

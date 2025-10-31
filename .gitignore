@@ -31,6 +31,8 @@ env/
 ENV/
 env.bak/
 venv.bak/
+venv_backup_*/
+venv_temp/
 virtualenv/
 
 # PyInstaller
