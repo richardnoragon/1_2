@@ -35,7 +35,7 @@ except ImportError:
 
 # Target module imports with fallback handling
 try:
-    from tools.network.gui import (
+    from src.tools.network.gui import (
         NetworkScanResult,
         BandwidthData,
         NetworkWorkerThread,

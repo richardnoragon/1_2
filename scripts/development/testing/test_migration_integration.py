@@ -4,33 +4,33 @@ Migration System Integration Test
 Tests the database migration system integration with the main database manager.
 """
 
-import sys
 import os
 import sqlite3
+import sys
 from pathlib import Path
 
 # Add the src directory to the path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-from src.core.database_manager import DatabaseManager
 from src.core.migrations import DatabaseMigrationManager
+from src.database.database_manager import DatabaseManager
 
 
 def test_migration_system():
     """Test the migration system integration."""
     print("=== RFU Hub Migration System Integration Test ===\n")
-    
+
     try:
         # Initialize database manager
         print("1. Initializing Database Manager...")
         db_manager = DatabaseManager()
         print("   ✅ Database Manager initialized successfully")
-        
+
         # Initialize migration manager
         print("\n2. Initializing Migration Manager...")
         migration_manager = DatabaseMigrationManager(db_manager)
         print("   ✅ Migration Manager initialized successfully")
-        
+
         # Check current migration status
         print("\n3. Checking Current Migration Status...")
         status = migration_manager.get_migration_status()
@@ -38,7 +38,7 @@ def test_migration_system():
         print(f"   Pending Migrations: {len(status.pending_migrations)}")
         for migration in status.pending_migrations:
             print(f"     - {migration}")
-        
+
         # Execute pending migrations
         if status.pending_migrations:
             print("\n4. Executing Pending Migrations...")
@@ -54,7 +54,7 @@ def test_migration_system():
         else:
             print("\n4. No pending migrations found")
             print("   ✅ Database is up to date")
-        
+
         # Validate database integrity
         print("\n5. Validating Database Integrity...")
         validation = migration_manager.validate_migration_integrity()
@@ -62,13 +62,14 @@ def test_migration_system():
             print("   ✅ Database integrity validated successfully")
         else:
             print(f"   ❌ Integrity validation failed: {validation.message}")
-        
+
         print("\n=== Migration System Test Completed Successfully ===")
         return True
-        
+
     except Exception as e:
         print(f"\n❌ Migration system test failed: {str(e)}")
         import traceback
+
         traceback.print_exc()
         return False
 

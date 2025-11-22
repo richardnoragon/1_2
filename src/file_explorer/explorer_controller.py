@@ -11,13 +11,12 @@ Created: September 28, 2025
 """
 
 import logging
-from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 try:
     from PyQt5.QtCore import QObject, Qt, pyqtSignal
-    from PyQt5.QtWidgets import QMainWindow, QSplitter, QTabWidget, QWidget
+    from PyQt5.QtWidgets import QMainWindow, QSplitter, QWidget
 
     QT_AVAILABLE = True
 except ImportError:
@@ -53,9 +52,9 @@ class ExplorerController(QObject if QT_AVAILABLE else object):
         self.main_window = main_window
 
         # Component managers
-        self._pane_manager = None
-        self._layout_manager = None
-        self._tool_integration = None
+        self._pane_manager: Any = None
+        self._layout_manager: Any = None
+        self._tool_integration: Any = None
 
         # State management
         self.active_pane_id = ""
@@ -68,8 +67,8 @@ class ExplorerController(QObject if QT_AVAILABLE else object):
         self.pane_states = {}  # pane_id -> state dict
         self.right_pane_widget = None  # Reference to right pane
 
-        # Preference service (T043)
-        self._preference_service = None
+        # Explorer preferences (T043)
+        self._preferences = None
         self._config_dir = None
 
         # Initialize components
@@ -140,45 +139,48 @@ class ExplorerController(QObject if QT_AVAILABLE else object):
             config_dir: Optional config directory for testing
         """
         try:
-            from src.file_explorer.services.preference_service import (
-                PreferenceService,
+            from src.file_explorer.services.explorer_preferences import (
+                ExplorerPreferences,
+                get_explorer_preferences,
             )
 
             self._config_dir = config_dir
-            self._preference_service = PreferenceService(config_dir=config_dir)
 
-            # Load preferences
-            prefs = self._preference_service.load_preferences()
+            if config_dir is None:
+                self._preferences = get_explorer_preferences()
+            else:
+                self._preferences = ExplorerPreferences(config_dir=config_dir)
 
-            # Apply loaded preferences to state
-            if prefs.pane_config:
-                self.pane_count = prefs.pane_config.pane_count
-                layout_type = prefs.pane_config.layout_type
-                self.layout_mode = (
-                    "horizontal"
-                    if str(layout_type).lower() == "horizontal"
-                    else "vertical"
-                )
+            prefs = self._preferences.load_user_preferences()
+
+            pane_config = getattr(prefs, "pane_config", None)
+            if pane_config:
+                self.pane_count = pane_config.pane_count
+                layout_value = str(pane_config.layout_type).lower()
+                if layout_value in {"horizontal", "vertical", "grid"}:
+                    self.layout_mode = layout_value
+                elif layout_value == "disabled":
+                    self.layout_mode = "single"
 
             self.logger.info(
                 f"Preferences loaded: {self.pane_count} panes, "
                 f"{self.layout_mode} layout"
             )
 
-        except ImportError as e:
-            self.logger.warning(f"PreferenceService not available: {e}")
-            self._preference_service = None
-        except Exception as e:
-            self.logger.error(f"Error initializing preferences: {e}")
-            self._preference_service = None
+        except ImportError as exc:
+            self.logger.warning(f"ExplorerPreferences unavailable: {exc}")
+            self._preferences = None
+        except Exception as exc:
+            self.logger.error(f"Error initializing preferences: {exc}")
+            self._preferences = None
 
     def _save_preferences(self):
         """Save current state to preferences (T043)."""
         try:
-            if not self._preference_service:
+            if not self._preferences:
                 return
 
-            prefs = self._preference_service.load_preferences()
+            prefs = self._preferences.load_user_preferences()
 
             # Update pane configuration
             from src.file_explorer.models.pane_configuration import (
@@ -186,20 +188,29 @@ class ExplorerController(QObject if QT_AVAILABLE else object):
                 PaneConfiguration,
             )
 
-            layout_type = (
-                LayoutType.HORIZONTAL
-                if self.layout_mode == "horizontal"
-                else LayoutType.VERTICAL
+            if self.layout_mode == "horizontal":
+                layout_type = LayoutType.HORIZONTAL
+            elif self.layout_mode == "vertical":
+                layout_type = LayoutType.VERTICAL
+            elif self.layout_mode == "grid":
+                layout_type = LayoutType.GRID
+            else:
+                layout_type = LayoutType.DISABLED
+
+            splitter_states = getattr(prefs.pane_config, "splitter_states", {})
+            prefs.pane_config = PaneConfiguration(
+                self.pane_count,
+                layout_type,
+                splitter_states,
             )
-            prefs.pane_config = PaneConfiguration(self.pane_count, layout_type, {})
 
             # Save updated preferences
-            self._preference_service.save_preferences(prefs)
+            self._preferences.save_user_preferences(prefs)
 
             self.logger.debug("Preferences saved successfully")
 
-        except Exception as e:
-            self.logger.error(f"Error saving preferences: {e}")
+        except Exception as exc:
+            self.logger.error(f"Error saving preferences: {exc}")
 
     def initialize_ui(self, container_widget: QWidget) -> bool:
         """
@@ -277,7 +288,10 @@ class ExplorerController(QObject if QT_AVAILABLE else object):
     def _initialize_default_panes(self) -> bool:
         """Initialize default pane configuration."""
         try:
-            if self._pane_manager and hasattr(self._pane_manager, "create_panes"):
+            if self._pane_manager and hasattr(
+                self._pane_manager,
+                "create_panes",
+            ):
                 return self._pane_manager.create_panes(self.pane_count)
             else:
                 # Fallback pane creation
@@ -299,7 +313,10 @@ class ExplorerController(QObject if QT_AVAILABLE else object):
     def _setup_tool_integration(self):
         """Setup tool integration."""
         try:
-            if self._tool_integration and hasattr(self._tool_integration, "setup"):
+            if self._tool_integration and hasattr(
+                self._tool_integration,
+                "setup",
+            ):
                 self._tool_integration.setup()
             else:
                 self.logger.info("Tool integration not available")
@@ -358,7 +375,10 @@ class ExplorerController(QObject if QT_AVAILABLE else object):
             old_mode = self.layout_mode
             self.layout_mode = mode
 
-            if self._layout_manager and hasattr(self._layout_manager, "set_mode"):
+            if self._layout_manager and hasattr(
+                self._layout_manager,
+                "set_mode",
+            ):
                 success = self._layout_manager.set_mode(mode)
                 if success:
                     msg = f"Layout mode changed from {old_mode} to {mode}"
@@ -390,7 +410,10 @@ class ExplorerController(QObject if QT_AVAILABLE else object):
                 return False
 
             if self._pane_manager and hasattr(self._pane_manager, "navigate"):
-                success = self._pane_manager.navigate(self.active_pane_id, path)
+                success = self._pane_manager.navigate(
+                    self.active_pane_id,
+                    path,
+                )
                 if success and self.pathChanged:
                     self.pathChanged.emit(self.active_pane_id, path)
                 return success
@@ -417,7 +440,10 @@ class ExplorerController(QObject if QT_AVAILABLE else object):
             # Check if path is available
             if self._is_path_available(path):
                 # Path available, navigate normally
-                if self._pane_manager and hasattr(self._pane_manager, "navigate"):
+                if self._pane_manager and hasattr(
+                    self._pane_manager,
+                    "navigate",
+                ):
                     success = self._pane_manager.navigate(pane_id, str(path))
                     if success and self.pathChanged:
                         self.pathChanged.emit(pane_id, str(path))
@@ -429,7 +455,10 @@ class ExplorerController(QObject if QT_AVAILABLE else object):
             fallback_path = self._get_system_root()
 
             if self._pane_manager and hasattr(self._pane_manager, "navigate"):
-                success = self._pane_manager.navigate(pane_id, str(fallback_path))
+                success = self._pane_manager.navigate(
+                    pane_id,
+                    str(fallback_path),
+                )
                 if success and self.pathChanged:
                     self.pathChanged.emit(pane_id, str(fallback_path))
                 return success
@@ -463,7 +492,7 @@ class ExplorerController(QObject if QT_AVAILABLE else object):
             # Fallback: basic existence check
             try:
                 return path.exists()
-            except (OSError, PermissionError):
+            except OSError:
                 return False
         except Exception as e:
             self.logger.error(f"Error checking path availability: {e}")
@@ -482,7 +511,7 @@ class ExplorerController(QObject if QT_AVAILABLE else object):
             )
 
             notification_service = NotificationService()
-            message = f"Location unavailable: {path}\n" f"Falling back to system root."
+            message = f"Location unavailable: {path}\n" "Falling back to system root."
             notification_service.show_warning(message)
 
         except ImportError:
@@ -518,7 +547,10 @@ class ExplorerController(QObject if QT_AVAILABLE else object):
             bool: True if successful
         """
         try:
-            if self._tool_integration and hasattr(self._tool_integration, "launch"):
+            if self._tool_integration and hasattr(
+                self._tool_integration,
+                "launch",
+            ):
                 return self._tool_integration.launch(tool_name, **kwargs)
             else:
                 self.logger.warning(f"Tool integration not available for {tool_name}")
@@ -542,7 +574,10 @@ class ExplorerController(QObject if QT_AVAILABLE else object):
         """Get list of selected files from specified or active pane."""
         try:
             target_pane = pane_id or self.active_pane_id
-            if self._pane_manager and hasattr(self._pane_manager, "get_selected"):
+            if self._pane_manager and hasattr(
+                self._pane_manager,
+                "get_selected",
+            ):
                 return self._pane_manager.get_selected(target_pane)
             return []
         except Exception as e:
@@ -584,7 +619,10 @@ class ExplorerController(QObject if QT_AVAILABLE else object):
     def _select_new_active_pane(self):
         """Select new active pane when current one is removed."""
         try:
-            if self._pane_manager and hasattr(self._pane_manager, "get_pane_ids"):
+            if self._pane_manager and hasattr(
+                self._pane_manager,
+                "get_pane_ids",
+            ):
                 pane_ids = self._pane_manager.get_pane_ids()
                 if pane_ids:
                     self.active_pane_id = pane_ids[0]
@@ -660,7 +698,12 @@ class ExplorerController(QObject if QT_AVAILABLE else object):
         """Get state for specific pane (T042)."""
         return self.pane_states.get(pane_id)
 
-    def update_pane_state(self, pane_id: str, state_key: str, state_value: Any):
+    def update_pane_state(
+        self,
+        pane_id: str,
+        state_key: str,
+        state_value: Any,
+    ):
         """Update specific state value for pane (T042)."""
         try:
             if pane_id in self.pane_states:
@@ -684,10 +727,16 @@ class ExplorerController(QObject if QT_AVAILABLE else object):
             }
 
             # Add manager-specific status if available
-            if self._pane_manager and hasattr(self._pane_manager, "get_status"):
+            if self._pane_manager and hasattr(
+                self._pane_manager,
+                "get_status",
+            ):
                 status["pane_manager_status"] = self._pane_manager.get_status()
 
-            if self._layout_manager and hasattr(self._layout_manager, "get_status"):
+            if self._layout_manager and hasattr(
+                self._layout_manager,
+                "get_status",
+            ):
                 status["layout_manager_status"] = self._layout_manager.get_status()
 
             return status

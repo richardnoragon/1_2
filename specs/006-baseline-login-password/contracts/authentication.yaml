@@ -1,0 +1,123 @@
+openapi: 3.0.1
+info:
+  title: RFU Identity Service (Internal Contracts)
+  version: 0.1.0-draft
+  description: >-
+    Contract used to guide CLI/GUI integration layers even though
+    the implementation is in-process. Treat these endpoints as
+    logical service boundaries for task decomposition.
+servers:
+  - url: internal://rfu-core
+paths:
+  /auth/login:
+    post:
+      summary: Authenticate a user and mint a session token.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [username, password, surface]
+              properties:
+                username:
+                  type: string
+                  minLength: 3
+                password:
+                  type: string
+                  format: password
+                surface:
+                  type: string
+                  enum: [gui, cli]
+      responses:
+        "200":
+          description: Login success
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [session_id, expires_at, preferences_id]
+                properties:
+                  session_id:
+                    type: string
+                  expires_at:
+                    type: string
+                    format: date-time
+                  preferences_id:
+                    type: string
+        "401":
+          description: Invalid credentials or blocked account
+    delete:
+      summary: Logout the current session (token in Authorization header)
+      responses:
+        "204": { description: Session invalidated }
+        "401": { description: Invalid or expired token }
+  /admin/users:
+    post:
+      summary: Approve a pending self-registration request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [username, approve]
+              properties:
+                username:
+                  type: string
+                approve:
+                  type: boolean
+      responses:
+        "200": { description: User activated }
+        "404": { description: Pending user not found }
+    patch:
+      summary: Perform admin actions on an existing account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [username, action]
+              properties:
+                username:
+                  type: string
+                action:
+                  type: string
+                  enum: [reset_password, unblock]
+                reason:
+                  type: string
+      responses:
+        "200":
+          description: Action completed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  temporary_password:
+                    type: string
+                    description: Returned only for reset_password
+        "400": { description: Invalid state transition }
+        "404": { description: User not found }
+  /preferences/share:
+    post:
+      summary: Export preferences bundle when `share_preferences=true`.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [username, purpose]
+              properties:
+                username:
+                  type: string
+                purpose:
+                  type: string
+                anonymize:
+                  type: boolean
+                  default: true
+      responses:
+        "200": { description: JSON blob ready for download }
+        "403": { description: Sharing disabled for user }

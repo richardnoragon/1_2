@@ -121,21 +121,8 @@ class FileExplorerSchema:
         """
         )
 
-        # User preferences
-        conn.execute(
-            """
-            CREATE TABLE IF NOT EXISTS user_preferences (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                category TEXT NOT NULL,
-                setting_name TEXT NOT NULL,
-                setting_value TEXT,
-                setting_type TEXT DEFAULT 'string',
-                description TEXT,
-                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                UNIQUE(category, setting_name)
-            )
-        """
-        )
+        # Explorer preference storage is handled by PreferenceManager; the
+        # legacy explorer-specific user_preferences table was removed in beta.
 
     def _create_history_tables(self, conn: sqlite3.Connection):
         """Create history-related tables."""
@@ -340,63 +327,6 @@ class FileExplorerSchema:
             categories,
         )
 
-        # Default user preferences
-        preferences = [
-            (
-                "general",
-                "default_pane_count",
-                "2",
-                "integer",
-                "Default number of panes",
-            ),
-            (
-                "general",
-                "layout_mode",
-                "horizontal",
-                "string",
-                "Default layout mode",
-            ),
-            (
-                "general",
-                "show_hidden_files",
-                "false",
-                "boolean",
-                "Show hidden files by default",
-            ),
-            (
-                "general",
-                "confirm_delete",
-                "true",
-                "boolean",
-                "Confirm file deletions",
-            ),
-            ("ui", "theme", "light", "string", "UI theme"),
-            ("ui", "font_size", "10", "integer", "UI font size"),
-            (
-                "performance",
-                "cache_size_mb",
-                "64",
-                "integer",
-                "File cache size in MB",
-            ),
-            (
-                "performance",
-                "max_history_entries",
-                "1000",
-                "integer",
-                "Maximum history entries",
-            ),
-        ]
-
-        conn.executemany(
-            """
-            INSERT OR IGNORE INTO user_preferences 
-            (category, setting_name, setting_value, setting_type, description)
-            VALUES (?, ?, ?, ?, ?)
-        """,
-            preferences,
-        )
-
 
 class FileExplorerDatabase:
     """Database manager for file explorer operations."""
@@ -486,9 +416,7 @@ class FileExplorerDatabase:
             self.logger.error(f"Failed to save pane configuration: {e}")
             return False
 
-    def add_to_navigation_history(
-        self, pane_index: int, path: str, session_id: str
-    ):
+    def add_to_navigation_history(self, pane_index: int, path: str, session_id: str):
         """Add an entry to navigation history."""
         try:
             with sqlite3.connect(self.db_path) as conn:
@@ -599,9 +527,7 @@ class FileExplorerDatabase:
             self.logger.error(f"Failed to get bookmarks: {e}")
             return []
 
-    def add_bookmark(
-        self, name: str, path: str, category: str = "user"
-    ) -> bool:
+    def add_bookmark(self, name: str, path: str, category: str = "user") -> bool:
         """Add a new bookmark."""
         try:
             with sqlite3.connect(self.db_path) as conn:

@@ -11,9 +11,9 @@ from typing import Optional
 from PyQt5.QtCore import QObject, pyqtSignal
 
 from src.file_explorer.models.pane_configuration import PaneConfiguration
-from src.file_explorer.services.preference_service import (
-    PreferenceService,
-    get_preference_service,
+from src.file_explorer.services.explorer_preferences import (
+    ExplorerPreferences,
+    get_explorer_preferences,
 )
 
 
@@ -23,22 +23,28 @@ class LayoutManager(QObject):
     # Signal emitted when layout changes
     layout_changed = pyqtSignal(PaneConfiguration)
 
-    def __init__(self, preference_service=None, config_dir=None):
+    def __init__(
+        self,
+        explorer_preferences: Optional[ExplorerPreferences] = None,
+        config_dir=None,
+    ):
         """
         Initialize the layout manager.
 
         Args:
-            preference_service: Optional PreferenceService instance
+            explorer_preferences: Optional ExplorerPreferences instance
             config_dir: Optional configuration directory for testing
         """
         super().__init__()
 
         self.logger = logging.getLogger("RFU.FileExplorer.LayoutManager")
 
-        if config_dir:
-            self.preference_service = PreferenceService(config_dir)
+        if explorer_preferences is not None:
+            self._preferences = explorer_preferences
+        elif config_dir:
+            self._preferences = ExplorerPreferences(config_dir=config_dir)
         else:
-            self.preference_service = preference_service or get_preference_service()
+            self._preferences = get_explorer_preferences()
 
         self._current_config: Optional[PaneConfiguration] = None
         self.logger.info("LayoutManager initialized")
@@ -64,9 +70,9 @@ class LayoutManager(QObject):
             self.layout_changed.emit(config)
 
             # Persist configuration
-            prefs = self.preference_service.load_preferences()
+            prefs = self._preferences.load_user_preferences()
             prefs.pane_config = config
-            self.preference_service.save_preferences(prefs)
+            self._preferences.save_user_preferences(prefs)
 
             self.logger.info(
                 f"Applied configuration: {config.pane_count} panes, "
@@ -90,7 +96,7 @@ class LayoutManager(QObject):
         if self._current_config is None:
             # Load from preferences
             try:
-                prefs = self.preference_service.load_preferences()
+                prefs = self._preferences.load_user_preferences()
                 self._current_config = prefs.pane_config
             except Exception as e:
                 self.logger.error(f"Error loading current configuration: {e}")
@@ -122,9 +128,9 @@ class LayoutManager(QObject):
                 current_config.splitter_states.update(splitter_states)
 
             # Persist immediately
-            prefs = self.preference_service.load_preferences()
+            prefs = self._preferences.load_user_preferences()
             prefs.pane_config = current_config
-            self.preference_service.save_preferences(prefs)
+            self._preferences.save_user_preferences(prefs)
 
             state_count = len(splitter_states) if splitter_states else 0
             self.logger.debug(f"Saved {state_count} splitter states")

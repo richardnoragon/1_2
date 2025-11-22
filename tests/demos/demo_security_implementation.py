@@ -9,8 +9,8 @@ This script demonstrates the implemented security features:
 Run this script to see the security features in action.
 """
 
-import logging
 import json
+import logging
 from datetime import datetime
 from pathlib import Path
 
@@ -29,7 +29,7 @@ def demo_migration_system():
 
     try:
         from src.core.migrations import DatabaseMigrationManager
-        from src.core.database_manager import get_database_manager
+        from src.database.database_manager import get_database_manager
 
         # Initialize components
         db_manager = get_database_manager()
@@ -159,7 +159,7 @@ def demo_security_integration():
     print("=" * 60)
 
     try:
-        from src.core.database_manager import get_database_manager
+        from src.database.database_manager import get_database_manager
 
         db_manager = get_database_manager()
 
@@ -175,9 +175,7 @@ def demo_security_integration():
         db_info = db_manager.get_database_info()
         print(f"\nDatabase security status:")
         print(f"  • Tables protected: {len(db_info.get('table_counts', {}))}")
-        print(
-            f"  • Session tracking: {db_info.get('session_id', 'N/A')[:8]}..."
-        )
+        print(f"  • Session tracking: {db_info.get('session_id', 'N/A')[:8]}...")
         print(f"  • Connection pooling: Active")
 
         # Simulate security metrics
@@ -278,9 +276,7 @@ def main():
 
     if success_count == total_count:
         print("🎉 ALL SECURITY FEATURES WORKING CORRECTLY!")
-        print(
-            "\nThe RFU Hub Preferences Security System has been successfully"
-        )
+        print("\nThe RFU Hub Preferences Security System has been successfully")
         print("implemented with comprehensive protection for:")
         print("• Theme data encryption and integrity")
         print("• Database migration with rollback")

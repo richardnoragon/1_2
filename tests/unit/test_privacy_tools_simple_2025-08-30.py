@@ -33,7 +33,7 @@ except ImportError:
 
 # Import target module
 if PYQT5_AVAILABLE:
-    from tools.privacy.privacy_tools_simple import (PrivacyCleanerGUI,
+    from src.tools.privacy.privacy_tools_simple import (PrivacyCleanerGUI,
                                                         SimplePrivacyHub, main)
 
 

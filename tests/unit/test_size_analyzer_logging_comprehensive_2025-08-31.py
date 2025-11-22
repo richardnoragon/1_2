@@ -481,7 +481,7 @@ class TestLoggingIntegration:
 
         # Test that logger can be used by analysis engine
         try:
-            from tools.analysis.size_analyzer.size_analyzer_logic import SizeAnalyzer
+            from src.tools.analysis.size_analyzer.size_analyzer_logic import SizeAnalyzer
 
             analyzer = SizeAnalyzer()
 

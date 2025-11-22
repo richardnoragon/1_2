@@ -26,16 +26,16 @@ from pytest import fixture, mark, raises
 
 # Import the modules to test
 try:
-    from tools.system.diagnostics_monitoring import SystemDiagnosticsGUI
-    from tools.system.diagnostics_monitoring.core.data_collector import (
+    from src.tools.system.diagnostics_monitoring import SystemDiagnosticsGUI
+    from src.tools.system.diagnostics_monitoring.core.data_collector import (
         DataCollector, DataPoint, DataType, get_data_collector)
-    from tools.system.diagnostics_monitoring.core.monitor_base import (
+    from src.tools.system.diagnostics_monitoring.core.monitor_base import (
         AlertLevel, MonitorBase, MonitorStatus)
-    from tools.system.diagnostics_monitoring.core.platform_detector import (
+    from src.tools.system.diagnostics_monitoring.core.platform_detector import (
         PlatformDetector, SupportedPlatform, get_platform_detector)
-    from tools.system.diagnostics_monitoring.system_diagnostics_gui import \
+    from src.tools.system.diagnostics_monitoring.system_diagnostics_gui import \
         SystemDiagnosticsGUI as MainSystemDiagnosticsGUI
-    from tools.system.diagnostics_monitoring.system_diagnostics_gui import \
+    from src.tools.system.diagnostics_monitoring.system_diagnostics_gui import \
         create_system_diagnostics_gui
     IMPORT_SUCCESS = True
 except ImportError as e:

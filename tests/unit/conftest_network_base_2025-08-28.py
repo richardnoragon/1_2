@@ -13,7 +13,7 @@ import tempfile
 import threading
 from datetime import datetime
 from pathlib import Path
-from unittest.mock import Mock, MagicMock, patch
+from unittest.mock import MagicMock, Mock, patch
 
 import pytest
 
@@ -24,10 +24,10 @@ sys.path.insert(0, str(src_dir))
 
 # Import target modules with error handling
 try:
-    from tools.network.network_connectivity_complex.core.network_base import (
-        NetworkOperationStatus,
+    from src.tools.network.network_connectivity_complex.core.network_base import (
         NetworkAlertLevel,
         NetworkOperationResult,
+        NetworkOperationStatus,
         NetworkToolBase,
     )
 
@@ -72,9 +72,7 @@ def mock_config_manager():
     config_manager.get_setting = Mock(
         side_effect=lambda section, key, default=None: config_manager.config.get(
             section, {}
-        ).get(
-            key, default
-        )
+        ).get(key, default)
     )
     config_manager.set_setting = Mock()
     return config_manager
@@ -169,13 +167,13 @@ def mock_network_tool_implementation():
         def __init__(self, tool_name="TestTool"):
             with (
                 patch(
-                    "utilities.network.network_connectivity_complex.core.network_base.ConfigManager"
+                    "src.tools.network.network_connectivity_complex.core.network_base.ConfigManager"
                 ),
                 patch(
-                    "utilities.network.network_connectivity_complex.core.network_base.logging.getLogger"
+                    "src.tools.network.network_connectivity_complex.core.network_base.logging.getLogger"
                 ),
                 patch(
-                    "utilities.network.network_connectivity_complex.core.network_base.error_handler"
+                    "src.tools.network.network_connectivity_complex.core.network_base.error_handler"
                 ),
             ):
                 super().__init__(tool_name)
@@ -323,8 +321,9 @@ def threading_test_environment():
 @pytest.fixture(scope="function")
 def performance_monitor():
     """Monitor performance metrics during tests."""
-    import psutil
     import time
+
+    import psutil
 
     monitor_data = {
         "start_time": time.time(),
@@ -406,9 +405,7 @@ def callback_tracker():
 
         return callback
 
-    def create_failing_callback(
-        callback_id, exception_message="Test callback failure"
-    ):
+    def create_failing_callback(callback_id, exception_message="Test callback failure"):
         """Create a callback that always fails."""
 
         def callback(*args, **kwargs):
@@ -472,9 +469,7 @@ def collect_test_metadata(request):
 def pytest_runtest_setup(item):
     """Called before each test item is executed."""
     if not NETWORK_BASE_AVAILABLE:
-        pytest.skip(
-            "network_base module not available", allow_module_level=True
-        )
+        pytest.skip("network_base module not available", allow_module_level=True)
 
 
 def pytest_runtest_makereport(item, call):
@@ -505,9 +500,7 @@ def pytest_configure(config):
 
 def pytest_sessionfinish(session, exitstatus):
     """Generate session summary."""
-    summary_file = (
-        test_dir / "result_network_base_test_metadata_2025-08-28.json"
-    )
+    summary_file = test_dir / "result_network_base_test_metadata_2025-08-28.json"
 
     summary = {
         "session_info": {

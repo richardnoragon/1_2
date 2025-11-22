@@ -38,7 +38,7 @@ try:
         DuplicateFinderApp as DuplicateFilesFinder,
     )
     from src.tools.analysis.empty_folders import EmptyFoldersFinder
-    from tools.analysis.size_analyzer.size_analyzer_logic import (
+    from src.tools.analysis.size_analyzer.size_analyzer_logic import (
         SizeAnalyzer,
         SizeAnalyzerWorker,
     )

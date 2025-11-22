@@ -31,7 +31,7 @@ import pytest
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
 
 # Import the modules to test
-from tools.network.bookmark_manager import (BookmarkDialog,
+from src.tools.network.bookmark_manager import (BookmarkDialog,
                                                 BookmarkExporter,
                                                 BookmarkImporter,
                                                 BookmarkManagerGUI,

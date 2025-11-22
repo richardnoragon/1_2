@@ -236,7 +236,18 @@
     "preference_confidence": 0.5
   },
   "test": {
-    "theme": "dark"
+    "theme": "dark",
+    "string_value": "hello world",
+    "integer_value": 42,
+    "boolean_value": true,
+    "json_value": {
+      "key": "value",
+      "list": [
+        1,
+        2,
+        3
+      ]
+    }
   },
   "duplicates": {
     "default_hash_algorithm": "sha256",
@@ -447,5 +458,14 @@
       "workflow": "content_indexer",
       "notify": "always"
     }
-  }
+  },
+  "identity": {
+    "database_path": "C:\\Users\\HP1\\1_2\\data\\rfu_identity.sqlite3",
+    "enable_idle_watchdog": false,
+    "idle_timeout_minutes": 10,
+    "watchdog_interval_seconds": 60
+  },
+  "theme": "dark",
+  "auto_save": true,
+  "max_workers": 8
 }

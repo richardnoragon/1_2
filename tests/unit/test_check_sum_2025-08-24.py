@@ -27,11 +27,11 @@ from PyQt5.QtWidgets import QApplication, QMessageBox
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
 try:
-    from tools.analysis.checksum.check_sum import ChecksumGUI, main
+    from src.tools.analysis.checksum.check_sum import ChecksumGUI, main
 except ImportError:
     # Alternative import path
     sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
-    from tools.analysis.checksum.check_sum import ChecksumGUI, main
+    from src.tools.analysis.checksum.check_sum import ChecksumGUI, main
 
 
 class TestChecksumGUI:

@@ -1777,6 +1777,19 @@ try:
             """Setup menu for switching between interface modes."""
             menubar = self.menuBar()
 
+            if not menubar:
+                return
+
+            # Remove any previously added Interface menu to avoid duplicates
+            for action in list(menubar.actions()):
+                menu = action.menu() if hasattr(action, "menu") else None
+                text = action.text() if hasattr(action, "text") else ""
+                if menu is None:
+                    continue
+                if text.replace("&", "").strip().lower() == "interface":
+                    menubar.removeAction(action)
+                    break
+
             # Add interface menu
             interface_menu = menubar.addMenu("&Interface")
 
@@ -2273,6 +2286,11 @@ try:
                         "Update and maintain installed software",
                         self.open_software_maintenance,
                     ),
+                    (
+                        "Preference Portability",
+                        "Export and import preference payloads",
+                        self.open_preference_portability,
+                    ),
                 ]
             )
             self._register_tab(system_tab, "System Tools")
@@ -2675,6 +2693,13 @@ try:
                 "Software Maintenance",
                 "src.tools.system.software_maintenance",
                 "SoftwareMaintenanceGUI",
+            )
+
+        def open_preference_portability(self):
+            self.launch_tool(
+                "Preference Portability",
+                "src.tools.preferences.portability_launcher",
+                "PreferencePortabilityGUI",
             )
 
         # Menu callback implementations

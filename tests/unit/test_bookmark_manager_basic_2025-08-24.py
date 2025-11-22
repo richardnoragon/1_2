@@ -23,7 +23,7 @@ src_path = os.path.join(os.path.dirname(__file__), '..', '..', 'src')
 sys.path.insert(0, src_path)
 
 # Import the modules to test
-from tools.network.bookmark_manager import (BookmarkExporter,
+from src.tools.network.bookmark_manager import (BookmarkExporter,
                                                 BookmarkImporter,
                                                 BookmarkModel)
 

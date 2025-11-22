@@ -34,7 +34,7 @@ test_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(test_root / "src"))
 
 try:
-    from tools.pdf_tools.pdf_security import encrypt
+    from src.tools.pdf_tools.pdf_security import encrypt
 except ImportError:
     # Handle import gracefully with clear error message
     pytest.skip("encrypt module not available - integration test environment required", allow_module_level=True)

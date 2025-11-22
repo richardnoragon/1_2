@@ -58,6 +58,22 @@ except ImportError:
         ThemeManager = None
         Colors = None
 
+try:
+    from src.core.preferences.manager import PreferenceManager
+    from src.core.preferences.migration import PreferenceMigrationHelper
+
+    PREFERENCE_MANAGER_AVAILABLE = True
+except ImportError:
+    try:
+        from core.preferences.manager import PreferenceManager
+        from core.preferences.migration import PreferenceMigrationHelper
+
+        PREFERENCE_MANAGER_AVAILABLE = True
+    except ImportError:
+        PreferenceManager = None
+        PreferenceMigrationHelper = None  # type: ignore
+        PREFERENCE_MANAGER_AVAILABLE = False
+
 # Import SettingsDialog separately to ensure it's always available
 try:
     from src.gui.settings_dialog import SettingsDialog
@@ -236,6 +252,8 @@ class MultiPaneFileExplorer(QMainWindow):
         # Initialize core systems
         self.config_manager = None
         self.db_manager = None
+        self.preference_manager = None
+        self._migration_helper = None
         self.setup_core_systems()
 
         # Theme system
@@ -349,33 +367,62 @@ class MultiPaneFileExplorer(QMainWindow):
             except Exception as e:
                 self.logger.warning(f"Database manager not available: {e}")
 
+        if PREFERENCE_MANAGER_AVAILABLE and self.preference_manager is None:
+            try:
+                self.preference_manager = PreferenceManager()
+            except Exception as e:
+                self.logger.warning(
+                    f"PreferenceManager not available for explorer: {e}"
+                )
+
+        if PreferenceMigrationHelper is not None:
+            self._migration_helper = PreferenceMigrationHelper(
+                preference_manager=self.preference_manager,
+                config_manager=self.config_manager,
+                logger=self.logger,
+            )
+
     def setup_theme_system(self):
         """Initialize theme system and load current theme."""
+        desired_theme = self.current_theme or "light"
         try:
-            if THEME_MANAGER_AVAILABLE and self.config_manager:
-                # Load saved theme
+            helper = getattr(self, "_migration_helper", None)
+            if helper is not None:
+                desired_theme = helper.load_theme(desired_theme)
+            elif self.preference_manager is not None:
                 try:
-                    saved_theme = self.config_manager.get_setting(
+                    desired_theme = self.preference_manager.get_theme(
+                        default=desired_theme
+                    )
+                except Exception as exc:  # noqa: BLE001
+                    self.logger.warning(
+                        "Could not load theme from PreferenceManager fallback: %s",
+                        exc,
+                    )
+            elif self.config_manager:
+                try:
+                    desired_theme = self.config_manager.get_setting(
                         "general", "theme", "light"
                     )
-                    self.current_theme = saved_theme
-                    self.logger.info(f"Loaded theme: {self.current_theme}")
-                except Exception as e:
-                    self.logger.warning(f"Could not load theme setting: {e}")
-                    self.current_theme = "light"
+                except Exception as exc:  # noqa: BLE001
+                    self.logger.warning(
+                        "Could not load theme setting from ConfigManager: %s",
+                        exc,
+                    )
+                    desired_theme = "light"
 
-                # Register for theme change notifications
-                if ThemeManager:
-                    ThemeManager.add_theme_changed_callback(self._on_theme_changed)
-                    # Set initial theme
-                    ThemeManager.set_theme(self.current_theme)
+            self.current_theme = desired_theme or "light"
+
+            if THEME_MANAGER_AVAILABLE and ThemeManager:
+                ThemeManager.add_theme_changed_callback(self._on_theme_changed)
+                ThemeManager.set_theme(self.current_theme)
+                self.logger.info(f"Loaded theme: {self.current_theme}")
             else:
-                self.current_theme = "light"
                 self.logger.info(
                     "Theme manager not available, using default light theme"
                 )
-        except Exception as e:
-            self.logger.error(f"Error setting up theme system: {e}")
+        except Exception as exc:
+            self.logger.error(f"Error setting up theme system: {exc}")
             self.current_theme = "light"
 
     def _on_theme_changed(self, new_theme: str):
@@ -481,13 +528,19 @@ class MultiPaneFileExplorer(QMainWindow):
             # Update theme manager
             ThemeManager.set_theme(theme_name)
 
-            # Save to configuration
-            if self.config_manager:
+            self.current_theme = theme_name
+
+            helper = getattr(self, "_migration_helper", None)
+            if helper is not None:
+                helper.save_theme(theme_name)
+            elif self.preference_manager is not None:
                 try:
-                    self.config_manager.set_setting("general", "theme", theme_name)
-                    self.logger.info(f"Saved theme setting: {theme_name}")
-                except Exception as e:
-                    self.logger.warning(f"Could not save theme setting: {e}")
+                    self.preference_manager.set_theme(theme_name)
+                except Exception as exc:  # noqa: BLE001
+                    self.logger.warning(
+                        "Could not persist theme via PreferenceManager fallback: %s",
+                        exc,
+                    )
 
         except Exception as e:
             self.logger.error(f"Error setting theme: {e}")
@@ -1420,17 +1473,34 @@ class MultiPaneFileExplorer(QMainWindow):
 
                 # Load and apply theme
                 if THEME_MANAGER_AVAILABLE:
-                    try:
-                        saved_theme = self.config_manager.get_setting(
-                            "general", "theme", "light"
+                    helper = getattr(self, "_migration_helper", None)
+                    if helper is not None:
+                        saved_theme = helper.load_theme(self.current_theme)
+                    elif self.preference_manager is not None:
+                        try:
+                            saved_theme = self.preference_manager.get_theme(
+                                default=self.current_theme
+                            )
+                        except Exception as exc:  # noqa: BLE001
+                            self.logger.warning(
+                                "Could not load theme from PreferenceManager fallback: %s",
+                                exc,
+                            )
+                            saved_theme = None
+                    else:
+                        saved_theme = self.current_theme
+
+                    if (
+                        saved_theme
+                        and isinstance(saved_theme, str)
+                        and saved_theme != self.current_theme
+                    ):
+                        self.current_theme = saved_theme
+                        if ThemeManager:
+                            ThemeManager.set_theme(saved_theme)
+                        self.logger.info(
+                            f"Loaded and applied theme from configuration: {saved_theme}"
                         )
-                        if saved_theme != self.current_theme:
-                            self.current_theme = saved_theme
-                            if ThemeManager:
-                                ThemeManager.set_theme(saved_theme)
-                            self.logger.info(f"Loaded and applied theme: {saved_theme}")
-                    except Exception as e:
-                        self.logger.warning(f"Could not load theme: {e}")
 
                 self.logger.info(
                     f"Configuration loaded: {self.pane_count} panes, "
@@ -2471,6 +2541,18 @@ class MultiPaneFileExplorer(QMainWindow):
     def save_configuration(self):
         """Save current configuration with enhanced Qt object support."""
         try:
+            helper = getattr(self, "_migration_helper", None)
+            if helper is not None:
+                helper.save_theme(self.current_theme)
+            elif self.preference_manager is not None:
+                try:
+                    self.preference_manager.set_theme(self.current_theme)
+                except Exception as exc:  # noqa: BLE001
+                    self.logger.warning(
+                        "Could not persist theme via PreferenceManager fallback: %s",
+                        exc,
+                    )
+
             # Use enhanced config manager if available
             if get_enhanced_config_manager:
                 enhanced_config = get_enhanced_config_manager()
@@ -2485,7 +2567,6 @@ class MultiPaneFileExplorer(QMainWindow):
                     enhanced_config.set_setting(
                         "file_explorer", "layout_mode", self.layout_mode
                     )
-                    enhanced_config.set_setting("general", "theme", self.current_theme)
                     enhanced_config.save_config()
                     self.logger.debug("Configuration saved with enhanced manager")
                     return
@@ -2499,7 +2580,6 @@ class MultiPaneFileExplorer(QMainWindow):
                     self.config_manager.set_setting(
                         "file_explorer.layout_mode", self.layout_mode
                     )
-                    self.config_manager.set_setting("general.theme", self.current_theme)
                     self.logger.debug("Configuration saved with basic manager")
                 except Exception as e:
                     self.logger.warning(f"Basic config save failed: {e}")

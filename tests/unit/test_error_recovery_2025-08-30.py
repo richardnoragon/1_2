@@ -21,7 +21,7 @@ import os
 # Add the source directory to the Python path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "src"))
 
-from tools.privacy.error_recovery import (
+from src.tools.privacy.error_recovery import (
     PrivacyToolsErrorRecovery,
     safe_import,
     safe_execute,

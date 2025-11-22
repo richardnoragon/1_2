@@ -1,6 +1,5 @@
-from pathlib import Path
+import logging
 
-from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
     QCheckBox,
     QComboBox,
@@ -8,7 +7,6 @@ from PyQt5.QtWidgets import (
     QFileDialog,
     QFormLayout,
     QHBoxLayout,
-    QLabel,
     QLineEdit,
     QMessageBox,
     QPushButton,
@@ -38,6 +36,18 @@ except ImportError:
 
             def reset_to_defaults(self):
                 self.settings = {}
+
+
+try:
+    from src.core.preferences.manager import PreferenceManager
+    from src.core.preferences.migration import PreferenceMigrationHelper
+except ImportError:
+    try:
+        from core.preferences.manager import PreferenceManager
+        from core.preferences.migration import PreferenceMigrationHelper
+    except ImportError:
+        PreferenceManager = None
+        PreferenceMigrationHelper = None  # type: ignore
 
 
 try:
@@ -75,7 +85,18 @@ class SettingsDialog(QDialog):
         Args:
             parent (Any): Description of parent"""
         super().__init__(parent)
+        self.logger = logging.getLogger("RFU.SettingsDialog")
         self.config = ConfigManager()
+        self.preference_manager = self._init_preference_manager()
+        self._migration_helper = (
+            PreferenceMigrationHelper(
+                preference_manager=self.preference_manager,
+                config_manager=self.config,
+                logger=self.logger,
+            )
+            if PreferenceMigrationHelper is not None
+            else None
+        )
         self.setup_ui()
         self.load_settings()
 
@@ -296,12 +317,8 @@ class SettingsDialog(QDialog):
         """Load current settings into the UI."""
         try:
             # General settings
-            self.theme_combo.setCurrentText(
-                self.config.get_setting("general", "theme", "light")
-            )
-            self.default_dir_edit.setText(
-                self.config.get_setting("general", "default_directory", "")
-            )
+            self.theme_combo.setCurrentText(self._load_theme_preference())
+            self.default_dir_edit.setText(self._load_default_directory())
             self.recent_spin.setValue(
                 self.config.get_setting("general", "max_recent_entries", 10)
             )
@@ -310,7 +327,9 @@ class SettingsDialog(QDialog):
             )
             self.debug_check.setChecked(
                 self.config.get_setting(
-                    "general", "enable_debug_logging", False
+                    "general",
+                    "enable_debug_logging",
+                    False,
                 )
             )
 
@@ -325,7 +344,9 @@ class SettingsDialog(QDialog):
             )
             self.skip_system_check.setChecked(
                 self.config.get_setting(
-                    "duplicates", "skip_system_files", True
+                    "duplicates",
+                    "skip_system_files",
+                    True,
                 )
             )
 
@@ -343,12 +364,16 @@ class SettingsDialog(QDialog):
             )
             self.compression_spin.setValue(
                 self.config.get_setting(
-                    "compression", "default_compression_level", 6
+                    "compression",
+                    "default_compression_level",
+                    6,
                 )
             )
             self.password_check.setChecked(
                 self.config.get_setting(
-                    "compression", "use_password_protection", False
+                    "compression",
+                    "use_password_protection",
+                    False,
                 )
             )
 
@@ -366,7 +391,9 @@ class SettingsDialog(QDialog):
             # Catalog settings
             self.catalog_recursive_check.setChecked(
                 self.config.get_setting(
-                    "catalog", "recursive_by_default", True
+                    "catalog",
+                    "recursive_by_default",
+                    True,
                 )
             )
             self.catalog_duplicates_check.setChecked(
@@ -383,19 +410,25 @@ class SettingsDialog(QDialog):
             )
             self.sort_order_combo.setCurrentText(
                 self.config.get_setting(
-                    "catalog", "default_sort_order", "ascending"
+                    "catalog",
+                    "default_sort_order",
+                    "ascending",
                 )
             )
 
             # Organize settings
             self.organize_recursive_check.setChecked(
                 self.config.get_setting(
-                    "organize", "recursive_by_default", False
+                    "organize",
+                    "recursive_by_default",
+                    False,
                 )
             )
             self.category_folders_check.setChecked(
                 self.config.get_setting(
-                    "organize", "create_category_folders", True
+                    "organize",
+                    "create_category_folders",
+                    True,
                 )
             )
             self.move_files_check.setChecked(
@@ -412,12 +445,8 @@ class SettingsDialog(QDialog):
         """Save settings from the UI to configuration."""
         try:
             # General settings
-            self.config.set_setting(
-                "general", "theme", self.theme_combo.currentText()
-            )
-            self.config.set_setting(
-                "general", "default_directory", self.default_dir_edit.text()
-            )
+            self._save_theme_preference(self.theme_combo.currentText())
+            self._save_default_directory(self.default_dir_edit.text())
             self.config.set_setting(
                 "general", "max_recent_entries", self.recent_spin.value()
             )
@@ -533,6 +562,51 @@ class SettingsDialog(QDialog):
                 title="Error",
                 parent=self,
             )
+
+    def _init_preference_manager(self):
+        if PreferenceManager is None:
+            return None
+        try:
+            return PreferenceManager()
+        except Exception as exc:  # noqa: BLE001
+            self.logger.warning(
+                "PreferenceManager unavailable for settings dialog: %s", exc
+            )
+            return None
+
+    def _load_theme_preference(self) -> str:
+        fallback = self.config.get_setting("general", "theme", "light")
+        if self._migration_helper is None:
+            return str(fallback or "light")
+        return self._migration_helper.load_theme(str(fallback or "light"))
+
+    def _save_theme_preference(self, theme_name: str) -> None:
+        helper = self._migration_helper
+        if helper is None:
+            self.logger.warning(
+                "PreferenceManager migration helper unavailable; theme '%s'"
+                " not persisted",
+                theme_name,
+            )
+            return
+        helper.save_theme(theme_name)
+
+    def _load_default_directory(self) -> str:
+        fallback = self.config.get_setting("general", "default_directory", "")
+        if self._migration_helper is None:
+            return str(fallback or "")
+        return self._migration_helper.load_default_directory(str(fallback or ""))
+
+    def _save_default_directory(self, directory: str) -> None:
+        helper = self._migration_helper
+        if helper is None:
+            self.logger.warning(
+                "PreferenceManager migration helper unavailable; default"
+                " directory '%s' not persisted",
+                directory,
+            )
+            return
+        helper.save_default_directory(directory)
 
     def reset_all_settings(self):
         """Reset all settings to defaults."""

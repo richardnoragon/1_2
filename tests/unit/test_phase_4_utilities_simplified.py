@@ -30,15 +30,15 @@ if str(src_path) not in sys.path:
 
 # Real imports with comprehensive error handling
 try:
-    import tools.file_management
+    import src.tools.file_management
     UTILITIES_AVAILABLE = True
 except ImportError as e:
     print(f"[IMPORT_ISSUE] Utilities modules: {e}")
     UTILITIES_AVAILABLE = False
 
 try:
-    from tools.analysis import size_analyzer
-    from tools.file_management import file_finder
+    from src.tools.analysis import size_analyzer
+    from src.tools.file_management import file_finder
     FILE_COMPONENTS_AVAILABLE = True
 except ImportError as e:
     print(f"[IMPORT_ISSUE] Utility components: {e}")

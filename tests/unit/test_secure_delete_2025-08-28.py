@@ -21,7 +21,7 @@ import pytest
 # Add the source directory to the Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
-SECURE_DELETE_MODULE = "tools.file_operations.secure_delete.secure_delete"
+SECURE_DELETE_MODULE = "src.tools.file_operations.secure_delete.secure_delete"
 
 
 # Mock PyQt5 before importing the module under test
@@ -77,18 +77,18 @@ def mock_standard_window():
     stub_module.__all__ = ["EnhancedEditor", "TextEditor"]
 
     module_stubs = {
-        "tools.file_operations.enhanced_editor": stub_package,
-        "tools.file_operations.enhanced_editor.enhanced_editor": stub_module,
+        "src.tools.file_operations.enhanced_editor": stub_package,
+        "src.tools.file_operations.enhanced_editor.enhanced_editor": stub_module,
         "src.tools.file_operations.enhanced_editor": stub_package,
         "src.tools.file_operations.enhanced_editor.enhanced_editor": stub_module,
     }
 
     modules_to_clear = [
-        "tools.file_operations",
-        "tools.file_operations.enhanced_editor",
-        "tools.file_operations.enhanced_editor.enhanced_editor",
-        "tools.file_operations.secure_delete",
-        "tools.file_operations.secure_delete.secure_delete",
+        "src.tools.file_operations",
+        "src.tools.file_operations.enhanced_editor",
+        "src.tools.file_operations.enhanced_editor.enhanced_editor",
+        "src.tools.file_operations.secure_delete",
+        "src.tools.file_operations.secure_delete.secure_delete",
         "src.tools.file_operations",
         "src.tools.file_operations.enhanced_editor",
         "src.tools.file_operations.enhanced_editor.enhanced_editor",
@@ -149,7 +149,7 @@ class TestSecureDeleteGUI:
             f"{SECURE_DELETE_MODULE}.STANDARD_WINDOW_AVAILABLE",
             True,
         ):
-            from tools.file_operations.secure_delete.secure_delete import (
+            from src.tools.file_operations.secure_delete.secure_delete import (
                 SecureDeleteGUI,
             )
 
@@ -171,7 +171,7 @@ class TestSecureDeleteGUI:
             f"{SECURE_DELETE_MODULE}.STANDARD_WINDOW_AVAILABLE",
             True,
         ):
-            from tools.file_operations.secure_delete.secure_delete import (
+            from src.tools.file_operations.secure_delete.secure_delete import (
                 SecureDeleteGUI,
             )
 
@@ -187,7 +187,7 @@ class TestSecureDeleteGUI:
             f"{SECURE_DELETE_MODULE}.STANDARD_WINDOW_AVAILABLE",
             False,
         ):
-            from tools.file_operations.secure_delete.secure_delete import (
+            from src.tools.file_operations.secure_delete.secure_delete import (
                 SecureDeleteGUI,
             )
 
@@ -456,7 +456,7 @@ class TestSecureDeleteGUI:
             f"{SECURE_DELETE_MODULE}.STANDARD_WINDOW_AVAILABLE",
             False,
         ):
-            from tools.file_operations.secure_delete.secure_delete import (
+            from src.tools.file_operations.secure_delete.secure_delete import (
                 SecureDeleteGUI,
             )
 
@@ -498,7 +498,7 @@ class TestSecureDeleteFunctions:
         # Mock sys.argv
         with patch("sys.argv", ["secure_delete.py"]):
             with patch("sys.exit") as mock_exit:
-                from tools.file_operations.secure_delete.secure_delete import main
+                from src.tools.file_operations.secure_delete.secure_delete import main
 
                 main()
 
@@ -525,7 +525,7 @@ class TestSecureDeleteIntegration:
                 f"{SECURE_DELETE_MODULE}.StandardWindow",
                 MagicMock(),
             ):
-                from tools.file_operations.secure_delete.secure_delete import (
+                from src.tools.file_operations.secure_delete.secure_delete import (
                     SecureDeleteGUI,
                 )
 

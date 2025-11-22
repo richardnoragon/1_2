@@ -44,7 +44,7 @@ try:
     import rfu
     import utilities
     from rfu import dev_hub, log_manager
-    from tools.file_management import file_finder
+    from src.tools.file_management import file_finder
     RFU_AVAILABLE = True
     UTILITIES_AVAILABLE = True
 except ImportError as e:

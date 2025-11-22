@@ -33,16 +33,31 @@ Usage (legacy - full version):
 __version__ = "1.0.0"
 __author__ = "Richard Noragon"
 
-# Import main classes for easy access
-try:
-    # New simplified version for hub integration (preferred)
-    # Legacy full-featured version (standalone)
-    from .multi_pane_explorer import MultiPaneFileExplorer
-    from .multi_pane_explorer_simple import MultiPaneExplorer
+# Import exposure is intentionally lazy to avoid loading the heavy multi-pane
+# explorer modules during package import (the hub only needs lightweight models
+# such as ``HubInterfaceMode`` during startup).  Eagerly importing the explorer
+# implementations caused the application to traverse the entire bookmark
+# subsystem before the GUI even appeared, which now manifests as the
+# KeyboardInterrupt stack trace reported in issue #RFU-189.
 
-    __all__ = ["MultiPaneExplorer", "MultiPaneFileExplorer"]
+from importlib import import_module
+from typing import TYPE_CHECKING, Any
 
-except ImportError as e:
-    # Handle missing dependencies gracefully
-    print(f"Warning: Could not import file explorer components: {e}")
-    __all__ = []
+__all__ = ["MultiPaneExplorer", "MultiPaneFileExplorer"]
+
+
+if TYPE_CHECKING:  # pragma: no cover - type checkers resolve real classes
+    from .multi_pane_explorer import MultiPaneFileExplorer as _MultiPaneFileExplorer
+    from .multi_pane_explorer_simple import MultiPaneExplorer as _MultiPaneExplorer
+
+
+def __getattr__(name: str) -> Any:
+    """Lazily resolve explorer entry points on first access."""
+
+    if name == "MultiPaneExplorer":
+        module = import_module("src.file_explorer.multi_pane_explorer_simple")
+        return getattr(module, name)
+    if name == "MultiPaneFileExplorer":
+        module = import_module("src.file_explorer.multi_pane_explorer")
+        return getattr(module, name)
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

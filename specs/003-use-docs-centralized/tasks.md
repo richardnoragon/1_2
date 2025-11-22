@@ -30,18 +30,18 @@
 
 ## Phase 3.4: Integration
 
-- [ ] T017 Wire validator notification outputs to GUI notification framework in `src/rfu/hub.py`
-- [ ] T018 Ensure headless workflows (e.g., network transfer) respect policy outcomes by updating `src/utilities/network/transfer/network_transfer.py`
-- [ ] T019 Update configuration management to permit per-workflow validator policies in `src/rfu/config_manager.py`
-- [ ] T020 Create compatibility shim for modules still using legacy helpers in `src/file_validator/compat.py`
+- [x] T017 Wire validator notification outputs to GUI notification framework in `src/rfu/hub.py`
+- [x] T018 Ensure headless workflows (e.g., network transfer) respect policy outcomes by updating `src/tools/network/transfer/network_transfer.py`
+- [x] T019 Update configuration management to permit per-workflow validator policies in `src/rfu/config_manager.py`
+- [x] T020 Create compatibility shim for modules still using legacy helpers in `src/file_validator/compat.py`
 
 ## Phase 3.5: Polish
 
-- [ ] T021 Write documentation quickstart in `specs/003-use-docs-centralized/quickstart.md`
-- [ ] T022 Update agent context via `.specify/scripts/powershell/update-agent-context.ps1 -AgentType copilot`
-- [ ] T023 Generate performance validation report by running validator against sample corpus and documenting results in `specs/003-use-docs-centralized/research.md`
-- [ ] T024 Review telemetry dashboards/log outputs to ensure mismatch evidence is captured, documenting in `specs/003-use-docs-centralized/data-model.md`
-- [ ] T025 Final validation: run `pytest tests/unit/file_validator/ tests/integration/gui/test_validator_notifications.py tests/integration/cli/test_validator_telemetry.py`
+- [x] T021 Write documentation quickstart in `specs/003-use-docs-centralized/quickstart.md`
+- [x] T022 Update agent context via `.specify/scripts/powershell/update-agent-context.ps1 -AgentType copilot`
+- [x] T023 Generate performance validation report by running validator against sample corpus and documenting results in `specs/003-use-docs-centralized/research.md`
+- [x] T024 Review telemetry dashboards/log outputs to ensure mismatch evidence is captured, documenting in `specs/003-use-docs-centralized/data-model.md`
+- [x] T025 Final validation: run `pytest tests/unit/file_validator/ tests/integration/gui/test_validator_notifications.py tests/integration/cli/test_validator_telemetry.py`
 
 ## Dependencies
 

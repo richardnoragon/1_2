@@ -1,13 +1,16 @@
-"""
-Service layer for the Multi-Pane Explorer feature.
+"""Service layer for the Multi-Pane Explorer feature."""
 
-This module contains business logic services for preferences, bookmarks,
-recent items, tool discovery, layout management, storage devices, and
-notifications.
-"""
+from .bookmark_service import BookmarkService
+from .explorer_preferences import ExplorerPreferences, get_explorer_preferences
+from .layout_manager import LayoutManager
+from .notification_service import NotificationService
+from .recent_items_service import RecentItemsService
+from .storage_device_service import StorageDeviceService
+from .tools_discovery_service import ToolsDiscoveryService
 
 __all__ = [
-    "PreferenceService",
+    "ExplorerPreferences",
+    "get_explorer_preferences",
     "BookmarkService",
     "RecentItemsService",
     "ToolsDiscoveryService",

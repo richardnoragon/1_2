@@ -110,9 +110,7 @@ class Colors:
     def set_theme(cls, theme_name: str):
         """Set the current theme and update all color attributes."""
         cls._current_theme = theme_name.lower()
-        color_class = (
-            DarkColors if cls._current_theme == "dark" else LightColors
-        )
+        color_class = DarkColors if cls._current_theme == "dark" else LightColors
 
         # Update all color attributes
         cls.PRIMARY = color_class.PRIMARY
@@ -693,3 +691,15 @@ class ThemeManager:
         except ImportError:
             # Return None if PyQt5 not available
             return None
+
+
+# Initialize current theme from preferences if available (best effort)
+try:  # pragma: no cover - optional integration
+    from src.core.preferences.manager import PreferenceManager
+
+    _pm = PreferenceManager()
+    _initial_theme = _pm.get_theme(default=Colors.get_theme())
+    Colors.set_theme(_initial_theme)
+except Exception:
+    # Prefer silent fallback to default theme on any import/DB errors
+    pass

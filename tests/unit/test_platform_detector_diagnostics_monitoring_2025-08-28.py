@@ -18,7 +18,7 @@ from unittest.mock import Mock, mock_open, patch
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
 
 try:
-    from tools.system.diagnostics_monitoring.core.platform_detector import (
+    from src.tools.system.diagnostics_monitoring.core.platform_detector import (
         PlatformDetector, SupportedPlatform, get_platform_detector)
     IMPORT_SUCCESS = True
 except ImportError as e:
@@ -628,7 +628,7 @@ class TestGlobalPlatformDetector(unittest.TestCase):
         """Test singleton behavior of global platform detector."""
         if IMPORT_SUCCESS and callable(get_platform_detector):
             # Clear any existing instance
-            import tools.system.diagnostics_monitoring.core.platform_detector as pd_module
+            import src.tools.system.diagnostics_monitoring.core.platform_detector as pd_module
             if hasattr(pd_module, '_platform_detector'):
                 pd_module._platform_detector = None
             

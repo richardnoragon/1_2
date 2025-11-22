@@ -16,7 +16,7 @@ try:
 
     # Test importing SystemCleanupGUI directly
     try:
-        from tools.privacy.privacy_cleaner.system_cleanup import SystemCleanupGUI
+        from src.tools.privacy.privacy_cleaner.system_cleanup import SystemCleanupGUI
 
         print("✅ SystemCleanupGUI imported successfully")
     except Exception as e:
@@ -76,7 +76,7 @@ try:
         print(f"✅ Window title: '{window_title}'")
 
         # Test that it's properly inheriting from SystemDiagnosticsGUI
-        from tools.system.diagnostics_monitoring.system_diagnostics_gui import (
+        from src.tools.system.diagnostics_monitoring.system_diagnostics_gui import (
             SystemDiagnosticsGUI,
         )
 

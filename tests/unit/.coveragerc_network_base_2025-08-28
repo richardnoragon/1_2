@@ -1,5 +1,5 @@
 [run]
-source = utilities.network.network_connectivity_complex.core.network_base
+source = src.tools.network.network_connectivity_complex.core.network_base
 omit = 
     */tests/*
     */test_*

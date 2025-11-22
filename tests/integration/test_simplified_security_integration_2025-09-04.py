@@ -53,7 +53,7 @@ except ImportError as e:
     print(f"EncryptionUtils import failed: {e}")
 
 try:
-    from tools.file_operations.secure_delete.secure_delete import SecureDeleteUtils
+    from src.tools.file_operations.secure_delete.secure_delete import SecureDeleteUtils
 
     available_modules["secure_delete"] = SecureDeleteUtils
 except ImportError as e:

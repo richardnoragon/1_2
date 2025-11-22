@@ -17,7 +17,7 @@ import pytest
 # Add the source directory to the Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
-MODULE_PATH = "tools.privacy.privacy_cleaner.system_cleanup"
+MODULE_PATH = "src.tools.privacy.privacy_cleaner.system_cleanup"
 
 
 def test_imports():
@@ -110,7 +110,7 @@ def test_format_size_method():
 def test_cleanup_operation_result_import():
     """Test importing CleanupOperationResult if available."""
     try:
-        from tools.system.system_cleanup.core.cleanup_base import CleanupOperationResult
+        from src.tools.system.system_cleanup.core.cleanup_base import CleanupOperationResult
 
         # Test creating a result object
         result = CleanupOperationResult(

@@ -6,22 +6,22 @@ corruption handling capabilities, and comprehensive logging.
 """
 
 import logging
-from typing import Optional, Dict, Any
 from datetime import datetime
+from typing import Any, Dict, Optional
 
 try:
-    from PyQt5.QtWidgets import (
-        QWidget,
-        QVBoxLayout,
-        QHBoxLayout,
-        QDialog,
-        QProgressDialog,
-        QLabel,
-        QPushButton,
-        QGroupBox,
-        QMessageBox,
-    )
     from PyQt5.QtCore import Qt, pyqtSignal
+    from PyQt5.QtWidgets import (
+        QDialog,
+        QGroupBox,
+        QHBoxLayout,
+        QLabel,
+        QMessageBox,
+        QProgressDialog,
+        QPushButton,
+        QVBoxLayout,
+        QWidget,
+    )
 
     PYQT_AVAILABLE = True
 except ImportError:
@@ -42,13 +42,13 @@ except ImportError:
 
 # Import theme security components (these would be implemented separately)
 try:
-    from ..core.theme_security.theme_security_manager import (
-        ThemeSecurityManager,
-    )
     from ..core.theme_security.theme_recovery_manager import (
         ThemeRecoveryManager,
     )
-    from ..core.database_manager import get_database_manager
+    from ..core.theme_security.theme_security_manager import (
+        ThemeSecurityManager,
+    )
+    from ..database.database_manager import get_database_manager
 except ImportError:
     # Mock classes for development
     class ThemeSecurityManager:
@@ -75,9 +75,7 @@ except ImportError:
         def __init__(self, db_manager):
             pass
 
-        def recover_corrupted_theme(
-            self, user_id, theme_name, corruption_type
-        ):
+        def recover_corrupted_theme(self, user_id, theme_name, corruption_type):
             from collections import namedtuple
 
             RecoveryResult = namedtuple("RecoveryResult", ["success", "error"])
@@ -89,8 +87,8 @@ except ImportError:
 
 # Create the base class depending on PyQt5 availability
 if PYQT_AVAILABLE:
-    from PyQt5.QtWidgets import QWidget as BaseWidget
     from PyQt5.QtCore import pyqtSignal
+    from PyQt5.QtWidgets import QWidget as BaseWidget
 else:
 
     class BaseWidget:
@@ -151,21 +149,15 @@ class SecureThemeSettingsWidget(BaseWidget):
         # Initialize signals
         if PYQT_AVAILABLE:
             self.theme_changed = pyqtSignal(str)  # Emitted when theme changes
-            self.security_event = pyqtSignal(
-                dict
-            )  # Emitted for security events
+            self.security_event = pyqtSignal(dict)  # Emitted for security events
         else:
             self.theme_changed = PyQtSignal(str)
             self.security_event = PyQtSignal(dict)
 
         # Initialize security managers
         try:
-            self.theme_security_manager = ThemeSecurityManager(
-                get_database_manager()
-            )
-            self.recovery_manager = ThemeRecoveryManager(
-                get_database_manager()
-            )
+            self.theme_security_manager = ThemeSecurityManager(get_database_manager())
+            self.recovery_manager = ThemeRecoveryManager(get_database_manager())
             self.logger.info("Security managers initialized successfully")
         except Exception as e:
             self.logger.error(f"Failed to initialize security managers: {e}")
@@ -181,8 +173,8 @@ class SecureThemeSettingsWidget(BaseWidget):
     def _setup_logging(self):
         """Setup logging configuration for the widget."""
         try:
-            from pathlib import Path
             import os
+            from pathlib import Path
 
             # Create log directory
             log_dir = Path.home() / ".rfu" / "logs"
@@ -214,9 +206,7 @@ class SecureThemeSettingsWidget(BaseWidget):
             # Fallback to console-only logging
             console_handler = logging.StreamHandler()
             console_handler.setLevel(logging.INFO)
-            formatter = logging.Formatter(
-                "%(name)s - %(levelname)s - %(message)s"
-            )
+            formatter = logging.Formatter("%(name)s - %(levelname)s - %(message)s")
             console_handler.setFormatter(formatter)
             self.logger.addHandler(console_handler)
             self.logger.warning(
@@ -313,15 +303,11 @@ class SecureThemeSettingsWidget(BaseWidget):
                 from PyQt5.QtCore import QTimer
 
                 self.security_timer = QTimer()
-                self.security_timer.timeout.connect(
-                    self._perform_security_check
-                )
+                self.security_timer.timeout.connect(self._perform_security_check)
                 self.security_timer.start(30000)  # Check every 30 seconds
                 self.logger.debug("Security monitoring timer started")
             except ImportError:
-                self.logger.warning(
-                    "Could not setup security monitoring timer"
-                )
+                self.logger.warning("Could not setup security monitoring timer")
 
     def on_theme_selected(self, theme_name: str):
         """
@@ -349,31 +335,23 @@ class SecureThemeSettingsWidget(BaseWidget):
                     return
 
                 # Load theme securely
-                retrieval_result = (
-                    self.theme_security_manager.retrieve_theme_securely(
-                        self.get_current_user_id(), theme_name
-                    )
+                retrieval_result = self.theme_security_manager.retrieve_theme_securely(
+                    self.get_current_user_id(), theme_name
                 )
 
                 if retrieval_result.success:
                     self.apply_theme_safely(retrieval_result.theme_data)
-                    self.update_security_status(
-                        "secure", "Theme loaded successfully"
-                    )
+                    self.update_security_status("secure", "Theme loaded successfully")
                     self.logger.info(f"Theme {theme_name} loaded successfully")
                     self.theme_changed.emit(theme_name)
                 else:
                     self.logger.error(
                         f"Theme retrieval failed: {retrieval_result.error}"
                     )
-                    self.update_security_status(
-                        "error", retrieval_result.error
-                    )
+                    self.update_security_status("error", retrieval_result.error)
             else:
                 self.logger.warning("Theme security manager not available")
-                self.update_security_status(
-                    "warning", "Security manager not available"
-                )
+                self.update_security_status("warning", "Security manager not available")
 
         except Exception as e:
             # FIXED: Use self.logger instead of undefined logger
@@ -406,9 +384,7 @@ class SecureThemeSettingsWidget(BaseWidget):
                 msg_box = QMessageBox(self)
                 msg_box.setIcon(QMessageBox.Warning)
                 msg_box.setWindowTitle("Theme Corruption Detected")
-                msg_box.setText(
-                    f"The theme '{theme_name}' appears to be corrupted."
-                )
+                msg_box.setText(f"The theme '{theme_name}' appears to be corrupted.")
                 msg_box.setInformativeText(
                     "Would you like to attempt automatic recovery?"
                 )
@@ -425,9 +401,7 @@ class SecureThemeSettingsWidget(BaseWidget):
                 elif result == QMessageBox.No:
                     self.show_manual_recovery_options(theme_name)
 
-                self.logger.info(
-                    f"User response to corruption dialog: {result}"
-                )
+                self.logger.info(f"User response to corruption dialog: {result}")
             else:
                 self.logger.warning(
                     "Cannot show corruption dialog - PyQt5 not available"
@@ -444,22 +418,16 @@ class SecureThemeSettingsWidget(BaseWidget):
             theme_name: Name of the theme to recover
             corruption_type: Type of corruption detected
         """
-        self.logger.info(
-            f"Attempting automatic recovery for theme: {theme_name}"
-        )
+        self.logger.info(f"Attempting automatic recovery for theme: {theme_name}")
 
         try:
             if self.recovery_manager:
-                recovery_result = (
-                    self.recovery_manager.recover_corrupted_theme(
-                        self.get_current_user_id(), theme_name, corruption_type
-                    )
+                recovery_result = self.recovery_manager.recover_corrupted_theme(
+                    self.get_current_user_id(), theme_name, corruption_type
                 )
 
                 if recovery_result.success:
-                    self.logger.info(
-                        f"Theme {theme_name} recovered successfully"
-                    )
+                    self.logger.info(f"Theme {theme_name} recovered successfully")
                     self.update_security_status(
                         "secure", "Theme recovered successfully"
                     )
@@ -467,12 +435,8 @@ class SecureThemeSettingsWidget(BaseWidget):
                     # Retry theme selection
                     self.on_theme_selected(theme_name)
                 else:
-                    self.logger.error(
-                        f"Theme recovery failed: {recovery_result.error}"
-                    )
-                    self.update_security_status(
-                        "error", "Theme recovery failed"
-                    )
+                    self.logger.error(f"Theme recovery failed: {recovery_result.error}")
+                    self.update_security_status("error", "Theme recovery failed")
                     self.show_manual_recovery_options(theme_name)
             else:
                 self.logger.warning("Recovery manager not available")
@@ -489,18 +453,14 @@ class SecureThemeSettingsWidget(BaseWidget):
         Args:
             theme_name: Name of the theme requiring manual recovery
         """
-        self.logger.info(
-            f"Showing manual recovery options for theme: {theme_name}"
-        )
+        self.logger.info(f"Showing manual recovery options for theme: {theme_name}")
 
         try:
             if PYQT_AVAILABLE:
                 msg_box = QMessageBox(self)
                 msg_box.setIcon(QMessageBox.Information)
                 msg_box.setWindowTitle("Manual Recovery Required")
-                msg_box.setText(
-                    f"Manual recovery options for theme '{theme_name}':"
-                )
+                msg_box.setText(f"Manual recovery options for theme '{theme_name}':")
                 msg_box.setInformativeText(
                     "• Restore from backup\n"
                     "• Reset to default theme\n"
@@ -523,16 +483,12 @@ class SecureThemeSettingsWidget(BaseWidget):
         Args:
             theme_data: Theme configuration data
         """
-        self.logger.debug(
-            f"Applying theme data safely: {len(theme_data)} properties"
-        )
+        self.logger.debug(f"Applying theme data safely: {len(theme_data)} properties")
 
         try:
             # Placeholder for actual theme application logic
             # This would integrate with the main theme system
-            self.logger.info(
-                "Theme applied successfully (placeholder implementation)"
-            )
+            self.logger.info("Theme applied successfully (placeholder implementation)")
 
         except Exception as e:
             self.logger.error(f"Error applying theme: {e}")
@@ -608,9 +564,7 @@ class SecureThemeSettingsWidget(BaseWidget):
 
     def clear_security_events(self):
         """Clear recorded security events"""
-        self.logger.info(
-            f"Clearing {len(self.security_events)} security events"
-        )
+        self.logger.info(f"Clearing {len(self.security_events)} security events")
         self.security_events.clear()
 
 
