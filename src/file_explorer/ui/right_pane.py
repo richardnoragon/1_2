@@ -11,8 +11,8 @@ from typing import Optional
 from PyQt5.QtWidgets import QTabWidget, QVBoxLayout, QWidget
 
 from src.file_explorer.models.right_pane_tab import RightPaneTab
-from src.file_explorer.services.preference_service import (
-    get_preference_service,
+from src.file_explorer.services.explorer_preferences import (
+    get_explorer_preferences,
 )
 from src.file_explorer.ui.preview_widget import PreviewWidget
 from src.file_explorer.ui.properties_widget import PropertiesWidget
@@ -31,7 +31,7 @@ class RightPane(QWidget):
         super().__init__(parent)
 
         self.logger = logging.getLogger("RFU.FileExplorer.RightPane")
-        self.preference_service = get_preference_service()
+        self._preferences = get_explorer_preferences()
 
         self.setup_ui()
         self.restore_default_tab()
@@ -61,8 +61,8 @@ class RightPane(QWidget):
     def restore_default_tab(self):
         """Restore the default tab from preferences."""
         try:
-            prefs = self.preference_service.load_preferences()
-            default_tab = prefs.default_right_tab
+            prefs = self._preferences.load_user_preferences()
+            default_tab = getattr(prefs, "right_default_tab", RightPaneTab.PREVIEW)
 
             # Map tab enum to index
             tab_index_map = {

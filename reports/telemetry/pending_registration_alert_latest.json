@@ -1,0 +1,17 @@
+{
+  "captured_at": "2025-11-22T10:31:27.098299",
+  "channel": "cli",
+  "database_path": "data\\rfu_identity.sqlite3",
+  "metadata": {
+    "email": "demo@example.com",
+    "purpose": "demo",
+    "surface": "cli"
+  },
+  "origin_surface": "cli",
+  "pending_count": 1,
+  "pending_preview": [
+    "demo"
+  ],
+  "submitted_at": "2025-11-22T10:31:27",
+  "username": "demo"
+}

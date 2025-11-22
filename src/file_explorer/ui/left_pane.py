@@ -11,8 +11,8 @@ from typing import Optional
 from PyQt5.QtWidgets import QTabWidget, QVBoxLayout, QWidget
 
 from src.file_explorer.models.left_pane_tab import LeftPaneTab
-from src.file_explorer.services.preference_service import (
-    get_preference_service,
+from src.file_explorer.services.explorer_preferences import (
+    get_explorer_preferences,
 )
 from src.file_explorer.ui.bookmarks_widget import BookmarksWidget
 from src.file_explorer.ui.recent_widget import RecentWidget
@@ -32,7 +32,7 @@ class LeftPane(QWidget):
         super().__init__(parent)
 
         self.logger = logging.getLogger("RFU.FileExplorer.LeftPane")
-        self.preference_service = get_preference_service()
+        self._preferences = get_explorer_preferences()
 
         self.setup_ui()
         self.restore_default_tab()
@@ -64,8 +64,8 @@ class LeftPane(QWidget):
     def restore_default_tab(self):
         """Restore the default tab from preferences."""
         try:
-            prefs = self.preference_service.load_preferences()
-            default_tab = prefs.default_left_tab
+            prefs = self._preferences.load_user_preferences()
+            default_tab = getattr(prefs, "left_default_tab", LeftPaneTab.RECENT)
 
             # Map tab enum to index
             tab_index_map = {

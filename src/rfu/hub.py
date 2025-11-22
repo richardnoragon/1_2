@@ -2,9 +2,12 @@
 
 from __future__ import annotations
 
+from dataclasses import dataclass
+from pathlib import Path
 from threading import RLock
-from typing import Optional, Protocol
+from typing import Any, Callable, Dict, Optional, Protocol
 
+from src.core.auth.watchdogs import enforce_idle_timeouts
 from src.file_validator.models import ValidationResult
 from src.gui.notifications.validator_bridge import dispatch_validator_alert
 from src.log_manager import get_log_manager
@@ -28,6 +31,90 @@ class ValidatorNotifier(Protocol):
 _logger = get_log_manager().get_logger("rfu.validator_notifications")
 _lock = RLock()
 _registered_notifier: Optional[ValidatorNotifier] = None
+_idle_watcher_config: Optional["IdleWatcherConfig"] = None
+_idle_watcher_last_summary: Optional[Dict[str, Any]] = None
+_idle_watcher_observers: set[Callable[[Dict[str, Any]], None]] = set()
+
+
+@dataclass(frozen=True)
+class IdleWatcherConfig:
+    database_path: Path
+    idle_minutes: int = 10
+
+
+def configure_idle_timeout_watcher(
+    *,
+    database_path: str | Path,
+    idle_minutes: int = 10,
+) -> IdleWatcherConfig:
+    path = Path(database_path)
+    minutes = max(1, int(idle_minutes))
+    config = IdleWatcherConfig(database_path=path, idle_minutes=minutes)
+    global _idle_watcher_config
+    with _lock:
+        _idle_watcher_config = config
+    _logger.info(
+        "Idle timeout watcher configured (path=%s, idle_minutes=%s)",
+        path,
+        minutes,
+    )
+    return config
+
+
+def get_idle_timeout_watcher_config() -> Optional[IdleWatcherConfig]:
+    with _lock:
+        return _idle_watcher_config
+
+
+def has_idle_timeout_watcher() -> bool:
+    with _lock:
+        return _idle_watcher_config is not None
+
+
+def register_idle_timeout_observer(callback: Callable[[Dict[str, Any]], None]) -> None:
+    with _lock:
+        _idle_watcher_observers.add(callback)
+
+
+def unregister_idle_timeout_observer(
+    callback: Callable[[Dict[str, Any]], None],
+) -> None:
+    with _lock:
+        _idle_watcher_observers.discard(callback)
+
+
+def get_last_idle_timeout_summary() -> Optional[Dict[str, Any]]:
+    with _lock:
+        return _idle_watcher_last_summary
+
+
+def run_idle_timeout_watcher(
+    *,
+    raise_on_missing_config: bool = True,
+) -> Dict[str, Any]:
+    with _lock:
+        config = _idle_watcher_config
+    if config is None:
+        if raise_on_missing_config:
+            raise RuntimeError("Idle timeout watcher has not been configured")
+        return {}
+
+    summary = enforce_idle_timeouts(
+        database_path=config.database_path,
+        idle_minutes=config.idle_minutes,
+    )
+    observers: list[Callable[[Dict[str, Any]], None]]
+    with _lock:
+        global _idle_watcher_last_summary
+        _idle_watcher_last_summary = summary
+        observers = list(_idle_watcher_observers)
+
+    for observer in observers:
+        try:
+            observer(summary)
+        except Exception as exc:  # pragma: no cover - observer safety
+            _logger.error("Idle timeout observer failed: %s", exc, exc_info=True)
+    return summary
 
 
 def register_validator_notifier(notifier: ValidatorNotifier) -> None:

@@ -50,17 +50,17 @@ sys.modules['scapy.all'] = Mock()
 
 # Import real implementations
 try:
-    from tools.network.network_connectivity_complex.core.network_base import (
+    from src.tools.network.network_connectivity_complex.core.network_base import (
         NetworkAlertLevel, NetworkOperationResult, NetworkToolBase)
-    from tools.network.network_connectivity_complex.tools.bandwidth_monitor import (
+    from src.tools.network.network_connectivity_complex.tools.bandwidth_monitor import (
         BandwidthAlert, BandwidthMonitor, SpeedCalculator, SpeedMeasurement)
-    from tools.network.network_connectivity_complex.tools.lan_file_transfer import (
+    from src.tools.network.network_connectivity_complex.tools.lan_file_transfer import (
         DeviceDiscovery, DeviceStatus, EncryptionHandler, LANFileTransfer,
         NetworkDevice, TransferDirection, TransferJob, TransferStatus)
-    from tools.network.network_connectivity_complex.tools.port_scanner import (
+    from src.tools.network.network_connectivity_complex.tools.port_scanner import (
         PortInfo, PortScanner, PortState, ScanPolicy, ScanResult, ScanType,
         ServiceDetector, VulnerabilityAssessment, VulnerabilityInfo)
-    from tools.network.network_connectivity_complex.tools.wifi_analyzer import (
+    from src.tools.network.network_connectivity_complex.tools.wifi_analyzer import (
         AccessPoint, ChannelBand, OUIDatabase, SecurityAssessment,
         SignalMeasurement, WiFiAnalyzer, WiFiChannelMap, WiFiSecurityType,
         WiFiStandard)
@@ -444,7 +444,7 @@ class TestLANFileTransferRealImplementation:
     @pytest.mark.skipif(not REAL_IMPLEMENTATIONS_AVAILABLE, reason="Real implementations not available")
     def test_transfer_job_dataclass(self):
         """Test TransferJob dataclass - UNTESTED ADVANCED FEATURE."""
-        from tools.network.network_connectivity_complex.tools.lan_file_transfer import \
+        from src.tools.network.network_connectivity_complex.tools.lan_file_transfer import \
             CompressionType
         
         job = TransferJob(
@@ -481,7 +481,7 @@ class TestBandwidthMonitorRealImplementation:
     def test_speed_calculator_functionality(self, mock_platform):
         """Test SpeedCalculator functionality - UNTESTED ADVANCED FEATURE."""
         # Mock network stats
-        from tools.network.network_connectivity_complex.core.platform_network import \
+        from src.tools.network.network_connectivity_complex.core.platform_network import \
             NetworkStats
         
         mock_stats1 = NetworkStats(
@@ -641,7 +641,7 @@ class TestAdvancedFeaturesCoverage:
     def test_wifi_analyzer_operation_types(self):
         """Test WiFi analyzer operation types - UNTESTED ADVANCED FEATURE."""
         # Test operation type constants exist
-        from tools.network.network_connectivity_complex.tools.wifi_analyzer import \
+        from src.tools.network.network_connectivity_complex.tools.wifi_analyzer import \
             WiFiOperationType
 
         # Test basic operation types

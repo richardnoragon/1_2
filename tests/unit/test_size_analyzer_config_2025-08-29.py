@@ -32,7 +32,7 @@ try:
 except ImportError:
     # Fallback import path
     try:
-        from tools.analysis.config.size_analyzer_config import (
+        from src.tools.analysis.config.size_analyzer_config import (
             SizeAnalyzerConfig,
             get_config_manager,
             get_log_manager,

@@ -39,7 +39,7 @@ def test_basic_imports():
         print("✓ Successfully imported SizeAnalyzerGUI through package " "structure")
 
         # Test importing core logic
-        from tools.analysis.size_analyzer.size_analyzer_logic import (
+        from src.tools.analysis.size_analyzer.size_analyzer_logic import (
             SizeAnalyzer,
         )
 
@@ -84,7 +84,7 @@ def test_class_instantiation():
         print("✓ Successfully instantiated SizeAnalyzerGUI")
 
         # Test SizeAnalyzer core logic instantiation
-        from tools.analysis.size_analyzer.size_analyzer_logic import (
+        from src.tools.analysis.size_analyzer.size_analyzer_logic import (
             SizeAnalyzer,
         )
 

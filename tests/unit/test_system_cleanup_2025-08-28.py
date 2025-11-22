@@ -281,7 +281,7 @@ class TestSystemCleanupGUITempCleanup:
     def test_run_temp_cleanup_successful_operation(self, mock_qmsg, mock_base_class):
         """Test successful temp cleanup operation."""
         # Import CleanupOperationResult for testing
-        from tools.system.system_cleanup.core.cleanup_base import \
+        from src.tools.system.system_cleanup.core.cleanup_base import \
             CleanupOperationResult
         
         with patch.object(SystemCleanupGUI, 'init_cleanup_tools'), \
@@ -324,7 +324,7 @@ class TestSystemCleanupGUITempCleanup:
     @patch('utilities.system.system_cleanup.QMessageBox')
     def test_run_temp_cleanup_with_errors(self, mock_qmsg, mock_base_class):
         """Test temp cleanup operation with errors."""
-        from tools.system.system_cleanup.core.cleanup_base import \
+        from src.tools.system.system_cleanup.core.cleanup_base import \
             CleanupOperationResult
         
         with patch.object(SystemCleanupGUI, 'init_cleanup_tools'), \
@@ -360,7 +360,7 @@ class TestSystemCleanupGUITempCleanup:
     @patch('utilities.system.system_cleanup.QMessageBox')
     def test_run_temp_cleanup_failed_operation(self, mock_qmsg, mock_base_class):
         """Test failed temp cleanup operation."""
-        from tools.system.system_cleanup.core.cleanup_base import \
+        from src.tools.system.system_cleanup.core.cleanup_base import \
             CleanupOperationResult
         
         with patch.object(SystemCleanupGUI, 'init_cleanup_tools'), \

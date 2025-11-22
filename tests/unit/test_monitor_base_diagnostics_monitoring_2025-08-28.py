@@ -19,9 +19,9 @@ from unittest.mock import MagicMock, Mock, patch
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
 
 try:
-    from tools.system.diagnostics_monitoring.core.monitor_base import (
+    from src.tools.system.diagnostics_monitoring.core.monitor_base import (
         AlertLevel, MonitorBase, MonitorStatus)
-    from tools.system.diagnostics_monitoring.core.platform_detector import \
+    from src.tools.system.diagnostics_monitoring.core.platform_detector import \
         get_platform_detector
     IMPORT_SUCCESS = True
 except ImportError as e:

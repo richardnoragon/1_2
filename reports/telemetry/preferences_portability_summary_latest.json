@@ -1,0 +1,32 @@
+{
+  "generated_at_utc": "2025-11-14 17:23:28",
+  "rows": [
+    {
+      "date": "2025-11-12",
+      "export_runs": 2,
+      "export_entries": 1,
+      "import_runs": 2,
+      "import_entries": 1,
+      "import_applied": 1,
+      "import_skipped": 0
+    },
+    {
+      "date": "2025-11-13",
+      "export_runs": 3,
+      "export_entries": 6,
+      "import_runs": 1,
+      "import_entries": 0,
+      "import_applied": 0,
+      "import_skipped": 0
+    },
+    {
+      "date": "2025-11-14",
+      "export_runs": 1,
+      "export_entries": 10000,
+      "import_runs": 1,
+      "import_entries": 10000,
+      "import_applied": 10000,
+      "import_skipped": 0
+    }
+  ]
+}

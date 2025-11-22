@@ -83,7 +83,7 @@ class TestSimplePasswordGeneratorGUI:
     @pytest.fixture
     def password_generator_gui(self, mock_pyqt5):
         """Create a SimplePasswordGeneratorGUI instance for testing."""
-        from tools.security.password_generator.password_generator import (
+        from src.tools.security.password_generator.password_generator import (
             SimplePasswordGeneratorGUI,
         )
 
@@ -351,7 +351,7 @@ class TestSimplePasswordGeneratorEdgeCases:
     @pytest.fixture
     def password_generator_gui(self, mock_pyqt5):
         """Create a SimplePasswordGeneratorGUI instance for testing."""
-        from tools.security.password_generator.password_generator import (
+        from src.tools.security.password_generator.password_generator import (
             SimplePasswordGeneratorGUI,
         )
 
@@ -465,7 +465,7 @@ class TestSimplePasswordGeneratorSecurity:
     @pytest.fixture
     def password_generator_gui(self, mock_pyqt5):
         """Create a SimplePasswordGeneratorGUI instance for testing."""
-        from tools.security.password_generator.password_generator import (
+        from src.tools.security.password_generator.password_generator import (
             SimplePasswordGeneratorGUI,
         )
 
@@ -530,7 +530,7 @@ class TestSimplePasswordGeneratorIntegration:
     @pytest.fixture
     def password_generator_gui(self, mock_pyqt5):
         """Create a SimplePasswordGeneratorGUI instance for testing."""
-        from tools.security.password_generator.password_generator import (
+        from src.tools.security.password_generator.password_generator import (
             SimplePasswordGeneratorGUI,
         )
 
@@ -632,7 +632,7 @@ class TestSimplePasswordGeneratorErrorHandling:
                             ]
 
                         # This should trigger the import error handling
-                        import tools.security.password_generator.password_generator
+                        import src.tools.security.password_generator.password_generator
                     except SystemExit:
                         # Expected behavior when PyQt5 is not available
                         pass
@@ -649,7 +649,7 @@ class TestSimplePasswordGeneratorErrorHandling:
         # Mock sys.argv and sys.exit
         with patch("sys.argv", ["simple_password_generator.py"]):
             with patch("sys.exit") as mock_exit:
-                from tools.security.password_generator.password_generator import main
+                from src.tools.security.password_generator.password_generator import main
 
                 main()
 
@@ -669,7 +669,7 @@ class TestSimplePasswordGeneratorPerformance:
     @pytest.fixture
     def password_generator_gui(self, mock_pyqt5):
         """Create a SimplePasswordGeneratorGUI instance for testing."""
-        from tools.security.password_generator.password_generator import (
+        from src.tools.security.password_generator.password_generator import (
             SimplePasswordGeneratorGUI,
         )
 

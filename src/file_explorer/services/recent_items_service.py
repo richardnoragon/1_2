@@ -1,38 +1,45 @@
 """
 RecentItemsService: Track recently accessed tools and locations.
 
-This service implements LRU (Least Recently Used) cache with configurable limits.
+This service implements LRU (Least Recently Used) cache with configurable
+limits.
 """
 
 import logging
-from datetime import datetime
 from pathlib import Path
 from typing import List, Optional
 
 from src.file_explorer.models.recent_item import RecentItem, RecentItemType
-from src.file_explorer.services.preference_service import (
-    PreferenceService,
-    get_preference_service,
+from src.file_explorer.services.explorer_preferences import (
+    ExplorerPreferences,
+    get_explorer_preferences,
 )
 
 
 class RecentItemsService:
     """Service for tracking recent tools and locations."""
 
-    def __init__(self, preference_service=None, config_dir=None, max_items=None):
+    def __init__(
+        self,
+        explorer_preferences: Optional[ExplorerPreferences] = None,
+        config_dir=None,
+        max_items=None,
+    ):
         """
         Initialize the recent items service.
 
         Args:
-            preference_service: Optional PreferenceService instance
+            explorer_preferences: Optional ExplorerPreferences instance
             config_dir: Optional configuration directory for testing
             max_items: Optional max items limit (for testing)
         """
         self.logger = logging.getLogger("RFU.FileExplorer.RecentItemsService")
-        if config_dir:
-            self.preference_service = PreferenceService(config_dir)
+        if explorer_preferences is not None:
+            self._preferences = explorer_preferences
+        elif config_dir:
+            self._preferences = ExplorerPreferences(config_dir=config_dir)
         else:
-            self.preference_service = preference_service or get_preference_service()
+            self._preferences = get_explorer_preferences()
         self.logger.info("RecentItemsService initialized")
 
     def add_tool(self, tool_name: str, metadata: Optional[dict] = None) -> None:
@@ -45,7 +52,7 @@ class RecentItemsService:
         """
         try:
             # Load preferences
-            prefs = self.preference_service.load_preferences()
+            prefs = self._preferences.load_user_preferences()
 
             # Check if tool already exists
             existing_index = None
@@ -82,7 +89,7 @@ class RecentItemsService:
                 )
 
             # Persist immediately
-            self.preference_service.save_preferences(prefs)
+            self._preferences.save_user_preferences(prefs)
 
         except Exception as e:
             self.logger.error(f"Error adding recent tool: {e}")
@@ -100,7 +107,7 @@ class RecentItemsService:
             path_str = str(path)
 
             # Load preferences
-            prefs = self.preference_service.load_preferences()
+            prefs = self._preferences.load_user_preferences()
 
             # Check if location already exists
             existing_index = None
@@ -137,7 +144,7 @@ class RecentItemsService:
                 )
 
             # Persist immediately
-            self.preference_service.save_preferences(prefs)
+            self._preferences.save_user_preferences(prefs)
 
         except Exception as e:
             self.logger.error(f"Error adding recent location: {e}")
@@ -150,7 +157,7 @@ class RecentItemsService:
             List[RecentItem]: Recent tools, newest first (max 10)
         """
         try:
-            prefs = self.preference_service.load_preferences()
+            prefs = self._preferences.load_user_preferences()
             return prefs.recent_tools
 
         except Exception as e:
@@ -165,7 +172,7 @@ class RecentItemsService:
             List[RecentItem]: Recent locations, newest first (max 10)
         """
         try:
-            prefs = self.preference_service.load_preferences()
+            prefs = self._preferences.load_user_preferences()
             return prefs.recent_locations
 
         except Exception as e:
@@ -180,7 +187,7 @@ class RecentItemsService:
             item_type: Optional filter (None clears both tools and locations)
         """
         try:
-            prefs = self.preference_service.load_preferences()
+            prefs = self._preferences.load_user_preferences()
 
             if item_type is None:
                 # Clear both
@@ -195,7 +202,7 @@ class RecentItemsService:
                 self.logger.info("Cleared recent locations")
 
             # Persist immediately
-            self.preference_service.save_preferences(prefs)
+            self._preferences.save_user_preferences(prefs)
 
         except Exception as e:
             self.logger.error(f"Error clearing recent items: {e}")

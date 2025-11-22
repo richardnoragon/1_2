@@ -29,7 +29,7 @@ try:
     )
 except ImportError:
     try:
-        from tools.network.network_connectivity_complex.core.performance_analyzer import (
+        from src.tools.network.network_connectivity_complex.core.performance_analyzer import (
             PerformanceAnalyzer,
             PerformanceMeasurement,
             PerformanceMetric,

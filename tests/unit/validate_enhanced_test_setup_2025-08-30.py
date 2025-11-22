@@ -164,7 +164,7 @@ class EnhancedTestSetupValidator:
             if str(src_path) not in sys.path:
                 sys.path.insert(0, str(src_path))
 
-            from tools.network.network_connectivity_complex.core.security_validator import (
+            from src.tools.network.network_connectivity_complex.core.security_validator import (
                 SecurityLevel,
                 SecurityRule,
                 SecurityValidator,

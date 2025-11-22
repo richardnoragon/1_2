@@ -29,7 +29,7 @@ from PyQt5.QtTest import QSignalSpy
 # Add src to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "src"))
 
-from tools.privacy.privacy_tools.core.privacy_base import (
+from src.tools.privacy.privacy_tools.core.privacy_base import (
     PrivacyOperationResult, PrivacyToolBase)
 
 

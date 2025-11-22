@@ -17,7 +17,7 @@ sys.path.insert(0, r'c:\Users\richardi\1_2\src')
 def test_imports():
     """Test that all required modules can be imported."""
     try:
-        from tools.network.gui import (DEFAULT_SPEED_LABEL, BandwidthData,
+        from src.tools.network.gui import (DEFAULT_SPEED_LABEL, BandwidthData,
                                            NetworkScanResult)
         assert DEFAULT_SPEED_LABEL == "0 KB/s"
         print("✅ Basic imports successful")
@@ -26,7 +26,7 @@ def test_imports():
 
 def test_network_scan_result():
     """Test NetworkScanResult dataclass creation."""
-    from tools.network.gui import NetworkScanResult
+    from src.tools.network.gui import NetworkScanResult
     
     result = NetworkScanResult(
         target="127.0.0.1",
@@ -45,7 +45,7 @@ def test_bandwidth_data():
     """Test BandwidthData dataclass creation."""
     from datetime import datetime
 
-    from tools.network.gui import BandwidthData
+    from src.tools.network.gui import BandwidthData
     
     timestamp = datetime.now()
     data = BandwidthData(

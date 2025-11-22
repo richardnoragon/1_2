@@ -35,7 +35,7 @@ try:
     from src.tools.analysis.size_analyzer.size_analyzer_logging import (
         SizeAnalyzerLogger,
     )
-    from tools.analysis.size_analyzer.size_analyzer_logic import SizeAnalyzer
+    from src.tools.analysis.size_analyzer.size_analyzer_logic import SizeAnalyzer
 
     IMPORTS_SUCCESSFUL = True
 except ImportError as e:

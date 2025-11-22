@@ -63,7 +63,7 @@ def teardown_module():
 
 # Enhanced Editor imports with fallback mocking
 try:
-    from tools.file_operations.enhanced_editor.enhanced_editor import (
+    from src.tools.file_operations.enhanced_editor.enhanced_editor import (
         DocumentManager, DocumentType, EnhancedEditor, PreferencesDialog,
         SearchDialog, SyntaxHighlighter, TextEditor)
     IMPORTS_AVAILABLE = True

@@ -3,6 +3,7 @@ from PyQt5 import QtCore
 from PyQt5 import QtGui
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt
+import importlib
 import time
 
 Richard's File Utilities Hub - Unified Main Application Interface
@@ -25,15 +26,18 @@ Consolidated from:
 - rfuhub.py (core functionality and fallback mechanisms)
 """
 
+import importlib
 import os
 import sys
 from collections import deque
 from datetime import datetime
+from pathlib import Path
 from threading import Lock
 from typing import Any, Dict, List, Optional
 
 # Core PyQt5 imports with graceful fallback
 try:
+    from PyQt5 import QtCore
     from PyQt5.QtCore import QObject, Qt, pyqtSignal, pyqtSlot
     from PyQt5.QtGui import QFont, QIcon
     from PyQt5.QtWidgets import (
@@ -55,6 +59,7 @@ try:
     PYQT5_AVAILABLE = True
 except ImportError:
     PYQT5_AVAILABLE = False
+    QtCore = None
     QMainWindow = object
     QWidget = object
     QObject = object
@@ -229,9 +234,7 @@ if PYQT5_AVAILABLE:
             else:
                 self._logger.info("Validator info: %s", display_message)
 
-            self._hub._enqueue_validator_notification(
-                level, display_message, details
-            )
+            self._hub._enqueue_validator_notification(level, display_message, details)
 
 
 class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
@@ -263,6 +266,14 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
 
         self.logger.info("RFU Hub initializing...")
 
+        self.hub_preferences_adapter = None
+        self._init_hub_preferences_adapter()
+        self.preference_badge_label = None
+        self._preference_badge: Optional[Dict[str, Any]] = None
+        self._session_context: Optional[Dict[str, Any]] = None
+        self._last_username = ""
+        self._login_prompt_shown = not PYQT5_AVAILABLE
+
         # Hub state management (from hub.py and rfuhub.py)
         self.registered_tools = {}
         self.tool_status = {}
@@ -276,6 +287,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
         self._validator_notification_queue = deque()
         self._validator_notification_lock = Lock()
         self._validator_notifier = None
+        self._idle_watchdog_timer = None
 
         # Multi-Pane Explorer support (Phase 3.5 Integration)
         self.multi_pane_explorer = None
@@ -292,8 +304,29 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
         self._setup_gui()
         self._setup_hub_integration()
         self._setup_validator_notifications()
+        self._setup_idle_timeout_watchdog()
 
         self.logger.info("RFU Hub initialized successfully")
+
+    def _init_hub_preferences_adapter(self) -> None:
+        """Prepare the hub preference adapter with graceful fallback."""
+
+        try:
+            from src.rfu.preferences_adapter import HubPreferencesAdapter
+
+            adapter = HubPreferencesAdapter()
+            if adapter.is_available():
+                self.logger.debug(
+                    "Hub preferences adapter active via PreferenceManager"
+                )
+            else:
+                self.logger.debug(
+                    "Hub preferences adapter falling back to legacy service"
+                )
+            self.hub_preferences_adapter = adapter
+        except Exception as exc:  # pragma: no cover - defensive fallback
+            self.logger.warning("Unable to initialize hub preferences adapter: %s", exc)
+            self.hub_preferences_adapter = None
 
     def _setup_gui(self):
         """Setup the GUI interface (adapted from simple_hub.py)."""
@@ -352,9 +385,11 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
         """
         )
         header_layout.addWidget(title_label, 1)
+        header_layout.addStretch(1)
 
-        # Add interface toggle button
+        # Add interface toggle button and preference badge display
         self._create_interface_toggle_button(header_layout)
+        self._create_preference_badge_display(header_layout)
 
         main_layout.addWidget(self.header_widget)
 
@@ -461,9 +496,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
         try:
             from rfu.hub import register_validator_notifier
         except ImportError as exc:
-            self.logger.debug(
-                "Validator notifier registration skipped: %s", exc
-            )
+            self.logger.debug("Validator notifier registration skipped: %s", exc)
             return
 
         self._validator_notifier = _HubValidatorNotifier(self)
@@ -479,6 +512,148 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
         if self._validator_notifier is not None:
             unregister_validator_notifier(self._validator_notifier)
             self._validator_notifier = None
+
+    def _setup_idle_timeout_watchdog(self) -> None:
+        """Configure periodic idle-timeout enforcement for the hub."""
+
+        config_manager = getattr(self, "config", None)
+        get_setting = getattr(config_manager, "get_setting", None)
+        if get_setting is None:
+            return
+
+        enabled = bool(get_setting("identity", "enable_idle_watchdog", False))
+        if not enabled:
+            return
+
+        database_path = self._get_identity_database_path()
+        if not database_path:
+            self.logger.warning(
+                "Idle timeout watchdog enabled but identity database is missing"
+            )
+            return
+
+        idle_minutes = int(get_setting("identity", "idle_timeout_minutes", 10))
+        interval_seconds = int(get_setting("identity", "watchdog_interval_seconds", 60))
+
+        try:
+            from src.rfu import configure_idle_timeout_watcher
+
+            configure_idle_timeout_watcher(
+                database_path=database_path,
+                idle_minutes=idle_minutes,
+            )
+        except Exception as exc:
+            self.logger.warning(
+                "Idle timeout watcher unavailable: %s",
+                exc,
+            )
+            return
+
+        if not PYQT5_AVAILABLE:
+            return
+
+        interval_ms = max(5, interval_seconds) * 1000
+        self._idle_watchdog_timer = QtCore.QTimer(self)
+        self._idle_watchdog_timer.setInterval(interval_ms)
+        self._idle_watchdog_timer.timeout.connect(self._execute_idle_watchdog_tick)
+        self._idle_watchdog_timer.start()
+        self.logger.info(
+            "Idle timeout watcher polling every %s seconds (idle=%s minutes)",
+            max(5, interval_seconds),
+            idle_minutes,
+        )
+
+    def _stop_idle_watchdog_timer(self) -> None:
+        if self._idle_watchdog_timer is None:
+            return
+        try:
+            self._idle_watchdog_timer.stop()
+            self._idle_watchdog_timer.deleteLater()
+        finally:
+            self._idle_watchdog_timer = None
+
+    def _get_identity_database_path(self) -> Optional[Path]:
+        """Return the configured identity database path, if available."""
+
+        config_manager = getattr(self, "config", None)
+        get_setting = getattr(config_manager, "get_setting", None)
+        raw_value: Optional[str] = None
+        if callable(get_setting):
+            raw_value = (get_setting("identity", "database_path", "") or "").strip()
+
+        candidates: list[Path] = []
+        if raw_value:
+            candidates.append(Path(raw_value).expanduser())
+
+        env_path = os.getenv("RFU_IDENTITY_DB_PATH")
+        if env_path:
+            candidates.append(Path(env_path).expanduser())
+
+        project_root = Path(__file__).resolve().parents[1]
+        candidates.append(project_root / "data" / "rfu_identity.sqlite3")
+
+        cwd_candidate = Path.cwd() / "data" / "rfu_identity.sqlite3"
+        candidates.append(cwd_candidate)
+
+        normalized_candidates: list[Path] = []
+        seen: set[str] = set()
+        for candidate in candidates:
+            key = str(candidate)
+            if key in seen:
+                continue
+            seen.add(key)
+            normalized_candidates.append(candidate)
+
+        for candidate in normalized_candidates:
+            if candidate.exists():
+                if raw_value and candidate != Path(raw_value).expanduser():
+                    self.logger.debug(
+                        "Using fallback identity database at %s",
+                        candidate,
+                    )
+                return candidate
+
+        if raw_value:
+            self.logger.warning(
+                "Configured identity database not found at %s",
+                Path(raw_value).expanduser(),
+            )
+        else:
+            self.logger.warning(
+                "Identity database not found in default locations: %s",
+                ", ".join(str(path) for path in normalized_candidates),
+            )
+        return None
+
+    def _execute_idle_watchdog_tick(self) -> None:
+        try:
+            from src.rfu import run_idle_timeout_watcher
+
+            summary = run_idle_timeout_watcher(raise_on_missing_config=False)
+        except Exception as exc:
+            self.logger.debug("Idle timeout watcher run skipped: %s", exc)
+            self._stop_idle_watchdog_timer()
+            return
+
+        if not summary:
+            return
+
+        revoked = int(summary.get("revoked_sessions", 0) or 0)
+        if revoked <= 0:
+            return
+
+        self.logger.warning(
+            "Idle timeout watcher revoked %s session(s); closing hub",
+            revoked,
+        )
+        if PYQT5_AVAILABLE and hasattr(self, "hub_event_broadcast"):
+            self.hub_event_broadcast.emit(
+                "idle_watchdog",
+                "idle-timeout",
+                summary,
+            )
+        self._update_status_bar("Session expired due to inactivity")
+        self.close()
 
     def _enqueue_validator_notification(
         self,
@@ -542,15 +717,11 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
         confidence = details.get("confidence")
         if detected:
             confidence_str = confidence or "unknown"
-            lines.append(
-                f"Detected type: {detected} (confidence {confidence_str})"
-            )
+            lines.append(f"Detected type: {detected} (confidence {confidence_str})")
 
         allowed = details.get("allowed_types")
         if allowed:
-            lines.append(
-                "Allowed types: " + self._format_allowed_types(allowed)
-            )
+            lines.append("Allowed types: " + self._format_allowed_types(allowed))
 
         text = "\n".join(lines).strip()
 
@@ -573,6 +744,134 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
 
         return ", ".join(sequence)
 
+    def _load_login_prompt_callable(self):
+        """Best-effort import of the login dialog callable."""
+
+        module_candidates = (
+            "src.rfu.login_dialog",
+            "rfu.login_dialog",
+        )
+        last_error = None
+        for module_name in module_candidates:
+            try:
+                module = importlib.import_module(module_name)
+                prompt = getattr(module, "prompt_for_login", None)
+                if callable(prompt):
+                    return prompt
+            except Exception as exc:  # pragma: no cover - import guard
+                last_error = exc
+                self.logger.debug(
+                    "Login dialog import failed via %s: %s",
+                    module_name,
+                    exc,
+                )
+
+        raise ImportError(
+            "Unable to import the login dialog from any known module path"
+        ) from last_error
+
+    def _prompt_for_login(self) -> bool:
+        """Display the hub login dialog and hydrate the session context."""
+
+        if not PYQT5_AVAILABLE:
+            return True
+
+        self.logger.debug(
+            "Login prompt requested (last_user=%s, prior_session=%s)",
+            self._last_username or "",
+            bool(self._session_context),
+        )
+        self._session_context = None
+
+        database_path = self._get_identity_database_path()
+        if database_path is None:
+            self.logger.warning(
+                "Identity database not configured; continuing without login prompt"
+            )
+            self._update_preference_badge(
+                None,
+                fallback_text="Identity database unavailable",
+            )
+            return True
+
+        try:
+            stats = database_path.stat()
+            resolved_details = f"size={stats.st_size} bytes"
+        except OSError as exc:
+            resolved_details = f"stat_error={exc}"
+        self.logger.info(
+            "Identity database resolved: %s (%s)",
+            database_path,
+            resolved_details,
+        )
+
+        try:
+            prompt_for_login = self._load_login_prompt_callable()
+        except ImportError as exc:
+            self.logger.error("Login dialog unavailable: %s", exc)
+            self._update_preference_badge(
+                None,
+                fallback_text="Login dialog unavailable",
+            )
+            QMessageBox.critical(
+                self,
+                "Authentication Unavailable",
+                "Unable to load the login dialog component.\n\n"
+                "Review the installation and try again.",
+            )
+            return False
+
+        self.logger.debug(
+            "Login dialog callable ready: %s.%s",
+            getattr(prompt_for_login, "__module__", "<unknown>"),
+            getattr(prompt_for_login, "__name__", "<callable>"),
+        )
+
+        start_time = time.perf_counter()
+        try:
+            result = prompt_for_login(
+                database_path=database_path,
+                parent=self,
+                initial_username=self._last_username,
+            )
+        except Exception as exc:  # pragma: no cover - GUI path
+            self.logger.error("Login dialog crashed: %s", exc, exc_info=True)
+            QMessageBox.critical(
+                self,
+                "Authentication Error",
+                f"The sign-in dialog encountered an unexpected error.\n\n{exc}",
+            )
+            return False
+        finally:
+            elapsed = time.perf_counter() - start_time
+            self.logger.debug("Login dialog duration %.2fs", elapsed)
+
+        if not result:
+            self.logger.warning("Login dialog dismissed without authentication")
+            return False
+
+        self._session_context = result
+        username = str(result.get("username") or "unknown")
+        self._last_username = username
+        role = result.get("role") or result.get("session", {}).get("role")
+        workspace_ready = bool(result.get("workspace_ready"))
+        badge = result.get("preference_badge")
+        self._update_preference_badge(badge)
+
+        status_parts = [f"Signed in as {username}"]
+        if role:
+            status_parts.append(f"({role})")
+        if not workspace_ready:
+            status_parts.append("- preferences fallback applied")
+        self._update_status_bar(" ".join(status_parts))
+        self.logger.info(
+            "Authenticated GUI session for user %s (role=%s, workspace_ready=%s)",
+            username,
+            role or "unknown",
+            workspace_ready,
+        )
+        return True
+
     def _create_interface_toggle_button(self, header_layout):
         """Create and configure the interface toggle button."""
         try:
@@ -580,12 +879,76 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
                 HubInterfaceToggle,
             )
 
-            self.interface_toggle = HubInterfaceToggle()
+            adapter = getattr(self, "hub_preferences_adapter", None)
+            self.interface_toggle = HubInterfaceToggle(preferences_adapter=adapter)
             self.interface_toggle.mode_changed.connect(self._on_interface_mode_changed)
             header_layout.addWidget(self.interface_toggle)
 
         except Exception as e:
             self.logger.error(f"Failed to create interface toggle: {e}")
+
+    def _create_preference_badge_display(self, header_layout) -> None:
+        """Add a compact badge showing the authenticated preference state."""
+
+        if not PYQT5_AVAILABLE:
+            return
+
+        badge = QLabel("Not signed in")
+        badge.setObjectName("preferenceBadge")
+        badge.setAlignment(Qt.AlignVCenter | Qt.AlignRight)
+        badge.setMinimumWidth(200)
+        badge.setStyleSheet(
+            """
+            QLabel#preferenceBadge {
+                padding: 6px 12px;
+                border-radius: 12px;
+                background-color: #ecf0f1;
+                color: #2c3e50;
+                font-weight: bold;
+            }
+            """
+        )
+        header_layout.addWidget(badge)
+        self.preference_badge_label = badge
+        self._update_preference_badge(None)
+
+    def _update_preference_badge(
+        self,
+        badge: Optional[Dict[str, Any]],
+        *,
+        fallback_text: Optional[str] = None,
+    ) -> None:
+        self._preference_badge = badge
+        if not PYQT5_AVAILABLE:
+            return
+
+        label = getattr(self, "preference_badge_label", None)
+        if label is None:
+            return
+
+        if not badge:
+            label.setText(fallback_text or "Not signed in")
+            label.setToolTip("Sign in to personalize the workspace")
+            return
+
+        text = badge.get("text") or badge.get("label")
+        label.setText(str(text or fallback_text or "Signed in"))
+
+        tooltip_lines = []
+        user = badge.get("user")
+        if user:
+            tooltip_lines.append(f"User: {user}")
+        pref_id = badge.get("preferences_id")
+        if pref_id:
+            tooltip_lines.append(f"Preferences: {pref_id}")
+        layout_hint = badge.get("layout")
+        if layout_hint:
+            tooltip_lines.append(f"Layout: {layout_hint}")
+        favorites = badge.get("favorite_tools")
+        if isinstance(favorites, list) and favorites:
+            preview = ", ".join(str(item) for item in favorites[:3])
+            tooltip_lines.append(f"Favorites: {preview}")
+        label.setToolTip("\n".join(tooltip_lines) or "Authenticated session")
 
     def _create_multi_pane_interface(self):
         """Create the Multi-Pane Explorer interface."""
@@ -614,14 +977,25 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
             from src.file_explorer.models.hub_interface_mode import (
                 HubInterfaceMode,
             )
-            from src.file_explorer.services.preference_service import (
-                get_preference_service,
-            )
 
-            pref_service = get_preference_service()
-            prefs = pref_service.load_preferences()
+            adapter = getattr(self, "hub_preferences_adapter", None)
+            if adapter:
+                mode = adapter.load_interface_mode(HubInterfaceMode.MULTI_PANE)
+            else:
+                from src.file_explorer.services.explorer_preferences import (
+                    get_explorer_preferences,
+                )
 
-            mode = prefs.hub_interface_mode
+                explorer_prefs = get_explorer_preferences()
+                prefs = explorer_prefs.load_user_preferences()
+                mode = getattr(prefs, "hub_interface_mode", None) or getattr(
+                    prefs,
+                    "active_hub_mode",
+                    HubInterfaceMode.MULTI_PANE,
+                )
+                if not isinstance(mode, HubInterfaceMode):
+                    mode = HubInterfaceMode(mode)
+
             self.current_hub_mode = mode
 
             # Set appropriate widget
@@ -630,10 +1004,13 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
             else:
                 self.interface_stack.setCurrentIndex(0)
 
-            self.logger.info(f"Interface mode set to: {mode.value}")
+            if getattr(self, "interface_toggle", None):
+                self.interface_toggle.set_mode(mode)
+
+            self.logger.info("Interface mode set to: %s", mode.value)
 
         except Exception as e:
-            self.logger.error(f"Error loading interface mode: {e}")
+            self.logger.error("Error loading interface mode: %s", e)
             # Default to tabbed
             self.interface_stack.setCurrentIndex(0)
 
@@ -711,6 +1088,15 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
             )
             self._show_command_line_interface()
             return
+
+        if not self._login_prompt_shown:
+            if not self._prompt_for_login():
+                self.logger.warning("Authentication cancelled; shutting down hub")
+                app = QApplication.instance()
+                if app is not None:
+                    app.quit()
+                return
+            self._login_prompt_shown = True
 
         try:
             super().show()
@@ -1052,9 +1438,67 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
         self.logger.info("Print Document requested")
 
     def show_preferences(self):
-        """Show preferences dialog."""
-        self._update_status_bar("Preferences - Feature coming soon...")
-        self.logger.info("Preferences requested")
+        """Display the sharing preferences dialog for the current session."""
+
+        if not PYQT5_AVAILABLE:
+            self.logger.info("Preferences view unavailable without PyQt5")
+            return
+
+        if not self._session_context:
+            self._update_status_bar("Sign in to manage preferences")
+            QMessageBox.information(
+                self,
+                "Preferences",
+                "You must sign in before editing preferences.",
+            )
+            return
+
+        database_path = self._get_identity_database_path()
+        if not database_path:
+            message = "Identity database is not configured; cannot open preferences."
+            self._update_status_bar(message)
+            QMessageBox.warning(self, "Preferences", message)
+            return
+
+        try:
+            from src.rfu.preferences import PreferencesViewDialog
+
+            dialog = PreferencesViewDialog(
+                database_path=database_path,
+                session=self._session_context,
+                parent=self,
+            )
+        except Exception as exc:
+            self.logger.warning("Unable to open preferences dialog: %s", exc)
+            QMessageBox.warning(
+                self,
+                "Preferences",
+                f"Preferences dialog unavailable: {exc}",
+            )
+            return
+
+        self.logger.info("Opening preferences dialog for %s", self._last_username)
+        dialog.exec_()
+        self._update_status_bar("Preferences dialog closed")
+
+    def show_performance(self, *_, **__):
+        """Stub handler for the Performance menu item."""
+
+        self.logger.info("Performance view requested (stub)")
+        if not PYQT5_AVAILABLE:
+            self._update_status_bar("Performance view unavailable without PyQt5")
+            return
+
+        try:
+            from PyQt5.QtWidgets import QMessageBox
+
+            QMessageBox.information(
+                self,
+                "Performance",
+                "Performance view is not yet implemented.",
+            )
+        except Exception as exc:
+            self.logger.debug("Unable to show performance stub dialog: %s", exc)
 
     def undo(self):
         """Undo last action."""
@@ -1839,6 +2283,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
 
     def closeEvent(self, event):
         """Ensure validator notifier is released before closing."""
+        self._stop_idle_watchdog_timer()
         self._teardown_validator_notifications()
         if PYQT5_AVAILABLE:
             super().closeEvent(event)

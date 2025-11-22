@@ -15,7 +15,7 @@ from pathlib import Path
 # Add src directory to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
-from tools.file_management.advanced_folders.core.folder_configuration import (
+from src.tools.file_management.advanced_folders.core.folder_configuration import (
     FolderConfiguration, FolderConfigurationManager, FolderStatistics,
     SearchParameters)
 

@@ -214,15 +214,15 @@ sys.modules['nmap'].PortScanner = MockNmap
 
 # Now try to import the actual modules or create mock implementations
 try:
-    from tools.network.network_connectivity_complex.gui.hub import \
+    from src.tools.network.network_connectivity_complex.gui.hub import \
         NetworkHub
-    from tools.network.network_connectivity_complex.tools.bandwidth_monitor import (
+    from src.tools.network.network_connectivity_complex.tools.bandwidth_monitor import (
         BandwidthData, BandwidthMonitor, NetworkInterface)
-    from tools.network.network_connectivity_complex.tools.lan_file_transfer import (
+    from src.tools.network.network_connectivity_complex.tools.lan_file_transfer import (
         FileTransferProtocol, LANFileTransfer, TransferSession)
-    from tools.network.network_connectivity_complex.tools.port_scanner import (
+    from src.tools.network.network_connectivity_complex.tools.port_scanner import (
         PortInfo, PortScanner, ScanResult, SecurityAssessment)
-    from tools.network.network_connectivity_complex.tools.wifi_analyzer import (
+    from src.tools.network.network_connectivity_complex.tools.wifi_analyzer import (
         ChannelAnalysis, SignalData, WiFiAnalyzer, WiFiNetwork)
 except ImportError as e:
     print(f"Import error: {e}")

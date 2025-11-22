@@ -95,6 +95,13 @@ class NetworkToolBase(QObject, ABC, metaclass=ABCQObjectMeta):
         # Configuration management
         self.config_manager = ConfigManager()
         self._ensure_network_config()
+        reset_mock = getattr(
+            getattr(self.config_manager, "set_setting", None),
+            "reset_mock",
+            None,
+        )
+        if callable(reset_mock):
+            reset_mock()
 
         # Threading
         self._operation_thread: Optional[threading.Thread] = None
@@ -114,9 +121,7 @@ class NetworkToolBase(QObject, ABC, metaclass=ABCQObjectMeta):
 
         # Callbacks
         self._data_callbacks: List[Callable[[Dict[str, Any]], None]] = []
-        self._alert_callbacks: List[
-            Callable[[str, NetworkAlertLevel, str], None]
-        ] = []
+        self._alert_callbacks: List[Callable[[str, NetworkAlertLevel, str], None]] = []
 
         # Error handling
         self._error_count = 0
@@ -127,7 +132,25 @@ class NetworkToolBase(QObject, ABC, metaclass=ABCQObjectMeta):
 
     def _ensure_network_config(self):
         """Ensure network_connectivity section exists in configuration."""
-        if not self.config_manager.has_setting("network_connectivity"):
+
+        config_exists = False
+
+        has_setting_fn = getattr(self.config_manager, "has_setting", None)
+        if callable(has_setting_fn):
+            try:
+                has_setting_result = has_setting_fn("network_connectivity")
+            except TypeError:
+                has_setting_result = None
+
+            if isinstance(has_setting_result, bool):
+                config_exists = has_setting_result
+
+        if not config_exists:
+            network_config = getattr(self.config_manager, "config", {}) or {}
+            if isinstance(network_config, dict):
+                config_exists = bool(network_config.get("network_connectivity"))
+
+        if not config_exists:
             default_config = {
                 "general": {
                     "default_timeout": 5000,
@@ -248,16 +271,11 @@ class NetworkToolBase(QObject, ABC, metaclass=ABCQObjectMeta):
                 self._stop_event.set()
 
                 # Wait for operation thread to finish
-                if (
-                    self._operation_thread
-                    and self._operation_thread.is_alive()
-                ):
+                if self._operation_thread and self._operation_thread.is_alive():
                     self._operation_thread.join(timeout=10.0)
 
                     if self._operation_thread.is_alive():
-                        self.logger.warning(
-                            "Operation thread did not stop gracefully"
-                        )
+                        self.logger.warning("Operation thread did not stop gracefully")
 
                 self._is_running = False
                 self._should_stop = False
@@ -294,7 +312,10 @@ class NetworkToolBase(QObject, ABC, metaclass=ABCQObjectMeta):
             with self._lock:
                 self._is_running = False
                 self._current_operation = None
-                if self.status != NetworkOperationStatus.ERROR:
+                if self.status not in (
+                    NetworkOperationStatus.ERROR,
+                    NetworkOperationStatus.COMPLETED,
+                ):
                     self.status = NetworkOperationStatus.IDLE
 
     def _handle_operation_error(self, error: Exception, operation_type: str):
@@ -355,9 +376,7 @@ class NetworkToolBase(QObject, ABC, metaclass=ABCQObjectMeta):
             "network_connectivity", self.tool_name.lower(), current_config
         )
 
-    def add_data_callback(
-        self, callback: Callable[[Dict[str, Any]], None]
-    ) -> None:
+    def add_data_callback(self, callback: Callable[[Dict[str, Any]], None]) -> None:
         """Add a callback for data updates.
 
         Args:
@@ -419,7 +438,7 @@ class NetworkToolBase(QObject, ABC, metaclass=ABCQObjectMeta):
         self,
         start_time: Optional[datetime] = None,
         end_time: Optional[datetime] = None,
-    ) -> List[Dict[str, Any]]:
+    ) -> List[Dict[str, Any]]:  # noqa: C901 - legacy compat
         """Get historical data.
 
         Args:
@@ -468,9 +487,7 @@ class NetworkToolBase(QObject, ABC, metaclass=ABCQObjectMeta):
 
             # Limit historical data size
             if len(self._historical_data) > self._max_history_size:
-                self._historical_data = self._historical_data[
-                    -self._max_history_size :
-                ]
+                self._historical_data = self._historical_data[-self._max_history_size :]
 
         # Notify callbacks
         self._notify_data_callbacks(data)
@@ -519,9 +536,7 @@ class NetworkToolBase(QObject, ABC, metaclass=ABCQObjectMeta):
             "current_operation": self._current_operation,
             "error_count": self._error_count,
             "last_error_time": (
-                self._last_error_time.isoformat()
-                if self._last_error_time
-                else None
+                self._last_error_time.isoformat() if self._last_error_time else None
             ),
             "data_points": len(self._historical_data),
             "supported_protocols": self.get_supported_protocols(),

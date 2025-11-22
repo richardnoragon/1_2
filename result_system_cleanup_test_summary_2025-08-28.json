@@ -1,149 +1,249 @@
 {
   "session_info": {
     "exit_status": 0,
-    "completion_time": "2025-10-20T16:57:09.891766",
-    "total_tests": 28
+    "completion_time": "2025-11-20T20:08:21.566959",
+    "total_tests": 48
   },
   "test_details": [
     {
-      "name": "test_index_file_blocks_high_risk_executable",
-      "file": "test_content_index_manager_integration.py",
-      "timestamp": "2025-10-20T16:57:09.594994"
+      "name": "test_rapid_operation_starts",
+      "file": "test_network_base_2025-08-28.py",
+      "timestamp": "2025-11-20T20:08:20.621361"
     },
     {
-      "name": "test_index_file_warns_on_policy_mismatch",
-      "file": "test_content_index_manager_integration.py",
-      "timestamp": "2025-10-20T16:57:09.640961"
+      "name": "test_callback_exception_isolation",
+      "file": "test_network_base_2025-08-28.py",
+      "timestamp": "2025-11-20T20:08:20.640905"
     },
     {
-      "name": "test_fixture_file_exists_with_expected_header[sample.docx]",
-      "file": "test_fixtures.py",
-      "timestamp": "2025-10-20T16:57:09.646239"
+      "name": "test_stop_before_start",
+      "file": "test_network_base_2025-08-28.py",
+      "timestamp": "2025-11-20T20:08:20.663437"
     },
     {
-      "name": "test_fixture_file_exists_with_expected_header[sample.exe]",
-      "file": "test_fixtures.py",
-      "timestamp": "2025-10-20T16:57:09.652086"
+      "name": "test_unicode_data_handling",
+      "file": "test_network_base_2025-08-28.py",
+      "timestamp": "2025-11-20T20:08:20.679976"
     },
     {
-      "name": "test_fixture_file_exists_with_expected_header[sample.pdf]",
-      "file": "test_fixtures.py",
-      "timestamp": "2025-10-20T16:57:09.657756"
+      "name": "test_multiple_stops",
+      "file": "test_network_base_2025-08-28.py",
+      "timestamp": "2025-11-20T20:08:20.747060"
     },
     {
-      "name": "test_fixture_file_exists_with_expected_header[sample.png]",
-      "file": "test_fixtures.py",
-      "timestamp": "2025-10-20T16:57:09.663048"
+      "name": "test_none_data_handling",
+      "file": "test_network_base_2025-08-28.py",
+      "timestamp": "2025-11-20T20:08:20.756581"
     },
     {
-      "name": "test_fixture_file_exists_with_expected_header[sample.zip]",
-      "file": "test_fixtures.py",
-      "timestamp": "2025-10-20T16:57:09.670911"
+      "name": "test_empty_data_storage",
+      "file": "test_network_base_2025-08-28.py",
+      "timestamp": "2025-11-20T20:08:20.767608"
     },
     {
-      "name": "test_docx_fixture_contains_office_structure",
-      "file": "test_fixtures.py",
-      "timestamp": "2025-10-20T16:57:09.677831"
+      "name": "test_large_data_handling",
+      "file": "test_network_base_2025-08-28.py",
+      "timestamp": "2025-11-20T20:08:20.778136"
     },
     {
-      "name": "test_zip_fixture_identified_as_zip_archive",
-      "file": "test_fixtures.py",
-      "timestamp": "2025-10-20T16:57:09.683819"
+      "name": "test_timestamp_auto_creation",
+      "file": "test_network_base_2025-08-28.py",
+      "timestamp": "2025-11-20T20:08:20.784134"
     },
     {
-      "name": "test_validate_accepts_allowed_type_in_reject_mode",
-      "file": "test_policy.py",
-      "timestamp": "2025-10-20T16:57:09.690357"
+      "name": "test_creation_with_all_fields",
+      "file": "test_network_base_2025-08-28.py",
+      "timestamp": "2025-11-20T20:08:20.790649"
     },
     {
-      "name": "test_validate_rejects_high_risk_mismatch",
-      "file": "test_policy.py",
-      "timestamp": "2025-10-20T16:57:09.697776"
+      "name": "test_timestamp_preservation",
+      "file": "test_network_base_2025-08-28.py",
+      "timestamp": "2025-11-20T20:08:20.795648"
     },
     {
-      "name": "test_validate_warn_mode_does_not_hard_fail_low_risk_mismatch",
-      "file": "test_policy.py",
-      "timestamp": "2025-10-20T16:57:09.706344"
+      "name": "test_basic_creation",
+      "file": "test_network_base_2025-08-28.py",
+      "timestamp": "2025-11-20T20:08:20.800646"
     },
     {
-      "name": "test_validate_auto_mode_escalates_high_risk",
-      "file": "test_policy.py",
-      "timestamp": "2025-10-20T16:57:09.713497"
+      "name": "test_enum_values",
+      "file": "test_network_base_2025-08-28.py",
+      "timestamp": "2025-11-20T20:08:20.807687"
     },
     {
-      "name": "test_validate_auto_mode_downgrades_low_risk_mismatch",
-      "file": "test_policy.py",
-      "timestamp": "2025-10-20T16:57:09.722135"
+      "name": "test_enum_completeness",
+      "file": "test_network_base_2025-08-28.py",
+      "timestamp": "2025-11-20T20:08:20.815689"
     },
     {
-      "name": "test_validate_accepts_when_policy_allowlist_empty",
-      "file": "test_policy.py",
-      "timestamp": "2025-10-20T16:57:09.727405"
+      "name": "test_large_history_performance",
+      "file": "test_network_base_2025-08-28.py",
+      "timestamp": "2025-11-20T20:08:20.838727"
     },
     {
-      "name": "test_validate_supports_extension_allowlist_variants",
-      "file": "test_policy.py",
-      "timestamp": "2025-10-20T16:57:09.734581"
+      "name": "test_memory_usage_large_dataset",
+      "file": "test_network_base_2025-08-28.py",
+      "timestamp": "2025-11-20T20:08:20.942747"
     },
     {
-      "name": "test_validate_raises_for_invalid_mode",
-      "file": "test_policy.py",
-      "timestamp": "2025-10-20T16:57:09.740377"
+      "name": "test_concurrent_data_storage",
+      "file": "test_network_base_2025-08-28.py",
+      "timestamp": "2025-11-20T20:08:20.963270"
     },
     {
-      "name": "test_signature_detection_returns_high_confidence[sample.pdf-pdf-.pdf]",
-      "file": "test_signatures.py",
-      "timestamp": "2025-10-20T16:57:09.745692"
+      "name": "test_add_data_callback",
+      "file": "test_network_base_2025-08-28.py",
+      "timestamp": "2025-11-20T20:08:20.977798"
     },
     {
-      "name": "test_signature_detection_returns_high_confidence[sample.png-png-.png]",
-      "file": "test_signatures.py",
-      "timestamp": "2025-10-20T16:57:09.754082"
+      "name": "test_get_status_info",
+      "file": "test_network_base_2025-08-28.py",
+      "timestamp": "2025-11-20T20:08:20.986813"
     },
     {
-      "name": "test_signature_detection_returns_high_confidence[sample.zip-zip-.zip]",
-      "file": "test_signatures.py",
-      "timestamp": "2025-10-20T16:57:09.764551"
+      "name": "test_is_healthy_property_old_errors",
+      "file": "test_network_base_2025-08-28.py",
+      "timestamp": "2025-11-20T20:08:20.996329"
     },
     {
-      "name": "test_signature_detection_returns_high_confidence[sample.docx-docx-.docx]",
-      "file": "test_signatures.py",
-      "timestamp": "2025-10-20T16:57:09.774421"
+      "name": "test_start_operation_validation_failure",
+      "file": "test_network_base_2025-08-28.py",
+      "timestamp": "2025-11-20T20:08:21.004842"
     },
     {
-      "name": "test_signature_detection_returns_high_confidence[sample.exe-pe-.exe]",
-      "file": "test_signatures.py",
-      "timestamp": "2025-10-20T16:57:09.783122"
+      "name": "test_get_current_data",
+      "file": "test_network_base_2025-08-28.py",
+      "timestamp": "2025-11-20T20:08:21.015856"
     },
     {
-      "name": "test_detect_file_type_returns_structured_dataclass",
-      "file": "test_signatures.py",
-      "timestamp": "2025-10-20T16:57:09.795163"
+      "name": "test_stop_operation_success",
+      "file": "test_network_base_2025-08-28.py",
+      "timestamp": "2025-11-20T20:08:21.078447"
     },
     {
-      "name": "test_detect_file_type_uses_pdf_token_heuristic",
-      "file": "test_signatures.py",
-      "timestamp": "2025-10-20T16:57:09.811748"
+      "name": "test_operation_wrapper_failure",
+      "file": "test_network_base_2025-08-28.py",
+      "timestamp": "2025-11-20T20:08:21.087444"
     },
     {
-      "name": "test_detect_file_type_marks_unknown_with_low_confidence",
-      "file": "test_signatures.py",
-      "timestamp": "2025-10-20T16:57:09.830119"
+      "name": "test_ensure_network_config",
+      "file": "test_network_base_2025-08-28.py",
+      "timestamp": "2025-11-20T20:08:21.101958"
     },
     {
-      "name": "test_detect_file_type_refines_zip_container",
-      "file": "test_signatures.py",
-      "timestamp": "2025-10-20T16:57:09.845387"
+      "name": "test_store_data_history_limit",
+      "file": "test_network_base_2025-08-28.py",
+      "timestamp": "2025-11-20T20:08:21.111001"
     },
     {
-      "name": "test_detect_file_type_handles_plain_text",
-      "file": "test_signatures.py",
-      "timestamp": "2025-10-20T16:57:09.859280"
+      "name": "test_start_operation_already_running",
+      "file": "test_network_base_2025-08-28.py",
+      "timestamp": "2025-11-20T20:08:21.124532"
     },
     {
-      "name": "test_detect_file_type_reports_zip_container_metadata",
-      "file": "test_signatures.py",
-      "timestamp": "2025-10-20T16:57:09.866104"
+      "name": "test_notify_data_callbacks",
+      "file": "test_network_base_2025-08-28.py",
+      "timestamp": "2025-11-20T20:08:21.134531"
+    },
+    {
+      "name": "test_stop_operation_not_running",
+      "file": "test_network_base_2025-08-28.py",
+      "timestamp": "2025-11-20T20:08:21.144065"
+    },
+    {
+      "name": "test_get_historical_data_all",
+      "file": "test_network_base_2025-08-28.py",
+      "timestamp": "2025-11-20T20:08:21.154065"
+    },
+    {
+      "name": "test_operation_wrapper_success",
+      "file": "test_network_base_2025-08-28.py",
+      "timestamp": "2025-11-20T20:08:21.163598"
+    },
+    {
+      "name": "test_add_alert_callback",
+      "file": "test_network_base_2025-08-28.py",
+      "timestamp": "2025-11-20T20:08:21.182129"
+    },
+    {
+      "name": "test_get_tool_config",
+      "file": "test_network_base_2025-08-28.py",
+      "timestamp": "2025-11-20T20:08:21.192645"
+    },
+    {
+      "name": "test_is_healthy_property_error_count",
+      "file": "test_network_base_2025-08-28.py",
+      "timestamp": "2025-11-20T20:08:21.203642"
+    },
+    {
+      "name": "test_signal_emission",
+      "file": "test_network_base_2025-08-28.py",
+      "timestamp": "2025-11-20T20:08:21.214172"
+    },
+    {
+      "name": "test_store_data",
+      "file": "test_network_base_2025-08-28.py",
+      "timestamp": "2025-11-20T20:08:21.226710"
+    },
+    {
+      "name": "test_handle_operation_error",
+      "file": "test_network_base_2025-08-28.py",
+      "timestamp": "2025-11-20T20:08:21.235710"
+    },
+    {
+      "name": "test_is_healthy_property_basic",
+      "file": "test_network_base_2025-08-28.py",
+      "timestamp": "2025-11-20T20:08:21.244245"
+    },
+    {
+      "name": "test_start_operation_success",
+      "file": "test_network_base_2025-08-28.py",
+      "timestamp": "2025-11-20T20:08:21.353401"
+    },
+    {
+      "name": "test_threading_safety",
+      "file": "test_network_base_2025-08-28.py",
+      "timestamp": "2025-11-20T20:08:21.384757"
+    },
+    {
+      "name": "test_notify_alert_callbacks",
+      "file": "test_network_base_2025-08-28.py",
+      "timestamp": "2025-11-20T20:08:21.396467"
+    },
+    {
+      "name": "test_initialization",
+      "file": "test_network_base_2025-08-28.py",
+      "timestamp": "2025-11-20T20:08:21.407504"
+    },
+    {
+      "name": "test_notify_data_callbacks_error_handling",
+      "file": "test_network_base_2025-08-28.py",
+      "timestamp": "2025-11-20T20:08:21.417513"
+    },
+    {
+      "name": "test_set_tool_config",
+      "file": "test_network_base_2025-08-28.py",
+      "timestamp": "2025-11-20T20:08:21.431040"
+    },
+    {
+      "name": "test_get_historical_data_filtered",
+      "file": "test_network_base_2025-08-28.py",
+      "timestamp": "2025-11-20T20:08:21.442583"
+    },
+    {
+      "name": "test_is_running_property",
+      "file": "test_network_base_2025-08-28.py",
+      "timestamp": "2025-11-20T20:08:21.512682"
+    },
+    {
+      "name": "test_enum_completeness",
+      "file": "test_network_base_2025-08-28.py",
+      "timestamp": "2025-11-20T20:08:21.525209"
+    },
+    {
+      "name": "test_enum_values",
+      "file": "test_network_base_2025-08-28.py",
+      "timestamp": "2025-11-20T20:08:21.539725"
     }
   ]
 }

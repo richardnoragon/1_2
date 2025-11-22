@@ -32,7 +32,7 @@ from typing import Any, Dict, List, Tuple
 # Add project root to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
 
-from tools.analysis.size_analyzer.size_analyzer_logic import SizeAnalyzer
+from src.tools.analysis.size_analyzer.size_analyzer_logic import SizeAnalyzer
 
 
 class SizeAnalyzerMemoryLeakRootCauseAnalyzer:

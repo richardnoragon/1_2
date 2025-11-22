@@ -69,6 +69,13 @@ DEFAULT_VALIDATOR_PROFILES: Dict[str, Any] = {
     },
 }
 
+MIGRATED_PREFERENCE_KEYS: set[tuple[str, str]] = {
+    ("general", "theme"),
+    ("general", "default_directory"),
+    ("general", "recent_directories"),
+    ("general", "show_hidden"),
+}
+
 DEFAULT_CONFIG_STRUCTURE: Dict[str, Any] = {
     "general": {
         "logging_level": "INFO",
@@ -98,6 +105,12 @@ DEFAULT_CONFIG_STRUCTURE: Dict[str, Any] = {
         "log_file_backup_count": 5,
         "enable_tool_logging": True,
         "log_format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    },
+    "identity": {
+        "database_path": "",
+        "enable_idle_watchdog": False,
+        "idle_timeout_minutes": 10,
+        "watchdog_interval_seconds": 60,
     },
     "tools": {
         "default_directory": str(Path.home()),
@@ -410,9 +423,7 @@ class ConfigManager:
         else:
             env_dir = os.getenv("RFU_CONFIG_DIR")
             base_dir = (
-                Path(env_dir).expanduser()
-                if env_dir
-                else project_root / "config"
+                Path(env_dir).expanduser() if env_dir else project_root / "config"
             )
             base_dir.mkdir(parents=True, exist_ok=True)
 
@@ -478,7 +489,7 @@ class ConfigManager:
                     self.config = data
                 else:
                     self.logger.warning(
-                        "Configuration file %s is not a dictionary; using defaults",
+                        "Configuration file %s is not a dictionary; " "using defaults",
                         self.config_file,
                     )
                     self.config = {}
@@ -509,25 +520,25 @@ class ConfigManager:
     def _validate_config_types(self, config_data: Dict[str, Any]) -> None:
         for (section, key), expected_type in TYPE_RULES.items():
             value: Any = None
-            if section in config_data and isinstance(
+            section_has_data = section in config_data and isinstance(
                 config_data[section], dict
-            ):
+            )
+            if section_has_data:
                 value = config_data[section].get(key)
             elif key in config_data:
                 value = config_data.get(key)
 
             if value is not None and not isinstance(value, expected_type):
-                message = (
-                    f"'{section}.{key}' must be of type "
-                    f"{expected_type.__name__}"
-                )
+                type_name = expected_type.__name__
+                message = f"'{section}.{key}' must be of type {type_name}"
                 raise ValueError(message)
 
     def _validate_required_fields(self, config_data: Dict[str, Any]) -> None:
         for section, key in REQUIRED_FIELDS:
-            if section in config_data and isinstance(
+            section_has_data = section in config_data and isinstance(
                 config_data[section], dict
-            ):
+            )
+            if section_has_data:
                 if key not in config_data[section]:
                     message = f"Required field '{section}.{key}' is missing"
                     raise ValueError(message)
@@ -561,6 +572,14 @@ class ConfigManager:
 
     def set_setting(self, section: str, key: str, value: Any) -> None:
         try:
+            if (section, key) in MIGRATED_PREFERENCE_KEYS:
+                self.logger.warning(
+                    "Skipped legacy write for migrated preference %s.%s;"
+                    " PreferenceManager now owns this key",
+                    section,
+                    key,
+                )
+                return
             if section not in self.config or not isinstance(
                 self.config.get(section), dict
             ):
@@ -582,16 +601,11 @@ class ConfigManager:
         if not directory:
             return
 
-        general = self.config.setdefault("general", {})
-        recent = list(general.get("recent_directories", []))
-        max_entries = int(general.get("max_recent_entries", 10))
-
-        if directory in recent:
-            recent.remove(directory)
-        recent.insert(0, directory)
-        general["recent_directories"] = recent[:max_entries]
-        self.save_config()
-        self.logger.info("Added recent directory: %s", directory)
+        self.logger.warning(
+            "Skipped legacy recent directory write for '%s'; PreferenceManager"
+            " handles persistence",
+            directory,
+        )
 
     def get_recent_directories(self) -> list[str]:
         recent = self.config.get("general", {}).get("recent_directories", [])
@@ -774,15 +788,11 @@ class ConfigManager:
             "config_dir": str(self.config_dir),
             "sections": list(self.config.keys()),
             "total_settings": sum(
-                len(value)
-                for value in self.config.values()
-                if isinstance(value, dict)
+                len(value) for value in self.config.values() if isinstance(value, dict)
             ),
             "file_exists": self.config_file.exists(),
             "file_size_bytes": (
-                self.config_file.stat().st_size
-                if self.config_file.exists()
-                else 0
+                self.config_file.stat().st_size if self.config_file.exists() else 0
             ),
             "modified_at": modified_at,
         }
@@ -880,9 +890,10 @@ class ConfigManager:
 
             legacy_key = f"{module_name}_profiles"
             legacy_profiles = self.config.get(legacy_key, {})
-            if isinstance(legacy_profiles, dict) and (
-                profile_name in legacy_profiles
-            ):
+            legacy_profile_exists = (
+                isinstance(legacy_profiles, dict) and profile_name in legacy_profiles
+            )
+            if legacy_profile_exists:
                 del legacy_profiles[profile_name]
                 removed = True
                 if not legacy_profiles:

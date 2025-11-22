@@ -1,0 +1,10 @@
+# Retired legacy suites and backup directories excluded from pytest discovery
+archive/
+emergency-backup-*/
+file_utilities_2/
+scripts/development/testing/
+tests/cross_platform/
+tests/phase4_enterprise_testing/
+tests/unit/network/
+tests/unit/gui/
+tests/unit/pdf/

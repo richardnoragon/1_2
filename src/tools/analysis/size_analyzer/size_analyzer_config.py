@@ -10,6 +10,17 @@ import os
 from pathlib import Path
 from typing import Any, Dict, Optional
 
+try:
+    from src.core.preferences.manager import PreferenceManager
+    from src.core.preferences.migration import PreferenceMigrationHelper
+except ImportError:
+    try:
+        from core.preferences.manager import PreferenceManager
+        from core.preferences.migration import PreferenceMigrationHelper
+    except ImportError:
+        PreferenceManager = None
+        PreferenceMigrationHelper = None  # type: ignore
+
 
 def get_config_manager():
     """Dynamically import config manager to avoid circular imports."""
@@ -93,6 +104,16 @@ class SizeAnalyzerConfig:
 
             self.logger = logging.getLogger("SizeAnalyzer.Config")
         self.section_name = "size_analyzer"
+        self.preference_manager = self._init_preference_manager()
+        self._migration_helper = (
+            PreferenceMigrationHelper(
+                preference_manager=self.preference_manager,
+                config_manager=self.config_manager,
+                logger=self.logger,
+            )
+            if PreferenceMigrationHelper is not None
+            else None
+        )
 
         # Default configuration values
         self.defaults = {
@@ -312,7 +333,7 @@ class SizeAnalyzerConfig:
     def add_recent_directory(self, directory: str) -> bool:
         """Add a directory to the recent directories list."""
         try:
-            recent_dirs = self.get_setting("general", "recent_directories", [])
+            recent_dirs = self._load_recent_directories()
             max_recent = self.get_setting("general", "max_recent_directories", 10)
 
             # Remove if already exists
@@ -325,7 +346,7 @@ class SizeAnalyzerConfig:
             # Limit to max entries
             recent_dirs = recent_dirs[:max_recent]
 
-            return self.set_setting("general", "recent_directories", recent_dirs)
+            return self._save_recent_directories(recent_dirs)
 
         except Exception as e:
             self.logger.error(f"Error adding recent directory: {e}")
@@ -333,7 +354,7 @@ class SizeAnalyzerConfig:
 
     def get_recent_directories(self) -> list:
         """Get the list of recent directories."""
-        return self.get_setting("general", "recent_directories", [])
+        return self._load_recent_directories()
 
     def save_window_geometry(
         self, width: int, height: int, x: int = None, y: int = None
@@ -483,6 +504,60 @@ class SizeAnalyzerConfig:
             self.logger.error(f"Error importing configuration: {e}")
             return False
 
+    def _init_preference_manager(self):
+        if PreferenceManager is None:
+            return None
+        try:
+            return PreferenceManager()
+        except Exception as exc:  # noqa: BLE001
+            self.logger.warning(
+                f"PreferenceManager unavailable for SizeAnalyzerConfig: {exc}"
+            )
+            return None
+
+    def _load_recent_directories(self) -> list:
+        fallback = self.get_setting("general", "recent_directories", [])
+        helper = getattr(self, "_migration_helper", None)
+        if helper is not None:
+            return helper.load_recent_directories(
+                fallback if isinstance(fallback, (list, tuple)) else []
+            )
+
+        recent: list[str] = []
+        if self.preference_manager is not None:
+            try:
+                prefs = self.preference_manager.get_directory_prefs()
+                if isinstance(prefs, dict):
+                    recent = [str(path) for path in prefs.get("recent", [])]
+            except Exception as exc:  # noqa: BLE001
+                self.logger.warning(
+                    "Unable to load recent dirs via PrefMgr fallback: %s",
+                    exc,
+                )
+
+        if not recent and isinstance(fallback, (list, tuple)):
+            recent = [str(path) for path in fallback]
+
+        return recent
+
+    def _save_recent_directories(self, directories: list) -> bool:
+        helper = getattr(self, "_migration_helper", None)
+        if helper is not None:
+            return helper.save_recent_directories(directories)
+
+        if self.preference_manager is not None:
+            try:
+                self.preference_manager.set_directory_prefs(recent=list(directories))
+                return True
+            except Exception as exc:  # noqa: BLE001
+                self.logger.warning(
+                    "Unable to persist recent dirs via PrefMgr fallback: %s",
+                    exc,
+                )
+
+        self.logger.debug("Skip legacy ConfigManager write for recent directories")
+        return False
+
     def _create_fallback_config_manager(self):
         """Create a fallback configuration manager."""
 
@@ -491,6 +566,7 @@ class SizeAnalyzerConfig:
                 self.config = {}
 
             def save_config(self):
+                # Mirror ConfigManager API while remaining inert.
                 pass
 
             def get(self, key, default=None):

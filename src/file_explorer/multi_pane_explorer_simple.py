@@ -17,8 +17,8 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
-from src.file_explorer.services.preference_service import (
-    get_preference_service,
+from src.file_explorer.services.explorer_preferences import (
+    get_explorer_preferences,
 )
 from src.file_explorer.ui.file_explorer_pane import FileExplorerPane
 from src.file_explorer.ui.layout_manager_ui import LayoutManagerUI
@@ -50,7 +50,7 @@ class MultiPaneExplorer(QWidget):
         super().__init__(parent)
 
         self.logger = logging.getLogger("RFU.MultiPaneExplorer")
-        self.preference_service = get_preference_service()
+        self._preferences = get_explorer_preferences()
 
         # Create center file explorer panes (max 4)
         self.center_panes: List[FileExplorerPane] = []
@@ -142,7 +142,7 @@ class MultiPaneExplorer(QWidget):
     def restore_configuration(self):
         """Restore saved pane configuration from preferences."""
         try:
-            prefs = self.preference_service.load_preferences()
+            prefs = self._preferences.load_user_preferences()
 
             # Restore left pane default tab
             self.left_pane.restore_default_tab()
@@ -165,7 +165,7 @@ class MultiPaneExplorer(QWidget):
     def _restore_splitter_state(self):
         """Restore main splitter state from preferences."""
         try:
-            prefs = self.preference_service.load_preferences()
+            prefs = self._preferences.load_user_preferences()
             splitter_states = prefs.pane_config.splitter_states
 
             if "main_explorer" in splitter_states:
@@ -179,7 +179,7 @@ class MultiPaneExplorer(QWidget):
     def save_configuration(self):
         """Save current pane configuration to preferences."""
         try:
-            prefs = self.preference_service.load_preferences()
+            prefs = self._preferences.load_user_preferences()
 
             # Save splitter state
             prefs.pane_config.splitter_states["main_explorer"] = (
@@ -190,7 +190,7 @@ class MultiPaneExplorer(QWidget):
             self.layout_manager_ui.save_splitter_states()
 
             # Save preferences
-            self.preference_service.save_preferences(prefs)
+            self._preferences.save_user_preferences(prefs)
 
             self.logger.info("Configuration saved to preferences")
 

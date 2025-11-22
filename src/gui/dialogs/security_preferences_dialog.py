@@ -1150,11 +1150,11 @@ try:
             try:
                 # Lazy load migration manager
                 if self._migration_manager is None:
-                    from src.core.database_manager import (
-                        get_database_manager,
-                    )
                     from src.core.migrations.migration_manager import (
                         DatabaseMigrationManager,
+                    )
+                    from src.database.database_manager import (
+                        get_database_manager,
                     )
 
                     database_manager = get_database_manager()

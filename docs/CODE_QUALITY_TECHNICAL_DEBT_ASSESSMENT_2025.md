@@ -52,7 +52,7 @@ Critical Files Requiring Immediate Refactoring:
 ├── src/file_explorer/multi_pane_explorer.py    # 3,852 lines (768% over limit)
 ├── src/file_explorer/ui/pane_manager.py        # 956 lines (91% over limit)
 ├── src/core/migrations/migration_manager.py    # 920 lines (84% over limit)
-├── src/core/database_manager.py               # 693 lines (39% over limit)
+├── src/database/database_manager.py           # 693 lines (39% over limit)
 ├── src/core/theme_security/...                # Multiple 500+ line files
 └── src/tools/pdf_tools/...                     # Complex processing modules
 ```
@@ -201,7 +201,7 @@ Critical Violations Requiring Immediate Action:
 1. src/file_explorer/multi_pane_explorer.py - 3,852 lines 💀
 2. src/file_explorer/ui/pane_manager.py - 956 lines 🚨
 3. src/core/migrations/migration_manager.py - 920 lines 🚨
-4. src/core/database_manager.py - 693 lines ❌
+4. src/database/database_manager.py - 693 lines ❌
 5. Additional 15+ files requiring refactoring
 ```
 

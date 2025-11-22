@@ -9,11 +9,30 @@ This package provides comprehensive security features for theme data:
 - Key management with OS keyring integration
 """
 
-from .theme_security_manager import ThemeSecurityManager
-from .theme_encryption import ThemeDataEncryption
-from .theme_validator import ThemeIntegrityValidator
-from .theme_access_control import ThemeAccessController
-from .theme_backup import ThemeBackupManager
+try:
+    from .theme_security_manager import ThemeSecurityManager
+except ImportError:  # Fallback for optional dependencies such as cryptography
+    ThemeSecurityManager = None  # type: ignore[assignment]
+
+try:
+    from .theme_encryption import ThemeDataEncryption
+except ImportError:  # Optional cryptography dependency may be missing
+    ThemeDataEncryption = None  # type: ignore[assignment]
+
+try:
+    from .theme_validator import ThemeIntegrityValidator
+except ImportError:
+    ThemeIntegrityValidator = None  # type: ignore[assignment]
+
+try:
+    from .theme_access_control import ThemeAccessController
+except ImportError:
+    ThemeAccessController = None  # type: ignore[assignment]
+
+try:
+    from .theme_backup import ThemeBackupManager
+except ImportError:
+    ThemeBackupManager = None  # type: ignore[assignment]
 
 __all__ = [
     "ThemeSecurityManager",

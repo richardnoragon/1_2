@@ -5,13 +5,12 @@ This service handles CRUD operations for bookmarks (tools and locations).
 """
 
 import logging
-import uuid
 from typing import List, Optional
 
 from src.file_explorer.models.bookmark import Bookmark, BookmarkType
-from src.file_explorer.services.preference_service import (
-    PreferenceService,
-    get_preference_service,
+from src.file_explorer.services.explorer_preferences import (
+    ExplorerPreferences,
+    get_explorer_preferences,
 )
 
 
@@ -24,19 +23,25 @@ class DuplicateError(Exception):
 class BookmarkService:
     """Service for managing bookmarks."""
 
-    def __init__(self, preference_service=None, config_dir=None):
+    def __init__(
+        self,
+        explorer_preferences: Optional[ExplorerPreferences] = None,
+        config_dir=None,
+    ):
         """
         Initialize the bookmark service.
 
         Args:
-            preference_service: Optional PreferenceService instance
+            explorer_preferences: Optional ExplorerPreferences instance
             config_dir: Optional configuration directory for testing
         """
         self.logger = logging.getLogger("RFU.FileExplorer.BookmarkService")
-        if config_dir:
-            self.preference_service = PreferenceService(config_dir)
+        if explorer_preferences is not None:
+            self._preferences = explorer_preferences
+        elif config_dir:
+            self._preferences = ExplorerPreferences(config_dir=config_dir)
         else:
-            self.preference_service = preference_service or get_preference_service()
+            self._preferences = get_explorer_preferences()
         self.logger.info("BookmarkService initialized")
 
     def create_bookmark(
@@ -65,8 +70,9 @@ class BookmarkService:
         try:
             # Additional validation for tool bookmarks
             if type == BookmarkType.TOOL:
-                # Basic validation: tool names typically have spaces or are from
-                # a known set. "NonExistentTool123" pattern is clearly invalid
+                # Basic validation: tool names typically have spaces or are
+                # from a known set. "NonExistentTool123" pattern is clearly
+                # invalid
                 if target and not any(c.isspace() for c in target):
                     # Check if it looks like a test/invalid name
                     if any(char.isdigit() for char in target[-3:]):
@@ -82,7 +88,7 @@ class BookmarkService:
             )
 
             # Load current preferences
-            prefs = self.preference_service.load_preferences()
+            prefs = self._preferences.load_user_preferences()
 
             # Check for duplicates (same target)
             existing = [b for b in prefs.bookmarks if b.target == target]
@@ -98,7 +104,7 @@ class BookmarkService:
             prefs.bookmarks.append(bookmark)
 
             # Persist immediately
-            self.preference_service.save_preferences(prefs)
+            self._preferences.save_user_preferences(prefs)
 
             self.logger.info(f"Created bookmark: {name} ({type.value})")
             return bookmark
@@ -119,11 +125,12 @@ class BookmarkService:
             bookmark_type: Optional filter (None returns all)
 
         Returns:
-            List[Bookmark]: Matching bookmarks ordered by created_at (newest first)
+            List[Bookmark]: Matching bookmarks ordered by created_at
+            (newest first)
         """
         try:
             # Load preferences
-            prefs = self.preference_service.load_preferences()
+            prefs = self._preferences.load_user_preferences()
 
             # Filter by type if specified
             if bookmark_type is not None:
@@ -152,7 +159,7 @@ class BookmarkService:
         """
         try:
             # Load preferences
-            prefs = self.preference_service.load_preferences()
+            prefs = self._preferences.load_user_preferences()
 
             # Find bookmark
             original_count = len(prefs.bookmarks)
@@ -164,7 +171,7 @@ class BookmarkService:
                 return False
 
             # Persist immediately
-            self.preference_service.save_preferences(prefs)
+            self._preferences.save_user_preferences(prefs)
 
             self.logger.info(f"Deleted bookmark: {bookmark_id}")
             return True

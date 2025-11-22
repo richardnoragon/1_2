@@ -3,6 +3,21 @@ import sys
 
 import pytest
 
+try:  # pragma: no cover - compatibility shim for pytest-lazy-fixture
+    from _pytest.python import CallSpec2
+except Exception:  # pragma: no cover - best effort import guard
+    CallSpec2 = None
+else:
+    if not hasattr(CallSpec2, "funcargs"):
+
+        def _get_funcargs(self):
+            return getattr(self, "_lazy_fixture_funcargs", {})
+
+        def _set_funcargs(self, value):
+            setattr(self, "_lazy_fixture_funcargs", value or {})
+
+        CallSpec2.funcargs = property(_get_funcargs, _set_funcargs)
+
 try:
     from PyQt5.QtWidgets import QApplication  # type: ignore
 except ModuleNotFoundError:  # pragma: no cover - fallback for headless envs
@@ -83,3 +98,20 @@ def mock_rfu_config(test_config_dir, monkeypatch):
     # Mock config directory path in config_manager
     monkeypatch.setenv("RFU_CONFIG_DIR", str(test_config_dir))
     return test_config_dir
+
+
+def pytest_configure(config):
+    """Register custom markers for strict-marker runs."""
+
+    for name, description in (
+        ("unit", "Unit tests"),
+        ("integration", "Integration tests"),
+        ("identity", "Identity workflow integration tests"),
+        ("performance", "Performance envelope validation tests"),
+        ("cli", "CLI workflow coverage"),
+        ("smoke", "Smoke tests"),
+        ("slow", "Tests that take a long time to run"),
+        ("gui", "Tests that require GUI components"),
+        ("pdf", "Tests that work with PDF files"),
+    ):
+        config.addinivalue_line("markers", f"{name}: {description}")

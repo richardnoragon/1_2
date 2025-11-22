@@ -5,13 +5,17 @@ Size Analyzer Tool for Richard's File Utilities
 A streamlined size analyzer utility with essential functionality.
 """
 
+import logging
 import sys
 
 try:
     from PyQt5.QtWidgets import (
         QApplication,
+        QFileDialog,
         QGroupBox,
+        QHBoxLayout,
         QLabel,
+        QLineEdit,
         QListWidget,
         QMainWindow,
         QMessageBox,
@@ -22,6 +26,29 @@ try:
 except ImportError:
     print("PyQt5 not available. Please install PyQt5.")
     sys.exit(1)
+
+try:
+    from .size_analyzer_logic import SizeAnalyzer, SizeAnalyzerWorker
+except ImportError:  # Allow running as standalone script
+    from src.tools.analysis.size_analyzer.size_analyzer_logic import (
+        SizeAnalyzer,
+        SizeAnalyzerWorker,
+    )
+
+try:
+    from ....log_manager import get_log_manager
+
+    LOG_MANAGER_AVAILABLE = True
+except ImportError:
+    try:
+        from src.log_manager import get_log_manager
+
+        LOG_MANAGER_AVAILABLE = True
+    except ImportError:
+        get_log_manager = None
+        LOG_MANAGER_AVAILABLE = False
+
+SIZE_ANALYZER_LABEL = "Size Analyzer"
 
 # Import SafeStandardWindow for reliable menu integration
 try:
@@ -78,7 +105,14 @@ class SizeAnalyzerGUI(StandardWindow):
         )
         self.setGeometry(100, 100, 800, 600)
 
+        self.logger = self._init_logger()
         self.analysis_results = {}
+        self.analyzer = SizeAnalyzer()
+        self.analyzer.operation_cancelled.connect(self._handle_analysis_cancelled)
+        self.worker_thread: SizeAnalyzerWorker | None = None
+        self._last_selected_path: str | None = None
+        self._worker_signals_connected = False
+        self._worker_signal_pairs = []
         self.init_ui()
         if STANDARD_WINDOW_AVAILABLE:
             self._setup_menu_callbacks()
@@ -89,9 +123,15 @@ class SizeAnalyzerGUI(StandardWindow):
         """Setup tool-specific menu callbacks."""
         if hasattr(self, "menu_manager"):
             # Register tool-specific callbacks
-            self.menu_manager.register_callback("new_analysis", self.clear_analysis)
+            self.menu_manager.register_callback(
+                "new_analysis",
+                self.clear_analysis,
+            )
             # Override the standard help with our tool-specific help
-            self.menu_manager.register_callback("show_user_guide", self.show_help)
+            self.menu_manager.register_callback(
+                "show_user_guide",
+                self.show_help,
+            )
             self.menu_manager.register_callback(
                 "show_preferences", self.show_preferences
             )
@@ -122,6 +162,8 @@ class SizeAnalyzerGUI(StandardWindow):
         <li><b>File Breakdown:</b> Individual file size listings</li>
         <li><b>Size Sorting:</b> Results sorted by size (largest first)</li>
         <li><b>Progress Tracking:</b> Real-time analysis progress</li>
+        <li><b>Name Range Filter:</b> Limit scans to names between
+        two values</li>
         </ul>
         
         <h3>Size Information:</h3>
@@ -187,7 +229,7 @@ class SizeAnalyzerGUI(StandardWindow):
             layout = QVBoxLayout(central_widget)
 
         # Add header
-        header_label = QLabel("Size Analyzer")
+        header_label = QLabel(SIZE_ANALYZER_LABEL)
         header_label.setStyleSheet(
             """
             QLabel {
@@ -210,19 +252,52 @@ class SizeAnalyzerGUI(StandardWindow):
         self.results_list = QListWidget()
         analysis_layout.addWidget(self.results_list)
 
-        analyze_button = QPushButton("Start Analysis")
-        analyze_button.clicked.connect(self.start_analysis)
-        analysis_layout.addWidget(analyze_button)
+        self.status_label = QLabel("Idle")
+        self.status_label.setStyleSheet("color: #2c3e50; padding: 4px 0;")
+        analysis_layout.addWidget(self.status_label)
+
+        filter_group = QGroupBox("File Name Range Filter (Optional)")
+        filter_layout = QHBoxLayout()
+        filter_group.setLayout(filter_layout)
+
+        start_label = QLabel("Start:")
+        self.start_range_input = QLineEdit()
+        self.start_range_input.setPlaceholderText("e.g., A or 100")
+
+        end_label = QLabel("End:")
+        self.end_range_input = QLineEdit()
+        self.end_range_input.setPlaceholderText("e.g., D or 399")
+
+        for widget in (
+            start_label,
+            self.start_range_input,
+            end_label,
+            self.end_range_input,
+        ):
+            filter_layout.addWidget(widget)
+
+        analysis_layout.addWidget(filter_group)
+
+        self.analyze_button = QPushButton("Start Analysis")
+        self.analyze_button.clicked.connect(self.start_analysis)
+        analysis_layout.addWidget(self.analyze_button)
+
+        self.cancel_button = QPushButton("Stop Analysis")
+        self.cancel_button.setEnabled(False)
+        self.cancel_button.clicked.connect(self.stop_analysis)
+        analysis_layout.addWidget(self.cancel_button)
 
         layout.addWidget(analysis_group)
-        content_label = QLabel("Tool functionality will be implemented here.")
+        content_label = QLabel(
+            "Use Start Analysis to scan a directory. Results appear above."
+        )
         content_label.setStyleSheet("padding: 20px; color: #666;")
         layout.addWidget(content_label)
 
         # Add action button
-        action_button = QPushButton("Execute Action")
-        action_button.clicked.connect(self.execute_action)
-        action_button.setStyleSheet(
+        self.action_button = QPushButton("Execute Action")
+        self.action_button.clicked.connect(self.execute_action)
+        self.action_button.setStyleSheet(
             """
             QPushButton {
                 background-color: #3498db;
@@ -237,20 +312,318 @@ class SizeAnalyzerGUI(StandardWindow):
             }
         """
         )
-        layout.addWidget(action_button)
+        layout.addWidget(self.action_button)
 
     def start_analysis(self):
         """Start the analysis process."""
+        if self.worker_thread and self.worker_thread.isRunning():
+            warning_text = (
+                "An analysis is already running. Please wait for it to finish."
+            )
+            QMessageBox.warning(self, SIZE_ANALYZER_LABEL, warning_text)
+            return
+
+        if self._worker_signals_connected:
+            if self.logger:
+                self.logger.warning(
+                    "Worker signals still connected from previous run;"
+                    " disconnecting before restarting"
+                )
+            self._disconnect_worker_signals()
+
+        try:
+            start_value, end_value = self._get_name_range_filters()
+        except ValueError as error:
+            QMessageBox.warning(self, SIZE_ANALYZER_LABEL, str(error))
+            return
+
+        name_range = None
+        if start_value or end_value:
+            name_range = (start_value, end_value)
+
         self.results_list.clear()
-        self.results_list.addItem("Analysis functionality ready for implementation")
+        target_path = self._prompt_drive_selection()
+        if not target_path:
+            self.results_list.addItem("Analysis cancelled: no drive selected")
+            return
+
+        self.status_label.setText("Preparing analysis...")
+        self.results_list.addItem(f"Analyzing: {target_path}")
+        if name_range:
+            self.results_list.addItem(self._describe_name_range())
+
+        self.worker_thread = SizeAnalyzerWorker(
+            self.analyzer,
+            target_path,
+            top_files_count=10,
+            name_range=name_range,
+        )
+        self._connect_worker_signals()
+        self.worker_thread.finished.connect(self._cleanup_worker)
+
+        self._set_analysis_running(True)
+        if self.logger:
+            self.logger.info(
+                "Worker %s launched for %s (range=%s)",
+                id(self.worker_thread),
+                target_path,
+                name_range,
+            )
+        self.worker_thread.start()
+
+    def stop_analysis(self):
+        """Allow the user to cancel the running analysis."""
+        if not self.worker_thread or not self.worker_thread.isRunning():
+            QMessageBox.information(
+                self,
+                SIZE_ANALYZER_LABEL,
+                "No analysis is currently running.",
+            )
+            return
+
+        self.status_label.setText("Cancelling analysis...")
+        if self.logger:
+            self.logger.info(
+                "Cancellation requested for worker %s", id(self.worker_thread)
+            )
+        self.worker_thread.cancel()
 
     def execute_action(self):
         """Main action method for this tool."""
-        QMessageBox.information(
+        if not self.analysis_results:
+            QMessageBox.information(
+                self,
+                SIZE_ANALYZER_LABEL,
+                "Run an analysis before exporting results.",
+            )
+            return
+
+        export_path, _ = QFileDialog.getSaveFileName(
             self,
-            "Size Analyzer",
-            "Tool functionality is ready for implementation.",
+            "Export Analysis Results",
+            "size_analysis.json",
+            "JSON Files (*.json)",
         )
+
+        if not export_path:
+            return
+
+        try:
+            self.analyzer.export_analysis(
+                self.analysis_results,
+                export_path,
+            )
+            QMessageBox.information(
+                self,
+                SIZE_ANALYZER_LABEL,
+                f"Analysis results exported to:\n{export_path}",
+            )
+        except OSError as exc:
+            QMessageBox.critical(
+                self,
+                "Export Failed",
+                f"Unable to export analysis results:\n{exc}",
+            )
+
+    def _prompt_drive_selection(self) -> str | None:
+        """Show a directory picker so the user can choose the drive/folder."""
+
+        caption = "Select drive or folder to analyze"
+        dialog_options = QFileDialog.ShowDirsOnly | QFileDialog.DontResolveSymlinks
+        selected = QFileDialog.getExistingDirectory(
+            self,
+            caption,
+            self._last_selected_path or "C:/",
+            options=dialog_options,
+        )
+        if selected:
+            self._last_selected_path = selected
+            return selected
+        return None
+
+    def _get_name_range_filters(self) -> tuple[str | None, str | None]:
+        """Return normalized start/end tokens for name filtering."""
+        if not hasattr(self, "start_range_input"):
+            return None, None
+
+        start_raw = self.start_range_input.text().strip()
+        end_raw = self.end_range_input.text().strip()
+
+        start_value = start_raw.lower() or None
+        end_value = end_raw.lower() or None
+
+        if start_value and end_value and start_value > end_value:
+            raise ValueError(
+                "Start value must alphabetically or numerically precede "
+                "the end value."
+            )
+
+        return start_value, end_value
+
+    def _describe_name_range(self) -> str:
+        """Generate a user-facing description of the active name range."""
+        start_raw = self.start_range_input.text().strip()
+        end_raw = self.end_range_input.text().strip()
+
+        if start_raw and end_raw:
+            return f"Name range: '{start_raw}' through '{end_raw}'"
+        if start_raw:
+            return f"Name range: from '{start_raw}' onward"
+        return f"Name range: up to '{end_raw}'"
+
+    def _handle_progress_update(self, percentage: int) -> None:
+        """Update UI with progress information."""
+        if self.logger and percentage % 25 == 0:
+            self.logger.debug("Progress update: %s%%", percentage)
+        self.status_label.setText(f"Progress: {percentage}%")
+        if percentage == 100:
+            self.status_label.setText("Finalizing results...")
+
+    def _handle_status_update(self, message: str) -> None:
+        """Display status text so users know what phase is running."""
+        if self.logger:
+            self.logger.debug("Status update: %s", message)
+        self.status_label.setText(message)
+
+    def _handle_analysis_finished(self, analysis: dict) -> None:
+        """Render analysis results when the worker finishes."""
+        self.analysis_results = analysis or {}
+        self.results_list.clear()
+
+        if not analysis:
+            self.results_list.addItem("No results returned from analysis.")
+        else:
+            total_size = self.analyzer.format_size(analysis.get("total_size", 0))
+            directory_label = f"Directory: {analysis.get('path', 'Unknown')}"
+            self.results_list.addItem(directory_label)
+            self.results_list.addItem(f"Total Size: {total_size}")
+            summary_line = (
+                f"Files: {analysis.get('file_count', 0)} | "
+                f"Folders: {analysis.get('directory_count', 0)}"
+            )
+            self.results_list.addItem(summary_line)
+
+            largest_files = analysis.get("largest_files", [])
+            if largest_files:
+                self.results_list.addItem("Largest Files:")
+                for file_info in largest_files[:5]:
+                    size_label = self.analyzer.format_size(file_info.get("size", 0))
+                    self.results_list.addItem(
+                        f"  {file_info.get('name', 'Unknown')} - {size_label}"
+                    )
+
+        self.status_label.setText("Analysis complete.")
+        self._set_analysis_running(False)
+        if self.logger:
+            self.logger.info(
+                "Analysis finished: files=%s total_bytes=%s",
+                analysis.get("file_count", 0),
+                analysis.get("total_size", 0),
+            )
+
+    def _handle_analysis_error(self, error_message: str) -> None:
+        """Show errors and restore UI state."""
+        self.status_label.setText("Analysis failed.")
+        self.results_list.addItem(error_message)
+        QMessageBox.critical(self, SIZE_ANALYZER_LABEL, error_message)
+        self._set_analysis_running(False)
+        if self.logger:
+            self.logger.error("Analysis error: %s", error_message)
+
+    def _cleanup_worker(self) -> None:
+        """Disconnect worker signals and release the thread."""
+        if self.logger:
+            self.logger.debug(
+                "Cleanup triggered for worker %s",
+                id(self.worker_thread) if self.worker_thread else None,
+            )
+        self._disconnect_worker_signals()
+        if self.worker_thread:
+            try:
+                self.worker_thread.deleteLater()
+            except (RuntimeError, TypeError) as error:
+                if self.logger:
+                    self.logger.warning("Failed to schedule worker deletion: %s", error)
+        self.worker_thread = None
+        if self.logger:
+            self.logger.debug("Worker cleanup complete")
+
+    def _handle_analysis_cancelled(self) -> None:
+        """Handle cancellation notifications from the analyzer."""
+        self.results_list.addItem("Analysis cancelled by user.")
+        self.status_label.setText("Analysis cancelled.")
+        self._set_analysis_running(False)
+        if self.logger:
+            self.logger.info("Analysis cancelled by user")
+
+    def _set_analysis_running(self, running: bool) -> None:
+        """Toggle button availability based on analysis state."""
+        if hasattr(self, "analyze_button"):
+            self.analyze_button.setEnabled(not running)
+        if hasattr(self, "action_button"):
+            self.action_button.setEnabled(not running)
+        if hasattr(self, "cancel_button"):
+            self.cancel_button.setEnabled(running)
+        if hasattr(self, "start_range_input"):
+            self.start_range_input.setEnabled(not running)
+        if hasattr(self, "end_range_input"):
+            self.end_range_input.setEnabled(not running)
+        if self.logger:
+            self.logger.debug("UI state updated (running=%s)", running)
+
+    def _connect_worker_signals(self) -> None:
+        """Connect worker signals while tracking for cleanup."""
+        if not self.worker_thread:
+            return
+
+        connections = [
+            (self.worker_thread.progress_update, self._handle_progress_update),
+            (self.worker_thread.status_update, self._handle_status_update),
+            (
+                self.worker_thread.analysis_finished,
+                self._handle_analysis_finished,
+            ),
+            (self.worker_thread.analysis_error, self._handle_analysis_error),
+        ]
+
+        for signal, slot in connections:
+            signal.connect(slot)
+
+        self._worker_signal_pairs = connections
+        self._worker_signals_connected = True
+        if self.logger:
+            self.logger.debug(
+                "Connected worker signals (worker_id=%s)",
+                id(self.worker_thread),
+            )
+
+    def _disconnect_worker_signals(self) -> None:
+        """Disconnect worker signals to avoid duplicate connections."""
+        if not self._worker_signals_connected:
+            return
+
+        for signal, slot in self._worker_signal_pairs:
+            try:
+                signal.disconnect(slot)
+            except (TypeError, RuntimeError):
+                continue
+
+        self._worker_signal_pairs = []
+        self._worker_signals_connected = False
+        if self.logger:
+            self.logger.debug("Worker signals disconnected")
+
+    def _init_logger(self):
+        """Initialize a logger instance for diagnostics."""
+        try:
+            if LOG_MANAGER_AVAILABLE and get_log_manager:
+                return get_log_manager().get_logger("SizeAnalyzerGUI")
+        except (AttributeError, RuntimeError, ImportError) as error:
+            logging.getLogger("SizeAnalyzerGUI").debug(
+                "Falling back to root logger due to: %s", error
+            )
+
+        return logging.getLogger("SizeAnalyzerGUI")
 
 
 def main():

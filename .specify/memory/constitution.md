@@ -1,20 +1,19 @@
 <!--
 Sync Impact Report
-Version change: 1.0.0 → 1.0.1
-Modified principles: None (structural clarity only)
-Added sections: None
+Version change: 1.1.0 → 1.2.0
+Modified principles:
+   - VI. User Preference Management & Personalization → clarified handling of sensitive settings vs. identity secrets
+Added sections:
+   - VII. Identity & Access Control (new principle)
+   - Authentication guard rails in Additional Technical & Quality Constraints
+   - Authentication compliance gate under Development Workflow & Quality Gates
 Removed sections: None
-Clarified sections:
-  - Principle V: Enhanced examples for PyQt5-based tool discovery and modular patterns
-  - Additional Technical & Quality Constraints: Clarified Qt5 GUI testing expectations
-  - Development Workflow: Added tool validation to PR gates
 Templates requiring updates:
-  - .specify/templates/plan-template.md ✅ (no changes needed)
-  - .specify/templates/spec-template.md ✅ (no changes needed)
-  - .specify/templates/tasks-template.md ✅ (no changes needed)
-  - .specify/templates/agent-file-template.md ✅ (already reflects active project structure)
-  - .github/copilot-instructions.md ✅ (architecture guidelines aligned)
-Follow-up TODOs: None
+   - .specify/templates/plan-template.md ✅ (added identity compliance prompts)
+   - .specify/templates/spec-template.md ✅ (documented auth requirements + security section)
+   - .specify/templates/tasks-template.md ✅ (added identity task rules and validation)
+Follow-up TODOs:
+   1. TODO(AUTH_DOCS): Publish operator guide for account provisioning/reset (docs/authentication.md) once CLI tooling is finalized.
 -->
 
 # RFU (Richard's File Utilities) Constitution
@@ -70,6 +69,68 @@ Rationale: Lean, modular design reduces coupling and accelerates safe
 innovation. For PyQt5-based tools: use `{ToolName}GUI` naming convention,
 auto-discovery via metadata patterns, and graceful import fallbacks.
 
+### VI. User Preference Management & Personalization
+
+User personalization is a first-class capability backed by a robust, modular
+preference framework:
+
+- Canonical store: Preferences MUST persist in a database table
+  (`user_preferences`) with strong namespacing: `user_id`,
+  `preference_category`, `preference_key` → `preference_value` + `value_type`.
+  Implement triggers to maintain timestamps and use indexes for category/user
+  queries. If the database is unavailable, a JSON file fallback MAY be used
+  transparently without loss of correctness.
+- Extensibility: Modules MUST define preferences under their own category
+  namespace (e.g., `theming`, `favorites`, `directories`,
+  `module_settings/<module>`). Categories and keys MUST be discoverable via a
+  registry API with validation (type, allowed range, default, description).
+- Universal theming: A single theme system MUST provide shared tokens (colors,
+  typography, spacing) consumed by all modules. Theme storage uses preferences
+  under the `theming` category with profile support (named presets) and WCAG AA
+  contrast compliance.
+- Favorites & directories: Users MUST be able to mark favorites (tools,
+  paths, actions) and persist directory preferences (e.g., last opened,
+  default start locations, visibility of hidden files) across modules.
+- Security & privacy: Sensitive preferences (e.g., encryption settings, saved
+  keys paths) MUST be storable as encrypted values with envelope encryption and
+  redactable logs. No secrets in plain text; credential material (passwords,
+  tokens, recovery phrases) MUST live in the Identity & Access Control layer and
+  may only reference preference data through opaque identifiers.
+- Migration & compatibility: Preference schemas MUST be versioned. Additive
+  changes are MINOR; breaking changes require a migration with fallback
+  defaults. Module independence MUST be preserved—each module may evolve its
+  preferences without impacting others.
+
+Rationale: A consistent, typed, and discoverable preference layer enables rich
+customization while preserving safety, performance, and maintainability across
+independent modules.
+
+### VII. Identity & Access Control
+
+Authentication and authorization guard every executable surface and obey the
+following non-negotiable rules:
+
+- Credential storage: User passwords MUST be hashed with a memory-hard
+  algorithm (Argon2id or bcrypt, cost parameters documented per release). No
+  plaintext or reversible formats allowed. Password updates MUST rotate salts.
+- Lockout & monitoring: After 5 consecutive failed logins the account MUST be
+  blocked until an administrator (or automated unlock workflow) resets the
+  counter. Each attempt (success or failure) MUST be logged with timestamp and
+  origin metadata.
+- Admin resets & unblock: Administrative resets MUST generate a temporary
+  password (or secure reset token) without exposing password hashes. Unblocks
+  MUST reset counters, emit audit entries, and confirm actor identity.
+- Preference linkage: Each account MUST reference a dedicated preference
+  namespace identifier so that personalization never leaks between users. Tying
+  a session to preferences MUST happen immediately after authentication.
+- Session controls: Long-running sessions MUST support manual logout and idle
+  timeout (≤ 30 min default). Tokens or session secrets MUST be stored in
+  memory only and cleared on logout or crash recovery.
+
+Rationale: Centralized, auditable identity enforcement prevents privilege
+escalation, enforces regulatory requirements, and protects the high-risk file
+operations delivered by RFU.
+
 ## Additional Technical & Quality Constraints
 
 1. Language & Framework: Python ≥ 3.8, Qt5 GUI. Migration past EOL versions
@@ -96,6 +157,60 @@ auto-discovery via metadata patterns, and graceful import fallbacks.
     deprecation period ≥ 1 MINOR release unless security issue mandates fast
     removal.
 
+11. Preference Schema & API:
+
+    - Typed values: `value_type` MUST be enforced (`string`, `int`, `float`,
+      `bool`, `json`). Invalid values MUST be rejected at write-time.
+    - Namespacing: Categories MUST be kebab-case or snake_case; module-owned
+      categories MUST be prefixed with module scope (e.g., `module_settings/af`).
+    - Auditability: Preference writes SHOULD emit structured audit events.
+    - Caching: Read-through caching MAY be used but MUST invalidate on write.
+    - Fallback: When DB is unavailable, JSON fallback MUST mirror API semantics
+      and migrate to DB when restored.
+
+12. Data Migration:
+
+    - Schema updates MUST be idempotent and forward-only with version gating.
+    - Migrations MUST be tested (up/down where applicable) and time-bounded.
+    - On failure, system MUST roll back to a safe checkpoint and surface user
+      guidance.
+
+13. Separation of Concerns:
+
+    - Core functionality MUST not embed user-specific defaults; read them via
+      the preference API.
+    - Modules MUST function with defaults if preferences are absent.
+
+14. Authentication Data Handling:
+
+    - `user_accounts` data MUST reside in the canonical database, keyed by
+      username with Argon2id hashes, per-user preference namespace, role, and
+      lockout status.
+    - Credential APIs MUST never expose password hashes. Administrative tools
+      MAY return generated temporary passwords once (on creation/reset) and MUST
+      log the actor + delivery channel.
+    - Login attempts MUST update `login_attempts`, `last_failed_login`, and
+      `is_blocked` atomically. Successful logins reset counters and stamp
+      `last_login`.
+
+15. Credential Reset & Account Lifecycle:
+
+    - Password policies: minimum 12 characters, at least 3 character classes,
+      reject breached passwords via denylist when network connectivity allows.
+    - Reset flow MUST be auditable and require either admin identity proof or a
+      signed challenge token.
+    - Account deletion MUST also delete or anonymize linked preference data.
+
+16. Session Management & Auditing:
+
+    - Session identifiers MUST be random, 128-bit entropy minimum, and stored
+      only in memory (or OS keyring when headless automation requires).
+    - Audit log retention for identity events MUST be ≥ 365 days. Log entries
+      MUST include username, actor, action (`login_success`, `login_failure`,
+      `reset`, `unblock`, `logout`), and correlation IDs.
+    - Automated anomaly detection MUST flag >10 failed attempts/day/user and
+      escalate to maintainers.
+
 ## Development Workflow & Quality Gates
 
 1. Branching: feature/_, fix/_, chore/_, docs/_ naming. One logical change per
@@ -121,6 +236,21 @@ auto-discovery via metadata patterns, and graceful import fallbacks.
 10. Contribution Onboarding: New contributor PR triggers automated checklist
     comment with principle summary and required gates.
 
+11. Preference Layer Gates:
+
+    - New/changed preferences MUST include: type, default, validation, and doc.
+    - Preference migrations MUST have unit + integration tests and rollback
+      guidance.
+    - Theming changes MUST pass accessibility checks and visual smoke tests.
+
+12. Authentication Compliance:
+
+    - Features touching identity MUST list Principle VII impacts in PRs.
+    - Login UI/CLI changes MUST include manual verification steps + screenshots
+      or recordings.
+    - Automated tests MUST exercise happy path, lockout, reset, and audit
+      logging before merge.
+
 ## Governance
 
 1. Authority: This Constitution supersedes conflicting informal practices.
@@ -139,13 +269,17 @@ auto-discovery via metadata patterns, and graceful import fallbacks.
    report listing deviations + corrective actions tracked as issues.
 6. Deprecation Cycle: Announce deprecated public API in CHANGELOG with target
    removal version; MUST supply migration guidance.
-7. Emergency Amendments: Security/data-loss critical changes may bypass
+7. Data & Preference Migrations: Any breaking change to preference categories,
+   keys, or types MUST ship with a migration plan, automated migration script,
+   and fallback defaults. Cross-module migrations MUST not introduce coupling;
+   each module owns its scope.
+8. Emergency Amendments: Security/data-loss critical changes may bypass
    normal cycle with expedited review (≥ 2 approvals) then retroactive audit.
-8. Enforcement: Every PR template MUST include a "Constitution Compliance"
+9. Enforcement: Every PR template MUST include a "Constitution Compliance"
    checklist; reviewers MUST block until all mandatory gates pass.
-9. Ratification: This initial version (1.0.0) is ratified by founding
-   maintainers on the date below. Future amendments update Last Amended.
-10. Dispute Resolution: If reviewers deadlock, escalate to maintainer vote; a
+10. Ratification: This initial version (1.0.0) is ratified by founding
+    maintainers on the date below. Future amendments update Last Amended.
+11. Dispute Resolution: If reviewers deadlock, escalate to maintainer vote; a
     simple majority decides within 5 business days.
 
-**Version**: 1.0.1 | **Ratified**: 2025-09-29 | **Last Amended**: 2025-10-18
+**Version**: 1.2.0 | **Ratified**: 2025-09-29 | **Last Amended**: 2025-11-15

@@ -12,9 +12,7 @@ from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QPushButton, QWidget
 
 from src.file_explorer.models.hub_interface_mode import HubInterfaceMode
-from src.file_explorer.services.preference_service import (
-    get_preference_service,
-)
+from src.rfu.preferences_adapter import HubPreferencesAdapter
 
 
 class HubInterfaceToggle(QPushButton):
@@ -23,7 +21,12 @@ class HubInterfaceToggle(QPushButton):
     # Signal emitted when mode changes
     mode_changed = pyqtSignal(HubInterfaceMode)
 
-    def __init__(self, parent: Optional[QWidget] = None):
+    def __init__(
+        self,
+        parent: Optional[QWidget] = None,
+        *,
+        preferences_adapter: Optional[HubPreferencesAdapter] = None,
+    ):
         """
         Initialize the hub interface toggle button.
 
@@ -33,7 +36,7 @@ class HubInterfaceToggle(QPushButton):
         super().__init__(parent)
 
         self.logger = logging.getLogger("RFU.FileExplorer.HubInterfaceToggle")
-        self.preference_service = get_preference_service()
+        self.preferences_adapter = preferences_adapter or HubPreferencesAdapter()
 
         self.current_mode = HubInterfaceMode.MULTI_PANE
 
@@ -63,43 +66,26 @@ class HubInterfaceToggle(QPushButton):
     def load_mode(self):
         """Load the current mode from preferences."""
         try:
-            prefs = self.preference_service.load_preferences()
-            self.current_mode = prefs.hub_interface_mode
+            self.current_mode = self.preferences_adapter.load_interface_mode(
+                HubInterfaceMode.MULTI_PANE
+            )
             self.update_button_text()
 
-            self.logger.debug(f"Loaded interface mode: {self.current_mode.value}")
+            self.logger.debug("Loaded interface mode: %s", self.current_mode.value)
 
         except Exception as e:
-            self.logger.error(f"Error loading mode: {e}")
-            # Default to multi-pane
+            self.logger.error("Error loading mode via adapter: %s", e)
             self.current_mode = HubInterfaceMode.MULTI_PANE
             self.update_button_text()
 
     def toggle_mode(self):
         """Toggle between interface modes."""
-        try:
-            # Toggle mode
-            if self.current_mode == HubInterfaceMode.MULTI_PANE:
-                new_mode = HubInterfaceMode.TABBED
-            else:
-                new_mode = HubInterfaceMode.MULTI_PANE
-
-            # Save to preferences
-            prefs = self.preference_service.load_preferences()
-            prefs.hub_interface_mode = new_mode
-            self.preference_service.save_preferences(prefs)
-
-            # Update internal state
-            self.current_mode = new_mode
-            self.update_button_text()
-
-            # Emit signal for UI to respond
-            self.mode_changed.emit(new_mode)
-
-            self.logger.info(f"Switched to mode: {new_mode.value}")
-
-        except Exception as e:
-            self.logger.error(f"Error toggling mode: {e}")
+        new_mode = (
+            HubInterfaceMode.TABBED
+            if self.current_mode == HubInterfaceMode.MULTI_PANE
+            else HubInterfaceMode.MULTI_PANE
+        )
+        self.set_mode(new_mode)
 
     def get_current_mode(self) -> HubInterfaceMode:
         """
@@ -117,8 +103,17 @@ class HubInterfaceToggle(QPushButton):
         Args:
             mode: Mode to set
         """
-        if mode != self.current_mode:
-            self.toggle_mode()
+        if mode == self.current_mode:
+            return
+        try:
+            self.preferences_adapter.save_interface_mode(mode)
+        except Exception as exc:
+            self.logger.error("Error saving interface mode: %s", exc)
+
+        self.current_mode = mode
+        self.update_button_text()
+        self.mode_changed.emit(mode)
+        self.logger.info("Switched to mode: %s", mode.value)
 
 
 class HubInterfaceToggleWidget(QWidget):
@@ -131,7 +126,12 @@ class HubInterfaceToggleWidget(QWidget):
     # Signal emitted when mode changes
     mode_changed = pyqtSignal(HubInterfaceMode)
 
-    def __init__(self, parent: Optional[QWidget] = None):
+    def __init__(
+        self,
+        parent: Optional[QWidget] = None,
+        *,
+        preferences_adapter: Optional[HubPreferencesAdapter] = None,
+    ):
         """
         Initialize the toggle widget.
 
@@ -141,6 +141,8 @@ class HubInterfaceToggleWidget(QWidget):
         super().__init__(parent)
 
         self.logger = logging.getLogger("RFU.FileExplorer.HubInterfaceToggleWidget")
+
+        self._preferences_adapter = preferences_adapter
 
         self.setup_ui()
 
@@ -154,7 +156,9 @@ class HubInterfaceToggleWidget(QWidget):
         layout.setContentsMargins(5, 5, 5, 5)
 
         # Create toggle button
-        self.toggle_button = HubInterfaceToggle()
+        self.toggle_button = HubInterfaceToggle(
+            preferences_adapter=self._preferences_adapter
+        )
         self.toggle_button.mode_changed.connect(self.on_mode_changed)
 
         layout.addWidget(self.toggle_button)

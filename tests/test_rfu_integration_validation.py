@@ -54,7 +54,7 @@ def test_module_import():
     
     try:
         # Test core imports
-        from tools.file_management.advanced_folders.core.folder_configuration import (
+        from src.tools.file_management.advanced_folders.core.folder_configuration import (
             FolderConfiguration, FolderConfigurationManager)
         print("  ✓ Core modules import successfully")
         

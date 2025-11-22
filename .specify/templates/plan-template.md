@@ -5,7 +5,7 @@
 
 ## Execution Flow (/plan command scope)
 
-```
+```text
 1. Load feature spec from Input path
    → If not found: ERROR "No feature spec at {path}"
 2. Fill Technical Context (scan for NEEDS CLARIFICATION)
@@ -49,15 +49,24 @@
 
 ## Constitution Check
 
-_GATE: Must pass before Phase 0 research. Re-check after Phase 1 design._
+> GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.
 
 [Gates determined based on constitution file]
+
+### Identity & Access Control (Principle VII)
+
+> Mandatory when the feature touches authentication, permissions, or user sessions.
+
+- Document how credentials are stored (hashing algorithm + parameters), lockout enforcement, and audit logging.
+- Describe the role-to-feature access matrix if a feature adds or changes user roles.
+- Specify how the plan links authenticated users to preference namespaces (`preferences_user_id`).
+- Capture reset/unblock flows, including operator tooling and manual verification steps.
 
 ## Project Structure
 
 ### Documentation (this feature)
 
-```
+````text
 specs/[###-feature]/
 ├── plan.md              # This file (/plan command output)
 ├── research.md          # Phase 0 output (/plan command)
@@ -65,7 +74,7 @@ specs/[###-feature]/
 ├── quickstart.md        # Phase 1 output (/plan command)
 ├── contracts/           # Phase 1 output (/plan command)
 └── tasks.md             # Phase 2 output (/tasks command - NOT created by /plan)
-```
+```text
 
 ### Source Code (repository root)
 
@@ -76,7 +85,7 @@ specs/[###-feature]/
   not include Option labels.
 -->
 
-```
+```text
 # [REMOVE IF UNUSED] Option 1: Single project (DEFAULT)
 src/
 ├── models/
@@ -110,7 +119,7 @@ api/
 
 ios/ or android/
 └── [platform-specific structure: feature modules, UI flows, platform tests]
-```
+````
 
 **Structure Decision**: [Document the selected structure and reference the real
 directories captured above]
@@ -125,7 +134,7 @@ directories captured above]
 
 2. **Generate and dispatch research agents**:
 
-   ```
+   ```text
    For each unknown in Technical Context:
      Task: "Research {unknown} for {feature context}"
    For each technology choice:
@@ -141,7 +150,7 @@ directories captured above]
 
 ## Phase 1: Design & Contracts
 
-_Prerequisites: research.md complete_
+> Prerequisites: research.md complete
 
 1. **Extract entities from feature spec** → `data-model.md`:
 
@@ -179,7 +188,7 @@ _Prerequisites: research.md complete_
 
 ## Phase 2: Task Planning Approach
 
-_This section describes what the /tasks command will do - DO NOT execute during /plan_
+> This section describes what the /tasks command will do - DO NOT execute during /plan
 
 **Task Generation Strategy**:
 
@@ -202,7 +211,7 @@ _This section describes what the /tasks command will do - DO NOT execute during 
 
 ## Phase 3+: Future Implementation
 
-_These phases are beyond the scope of the /plan command_
+> These phases are beyond the scope of the /plan command
 
 **Phase 3**: Task execution (/tasks command creates tasks.md)  
 **Phase 4**: Implementation (execute tasks.md following constitutional principles)  
@@ -210,7 +219,7 @@ _These phases are beyond the scope of the /plan command_
 
 ## Complexity Tracking
 
-_Fill ONLY if Constitution Check has violations that must be justified_
+> Fill ONLY if Constitution Check has violations that must be justified
 
 | Violation                  | Why Needed         | Simpler Alternative Rejected Because |
 | -------------------------- | ------------------ | ------------------------------------ |
@@ -219,7 +228,7 @@ _Fill ONLY if Constitution Check has violations that must be justified_
 
 ## Progress Tracking
 
-_This checklist is updated during execution flow_
+> This checklist is updated during execution flow
 
 **Phase Status**:
 
@@ -239,4 +248,4 @@ _This checklist is updated during execution flow_
 
 ---
 
-_Based on Constitution v1.0.0 - See `/memory/constitution.md`_
+> Based on Constitution v1.2.0 - See `/memory/constitution.md`

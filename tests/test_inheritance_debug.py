@@ -16,7 +16,7 @@ try:
 
     # Test importing SystemDiagnosticsGUI directly
     try:
-        from tools.system.diagnostics_monitoring.system_diagnostics_gui import (
+        from src.tools.system.diagnostics_monitoring.system_diagnostics_gui import (
             SystemDiagnosticsGUI,
         )
 
@@ -31,7 +31,7 @@ try:
 
     # Test importing SystemCleanupGUI
     try:
-        from tools.privacy.privacy_cleaner.system_cleanup import SystemCleanupGUI
+        from src.tools.privacy.privacy_cleaner.system_cleanup import SystemCleanupGUI
 
         print("✅ SystemCleanupGUI imported successfully")
         print(f"SystemCleanupGUI type: {type(SystemCleanupGUI)}")

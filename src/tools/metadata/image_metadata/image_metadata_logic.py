@@ -10,9 +10,24 @@ import os
 from datetime import datetime
 from typing import Any, Callable, Dict, Optional
 
-from PIL import Image
-from PIL.ExifTags import TAGS as PIL_TAGS
 from PyQt5.QtCore import QObject, QThread, pyqtSignal
+
+try:
+    from PIL import Image
+    from PIL.ExifTags import TAGS as PIL_TAGS
+
+    PIL_AVAILABLE = True
+    PIL_IMPORT_ERROR = None
+except ImportError as pil_error:
+    Image = None  # type: ignore[assignment]
+    PIL_TAGS = {}
+    PIL_AVAILABLE = False
+    PIL_IMPORT_ERROR = pil_error
+
+PIL_DEPENDENCY_MESSAGE = (
+    "Pillow (PIL) is required for the Image Metadata Editor. "
+    "Install it with 'pip install Pillow' in the RFU virtual environment."
+)
 
 try:
     import piexif
@@ -215,6 +230,14 @@ class ImageMetadataLogic(QObject):
     def __init__(self, hub_connector=None):
         """Initialize with optional hub integration."""
         super().__init__()
+
+        if not PIL_AVAILABLE:
+            missing_detail = ""
+            if PIL_IMPORT_ERROR:
+                missing_detail = f"Original error: {PIL_IMPORT_ERROR}"
+
+            raise RuntimeError(f"{PIL_DEPENDENCY_MESSAGE}\n{missing_detail}".strip())
+
         self._hub_connector = hub_connector
         self._is_running = False
         self._should_cancel = False

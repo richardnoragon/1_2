@@ -112,7 +112,7 @@ class EnterpriseFileProcessor:
 **Scalability Constraints:**
 
 ```python
-# CURRENT LIMITATIONS (src/core/database_manager.py)
+# CURRENT LIMITATIONS (src/database/database_manager.py)
 
 class DatabaseManager:
     def __init__(self):
@@ -674,7 +674,7 @@ Energy Data Processing Benchmarks:
 **1. Connection Pool Expansion**
 
 ```python
-# File: src/core/database_manager.py
+# File: src/database/database_manager.py
 # Current: max_connections = 10
 # Target: max_connections = 1000 with connection pooling
 

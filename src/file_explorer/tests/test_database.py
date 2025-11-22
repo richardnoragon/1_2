@@ -16,10 +16,12 @@ import pytest
 
 # Test database components
 try:
-    from src.file_explorer.database.cache_manager import (CacheEntry,
-                                                              CacheManager)
+    from src.file_explorer.database.cache_manager import CacheEntry, CacheManager
     from src.file_explorer.database.schema import (
-        CreateInitialSchemaMigration, DatabaseSchema)
+        CreateInitialSchemaMigration,
+        DatabaseSchema,
+    )
+
     DATABASE_AVAILABLE = True
 except ImportError:
     DATABASE_AVAILABLE = False
@@ -37,7 +39,7 @@ class TestDatabaseSchema:
 
     def test_file_database_creation(self):
         """Test file-based database creation."""
-        with tempfile.NamedTemporaryFile(suffix='.db', delete=False) as tmp:
+        with tempfile.NamedTemporaryFile(suffix=".db", delete=False) as tmp:
             db_path = tmp.name
 
         try:
@@ -53,9 +55,17 @@ class TestDatabaseSchema:
         db.initialize()
 
         expected_tables = [
-            'files', 'directories', 'file_metadata', 'directory_metadata',
-            'tags', 'file_tags', 'bookmarks', 'history', 'search_cache',
-            'user_preferences', 'cache_entries', 'schema_migrations'
+            "files",
+            "directories",
+            "file_metadata",
+            "directory_metadata",
+            "tags",
+            "file_tags",
+            "bookmarks",
+            "history",
+            "search_cache",
+            "cache_entries",
+            "schema_migrations",
         ]
 
         tables = db.get_table_names()
@@ -102,19 +112,18 @@ class TestDatabaseSchema:
 
         db.execute_update(
             "INSERT INTO files (path, name, size, modified_time) VALUES (?, ?, ?, ?)",
-            (file_path, file_name, file_size, modified_time)
+            (file_path, file_name, file_size, modified_time),
         )
 
         # Retrieve file
         result = db.execute_query(
-            "SELECT path, name, size FROM files WHERE path = ?",
-            (file_path,)
+            "SELECT path, name, size FROM files WHERE path = ?", (file_path,)
         )
 
         assert len(result) == 1
-        assert result[0]['path'] == file_path
-        assert result[0]['name'] == file_name
-        assert result[0]['size'] == file_size
+        assert result[0]["path"] == file_path
+        assert result[0]["name"] == file_name
+        assert result[0]["size"] == file_size
 
 
 @pytest.mark.skipif(not DATABASE_AVAILABLE, reason="Database components not available")
@@ -201,9 +210,9 @@ class TestCacheManager:
 
         # Initial statistics
         stats = cache.get_statistics()
-        assert 'hits' in stats
-        assert 'misses' in stats
-        assert 'size' in stats
+        assert "hits" in stats
+        assert "misses" in stats
+        assert "size" in stats
 
         # Perform operations
         cache.put("test", {"data": "value"})
@@ -211,8 +220,8 @@ class TestCacheManager:
         cache.get("nonexistent")  # Miss
 
         new_stats = cache.get_statistics()
-        assert new_stats['hits'] >= 1
-        assert new_stats['misses'] >= 1
+        assert new_stats["hits"] >= 1
+        assert new_stats["misses"] >= 1
 
     def test_cache_cleanup(self):
         """Test cache cleanup operations."""
@@ -233,7 +242,7 @@ class TestCacheManager:
 
     def test_cache_persistence(self):
         """Test cache persistence across instances."""
-        with tempfile.NamedTemporaryFile(suffix='.db', delete=False) as tmp:
+        with tempfile.NamedTemporaryFile(suffix=".db", delete=False) as tmp:
             db_path = tmp.name
 
         try:
@@ -259,11 +268,7 @@ class TestCacheManager:
 
     def test_cache_entry_model(self):
         """Test CacheEntry model."""
-        entry = CacheEntry(
-            key="test_key",
-            data={"test": "data"},
-            ttl=3600
-        )
+        entry = CacheEntry(key="test_key", data={"test": "data"}, ttl=3600)
 
         assert entry.key == "test_key"
         assert entry.data == {"test": "data"}
@@ -275,7 +280,7 @@ class TestCacheManager:
             key="expired_key",
             data={"expired": True},
             ttl=0,
-            created_at=time.time() - 10
+            created_at=time.time() - 10,
         )
 
         assert expired_entry.is_expired()
@@ -294,7 +299,7 @@ class TestCacheManager:
 
         # Memory usage should be reasonable
         stats = cache.get_statistics()
-        assert stats['size'] <= 1000
+        assert stats["size"] <= 1000
 
     def test_cache_concurrent_access(self):
         """Test cache thread safety (basic test)."""
@@ -313,5 +318,5 @@ class TestCacheManager:
                 assert data["thread_id"] == i
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     pytest.main([__file__, "-v"])

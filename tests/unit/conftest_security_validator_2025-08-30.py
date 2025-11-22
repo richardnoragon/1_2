@@ -412,7 +412,7 @@ def assert_validation_response(
     response, expected_result=None, expected_rule=None
 ):
     """Custom assertion for ValidationResponse objects."""
-    from tools.network.network_connectivity_complex.core.security_validator import (
+    from src.tools.network.network_connectivity_complex.core.security_validator import (
         ValidationResponse,
         ValidationResult,
     )
@@ -440,7 +440,7 @@ def assert_validation_response(
 
 def assert_security_rule(rule, expected_type=None, expected_action=None):
     """Custom assertion for SecurityRule objects."""
-    from tools.network.network_connectivity_complex.core.security_validator import (
+    from src.tools.network.network_connectivity_complex.core.security_validator import (
         SecurityRule,
         ValidationResult,
     )

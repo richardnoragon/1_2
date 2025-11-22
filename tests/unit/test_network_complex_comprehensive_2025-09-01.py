@@ -68,13 +68,13 @@ sys.modules['core.error_handler'].error_handler = mock_error_handler
 
 # Import the modules under test
 try:
-    from tools.network.network_connectivity_complex.core.metrics_service import (
+    from src.tools.network.network_connectivity_complex.core.metrics_service import (
         Metric, MetricAggregator, MetricAlert, MetricCollector, MetricsService,
         MetricType, MetricUnit, MetricValue)
-    from tools.network.network_connectivity_complex.core.performance_analyzer import (
+    from src.tools.network.network_connectivity_complex.core.performance_analyzer import (
         PerformanceAnalyzer, PerformanceMeasurement, PerformanceMetric,
         PerformanceReport)
-    from tools.network.network_connectivity_complex.core.security_validator import (
+    from src.tools.network.network_connectivity_complex.core.security_validator import (
         SecurityLevel, SecurityRule, SecurityValidator, ValidationResponse,
         ValidationResult)
 except ImportError as e:

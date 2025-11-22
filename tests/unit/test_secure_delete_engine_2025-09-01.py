@@ -22,7 +22,7 @@ import pytest
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
 # Import the classes we're testing
-from tools.file_operations.secure_delete.secure_delete import (
+from src.tools.file_operations.secure_delete.secure_delete import (
     DeletionMethod,
     SecureDeleteEngine,
     SecureDeleteResult,

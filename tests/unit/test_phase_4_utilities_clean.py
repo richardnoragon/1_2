@@ -35,8 +35,8 @@ UTILITIES_AVAILABLE = False
 FILE_COMPONENTS_AVAILABLE = False
 
 try:
-    from tools.analysis import size_analyzer
-    from tools.file_management import file_finder
+    from src.tools.analysis import size_analyzer
+    from src.tools.file_management import file_finder
     FILE_COMPONENTS_AVAILABLE = True
     UTILITIES_AVAILABLE = True
 except ImportError as e:

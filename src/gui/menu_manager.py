@@ -6,29 +6,31 @@ including standardized File, Edit, View, Tools, and Help menus with proper
 keyboard shortcuts and platform-specific design guidelines.
 """
 
-import sys
 import os
+import sys
 import webbrowser
-from typing import Optional, Callable, Dict, Any
+from typing import Any, Callable, Dict, Optional
+
+from PyQt5.QtCore import QSettings, Qt, pyqtSignal
+from PyQt5.QtGui import QFont, QIcon, QKeySequence
 from PyQt5.QtWidgets import (
-    QMainWindow,
-    QMenuBar,
-    QMenu,
     QAction,
     QActionGroup,
-    QMessageBox,
-    QFileDialog,
-    QDialog,
-    QVBoxLayout,
-    QLabel,
-    QTextEdit,
-    QPushButton,
-    QHBoxLayout,
     QApplication,
+    QDialog,
+    QFileDialog,
+    QHBoxLayout,
+    QLabel,
+    QMainWindow,
+    QMenu,
+    QMenuBar,
+    QMessageBox,
+    QPushButton,
+    QTextEdit,
+    QVBoxLayout,
 )
-from PyQt5.QtCore import Qt, QSettings, pyqtSignal
-from PyQt5.QtGui import QKeySequence, QIcon, QFont
-from gui.themes import ThemeManager, Colors, Fonts
+
+from gui.themes import Colors, Fonts, ThemeManager
 
 
 class MenuManager:
@@ -50,9 +52,7 @@ class MenuManager:
         # Window-specific callbacks
         self.callbacks = {}
 
-    def create_standard_menubar(
-        self, window_type: str = "utility"
-    ) -> QMenuBar:
+    def create_standard_menubar(self, window_type: str = "utility") -> QMenuBar:
         """
         Create a standard menu bar for the application.
 
@@ -498,9 +498,7 @@ class MenuManager:
             "Visit &Website",
             "",
             "Open official website",
-            callback=lambda: webbrowser.open(
-                "https://github.com/richardnoragon"
-            ),
+            callback=lambda: webbrowser.open("https://github.com/richardnoragon"),
         )
         self.help_menu.addAction(website_action)
 
@@ -628,9 +626,7 @@ class MenuManager:
                     )
                     action.setStatusTip(file_path)
                     action.triggered.connect(
-                        lambda checked, path=file_path: self._open_recent_file(
-                            path
-                        )
+                        lambda checked, path=file_path: self._open_recent_file(path)
                     )
                     menu.addAction(action)
 
@@ -740,9 +736,7 @@ class MenuManager:
 
     def _save_window_state(self):
         """Save the current window state."""
-        self.settings.setValue(
-            "window_geometry", self.parent_window.saveGeometry()
-        )
+        self.settings.setValue("window_geometry", self.parent_window.saveGeometry())
         self.settings.setValue("window_state", self.parent_window.saveState())
 
     def restore_window_state(self):
@@ -948,6 +942,7 @@ class SystemInfoDialog(QDialog):
 
         # Gather system information
         import platform
+
         import PyQt5.QtCore
 
         info_html = f"""
