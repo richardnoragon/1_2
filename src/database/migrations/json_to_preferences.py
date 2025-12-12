@@ -6,7 +6,7 @@ import logging
 from typing import Any, Dict, Iterable, List, Optional, Sequence
 
 from src.config.schema_map import map_config_to_preferences
-from src.config_manager import get_config_manager
+from src.config.config_manager import get_config_manager
 from src.core.preferences.store import PreferencesStore
 from src.database.database_manager import DatabaseError, get_database_manager
 

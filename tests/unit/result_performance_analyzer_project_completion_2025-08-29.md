@@ -2,7 +2,7 @@
 
 **Created:** 2025-08-29  
 **Status:** ✅ COMPLETED  
-**Target Module:** [`src/utilities/network/network_connectivity_complex/core/performance_analyzer.py`](../../src/utilities/network/network_connectivity_complex/core/performance_analyzer.py)  
+**Target Module:** [`src/tools/network/network_connectivity_complex/core/performance_analyzer.py`](../../src/tools/network/network_connectivity_complex/core/performance_analyzer.py)  
 **Framework:** pytest with comprehensive reporting  
 
 ## 🎯 Project Overview

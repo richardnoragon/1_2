@@ -105,7 +105,67 @@ python scripts/admin/rfu_admin.py mfa-enroll \
 ```
 
 - Both commands currently exit with `MFAFeatureUnavailableError` (exit code 3)
-   but exercise the controller plumbing so future MFA work only needs to replace
-   the placeholder responses.
+  but exercise the controller plumbing so future MFA work only needs to replace
+  the placeholder responses.
 
 Document outcomes in the upcoming `/tasks` checklist to ensure each verification becomes a discrete, automatable test.
+
+## 9. Bootstrap Protected Accounts (Lockout Prevention)
+
+```bash
+python scripts/admin/rfu_admin.py bootstrap-protected-accounts \
+   --database-path "$DB_PATH" \
+   --export-credentials secure_note
+```
+
+- Expected: Creates two always-available accounts (one `dev`, one `admin`) and two break-glass accounts (one `dev`, one `admin`). Credentials exported to encrypted secure-note files in `<database dir>/protected_credentials/`.
+
+## 10. Always-Available Account Cooldown
+
+```bash
+# Simulate 5 failed logins for always-available admin
+python scripts/admin/simulate_failed_logins.py --username always_available_admin --attempts 5
+```
+
+- Expected: `account_status` flips to `blocked`, but `auto_unblock_at` is set to current time + 15 minutes. After cooldown expires, account automatically unblocks.
+
+## 11. Break-Glass Emergency Access
+
+```bash
+# Login with break-glass credentials (requires justification)
+python scripts/admin/rfu_admin.py break-glass-login \
+   --database-path "$DB_PATH" \
+   --username break_glass_admin \
+   --justification "Primary admin account compromised during incident #12345"
+```
+
+- Expected: Session marked as break-glass, enhanced audit logging enabled, all administrators notified. Upon logout, credential rotation is triggered automatically.
+
+## 12. List Protected Accounts
+
+```bash
+python scripts/admin/rfu_admin.py list-protected-accounts \
+   --database-path "$DB_PATH"
+```
+
+- Expected: Shows status of always-available and break-glass accounts including last login, cooldown status, and rotation status.
+
+## 13. Rotate Break-Glass Credentials
+
+```bash
+python scripts/admin/rfu_admin.py rotate-break-glass \
+   --database-path "$DB_PATH" \
+   --account break_glass_dev \
+   --export-credentials secure_note \
+   --justification "Post-incident credential rotation"
+```
+
+- Expected: New credentials generated, old credentials invalidated, audit entry logged, secure-note file created for offline storage.
+
+## 14. Verify Lockout Prevention Guarantee
+
+```bash
+python scripts/admin/verify_lockout_prevention.py --database-path "$DB_PATH"
+```
+
+- Expected: Script confirms at least one administrative access path is always available (always-available accounts not all blocked, or break-glass accounts accessible).

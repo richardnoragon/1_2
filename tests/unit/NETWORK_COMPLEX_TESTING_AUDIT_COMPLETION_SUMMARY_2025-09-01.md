@@ -121,7 +121,7 @@ Coverage Warning: No data was collected. (no-data-collected)
 ### Dependency Resolution Failures
 ```python
 CRITICAL IMPORT CHAIN FAILURE:
-src/utilities/network/network_connectivity_complex/core/network_base.py:13
+src/tools/network/network_connectivity_complex/core/network_base.py:13
 from core.config_manager import ConfigManager
 └── ModuleNotFoundError: No module named 'core.config_manager'
 

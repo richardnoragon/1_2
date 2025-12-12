@@ -36,6 +36,12 @@ class AuthSession:
     session_id: str | None = None
     issued_at: datetime | None = None
     expires_at: datetime | None = None
+    session_type: str = "standard"  # 'standard', 'break_glass'
+
+    @property
+    def is_break_glass(self) -> bool:
+        """True if this is a break-glass emergency session."""
+        return self.session_type == "break_glass"
 
     @classmethod
     def from_account(
@@ -45,6 +51,7 @@ class AuthSession:
         session_id: str | None = None,
         issued_at: datetime | None = None,
         expires_at: datetime | None = None,
+        session_type: str = "standard",
     ) -> "AuthSession":
         return cls(
             username=account.username,
@@ -54,6 +61,7 @@ class AuthSession:
             session_id=session_id,
             issued_at=issued_at,
             expires_at=expires_at,
+            session_type=session_type,
         )
 
 

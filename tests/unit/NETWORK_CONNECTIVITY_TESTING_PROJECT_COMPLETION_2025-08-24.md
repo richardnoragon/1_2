@@ -1,7 +1,7 @@
 # Network Connectivity Unit Testing - Project Completion Report
 
 **Date:** August 24, 2025  
-**Target Module:** `src/utilities/network/network_connectivity.py`  
+**Target Module:** `src/tools/network/network_connectivity.py`  
 **Test Framework:** pytest with comprehensive reporting  
 **Project Status:** ✅ COMPLETED SUCCESSFULLY  
 
@@ -188,7 +188,7 @@ pytest --json-report --json-report-file=result_network_connectivity_simple_2025-
 
 ### Coverage Analysis
 ```bash
-pytest --cov=src.utilities.network.network_connectivity --cov-report=html
+pytest --cov=src.tools.network.network_connectivity --cov-report=html
 ```
 
 ## Dependencies Installed

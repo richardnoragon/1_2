@@ -1,7 +1,7 @@
 # Network GUI Comprehensive Testing Project Completion Summary
 
 **Project:** Network GUI Module Testing  
-**Target Module:** `../../src/utilities/network/gui.py`  
+**Target Module:** `../../src/tools/network/gui.py`  
 **Date:** August 29, 2025  
 **Test Framework:** pytest  
 **Status:** ✅ **COMPLETED WITH HIGH SUCCESS RATE**

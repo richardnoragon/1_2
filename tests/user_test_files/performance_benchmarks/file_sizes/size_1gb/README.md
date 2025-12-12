@@ -1,0 +1,1 @@
+# 1GB Benchmark\n\nGenerate on-demand with:\n`python\ngenerate_binary_file(path, 1024)  # 1GB\n`\n\nNote: 1GB files are optional and generated only for stress testing.\n

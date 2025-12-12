@@ -1,7 +1,7 @@
 # Network GUI Comprehensive Unit Testing Documentation
 
 **Test Execution Timestamp:** 2025-08-28  
-**Target Module:** `src/utilities/network/gui.py`  
+**Target Module:** `src/tools/network/gui.py`  
 **Framework:** pytest with PyQt5 support  
 
 ## Overview
@@ -264,7 +264,7 @@ timeout = 300  # 5 minutes
 **Coverage Calculation Errors**
 ```
 Solution: Ensure source paths are correct
---cov=src.utilities.network.gui
+--cov=src.tools.network.gui
 ```
 
 #### Debug Mode

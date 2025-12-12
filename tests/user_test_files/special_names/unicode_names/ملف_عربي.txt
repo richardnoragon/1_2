@@ -1,0 +1,1 @@
+Unicode test file: ملف_عربي.txt

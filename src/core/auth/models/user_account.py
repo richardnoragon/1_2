@@ -18,21 +18,45 @@ from .utils import (
 
 
 class UserRole(StrEnum):
+    """Four-role system: dev > admin > user > readonly."""
+
+    DEV = "dev"
     ADMIN = "admin"
-    STANDARD = "standard"
+    USER = "user"
     READONLY = "readonly"
+
+    # Legacy alias for backward compatibility during migration
+    STANDARD = "user"
 
     @classmethod
     def from_db(cls, value: str | None) -> "UserRole":
-        normalized = (value or cls.STANDARD.value).strip().lower()
+        normalized = (value or cls.USER.value).strip().lower()
         alias_map = {
+            "dev": cls.DEV,
+            "developer": cls.DEV,
             "admin": cls.ADMIN,
-            "standard": cls.STANDARD,
-            "user": cls.STANDARD,
+            "administrator": cls.ADMIN,
+            "user": cls.USER,
+            "standard": cls.USER,  # Migration: standard → user
             "readonly": cls.READONLY,
             "read_only": cls.READONLY,
         }
-        return alias_map.get(normalized, cls.STANDARD)
+        return alias_map.get(normalized, cls.USER)
+
+    @property
+    def privilege_level(self) -> int:
+        """Return privilege level for hierarchy comparisons."""
+        levels = {
+            UserRole.DEV: 4,
+            UserRole.ADMIN: 3,
+            UserRole.USER: 2,
+            UserRole.READONLY: 1,
+        }
+        return levels.get(self, 2)
+
+    def has_at_least(self, required: "UserRole") -> bool:
+        """Check if this role meets or exceeds required level."""
+        return self.privilege_level >= required.privilege_level
 
 
 class AccountStatus(StrEnum):
@@ -90,7 +114,7 @@ class UserAccount:
     username: str
     password_hash: str
     password_salt: bytes | None = None
-    role: UserRole = UserRole.STANDARD
+    role: UserRole = UserRole.USER
     account_status: AccountStatus = AccountStatus.PENDING
     login_attempts: int = 0
     is_blocked: bool = False
@@ -109,6 +133,11 @@ class UserAccount:
     mfa_secret_encrypted: bytes | None = None
     mfa_recovery_codes: Sequence[str] = field(default_factory=tuple)
     mfa_enforced_at: datetime | None = None
+    # Lockout prevention fields (007-upgrade-to-login)
+    is_always_available: bool = False
+    is_break_glass: bool = False
+    break_glass_justification: str | None = None
+    auto_unblock_at: datetime | None = None
 
     @classmethod
     def from_row(cls, row: Mapping[str, Any]) -> "UserAccount":
@@ -143,6 +172,10 @@ class UserAccount:
             mfa_secret_encrypted=_coerce_bytes(row.get("mfa_secret_encrypted")),
             mfa_recovery_codes=recovery_codes,
             mfa_enforced_at=parse_datetime(row.get("mfa_enforced_at")),
+            is_always_available=bool_from_db(row.get("is_always_available")),
+            is_break_glass=bool_from_db(row.get("is_break_glass")),
+            break_glass_justification=row.get("break_glass_justification"),
+            auto_unblock_at=parse_datetime(row.get("auto_unblock_at")),
         )
 
     def to_record(self) -> Dict[str, Any]:
@@ -169,6 +202,10 @@ class UserAccount:
             "mfa_secret_encrypted": self.mfa_secret_encrypted,
             "mfa_recovery_codes": list_to_json(self.mfa_recovery_codes),
             "mfa_enforced_at": self.mfa_enforced_at,
+            "is_always_available": int(self.is_always_available),
+            "is_break_glass": int(self.is_break_glass),
+            "break_glass_justification": self.break_glass_justification,
+            "auto_unblock_at": self.auto_unblock_at,
         }
 
     @property
@@ -182,6 +219,21 @@ class UserAccount:
     @property
     def is_disabled(self) -> bool:
         return self.account_status == AccountStatus.DISABLED
+
+    @property
+    def is_protected(self) -> bool:
+        """True if always-available or break-glass account."""
+        return self.is_always_available or self.is_break_glass
+
+    @property
+    def can_be_deleted(self) -> bool:
+        """Return False if account is protected from deletion."""
+        return not self.is_protected
+
+    @property
+    def can_be_permanently_blocked(self) -> bool:
+        """Return False if account is always-available (uses cooldown)."""
+        return not self.is_always_available
 
     @property
     def preferences_user_id(self) -> str | None:

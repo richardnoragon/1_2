@@ -104,6 +104,11 @@ class UserSeed:
     mfa_secret_encrypted: bytes | None = None
     mfa_recovery_codes: list[str] | None = None
     mfa_enforced_at: str | None = None
+    # Lockout prevention fields (Phase 3.8)
+    is_always_available: bool = False
+    is_break_glass: bool = False
+    break_glass_justification: str | None = None
+    auto_unblock_at: str | None = None
 
     def to_row(self) -> Dict[str, Any]:
         password_hash, salt = hash_password(self.plaintext_password)
@@ -134,6 +139,11 @@ class UserSeed:
             "mfa_secret_encrypted": self.mfa_secret_encrypted,
             "mfa_recovery_codes": _json_or_null(self.mfa_recovery_codes),
             "mfa_enforced_at": self.mfa_enforced_at,
+            # Lockout prevention fields
+            "is_always_available": 1 if self.is_always_available else 0,
+            "is_break_glass": 1 if self.is_break_glass else 0,
+            "break_glass_justification": self.break_glass_justification,
+            "auto_unblock_at": self.auto_unblock_at,
         }
         return row
 

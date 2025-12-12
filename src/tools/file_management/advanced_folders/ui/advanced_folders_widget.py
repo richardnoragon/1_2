@@ -81,11 +81,11 @@ except ImportError:
 # Import RFU core components
 try:
     from gui.standard_window import StandardWindow
-    from src.config_manager import get_config_manager
+    from src.config.config_manager import get_config_manager
 except ImportError:
     # Fallback imports for development
     try:
-        from src.config_manager import get_config_manager
+        from src.config.config_manager import get_config_manager
         from src.gui.standard_window import StandardWindow
     except ImportError:
         get_config_manager = None

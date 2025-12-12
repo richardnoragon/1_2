@@ -5,7 +5,7 @@ from __future__ import annotations
 import os
 import secrets
 import string
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from src.core.auth.exceptions import AccountBlockedError, AuthenticationError
 from src.core.auth.models import (
@@ -19,7 +19,22 @@ from src.core.auth.security import PasswordHasher
 from src.core.auth.user_store import UserStore
 from src.log_manager import get_log_manager
 
+if TYPE_CHECKING:
+    from src.core.auth.services.admin_notification_service import (
+        AdminNotificationService,
+    )
+    from src.core.auth.services.break_glass_service import BreakGlassService
+    from src.core.auth.services.lockout_prevention_service import (
+        LockoutPreventionService,
+    )
+
 _DEFAULT_BOOTSTRAP_PASSWORD = "ChangeMeNow!2025"
+
+
+class BreakGlassJustificationRequired(AuthenticationError):
+    """Break-glass login requires justification."""
+
+    pass
 
 
 class AuthService:
@@ -34,6 +49,9 @@ class AuthService:
         password_hasher: Optional[PasswordHasher] = None,
         input_validator: Optional[InputValidator] = None,
         lockout_policy: Optional[LockoutPolicy] = None,
+        break_glass_service: Optional["BreakGlassService"] = None,
+        notification_service: Optional["AdminNotificationService"] = None,
+        lockout_prevention_service: Optional["LockoutPreventionService"] = None,
     ) -> None:
         self.store = store or UserStore()
         self.password_hasher = password_hasher or PasswordHasher()
@@ -41,6 +59,9 @@ class AuthService:
         self._lockout_policy = lockout_policy or LockoutPolicy(
             max_attempts=self.MAX_LOGIN_ATTEMPTS,
         )
+        self._break_glass_service = break_glass_service
+        self._notification_service = notification_service
+        self._lockout_prevention_service = lockout_prevention_service
         self.logger = get_log_manager().get_logger("AuthService")
         self._ensure_bootstrap_admin()
 
@@ -53,7 +74,27 @@ class AuthService:
         password: str,
         *,
         surface: str = "gui",
+        justification: Optional[str] = None,
+        source_ip: Optional[str] = None,
     ) -> AuthSession:
+        """Authenticate a user and return a session.
+
+        Args:
+            username: The username to authenticate.
+            password: The password to verify.
+            surface: The login surface (gui, cli, api).
+            justification: Required for break-glass accounts.
+            source_ip: Optional source IP for audit logging.
+
+        Returns:
+            AuthSession with session details.
+
+        Raises:
+            AuthenticationError: Invalid credentials or account state.
+            AccountBlockedError: Account is blocked.
+            BreakGlassJustificationRequired: Break-glass login without
+                justification.
+        """
         if not isinstance(username, str) or not isinstance(password, str):
             raise AuthenticationError("Username and password are required")
 
@@ -74,13 +115,36 @@ class AuthService:
             raise AuthenticationError("Invalid username or password")
 
         if account.is_blocked:
-            self.logger.warning(
-                "Login rejected: blocked account '%s'",
-                sanitized_username,
-            )
-            raise AccountBlockedError(
-                "Account is blocked; contact an administrator",
-            )
+            # Check if always-available account can auto-unblock
+            is_always_available = getattr(account, "is_always_available", False)
+            if is_always_available and self._lockout_prevention_service:
+                result = self._lockout_prevention_service.check_auto_unblock(
+                    sanitized_username
+                )
+                if result.should_unblock:
+                    self._lockout_prevention_service.perform_auto_unblock(
+                        sanitized_username
+                    )
+                    self.logger.info(
+                        "Auto-unblocked always-available account '%s'",
+                        sanitized_username,
+                    )
+                    # Re-fetch account after unblock
+                    account = self.store.get_user(sanitized_username)
+                elif result.time_remaining:
+                    mins = int(result.time_remaining.total_seconds() / 60)
+                    raise AccountBlockedError(
+                        f"Account in cooldown; auto-unblock in {mins} minute(s)"
+                    )
+
+            if account.is_blocked:
+                self.logger.warning(
+                    "Login rejected: blocked account '%s'",
+                    sanitized_username,
+                )
+                raise AccountBlockedError(
+                    "Account is blocked; contact an administrator",
+                )
 
         status_value = self._status_value(account.account_status)
 
@@ -121,6 +185,23 @@ class AuthService:
                     decision.max_attempts,
                 )
             if blocked:
+                is_always_available = getattr(account, "is_always_available", False)
+                # For always-available: cooldown instead of permanent block
+                if is_always_available and self._lockout_prevention_service:
+                    unblock_at = self._lockout_prevention_service.trigger_cooldown(
+                        sanitized_username
+                    )
+                    mins = 5  # Default cooldown
+                    self.logger.warning(
+                        "Always-available account '%s' in cooldown until %s",
+                        sanitized_username,
+                        unblock_at.isoformat(),
+                    )
+                    self._lockout_policy.reset_history(account.username)
+                    raise AccountBlockedError(
+                        f"Account in cooldown; auto-unblock in {mins} min"
+                    )
+
                 self.logger.error(
                     "Account '%s' blocked after %s failures",
                     sanitized_username,
@@ -131,6 +212,56 @@ class AuthService:
                     "Account blocked after too many failed attempts",
                 )
             raise AuthenticationError("Invalid username or password")
+
+        # Check if this is a break-glass login
+        is_break_glass = getattr(account, "is_break_glass", False)
+        session_type = "standard"
+        break_glass_session_id: Optional[str] = None
+
+        if is_break_glass:
+            # Break-glass requires justification
+            if not justification or len(justification.strip()) < 10:
+                raise BreakGlassJustificationRequired(
+                    "Break-glass login requires justification "
+                    "(minimum 10 characters)"
+                )
+
+            if self._break_glass_service:
+                result = self._break_glass_service.activate(
+                    username=sanitized_username,
+                    justification=justification,
+                )
+                if not result.success:
+                    self.logger.error(
+                        "Break-glass activation failed for %s: %s",
+                        sanitized_username,
+                        result.error,
+                    )
+                    raise AuthenticationError(
+                        f"Break-glass activation failed: {result.error}"
+                    )
+                break_glass_session_id = result.session_id
+                self.logger.warning(
+                    "Break-glass login: %s (session=%s)",
+                    sanitized_username,
+                    break_glass_session_id,
+                )
+            else:
+                self.logger.warning(
+                    "Break-glass login without service: %s",
+                    sanitized_username,
+                )
+
+            # Send notification
+            if self._notification_service:
+                self._notification_service.notify_break_glass_usage(
+                    username=sanitized_username,
+                    justification=justification,
+                    session_id=break_glass_session_id or "unknown",
+                    source_ip=source_ip,
+                )
+
+            session_type = "break_glass"
 
         self.store.record_login_success(
             sanitized_username,
@@ -144,6 +275,8 @@ class AuthService:
             role=self._role_value(account.role),
             preferences_user_id=account.preferences_user_id,
             reset_required=account.reset_required,
+            session_type=session_type,
+            session_id=break_glass_session_id,
         )
 
     def create_user(
@@ -236,4 +369,4 @@ class AuthService:
         )
 
 
-__all__ = ["AuthService"]
+__all__ = ["AuthService", "BreakGlassJustificationRequired"]

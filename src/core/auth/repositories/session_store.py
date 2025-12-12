@@ -39,7 +39,9 @@ class SessionStore(SQLiteRepository):
                     revoked,
                     revoked_at,
                     preferences_id,
-                    idle_timeout_deadline
+                    idle_timeout_deadline,
+                    session_type,
+                    usage_log_id
                 ) VALUES (
                     :session_handle_hash,
                     :user_id,
@@ -51,7 +53,9 @@ class SessionStore(SQLiteRepository):
                     :revoked,
                     :revoked_at,
                     :preferences_id,
-                    :idle_timeout_deadline
+                    :idle_timeout_deadline,
+                    :session_type,
+                    :usage_log_id
                 )
                 ON CONFLICT(session_handle_hash) DO UPDATE SET
                     user_id = excluded.user_id,
@@ -62,7 +66,9 @@ class SessionStore(SQLiteRepository):
                     revoked = excluded.revoked,
                     revoked_at = excluded.revoked_at,
                     preferences_id = excluded.preferences_id,
-                    idle_timeout_deadline = excluded.idle_timeout_deadline
+                    idle_timeout_deadline = excluded.idle_timeout_deadline,
+                    session_type = excluded.session_type,
+                    usage_log_id = excluded.usage_log_id
                 """,
                 record,
             )

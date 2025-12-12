@@ -1,19 +1,24 @@
 <!--
 Sync Impact Report
-Version change: 1.1.0 → 1.2.0
+Version change: 1.2.0 → 1.3.0
 Modified principles:
-   - VI. User Preference Management & Personalization → clarified handling of sensitive settings vs. identity secrets
+   - VII. Identity & Access Control → expanded with role taxonomy (dev, admin, user, readonly),
+     always-available accounts (one dev, one admin), and break-glass emergency accounts (one dev, one admin)
+     to prevent operator lockout scenarios.
 Added sections:
-   - VII. Identity & Access Control (new principle)
-   - Authentication guard rails in Additional Technical & Quality Constraints
-   - Authentication compliance gate under Development Workflow & Quality Gates
+   - Role-Based Access Matrix subsection under Principle VII
+   - Always-Available Accounts subsection under Principle VII
+   - Break-Glass Emergency Access subsection under Principle VII
+   - Lockout Prevention constraints in Additional Technical & Quality Constraints (items 17-19)
 Removed sections: None
 Templates requiring updates:
-   - .specify/templates/plan-template.md ✅ (added identity compliance prompts)
-   - .specify/templates/spec-template.md ✅ (documented auth requirements + security section)
-   - .specify/templates/tasks-template.md ✅ (added identity task rules and validation)
+   - .specify/templates/plan-template.md ✅ (already has identity compliance prompts)
+   - .specify/templates/spec-template.md ✅ (already documents auth requirements + security section)
+   - .specify/templates/tasks-template.md ✅ (already has identity task rules and validation)
 Follow-up TODOs:
    1. TODO(AUTH_DOCS): Publish operator guide for account provisioning/reset (docs/authentication.md) once CLI tooling is finalized.
+   2. TODO(BREAK_GLASS_PROCEDURE): Document sealed-envelope storage and rotation procedure for break-glass credentials.
+   3. TODO(ROLE_MIGRATION): Add migration scripts to provision always-available and break-glass accounts in existing databases.
 -->
 
 # RFU (Richard's File Utilities) Constitution
@@ -110,26 +115,101 @@ independent modules.
 Authentication and authorization guard every executable surface and obey the
 following non-negotiable rules:
 
-- Credential storage: User passwords MUST be hashed with a memory-hard
+#### Role-Based Access Matrix
+
+The system enforces **four account roles** with distinct privilege levels:
+
+| Role       | Description                                                            | Key Capabilities                                                                     |
+| ---------- | ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| `dev`      | Developer access with full debugging/diagnostic capabilities           | All user + admin capabilities, plus debug logging, diagnostics, and internal tooling |
+| `admin`    | Administrator access with user management and configuration privileges | User management, account approval/reset/unblock, configuration changes, audit review |
+| `user`     | Standard user access for regular application functionality             | Normal file operations, preference management, tool usage                            |
+| `readonly` | Read-only access with no write/modification capabilities               | View-only access to files and reports; no destructive operations                     |
+
+Role assignment MUST be explicit; default new accounts MUST start in a pending
+state until approved by an admin. Role escalation (e.g., user → admin) MUST
+require admin approval and emit an audit entry.
+
+#### Always-Available Accounts
+
+To prevent operator lockout, **two accounts MUST always be available** and
+active at system initialization:
+
+| Account Type | Purpose                                                              |
+| ------------ | -------------------------------------------------------------------- |
+| **dev**      | Guaranteed developer access for debugging and development operations |
+| **admin**    | Guaranteed administrator access for user management and recovery     |
+
+These accounts:
+
+- MUST be provisioned automatically during database initialization or migration.
+- MUST NOT be deletable or deactivatable through normal UI/CLI flows.
+- MUST have their passwords set via secure operator procedures (not hard-coded).
+- MUST emit audit entries for every login and action.
+- MAY be renamed but MUST retain their protected status via internal flags.
+
+#### Break-Glass Emergency Access
+
+**Two break-glass accounts** provide emergency recovery when primary accounts
+are compromised or locked:
+
+| Account Type | Purpose                                                            |
+| ------------ | ------------------------------------------------------------------ |
+| **dev**      | Emergency developer access when primary dev account is unavailable |
+| **admin**    | Emergency admin access when primary admin account is unavailable   |
+
+Break-glass accounts:
+
+- MUST have credentials stored offline in a sealed envelope or secure vault
+  (not in version control, not in config files, not in the database itself).
+- MUST be disabled by default and require explicit enablement (CLI flag or
+  environment variable) before authentication succeeds.
+- MUST trigger an audit alert upon successful login, notifying all active
+  admins.
+- MUST require immediate password rotation after use; the system SHOULD prompt
+  or enforce rotation before allowing continued operation.
+- MUST be tested annually to verify credentials remain valid and recovery
+  procedures are documented.
+
+#### Credential Storage
+
+- User passwords MUST be hashed with a memory-hard
   algorithm (Argon2id or bcrypt, cost parameters documented per release). No
   plaintext or reversible formats allowed. Password updates MUST rotate salts.
-- Lockout & monitoring: After 5 consecutive failed logins the account MUST be
+
+#### Lockout & Monitoring
+
+- After 5 consecutive failed logins the account MUST be
   blocked until an administrator (or automated unlock workflow) resets the
   counter. Each attempt (success or failure) MUST be logged with timestamp and
   origin metadata.
-- Admin resets & unblock: Administrative resets MUST generate a temporary
+- Always-available and break-glass accounts are subject to the same lockout
+  rules but MUST be recoverable via the alternate emergency account (e.g., if
+  the always-available admin is locked, the break-glass admin can unblock it).
+
+#### Admin Resets & Unblock
+
+- Administrative resets MUST generate a temporary
   password (or secure reset token) without exposing password hashes. Unblocks
   MUST reset counters, emit audit entries, and confirm actor identity.
-- Preference linkage: Each account MUST reference a dedicated preference
+
+#### Preference Linkage
+
+- Each account MUST reference a dedicated preference
   namespace identifier so that personalization never leaks between users. Tying
   a session to preferences MUST happen immediately after authentication.
-- Session controls: Long-running sessions MUST support manual logout and idle
+
+#### Session Controls
+
+- Long-running sessions MUST support manual logout and idle
   timeout (≤ 30 min default). Tokens or session secrets MUST be stored in
   memory only and cleared on logout or crash recovery.
 
 Rationale: Centralized, auditable identity enforcement prevents privilege
 escalation, enforces regulatory requirements, and protects the high-risk file
-operations delivered by RFU.
+operations delivered by RFU. The always-available and break-glass accounts
+guarantee that operators are never permanently locked out, while maintaining
+full audit trails for accountability.
 
 ## Additional Technical & Quality Constraints
 
@@ -211,6 +291,45 @@ operations delivered by RFU.
     - Automated anomaly detection MUST flag >10 failed attempts/day/user and
       escalate to maintainers.
 
+17. Lockout Prevention (Always-Available Accounts):
+
+    - The system MUST provision two always-available accounts (one `dev`, one
+      `admin`) during database initialization.
+    - These accounts MUST NOT be deletable or deactivatable via standard
+      UI/CLI/API flows; removal requires direct database modification with
+      audit trail.
+    - Password initialization MUST occur via secure operator procedure, never
+      hard-coded defaults.
+    - Implementation MUST include an `is_protected` flag on user records to
+      enforce deletion/deactivation guards.
+
+18. Break-Glass Emergency Access:
+
+    - The system MUST provision two break-glass accounts (one `dev`, one
+      `admin`) that are disabled by default.
+    - Enablement MUST require an explicit CLI flag or environment variable;
+      break-glass accounts MUST NOT be accessible through normal login flows
+      when disabled.
+    - Credentials MUST be stored offline (sealed envelope, hardware security
+      module, or equivalent) and MUST NOT exist in version control or config.
+    - Successful break-glass login MUST emit an immediate alert to all active
+      admin accounts and create a high-priority audit entry.
+    - Post-use password rotation MUST be enforced; the system SHOULD block
+      further break-glass operations until rotation completes.
+    - Annual drill: break-glass credentials MUST be tested at least once per
+      year with documented results.
+
+19. Role Taxonomy & Privilege Escalation:
+
+    - The system enforces four roles: `dev`, `admin`, `user`, `readonly`.
+    - New accounts MUST default to `pending` status until approved by an admin.
+    - Role escalation (e.g., `user` → `admin`) MUST require admin approval and
+      emit an audit entry with before/after roles.
+    - Role demotion MAY occur without approval but MUST still emit audit.
+    - `readonly` accounts MUST be blocked from any destructive file operation
+      (delete, move, sync with overwrite, secure wipe) regardless of feature
+      flags.
+
 ## Development Workflow & Quality Gates
 
 1. Branching: feature/_, fix/_, chore/_, docs/_ naming. One logical change per
@@ -282,4 +401,4 @@ operations delivered by RFU.
 11. Dispute Resolution: If reviewers deadlock, escalate to maintainer vote; a
     simple majority decides within 5 business days.
 
-**Version**: 1.2.0 | **Ratified**: 2025-09-29 | **Last Amended**: 2025-11-15
+**Version**: 1.3.0 | **Ratified**: 2025-09-29 | **Last Amended**: 2025-11-26

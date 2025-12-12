@@ -170,7 +170,7 @@ class EnterpriseTestFramework:
 
         # Test RFU core module imports
         try:
-            from src.config_manager import get_config_manager
+            from src.config.config_manager import get_config_manager
 
             import_results["config_manager_available"] = True
             successful_imports += 1

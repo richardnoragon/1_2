@@ -4,11 +4,14 @@ from __future__ import annotations
 
 import sqlite3
 from datetime import datetime, timezone
-from typing import Mapping
+from typing import TYPE_CHECKING, Mapping
 
 from src.core.auth.models import AccountStatus, UserAccount, UserRole
 from src.core.auth.models.utils import datetime_to_iso, dict_to_json
 from src.core.database.repository_base import SQLiteRepository
+
+if TYPE_CHECKING:
+    from src.core.auth.services.audit_logger import AuditLogger
 
 
 def _blob(value: bytes | memoryview | None) -> sqlite3.Binary | None:
@@ -81,7 +84,11 @@ class UserAccountRepository(SQLiteRepository):
                     mfa_enabled,
                     mfa_secret_encrypted,
                     mfa_recovery_codes,
-                    mfa_enforced_at
+                    mfa_enforced_at,
+                    is_always_available,
+                    is_break_glass,
+                    break_glass_justification,
+                    auto_unblock_at
                 ) VALUES (
                     :username,
                     :password_hash,
@@ -104,7 +111,11 @@ class UserAccountRepository(SQLiteRepository):
                     :mfa_enabled,
                     :mfa_secret_encrypted,
                     :mfa_recovery_codes,
-                    :mfa_enforced_at
+                    :mfa_enforced_at,
+                    :is_always_available,
+                    :is_break_glass,
+                    :break_glass_justification,
+                    :auto_unblock_at
                 )
                 ON CONFLICT(username) DO UPDATE SET
                     password_hash = excluded.password_hash,
@@ -126,7 +137,11 @@ class UserAccountRepository(SQLiteRepository):
                     mfa_enabled = excluded.mfa_enabled,
                     mfa_secret_encrypted = excluded.mfa_secret_encrypted,
                     mfa_recovery_codes = excluded.mfa_recovery_codes,
-                    mfa_enforced_at = excluded.mfa_enforced_at
+                    mfa_enforced_at = excluded.mfa_enforced_at,
+                    is_always_available = excluded.is_always_available,
+                    is_break_glass = excluded.is_break_glass,
+                    break_glass_justification = excluded.break_glass_justification,
+                    auto_unblock_at = excluded.auto_unblock_at
                 """,
                 {
                     "username": record["username"],
@@ -152,6 +167,12 @@ class UserAccountRepository(SQLiteRepository):
                     "mfa_secret_encrypted": _blob(record.get("mfa_secret_encrypted")),
                     "mfa_recovery_codes": record.get("mfa_recovery_codes"),
                     "mfa_enforced_at": _iso(record.get("mfa_enforced_at")),
+                    "is_always_available": record.get("is_always_available", 0),
+                    "is_break_glass": record.get("is_break_glass", 0),
+                    "break_glass_justification": record.get(
+                        "break_glass_justification"
+                    ),
+                    "auto_unblock_at": _iso(record.get("auto_unblock_at")),
                 },
             )
             conn.commit()
@@ -357,6 +378,258 @@ class UserAccountRepository(SQLiteRepository):
                 (role.value,),
             ).fetchall()
         return [row["username"] for row in rows]
+
+    def unblock(self, username: str) -> bool:
+        """Unblock an account by resetting status to active.
+
+        Also resets login_attempts and is_blocked flag.
+
+        Args:
+            username: The account username to unblock
+
+        Returns:
+            True if account was updated, False otherwise
+        """
+        with self._connection() as conn:
+            cursor = conn.execute(
+                """
+                UPDATE user_accounts
+                SET account_status = ?,
+                    is_blocked = 0,
+                    login_attempts = 0,
+                    blocked_at = NULL,
+                    updated_at = CURRENT_TIMESTAMP
+                WHERE username = ?
+                """,
+                (AccountStatus.ACTIVE.value, username),
+            )
+            conn.commit()
+            return bool(cursor.rowcount)
+
+    def set_auto_unblock(
+        self,
+        username: str,
+        auto_unblock_at: datetime | None,
+    ) -> bool:
+        """Set or clear the auto-unblock timestamp for an account.
+
+        Args:
+            username: The account username
+            auto_unblock_at: When to auto-unblock, or None to clear
+
+        Returns:
+            True if account was updated, False otherwise
+        """
+        with self._connection() as conn:
+            cursor = conn.execute(
+                """
+                UPDATE user_accounts
+                SET auto_unblock_at = ?,
+                    updated_at = CURRENT_TIMESTAMP
+                WHERE username = ?
+                """,
+                (_iso(auto_unblock_at), username),
+            )
+            conn.commit()
+            return bool(cursor.rowcount)
+
+    # ------------------------------------------------------------------
+    # T044: Protected account queries
+    # ------------------------------------------------------------------
+
+    def get_always_available_accounts(self) -> list[UserAccount]:
+        """Get all accounts marked as always-available.
+
+        Returns:
+            List of UserAccount objects with is_always_available=True
+        """
+        with self._connection() as conn:
+            rows = conn.execute(
+                """
+                SELECT * FROM user_accounts
+                WHERE is_always_available = 1
+                ORDER BY username
+                """
+            ).fetchall()
+        return [self._row_to_account(row) for row in rows if row]
+
+    def get_break_glass_accounts(self) -> list[UserAccount]:
+        """Get all accounts marked as break-glass.
+
+        Returns:
+            List of UserAccount objects with is_break_glass=True
+        """
+        with self._connection() as conn:
+            rows = conn.execute(
+                """
+                SELECT * FROM user_accounts
+                WHERE is_break_glass = 1
+                ORDER BY username
+                """
+            ).fetchall()
+        return [self._row_to_account(row) for row in rows if row]
+
+    def get_protected_accounts(self) -> list[UserAccount]:
+        """Get all protected accounts (always-available or break-glass).
+
+        Returns:
+            List of UserAccount objects that are protected
+        """
+        with self._connection() as conn:
+            rows = conn.execute(
+                """
+                SELECT * FROM user_accounts
+                WHERE is_always_available = 1 OR is_break_glass = 1
+                ORDER BY username
+                """
+            ).fetchall()
+        return [self._row_to_account(row) for row in rows if row]
+
+    def is_protected(self, username: str) -> bool:
+        """Check if an account is protected (always-available or break-glass).
+
+        Args:
+            username: The account username to check
+
+        Returns:
+            True if the account is protected, False otherwise
+        """
+        with self._connection() as conn:
+            row = conn.execute(
+                """
+                SELECT (is_always_available = 1 OR is_break_glass = 1)
+                    AS protected
+                FROM user_accounts
+                WHERE username = ?
+                """,
+                (username,),
+            ).fetchone()
+        if row is None:
+            return False
+        return bool(row["protected"])
+
+    def is_always_available(self, username: str) -> bool:
+        """Check if an account is always-available.
+
+        Args:
+            username: The account username to check
+
+        Returns:
+            True if the account is always-available, False otherwise
+        """
+        with self._connection() as conn:
+            row = conn.execute(
+                """
+                SELECT is_always_available
+                FROM user_accounts
+                WHERE username = ?
+                """,
+                (username,),
+            ).fetchone()
+        if row is None:
+            return False
+        return bool(row["is_always_available"])
+
+    def is_break_glass(self, username: str) -> bool:
+        """Check if an account is a break-glass account.
+
+        Args:
+            username: The account username to check
+
+        Returns:
+            True if the account is break-glass, False otherwise
+        """
+        with self._connection() as conn:
+            row = conn.execute(
+                """
+                SELECT is_break_glass
+                FROM user_accounts
+                WHERE username = ?
+                """,
+                (username,),
+            ).fetchone()
+        if row is None:
+            return False
+        return bool(row["is_break_glass"])
+
+    def update_role(
+        self,
+        username: str,
+        new_role: UserRole,
+        *,
+        actor_username: str | None = None,
+        audit_logger: "AuditLogger | None" = None,
+        correlation_id: str | None = None,
+    ) -> bool:
+        """Update an account's role with optional audit logging.
+
+        Protected accounts (always-available or break-glass) cannot have
+        their roles changed.
+
+        Args:
+            username: The account username to update
+            new_role: The new role to assign
+            actor_username: Who is making the change (for audit)
+            audit_logger: Optional audit logger for recording the change
+            correlation_id: Optional correlation ID for audit trail
+
+        Returns:
+            True if role was updated, False otherwise
+
+        Raises:
+            PermissionError: If account is protected
+        """
+        # Check if account is protected
+        if self.is_protected(username):
+            if audit_logger and actor_username and correlation_id:
+                audit_logger.record_action(
+                    action_type="role_change_blocked",
+                    actor_username=actor_username,
+                    target_username=username,
+                    details={
+                        "reason": "protected_account",
+                        "attempted_role": new_role.value,
+                    },
+                    correlation_id=correlation_id,
+                )
+            raise PermissionError(
+                f"Cannot change role for protected account '{username}'"
+            )
+
+        # Get current role for audit
+        current_account = self.get(username)
+        if current_account is None:
+            return False
+
+        old_role = current_account.role
+
+        with self._connection() as conn:
+            cursor = conn.execute(
+                """
+                UPDATE user_accounts
+                SET role = ?,
+                    updated_at = CURRENT_TIMESTAMP
+                WHERE username = ?
+                """,
+                (new_role.value, username),
+            )
+            conn.commit()
+            updated = bool(cursor.rowcount)
+
+        # Log the role change if audit logger provided
+        if updated and audit_logger and actor_username and correlation_id:
+            audit_logger.record_action(
+                action_type="role_changed",
+                actor_username=actor_username,
+                target_username=username,
+                details={
+                    "old_role": old_role.value,
+                    "new_role": new_role.value,
+                },
+                correlation_id=correlation_id,
+            )
+
+        return updated
 
     @staticmethod
     def _row_to_account(

@@ -1,0 +1,1 @@
+# Split Results Directory\n\nThis directory receives output from split operations.\n\nTo split a file:\n`python\n# Split 1MB file into 256KB parts\nchunk_size = 256 * 1024\nwith open("source.bin", "rb") as f:\n    part_num = 1\n    while chunk := f.read(chunk_size):\n        Path(f"split_results/part_{part_num:03d}.bin").write_bytes(chunk)\n        part_num += 1\n`\n

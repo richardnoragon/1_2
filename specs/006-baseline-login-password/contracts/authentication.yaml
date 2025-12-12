@@ -1,17 +1,21 @@
 openapi: 3.0.1
 info:
   title: RFU Identity Service (Internal Contracts)
-  version: 0.1.0-draft
+  version: 0.2.0-draft
   description: >-
     Contract used to guide CLI/GUI integration layers even though
     the implementation is in-process. Treat these endpoints as
     logical service boundaries for task decomposition.
+    Updated for four-role system and lockout prevention (007-upgrade-to-login).
 servers:
   - url: internal://rfu-core
 paths:
   /auth/login:
     post:
       summary: Authenticate a user and mint a session token.
+      description: >-
+        For break-glass accounts, requires `justification` field and triggers
+        enhanced audit logging plus administrator notifications.
       requestBody:
         required: true
         content:
@@ -29,6 +33,9 @@ paths:
                 surface:
                   type: string
                   enum: [gui, cli]
+                justification:
+                  type: string
+                  description: Required for break-glass account login
       responses:
         "200":
           description: Login success
@@ -36,7 +43,8 @@ paths:
             application/json:
               schema:
                 type: object
-                required: [session_id, expires_at, preferences_id]
+                required:
+                  [session_id, expires_at, preferences_id, role, session_type]
                 properties:
                   session_id:
                     type: string
@@ -45,10 +53,21 @@ paths:
                     format: date-time
                   preferences_id:
                     type: string
+                  role:
+                    type: string
+                    enum: [dev, admin, user, readonly]
+                  session_type:
+                    type: string
+                    enum: [normal, break_glass]
         "401":
           description: Invalid credentials or blocked account
+        "403":
+          description: Break-glass login requires justification
     delete:
       summary: Logout the current session (token in Authorization header)
+      description: >-
+        For break-glass sessions, triggers automatic credential rotation
+        and updates BreakGlassUsageLog.
       responses:
         "204": { description: Session invalidated }
         "401": { description: Invalid or expired token }
@@ -67,6 +86,10 @@ paths:
                   type: string
                 approve:
                   type: boolean
+                role:
+                  type: string
+                  enum: [dev, admin, user, readonly]
+                  default: user
       responses:
         "200": { description: User activated }
         "404": { description: Pending user not found }
@@ -84,9 +107,13 @@ paths:
                   type: string
                 action:
                   type: string
-                  enum: [reset_password, unblock]
+                  enum: [reset_password, unblock, change_role]
                 reason:
                   type: string
+                new_role:
+                  type: string
+                  enum: [dev, admin, user, readonly]
+                  description: Required for change_role action
       responses:
         "200":
           description: Action completed
@@ -98,8 +125,179 @@ paths:
                   temporary_password:
                     type: string
                     description: Returned only for reset_password
-        "400": { description: Invalid state transition }
+        "400":
+          {
+            description: Invalid state transition or protected account violation,
+          }
+        "403": { description: Insufficient role privileges }
         "404": { description: User not found }
+  /admin/protected-accounts:
+    get:
+      summary: List always-available and break-glass account status
+      description: Requires dev role for break-glass details, admin role for always-available status.
+      responses:
+        "200":
+          description: Protected account status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  always_available:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        username:
+                          type: string
+                        role:
+                          type: string
+                          enum: [dev, admin]
+                        is_blocked:
+                          type: boolean
+                        auto_unblock_at:
+                          type: string
+                          format: date-time
+                        cooldown_count:
+                          type: integer
+                  break_glass:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        username:
+                          type: string
+                        role:
+                          type: string
+                          enum: [dev, admin]
+                        last_used:
+                          type: string
+                          format: date-time
+                        rotation_status:
+                          type: string
+                          enum: [current, pending_rotation]
+        "403": { description: Requires admin or dev role }
+    post:
+      summary: Bootstrap protected accounts during initial setup
+      description: Creates always-available and break-glass accounts. Requires dev role.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [export_method]
+              properties:
+                export_method:
+                  type: string
+                  enum: [console, secure_note]
+      responses:
+        "201":
+          description: Protected accounts created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  always_available_dev:
+                    type: object
+                    properties:
+                      username:
+                        type: string
+                      credential_export:
+                        type: string
+                        description: Path to secure note or console indicator
+                  always_available_admin:
+                    type: object
+                  break_glass_dev:
+                    type: object
+                  break_glass_admin:
+                    type: object
+        "403": { description: Requires dev role }
+        "409": { description: Protected accounts already exist }
+  /admin/break-glass/{username}/rotate:
+    post:
+      summary: Rotate break-glass account credentials
+      description: Requires dev role. Generates new credentials and exports via specified method.
+      parameters:
+        - name: username
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [export_method, justification]
+              properties:
+                export_method:
+                  type: string
+                  enum: [console, secure_note]
+                justification:
+                  type: string
+      responses:
+        "200":
+          description: Credentials rotated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  credential_export:
+                    type: string
+                  rotation_timestamp:
+                    type: string
+                    format: date-time
+        "403": { description: Requires dev role }
+        "404": { description: Break-glass account not found }
+  /admin/break-glass/usage-log:
+    get:
+      summary: Retrieve break-glass usage history
+      description: Requires dev role. Returns all break-glass sessions with actions performed.
+      parameters:
+        - name: since
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+      responses:
+        "200":
+          description: Break-glass usage log
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    log_id:
+                      type: string
+                    account_username:
+                      type: string
+                    login_timestamp:
+                      type: string
+                      format: date-time
+                    logout_timestamp:
+                      type: string
+                      format: date-time
+                    justification:
+                      type: string
+                    actions_performed:
+                      type: array
+                      items:
+                        type: string
+                    post_usage_rotation_status:
+                      type: string
+                      enum: [pending, completed, failed]
+        "403": { description: Requires dev role }
   /preferences/share:
     post:
       summary: Export preferences bundle when `share_preferences=true`.

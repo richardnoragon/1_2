@@ -1,0 +1,1 @@
+Lowercase version of case-sensitive test file

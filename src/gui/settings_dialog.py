@@ -18,7 +18,7 @@ from PyQt5.QtWidgets import (
 
 # Import with fallback handling
 try:
-    from src.config_manager import ConfigManager
+    from src.config.config_manager import ConfigManager
 except ImportError:
     try:
         from core.config_manager import ConfigManager

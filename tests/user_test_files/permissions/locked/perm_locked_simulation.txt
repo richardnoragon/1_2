@@ -1,0 +1,2 @@
+This file simulates a locked file scenario.
+Used for testing file-in-use handling.

@@ -99,7 +99,7 @@ TOTAL                    2400   2400     0%
 
 ```python
 # FAILING IMPORT CHAIN:
-src/utilities/network/network_connectivity_complex/core/network_base.py:13
+src/tools/network/network_connectivity_complex/core/network_base.py:13
 from core.config_manager import ConfigManager
 # -> ModuleNotFoundError: No module named 'core.config_manager'
 ```

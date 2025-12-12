@@ -22,17 +22,19 @@
 - ✅ Every login outcome (success, failure, block, reset, share) should be auditable with timestamps, actor identity, and originating surface (CLI/UI/service).
 - ✅ Preference personalization is inseparable from identity: block access to user-specific configuration until the session is authenticated.
 - ❌ Do not introduce password recovery flows that email or display secrets; only admin-triggered resets or future MFA tokens are allowed.
-- 👥 Launch roles: `admin` (full account + governance control) and `standard` (day-to-day utility access); no read-only tier in v1.
+- 👥 Launch roles: `dev` (full debugging/diagnostics control), `admin` (full account + governance control), `user` (day-to-day utility access, replaces `standard`), and `readonly` (view-only access); see 007-upgrade-to-login for lockout prevention details.
 - 🔒 Sharing/export tooling must strip identifiers unless `share_preferences` flag is explicitly enabled per user.
+- 🛡️ Always-available and break-glass accounts ensure administrators are never locked out (see 007-upgrade-to-login spec for full requirements).
 
 ## Clarifications
 
 ### Session 2025-11-15
 
-- Q: How many roles must RFU support at launch and what are their capabilities? → A: Two roles only: `admin` (full control) and `standard` (regular users).
+- Q: How many roles must RFU support at launch and what are their capabilities? → A: Four roles: `dev` (full debugging/diagnostics), `admin` (full control), `user` (regular users, replaces `standard`), and `readonly` (view-only access).
 - Q: How are new RFU user accounts created and approved? → A: Users self-register but require admin approval before activation.
 - Q: Should admin-triggered password resets immediately terminate existing sessions for that user? → A: Yes — reset immediately terminates all live sessions for that user.
 - Q: What is the default idle timeout for authenticated sessions? → A: 10 minutes of inactivity.
+- Q: How does the system prevent complete administrator lockout? → A: Two always-available accounts (one dev, one admin) and two break-glass accounts (one dev, one admin) ensure operators are never completely locked out. See 007-upgrade-to-login spec for complete requirements.
 
 ## User Scenarios & Testing _(mandatory)_
 
@@ -66,7 +68,7 @@ An RFU operator launches the hub, authenticates with their username and password
 - **FR-007**: System MUST log every login attempt (success/failure), block, unblock, password reset, and preference-sharing action with timestamps, actor identifiers, origin surface, and outcome, storing records for at least 12 months.
 - **FR-008**: System MUST include a `share_preferences` flag that, when true, allows exporting a sanitized JSON bundle containing UI/settings data plus metadata (`shared_by`, `timestamp`, `purpose`) but never credential material.
 - **FR-009**: System MUST provide self-registration for new users but hold accounts in a pending state until an admin explicitly approves and activates them.
-- **FR-010**: System MUST limit roles to `admin` (manage accounts, reset/unblock, approve sharing) and `standard` (use utilities, manage own preferences), ensuring sensitive actions remain admin-only.
+- **FR-010**: System MUST support four roles: `dev` (manage accounts, debugging/diagnostics, break-glass account management), `admin` (manage accounts, reset/unblock, approve sharing), `user` (use utilities, manage own preferences), and `readonly` (view-only access with no write capabilities), ensuring sensitive actions remain dev/admin-only.
 - **FR-011**: System MUST sanitize and validate usernames/passwords at entry time (length, allowed characters, password complexity) to prevent injection or weak secrets.
 - **FR-012**: System MUST expose CLI hooks parallel to the UI so admins can perform resets/unblocks even when the GUI is unavailable.
 - **FR-013**: System MUST support future MFA/token-based enhancements without reworking the storage model (e.g., ability to add secondary credential fields later).
@@ -80,23 +82,28 @@ An RFU operator launches the hub, authenticates with their username and password
 
 ### Key Entities _(include if feature involves data)_
 
-- **UserAccount**: Represents an individual operator; attributes include username, hashed password, role, lockout counters, `account_status ∈ {pending, active, blocked, disabled}`, registration channel/metadata, last login metadata, linked `preferences_id`, and `share_preferences`.
+- **UserAccount**: Represents an individual operator; attributes include username, hashed password, role (`dev`, `admin`, `user`, `readonly`), lockout counters, `account_status ∈ {pending, active, blocked, disabled}`, registration channel/metadata, last login metadata, linked `preferences_id`, `share_preferences`, `is_always_available` flag, `is_break_glass` flag, and `break_glass_justification` field.
 - **PreferenceProfile**: Stores personalized UI and workflow settings keyed by `preferences_id`, plus metadata for sharing/export control.
 - **AdminActionAudit**: Append-only ledger of sensitive actions (approve user, reset password, unblock, export preferences) with actor, target, timestamps, origin surface, and justification text.
 - **ResetRequest**: Short-lived record that tracks password-reset operations or pending approvals, including initiator, reason, encrypted temporary secret, dispatch channel metadata, `secret_displayed_at`, and expiration.
 - **PendingPreferenceAlert**: Flags corrupted or missing preference payloads for a user, ensuring log visibility and prompting recovery workflows.
-- **SessionToken**: Represents an active authenticated session tied to a preference profile; the database stores only a hashed `session_handle`, while the raw secret stays in memory for logout/timeout enforcement.
+- **SessionToken**: Represents an active authenticated session tied to a preference profile; the database stores only a hashed `session_handle`, while the raw secret stays in memory for logout/timeout enforcement. Break-glass sessions receive a special `session_type='break_glass'` marker.
+- **BreakGlassUsageLog**: Tracks every break-glass session with `session_id`, `account_username`, `login_timestamp`, `logout_timestamp`, `justification`, `actions_performed`, and `post_usage_rotation_status`.
+- **AlwaysAvailableAccountConfig**: Stores metadata about always-available accounts including `last_cooldown_start`, `cooldown_duration_minutes`, and `auto_unblock_enabled`.
+- **AdminNotification**: Queue table for administrator notifications about break-glass usage and security incidents.
 
 ## Security & Identity Considerations _(mandatory when feature touches authentication or permissions)_
 
 - Passwords must be hashed with Argon2id (memory-hard parameters tuned to RFU's desktop constraints) and salted per account; plaintext passwords may never be stored or logged.
-- Lockout policy: automatically block after five consecutive failures, optionally escalating alerts to security operators after three failures within five minutes.
+- Lockout policy: automatically block after five consecutive failures, optionally escalating alerts to security operators after three failures within five minutes. Always-available accounts use a 15-minute cooldown auto-unblock mechanism instead of permanent blocking.
 - Admin-triggered resets must issue temporary secrets out-of-band (e.g., console print or secure note), enforce a mandatory password change on next login, and immediately invalidate all active sessions for the affected user.
+- Break-glass accounts: Two break-glass accounts (one dev, one admin) exist for emergency recovery. Usage triggers enhanced audit logging, immediate password rotation on session end, and administrator notifications. See 007-upgrade-to-login spec for complete requirements.
 - Secure reset workflow: Admin flows (CLI + GUI) must prompt for justification, require explicit confirmation that the recipient was verified, and invoke the approved secret dispatcher to present the temporary credential exactly once (console render or encrypted secure-note file). Dispatcher activity must be captured in `ResetRequest` + `AdminActionAudit`, and secrets may never be logged, cached, or stored beyond the encrypted payload.
 - Onboarding: users initiate self-registration, but no account becomes active until an administrator reviews and approves the request.
 - Self-registration surfaces (hub UI + CLI script) must validate username/password locally, transmit only over secure channels, and immediately show the pending-state status so users know further access requires admin approval.
 - Unblock actions must be auditable, require justification, and should optionally notify the affected user when the account is re-enabled.
-- Roles: only `admin` (accounts, resets, exports) and `standard` (utility usage with own preferences); reporting-only roles are out of scope for this release.
+- Roles: `dev` (accounts, debugging/diagnostics, break-glass management), `admin` (accounts, resets, exports), `user` (utility usage with own preferences), and `readonly` (view-only access); reporting-only roles are now covered by `readonly`.
+- Always-available accounts: Two always-available accounts (one dev, one admin) are protected from deletion, disabling, or permanent blocking. They use auto-unblock after 15-minute cooldown instead of permanent lockout. See 007-upgrade-to-login spec for bootstrap and management requirements.
 - Session handling must invalidate existing sessions when `is_blocked` toggles to true and enforce a 10-minute idle timeout before requiring re-authentication.
 - Preference access is restricted to authenticated sessions whose `preferences_id` matches the requested configuration, preventing cross-user leakage.
 - Audit retention: keep identity-related audit logs for ≥12 months with secure backup and review procedures; define who can access these logs and how breaches are reported within SLA.

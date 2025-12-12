@@ -53,8 +53,8 @@ visualizer.barPlotSalesByMonth(
 
 - `demo_pyvisualizer.py` - Comprehensive demonstration
 - `simple_pyvisualizer_demo.py` - Simple demo with RFU data
-- `src/analytics/rfu_analytics.py` - Advanced analytics system
-- `src/rfu/analytics/pyvisualizer_integration.py` - PyQt5 integration
+- `src/analytics/analytics.py` - Advanced analytics system
+- `src/analytics/pyvisualizer_integration.py` - PyQt5 integration
 
 **Generated Reports:**
 
@@ -80,7 +80,7 @@ pyvisualizer>=1.0.9
 In your RFU tools, add operation logging:
 
 ```python
-from src.rfu.analytics.pyvisualizer_integration import RFUAnalyticsLogger
+from src.analytics.pyvisualizer_integration import RFUAnalyticsLogger
 
 class YourRFUTool:
     def __init__(self):
@@ -107,7 +107,7 @@ class YourRFUTool:
 In your main hub (`src/rfu/main.py`), add analytics menu:
 
 ```python
-from src.rfu.analytics.pyvisualizer_integration import integrate_with_main_hub
+from src.analytics.pyvisualizer_integration import integrate_with_main_hub
 
 class MainWindow:
     def __init__(self):
@@ -122,7 +122,7 @@ class MainWindow:
 The PyQt5 widget is ready to use:
 
 ```python
-from src.rfu.analytics.pyvisualizer_integration import RFUVisualizerWidget
+from src.analytics.pyvisualizer_integration import RFUVisualizerWidget
 
 # Create and show analytics widget
 analytics_widget = RFUVisualizerWidget()
@@ -225,9 +225,8 @@ import seaborn as sns
 ```
 your_project/
 ├── src/
-│   └── rfu/
-│       └── analytics/
-│           └── pyvisualizer_integration.py    # Main integration
+│   └── analytics/
+│       └── pyvisualizer_integration.py        # Main integration
 ├── data/
 │   └── analytics/                             # Analytics data storage
 ├── reports/                                   # Generated visualizations
@@ -244,7 +243,7 @@ your_project/
 
 1. **Basic Demo:** `python demo_pyvisualizer.py`
 2. **Simple Demo:** `python simple_pyvisualizer_demo.py`
-3. **GUI Integration:** `python src/rfu/analytics/pyvisualizer_integration.py`
+3. **GUI Integration:** `python src/analytics/pyvisualizer_integration.py`
 
 ### Expected Outputs
 
@@ -293,8 +292,8 @@ your_project/
 
 ## 📞 Support Resources
 
-- **PyVisualizer GitHub:** https://github.com/vishalkashyap95/PyVisualizer_Task2
+- **PyVisualizer GitHub:** [github.com/vishalkashyap95/PyVisualizer_Task2](https://github.com/vishalkashyap95/PyVisualizer_Task2)
 - **Demo Files:** All created in your project directory
-- **Integration Code:** Ready-to-use in `src/rfu/analytics/`
+- **Integration Code:** Ready-to-use in `src/analytics/`
 
 **Status:** ✅ PyVisualizer successfully installed and integrated with RFU!

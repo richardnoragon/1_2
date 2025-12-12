@@ -24,7 +24,7 @@ addopts =
     --strict-config
     --verbose
     --tb=short
-    --cov=src.utilities.network.network_connectivity_complex.core.performance_analyzer
+    --cov=src.tools.network.network_connectivity_complex.core.performance_analyzer
     --cov-report=html:tests/unit/result_performance_analyzer_coverage_2025-08-29
     --cov-report=json:tests/unit/result_performance_analyzer_coverage_2025-08-29.json
     --cov-report=term-missing
@@ -40,7 +40,7 @@ addopts =
 
 # Coverage settings specific to performance_analyzer
 [coverage:run]
-source = src.utilities.network.network_connectivity_complex.core.performance_analyzer
+source = src.tools.network.network_connectivity_complex.core.performance_analyzer
 omit = 
     */tests/*
     */test_*
@@ -227,7 +227,7 @@ def populated_analyzer(empty_analyzer, sample_measurements_set):
 def mock_datetime():
     """Mock datetime for consistent testing."""
     fixed_time = datetime(2025, 8, 29, 12, 0, 0)
-    with patch('utilities.network.network_connectivity_complex.core.performance_analyzer.datetime') as mock_dt:
+    with patch('src.tools.network.network_connectivity_complex.core.performance_analyzer.datetime') as mock_dt:
         mock_dt.now.return_value = fixed_time
         mock_dt.side_effect = lambda *args, **kw: datetime(*args, **kw)
         yield mock_dt
@@ -332,7 +332,7 @@ def pytest_sessionfinish(session, exitstatus):
 """
 Comprehensive Unit Tests for performance_analyzer.py
 Created: 2025-08-29
-Target: src/utilities/network/network_connectivity_complex/core/performance_analyzer.py
+Target: src/tools/network/network_connectivity_complex/core/performance_analyzer.py
 
 This module provides complete test coverage for all components of the
 performance_analyzer module including PerformanceMetric, PerformanceMeasurement,

@@ -1,5 +1,14 @@
 # Fleeting Notes — Login & Password Baseline (006)
 
+## Phase 3.8 Lockout Prevention Upgrade (2025-11-26)
+
+- Four-role system implemented: `dev`, `admin`, `user` (replaces `standard`), `readonly`. Role hierarchy: `dev > admin > user > readonly`.
+- Always-available accounts: Two protected accounts (one dev, one admin) that cannot be deleted, disabled, or permanently blocked. Use 15-minute cooldown auto-unblock instead of permanent lockout.
+- Break-glass accounts: Two emergency accounts (one dev, one admin) with enhanced audit logging, mandatory justification at login, and automatic credential rotation on logout.
+- Admin notifications: Break-glass usage triggers immediate notifications to all administrators with timestamp, IP address, and action summary.
+- CLI recovery path: All lockout prevention features accessible via CLI for headless recovery scenarios.
+- See `specs/007-upgrade-to-login/spec.md` for complete requirements and `tasks.md` Phase 3.8 for implementation tasks.
+
 ## Phase 3.5 Domain Services Snapshot
 
 - Argon2id helper `src/core/auth/security/password_hasher.py` now backs AuthService, RegistrationService, and admin workflows; the legacy shim simply proxies to the new implementation. Lockout policy wiring in `AuthService` emits warnings after 3+ failures and resets state on success, satisfying FR-002 alerts.
