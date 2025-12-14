@@ -9,7 +9,7 @@ Purpose: Track the status of merging all project branches into `master` in this 
 
 ## Checklist
 
-- [ ] 1. Verify clean working tree
+- [x] 1. Verify clean working tree ✅ (verified 2025-12-14 — working tree is clean)
 - [ ] 2. Fetch and update local refs
 - [ ] 3. Checkout and update `master`
 - [ ] 4. Merge `001-refactor-the-multi`
