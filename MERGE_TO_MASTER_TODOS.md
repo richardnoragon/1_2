@@ -10,7 +10,7 @@ Purpose: Track the status of merging all project branches into `master` in this 
 ## Checklist
 
 - [x] 1. Verify clean working tree ✅ (verified 2025-12-14 — working tree is clean)
-- [ ] 2. Fetch and update local refs
+- [x] 2. Fetch and update local refs ✅ (fetched 2025-12-14 — all 4 branches verified: 001, 003, 006, 007 + master)
 - [ ] 3. Checkout and update `master`
 - [ ] 4. Merge `001-refactor-the-multi`
 - [ ] 5. Merge `003-use-docs-centralized`
