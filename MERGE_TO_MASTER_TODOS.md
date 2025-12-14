@@ -24,3 +24,7 @@ Purpose: Track the status of merging all project branches into `master` in this 
 
 - If a merge conflict occurs, resolve it, then run `git add -A` and complete the merge commit.
 - After the final merge, verify that `master` reflects all changes from `007-upgrade-to-login` (especially anything under `specs/007-upgrade-to-login`).
+
+## Fleeting Notes
+
+- **2025-12-14**: Git warning — "There are too many unreachable loose objects; run 'git prune' to remove them." Consider running `git gc` or `git prune` after the merge process is complete (non-blocking).
