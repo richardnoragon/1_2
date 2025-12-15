@@ -1,2 +1,0 @@
-This file should have system attribute set.
-System files are typically protected by Windows.

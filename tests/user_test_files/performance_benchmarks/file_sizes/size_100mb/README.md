@@ -1,1 +1,0 @@
-# 100MB Benchmark\n\nFor 100MB benchmarks, use:\n- split_join_test_data/split_source/split_medium_100mb.bin\n- 	ext_files/sizes/perf_100mb_extreme.txt\n

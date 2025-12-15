@@ -1,2 +1,0 @@
-This file should have read-only attribute set.
-Attempting to modify should fail.

@@ -1,2 +1,0 @@
-This file should have hidden attribute set.
-It should not appear in normal directory listings.
