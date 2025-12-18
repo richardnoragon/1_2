@@ -40,7 +40,7 @@ src/
 ├── core/                   # Foundation services
 │   ├── constants.py        # Application constants
 │   └── error_handler.py    # Global exception handling
-├── core_rfu/              # Advanced RFU core systems
+├── core/                  # Advanced RFU core systems
 │   └── theme_security/     # Comprehensive security framework
 ├── tools/                  # Organized tool categories (current structure)
 │   ├── metadata/          # Image and office metadata tools
@@ -49,6 +49,7 @@ src/
 │   └── system/            # System diagnostics and maintenance
 ├── gui/                   # Reusable GUI components
 ├── database/              # SQLite integration
+├── file_validator/        # Centralized file type validation
 └── file_explorer/         # Multi-pane explorer components
 
 # Root level files

@@ -29,13 +29,14 @@
 │ ├── System Tools (Diagnostics and maintenance)             │
 │ ├── Metadata Tools (Image and office metadata editing)     │
 │ ├── Security Tools (Theme security framework)              │
+│ ├── File Validator (Centralized file type validation)      │
 │ ├── File Operations (Template-based, need implementation)  │
 │ └── Analysis Tools (Basic implementations)                 │
 ├─────────────────────────────────────────────────────────────┤
 │ Core Infrastructure Layer                                   │
 │ ├── Configuration Management (src/config_manager.py)       │
 │ ├── Database Manager (src/database/)                       │
-│ ├── Security Manager (src/core_rfu/theme_security/)        │
+│ ├── Security Manager (src/core/theme_security/)            │
 │ ├── Logging Manager (src/log_manager.py)                   │
 │ ├── Error Handler (src/core/error_handler.py)              │
 │ └── Archive System (271+ files archived with metadata)     │
@@ -272,6 +273,14 @@ CREATE TABLE file_history (
 - **Office Metadata**: Document property management
 - **Metadata Logic**: Core metadata processing engines
 
+**File Validator** - [`src/file_validator/`](src/file_validator/) - Centralized File Type Validation:
+
+- **File Type Detection**: Content-based file type identification
+- **Format Validation**: Verification against declared file extensions
+- **Security Assessment**: High-risk file type identification and protection
+- **Policy Enforcement**: Configurable validation policies (reject, warn, auto)
+- **Audit & Telemetry**: Comprehensive detection and mismatch logging
+
 #### Standardized Tool Pattern
 
 **Current Implementation Pattern:**
@@ -304,17 +313,17 @@ def launch_tool(self, tool_name: str, *args, **kwargs):
 
 #### Security Framework Implementation
 
-**File:** [`src/core_rfu/theme_security/`](src/core_rfu/theme_security/) - Comprehensive security implementation
+**File:** [`src/core/theme_security/`](src/core/theme_security/) - Comprehensive security implementation
 
 **Components:**
 
-- **Theme Access Control**: [`theme_access_control.py`](src/core_rfu/theme_security/theme_access_control.py)
-- **Theme Backup**: [`theme_backup.py`](src/core_rfu/theme_security/theme_backup.py)
-- **Theme Encryption**: [`theme_encryption.py`](src/core_rfu/theme_security/theme_encryption.py)
-- **Theme Recovery**: [`theme_recovery.py`](src/core_rfu/theme_security/theme_recovery.py)
-- **Security GUI**: [`theme_security_gui.py`](src/core_rfu/theme_security/theme_security_gui.py)
-- **Security Manager**: [`theme_security_manager.py`](src/core_rfu/theme_security/theme_security_manager.py)
-- **Theme Validator**: [`theme_validator.py`](src/core_rfu/theme_security/theme_validator.py)
+- **Theme Access Control**: [`theme_access_control.py`](src/core/theme_security/theme_access_control.py)
+- **Theme Backup**: [`theme_backup.py`](src/core/theme_security/theme_backup.py)
+- **Theme Encryption**: [`theme_encryption.py`](src/core/theme_security/theme_encryption.py)
+- **Theme Recovery**: [`theme_recovery.py`](src/core/theme_security/theme_recovery.py)
+- **Security GUI**: [`theme_security_gui.py`](src/core/theme_security/theme_security_gui.py)
+- **Security Manager**: [`theme_security_manager.py`](src/core/theme_security/theme_security_manager.py)
+- **Theme Validator**: [`theme_validator.py`](src/core/theme_security/theme_validator.py)
 
 **Architecture Features:**
 
