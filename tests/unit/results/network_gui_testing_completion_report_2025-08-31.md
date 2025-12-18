@@ -2,7 +2,7 @@
 
 **Generated:** August 31, 2025  
 **Test Suite:** test_network_gui_corrected_2025-08-31.py  
-**Target Module:** src/utilities/network/gui.py  
+**Target Module:** src/tools/network/gui.py  
 **Status:** ✅ **COMPLETE**  
 
 ## Executive Summary

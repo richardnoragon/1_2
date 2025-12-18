@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Dict, Iterable, Optional, Tuple
 
-from src.config_manager import get_config_manager
+from src.config.config_manager import get_config_manager
 from src.file_validator.utils import canonicalise_allowed_types
 
 _ALLOWED_MODES = {"reject", "warn", "auto"}

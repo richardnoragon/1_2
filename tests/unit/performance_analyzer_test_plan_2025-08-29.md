@@ -1,7 +1,7 @@
 # Comprehensive Test Plan for performance_analyzer.py
 
 **Created:** 2025-08-29  
-**Target Module:** `src/utilities/network/network_connectivity_complex/core/performance_analyzer.py`  
+**Target Module:** `src/tools/network/network_connectivity_complex/core/performance_analyzer.py`  
 **Testing Framework:** pytest  
 **Coverage Goal:** 100% line and branch coverage  
 

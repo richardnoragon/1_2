@@ -86,7 +86,7 @@ DEFAULT_CHART_POINTS = 100
 
 ### 2. LAN File Transfer Methods
 
-**File:** `src/utilities/network/network_connectivity_complex/tools/lan_file_transfer.py`  
+**File:** `src/tools/network/network_connectivity_complex/tools/lan_file_transfer.py`  
 **Status:** ✅ **ENHANCED - IMPLEMENTED TODOS**
 
 #### Implemented Methods:
@@ -180,7 +180,7 @@ class pyqtSignal:
 
 ### 4. Network Config Validation
 
-**File:** `src/utilities/network/network_connectivity_complex/config/config_validator.py`  
+**File:** `src/tools/network/network_connectivity_complex/config/config_validator.py`  
 **Status:** ✅ **FIXED - IMPLEMENTED BASE METHOD**
 
 #### Fixed Method:
@@ -244,7 +244,7 @@ metadata_fields = {
 
 ### 6. Network Connection Manager Enhancement
 
-**File:** `src/utilities/network/network_connectivity_complex/core/connection_manager.py`  
+**File:** `src/tools/network/network_connectivity_complex/core/connection_manager.py`  
 **Status:** ✅ **IMPLEMENTED - DNS DETECTION**
 
 #### Implemented Methods:

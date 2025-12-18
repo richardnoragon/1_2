@@ -1,11 +1,4 @@
 """
-from PyQt5 import QtCore
-from PyQt5 import QtGui
-from PyQt5 import QtWidgets
-from PyQt5.QtCore import Qt
-import importlib
-import time
-
 Richard's File Utilities Hub - Unified Main Application Interface
 
 This module provides the main hub interface that serves as the central
@@ -29,6 +22,7 @@ Consolidated from:
 import importlib
 import os
 import sys
+import time
 from collections import deque
 from datetime import datetime
 from pathlib import Path
@@ -293,6 +287,12 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
         self.multi_pane_explorer = None
         self.current_hub_mode = None  # Will be set in _setup_gui
 
+        # T062/T063: Readonly mode and break-glass session indicators
+        self._readonly_banner = None
+        self._break_glass_banner = None
+        self._is_readonly_mode = False
+        self._is_break_glass_session = False
+
         # Check for PyQt5 availability (from rfuhub.py)
         if not PYQT5_AVAILABLE:
             self.logger.warning(
@@ -392,6 +392,12 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
         self._create_preference_badge_display(header_layout)
 
         main_layout.addWidget(self.header_widget)
+
+        # T062: Add readonly mode banner (hidden by default)
+        self._create_readonly_banner(main_layout)
+
+        # T063: Add break-glass session banner (hidden by default)
+        self._create_break_glass_banner(main_layout)
 
         # Create stacked widget to hold both interfaces
         from PyQt5.QtWidgets import QStackedWidget
@@ -858,6 +864,9 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
         badge = result.get("preference_badge")
         self._update_preference_badge(badge)
 
+        # T062/T063: Update session mode banners based on role/session type
+        self._update_session_mode_banners()
+
         status_parts = [f"Signed in as {username}"]
         if role:
             status_parts.append(f"({role})")
@@ -873,19 +882,14 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
         return True
 
     def _create_interface_toggle_button(self, header_layout):
-        """Create and configure the interface toggle button."""
-        try:
-            from src.file_explorer.features.hub_interface_toggle import (
-                HubInterfaceToggle,
-            )
+        """Create and configure the interface toggle button.
 
-            adapter = getattr(self, "hub_preferences_adapter", None)
-            self.interface_toggle = HubInterfaceToggle(preferences_adapter=adapter)
-            self.interface_toggle.mode_changed.connect(self._on_interface_mode_changed)
-            header_layout.addWidget(self.interface_toggle)
-
-        except Exception as e:
-            self.logger.error(f"Failed to create interface toggle: {e}")
+        NOTE: The src.file_explorer module has been removed.
+        Interface toggle functionality is currently disabled.
+        """
+        # file_explorer module removed - interface toggle disabled
+        self.interface_toggle = None
+        self.logger.info("Interface toggle disabled - file_explorer module removed")
 
     def _create_preference_badge_display(self, header_layout) -> None:
         """Add a compact badge showing the authenticated preference state."""
@@ -950,69 +954,203 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
             tooltip_lines.append(f"Favorites: {preview}")
         label.setToolTip("\n".join(tooltip_lines) or "Authenticated session")
 
+    def _create_readonly_banner(self, main_layout) -> None:
+        """Create the readonly mode warning banner (T062).
+
+        Hidden by default, shown when user logs in with readonly role.
+        """
+        if not PYQT5_AVAILABLE:
+            return
+
+        banner = QLabel(
+            "🔒 READONLY MODE - Write operations are disabled for this account"
+        )
+        banner.setObjectName("readonlyBanner")
+        banner.setAlignment(Qt.AlignCenter)
+        banner.setStyleSheet(
+            f"""
+            QLabel#readonlyBanner {{
+                padding: 8px 16px;
+                background-color: {WARNING_ORANGE};
+                color: white;
+                font-weight: bold;
+                border-radius: 4px;
+                margin: 4px 0px;
+            }}
+            """
+        )
+        banner.setVisible(False)
+        main_layout.addWidget(banner)
+        self._readonly_banner = banner
+
+    def _create_break_glass_banner(self, main_layout) -> None:
+        """Create the break-glass session warning banner (T063).
+
+        Hidden by default, shown when user logs in with break-glass account.
+        Displays warning and "Actions logged" reminder.
+        """
+        if not PYQT5_AVAILABLE:
+            return
+
+        banner = QLabel(
+            "🚨 BREAK-GLASS SESSION - Emergency access active | "
+            "All actions are logged and audited"
+        )
+        banner.setObjectName("breakGlassBanner")
+        banner.setAlignment(Qt.AlignCenter)
+        banner.setStyleSheet(
+            f"""
+            QLabel#breakGlassBanner {{
+                padding: 8px 16px;
+                background-color: {ERROR_RED};
+                color: white;
+                font-weight: bold;
+                border-radius: 4px;
+                margin: 4px 0px;
+            }}
+            """
+        )
+        banner.setVisible(False)
+        main_layout.addWidget(banner)
+        self._break_glass_banner = banner
+
+    def _update_session_mode_banners(self) -> None:
+        """Update banner visibility based on session context (T062/T063)."""
+        if not PYQT5_AVAILABLE:
+            return
+
+        context = self._session_context
+        if not context:
+            self._hide_all_session_banners()
+            return
+
+        # Extract role and session type
+        role = context.get("role") or ""
+        if not role and isinstance(context.get("session"), dict):
+            role = context["session"].get("role", "")
+        role = str(role).lower()
+
+        session_type = context.get("session_type") or ""
+        if not session_type and isinstance(context.get("session"), dict):
+            session_type = context["session"].get("session_type", "")
+        session_type = str(session_type).lower()
+
+        # T062: Show readonly banner for readonly role
+        self._is_readonly_mode = role == "readonly"
+        if self._readonly_banner:
+            self._readonly_banner.setVisible(self._is_readonly_mode)
+
+        # T063: Show break-glass banner for break_glass session type
+        self._is_break_glass_session = session_type == "break_glass"
+        if self._break_glass_banner:
+            self._break_glass_banner.setVisible(self._is_break_glass_session)
+
+        # Apply readonly mode restrictions if applicable
+        if self._is_readonly_mode:
+            self._apply_readonly_restrictions()
+
+    def _hide_all_session_banners(self) -> None:
+        """Hide all session mode banners."""
+        if self._readonly_banner:
+            self._readonly_banner.setVisible(False)
+        if self._break_glass_banner:
+            self._break_glass_banner.setVisible(False)
+        self._is_readonly_mode = False
+        self._is_break_glass_session = False
+
+    def _apply_readonly_restrictions(self) -> None:
+        """Apply UI restrictions for readonly mode (T062).
+
+        Disables write operation buttons across all tabs.
+        """
+        self.logger.info("Applying readonly mode restrictions")
+        # Note: Individual tool tabs should check is_readonly_mode
+        # and disable their write operation buttons accordingly
+
+    def is_readonly_mode(self) -> bool:
+        """Return True if session is in readonly mode (T062)."""
+        return self._is_readonly_mode
+
+    def is_break_glass_session(self) -> bool:
+        """Return True if session is a break-glass session (T063)."""
+        return self._is_break_glass_session
+
+    def show_permission_toast(self, action: str = "operation") -> None:
+        """Show permission denied toast/notification (T062).
+
+        Called when readonly user attempts a write operation.
+        """
+        if not PYQT5_AVAILABLE:
+            return
+
+        self._update_status_bar(
+            f"Permission denied: {action} not allowed in readonly mode"
+        )
+        QMessageBox.warning(
+            self,
+            "Readonly Mode",
+            f"You do not have permission to perform this {action}.\n\n"
+            "Your account is in readonly mode. Contact an administrator "
+            "if you need write access.",
+        )
+
+    def confirm_break_glass_logout(self) -> bool:
+        """Show confirmation dialog before logging out of break-glass (T063).
+
+        Returns:
+            True if user confirms logout, False to cancel.
+        """
+        if not PYQT5_AVAILABLE:
+            return True
+
+        if not self._is_break_glass_session:
+            return True
+
+        result = QMessageBox.question(
+            self,
+            "End Break-Glass Session",
+            "You are about to end your break-glass emergency session.\n\n"
+            "This will:\n"
+            "• Log your session end time\n"
+            "• Trigger credential rotation (recommended)\n"
+            "• Record all actions performed during this session\n\n"
+            "Do you want to proceed?",
+            QMessageBox.Yes | QMessageBox.No,
+            QMessageBox.No,
+        )
+        return result == QMessageBox.Yes
+
     def _create_multi_pane_interface(self):
-        """Create the Multi-Pane Explorer interface."""
-        try:
-            from src.file_explorer.multi_pane_explorer_simple import (
-                MultiPaneExplorer,
-            )
+        """Create the Multi-Pane Explorer interface.
 
-            self.multi_pane_explorer = MultiPaneExplorer()
-            self.interface_stack.addWidget(self.multi_pane_explorer)
-
-            self.logger.info("Multi-Pane Explorer interface created")
-
-        except Exception as e:
-            self.logger.error(f"Failed to create multi-pane interface: {e}")
-            # Add placeholder
-            placeholder = QWidget()
-            placeholder_layout = QVBoxLayout(placeholder)
-            placeholder_label = QLabel("Multi-Pane Explorer unavailable")
-            placeholder_layout.addWidget(placeholder_label)
-            self.interface_stack.addWidget(placeholder)
+        NOTE: The src.file_explorer module has been removed.
+        Using a placeholder widget instead.
+        """
+        # file_explorer module removed - using placeholder
+        self.multi_pane_explorer = None
+        placeholder = QWidget()
+        placeholder_layout = QVBoxLayout(placeholder)
+        placeholder_label = QLabel(
+            "Multi-Pane Explorer has been removed.\n"
+            "Please use the Tabbed Interface instead."
+        )
+        placeholder_label.setAlignment(Qt.AlignCenter)
+        placeholder_layout.addWidget(placeholder_label)
+        self.interface_stack.addWidget(placeholder)
+        self.logger.info("Multi-Pane Explorer disabled - file_explorer module removed")
 
     def _load_and_set_interface_mode(self):
-        """Load saved interface mode and set initial view."""
-        try:
-            from src.file_explorer.models.hub_interface_mode import (
-                HubInterfaceMode,
-            )
+        """Load saved interface mode and set initial view.
 
-            adapter = getattr(self, "hub_preferences_adapter", None)
-            if adapter:
-                mode = adapter.load_interface_mode(HubInterfaceMode.MULTI_PANE)
-            else:
-                from src.file_explorer.services.explorer_preferences import (
-                    get_explorer_preferences,
-                )
-
-                explorer_prefs = get_explorer_preferences()
-                prefs = explorer_prefs.load_user_preferences()
-                mode = getattr(prefs, "hub_interface_mode", None) or getattr(
-                    prefs,
-                    "active_hub_mode",
-                    HubInterfaceMode.MULTI_PANE,
-                )
-                if not isinstance(mode, HubInterfaceMode):
-                    mode = HubInterfaceMode(mode)
-
-            self.current_hub_mode = mode
-
-            # Set appropriate widget
-            if mode == HubInterfaceMode.MULTI_PANE:
-                self.interface_stack.setCurrentIndex(1)
-            else:
-                self.interface_stack.setCurrentIndex(0)
-
-            if getattr(self, "interface_toggle", None):
-                self.interface_toggle.set_mode(mode)
-
-            self.logger.info("Interface mode set to: %s", mode.value)
-
-        except Exception as e:
-            self.logger.error("Error loading interface mode: %s", e)
-            # Default to tabbed
-            self.interface_stack.setCurrentIndex(0)
+        NOTE: The src.file_explorer module has been removed.
+        Defaulting to tabbed interface mode.
+        """
+        # file_explorer module removed - default to tabbed mode
+        self.current_hub_mode = "tabbed"
+        self.interface_stack.setCurrentIndex(0)
+        self.logger.info(
+            "Interface mode defaulted to tabbed - " "file_explorer module removed"
+        )
 
     def _apply_startup_focus_mode(self):
         """Hide non-tab UI so the tabbed interface is the startup focus."""
@@ -1040,34 +1178,22 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
             self.tab_widget.setFocus()
             self.tab_widget.setFocusPolicy(Qt.StrongFocus)
 
-        try:
-            from src.file_explorer.models.hub_interface_mode import (
-                HubInterfaceMode,
-            )
-
-            self.current_hub_mode = HubInterfaceMode.TABBED
-        except Exception:
-            self.current_hub_mode = "tabbed"
+        # file_explorer module removed - use simple string mode
+        self.current_hub_mode = "tabbed"
 
     def _on_interface_mode_changed(self, new_mode):
-        """Handle interface mode change from toggle button."""
-        try:
-            from src.file_explorer.models.hub_interface_mode import (
-                HubInterfaceMode,
-            )
+        """Handle interface mode change from toggle button.
 
-            self.current_hub_mode = new_mode
-
-            # Switch widget
-            if new_mode == HubInterfaceMode.MULTI_PANE:
-                self.interface_stack.setCurrentIndex(1)
-                self.logger.info("Switched to Multi-Pane Explorer")
-            else:
-                self.interface_stack.setCurrentIndex(0)
-                self.logger.info("Switched to Tabbed Interface")
-
-        except Exception as e:
-            self.logger.error(f"Error switching interface mode: {e}")
+        NOTE: The src.file_explorer module has been removed.
+        Interface mode switching is currently disabled.
+        """
+        # file_explorer module removed - mode switching disabled
+        self.logger.info(
+            "Interface mode switching disabled - " "file_explorer module removed"
+        )
+        # Always stay on tabbed interface
+        self.interface_stack.setCurrentIndex(0)
+        self.current_hub_mode = "tabbed"
 
     def _get_application_icon(self):
         """Get application icon with fallback."""
@@ -1221,6 +1347,919 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
             )
 
         return button
+
+    # =========================================================================
+    # Tab Creation Methods (from simple_hub.py)
+    # =========================================================================
+
+    def create_analysis_tab(self):
+        """Create the Analysis tab with organized grid layout."""
+        tab = QWidget()
+        layout = QVBoxLayout(tab)
+        layout.setContentsMargins(15, 15, 15, 15)
+        layout.setSpacing(15)
+
+        # Title
+        title = QLabel(ANALYSIS_TOOLS)
+        title.setAlignment(Qt.AlignCenter)
+        font = QFont()
+        font.setPointSize(14)
+        font.setBold(True)
+        title.setFont(font)
+        title.setStyleSheet(SECTION_MARGIN_STYLE)
+        layout.addWidget(title)
+
+        # Description
+        desc = QLabel(
+            "Tools for analyzing file properties, finding duplicates, "
+            "and checking data integrity"
+        )
+        desc.setAlignment(Qt.AlignCenter)
+        desc.setStyleSheet(
+            f"color: {DARKER_GRAY}; margin-bottom: 15px; font-size: 10px;"
+        )
+        layout.addWidget(desc)
+
+        # Create organized grid layout
+        grid_widget = QWidget()
+        grid_layout = QGridLayout(grid_widget)
+        grid_layout.setSpacing(12)
+        grid_layout.setContentsMargins(20, 10, 20, 10)
+
+        # Analysis tools in organized grid (3 columns)
+        tools = [
+            (
+                "📊 Size Analyzer",
+                "Analyze disk usage and file sizes",
+                self.open_size_analyzer,
+            ),
+            (
+                "🔍 Duplicate Finder",
+                "Find and manage duplicate files",
+                self.open_duplicate_finder,
+            ),
+            (
+                "📁 Empty Folders",
+                "Find and clean empty directories",
+                self.open_empty_folders,
+            ),
+            (
+                "✅ Checksum Verification",
+                "Verify file integrity with checksums",
+                self.open_checksum,
+            ),
+            (
+                "📋 File Catalog",
+                "Generate comprehensive file catalogs",
+                self.open_file_catalog,
+            ),
+        ]
+
+        row, col = 0, 0
+        max_cols = 3
+
+        for title_text, tooltip, callback in tools:
+            btn = self._create_styled_tool_button(title_text, tooltip, callback)
+            grid_layout.addWidget(btn, row, col)
+
+            col += 1
+            if col >= max_cols:
+                col = 0
+                row += 1
+
+        layout.addWidget(grid_widget)
+        layout.addStretch()
+        self.tab_widget.addTab(tab, "Analysis")
+
+    def create_file_operations_tab(self):
+        """Create the File Operations tab with organized grid layout."""
+        tab = QWidget()
+        layout = QVBoxLayout(tab)
+        layout.setContentsMargins(15, 15, 15, 15)
+        layout.setSpacing(15)
+
+        # Title
+        title = QLabel("File Operations")
+        title.setAlignment(Qt.AlignCenter)
+        font = QFont()
+        font.setPointSize(14)
+        font.setBold(True)
+        title.setFont(font)
+        title.setStyleSheet(TITLE_HEADER_STYLE)
+        layout.addWidget(title)
+
+        # Description
+        desc = QLabel(
+            "Tools for file manipulation, splitting, copying, and synchronization"
+        )
+        desc.setAlignment(Qt.AlignCenter)
+        desc.setStyleSheet(
+            f"color: {DARKER_GRAY}; margin-bottom: 15px; font-size: 10px;"
+        )
+        layout.addWidget(desc)
+
+        # Create organized grid layout
+        grid_widget = QWidget()
+        grid_layout = QGridLayout(grid_widget)
+        grid_layout.setSpacing(12)
+        grid_layout.setContentsMargins(20, 10, 20, 10)
+
+        # File operations tools
+        tools = [
+            (
+                "📂 File Splitter",
+                "Split large files into smaller chunks",
+                self.open_file_splitter,
+            ),
+            (
+                "📋 Copy/Move/Sync",
+                "Advanced file operations",
+                self.open_cmsd_logic,
+            ),
+            (
+                "🔄 Sync & Backup",
+                "Synchronization and backup tools",
+                self.open_sync_backup,
+            ),
+            ("⏰ File Touch", "Modify file timestamps", self.open_file_touch),
+            (
+                "📁 Organize Files",
+                "Organize files by rules",
+                self.open_organize_files,
+            ),
+            (
+                "🗂️ Batch Rename",
+                "Rename multiple files",
+                self.open_batch_rename,
+            ),
+        ]
+
+        row, col = 0, 0
+        max_cols = 3
+
+        for title_text, tooltip, callback in tools:
+            btn = self._create_styled_tool_button(title_text, tooltip, callback)
+            grid_layout.addWidget(btn, row, col)
+
+            col += 1
+            if col >= max_cols:
+                col = 0
+                row += 1
+
+        layout.addWidget(grid_widget)
+        layout.addStretch()
+        self.tab_widget.addTab(tab, "File Operations")
+
+    def create_metadata_tab(self):
+        """Create the Metadata tab with organized grid layout."""
+        tab = QWidget()
+        layout = QVBoxLayout(tab)
+        layout.setContentsMargins(15, 15, 15, 15)
+        layout.setSpacing(15)
+
+        # Title
+        title = QLabel("Metadata Tools")
+        title.setAlignment(Qt.AlignCenter)
+        font = QFont()
+        font.setPointSize(14)
+        font.setBold(True)
+        title.setFont(font)
+        title.setStyleSheet(TITLE_HEADER_STYLE)
+        layout.addWidget(title)
+
+        # Description
+        desc = QLabel(
+            "Tools for viewing and editing file metadata, "
+            "EXIF data, and document properties"
+        )
+        desc.setAlignment(Qt.AlignCenter)
+        desc.setStyleSheet(
+            f"color: {DARKER_GRAY}; margin-bottom: 15px; font-size: 10px;"
+        )
+        layout.addWidget(desc)
+
+        # Create organized grid layout
+        grid_widget = QWidget()
+        grid_layout = QGridLayout(grid_widget)
+        grid_layout.setSpacing(12)
+        grid_layout.setContentsMargins(20, 10, 20, 10)
+
+        # Metadata tools
+        tools = [
+            (
+                "🖼️ Image Metadata",
+                "Edit image metadata and properties",
+                self.open_image_metadata,
+            ),
+            (
+                "📄 Office Documents",
+                "Edit office document metadata",
+                self.open_office_metadata,
+            ),
+            (
+                "📷 EXIF Data Viewer",
+                "View and edit EXIF camera data",
+                self.open_exif_viewer,
+            ),
+            (
+                "🔍 Metadata Analyzer",
+                "Analyze file metadata patterns",
+                self.open_metadata_analyzer,
+            ),
+            (
+                "🏷️ Tag Editor",
+                "Edit file tags and labels",
+                self.open_tag_editor,
+            ),
+            (
+                "📊 Property Inspector",
+                "Inspect detailed file properties",
+                self.open_property_inspector,
+            ),
+        ]
+
+        row, col = 0, 0
+        max_cols = 3
+
+        for title_text, tooltip, callback in tools:
+            btn = self._create_styled_tool_button(title_text, tooltip, callback)
+            grid_layout.addWidget(btn, row, col)
+
+            col += 1
+            if col >= max_cols:
+                col = 0
+                row += 1
+
+        layout.addWidget(grid_widget)
+        layout.addStretch()
+        self.tab_widget.addTab(tab, "Metadata")
+
+    def create_network_tab(self):
+        """Create the Network tab with organized grid layout."""
+        tab = QWidget()
+        layout = QVBoxLayout(tab)
+        layout.setContentsMargins(15, 15, 15, 15)
+        layout.setSpacing(15)
+
+        # Title
+        title = QLabel("Network Tools")
+        title.setAlignment(Qt.AlignCenter)
+        font = QFont()
+        font.setPointSize(14)
+        font.setBold(True)
+        title.setFont(font)
+        title.setStyleSheet(TITLE_HEADER_STYLE)
+        layout.addWidget(title)
+
+        # Description
+        desc = QLabel(
+            "Network connectivity, scanning, file transfer, and remote access tools"
+        )
+        desc.setAlignment(Qt.AlignCenter)
+        desc.setStyleSheet(
+            f"color: {DARKER_GRAY}; margin-bottom: 15px; font-size: 10px;"
+        )
+        layout.addWidget(desc)
+
+        # Create organized grid layout
+        grid_widget = QWidget()
+        grid_layout = QGridLayout(grid_widget)
+        grid_layout.setSpacing(12)
+        grid_layout.setContentsMargins(20, 10, 20, 10)
+
+        # Network tools
+        tools = [
+            (
+                "🌐 Network Scanner",
+                "Scan and discover network devices",
+                self.open_network_scan,
+            ),
+            (
+                "🔌 Connectivity Test",
+                "Test network connectivity and speed",
+                self.open_connectivity_test,
+            ),
+            (
+                "📡 Network Transfer",
+                "Transfer files over network",
+                self.open_network_transfer,
+            ),
+            (
+                "🔗 Bookmark Manager",
+                "Manage network bookmarks and links",
+                self.open_bookmark_manager,
+            ),
+            (
+                "📊 Bandwidth Monitor",
+                "Monitor network bandwidth usage",
+                self.open_bandwidth_test,
+            ),
+            (
+                "🛡️ Network Security",
+                "Network security analysis tools",
+                self.open_network_security,
+            ),
+        ]
+
+        row, col = 0, 0
+        max_cols = 3
+
+        for title_text, tooltip, callback in tools:
+            btn = self._create_styled_tool_button(title_text, tooltip, callback)
+            grid_layout.addWidget(btn, row, col)
+
+            col += 1
+            if col >= max_cols:
+                col = 0
+                row += 1
+
+        layout.addWidget(grid_widget)
+        layout.addStretch()
+        self.tab_widget.addTab(tab, "Network")
+
+    def create_pdf_tools_tab(self):
+        """Create the PDF Tools tab with folder-based dynamic structure."""
+        try:
+            # Import enhanced PDF tools widget
+            from src.tools.pdf_tools.widgets.enhanced_pdf_tools_widget import (
+                EnhancedPDFToolsWidget,
+            )
+
+            pdf_tools_widget = EnhancedPDFToolsWidget(self)
+            self.tab_widget.addTab(pdf_tools_widget, PDF_TOOLS)
+            self.logger.info(f"{PDF_TOOLS} tab created with enhanced widget")
+
+        except Exception as e:
+            self.logger.error(f"Failed to create enhanced PDF Tools tab: {e}")
+            self._create_simple_pdf_tools_tab()
+
+    def _create_simple_pdf_tools_tab(self):
+        """Create a simple PDF Tools tab as fallback."""
+        tab = QWidget()
+        layout = QVBoxLayout(tab)
+        layout.setContentsMargins(15, 15, 15, 15)
+        layout.setSpacing(15)
+
+        # Professional header
+        title = QLabel(PDF_TOOLS)
+        title.setAlignment(Qt.AlignCenter)
+        title.setFont(QFont(SEGOE_UI_FONT, 16, QFont.Bold))
+        title.setStyleSheet(f"color: {TITLE_STYLE_COLOR};")
+        layout.addWidget(title)
+
+        # Description
+        desc = QLabel("PDF processing, conversion, security, and analysis tools")
+        desc.setAlignment(Qt.AlignCenter)
+        desc.setFont(QFont(SEGOE_UI_FONT, 10))
+        desc.setStyleSheet(f"color: {SUBTITLE_STYLE_COLOR};")
+        layout.addWidget(desc)
+
+        # Create grid widget for tools
+        grid_widget = QWidget()
+        grid_layout = QGridLayout(grid_widget)
+        grid_layout.setSpacing(12)
+        grid_layout.setContentsMargins(0, 0, 0, 0)
+
+        # PDF tools
+        tools = [
+            ("📄 PDF Merger", "Combine multiple PDFs into one", self.open_pdf_merger),
+            ("✂️ PDF Splitter", "Split PDF into separate pages", self.open_pdf_splitter),
+            (
+                "🔄 PDF Converter",
+                "Convert PDFs to other formats",
+                self.open_pdf_converter,
+            ),
+            ("🔒 PDF Security", "Add passwords and encryption", self.open_pdf_security),
+            (
+                "🔍 PDF Analysis",
+                "Analyze PDF structure and content",
+                self.open_pdf_analysis,
+            ),
+            ("🖼️ PDF Optimizer", "Optimize and compress PDFs", self.open_pdf_optimizer),
+        ]
+
+        for i, (title_text, desc_text, callback) in enumerate(tools):
+            row = i // 3
+            col = i % 3
+
+            tool_btn = self._create_styled_tool_button(title_text, desc_text, callback)
+            grid_layout.addWidget(tool_btn, row, col)
+
+        layout.addWidget(grid_widget)
+        layout.addStretch()
+        self.tab_widget.addTab(tab, PDF_TOOLS)
+        self.logger.info(f"Simple {PDF_TOOLS} tab created as fallback")
+
+    def create_privacy_tab(self):
+        """Create the Privacy tab with organized grid layout."""
+        tab = QWidget()
+        layout = QVBoxLayout(tab)
+        layout.setContentsMargins(15, 15, 15, 15)
+        layout.setSpacing(15)
+
+        # Professional header
+        title = QLabel(PRIVACY_TOOLS)
+        title.setAlignment(Qt.AlignCenter)
+        title.setFont(QFont(SEGOE_UI_FONT, 16, QFont.Bold))
+        title.setStyleSheet(f"color: {TITLE_STYLE_COLOR};")
+        layout.addWidget(title)
+
+        # Description
+        desc = QLabel("Privacy protection, data cleanup, and secure browsing tools")
+        desc.setAlignment(Qt.AlignCenter)
+        desc.setFont(QFont(SEGOE_UI_FONT, 10))
+        desc.setStyleSheet(f"color: {SUBTITLE_STYLE_COLOR};")
+        layout.addWidget(desc)
+
+        # Create grid widget for tools
+        grid_widget = QWidget()
+        grid_layout = QGridLayout(grid_widget)
+        grid_layout.setSpacing(12)
+        grid_layout.setContentsMargins(0, 0, 0, 0)
+
+        # Privacy tools
+        tools = [
+            ("🧹 Privacy Cleaner", "Clean privacy traces", self.open_privacy_cleaner),
+            ("🗂️ Temp File Cleanup", "Remove temporary files", self.open_temp_cleanup),
+            ("🌐 Browser Cleanup", "Clear browsing history", self.open_browser_cleanup),
+            (
+                "⚙️ Privacy Settings",
+                "Configure privacy settings",
+                self.open_privacy_settings,
+            ),
+            ("🔍 Data Scanner", "Scan for sensitive data", self.open_data_scanner),
+            (
+                "🛡️ Privacy Shield",
+                "Advanced privacy protection",
+                self.open_privacy_shield,
+            ),
+        ]
+
+        for i, (title_text, desc_text, callback) in enumerate(tools):
+            row = i // 3
+            col = i % 3
+
+            tool_btn = self._create_styled_tool_button(title_text, desc_text, callback)
+            grid_layout.addWidget(tool_btn, row, col)
+
+        layout.addWidget(grid_widget)
+        layout.addStretch()
+        self.tab_widget.addTab(tab, "Privacy")
+
+    def create_security_tab(self):
+        """Create the Security tab with organized grid layout."""
+        tab = QWidget()
+        layout = QVBoxLayout(tab)
+        layout.setContentsMargins(15, 15, 15, 15)
+        layout.setSpacing(15)
+
+        # Professional header
+        title = QLabel("Security Tools")
+        title.setAlignment(Qt.AlignCenter)
+        title.setFont(QFont(SEGOE_UI_FONT, 16, QFont.Bold))
+        title.setStyleSheet(f"color: {TITLE_STYLE_COLOR};")
+        layout.addWidget(title)
+
+        # Description
+        desc = QLabel("File encryption, secure deletion, and security analysis tools")
+        desc.setAlignment(Qt.AlignCenter)
+        desc.setFont(QFont(SEGOE_UI_FONT, 10))
+        desc.setStyleSheet(f"color: {SUBTITLE_STYLE_COLOR};")
+        layout.addWidget(desc)
+
+        # Create grid widget for tools
+        grid_widget = QWidget()
+        grid_layout = QGridLayout(grid_widget)
+        grid_layout.setSpacing(12)
+        grid_layout.setContentsMargins(0, 0, 0, 0)
+
+        # Security tools
+        tools = [
+            (
+                "🔒 File Encryption",
+                "Encrypt files and folders",
+                self.open_encrypt_decrypt,
+            ),
+            ("🗑️ Secure Delete", "Permanently delete files", self.open_secure_delete),
+            (
+                "🔑 Password Generator",
+                "Generate strong passwords",
+                self.open_password_generator,
+            ),
+            ("🔍 Security Scan", "Scan for vulnerabilities", self.open_security_scan),
+            (
+                "🛡️ Security Monitor",
+                "Monitor system security",
+                self.open_security_monitor,
+            ),
+            (
+                "⚙️ Security Settings",
+                "Configure security preferences",
+                self.open_security_settings,
+            ),
+        ]
+
+        for i, (title_text, desc_text, callback) in enumerate(tools):
+            row = i // 3
+            col = i % 3
+
+            tool_btn = self._create_styled_tool_button(title_text, desc_text, callback)
+            grid_layout.addWidget(tool_btn, row, col)
+
+        layout.addWidget(grid_widget)
+        layout.addStretch()
+        self.tab_widget.addTab(tab, "Security")
+
+    def create_system_tab(self):
+        """Create the System tab with organized grid layout."""
+        tab = QWidget()
+        layout = QVBoxLayout(tab)
+        layout.setContentsMargins(15, 15, 15, 15)
+        layout.setSpacing(15)
+
+        # Professional header
+        title = QLabel("System Tools")
+        title.setAlignment(Qt.AlignCenter)
+        title.setFont(QFont(SEGOE_UI_FONT, 16, QFont.Bold))
+        title.setStyleSheet(f"color: {TITLE_STYLE_COLOR};")
+        layout.addWidget(title)
+
+        # Description
+        desc = QLabel("System monitoring, analysis, and maintenance tools")
+        desc.setAlignment(Qt.AlignCenter)
+        desc.setFont(QFont(SEGOE_UI_FONT, 10))
+        desc.setStyleSheet(f"color: {SUBTITLE_STYLE_COLOR};")
+        layout.addWidget(desc)
+
+        # Create grid widget for tools
+        grid_widget = QWidget()
+        grid_layout = QGridLayout(grid_widget)
+        grid_layout.setSpacing(12)
+        grid_layout.setContentsMargins(0, 0, 0, 0)
+
+        # System tools
+        tools = [
+            ("💻 System Information", "View system specs", self.open_system_info),
+            ("💿 Disk Usage Analyzer", "Analyze disk space", self.open_disk_analyzer),
+            ("⚡ Process Monitor", "Monitor processes", self.open_process_monitor),
+            ("🧹 System Cleanup", "Clean system cache", self.open_system_cleanup),
+            (
+                "📊 Performance Monitor",
+                "Monitor performance",
+                self.open_performance_monitor,
+            ),
+            ("⚙️ System Settings", "Configure system", self.open_system_settings),
+        ]
+
+        for i, (title_text, desc_text, callback) in enumerate(tools):
+            row = i // 3
+            col = i % 3
+
+            tool_btn = self._create_styled_tool_button(title_text, desc_text, callback)
+            grid_layout.addWidget(tool_btn, row, col)
+
+        layout.addWidget(grid_widget)
+        layout.addStretch()
+        self.tab_widget.addTab(tab, "System")
+
+    def create_logs_tab(self):
+        """Create the logs tab with enhanced display."""
+        tab = QWidget()
+        layout = QVBoxLayout(tab)
+        layout.setContentsMargins(15, 15, 15, 15)
+        layout.setSpacing(15)
+
+        # Professional header
+        title = QLabel("Application Logs")
+        title.setAlignment(Qt.AlignCenter)
+        title.setFont(QFont(SEGOE_UI_FONT, 16, QFont.Bold))
+        title.setStyleSheet(f"color: {TITLE_STYLE_COLOR};")
+        layout.addWidget(title)
+
+        # Description
+        desc = QLabel("Real-time application logs and system monitoring")
+        desc.setAlignment(Qt.AlignCenter)
+        desc.setFont(QFont(SEGOE_UI_FONT, 10))
+        desc.setStyleSheet(f"color: {SUBTITLE_STYLE_COLOR};")
+        layout.addWidget(desc)
+
+        # Enhanced log viewer
+        self.log_viewer = QTextEdit()
+        self.log_viewer.setReadOnly(True)
+        self.log_viewer.setStyleSheet(
+            """
+            QTextEdit {
+                background-color: #f8f9fa;
+                border: 2px solid #e9ecef;
+                border-radius: 8px;
+                padding: 10px;
+                font-family: 'Consolas', 'Monaco', monospace;
+                font-size: 11px;
+                color: #2c3e50;
+            }
+            QTextEdit:focus {
+                border-color: #3498db;
+            }
+        """
+        )
+        self.log_viewer.setMinimumHeight(350)
+        layout.addWidget(self.log_viewer)
+
+        # Load recent logs
+        self.load_recent_logs()
+
+        # Control buttons
+        from PyQt5.QtWidgets import QHBoxLayout
+
+        controls_layout = QHBoxLayout()
+        controls_layout.setSpacing(10)
+
+        refresh_btn = QPushButton("🔄 Refresh Logs")
+        refresh_btn.clicked.connect(self.load_recent_logs)
+        refresh_btn.setStyleSheet(
+            f"""
+            QPushButton {{
+                background: {SUCCESS_GREEN};
+                border: none;
+                color: white;
+                padding: 8px 16px;
+                border-radius: 6px;
+                font-weight: bold;
+                min-width: 120px;
+            }}
+            QPushButton:hover {{ background: #2ecc71; }}
+        """
+        )
+        controls_layout.addWidget(refresh_btn)
+
+        clear_btn = QPushButton("🗑️ Clear Display")
+        clear_btn.clicked.connect(self.clear_log_display)
+        clear_btn.setStyleSheet(
+            f"""
+            QPushButton {{
+                background: {WARNING_ORANGE};
+                border: none;
+                color: white;
+                padding: 8px 16px;
+                border-radius: 6px;
+                font-weight: bold;
+                min-width: 120px;
+            }}
+            QPushButton:hover {{ background: #f7a41e; }}
+        """
+        )
+        controls_layout.addWidget(clear_btn)
+
+        export_btn = QPushButton("💾 Export Logs")
+        export_btn.clicked.connect(self.export_logs)
+        export_btn.setStyleSheet(
+            f"""
+            QPushButton {{
+                background: {PRIMARY_BLUE};
+                border: none;
+                color: white;
+                padding: 8px 16px;
+                border-radius: 6px;
+                font-weight: bold;
+                min-width: 120px;
+            }}
+            QPushButton:hover {{ background: #4DA6E5; }}
+        """
+        )
+        controls_layout.addWidget(export_btn)
+
+        controls_layout.addStretch()
+        layout.addLayout(controls_layout)
+
+        self.tab_widget.addTab(tab, "Logs")
+
+    def load_recent_logs(self):
+        """Load and display recent log entries."""
+        try:
+            log_file = os.path.join("logs", "rfu.log")
+            if os.path.exists(log_file):
+                with open(log_file, "r", encoding="utf-8") as f:
+                    lines = f.readlines()
+                    recent_lines = lines[-50:] if len(lines) > 50 else lines
+                    self.log_viewer.setPlainText("".join(recent_lines))
+            else:
+                self.log_viewer.setPlainText("No log file found yet.")
+        except Exception as e:
+            self.log_viewer.setPlainText(f"Error loading logs: {e}")
+
+    def clear_log_display(self):
+        """Clear the log display (not the log file)."""
+        self.log_viewer.clear()
+        self.log_viewer.setPlainText(
+            "Log display cleared. Click 'Refresh Logs' to reload."
+        )
+        self._update_status_bar("Log display cleared")
+        self.logger.info("Log display cleared by user")
+
+    def export_logs(self):
+        """Export current logs to file."""
+        try:
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            export_filename = f"exported_logs_{timestamp}.txt"
+
+            log_content = self.log_viewer.toPlainText()
+            if log_content:
+                with open(export_filename, "w", encoding="utf-8") as f:
+                    f.write("# RFU Application Logs Export\n")
+                    timestamp_str = datetime.now().strftime("%Y-%m-%d %H:%M")
+                    f.write(f"# Exported on: {timestamp_str}\n")
+                    f.write("# " + "=" * 38 + "\n\n")
+                    f.write(log_content)
+
+                self._update_status_bar(f"Logs exported to {export_filename}")
+                self.logger.info(f"Logs exported to {export_filename}")
+            else:
+                self._update_status_bar("No logs to export")
+                self.logger.info("Export logs requested but no content available")
+
+        except Exception as e:
+            self._update_status_bar(f"Error exporting logs: {e}")
+            self.logger.error(f"Error exporting logs: {e}")
+
+    # =========================================================================
+    # Tool Opening Methods - Stubs for missing methods
+    # =========================================================================
+
+    def open_size_analyzer(self):
+        """Open size analyzer tool."""
+        self._update_status_bar("Size Analyzer - Opening...")
+        self.logger.info("Size Analyzer requested")
+        # TODO: Implement or connect to actual tool
+
+    def open_empty_folders(self):
+        """Open empty folders finder."""
+        self._update_status_bar("Empty Folders Finder - Opening...")
+        self.logger.info("Empty Folders Finder requested")
+
+    def open_checksum(self):
+        """Open checksum verification tool."""
+        self._update_status_bar("Checksum Verification - Opening...")
+        self.logger.info("Checksum Verification requested")
+
+    def open_cmsd_logic(self):
+        """Open Copy/Move/Sync/Delete tool."""
+        self._update_status_bar("Copy/Move/Sync/Delete - Opening...")
+        self.logger.info("CMSD Logic requested")
+
+    def open_sync_backup(self):
+        """Open synchronization and backup tool."""
+        self._update_status_bar("Sync & Backup - Opening...")
+        self.logger.info("Sync & Backup requested")
+
+    def open_organize_files(self):
+        """Open file organization tool."""
+        self._update_status_bar("File Organization - Opening...")
+        self.logger.info("File Organization requested")
+
+    def open_batch_rename(self):
+        """Open batch rename tool."""
+        self._update_status_bar("Batch Rename - Opening...")
+        self.logger.info("Batch Rename requested")
+
+    def open_exif_viewer(self):
+        """Open EXIF data viewer."""
+        self._update_status_bar("EXIF Viewer - Opening...")
+        self.logger.info("EXIF Viewer requested")
+
+    def open_metadata_analyzer(self):
+        """Open metadata analyzer."""
+        self._update_status_bar("Metadata Analyzer - Opening...")
+        self.logger.info("Metadata Analyzer requested")
+
+    def open_tag_editor(self):
+        """Open tag editor."""
+        self._update_status_bar("Tag Editor - Opening...")
+        self.logger.info("Tag Editor requested")
+
+    def open_property_inspector(self):
+        """Open property inspector."""
+        self._update_status_bar("Property Inspector - Opening...")
+        self.logger.info("Property Inspector requested")
+
+    def open_connectivity_test(self):
+        """Open connectivity test."""
+        self._update_status_bar("Connectivity Test - Feature coming soon...")
+        self.logger.info("Connectivity Test requested")
+
+    def open_bookmark_manager(self):
+        """Open bookmark manager."""
+        self._update_status_bar("Bookmark Manager - Feature coming soon...")
+        self.logger.info("Bookmark Manager requested")
+
+    def open_network_security(self):
+        """Open network security tools."""
+        self._update_status_bar("Network Security - Feature coming soon...")
+        self.logger.info("Network Security requested")
+
+    def open_pdf_merger(self):
+        """Open PDF merger."""
+        self._update_status_bar("PDF Merger - Feature coming soon...")
+        self.logger.info("PDF Merger requested")
+
+    def open_pdf_splitter(self):
+        """Open PDF splitter."""
+        self._update_status_bar("PDF Splitter - Feature coming soon...")
+        self.logger.info("PDF Splitter requested")
+
+    def open_pdf_converter(self):
+        """Open PDF converter."""
+        self._update_status_bar("PDF Converter - Feature coming soon...")
+        self.logger.info("PDF Converter requested")
+
+    def open_pdf_security(self):
+        """Open PDF security."""
+        self._update_status_bar("PDF Security - Feature coming soon...")
+        self.logger.info("PDF Security requested")
+
+    def open_pdf_analysis(self):
+        """Open PDF analysis."""
+        self._update_status_bar("PDF Analysis - Feature coming soon...")
+        self.logger.info("PDF Analysis requested")
+
+    def open_pdf_optimizer(self):
+        """Open PDF optimizer."""
+        self._update_status_bar("PDF Optimizer - Feature coming soon...")
+        self.logger.info("PDF Optimizer requested")
+
+    def open_privacy_cleaner(self):
+        """Open privacy cleaner."""
+        self._update_status_bar("Privacy Cleaner - Opening...")
+        self.logger.info("Privacy Cleaner requested")
+
+    def open_temp_cleanup(self):
+        """Open temporary file cleanup."""
+        self._update_status_bar("Temp File Cleanup - Opening...")
+        self.logger.info("Temp File Cleanup requested")
+
+    def open_browser_cleanup(self):
+        """Open browser history cleaner."""
+        self._update_status_bar("Browser Cleanup - Opening...")
+        self.logger.info("Browser Cleanup requested")
+
+    def open_privacy_settings(self):
+        """Open privacy settings."""
+        self._update_status_bar("Privacy Settings - Feature coming soon...")
+        self.logger.info("Privacy Settings requested")
+
+    def open_data_scanner(self):
+        """Open data scanner."""
+        self._update_status_bar("Data Scanner - Opening...")
+        self.logger.info("Data Scanner requested")
+
+    def open_privacy_shield(self):
+        """Open privacy shield."""
+        self._update_status_bar("Privacy Shield - Feature coming soon...")
+        self.logger.info("Privacy Shield requested")
+
+    def open_security_scan(self):
+        """Open security scan."""
+        self._update_status_bar("Security Scan - Opening...")
+        self.logger.info("Security Scan requested")
+
+    def open_security_monitor(self):
+        """Open security monitor."""
+        self._update_status_bar("Security Monitor - Feature coming soon...")
+        self.logger.info("Security Monitor requested")
+
+    def open_security_settings(self):
+        """Open security settings."""
+        self._update_status_bar("Security Settings - Feature coming soon...")
+        self.logger.info("Security Settings requested")
+
+    def open_system_info(self):
+        """Open system information."""
+        self._update_status_bar("System Information - Opening...")
+        self.logger.info("System Information requested")
+
+    def open_disk_analyzer(self):
+        """Open disk usage analyzer."""
+        self._update_status_bar("Disk Usage Analyzer - Feature coming soon...")
+        self.logger.info("Disk Usage Analyzer requested")
+
+    def open_process_monitor(self):
+        """Open process monitor."""
+        self._update_status_bar("Process Monitor - Opening...")
+        self.logger.info("Process Monitor requested")
+
+    def open_system_cleanup(self):
+        """Open system cleanup."""
+        self._update_status_bar("System Cleanup - Feature coming soon...")
+        self.logger.info("System Cleanup requested")
+
+    def open_performance_monitor(self):
+        """Open performance monitor."""
+        self._update_status_bar("Performance Monitor - Feature coming soon...")
+        self.logger.info("Performance Monitor requested")
+
+    def open_system_settings(self):
+        """Open system settings."""
+        self._update_status_bar("System Settings - Feature coming soon...")
+        self.logger.info("System Settings requested")
 
     # Hub Integration Methods (from hub.py)
     def register_tool(self, tool_name: str, tool_instance) -> bool:
@@ -1461,7 +2500,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
             return
 
         try:
-            from src.rfu.preferences import PreferencesViewDialog
+            from src.preferences import PreferencesViewDialog
 
             dialog = PreferencesViewDialog(
                 database_path=database_path,

@@ -33,11 +33,11 @@ The `DirectorySecurityManager` class provides the main interface for secure dire
 def __init__(self, database_manager: DatabaseManager, config_manager: Optional[ConfigManager] = None):
     """
     Initialize the Directory Security Manager.
-    
+
     Args:
         database_manager (DatabaseManager): Database manager instance for data persistence
         config_manager (Optional[ConfigManager]): Configuration manager for security settings
-    
+
     Raises:
         ValueError: If database_manager is None
         SecurityError: If security initialization fails
@@ -49,17 +49,17 @@ def __init__(self, database_manager: DatabaseManager, config_manager: Optional[C
 ##### `store_directory_preference`
 
 ```python
-def store_directory_preference(self, user_id: str, tool_id: str, category: str, 
+def store_directory_preference(self, user_id: str, tool_id: str, category: str,
                              directory_path: str) -> DirectorySecurityResult:
     """
     Securely store a directory preference with encryption and PII detection.
-    
+
     Args:
         user_id (str): User identifier (must be non-empty)
         tool_id (str): Tool identifier (must be non-empty)
         category (str): Category for the preference
         directory_path (str): Directory path to store
-    
+
     Returns:
         DirectorySecurityResult: Result object containing:
             - success (bool): Operation success status
@@ -67,14 +67,14 @@ def store_directory_preference(self, user_id: str, tool_id: str, category: str,
             - pii_sensitive (bool): Whether PII was detected
             - encrypted (bool): Whether path was encrypted
             - error_message (str): Error details if operation failed
-    
+
     Raises:
         ValueError: If required parameters are empty or None
         SecurityError: If encryption or storage fails
-    
+
     Example:
         >>> result = security_manager.store_directory_preference(
-        ...     "user123", "file_manager", "documents", 
+        ...     "user123", "file_manager", "documents",
         ...     "C:\\Users\\john\\Documents\\Personal"
         ... )
         >>> if result.success:
@@ -89,11 +89,11 @@ def store_directory_preference(self, user_id: str, tool_id: str, category: str,
 def retrieve_directory_preference(self, user_id: str, path_hash: str) -> DirectorySecurityResult:
     """
     Retrieve and decrypt a stored directory preference.
-    
+
     Args:
         user_id (str): User identifier
         path_hash (str): SHA-256 hash of the directory path
-    
+
     Returns:
         DirectorySecurityResult: Result object containing:
             - success (bool): Operation success status
@@ -102,7 +102,7 @@ def retrieve_directory_preference(self, user_id: str, path_hash: str) -> Directo
             - encrypted (bool): Whether path was encrypted
             - metadata (dict): Additional metadata
             - error_message (str): Error details if operation failed
-    
+
     Example:
         >>> result = security_manager.retrieve_directory_preference(
         ...     "user123", "abc123def456..."
@@ -118,10 +118,10 @@ def retrieve_directory_preference(self, user_id: str, path_hash: str) -> Directo
 def list_user_directories(self, user_id: Optional[str] = None) -> List[DirectoryInfo]:
     """
     List directory preferences for a user or all users.
-    
+
     Args:
         user_id (Optional[str]): User ID to filter by. If None, returns all directories
-    
+
     Returns:
         List[DirectoryInfo]: List of directory information objects containing:
             - path_hash (str): Hash identifier
@@ -131,7 +131,7 @@ def list_user_directories(self, user_id: Optional[str] = None) -> List[Directory
             - pii_sensitive (bool): PII detection status
             - created_at (datetime): Creation timestamp
             - last_accessed (datetime): Last access timestamp
-    
+
     Example:
         >>> directories = security_manager.list_user_directories("user123")
         >>> for dir_info in directories:
@@ -145,14 +145,14 @@ def list_user_directories(self, user_id: Optional[str] = None) -> List[Directory
 def delete_directory_preference(self, user_id: str, path_hash: str) -> DirectorySecurityResult:
     """
     Securely delete a directory preference with audit logging.
-    
+
     Args:
         user_id (str): User identifier
         path_hash (str): SHA-256 hash of the directory path
-    
+
     Returns:
         DirectorySecurityResult: Result object with success status
-    
+
     Example:
         >>> result = security_manager.delete_directory_preference(
         ...     "user123", "abc123def456..."
@@ -164,11 +164,11 @@ def delete_directory_preference(self, user_id: str, path_hash: str) -> Directory
 ##### `update_directory_permissions`
 
 ```python
-def update_directory_permissions(self, user_id: str, path_hash: str, 
+def update_directory_permissions(self, user_id: str, path_hash: str,
                                permissions: Dict[str, bool]) -> DirectorySecurityResult:
     """
     Update permissions for a directory preference.
-    
+
     Args:
         user_id (str): User identifier
         path_hash (str): Directory path hash
@@ -177,13 +177,13 @@ def update_directory_permissions(self, user_id: str, path_hash: str,
             - 'write': Write permission
             - 'execute': Execute permission
             - 'share': Share permission
-    
+
     Returns:
         DirectorySecurityResult: Result with updated permissions
-    
+
     Example:
         >>> result = security_manager.update_directory_permissions(
-        ...     "user123", "abc123def456...", 
+        ...     "user123", "abc123def456...",
         ...     {"read": True, "write": False, "share": False}
         ... )
     """
@@ -205,7 +205,7 @@ The `DirectoryPathEncryption` class provides secure encryption/decryption for di
 def __init__(self, config_manager: Optional[ConfigManager] = None):
     """
     Initialize directory path encryption with configurable parameters.
-    
+
     Args:
         config_manager (Optional[ConfigManager]): Configuration for encryption settings
     """
@@ -219,11 +219,11 @@ def __init__(self, config_manager: Optional[ConfigManager] = None):
 def encrypt_directory_path(self, directory_path: str, user_id: str) -> EncryptionResult:
     """
     Encrypt a directory path with user-specific key derivation.
-    
+
     Args:
         directory_path (str): Directory path to encrypt
         user_id (str): User identifier for key derivation
-    
+
     Returns:
         EncryptionResult: Result object containing:
             - success (bool): Encryption success status
@@ -232,7 +232,7 @@ def encrypt_directory_path(self, directory_path: str, user_id: str) -> Encryptio
             - nonce (bytes): Random nonce for encryption
             - integrity_hash (str): HMAC for data integrity
             - error_message (str): Error details if encryption failed
-    
+
     Security Features:
         - AES-256-GCM encryption
         - PBKDF2 key derivation with 100,000 iterations
@@ -240,11 +240,11 @@ def encrypt_directory_path(self, directory_path: str, user_id: str) -> Encryptio
         - Random nonce generation (12 bytes)
         - HMAC-SHA256 integrity protection
         - Timing attack resistance
-    
+
     Performance:
         - Target: <100ms encryption time
         - Memory-efficient for large paths
-    
+
     Example:
         >>> encryption = DirectoryPathEncryption()
         >>> result = encryption.encrypt_directory_path(
@@ -258,32 +258,32 @@ def encrypt_directory_path(self, directory_path: str, user_id: str) -> Encryptio
 ##### `decrypt_directory_path`
 
 ```python
-def decrypt_directory_path(self, encrypted_data: bytes, salt: bytes, 
-                         nonce: bytes, user_id: str, 
+def decrypt_directory_path(self, encrypted_data: bytes, salt: bytes,
+                         nonce: bytes, user_id: str,
                          integrity_hash: str) -> DecryptionResult:
     """
     Decrypt a directory path with integrity verification.
-    
+
     Args:
         encrypted_data (bytes): Encrypted path data
         salt (bytes): Salt used for key derivation
         nonce (bytes): Nonce used for encryption
         user_id (str): User identifier for key derivation
         integrity_hash (str): HMAC for integrity verification
-    
+
     Returns:
         DecryptionResult: Result object containing:
             - success (bool): Decryption success status
             - decrypted_path (str): Original directory path
             - integrity_verified (bool): Integrity check result
             - error_message (str): Error details if decryption failed
-    
+
     Security Features:
         - Integrity verification before decryption
         - Constant-time comparisons
         - Secure memory cleanup
         - Timing attack resistance
-    
+
     Example:
         >>> result = encryption.decrypt_directory_path(
         ...     encrypted_data, salt, nonce, "user123", integrity_hash
@@ -299,19 +299,19 @@ def decrypt_directory_path(self, encrypted_data: bytes, salt: bytes,
 def generate_key_from_user(self, user_id: str, salt: bytes) -> bytes:
     """
     Generate encryption key from user ID and salt using PBKDF2.
-    
+
     Args:
         user_id (str): User identifier
         salt (bytes): Random salt for key derivation
-    
+
     Returns:
         bytes: 32-byte encryption key
-    
+
     Security Features:
         - PBKDF2-HMAC-SHA256 with 100,000 iterations
         - 32-byte key length for AES-256
         - User isolation through unique key derivation
-    
+
     Example:
         >>> salt = os.urandom(32)
         >>> key = encryption.generate_key_from_user("user123", salt)
@@ -335,7 +335,7 @@ The `PIIDetector` class provides detection of Personally Identifiable Informatio
 def __init__(self, config_manager: Optional[ConfigManager] = None):
     """
     Initialize PII detector with configurable detection rules.
-    
+
     Args:
         config_manager (Optional[ConfigManager]): Configuration for PII detection rules
     """
@@ -349,10 +349,10 @@ def __init__(self, config_manager: Optional[ConfigManager] = None):
 def detect_pii(self, directory_path: str) -> PIIDetectionResult:
     """
     Detect PII in a directory path using multiple detection methods.
-    
+
     Args:
         directory_path (str): Directory path to analyze
-    
+
     Returns:
         PIIDetectionResult: Result object containing:
             - has_pii (bool): Whether PII was detected
@@ -360,7 +360,7 @@ def detect_pii(self, directory_path: str) -> PIIDetectionResult:
             - confidence_score (float): Detection confidence (0.0-1.0)
             - detected_patterns (List[str]): Specific patterns found
             - recommendations (List[str]): Security recommendations
-    
+
     Detection Categories:
         - Personal names in paths
         - Social Security Numbers (SSN)
@@ -370,7 +370,7 @@ def detect_pii(self, directory_path: str) -> PIIDetectionResult:
         - Date of birth patterns
         - Medical record indicators
         - Financial information keywords
-    
+
     Example:
         >>> detector = PIIDetector()
         >>> result = detector.detect_pii("C:\\Users\\john.doe\\Documents\\SSN_123-45-6789.txt")
@@ -386,17 +386,17 @@ def detect_pii(self, directory_path: str) -> PIIDetectionResult:
 def analyze_path_components(self, directory_path: str) -> List[ComponentAnalysis]:
     """
     Analyze individual path components for PII indicators.
-    
+
     Args:
         directory_path (str): Directory path to analyze
-    
+
     Returns:
         List[ComponentAnalysis]: Analysis results for each path component:
             - component (str): Path component text
             - pii_indicators (List[str]): PII indicators found
             - risk_level (str): Risk level (low/medium/high/critical)
             - suggestions (List[str]): Mitigation suggestions
-    
+
     Example:
         >>> analyses = detector.analyze_path_components(
         ...     "C:\\Users\\john.doe\\Medical\\Records\\2024"
@@ -413,13 +413,13 @@ def analyze_path_components(self, directory_path: str) -> List[ComponentAnalysis
 def get_pii_recommendations(self, pii_types: List[str]) -> List[str]:
     """
     Get security recommendations based on detected PII types.
-    
+
     Args:
         pii_types (List[str]): List of detected PII types
-    
+
     Returns:
         List[str]: Security recommendations
-    
+
     Example:
         >>> recommendations = detector.get_pii_recommendations(
         ...     ["ssn", "credit_card", "personal_name"]
@@ -445,7 +445,7 @@ The `DirectoryPermissionManager` class manages access permissions for directory 
 def __init__(self, database_manager: DatabaseManager):
     """
     Initialize directory permission manager.
-    
+
     Args:
         database_manager (DatabaseManager): Database manager for permission storage
     """
@@ -456,11 +456,11 @@ def __init__(self, database_manager: DatabaseManager):
 ##### `set_permissions`
 
 ```python
-def set_permissions(self, user_id: str, resource_id: str, 
+def set_permissions(self, user_id: str, resource_id: str,
                    permissions: Dict[str, bool]) -> PermissionResult:
     """
     Set permissions for a directory resource.
-    
+
     Args:
         user_id (str): User identifier
         resource_id (str): Directory resource identifier (path hash)
@@ -470,13 +470,13 @@ def set_permissions(self, user_id: str, resource_id: str,
             - 'execute': Execute access permission
             - 'share': Share permission with other users
             - 'delete': Delete permission
-    
+
     Returns:
         PermissionResult: Result object containing:
             - success (bool): Operation success status
             - permissions_set (Dict[str, bool]): Applied permissions
             - error_message (str): Error details if operation failed
-    
+
     Example:
         >>> result = permission_manager.set_permissions(
         ...     "user123", "abc123def456...",
@@ -488,19 +488,19 @@ def set_permissions(self, user_id: str, resource_id: str,
 ##### `check_permission`
 
 ```python
-def check_permission(self, user_id: str, resource_id: str, 
+def check_permission(self, user_id: str, resource_id: str,
                     permission_type: str) -> bool:
     """
     Check if user has specific permission for a resource.
-    
+
     Args:
         user_id (str): User identifier
         resource_id (str): Directory resource identifier
         permission_type (str): Permission to check ('read', 'write', 'execute', 'share', 'delete')
-    
+
     Returns:
         bool: True if user has permission, False otherwise
-    
+
     Example:
         >>> has_write = permission_manager.check_permission(
         ...     "user123", "abc123def456...", "write"
@@ -516,14 +516,14 @@ def check_permission(self, user_id: str, resource_id: str,
 def get_user_permissions(self, user_id: str, resource_id: str) -> Dict[str, bool]:
     """
     Get all permissions for a user on a specific resource.
-    
+
     Args:
         user_id (str): User identifier
         resource_id (str): Directory resource identifier
-    
+
     Returns:
         Dict[str, bool]: All permissions for the user on the resource
-    
+
     Example:
         >>> permissions = permission_manager.get_user_permissions(
         ...     "user123", "abc123def456..."
@@ -536,19 +536,19 @@ def get_user_permissions(self, user_id: str, resource_id: str) -> Dict[str, bool
 ##### `revoke_permissions`
 
 ```python
-def revoke_permissions(self, user_id: str, resource_id: str, 
+def revoke_permissions(self, user_id: str, resource_id: str,
                       permission_types: List[str]) -> PermissionResult:
     """
     Revoke specific permissions for a user on a resource.
-    
+
     Args:
         user_id (str): User identifier
         resource_id (str): Directory resource identifier
         permission_types (List[str]): Permissions to revoke
-    
+
     Returns:
         PermissionResult: Result with revocation status
-    
+
     Example:
         >>> result = permission_manager.revoke_permissions(
         ...     "user123", "abc123def456...", ["write", "delete"]
@@ -572,7 +572,7 @@ The `DirectoryAuditLogger` class provides comprehensive audit logging for securi
 def __init__(self, database_manager: DatabaseManager, config_manager: Optional[ConfigManager] = None):
     """
     Initialize directory audit logger.
-    
+
     Args:
         database_manager (DatabaseManager): Database manager for audit log storage
         config_manager (Optional[ConfigManager]): Configuration for audit settings
@@ -584,12 +584,12 @@ def __init__(self, database_manager: DatabaseManager, config_manager: Optional[C
 ##### `log_directory_operation`
 
 ```python
-def log_directory_operation(self, user_id: str, resource_id: str, 
-                          operation_type: str, success: bool, 
+def log_directory_operation(self, user_id: str, resource_id: str,
+                          operation_type: str, success: bool,
                           metadata: Optional[Dict] = None) -> bool:
     """
     Log a directory operation with comprehensive details.
-    
+
     Args:
         user_id (str): User performing the operation
         resource_id (str): Directory resource identifier
@@ -604,10 +604,10 @@ def log_directory_operation(self, user_id: str, resource_id: str,
             - 'decrypt': Decryption operation
         success (bool): Whether operation succeeded
         metadata (Optional[Dict]): Additional operation metadata
-    
+
     Returns:
         bool: True if audit log was successfully recorded
-    
+
     Logged Information:
         - Timestamp (UTC with microsecond precision)
         - User identifier
@@ -618,7 +618,7 @@ def log_directory_operation(self, user_id: str, resource_id: str,
         - Session identifier
         - Request metadata
         - Security context
-    
+
     Example:
         >>> logged = audit_logger.log_directory_operation(
         ...     "user123", "abc123def456...", "create", True,
@@ -630,11 +630,11 @@ def log_directory_operation(self, user_id: str, resource_id: str,
 ##### `log_security_event`
 
 ```python
-def log_security_event(self, event_type: str, severity: str, 
+def log_security_event(self, event_type: str, severity: str,
                       user_id: Optional[str], details: Dict) -> bool:
     """
     Log security-related events for monitoring and analysis.
-    
+
     Args:
         event_type (str): Type of security event:
             - 'authentication_failure': Failed login attempts
@@ -646,10 +646,10 @@ def log_security_event(self, event_type: str, severity: str,
         severity (str): Event severity ('low', 'medium', 'high', 'critical')
         user_id (Optional[str]): User associated with event (if applicable)
         details (Dict): Event-specific details
-    
+
     Returns:
         bool: True if security event was logged successfully
-    
+
     Example:
         >>> logged = audit_logger.log_security_event(
         ...     "permission_violation", "high", "user123",
@@ -661,21 +661,21 @@ def log_security_event(self, event_type: str, severity: str,
 ##### `get_audit_logs`
 
 ```python
-def get_audit_logs(self, user_id: Optional[str] = None, 
+def get_audit_logs(self, user_id: Optional[str] = None,
                   operation_type: Optional[str] = None,
                   start_date: Optional[datetime] = None,
                   end_date: Optional[datetime] = None,
                   limit: int = 100) -> List[AuditLogEntry]:
     """
     Retrieve audit logs with filtering options.
-    
+
     Args:
         user_id (Optional[str]): Filter by user ID
         operation_type (Optional[str]): Filter by operation type
         start_date (Optional[datetime]): Filter by start date
         end_date (Optional[datetime]): Filter by end date
         limit (int): Maximum number of entries to return
-    
+
     Returns:
         List[AuditLogEntry]: List of audit log entries containing:
             - timestamp (datetime): Operation timestamp
@@ -686,10 +686,10 @@ def get_audit_logs(self, user_id: Optional[str] = None,
             - metadata (Dict): Additional metadata
             - ip_address (str): User IP address
             - session_id (str): Session identifier
-    
+
     Example:
         >>> logs = audit_logger.get_audit_logs(
-        ...     user_id="user123", 
+        ...     user_id="user123",
         ...     operation_type="delete",
         ...     limit=50
         ... )
@@ -708,17 +708,17 @@ def get_security_events(self, severity: Optional[str] = None,
                        limit: int = 100) -> List[SecurityEventEntry]:
     """
     Retrieve security events with filtering options.
-    
+
     Args:
         severity (Optional[str]): Filter by severity level
         event_type (Optional[str]): Filter by event type
         start_date (Optional[datetime]): Filter by start date
         end_date (Optional[datetime]): Filter by end date
         limit (int): Maximum number of entries to return
-    
+
     Returns:
         List[SecurityEventEntry]: List of security event entries
-    
+
     Example:
         >>> events = audit_logger.get_security_events(
         ...     severity="high", limit=20
@@ -744,7 +744,7 @@ The `DatabaseManager` class provides secure database operations with connection 
 def __init__(self, database_path: str, config_manager: Optional[ConfigManager] = None):
     """
     Initialize database manager with security configurations.
-    
+
     Args:
         database_path (str): Path to SQLite database file
         config_manager (Optional[ConfigManager]): Configuration manager
@@ -759,20 +759,20 @@ def __init__(self, database_path: str, config_manager: Optional[ConfigManager] =
 def execute_query(self, query: str, parameters: Optional[Tuple] = None) -> DatabaseResult:
     """
     Execute a SQL query with parameterized inputs for security.
-    
+
     Args:
         query (str): SQL query with parameter placeholders
         parameters (Optional[Tuple]): Query parameters
-    
+
     Returns:
         DatabaseResult: Query execution result
-    
+
     Security Features:
         - Parameterized queries to prevent SQL injection
         - Connection pooling for performance
         - Transaction management
         - Error handling and logging
-    
+
     Example:
         >>> result = db_manager.execute_query(
         ...     "SELECT * FROM directories WHERE user_id = ?", ("user123",)
@@ -819,12 +819,12 @@ The `MigrationManager` class handles database schema migrations and versioning.
 def apply_pending_migrations(self) -> bool:
     """
     Apply all pending database migrations.
-    
+
     Returns:
         bool: True if all migrations applied successfully
-    
+
     Performance Target: <30 seconds for all migrations
-    
+
     Example:
         >>> migration_manager = MigrationManager(db_manager)
         >>> success = migration_manager.apply_pending_migrations()
@@ -839,7 +839,7 @@ def apply_pending_migrations(self) -> bool:
 def get_applied_migrations(self) -> List[str]:
     """
     Get list of applied migration versions.
-    
+
     Returns:
         List[str]: List of applied migration identifiers
     """
@@ -853,7 +853,7 @@ The `ConfigManager` class manages security configuration settings.
 
 ### Class: `ConfigManager`
 
-**Location:** `src/rfu/config/config_manager.py`
+**Location:** `src/config/config_manager.py`
 
 #### Core Methods
 
@@ -863,7 +863,7 @@ The `ConfigManager` class manages security configuration settings.
 def get_encryption_config(self) -> Dict[str, Any]:
     """
     Get encryption configuration settings.
-    
+
     Returns:
         Dict[str, Any]: Encryption configuration including:
             - algorithm: Encryption algorithm (AES-256-GCM)
@@ -879,7 +879,7 @@ def get_encryption_config(self) -> Dict[str, Any]:
 def get_pii_detection_config(self) -> Dict[str, Any]:
     """
     Get PII detection configuration settings.
-    
+
     Returns:
         Dict[str, Any]: PII detection configuration
     """
@@ -897,7 +897,7 @@ def get_pii_detection_config(self) -> Dict[str, Any]:
 class SecurityError(Exception):
     """
     Raised when security operations fail.
-    
+
     Attributes:
         message (str): Error description
         error_code (str): Specific error code
@@ -927,7 +927,7 @@ class PermissionError(SecurityError):
 class DirectorySecurityResult:
     """
     Result object for directory security operations.
-    
+
     Attributes:
         success (bool): Operation success status
         path_hash (str): SHA-256 hash of directory path

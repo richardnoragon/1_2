@@ -2,7 +2,7 @@
 
 **Created:** 2025-08-29  
 **Status:** Planning Complete - Ready for Implementation  
-**Target:** `src/utilities/network/network_connectivity_complex/core/performance_analyzer.py`
+**Target:** `src/tools/network/network_connectivity_complex/core/performance_analyzer.py`
 
 ## Project Overview
 

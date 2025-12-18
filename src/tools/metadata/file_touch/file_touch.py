@@ -31,7 +31,7 @@ from src.gui.common.dialogs import (
     show_info_dialog,
     get_open_file_name,
 )
-from src.config_manager import ConfigManager
+from src.config.config_manager import ConfigManager
 
 # Note: Reliably *setting* creation time is platform-specific and often
 # requires extra privileges or libraries (like pywin32 on Windows).

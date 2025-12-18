@@ -114,10 +114,56 @@
 - [x] T084 Ensure `scripts/admin/rfu_admin.py` exposes an `approve_user_cli(database_path, username, role, preferences_template)` callable returning an object with `exit_code` + `payload` so automation harnesses and `test_cli_approval_flow.py` can drive approvals without shelling out.
 - [x] T085 Wire CLI approvals through `AdminApprovalService` so pending users flip to `account_status="active"`, receive `preferences_id`, stamp `activated_at`, and emit matching `user_preferences` rows exactly as required by `tests/integration/identity/test_cli_approval_flow.py`.
 - [x] T086 Route CLI approvals through `AuditLogger`/`AdminActionAuditRepository` to record `action_type="approve_user"` entries with `origin_surface="cli"`, eliminating raw SQL writes in the CLI layer.
-- [x] T087 Add a headless GUI helper `login_with_preferences(database_path, username, password)` in `src/rfu/identity/gui_login_flow.py` (or equivalent) so `tests/integration/gui/test_login_personalization.py` can drive hub logins without a live GUI. _(Implemented in `src/rfu/identity/gui_login_flow.py` and now invoked by `src/rfu/login_dialog.py`.)_
+- [x] T087 Add a headless GUI helper `login_with_preferences(database_path, username, password)` in `src/identity/gui_login_flow.py` (or equivalent) so `tests/integration/gui/test_login_personalization.py` can drive hub logins without a live GUI. _(Implemented in `src/identity/gui_login_flow.py` and now invoked by `src/rfu/login_dialog.py`.)_
 - [x] T088 Ensure `login_with_preferences` returns a DTO/mapping containing `status="authenticated"`, `workspace_ready=True`, and a `preference_snapshot` payload with both `preferences_id` and parsed layout/favorite data matching the integration test contract. _(Helper now hydrates snapshots from SQLite or fallback templates.)_
 - [x] T089 Populate `preference_badge` metadata (user, `preferences_id`, layout label) when returning from `login_with_preferences` so the GUI can render the badge text asserted by the integration test. _(Badge consumed by the new hub login dialog to surface personalization.)_
 - [x] T090 Add admin panel guard + launch helpers in `src/rfu/admin_panel.py` so GUI flows/tests can reuse consistent role gating before instantiating `AdminUsersController`.
+
+## Phase 3.8 – Four-Role System & Lockout Prevention (007-upgrade-to-login)
+
+> These tasks implement the lockout prevention features from spec 007-upgrade-to-login
+
+### Role System Expansion
+
+- [x] T091 [P] Update `src/core/auth/models/user_account.py` to expand role enum from `{admin, standard}` to `{dev, admin, user, readonly}` and add `is_always_available`, `is_break_glass`, `break_glass_justification`, and `auto_unblock_at` fields.
+- [x] T092 [P] Create migration `scripts/migrations/007_lockout_prevention.sql` to add new columns, create `break_glass_usage_log`, `always_available_account_config`, and `admin_notification` tables, and migrate existing `standard` role to `user`.
+- [x] T093 [P] Update `src/core/auth/policies/role_policy.py` to enforce four-role privilege hierarchy: `dev > admin > user > readonly`.
+- [x] T094 [P] Add unit tests `tests/unit/auth/test_role_hierarchy.py` verifying role-based access control for all four roles.
+
+### Always-Available Accounts
+
+- [x] T095 [P] Implement `src/core/auth/models/always_available_account_config.py` dataclass for cooldown tracking and configuration.
+- [x] T096 [P] Implement `src/core/auth/repositories/always_available_account_repository.py` for managing always-available account configuration.
+- [x] T097 [P] Implement `src/core/auth/services/lockout_prevention_service.py` for protected account management, cooldown logic, and auto-unblock scheduling.
+- [x] T098 [P] Update `src/core/auth/policies/lockout_policy.py` to use 15-minute cooldown auto-unblock for always-available accounts instead of permanent blocking.
+- [x] T099 Add CLI command `bootstrap-protected-accounts` to `scripts/admin/rfu_admin.py` for initial setup of always-available and break-glass accounts with secure credential generation.
+- [x] T100 [P] Add integration test `tests/integration/identity/test_always_available_cooldown.py` verifying automatic unblock after cooldown period.
+- [x] T101 [P] Add contract test `tests/contracts/identity/test_always_available_protection.py` ensuring deletion/disable/permanent-block attempts are rejected and logged.
+
+### Break-Glass Accounts
+
+- [x] T102 [P] Implement `src/core/auth/models/break_glass_usage_log.py` dataclass for break-glass session tracking.
+- [x] T103 [P] Implement `src/core/auth/repositories/break_glass_usage_log_repository.py` for break-glass usage logging and credential rotation status.
+- [x] T104 [P] Implement `src/core/auth/services/break_glass_service.py` for break-glass login handling, justification capture, enhanced audit logging, and post-session credential rotation.
+- [x] T105 [P] Implement `src/core/auth/services/admin_notification_service.py` for sending break-glass usage alerts and security incident notifications to administrators.
+- [x] T106 Update `src/core/auth/services/auth_service.py` to detect break-glass login, invoke `BreakGlassService`, and mark session with `session_type='break_glass'`.
+- [x] T107 Update `src/core/auth/services/session_service.py` to trigger credential rotation on break-glass session logout and update `BreakGlassUsageLog`.
+- [x] T108 [P] Add integration test `tests/integration/identity/test_break_glass_workflow.py` covering login with justification, enhanced audit, logout rotation, and admin notification.
+- [x] T109 [P] Add contract test `tests/contracts/identity/test_break_glass_justification.py` ensuring break-glass login requires justification and logs the stated reason.
+
+### CLI & GUI Updates for Lockout Prevention
+
+- [x] T110 Add CLI command `rotate-break-glass` to `scripts/admin/rfu_admin.py` for manual break-glass credential rotation with secure export.
+- [x] T111 Add CLI command `list-protected-accounts` to `scripts/admin/rfu_admin.py` showing always-available and break-glass account status.
+- [x] T112 Update hub login dialog `src/rfu/login_dialog.py` to prompt for justification when break-glass credentials are detected.
+- [x] T113 Update admin panel `src/rfu/admin_panel.py` to show break-glass usage history and always-available account status (dev role only).
+- [x] T114 [P] Add GUI integration test `tests/integration/gui/test_break_glass_justification_dialog.py` verifying justification prompt and logging.
+
+### Lockout Prevention Verification
+
+- [x] T115 [P] Add integration test `tests/integration/identity/test_lockout_prevention_guarantee.py` verifying system can never reach complete lockout state.
+- [x] T116 [P] Add CLI integration test `tests/integration/cli/test_headless_recovery.py` verifying CLI recovery path works without GUI authentication.
+- [x] T117 [P] Update documentation `docs/login_password_baseline.md` with lockout prevention features, four-role system, and break-glass procedures.
 
 ## Phase 3.7 – Polish, Quality, and Documentation
 

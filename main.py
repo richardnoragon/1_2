@@ -10,10 +10,12 @@ It provides a comprehensive GUI interface with dual interface modes:
 Enhanced with interface mode switching, workflow analysis, and accessibility features.
 """
 
+import importlib
 import logging
 import os
 import subprocess
 import sys
+import time
 from datetime import datetime, timedelta
 from enum import Enum
 from pathlib import Path
@@ -48,11 +50,13 @@ USE_DEFAULT_INTERFACE = "Use Default Interface"
 
 # Interface mode definitions
 class InterfaceMode(Enum):
-    """Enumeration for interface modes."""
+    """Enumeration for interface modes.
+
+    NOTE: MULTI_PANE mode has been removed. Only DIALOG_HUB (tabbed) is available.
+    """
 
     DIALOG_HUB = "dialog_hub"
-    MULTI_PANE = "multi_pane"
-    AUTO_DETECT = "auto_detect"
+    # MULTI_PANE removed - file_explorer module has been deleted
 
 
 class WorkflowPattern(Enum):
@@ -64,6 +68,12 @@ class WorkflowPattern(Enum):
     DATA_ANALYSIS = "data_analysis"
     CONTENT_CREATION = "content_creation"
     SYSTEM_MAINTENANCE = "system_maintenance"
+
+
+class AuthenticationCancelledError(RuntimeError):
+    """Raised when the user dismisses the login gate without authenticating."""
+
+    pass
 
 
 # Initialize database system
@@ -450,7 +460,11 @@ class InterfaceSelectionDialog:
         return workflow_group
 
     def _create_selection_section(self):
-        """Create enhanced interface selection section."""
+        """Create interface selection section.
+
+        NOTE: Multi-pane option has been removed. Only tabbed interface
+        is now available after login.
+        """
         from PyQt5.QtWidgets import (
             QButtonGroup,
             QFrame,
@@ -461,29 +475,27 @@ class InterfaceSelectionDialog:
             QVBoxLayout,
         )
 
-        selection_group = QGroupBox("🖥️ Select Your Interface Mode")
+        selection_group = QGroupBox("🖥️ Interface Mode")
         selection_layout = QVBoxLayout(selection_group)
 
         # Create button group for mutual exclusion
         self.button_group = QButtonGroup()
 
-        # Dialog Hub option with enhanced styling
+        # Only Dialog Hub (tabbed) option available
         dialog_frame = self._create_interface_option(
             "dialog_hub",
-            "📋 Dialog-Based Hub Interface",
-            "• Comprehensive tabbed interface\n• All tools organized by category\n• Perfect for organized task management",
+            "📋 Tabbed Hub Interface",
+            "• Comprehensive tabbed interface\n"
+            "• All tools organized by category\n"
+            "• Professional workflow design",
             "#3498db",
         )
         selection_layout.addWidget(dialog_frame)
 
-        # Multi-pane option with enhanced styling
-        pane_frame = self._create_interface_option(
-            "multi_pane",
-            "🔀 Multi-Pane Explorer Layout",
-            "• Simultaneous multiple views\n• Resizable, dockable panels\n• Perfect for complex operations",
-            "#e74c3c",
-        )
-        selection_layout.addWidget(pane_frame)
+        # Multi-pane removed - no longer available
+        self.pane_radio = None
+
+        return selection_group
 
         return selection_group
 
@@ -645,14 +657,8 @@ class InterfaceSelectionDialog:
             result = self.dialog.exec_()
 
             if result == self.dialog.Accepted:
-                # Process user selection
-                if self.dialog_radio and self.dialog_radio.isChecked():
-                    self.selected_mode = InterfaceMode.DIALOG_HUB
-                elif self.pane_radio and self.pane_radio.isChecked():
-                    self.selected_mode = InterfaceMode.MULTI_PANE
-                else:
-                    # Fallback to default
-                    self.selected_mode = InterfaceMode.DIALOG_HUB
+                # Process user selection - only tabbed interface available
+                self.selected_mode = InterfaceMode.DIALOG_HUB
 
                 if self.remember_checkbox:
                     self.remember_choice = self.remember_checkbox.isChecked()
@@ -664,31 +670,21 @@ class InterfaceSelectionDialog:
                 )
                 return True
             else:
-                # User cancelled or closed dialog
-                self.logger.info("User cancelled interface selection, " "using default")
+                # User cancelled - still use tabbed interface
+                self.logger.info("User cancelled, using default tabbed interface")
                 self.selected_mode = InterfaceMode.DIALOG_HUB
                 self.remember_choice = False
                 return False  # User cancelled
 
         except Exception as e:
-            self.logger.error(f"Error executing interface selection " f"dialog: {e}")
+            self.logger.error(f"Error executing interface selection dialog: {e}")
             self._show_fallback_dialog()
             return False  # Error occurred
 
     def _handle_continue(self):
-        """Handle continue button click with validation."""
+        """Handle continue button click."""
         try:
-            # Validate selection
-            if not (self.dialog_radio.isChecked() or self.pane_radio.isChecked()):
-                from PyQt5.QtWidgets import QMessageBox
-
-                QMessageBox.warning(
-                    self.dialog,
-                    "Selection Required",
-                    "Please select an interface mode before continuing.",
-                )
-                return
-
+            # Only tabbed interface available - always accept
             self.dialog.accept()
 
         except Exception as e:
@@ -696,14 +692,14 @@ class InterfaceSelectionDialog:
             self.dialog.accept()  # Continue anyway
 
     def _handle_cancel(self):
-        """Handle cancel button click with fallback to default interface."""
+        """Handle cancel button click - still uses tabbed interface."""
         try:
             from PyQt5.QtWidgets import QMessageBox
 
             result = QMessageBox.question(
                 self.dialog,
                 USE_DEFAULT_INTERFACE,
-                "Would you like to use the default Dialog Hub interface instead?",
+                "Continue with the Tabbed Hub interface?",
                 QMessageBox.Yes | QMessageBox.No,
                 QMessageBox.Yes,
             )
@@ -824,32 +820,17 @@ class InterfaceSelectionDialog:
             return False
 
     def _get_interface_recommendation(self, workflow):
-        """Get interface recommendation based on workflow pattern."""
-        recommendations = {
-            WorkflowPattern.FILE_MANAGEMENT: {
-                "mode": InterfaceMode.DIALOG_HUB,
-                "name": "Dialog-Based Hub",
-                "reason": "Perfect for organized file operations with comprehensive tabbed interface. "
-                "All tools are categorized and easily accessible with professional workflow design.",
-            },
-            WorkflowPattern.DEVELOPMENT: {
-                "mode": InterfaceMode.MULTI_PANE,
-                "name": "Multi-Pane Explorer",
-                "reason": "Ideal for development workflows requiring simultaneous access to multiple "
-                "directories, file comparison, and integrated tool access. Supports complex "
-                "project navigation and batch operations.",
-            },
-            WorkflowPattern.BATCH_OPERATIONS: {
-                "mode": InterfaceMode.MULTI_PANE,
-                "name": "Multi-Pane Explorer",
-                "reason": "Optimized for batch operations with multiple file views, drag-and-drop "
-                "between panes, and efficient cross-directory operations.",
-            },
-        }
+        """Get interface recommendation based on workflow pattern.
 
-        return recommendations.get(
-            workflow, recommendations[WorkflowPattern.FILE_MANAGEMENT]
-        )
+        NOTE: Multi-pane has been removed. Always returns tabbed interface.
+        """
+        # All workflows now use the tabbed Dialog Hub interface
+        return {
+            "mode": InterfaceMode.DIALOG_HUB,
+            "name": "Tabbed Hub Interface",
+            "reason": "Professional tabbed interface with all tools "
+            "organized by category for efficient workflow management.",
+        }
 
 
 try:
@@ -991,6 +972,14 @@ try:
             # Initialize core systems
             self._initialize_core_systems()
 
+            # Enforce authentication before any interface work begins
+            self.logger.info("Enforcing authentication gate prior to UI setup")
+            if not self._enforce_login_gate():
+                self.logger.warning("Authentication not completed; aborting startup")
+                raise AuthenticationCancelledError(
+                    "Authentication dialog was dismissed"
+                )
+
             # Show startup dialog and determine interface mode BEFORE UI initialization
             self.logger.info("Determining interface mode through startup dialog")
             self._determine_interface_mode()
@@ -1047,6 +1036,9 @@ try:
                 self.dialog_hub_widget = None
                 self.interface_switching_enabled = True
                 self.transition_in_progress = False
+                self._session_context: Optional[Dict[str, Any]] = None
+                self._last_username: str = ""
+                self._authentication_verified = False
 
                 # Workflow analysis and session tracking
                 self.session_start_time = datetime.now()
@@ -1082,7 +1074,7 @@ try:
 
                 # Initialize configuration manager
                 try:
-                    from src.config_manager import get_config_manager
+                    from src.config.config_manager import get_config_manager
 
                     self.config_manager = get_config_manager()
                     self._setup_interface_configuration()
@@ -1148,6 +1140,185 @@ try:
                                 )
                     except (AttributeError, KeyError):
                         pass
+
+        def _resolve_identity_database_path(self) -> Optional[Path]:
+            """Locate the identity database used by the login dialog."""
+
+            configured_value = ""
+            if self.config_manager and hasattr(self.config_manager, "get_setting"):
+                try:
+                    configured_value = (
+                        self.config_manager.get_setting("identity", "database_path", "")
+                        or ""
+                    ).strip()
+                except Exception as exc:
+                    self.logger.debug(
+                        "Unable to read identity.database_path from config: %s",
+                        exc,
+                    )
+
+            candidates: list[tuple[str, Path]] = []
+            if configured_value:
+                candidates.append(("config", Path(configured_value).expanduser()))
+
+            env_override = (os.getenv("RFU_IDENTITY_DB_PATH") or "").strip()
+            if env_override:
+                candidates.append(("env", Path(env_override).expanduser()))
+
+            candidates.append(
+                (
+                    "project",
+                    Path(project_root) / "data" / "rfu_identity.sqlite3",
+                )
+            )
+            candidates.append(("cwd", Path.cwd() / "data" / "rfu_identity.sqlite3"))
+
+            normalized: list[tuple[str, Path]] = []
+            seen: set[str] = set()
+            for label, candidate in candidates:
+                expanded = candidate.expanduser()
+                key = str(expanded)
+                if key in seen:
+                    continue
+                seen.add(key)
+                normalized.append((label, expanded))
+
+            for label, candidate in normalized:
+                try:
+                    if candidate.exists():
+                        self.logger.debug(
+                            "Identity DB candidate (%s) selected: %s",
+                            label,
+                            candidate,
+                        )
+                        return candidate
+                    self.logger.debug(
+                        "Identity DB candidate (%s) missing: %s",
+                        label,
+                        candidate,
+                    )
+                except OSError as exc:
+                    self.logger.debug(
+                        "Identity DB candidate (%s) stat error: %s",
+                        label,
+                        exc,
+                    )
+
+            if configured_value:
+                self.logger.warning(
+                    "Configured identity database not found at %s",
+                    Path(configured_value).expanduser(),
+                )
+            else:
+                missing_paths = ", ".join(str(path) for _, path in normalized)
+                self.logger.warning(
+                    "Identity database not found in default locations (%s)",
+                    missing_paths,
+                )
+            return None
+
+        def _load_login_prompt_callable(self):
+            """Import the GUI login dialog without hard-coding a single path."""
+
+            module_candidates = (
+                "src.rfu.login_dialog",
+                "rfu.login_dialog",
+            )
+            last_error: Optional[Exception] = None
+            for module_name in module_candidates:
+                try:
+                    module = importlib.import_module(module_name)
+                    prompt = getattr(module, "prompt_for_login", None)
+                    if callable(prompt):
+                        return prompt
+                except Exception as exc:
+                    last_error = exc
+                    self.logger.debug(
+                        "Login dialog import failed via %s: %s",
+                        module_name,
+                        exc,
+                    )
+
+            raise ImportError(
+                "Unable to locate the login dialog prompt callable"
+            ) from last_error
+
+        def _show_authentication_error(self, title: str, message: str) -> None:
+            """Display authentication errors without crashing headless tests."""
+
+            try:
+                QMessageBox.critical(self, title, message)
+            except Exception:
+                self.logger.error("%s: %s", title, message)
+
+        def _enforce_login_gate(self) -> bool:
+            """Prompt for login and block UI startup until authentication succeeds."""
+
+            if self._authentication_verified:
+                return True
+
+            database_path = self._resolve_identity_database_path()
+            if database_path is None:
+                self.logger.warning(
+                    "Identity database unavailable; skipping authentication gate"
+                )
+                self._authentication_verified = True
+                return True
+
+            try:
+                prompt_for_login = self._load_login_prompt_callable()
+            except ImportError as exc:
+                self.logger.error("Login dialog unavailable: %s", exc)
+                self._show_authentication_error(
+                    "Authentication Unavailable",
+                    "Unable to load the login dialog component.\n\n"
+                    "Please reinstall or repair the RFU login dependencies.",
+                )
+                return False
+
+            self.logger.debug("Launching authentication dialog for %s", database_path)
+            start_time = time.perf_counter()
+            try:
+                session = prompt_for_login(
+                    database_path=database_path,
+                    parent=self,
+                    initial_username=self._last_username or "",
+                )
+            except Exception as exc:
+                self.logger.error("Login dialog crashed: %s", exc, exc_info=True)
+                self._show_authentication_error(
+                    "Authentication Error",
+                    f"The sign-in dialog encountered an unexpected error.\n\n{exc}",
+                )
+                return False
+            finally:
+                elapsed = time.perf_counter() - start_time
+                self.logger.debug("Authentication dialog closed after %.2fs", elapsed)
+
+            if not session:
+                self.logger.info("Authentication dialog dismissed without sign-in")
+                return False
+
+            self._session_context = session
+            username = str(session.get("username") or "").strip()
+            self._last_username = username
+            role = session.get("role") or session.get("session", {}).get("role")
+            self._authentication_verified = True
+
+            try:
+                status_text = f"Signed in as {username or 'unknown'}" + (
+                    f" ({role})" if role else ""
+                )
+                self.statusBar().showMessage(status_text, 8000)
+            except Exception:
+                pass
+
+            self.logger.info(
+                "Authenticated GUI session for user %s (role=%s)",
+                username or "unknown",
+                role or "unknown",
+            )
+            return True
 
         def _determine_interface_mode(self):
             """Determine which interface mode to use with comprehensive startup dialog logic."""
@@ -1285,21 +1456,16 @@ try:
                 self.logger.warning(f"Failed to track interface selection: {db_error}")
 
         def _handle_dialog_fallback(self):
-            """Handle fallback when dialog creation or interaction fails."""
+            """Handle fallback when dialog creation or interaction fails.
+
+            NOTE: Multi-pane has been removed. Always defaults to Dialog Hub.
+            """
             try:
                 self.logger.info("Using fallback interface selection logic")
 
-                # Try to detect suitable interface based on system characteristics
-                if self._detect_developer_environment():
-                    self.current_interface_mode = InterfaceMode.MULTI_PANE
-                    self.logger.info(
-                        "Detected developer environment, defaulting to Multi-Pane Explorer"
-                    )
-                else:
-                    self.current_interface_mode = InterfaceMode.DIALOG_HUB
-                    self.logger.info(
-                        "Detected general use environment, defaulting to Dialog Hub"
-                    )
+                # Always use Dialog Hub (tabbed interface) - multi-pane removed
+                self.current_interface_mode = InterfaceMode.DIALOG_HUB
+                self.logger.info("Defaulting to Tabbed Hub Interface")
 
                 # Show simple notification if possible
                 try:
@@ -1308,14 +1474,17 @@ try:
                     QMessageBox.information(
                         self,
                         "Interface Mode Selected",
-                        f"Starting with {self.current_interface_mode.value.replace('_', ' ').title()} mode.\n\n"
-                        "You can change interface modes from the Interface menu.",
+                        "Starting with Tabbed Hub Interface.\n\n"
+                        "This provides organized access to all tools by category.",
                     )
                 except Exception:
                     # Ultimate fallback - just print message
-                    print(
-                        f"Starting with {self.current_interface_mode.value.replace('_', ' ').title()} interface mode"
-                    )
+                    print("Starting with Tabbed Hub Interface")
+
+            except Exception as e:
+                self.logger.error(f"Error in dialog fallback handling: {e}")
+                # Ultimate fallback
+                self.current_interface_mode = InterfaceMode.DIALOG_HUB
 
             except Exception as e:
                 self.logger.error(f"Error in dialog fallback handling: {e}")
@@ -1402,24 +1571,19 @@ try:
                 self.logger.warning(f"Failed to track interface selection: {e}")
 
         def _initialize_interface(self):
-            """Initialize the selected interface mode with comprehensive error handling."""
+            """Initialize the selected interface mode with comprehensive error handling.
+
+            NOTE: Multi-pane interface has been removed. Only tabbed interface is supported.
+            """
             try:
                 self.logger.info(
                     f"Initializing interface mode: {self.current_interface_mode.value}"
                 )
 
-                if self.current_interface_mode == InterfaceMode.MULTI_PANE:
-                    success = self._initialize_multi_pane_interface()
-                    if not success:
-                        self.logger.warning(
-                            "Multi-pane interface initialization failed, falling back to dialog hub"
-                        )
-                        self.current_interface_mode = InterfaceMode.DIALOG_HUB
-                        self._initialize_dialog_hub_interface()
-                else:
-                    self._initialize_dialog_hub_interface()
+                # Always initialize the dialog hub (tabbed) interface
+                self._initialize_dialog_hub_interface()
 
-                # Setup interface switching menu
+                # Setup interface menu (switching disabled)
                 self._setup_interface_switching_menu()
 
                 self.logger.info(
@@ -1516,7 +1680,11 @@ try:
                 self.dialog_hub_widget = self.centralWidget()
 
         def _initialize_multi_pane_interface(self):
-            """Initialize the multi-pane explorer interface embedded in the main window."""
+            """Initialize the multi-pane explorer interface embedded in the main window.
+
+            NOTE: The src.file_explorer module has been removed due to stability issues.
+            This method now uses the built-in simple multi-pane widget fallback.
+            """
             try:
                 self.logger.info("Initializing multi-pane explorer interface")
 
@@ -1528,48 +1696,11 @@ try:
                         "Stored current dialog hub widget for future restoration"
                     )
 
-                # Create or reuse the multi-pane explorer widget with new architecture
+                # Create or reuse the multi-pane explorer widget
+                # NOTE: file_explorer module removed - using built-in fallback only
                 if not self.multi_pane_explorer:
-                    try:
-                        # Try to import and create the simplified multi-pane explorer (new architecture)
-                        try:
-                            from src.file_explorer.multi_pane_explorer_simple import (
-                                MultiPaneExplorer,
-                            )
-
-                            # Create simplified explorer as embedded widget
-                            self.multi_pane_explorer = MultiPaneExplorer()
-
-                            # Embed properly in main window
-                            if hasattr(self.multi_pane_explorer, "setWindowFlags"):
-                                self.multi_pane_explorer.setWindowFlags(Qt.Widget)
-
-                            self.logger.info(
-                                "Simplified multi-pane explorer created successfully"
-                            )
-                        except ImportError:
-                            # Fall back to full explorer if simplified version fails
-                            self.logger.warning(
-                                "Simplified explorer not available, trying full version"
-                            )
-                            try:
-                                from src.file_explorer.multi_pane_explorer import (
-                                    MultiPaneFileExplorer,
-                                )
-
-                                self.multi_pane_explorer = MultiPaneFileExplorer()
-                                self.multi_pane_explorer.setWindowFlags(Qt.Widget)
-                                self.logger.info("Full multi-pane explorer created")
-                            except ImportError:
-                                # Final fallback to simplified widget
-                                self.multi_pane_explorer = (
-                                    self._create_simple_multi_pane_widget()
-                                )
-                                self.logger.warning("Using simplified widget fallback")
-                    except Exception as ce:
-                        self.logger.error(f"Failed to create multi-pane explorer: {ce}")
-                        self._create_fallback_multi_pane()
-                        return True  # Fallback is still a success
+                    self.multi_pane_explorer = self._create_simple_multi_pane_widget()
+                    self.logger.info("Using built-in simple multi-pane widget")
 
                 # Embed the multi-pane explorer in the main window
                 self.setCentralWidget(self.multi_pane_explorer)
@@ -1739,7 +1870,18 @@ try:
             self.setWindowTitle(f"{APP_NAME} - Multi-Pane Explorer (Simplified)")
 
         def switch_interface_mode(self, new_mode, animated=True):
-            """Switch between interface modes with optional animation."""
+            """Switch between interface modes with optional animation.
+
+            NOTE: Multi-pane interface has been removed. This method now only
+            supports DIALOG_HUB mode and is kept for API compatibility.
+            """
+            # Only DIALOG_HUB is supported now
+            if new_mode != InterfaceMode.DIALOG_HUB:
+                self.logger.warning(
+                    f"Unsupported interface mode: {new_mode}. Using DIALOG_HUB."
+                )
+                new_mode = InterfaceMode.DIALOG_HUB
+
             if self.current_interface_mode == new_mode or self.transition_in_progress:
                 return
 
@@ -1758,23 +1900,27 @@ try:
             # Track switch for analytics
             self.interface_switch_count += 1
 
-            # Perform transition (no animation for window switching)
+            # Perform transition
             self._immediate_interface_transition(new_mode)
 
             # Emit signal
             self.interface_switched.emit(new_mode.value)
 
         def _immediate_interface_transition(self, new_mode):
-            """Perform immediate interface transition without animation."""
-            if new_mode == InterfaceMode.MULTI_PANE:
-                self._initialize_multi_pane_interface()
-            else:
-                self._initialize_dialog_hub_interface()
+            """Perform immediate interface transition without animation.
 
+            NOTE: Only DIALOG_HUB is supported after multi-pane removal.
+            """
+            # Always use dialog hub interface
+            self._initialize_dialog_hub_interface()
             self.transition_in_progress = False
 
         def _setup_interface_switching_menu(self):
-            """Setup menu for switching between interface modes."""
+            """Setup menu for interface options.
+
+            NOTE: Interface switching is disabled since only tabbed mode
+            is supported. Menu is kept for preferences access only.
+            """
             menubar = self.menuBar()
 
             if not menubar:
@@ -1793,27 +1939,11 @@ try:
             # Add interface menu
             interface_menu = menubar.addMenu("&Interface")
 
-            # Switch to dialog hub action
-            switch_hub_action = interface_menu.addAction("Switch to Dialog Hub")
-            switch_hub_action.setShortcut("Ctrl+Shift+H")
-            switch_hub_action.triggered.connect(
-                lambda: self.switch_interface_mode(InterfaceMode.DIALOG_HUB)
+            # Current mode indicator (disabled, just shows status)
+            current_mode_action = interface_menu.addAction(
+                "✓ Tabbed Hub Interface (Active)"
             )
-            switch_hub_action.setEnabled(
-                self.current_interface_mode != InterfaceMode.DIALOG_HUB
-            )
-
-            # Switch to multi-pane action
-            switch_pane_action = interface_menu.addAction(
-                "Switch to Multi-Pane Explorer"
-            )
-            switch_pane_action.setShortcut("Ctrl+Shift+M")
-            switch_pane_action.triggered.connect(
-                lambda: self.switch_interface_mode(InterfaceMode.MULTI_PANE)
-            )
-            switch_pane_action.setEnabled(
-                self.current_interface_mode != InterfaceMode.MULTI_PANE
-            )
+            current_mode_action.setEnabled(False)
 
             interface_menu.addSeparator()
 
@@ -2811,7 +2941,13 @@ try:
         app.setApplicationVersion("3.0.0")
         app.setOrganizationName(APP_NAME)
 
-        window = RFUMainWindow()
+        try:
+            window = RFUMainWindow()
+        except AuthenticationCancelledError:
+            print("Authentication was cancelled. " "Exiting without launching the UI.")
+            app.quit()
+            return 0
+
         window.show()
 
         print("Dual-interface system initialized with tabbed hub interface.")

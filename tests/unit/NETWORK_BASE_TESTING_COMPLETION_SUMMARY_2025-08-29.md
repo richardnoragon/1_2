@@ -7,7 +7,7 @@
 
 ## Project Overview
 
-This project successfully created comprehensive unit tests for the `network_base.py` module located in `src/utilities/network/network_connectivity_complex/core/`. The testing suite provides complete coverage of all classes, methods, and functionality within the target module.
+This project successfully created comprehensive unit tests for the `network_base.py` module located in `src/tools/network/network_connectivity_complex/core/`. The testing suite provides complete coverage of all classes, methods, and functionality within the target module.
 
 ## Files Generated
 

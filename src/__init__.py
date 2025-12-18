@@ -36,15 +36,11 @@ def safe_import_package(package_name: str):
         return None
 
 
-# Import main packages
-utilities = safe_import_package("utilities")
+# Import main packages (only import existing packages)
 rfu = safe_import_package("rfu")
-legacy = safe_import_package("legacy")
 
 __all__ = [
-    "utilities",
     "rfu",
-    "legacy",
     "APP_NAME",
     "APP_ORGANIZATION",
     "APP_VERSION",
@@ -59,9 +55,7 @@ __all__ = [
 def get_package_info() -> Dict[str, Any]:
     """Return information about available packages."""
     return {
-        "utilities": utilities is not None,
         "rfu": rfu is not None,
-        "legacy": legacy is not None,
         "version": __version__,
         "description": __description__,
     }

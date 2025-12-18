@@ -23,6 +23,15 @@ class AdminActionType(StrEnum):
     SELF_REGISTRATION = "self_registration"
     PREFERENCE_RECOVERY = "preference_recovery"
     PENDING_REGISTRATION_ALERT = "pending_registration_alert"
+    # Lockout prevention actions
+    AUTO_UNBLOCK = "auto_unblock"
+    AUTO_UNBLOCK_SCHEDULED = "auto_unblock_scheduled"
+    BREAK_GLASS_LOGIN = "break_glass_login"
+    BREAK_GLASS_LOGOUT = "break_glass_logout"
+    # Role enforcement actions
+    ROLE_CHANGE = "role_change"
+    ROLE_ESCALATION = "role_escalation"
+    ROLE_DEMOTION = "role_demotion"
 
     @classmethod
     def coerce(cls, value: object | None) -> "AdminActionType":

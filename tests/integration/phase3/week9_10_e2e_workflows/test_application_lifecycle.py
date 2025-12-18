@@ -23,7 +23,7 @@ import pytest
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", "..", ".."))
 
 try:
-    from src.config_manager import ConfigManager
+    from src.config.config_manager import ConfigManager
     from src.log_manager import LogManager
     from tabbed_hub import RFUHub
 except ImportError as e:

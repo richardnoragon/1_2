@@ -120,7 +120,7 @@ def show_integration_guide():
     print("   pyvisualizer>=1.0.9")
 
     print("\n2. 🏗️  Create analytics module:")
-    print("   src/rfu/analytics/visualizer.py")
+    print("   src/analytics/pyvisualizer_integration.py")
 
     print("\n3. 📊 Add logging to RFU tools:")
     print("   - Log file operations (copy, move, delete)")
@@ -136,11 +136,11 @@ def show_integration_guide():
     print("\n5. 📈 Sample integration code:")
     integration_code = """
 # In your RFU tool classes:
-from src.rfu.analytics.visualizer import RFUVisualizer
+from src.analytics.pyvisualizer_integration import RFUAnalyticsLogger
 
 class FileOperationTool:
     def __init__(self):
-        self.analytics = RFUVisualizer()
+        self.analytics = RFUAnalyticsLogger()
     
     def copy_files(self, files):
         start_time = time.time()

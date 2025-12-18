@@ -1,17 +1,18 @@
 {
-  "captured_at": "2025-11-22T10:31:27.098299",
-  "channel": "cli",
-  "database_path": "data\\rfu_identity.sqlite3",
+  "captured_at": "2025-11-28T19:15:23.059240",
+  "channel": "gui",
+  "database_path": "C:\\Users\\HP1\\AppData\\Local\\Temp\\pytest-of-HP1\\pytest-225\\test_post_register_queues_pend0\\identity_contract.sqlite",
   "metadata": {
-    "email": "demo@example.com",
-    "purpose": "demo",
-    "surface": "cli"
+    "notes": "qa",
+    "purpose": "contract",
+    "surface": "gui"
   },
-  "origin_surface": "cli",
-  "pending_count": 1,
+  "origin_surface": "service",
+  "pending_count": 2,
   "pending_preview": [
-    "demo"
+    "pending_demo",
+    "pending_contract_user"
   ],
-  "submitted_at": "2025-11-22T10:31:27",
-  "username": "demo"
+  "submitted_at": "2025-11-28T19:15:23",
+  "username": "pending_contract_user"
 }

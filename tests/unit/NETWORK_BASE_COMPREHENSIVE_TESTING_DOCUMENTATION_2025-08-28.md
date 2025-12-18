@@ -1,7 +1,7 @@
 # NETWORK_BASE.PY COMPREHENSIVE UNIT TESTING DOCUMENTATION
 
 **Generated:** 2025-08-28  
-**Target Module:** `src/utilities/network/network_connectivity_complex/core/network_base.py`  
+**Target Module:** `src/tools/network/network_connectivity_complex/core/network_base.py`  
 **Testing Framework:** pytest  
 **Location:** `C:\Users\richardi\1_2\tests\unit\`
 
@@ -86,7 +86,7 @@ tests/unit/
 - **Logging:** Comprehensive logging to file and console
 
 ### Coverage Configuration (`.coveragerc_network_base_2025-08-28`)
-- **Source:** `utilities.network.network_connectivity_complex.core.network_base`
+- **Source:** `src.tools.network.network_connectivity_complex.core.network_base`
 - **Branch Coverage:** Enabled
 - **Exclusions:** Test files, cache directories, virtual environments
 - **Reports:** HTML, JSON, XML formats
@@ -207,7 +207,7 @@ pytest test_network_base_2025-08-28.py -c pytest_network_base_2025-08-28.ini -v
 
 ### With Coverage Only
 ```bash
-pytest test_network_base_2025-08-28.py --cov=utilities.network.network_connectivity_complex.core.network_base --cov-report=html
+pytest test_network_base_2025-08-28.py --cov=src.tools.network.network_connectivity_complex.core.network_base --cov-report=html
 ```
 
 ### Specific Test Categories

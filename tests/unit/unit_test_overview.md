@@ -309,7 +309,7 @@
 **Status:** 🟢 **FULLY OPERATIONAL** (September 2, 2025)
 **Breakthrough Achievement:** Enterprise ConfigManager implementation enables comprehensive testing of 2,400+ lines of network code
 
-#### [`network_connectivity.py`](../../src/utilities/network/network_connectivity.py)
+#### [`network_connectivity.py`](../../src/tools/network/network_connectivity.py)
 
 **Status:** ✅ **Comprehensive Testing Available + Enhanced Capabilities**  
 **Test File:** Multiple test variants available  
@@ -318,21 +318,21 @@
 **Features:** Real-time monitoring, security assessment, performance analysis
 **Enhanced:** Network security testing framework operational
 
-#### [`network_scanner.py`](../../src/utilities/network/network_scanner.py)
+#### [`network_scanner.py`](../../src/tools/network/network_scanner.py)
 
 **Status:** ✅ **Testing Available + CVE Detection Ready**  
 **Results:** [📊 Test Documentation](NETWORK_SCANNER_TESTING_DOCUMENTATION_2025-08-24.md)  
 **Purpose:** Network device discovery and analysis
 **Enhanced:** CVE pattern matching (CVE-2011-2523, CVE-2016-0777) testing enabled
 
-#### [`network_transfer.py`](../../src/utilities/network/network_transfer.py)
+#### [`network_transfer.py`](../../src/tools/network/network_transfer.py)
 
 **Status:** ✅ **Testing Available + Encryption Validation Ready**  
 **Results:** [📊 Test Results](NETWORK_TRANSFER_TESTING_COMPLETION_SUMMARY_2025-08-24.md)  
 **Purpose:** Secure file transfer over network protocols
 **Enhanced:** AES-256 with PBKDF2 encryption testing framework operational
 
-#### [`gui.py`](../../src/utilities/network/gui.py)
+#### [`gui.py`](../../src/tools/network/gui.py)
 
 **Status:** ✅ **Comprehensive Testing Complete - August 31, 2025**  
 **Test Files:** [`test_network_gui_corrected_2025-08-31.py`](test_network_gui_corrected_2025-08-31.py)
@@ -347,10 +347,10 @@
 
 #### Core Components - **ALL MODULES NOW TESTABLE**
 
-- **[`network_base.py`](../../src/utilities/network/network_connectivity_complex/core/network_base.py)** - ✅ **Enhanced Testing Framework Ready**
-- **[`performance_analyzer.py`](../../src/utilities/network/network_connectivity_complex/core/performance_analyzer.py)** - ✅ **60K+ ops/sec Benchmarking Ready**
-- **[`security_validator.py`](../../src/utilities/network/network_connectivity_complex/core/security_validator.py)** - ✅ **Vulnerability Assessment Framework Operational**
-- **[`metrics_service.py`](../../src/utilities/network/network_connectivity_complex/core/metrics_service.py)** - ✅ **Advanced Metrics Collection Ready**
+- **[`network_base.py`](../../src/tools/network/network_connectivity_complex/core/network_base.py)** - ✅ **Enhanced Testing Framework Ready**
+- **[`performance_analyzer.py`](../../src/tools/network/network_connectivity_complex/core/performance_analyzer.py)** - ✅ **60K+ ops/sec Benchmarking Ready**
+- **[`security_validator.py`](../../src/tools/network/network_connectivity_complex/core/security_validator.py)** - ✅ **Vulnerability Assessment Framework Operational**
+- **[`metrics_service.py`](../../src/tools/network/network_connectivity_complex/core/metrics_service.py)** - ✅ **Advanced Metrics Collection Ready**
 
 **Enhanced Network Capabilities Now Testable:**
 

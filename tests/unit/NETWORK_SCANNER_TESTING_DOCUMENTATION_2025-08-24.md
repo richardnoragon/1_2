@@ -1,7 +1,7 @@
 # Network Scanner Unit Testing Documentation
 
 **Created:** 2025-08-24  
-**Target Module:** `src/utilities/network/network_scanner.py`  
+**Target Module:** `src/tools/network/network_scanner.py`  
 **Testing Framework:** pytest with comprehensive reporting
 
 ## Overview

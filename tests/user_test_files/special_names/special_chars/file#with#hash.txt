@@ -1,0 +1,1 @@
+Special char test: file#with#hash.txt

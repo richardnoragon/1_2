@@ -4,11 +4,17 @@ from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from typing import Callable, Iterable, List
+from typing import TYPE_CHECKING, Callable, Iterable, List, Optional
 
 from src.core.auth.models import SessionToken
 from src.core.auth.repositories.session_store import SessionStore
 from src.log_manager import get_log_manager
+
+if TYPE_CHECKING:
+    from src.core.auth.services.admin_notification_service import (
+        AdminNotificationService,
+    )
+    from src.core.auth.services.break_glass_service import BreakGlassService
 
 Clock = Callable[[], datetime]
 
@@ -27,6 +33,8 @@ class SessionService:
         database_path: str | Path | None = None,
         idle_timeout: timedelta = timedelta(minutes=10),
         clock: Clock | None = None,
+        break_glass_service: Optional["BreakGlassService"] = None,
+        notification_service: Optional["AdminNotificationService"] = None,
     ) -> None:
         if session_store is not None:
             self._store = session_store
@@ -38,6 +46,8 @@ class SessionService:
         self._idle_timeout = idle_timeout
         self._clock = clock or _utcnow
         self._logger = get_log_manager().get_logger("Auth.SessionService")
+        self._break_glass_service = break_glass_service
+        self._notification_service = notification_service
 
     # ------------------------------------------------------------------
     def logout(
@@ -46,7 +56,13 @@ class SessionService:
         *,
         actor: str | None = None,
     ) -> bool:
-        """Revoke a single session handle hash."""
+        """Revoke a single session handle hash.
+
+        For break-glass sessions, this also deactivates the break-glass
+        session and triggers credential rotation requirements.
+        """
+        # Get session to check if it's break-glass
+        token = self._store.get(session_handle_hash)
 
         revoked = self._store.revoke(
             session_handle_hash,
@@ -58,12 +74,83 @@ class SessionService:
                 session_handle_hash,
                 actor or "system",
             )
+
+            # Handle break-glass session deactivation
+            if token and token.is_break_glass:
+                self._handle_break_glass_logout(token, actor)
         else:
             self._logger.debug(
                 "Session %s not found during logout request",
                 session_handle_hash,
             )
         return revoked
+
+    def _handle_break_glass_logout(
+        self,
+        token: SessionToken,
+        actor: str | None = None,
+    ) -> None:
+        """Handle break-glass session logout with rotation trigger.
+
+        Args:
+            token: The break-glass session token being logged out
+            actor: The actor performing the logout
+        """
+        username = token.user_id
+        bg_session_id = token.break_glass_session_id
+
+        self._logger.warning(
+            "Break-glass session ended: user=%s, session_id=%s",
+            username,
+            bg_session_id,
+        )
+
+        # Deactivate the break-glass session
+        if self._break_glass_service and bg_session_id:
+            deactivated = self._break_glass_service.deactivate(
+                username,
+                now=self._clock(),
+            )
+            if deactivated:
+                self._logger.info(
+                    "Break-glass session deactivated: %s",
+                    bg_session_id,
+                )
+            else:
+                self._logger.warning(
+                    "Failed to deactivate break-glass session: %s",
+                    bg_session_id,
+                )
+
+        # Calculate session duration
+        duration_minutes = 0
+        if token.issued_at:
+            duration = self._clock() - token.issued_at
+            duration_minutes = int(duration.total_seconds() / 60)
+
+        # Send notification about session end
+        if self._notification_service and bg_session_id:
+            # Get action count from break-glass service if available
+            action_count = 0
+            if self._break_glass_service:
+                status = self._break_glass_service.get_session_status(username)
+                if status:
+                    action_count = status.action_count
+
+            self._notification_service.notify_break_glass_session_ended(
+                username=username,
+                session_id=bg_session_id,
+                duration_minutes=duration_minutes,
+                action_count=action_count,
+            )
+
+            # Notify that rotation is required
+            reason_text = f"Break-glass session ended after {duration_minutes} minutes"
+            self._notification_service.notify_rotation_required(
+                username=username,
+                reason=reason_text,
+                urgency="high",
+            )
 
     def logout_many(
         self,

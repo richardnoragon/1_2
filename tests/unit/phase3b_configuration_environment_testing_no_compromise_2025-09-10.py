@@ -62,7 +62,7 @@ import configparser
 # Add project root to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-from src.config_manager import ConfigManager, get_config_manager
+from src.config.config_manager import ConfigManager, get_config_manager
 from src.tools.network.network_connectivity_complex.deployment.install import NetworkConnectivityInstaller
 
 

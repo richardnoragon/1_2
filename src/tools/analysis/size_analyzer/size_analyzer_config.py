@@ -27,9 +27,9 @@ def get_config_manager():
     try:
         # Try multiple import paths
         import_paths = [
+            "src.config.config_manager",
             "src.rfu.core.config_manager",
             "rfu.core.config_manager",
-            "src.config_manager",
             "rfu.config_manager",
         ]
 

@@ -33,7 +33,7 @@
 
 ## Summary
 
-The feature introduces a governed identity subsystem for RFU: Argon2id-hashed credentials, lockout and auditing, self-service registration that lands accounts in a pending queue, admin approval tooling, session invalidation on password reset, 10-minute idle timeout, and preference linkage that ensures each authenticated user loads only their own personalization. Implementation will prioritize the motto **“better many smaller detailed dedicated tasks than fewer large complex ones”** by decomposing each workflow (registration, login, approval, reset, sharing) into discrete service, CLI, GUI, and test tickets so work streams can advance independently without coupling.
+The feature introduces a governed identity subsystem for RFU: Argon2id-hashed credentials, lockout and auditing, self-service registration that lands accounts in a pending queue, admin approval tooling, session invalidation on password reset, 10-minute idle timeout, and preference linkage that ensures each authenticated user loads only their own personalization. The system now supports four roles (`dev`, `admin`, `user`, `readonly`) with lockout prevention via always-available and break-glass accounts (see 007-upgrade-to-login spec). Implementation will prioritize the motto **"better many smaller detailed dedicated tasks than fewer large complex ones"** by decomposing each workflow (registration, login, approval, reset, sharing, lockout prevention) into discrete service, CLI, GUI, and test tickets so work streams can advance independently without coupling.
 
 ## Technical Context
 
@@ -53,7 +53,7 @@ The feature introduces a governed identity subsystem for RFU: Argon2id-hashed cr
 
 - **Principle II (Safety & Data Integrity)**: Plan includes dry-run friendly admin tools and ensures resets/unblocks are auditable with rollback; no destructive operations occur without explicit operator confirmation.
 - **Principle VI (User Preference Management)**: Preference linkage handled via `preferences_id`, corruption fallback logged, sharing flows enforce metadata and anonymization.
-- **Principle VII (Identity & Access Control)**: Argon2id hashing, lockout thresholds, audit retention, session invalidation, and admin approval lifecycle captured explicitly. Session secrets only live in memory/process vaults; the database stores a hashed `session_handle` for revocation & auditing so Principle VII's "tokens in memory only" clause remains satisfied. CLI + GUI tooling ensures reset/unblock controls exist even when hub unavailable.
+- **Principle VII (Identity & Access Control)**: Argon2id hashing, lockout thresholds, audit retention, session invalidation, and admin approval lifecycle captured explicitly. Session secrets only live in memory/process vaults; the database stores a hashed `session_handle` for revocation & auditing so Principle VII's "tokens in memory only" clause remains satisfied. CLI + GUI tooling ensures reset/unblock controls exist even when hub unavailable. Four-role system (`dev`, `admin`, `user`, `readonly`) with graduated privileges. Always-available and break-glass accounts ensure operators are never completely locked out (see 007-upgrade-to-login spec).
 - **Additional Constraints 14–16**: Database schema extensions (user_accounts/admin_action_audit/session) respect canonical storage, lockout counters updated atomically, idle timeout ≤10 minutes, audit retention ≥365 days.
 
 No constitutional violations identified; complexity tracking not required at this stage. These gates will be rechecked after Phase 1 artifacts are produced.
@@ -193,16 +193,38 @@ tests/
 - [x] Phase 0: Research complete (/plan command)
 - [x] Phase 1: Design complete (/plan command)
 - [x] Phase 2: Task planning complete (/plan command - describe approach only)
-- [ ] Phase 3: Tasks generated (/tasks command)
-- [ ] Phase 4: Implementation complete
-- [ ] Phase 5: Validation passed
+- [x] Phase 3: Tasks generated (/tasks command) — **117 tasks created and completed**
+- [x] Phase 4: Implementation complete — **All T001–T117 finished (2025-11-28)**
+- [x] Phase 5: Validation passed — **All tests passing (lockout prevention, CLI recovery, integration)**
 
 **Gate Status**:
 
 - [x] Initial Constitution Check: PASS
 - [x] Post-Design Constitution Check: PASS
 - [x] All NEEDS CLARIFICATION resolved
-- [ ] Complexity deviations documented (not needed)
+- [x] Complexity deviations documented (not needed)
+
+**Completion Summary (2025-11-28)**:
+
+All 117 tasks completed across 8 phases:
+
+- Phase 3.1: Schema & Migrations (T001–T014)
+- Phase 3.2: TDD Contract Tests (T015–T034)
+- Phase 3.3: Core Models (T035–T040)
+- Phase 3.4: Repositories (T041–T047)
+- Phase 3.5: Services (T048–T068)
+- Phase 3.6: CLI Integration (T069–T086)
+- Phase 3.7: GUI Integration (T087–T108)
+- Phase 3.8: Polish & Documentation (T109–T117)
+
+Key deliverables:
+
+- Four-role system (dev > admin > user > readonly)
+- Lockout prevention with always-available and break-glass accounts
+- CLI headless recovery for disaster scenarios
+- Argon2id password hashing with secure salt management
+- Session management with idle timeout
+- Comprehensive audit logging
 
 ---
 

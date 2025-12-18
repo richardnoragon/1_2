@@ -11,28 +11,35 @@ The Network Connectivity Toolkit provides a comprehensive Python API for program
 ## 📚 API Structure
 
 ### Core Modules
-- **[`network_connectivity.core`](#core-api)** - Base classes and core functionality
+
+- **[`network_connectivity_complex.core`](#core-api)** - Base classes and core functionality
 - **[`network_connectivity.tools`](#tools-api)** - Network analysis tools
 - **[`network_connectivity.config`](#configuration-api)** - Configuration management
 - **[`network_connectivity.gui`](#gui-api)** - Graphical user interface components
 
 ### Service Modules
+
 - **[`network_connectivity.services`](#services-api)** - Shared services (logging, config, etc.)
 - **[`network_connectivity.integration`](#integration-api)** - System integration utilities
 - **[`network_connectivity.utils`](#utilities-api)** - Utility functions and helpers
 
 ## 🔧 Core API
 
+> **Import update (2025-11-23):** The former `utilities.network...` shim has been removed. Always import directly from `src.tools.network.network_connectivity_complex.*` (or the packaged `network_connectivity_complex.*`) going forward.
+
 ### NetworkToolBase
 
 Base class for all network connectivity tools.
 
 ```python
-from network_connectivity.core.network_base import NetworkToolBase, NetworkOperationStatus
+from src.tools.network.network_connectivity_complex.core.network_base import (
+    NetworkOperationStatus,
+    NetworkToolBase,
+)
 
 class NetworkToolBase(QObject, ABC):
     """Base class for all network connectivity tools."""
-    
+
     # Signals
     progress_updated = pyqtSignal(int, int, str)  # current, total, message
     operation_complete = pyqtSignal(object)       # NetworkOperationResult
@@ -43,62 +50,66 @@ class NetworkToolBase(QObject, ABC):
 ```
 
 #### Constructor
+
 ```python
 def __init__(self, tool_name: str):
     """Initialize the network tool.
-    
+
     Args:
         tool_name: Name of the network tool
     """
 ```
 
 #### Abstract Methods
+
 ```python
 @abstractmethod
 def execute_operation(self, **kwargs) -> NetworkOperationResult:
     """Execute the network operation."""
-    
+
 @abstractmethod
 def get_supported_protocols(self) -> List[str]:
     """Get list of supported network protocols."""
-    
+
 @abstractmethod
 def validate_parameters(self, **kwargs) -> bool:
     """Validate operation parameters."""
-    
+
 @abstractmethod
 def get_health_status(self) -> Dict[str, Any]:
     """Get the current health status of the tool."""
 ```
 
 #### Public Methods
+
 ```python
 def start_operation(self, operation_type: str, **kwargs) -> bool:
     """Start a network operation."""
-    
+
 def stop_operation(self) -> bool:
     """Stop the current operation."""
-    
+
 def get_tool_config(self, key: str, default: Any = None) -> Any:
     """Get tool-specific configuration value."""
-    
+
 def set_tool_config(self, key: str, value: Any):
     """Set tool-specific configuration value."""
-    
+
 def get_current_data(self) -> Dict[str, Any]:
     """Get the current data."""
-    
-def get_historical_data(self, start_time: Optional[datetime] = None, 
+
+def get_historical_data(self, start_time: Optional[datetime] = None,
                        end_time: Optional[datetime] = None) -> List[Dict[str, Any]]:
     """Get historical data."""
 ```
 
 #### Properties
+
 ```python
 @property
 def is_running(self) -> bool:
     """Check if the tool is running."""
-    
+
 @property
 def is_healthy(self) -> bool:
     """Check if the tool is healthy."""
@@ -149,20 +160,22 @@ class BandwidthMonitor(NetworkToolBase):
 ```
 
 #### Constructor
+
 ```python
 def __init__(self):
     """Initialize bandwidth monitor."""
 ```
 
 #### Public Methods
+
 ```python
 def start_monitoring(self, interface: str = "auto", interval: int = 1000) -> bool:
     """Start bandwidth monitoring.
-    
+
     Args:
         interface: Network interface to monitor ("auto" for automatic selection)
         interval: Monitoring interval in milliseconds
-        
+
     Returns:
         bool: True if started successfully
     """
@@ -182,12 +195,13 @@ def get_usage_statistics(self, start_time: datetime, end_time: datetime) -> Dict
 def configure_alert(self, alert_type: str, **kwargs) -> bool:
     """Configure bandwidth alerts."""
 
-def export_data(self, start_time: datetime, end_time: datetime, 
+def export_data(self, start_time: datetime, end_time: datetime,
                format: str = "csv", filename: str = None) -> str:
     """Export bandwidth data."""
 ```
 
 #### Example Usage
+
 ```python
 # Create and configure monitor
 monitor = BandwidthMonitor()
@@ -222,23 +236,25 @@ class PortScanner(NetworkToolBase):
 ```
 
 #### Constructor
+
 ```python
 def __init__(self):
     """Initialize port scanner."""
 ```
 
 #### Public Methods
+
 ```python
-def scan(self, target: str, ports: str = "1-1000", 
+def scan(self, target: str, ports: str = "1-1000",
          scan_type: str = "tcp_syn", **kwargs) -> Dict[str, Any]:
     """Perform port scan.
-    
+
     Args:
         target: Target IP address, hostname, or network range
         ports: Port specification (e.g., "80", "1-1000", "80,443,8080")
         scan_type: Scan technique ("tcp_syn", "tcp_connect", "udp")
         **kwargs: Additional scan options
-        
+
     Returns:
         Dict containing scan results
     """
@@ -260,6 +276,7 @@ def generate_report(self, results: Dict[str, Any], format: str = "html") -> str:
 ```
 
 #### Example Usage
+
 ```python
 # Create scanner
 scanner = PortScanner()
@@ -295,20 +312,22 @@ class WiFiAnalyzer(NetworkToolBase):
 ```
 
 #### Constructor
+
 ```python
 def __init__(self):
     """Initialize Wi-Fi analyzer."""
 ```
 
 #### Public Methods
+
 ```python
 def start_scanning(self, scan_interval: int = 30000, **kwargs) -> bool:
     """Start Wi-Fi network scanning.
-    
+
     Args:
         scan_interval: Scan interval in milliseconds
         **kwargs: Additional scan options
-        
+
     Returns:
         bool: True if started successfully
     """
@@ -336,6 +355,7 @@ def monitor_signal(self, ssid: str, duration: int = 300) -> List[Dict[str, Any]]
 ```
 
 #### Example Usage
+
 ```python
 # Create analyzer
 analyzer = WiFiAnalyzer()
@@ -370,12 +390,14 @@ class LANFileTransfer(NetworkToolBase):
 ```
 
 #### Constructor
+
 ```python
 def __init__(self):
     """Initialize LAN file transfer."""
 ```
 
 #### Public Methods
+
 ```python
 def start_service(self, port: int = 8765) -> bool:
     """Start file transfer service."""
@@ -388,7 +410,7 @@ def discover_devices(self, timeout: int = 30) -> List[Dict[str, Any]]:
 
 def send_file(self, device_id: str, file_path: str, **kwargs) -> str:
     """Send file to device.
-    
+
     Returns:
         str: Transfer ID for tracking
     """
@@ -407,6 +429,7 @@ def get_transfer_history(self) -> List[Dict[str, Any]]:
 ```
 
 #### Example Usage
+
 ```python
 # Create file transfer instance
 transfer = LANFileTransfer()
@@ -424,7 +447,7 @@ if devices:
         device_id=devices[0]['id'],
         file_path="/path/to/file.txt"
     )
-    
+
     # Monitor transfer
     while True:
         status = transfer.get_transfer_status(transfer_id)
@@ -447,6 +470,7 @@ class ConfigService:
 ```
 
 #### Public Methods
+
 ```python
 def get_setting(self, section: str, key: str = None, default: Any = None) -> Any:
     """Get configuration setting."""
@@ -477,6 +501,7 @@ def reset_to_defaults(self, section: str = None) -> bool:
 ```
 
 #### Example Usage
+
 ```python
 from network_connectivity.core.config_service import get_config_service
 
@@ -515,16 +540,17 @@ class LoggingService:
 ```
 
 #### Public Methods
+
 ```python
 def get_logger(self, name: str) -> logging.Logger:
     """Get logger instance."""
 
-def log_network_event(self, tool_name: str, event_type: str, 
+def log_network_event(self, tool_name: str, event_type: str,
                      message: str, **kwargs) -> None:
     """Log network-specific event."""
 
-def get_log_entries(self, start_time: datetime = None, 
-                   end_time: datetime = None, 
+def get_log_entries(self, start_time: datetime = None,
+                   end_time: datetime = None,
                    level: str = None) -> List[Dict[str, Any]]:
     """Get log entries."""
 
@@ -550,8 +576,9 @@ class NotificationService:
 ```
 
 #### Public Methods
+
 ```python
-def send_notification(self, title: str, message: str, 
+def send_notification(self, title: str, message: str,
                      level: str = "info", **kwargs) -> bool:
     """Send notification."""
 
@@ -579,6 +606,7 @@ class NetworkConnectivityHub(StandardWindow):
 ```
 
 #### Public Methods
+
 ```python
 def launch_tool(self, tool_name: str) -> bool:
     """Launch a network tool."""
@@ -598,7 +626,7 @@ Individual tool GUI components.
 # Bandwidth Monitor Widget
 from network_connectivity.gui.widgets.bandwidth_monitor_widget import BandwidthMonitorWidget
 
-# Port Scanner Widget  
+# Port Scanner Widget
 from network_connectivity.gui.widgets.port_scanner_widget import PortScannerWidget
 
 # Wi-Fi Analyzer Widget
@@ -660,7 +688,7 @@ def export_to_json(data: Any, filename: str) -> bool:
 def export_to_xml(data: Dict[str, Any], filename: str) -> bool:
     """Export data to XML format."""
 
-def generate_report(data: Dict[str, Any], template: str, 
+def generate_report(data: Dict[str, Any], template: str,
                    format: str = "html") -> str:
     """Generate formatted report."""
 ```
@@ -694,16 +722,16 @@ try:
     # Start bandwidth monitoring
     logger.info("Starting network analysis workflow")
     bandwidth_monitor.start_monitoring(interface="auto", interval=1000)
-    
+
     # Perform port scan
     scan_results = port_scanner.quick_scan("192.168.1.1")
     logger.info(f"Port scan completed: {len(scan_results['ports'])} ports scanned")
-    
+
     # Analyze Wi-Fi
     wifi_analyzer.start_scanning(scan_interval=30000)
     networks = wifi_analyzer.get_networks()
     logger.info(f"Wi-Fi analysis completed: {len(networks)} networks found")
-    
+
     # Generate comprehensive report
     report_data = {
         'bandwidth': bandwidth_monitor.get_current_data(),
@@ -711,7 +739,7 @@ try:
         'wifi_networks': networks,
         'timestamp': datetime.now().isoformat()
     }
-    
+
     # Export results
     bandwidth_monitor.export_data(
         start_time=datetime.now() - timedelta(hours=1),
@@ -719,9 +747,9 @@ try:
         format="csv",
         filename="bandwidth_report.csv"
     )
-    
+
     port_scanner.generate_report(scan_results, format="html")
-    
+
 finally:
     # Cleanup
     bandwidth_monitor.stop_monitoring()
@@ -732,8 +760,12 @@ finally:
 ### Error Handling
 
 ```python
-from network_connectivity.core.network_base import NetworkOperationStatus
-from network_connectivity.tools.bandwidth_monitor import BandwidthMonitor
+from src.tools.network.network_connectivity_complex.core.network_base import (
+    NetworkOperationStatus,
+)
+from src.tools.network.network_connectivity_complex.tools.bandwidth_monitor import (
+    BandwidthMonitor,
+)
 
 monitor = BandwidthMonitor()
 
@@ -760,18 +792,21 @@ except Exception as e:
 ## 📋 API Conventions
 
 ### Return Values
+
 - **Boolean methods:** Return `True` for success, `False` for failure
 - **Data methods:** Return data structures or `None` for no data
 - **List methods:** Return empty list `[]` if no items found
 - **Dict methods:** Return empty dict `{}` if no data available
 
 ### Error Handling
+
 - **Exceptions:** Raised for programming errors and invalid parameters
 - **Signals:** Emitted for runtime errors and status changes
 - **Return values:** Used for operation success/failure indication
 - **Logging:** All errors logged to appropriate logger
 
 ### Threading
+
 - **Thread-safe:** All public methods are thread-safe
 - **Signals:** Emitted from worker threads, safe for GUI updates
 - **Blocking operations:** Long-running operations use separate threads

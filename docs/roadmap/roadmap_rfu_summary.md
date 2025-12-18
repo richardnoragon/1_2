@@ -53,7 +53,7 @@
 
 ## 4. File System Restructuring Plan
 
-- **Consolidate application code**: Move all runtime code to `src/rfu/` following domains (`core/`, `utilities/`, `interfaces/`, `plugins/`); migrate `src/rfu/analytics/` into `src/rfu/analysis/` to avoid duplication.
+- **Consolidate application code**: Move all runtime code to `src/rfu/` following domains (`core/`, `utilities/`, `interfaces/`, `plugins/`); migrate analytics modules (now located in `src/analytics/`) into `src/rfu/analysis/` to avoid duplication.
 - **Archive segregation**: Relocate historical artifacts to `archive/legacy/` with metadata manifest; keep only non-deployable references.
 - **Entry point normalization**: Retain `src/main.py` as canonical launcher; convert root `main.py` and `rfu_explorer.py` into thin wrappers or CLI scripts under `src/rfu/cli/`; retire legacy references to `src/rfu/main.py` once modernization gating completes.
 - **Testing alignment**: Move root-level pytest files into `tests/ui/` or relevant domain folders; ensure tests mirror `src` structure (e.g., `tests/utilities/file_management/test_file_finder.py`).

@@ -1,0 +1,2 @@
+UTF-8 without BOM content
+Line 2

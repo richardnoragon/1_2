@@ -71,8 +71,12 @@ def insert_user(conn: sqlite3.Connection, user_row: Dict[str, Any]) -> None:
             activated_at,
             blocked_at,
             updated_at,
-            enforced_password_change
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            enforced_password_change,
+            is_always_available,
+            is_break_glass,
+            break_glass_justification,
+            auto_unblock_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
         (
             user_row["username"],
@@ -93,6 +97,10 @@ def insert_user(conn: sqlite3.Connection, user_row: Dict[str, Any]) -> None:
             user_row["blocked_at"],
             user_row["updated_at"],
             user_row["enforced_password_change"],
+            user_row.get("is_always_available", 0),
+            user_row.get("is_break_glass", 0),
+            user_row.get("break_glass_justification"),
+            user_row.get("auto_unblock_at"),
         ),
     )
 
@@ -174,6 +182,8 @@ def build_user(
     login_attempts: int = 0,
     share_preferences: bool = False,
     preferences_id: str | None = None,
+    is_always_available: bool = False,
+    is_break_glass: bool = False,
 ) -> Dict[str, Any]:
     seed = UserSeed(
         username=username,
@@ -183,6 +193,8 @@ def build_user(
         login_attempts=login_attempts,
         share_preferences=share_preferences,
         preferences_id=preferences_id,
+        is_always_available=is_always_available,
+        is_break_glass=is_break_glass,
     )
     return seed.to_row()
 

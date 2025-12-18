@@ -295,9 +295,7 @@ class SearchResultsModel(QAbstractTableModel):
             elif result_item.highlighted:
                 return QBrush(QColor(255, 255, 224))  # Light yellow
             elif index.row() % 2 == 0:
-                return QBrush(
-                    QColor(248, 248, 248)
-                )  # Light gray for alternating rows
+                return QBrush(QColor(248, 248, 248))  # Light gray for alternating rows
 
         elif role == Qt.FontRole:
             if result_item.selected:
@@ -344,7 +342,7 @@ class SearchResultsModel(QAbstractTableModel):
         if column < 0 or column >= len(self.columns):
             return
 
-        self.layoutAboutToBeChanged.emit()
+        self.beginResetModel()
 
         self.sort_column = column
         self.sort_order = order
@@ -373,7 +371,7 @@ class SearchResultsModel(QAbstractTableModel):
                 reverse=reverse,
             )
 
-        self.layoutChanged.emit()
+        self.endResetModel()
         self.logger.debug(f"Sorted by {column_name} ({order})")
 
     def _create_tooltip(self, result_item: SearchResultItem) -> str:
@@ -408,9 +406,7 @@ class SearchResultsModel(QAbstractTableModel):
         """
         self.beginResetModel()
 
-        self.results = [
-            SearchResultItem(metadata) for metadata in file_metadata_list
-        ]
+        self.results = [SearchResultItem(metadata) for metadata in file_metadata_list]
         self.selected_items.clear()
 
         self.endResetModel()
@@ -427,9 +423,7 @@ class SearchResultsModel(QAbstractTableModel):
 
         self.dataUpdated.emit(0)
 
-    def get_result_item(
-        self, index: QModelIndex
-    ) -> Optional[SearchResultItem]:
+    def get_result_item(self, index: QModelIndex) -> Optional[SearchResultItem]:
         """Get result item for model index.
 
         Args:
@@ -451,9 +445,7 @@ class SearchResultsModel(QAbstractTableModel):
         """
         return self.selected_items.copy()
 
-    def set_item_selection(
-        self, items: List[SearchResultItem], selected: bool
-    ):
+    def set_item_selection(self, items: List[SearchResultItem], selected: bool):
         """Set selection state for items.
 
         Args:
@@ -471,14 +463,10 @@ class SearchResultsModel(QAbstractTableModel):
         # Emit data changed for affected rows
         if items:
             start_row = min(
-                self.results.index(item)
-                for item in items
-                if item in self.results
+                self.results.index(item) for item in items if item in self.results
             )
             end_row = max(
-                self.results.index(item)
-                for item in items
-                if item in self.results
+                self.results.index(item) for item in items if item in self.results
             )
 
             start_index = self.createIndex(start_row, 0)
@@ -487,9 +475,7 @@ class SearchResultsModel(QAbstractTableModel):
 
         self.selectionChanged.emit(self.selected_items)
 
-    def highlight_items(
-        self, items: List[SearchResultItem], highlighted: bool
-    ):
+    def highlight_items(self, items: List[SearchResultItem], highlighted: bool):
         """Set highlight state for items.
 
         Args:
@@ -503,14 +489,10 @@ class SearchResultsModel(QAbstractTableModel):
         # Emit data changed for affected rows
         if items:
             start_row = min(
-                self.results.index(item)
-                for item in items
-                if item in self.results
+                self.results.index(item) for item in items if item in self.results
             )
             end_row = max(
-                self.results.index(item)
-                for item in items
-                if item in self.results
+                self.results.index(item) for item in items if item in self.results
             )
 
             start_index = self.createIndex(start_row, 0)
@@ -533,9 +515,7 @@ class SearchResultsTable(QTableView):
     itemSelected = pyqtSignal(object)  # SearchResultItem
     itemActivated = pyqtSignal(object)  # SearchResultItem
     selectionChanged = pyqtSignal(list)  # List[SearchResultItem]
-    contextMenuRequested = pyqtSignal(
-        object, object
-    )  # SearchResultItem, QPoint
+    contextMenuRequested = pyqtSignal(object, object)  # SearchResultItem, QPoint
 
     def __init__(self, parent: Optional[QWidget] = None):
         """Initialize search results table.
@@ -603,9 +583,7 @@ class SearchResultsTable(QTableView):
         """Connect internal signals."""
         # Selection changes
         self.selectionModel().currentChanged.connect(self._on_current_changed)
-        self.selectionModel().selectionChanged.connect(
-            self._on_selection_changed
-        )
+        self.selectionModel().selectionChanged.connect(self._on_selection_changed)
 
         # Double-click activation
         self.doubleClicked.connect(self._on_double_clicked)
@@ -624,9 +602,7 @@ class SearchResultsTable(QTableView):
         result_item = self.results_model.get_result_item(current)
         if result_item:
             self.itemSelected.emit(result_item)
-            self.logger.debug(
-                f"Selected item: {result_item.file_metadata.file_name}"
-            )
+            self.logger.debug(f"Selected item: {result_item.file_metadata.file_name}")
 
     def _on_selection_changed(self, selected, deselected):
         """Handle selection changes.
@@ -662,9 +638,7 @@ class SearchResultsTable(QTableView):
         result_item = self.results_model.get_result_item(index)
         if result_item:
             self.itemActivated.emit(result_item)
-            self.logger.debug(
-                f"Activated item: {result_item.file_metadata.file_name}"
-            )
+            self.logger.debug(f"Activated item: {result_item.file_metadata.file_name}")
 
     def _on_data_updated(self, count: int):
         """Handle data update.
@@ -691,9 +665,7 @@ class SearchResultsTable(QTableView):
         result_item = self.results_model.get_result_item(index)
 
         if result_item:
-            self.contextMenuRequested.emit(
-                result_item, self.mapToGlobal(position)
-            )
+            self.contextMenuRequested.emit(result_item, self.mapToGlobal(position))
 
     def set_results(self, file_metadata_list: List[FileMetadata]):
         """Set search results.
@@ -723,9 +695,7 @@ class SearchResultsTable(QTableView):
         """
         return self.results_model.results.copy()
 
-    def highlight_items(
-        self, items: List[SearchResultItem], highlighted: bool = True
-    ):
+    def highlight_items(self, items: List[SearchResultItem], highlighted: bool = True):
         """Highlight specific items.
 
         Args:
@@ -758,9 +728,7 @@ class SearchResultsTable(QTableView):
             return
 
         # Create tab-separated text
-        column_headers = [
-            col["title"] for col in self.results_model.get_column_info()
-        ]
+        column_headers = [col["title"] for col in self.results_model.get_column_info()]
         lines = ["\t".join(column_headers)]
 
         for item in selected_items:
@@ -857,9 +825,7 @@ class SearchResultsWidget(QWidget):
 
         # Results count label
         self.count_label = QLabel("0 results")
-        self.count_label.setStyleSheet(
-            "QLabel { color: #666666; font-size: 11px; }"
-        )
+        self.count_label.setStyleSheet("QLabel { color: #666666; font-size: 11px; }")
         toolbar_layout.addWidget(self.count_label)
 
         parent_layout.addWidget(toolbar_frame)

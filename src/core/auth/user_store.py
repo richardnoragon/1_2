@@ -163,6 +163,11 @@ class UserStore:
         row["enforced_password_change"] = row.get(reset_column)
         return UserAccount.from_row(row)
 
+    # Alias for compatibility with BreakGlassService
+    def get_by_username(self, username: str) -> Optional[UserAccount]:
+        """Alias for get_user() - compatibility with BreakGlassService."""
+        return self.get_user(username)
+
     @staticmethod
     def _utc_timestamp() -> str:
         return datetime.now(timezone.utc).isoformat(timespec="microseconds")

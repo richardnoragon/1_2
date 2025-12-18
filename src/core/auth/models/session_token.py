@@ -37,6 +37,18 @@ class SessionToken:
     revoked_at: datetime | None = None
     preferences_id: str | None = None
     idle_timeout_deadline: datetime | None = None
+    session_type: str = "normal"  # 'normal', 'break_glass'
+    usage_log_id: int | None = None  # FK to break_glass_usage_log.id
+
+    @property
+    def is_break_glass(self) -> bool:
+        """True if this is a break-glass emergency session."""
+        return self.session_type == "break_glass"
+
+    @property
+    def break_glass_session_id(self) -> str | None:
+        """Alias for usage_log_id as string for API compatibility."""
+        return str(self.usage_log_id) if self.usage_log_id else None
 
     @classmethod
     def from_row(cls, row: Mapping[str, Any]) -> "SessionToken":
@@ -55,6 +67,8 @@ class SessionToken:
             revoked_at=parse_datetime(row.get("revoked_at")),
             preferences_id=row.get("preferences_id"),
             idle_timeout_deadline=parse_datetime(row.get("idle_timeout_deadline")),
+            session_type=row.get("session_type", "normal"),
+            usage_log_id=row.get("usage_log_id"),
         )
 
     def is_active(self, *, as_of: datetime | None = None) -> bool:
@@ -138,6 +152,8 @@ class SessionToken:
             "revoked_at": datetime_to_iso(self.revoked_at),
             "preferences_id": self.preferences_id,
             "idle_timeout_deadline": datetime_to_iso(self.idle_timeout_deadline),
+            "session_type": self.session_type,
+            "usage_log_id": self.usage_log_id,
         }
 
 

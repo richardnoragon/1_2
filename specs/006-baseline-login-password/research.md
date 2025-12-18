@@ -49,3 +49,36 @@ Motto: **"Better many smaller, detailed tasks than fewer large complex ones."** 
 - **Alternatives Considered**:
   - _Event-driven only_: Risk of sessions lingering if no UI events fire (e.g., minimized app).
   - _Shorter intervals (<5 min)_: Unnecessarily disruptive for file utility workflows.
+
+## Decision 7: Four-Role System
+
+- **Decision**: Expand from two roles (`admin`, `standard`) to four roles: `dev` (developer/debugging), `admin` (user management), `user` (standard access, replaces `standard`), and `readonly` (view-only).
+- **Rationale**: Provides graduated privilege levels. `dev` role enables debugging/diagnostics and break-glass account management. `readonly` role supports audit/compliance scenarios without write risk. `user` replaces `standard` for clarity.
+- **Alternatives Considered**:
+  - _Keep two roles_: Insufficient for debugging needs and compliance scenarios.
+  - _More granular permissions_: Over-engineering for current scope; can be added later.
+
+## Decision 8: Always-Available Accounts
+
+- **Decision**: Maintain exactly two always-available accounts (one `dev`, one `admin`) that cannot be deleted, disabled, or permanently blocked. Use 15-minute cooldown auto-unblock instead of permanent lockout.
+- **Rationale**: Ensures operators are never completely locked out. Cooldown prevents brute-force attacks while guaranteeing recovery path. Protected accounts bootstrap during system setup.
+- **Alternatives Considered**:
+  - _No protected accounts_: Risk of complete lockout scenario.
+  - _Single protected account_: Insufficient redundancy; both dev and admin capabilities needed.
+
+## Decision 9: Break-Glass Accounts
+
+- **Decision**: Maintain exactly two break-glass accounts (one `dev`, one `admin`) separate from always-available accounts. Usage triggers enhanced audit logging, mandatory password rotation, and administrator notifications.
+- **Rationale**: Provides emergency recovery path when always-available accounts are compromised. Justification requirement and immediate rotation prevent routine abuse. Notifications ensure visibility.
+- **Alternatives Considered**:
+  - _No break-glass accounts_: Complete lockout risk if always-available accounts compromised.
+  - _Single break-glass account_: Insufficient for scenarios requiring both dev and admin capabilities.
+  - _Shared break-glass with always-available_: Conflates routine and emergency access patterns.
+
+## Decision 10: Lockout Prevention Guarantee
+
+- **Decision**: System must never reach a state where all administrative access is blocked. CLI recovery path must work without GUI authentication. Always-available + break-glass accounts ensure this guarantee.
+- **Rationale**: Critical business requirement from 005-Login notes. CLI path enables headless recovery for server/automation scenarios.
+- **Alternatives Considered**:
+  - _GUI-only recovery_: Blocks headless environments.
+  - _External recovery tool_: Adds complexity and deployment overhead.

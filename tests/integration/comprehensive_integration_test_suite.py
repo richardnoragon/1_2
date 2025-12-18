@@ -63,7 +63,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent / "src"))
 try:
     # Core file explorer components
     # RFU core components
-    from src.config_manager import ConfigManager
+    from src.config.config_manager import ConfigManager
     from src.file_explorer.core.pane_manager import PaneManager
     from src.file_explorer.database.migrations import DatabaseMigrator
     from src.file_explorer.database.schema import FileExplorerDatabase

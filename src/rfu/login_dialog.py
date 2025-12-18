@@ -10,11 +10,13 @@ try:
     from PyQt5.QtCore import Qt
     from PyQt5.QtWidgets import (
         QDialog,
+        QDialogButtonBox,
         QFrame,
         QGridLayout,
         QHBoxLayout,
         QLabel,
         QLineEdit,
+        QPlainTextEdit,
         QPushButton,
         QVBoxLayout,
         QWidget,
@@ -27,7 +29,8 @@ except ImportError:  # pragma: no cover - GUI fallback
     QDialog = object  # type: ignore
     QWidget = object  # type: ignore
 
-from src.rfu.identity import (
+from src.identity import (
+    BreakGlassJustificationRequired,
     login_with_preferences,
     submit_registration_request,
 )
@@ -36,6 +39,113 @@ _LOGGER = logging.getLogger("RFU.LoginDialog")
 
 
 if PYQT5_AVAILABLE:
+
+    class BreakGlassJustificationDialog(QDialog):
+        """Modal dialog to collect justification for break-glass access."""
+
+        MIN_JUSTIFICATION_LENGTH = 10
+
+        def __init__(
+            self,
+            *,
+            username: str,
+            parent: Optional[QWidget] = None,
+        ) -> None:
+            super().__init__(parent)
+            self.setWindowTitle("Break-Glass Access - Justification Required")
+            self.setModal(True)
+            self.setMinimumWidth(480)
+            self._username = username
+            self.justification: Optional[str] = None
+            self._build_ui()
+
+        def _build_ui(self) -> None:
+            layout = QVBoxLayout(self)
+            layout.setContentsMargins(24, 24, 24, 24)
+            layout.setSpacing(12)
+
+            # Warning header
+            warning = QLabel("⚠️ Break-Glass Emergency Access")
+            warning.setAlignment(Qt.AlignHCenter)
+            warning.setStyleSheet("font-size: 16px; font-weight: bold; color: #c0392b;")
+            layout.addWidget(warning)
+
+            # Explanation
+            explanation = QLabel(
+                f"Account '{self._username}' is a break-glass emergency "
+                "account. These credentials should only be used when normal "
+                "access is unavailable.\n\n"
+                "You must provide a justification for this emergency access. "
+                "All break-glass logins are logged and audited."
+            )
+            explanation.setWordWrap(True)
+            layout.addWidget(explanation)
+
+            # Justification input
+            justification_label = QLabel(
+                f"Justification (minimum {self.MIN_JUSTIFICATION_LENGTH} "
+                "characters):"
+            )
+            layout.addWidget(justification_label)
+
+            self.justification_input = QPlainTextEdit()
+            self.justification_input.setPlaceholderText(
+                "Describe why you need emergency access..."
+            )
+            self.justification_input.setMaximumHeight(100)
+            layout.addWidget(self.justification_input)
+
+            # Character count feedback
+            self.char_count_label = QLabel(
+                f"0/{self.MIN_JUSTIFICATION_LENGTH} characters"
+            )
+            self.char_count_label.setStyleSheet("color: #e74c3c;")
+            layout.addWidget(self.char_count_label)
+
+            self.justification_input.textChanged.connect(self._update_char_count)
+
+            # Error label
+            self.error_label = QLabel("")
+            self.error_label.setWordWrap(True)
+            self.error_label.setStyleSheet("color: #e74c3c;")
+            layout.addWidget(self.error_label)
+
+            # Buttons
+            button_row = QHBoxLayout()
+            button_row.addStretch(1)
+
+            cancel_button = QPushButton("Cancel")
+            cancel_button.clicked.connect(self.reject)
+            button_row.addWidget(cancel_button)
+
+            self.submit_button = QPushButton("Submit & Continue Login")
+            self.submit_button.setDefault(True)
+            self.submit_button.clicked.connect(self._submit)
+            button_row.addWidget(self.submit_button)
+
+            layout.addLayout(button_row)
+
+        def _update_char_count(self) -> None:
+            text = self.justification_input.toPlainText().strip()
+            count = len(text)
+            self.char_count_label.setText(
+                f"{count}/{self.MIN_JUSTIFICATION_LENGTH} characters"
+            )
+            if count >= self.MIN_JUSTIFICATION_LENGTH:
+                self.char_count_label.setStyleSheet("color: #27ae60;")
+            else:
+                self.char_count_label.setStyleSheet("color: #e74c3c;")
+
+        def _submit(self) -> None:
+            text = self.justification_input.toPlainText().strip()
+            if len(text) < self.MIN_JUSTIFICATION_LENGTH:
+                self.error_label.setText(
+                    f"Justification must be at least "
+                    f"{self.MIN_JUSTIFICATION_LENGTH} characters."
+                )
+                return
+            self.justification = text
+            self.accept()
 
     class HubLoginDialog(QDialog):
         """Simple username/password dialog that runs GUI login helpers."""
@@ -139,7 +249,7 @@ if PYQT5_AVAILABLE:
         def _display_error(self, message: str) -> None:
             self.feedback_label.setText(message)
 
-        def _attempt_login(self) -> None:
+        def _attempt_login(self, *, justification: Optional[str] = None) -> None:
             if self._busy:
                 return
 
@@ -156,7 +266,12 @@ if PYQT5_AVAILABLE:
                     database_path=self.database_path,
                     username=username,
                     password=password,
+                    justification=justification,
                 )
+            except BreakGlassJustificationRequired:
+                self._set_busy(False)
+                self._handle_break_glass_justification(username, password)
+                return
             except Exception as exc:  # pragma: no cover - GUI event path
                 _LOGGER.warning("Login failed: %s", exc)
                 self._display_error(str(exc))
@@ -174,6 +289,46 @@ if PYQT5_AVAILABLE:
             badge_text = badge.get("text") or badge.get("label")
             if badge_text:
                 self._display_error(f"Loaded preferences: {badge_text}")
+            self.accept()
+
+        def _handle_break_glass_justification(
+            self, username: str, password: str
+        ) -> None:
+            """Show justification dialog and retry login with justification."""
+            dialog = BreakGlassJustificationDialog(
+                username=username,
+                parent=self,
+            )
+            result = dialog.exec_()
+            if result != QDialog.Accepted or not dialog.justification:
+                self._display_error("Break-glass login cancelled")
+                return
+
+            # Retry login with justification
+            self._display_error("")
+            self._set_busy(True)
+            try:
+                login_result = login_with_preferences(
+                    database_path=self.database_path,
+                    username=username,
+                    password=password,
+                    justification=dialog.justification,
+                )
+            except Exception as exc:  # pragma: no cover - GUI path
+                _LOGGER.warning("Break-glass login failed: %s", exc)
+                self._display_error(str(exc))
+                self.password_input.selectAll()
+                self.password_input.setFocus()
+                return
+            finally:
+                self._set_busy(False)
+
+            self.login_result = login_result
+            _LOGGER.warning(
+                "Break-glass login successful: %s (justification: %s...)",
+                username,
+                dialog.justification[:20],
+            )
             self.accept()
 
         # ------------------------------------------------------------------
@@ -362,8 +517,16 @@ else:  # pragma: no cover - fallback definitions
         def __init__(self, *_, **__) -> None:
             raise RuntimeError("PyQt5 is required for the hub login dialog")
 
+    class BreakGlassJustificationDialog:  # type: ignore[override]
+        def __init__(self, *_, **__) -> None:
+            raise RuntimeError("PyQt5 is required for the justification dialog")
+
     def prompt_for_login(*_, **__):  # type: ignore[override]
         raise RuntimeError("PyQt5 is required for the hub login dialog")
 
 
-__all__ = ["HubLoginDialog", "prompt_for_login"]
+__all__ = [
+    "HubLoginDialog",
+    "BreakGlassJustificationDialog",
+    "prompt_for_login",
+]
