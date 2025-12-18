@@ -36,6 +36,8 @@
 │ Core Infrastructure Layer                                   │
 │ ├── Configuration Management (src/config_manager.py)       │
 │ ├── Database Manager (src/database/)                       │
+│ ├── Authentication System (src/core/auth/)                 │
+│ ├── Preferences Framework (src/core/preferences/)          │
 │ ├── Security Manager (src/core/theme_security/)            │
 │ ├── Logging Manager (src/log_manager.py)                   │
 │ ├── Error Handler (src/core/error_handler.py)              │
@@ -234,6 +236,75 @@ CREATE TABLE file_history (
     "security_lockdown": "Disable all security-sensitive operations",
     "emergency_disable": "Complete security feature shutdown",
     "force_backup": "Immediate backup creation and validation"
+}
+```
+
+### 5. Authentication and Identity Architecture
+
+#### Enterprise Authentication System
+
+**File:** [`src/core/auth/`](src/core/auth/) - Comprehensive identity management implementation
+
+**Components:**
+
+- **Auth Service**: [`auth_service.py`](src/core/auth/auth_service.py) - Core authentication service
+- **User Management**: [`models/user_account.py`](src/core/auth/models/user_account.py) - User account model and operations
+- **Session Management**: [`repositories/session_store.py`](src/core/auth/repositories/session_store.py) - Secure session token management
+- **Security Policies**: [`policies/lockout_policy.py`](src/core/auth/policies/lockout_policy.py) - Account lockout and security enforcement
+- **Password Security**: [`security/password_hasher.py`](src/core/auth/security/password_hasher.py) - Secure password hashing with salt
+- **Admin Panel**: [`workflows/admin_actions.py`](src/core/auth/workflows/admin_actions.py) - Administrative workflows
+
+**Architecture Features:**
+
+- **Multi-Factor Authentication Ready**: MFA hook service for future expansion
+- **Session Timeout Management**: Idle timeout watchdog with configurable policies
+- **Audit Trail**: Comprehensive logging of all authentication events
+- **Registration Workflow**: Admin approval process with pending registration alerts
+- **Security Validation**: Password strength validation and credential rules
+
+**Integration Points:**
+
+```python
+# Authentication Integration Architecture
+{
+    "login_dialog": "src/rfu/login_dialog.py - GUI integration with RFUHub",
+    "admin_panel": "src/rfu/admin_panel.py - User registration and management",
+    "session_watchdog": "src/core/auth/watchdogs/idle_timeout_watcher.py",
+    "telemetry": "Real-time security event logging and alerting"
+}
+```
+
+### 6. Preferences Framework Architecture
+
+#### Enterprise Preferences Management
+
+**File:** [`src/core/preferences/`](src/core/preferences/) - Comprehensive preferences framework
+
+**Components:**
+
+- **Preferences Manager**: [`manager.py`](src/core/preferences/manager.py) - Core preferences coordination
+- **Portability System**: [`portability.py`](src/core/preferences/portability.py) - Cross-system preference migration
+- **Preference Profiles**: [`models/preference_profile.py`](src/core/preferences/models/preference_profile.py) - User preference profiles
+- **Share Service**: [`services/share_service.py`](src/core/preferences/services/share_service.py) - Preference sharing between users
+- **Recovery Service**: [`services/preference_recovery_service.py`](src/core/preferences/services/preference_recovery_service.py) - Backup and restore
+
+**Architecture Features:**
+
+- **Cross-Platform Portability**: Seamless preference migration across systems
+- **Profile Management**: Multiple preference profiles per user
+- **Backup and Recovery**: Automated backup with point-in-time restoration
+- **Sharing Capabilities**: Secure preference sharing between team members
+- **Migration Support**: Upgrade path from legacy configuration systems
+
+**Integration with Tools:**
+
+```python
+# Preferences Integration Points
+{
+    "tools_preferences": "Per-tool preference storage and retrieval",
+    "ui_preferences": "Interface layout and theme preferences",
+    "security_preferences": "Security policy and access control preferences",
+    "performance_preferences": "Performance tuning and optimization settings"
 }
 ```
 
