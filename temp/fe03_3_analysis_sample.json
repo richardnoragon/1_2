@@ -1,0 +1,21 @@
+{
+  "session_id": "20251220_151652",
+  "timestamp": "2025-12-20T15:16:52.408683",
+  "summary": {
+    "files_analyzed": 1,
+    "files_needing_changes": 1,
+    "total_potential_changes": 24
+  },
+  "file_analyses": [
+    {
+      "file_path": "tests\\unit\\test_cmsd_core.py",
+      "potential_changes": 24,
+      "changes_by_type": {
+        "import_path": 1,
+        "assertion": 23
+      },
+      "imports_needed": [],
+      "warnings": []
+    }
+  ]
+}

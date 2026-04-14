@@ -697,6 +697,8 @@ class AnalysisToolsPerformanceMonitor:
             'batch_processing': 45,
             'report_generation': 5
         },
+    }
+
     def analyze_directory_sizes(self, root_path: str, 
                               options: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         """Simulate directory size analysis"""

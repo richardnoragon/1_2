@@ -3,9 +3,12 @@
 This module exports catalog data as HTML with embedded CSS and color preservation.
 """
 
-from pathlib import Path
-from typing import Dict, Any, List
 from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, List
+
+from src.gui.themes import token
+
 from .base_exporter import BaseExporter
 
 
@@ -79,11 +82,11 @@ class HTMLExporter(BaseExporter):
         return f"""
 <style>
 :root {{
-    --primary-color: #2196F3;
-    --secondary-color: #FFC107;
-    --background-color: #FAFAFA;
-    --text-color: #212121;
-    --border-color: #E0E0E0;
+    --primary-color: {token('button_primary')};
+    --secondary-color: {token('color_amber')};
+    --background-color: {token('surface')};
+    --text-color: {token('color_text_darkest')};
+    --border-color: {token('border_light')};
 }}
 
 body {{
@@ -163,7 +166,7 @@ body {{
 }}
 
 .legend-item:hover {{
-    background-color: #F5F5F5;
+    background-color: {token('surface')};
 }}
 
 .color-sample {{
@@ -185,7 +188,7 @@ body {{
 }}
 
 .legend-description {{
-    color: #666;
+    color: {token('text_muted')};
     font-size: 0.9em;
 }}
 
@@ -233,14 +236,14 @@ body {{
 
 .file-size {{
     font-family: 'Courier New', monospace;
-    color: #666;
+    color: {token('text_muted')};
     font-size: 0.9em;
     min-width: 80px;
     text-align: right;
 }}
 
 .file-date {{
-    color: #666;
+    color: {token('text_muted')};
     font-size: 0.9em;
     min-width: 120px;
     text-align: right;
@@ -261,7 +264,7 @@ body {{
 .footer {{
     margin-top: 40px;
     text-align: center;
-    color: #666;
+    color: {token('text_muted')};
     font-size: 0.9em;
     border-top: 1px solid var(--border-color);
     padding-top: 20px;
@@ -319,7 +322,7 @@ body {{
     def _get_pattern_css(self, pattern_type: str) -> str:
         """Get CSS for accessibility patterns."""
         patterns = {
-            "dots": "background-image: radial-gradient(circle, #000 1px, transparent 1px); background-size: 8px 8px;",
+            "dots": f"background-image: radial-gradient(circle, {token('color_black')} 1px, transparent 1px); background-size: 8px 8px;",
             "diagonal": "background-image: repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(0,0,0,0.1) 2px, rgba(0,0,0,0.1) 4px);",
             "horizontal": "background-image: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.1) 2px, rgba(0,0,0,0.1) 4px);",
             "vertical": "background-image: repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(0,0,0,0.1) 2px, rgba(0,0,0,0.1) 4px);",
@@ -353,53 +356,53 @@ body {{
 
     def _generate_print_css(self) -> str:
         """Generate print-friendly CSS."""
-        return """
-@media print {
-    body {
+        return f"""
+@media print {{
+    body {{
         background: white;
         color: black;
-    }
+    }}
     
-    .catalog-header {
+    .catalog-header {{
         background: none !important;
         color: black !important;
         box-shadow: none !important;
         border: 2px solid black;
-    }
+    }}
     
-    .file-entry {
+    .file-entry {{
         break-inside: avoid;
-        border: 1px solid #ccc;
+        border: 1px solid {token('border')};
         margin-bottom: 2px;
-    }
+    }}
     
-    .legend-section {
+    .legend-section {{
         break-inside: avoid;
-        border: 1px solid #ccc;
+        border: 1px solid {token('border')};
         box-shadow: none;
-    }
+    }}
     
-    .file-entry:hover {
+    .file-entry:hover {{
         transform: none;
         box-shadow: none;
-    }
-}"""
+    }}
+}}"""
 
     def _generate_accessibility_css(self) -> str:
         """Generate accessibility CSS."""
-        return """
-.accessibility-mode .file-entry {
+        return f"""
+.accessibility-mode .file-entry {{
     border-width: 2px;
-}
+}}
 
-.accessibility-mode .color-sample {
+.accessibility-mode .color-sample {{
     border-width: 2px;
-    border-color: #000;
-}
+    border-color: {token('color_black')};
+}}
 
-.accessibility-mode .file-name {
+.accessibility-mode .file-name {{
     font-weight: 600;
-}"""
+}}"""
 
     def _generate_javascript(self) -> str:
         """Generate JavaScript for interactive features."""

@@ -5,6 +5,139 @@
     }
   ],
   "settings": {
-    "accessibility.signalOptions.volume": 40
+    "accessibility.signalOptions.volume": 40,
+    "chat.tools.terminal.autoApprove": {
+      "New-Item": true,
+      "Out-Null": true,
+      "/^python c:\\\\Users\\\\HP1\\\\1_2\\\\temp\\\\fix_constitution_structure\\.py$/": {
+        "approve": true,
+        "matchCommandLine": true
+      },
+      "Copy-Item": true,
+      ".\\.venv312\\Scripts\\python.exe": true,
+      "Test-Path": true,
+      "Set-Content": true,
+      "venv\\Scripts\\python.exe": true,
+      ".venv312\\Scripts\\python.exe": true,
+      "ConvertFrom-Json": true,
+      "Group-Object": true,
+      "Get-Member": true,
+      "ForEach-Object": true,
+      "qfont_files.append(str(f))": true,
+      "str(f)": true,
+      "f": true,
+      "print()": true,
+      "print('===": true,
+      "os.getcwd": true,
+      "f.read_text(encoding='utf-8',": true,
+      "if": true,
+      "hub_nav_files.append(str(f))": true,
+      "v[\\\"match\\\"]": true,
+      "v[\\\"source\\\"].strip()[:100]": true,
+      "print('Remaining": true,
+      "{v[\\\"source\\\"].strip()}')": true,
+      "v[\\\"source\\\"].strip()": true,
+      "/^python -c \"\nimport ast, os\nfiles = \\[\n    'src/tools/network/gui\\.py',\n    'src/tools/pdf_tools/dialogs/parameter_dialogs\\.py',\n    'src/tools/pdf_tools/dialogs/security_parameter_dialogs\\.py',\n    'src/tools/analysis/empty_folders/empty_folders\\.py',\n    'src/tools/file_management/advanced_catalog/catalog/catalog\\.py',\n    'src/tools/analysis/config/config_analyzer\\.py',\n    'src/tools/security/security_scanner/security_scanner\\.py',\n    'src/tools/system/process_monitor/process_monitor\\.py',\n    'src/gui/dialogs/security_preferences_dialog\\.py',\n    'src/gui/themes\\.py',\n\\]\nfor fp in files:\n    try:\n        with open\\(fp, encoding='utf-8', errors='replace'\\) as f:\n            src = f\\.read\\(\\)\n        ast\\.parse\\(src\\)\n        print\\(f'OK  \\{fp\\}'\\)\n    except SyntaxError as e:\n        print\\(f'ERR \\{fp\\}: \\{e\\}'\\)\n\" 2>&1$/": {
+        "approve": true,
+        "matchCommandLine": true
+      },
+      "/^python temp\\\\_check_syntax\\.py$/": {
+        "approve": true,
+        "matchCommandLine": true
+      },
+      "/^python \"temp\\\\_check_syntax\\.py\"; echo done$/": {
+        "approve": true,
+        "matchCommandLine": true
+      },
+      "/^Get-Content temp\\\\_check_syntax\\.py \\| python$/": {
+        "approve": true,
+        "matchCommandLine": true
+      },
+      "fp": true,
+      "p": true,
+      "i": true,
+      "line.rstrip()": true,
+      "for": true,
+      "print(v)": true,
+      "v": true,
+      "Check-DryRun": true,
+      "C:\\Users\\HP1\\1_2\\.venv312\\Scripts\\python.exe": true,
+      "type": true,
+      "15..22": true,
+      "Out-File": true,
+      "\\\"src/tools/file_management/advanced_folders\\\"": true,
+      "print(r.stdout)": true,
+      "r.stdout": true,
+      "/^python -c \"import ast; src = open\\(r'c:\\\\Users\\\\HP1\\\\1_2\\\\src\\\\tools\\\\system\\\\system_cleanup\\\\system_cleanup_gui\\.py', encoding='utf-8'\\)\\.read\\(\\); ast\\.parse\\(src\\); print\\('system_cleanup_gui\\.py OK'\\)\"$/": {
+        "approve": true,
+        "matchCommandLine": true
+      },
+      "/^python -c \"import ast; src = open\\(r'c:\\\\Users\\\\HP1\\\\1_2\\\\src\\\\tools\\\\file_management\\\\synchronization_backup\\\\sync\\.py', encoding='utf-8'\\)\\.read\\(\\); ast\\.parse\\(src\\); print\\('sync\\.py OK'\\)\"$/": {
+        "approve": true,
+        "matchCommandLine": true
+      },
+      "&": true,
+      "/^python -c \"import ast; ast\\.parse\\(open\\(r'c:\\\\Users\\\\HP1\\\\1_2\\\\src\\\\tools\\\\file_management\\\\advanced_folders\\\\ui\\\\advanced_folders_widget\\.py', encoding='utf-8'\\)\\.read\\(\\)\\); print\\('advanced_folders_widget\\.py OK'\\)\"$/": {
+        "approve": true,
+        "matchCommandLine": true
+      },
+      "/^python -c \"import ast; ast\\.parse\\(open\\(r'c:\\\\Users\\\\HP1\\\\1_2\\\\src\\\\tools\\\\system\\\\system_cleanup\\\\system_cleanup_gui\\.py', encoding='utf-8'\\)\\.read\\(\\)\\); print\\('system_cleanup_gui\\.py OK'\\)\"$/": {
+        "approve": true,
+        "matchCommandLine": true
+      },
+      "/^python -c \"\nwith open\\(r'c:\\\\Users\\\\HP1\\\\1_2\\\\docs\\\\ui-ux-harmonization\\\\TASKS\\.md', 'r', encoding='utf-8'\\) as f:\n    lines = f\\.readlines\\(\\)\n# Show lines 41-47 \\(0-indexed: 40-46\\)\nfor i, line in enumerate\\(lines\\[40:47\\], start=41\\):\n    print\\(f'Line \\{i\\}: \\{repr\\(line\\[:80\\]\\)\\}\\.\\.\\.'\\)\n\"\n$/": {
+        "approve": true,
+        "matchCommandLine": true
+      },
+      "/^python -c \"\nfn028 = '\\| FN-028 \\| April 2026 \\| A11Y-8c \\| Compact mini-toolbar buttons in \\\\`folder_tree_view\\.py\\\\` \\(line ~730\\) and \\\\`search_results_table\\.py\\\\` \\(line ~801\\) are constrained to 28\\\\xd728 px by \\\\`toolbar_frame\\.setMaximumHeight\\(32\\)\\\\` with 4 px top/bottom margins, below the 44\\\\xd744 px WCAG 2\\.1 SC 2\\.5\\.8 minimum touch-target size\\. \\*\\*Design rationale:\\*\\* These mini toolbars are compact panel-chrome rows embedded at the top of tree/results panels; doubling their height to meet 44 px would inflate the panel chrome by ~37%, disrupting the two-panel split-view layout\\. Each action has a keyboard/menu alternative: \\\\u201cNew Folder\\\\u201d and \\\\u201cRefresh\\\\u201d via right-click context menu; \\\\u201cExport\\\\u201d, \\\\u201cCopy\\\\u201d, \\\\u201cSelect All\\\\u201d via menu bar entries and keyboard shortcuts\\. \\*\\*Accepted deviation:\\*\\* Compact panel-chrome constraint with full keyboard alternatives satisfies the spirit of spec \\\\xa74\\.3; the 44 px requirement is mandatory for standalone toolbar buttons \\(fulfilled via \\\\`setMinimumSize\\(44,44\\)\\\\` in \\\\`_create_toolbar_button\\(\\)\\\\` for the main toolbar\\)\\. \\*\\*Constraint:\\*\\* If either mini toolbar is ever redesigned as a standalone or floating toolbar, the 44\\\\xd744 px minimum MUST be applied at that time\\. \\|\\\\n'\n\nwith open\\(r'c:\\\\Users\\\\HP1\\\\1_2\\\\docs\\\\ui-ux-harmonization\\\\TASKS\\.md', 'r', encoding='utf-8'\\) as f:\n    lines = f\\.readlines\\(\\)\n\n# Lines 43-44 \\(1-indexed\\) = indices 42-43 \\(0-indexed\\) are duplicates; replace with FN-028\nlines\\[42:44\\] = \\[fn028\\]\n\nwith open\\(r'c:\\\\Users\\\\HP1\\\\1_2\\\\docs\\\\ui-ux-harmonization\\\\TASKS\\.md', 'w', encoding='utf-8'\\) as f:\n    f\\.writelines\\(lines\\)\nprint\\(f'Done\\. New line 43: \\{repr\\(lines\\[42\\]\\[:80\\]\\)\\}'\\)\n\"\n$/": {
+        "approve": true,
+        "matchCommandLine": true
+      },
+      "/^python c:\\\\Users\\\\HP1\\\\1_2\\\\temp\\\\fix_fn028\\.py$/": {
+        "approve": true,
+        "matchCommandLine": true
+      },
+      "/^python -c \"\nwith open\\(r'c:\\\\Users\\\\HP1\\\\1_2\\\\docs\\\\ui-ux-harmonization\\\\TASKS\\.md', 'r', encoding='utf-8'\\) as f:\n    lines = f\\.readlines\\(\\)\n# Print FN table header and each FN ID \\+ first ~80 chars\nfor i, line in enumerate\\(lines, 1\\):\n    if line\\.startswith\\('\\| FN-'\\):\n        fn_id = line\\.split\\('\\|'\\)\\[1\\]\\.strip\\(\\)\n        # Get action status hint\n        if 'FIXED' in line or 'RESOLVED' in line:\n            status = 'RESOLVED/FIXED'\n        elif 'Deferred' in line or 'No action' in line or 'Accepted' in line or 'Documented as DEV' in line:\n            status = 'deferred/accepted'\n        else:\n            status = 'OPEN\\?'\n        print\\(f'Line \\{i\\}: \\{fn_id\\} \\[\\{status\\}\\]'\\)\n\"\n$/": {
+        "approve": true,
+        "matchCommandLine": true
+      },
+      "/^python -c \"\nf = open\\(r'c:\\\\Users\\\\HP1\\\\1_2\\\\docs\\\\ui-ux-harmonization\\\\TASKS\\.md', encoding='utf-8'\\)\nlines = f\\.readlines\\(\\)\nf\\.close\\(\\)\nline = lines\\[42\\]\nprint\\(f'Line 43 len: \\{len\\(line\\)\\}'\\)\n# Find FN-028 end \\(should end with \\| before the separator\\)\n# Find where FN-029 begins\nidx = line\\.find\\('\\| FN-029'\\)\nprint\\(f'FN-029 at: \\{idx\\}'\\)\nif idx > 0:\n    print\\(f'Chars before: \\{repr\\(line\\[idx-5:idx\\+20\\]\\)\\}'\\)\n\"\n$/": {
+        "approve": true,
+        "matchCommandLine": true
+      },
+      "/^python -c \"\nf = open\\(r'c:\\\\Users\\\\HP1\\\\1_2\\\\docs\\\\ui-ux-harmonization\\\\TASKS\\.md', encoding='utf-8'\\)\nlines = f\\.readlines\\(\\)\nf\\.close\\(\\)\n\nline43 = lines\\[42\\]\n# Split on the literal backtick-n separator\nparts = line43\\.split\\('\\\\`n'\\)\nif len\\(parts\\) == 2:\n    fn028 = parts\\[0\\] \\+ '\\\\n'\n    fn029 = parts\\[1\\]\n    lines\\[42\\] = fn028\n    lines\\.insert\\(43, fn029\\)\n    with open\\(r'c:\\\\Users\\\\HP1\\\\1_2\\\\docs\\\\ui-ux-harmonization\\\\TASKS\\.md', 'w', encoding='utf-8'\\) as f:\n        f\\.writelines\\(lines\\)\n    print\\(f'Fixed: split into \\{len\\(parts\\)\\} parts'\\)\n    print\\(f'FN-028 line length: \\{len\\(fn028\\)\\}'\\)\n    print\\(f'FN-029 line start: \\{fn029\\[:80\\]\\}'\\)\nelse:\n    print\\(f'Unexpected parts count: \\{len\\(parts\\)\\}'\\)\n    for p in parts:\n        print\\(f'  PART: \\{repr\\(p\\[:80\\]\\)\\}'\\)\n\"\n$/": {
+        "approve": true,
+        "matchCommandLine": true
+      },
+      "/^python -c \"\nsep = chr\\(96\\) \\+ 'n'\nf = open\\(r'c:\\\\Users\\\\HP1\\\\1_2\\\\docs\\\\ui-ux-harmonization\\\\TASKS\\.md', encoding='utf-8'\\)\nlines = f\\.readlines\\(\\)\nf\\.close\\(\\)\nline43 = lines\\[42\\]\nidx = line43\\.find\\(sep\\)\nprint\\('sep found at:', idx\\)\nif idx > 0:\n    print\\('before sep:', repr\\(line43\\[idx-10:idx\\+20\\]\\)\\)\n\"\n$/": {
+        "approve": true,
+        "matchCommandLine": true
+      },
+      "/^python -c \"\nsep = chr\\(96\\) \\+ 'n'\nfn = r'c:\\\\Users\\\\HP1\\\\1_2\\\\docs\\\\ui-ux-harmonization\\\\TASKS\\.md'\nwith open\\(fn, encoding='utf-8'\\) as f:\n    lines = f\\.readlines\\(\\)\nline43 = lines\\[42\\]\nparts = line43\\.split\\(sep, 1\\)\nif len\\(parts\\) == 2:\n    lines\\[42\\] = parts\\[0\\] \\+ '\\\\n'\n    lines\\.insert\\(43, parts\\[1\\]\\)\n    with open\\(fn, 'w', encoding='utf-8'\\) as f:\n        f\\.writelines\\(lines\\)\n    print\\('Done\\. FN-028 len:', len\\(parts\\[0\\]\\)\\)\n    print\\('FN-029 start:', parts\\[1\\]\\[:80\\]\\)\nelse:\n    print\\('sep not found'\\)\n\"\n$/": {
+        "approve": true,
+        "matchCommandLine": true
+      },
+      "Get-Unique": true,
+      "Select": true,
+      "\\.setTitle\\(\"|'\\''\\)|\\.setWindowTitle\\(\"|'\\''\\)": true,
+      "PrimaryButton\\(\"|'\\''\\)|SecondaryButton\\(\"|'\\''\\)": true,
+      "DestructiveButton\\(\"|'\\''\\)|QGroupBox\\(\"|'\\''\\)": true,
+      "QLabel\\(\"|'\\''\\)|QCheckBox\\(\"|'\\''\\)": true,
+      "addTab\\(.*,\"|'\\''\\)|setPlaceholderText\\(\"|'\\''\\)": true,
+      "\\s*\"|'\\'''": true,
+      "get_terminal_output": true,
+      "/^python -c \"\np = r'C:\\\\Users\\\\HP1\\\\1_2\\\\tests\\\\test_hub_system_cleanup_integration\\.py'\nlines = open\\(p, encoding='utf-8'\\)\\.readlines\\(\\)\n# Find the first line after the real end of the new content\n# New content ends at the closing '\\)' of test_hub5c_retry_signal_wired_to_relaunch\n# which is line index around 303 \\(0-based ~302\\)\n# Find the line that has the stray free-floating text starting with 'HUB-2'\ncut_at = None\nfor i, ln in enumerate\\(lines\\):\n    if ln\\.strip\\(\\)\\.startswith\\('HUB-2'\\) and i > 10:\n        cut_at = i\n        break\nprint\\(f'Cutting at line \\{cut_at\\}: \\{repr\\(lines\\[cut_at\\]\\[:60\\]\\)\\}'\\)\nopen\\(p, 'w', encoding='utf-8'\\)\\.writelines\\(lines\\[:cut_at\\]\\)\nprint\\('Done'\\)\n\"\n$/": {
+        "approve": true,
+        "matchCommandLine": true
+      },
+      "Verifies": true,
+      "UtilityWindow": true,
+      "\\\"\\\"\\\"": true,
+      "return": true,
+      "content.splitlines()": true,
+      "Tee-Object": true,
+      "git remote": true,
+      "git add": true
+    }
   }
 }

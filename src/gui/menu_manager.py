@@ -30,7 +30,7 @@ from PyQt5.QtWidgets import (
     QVBoxLayout,
 )
 
-from gui.themes import Colors, Fonts, ThemeManager
+from gui.themes import Colors, Fonts, ThemeManager, Typography
 
 
 class MenuManager:
@@ -764,7 +764,7 @@ class LogViewerDialog(QDialog):
         # Log text area
         self.log_text = QTextEdit()
         self.log_text.setReadOnly(True)
-        self.log_text.setFont(QFont("Consolas", 9))
+        self.log_text.setFont(Typography.monospace())
         layout.addWidget(self.log_text)
 
         # Load logs

@@ -33,7 +33,7 @@ from uuid import UUID
 
 from ..exceptions.advanced_folders_exceptions import (
     CacheException,
-    ValidationException
+    ValidationException,
 )
 from ..models.folder_configuration import SearchParameters
 
@@ -41,6 +41,7 @@ from ..models.folder_configuration import SearchParameters
 @dataclass
 class CacheEntry:
     """Represents a cached search result entry."""
+
     key: str
     data: Any
     created_time: datetime
@@ -67,20 +68,21 @@ class CacheEntry:
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary representation."""
         return {
-            'key': self.key,
-            'created_time': self.created_time.isoformat(),
-            'expires_time': self.expires_time.isoformat(),
-            'access_count': self.access_count,
-            'last_access_time': self.last_access_time.isoformat(),
-            'size_bytes': self.size_bytes,
-            'folder_id': str(self.folder_id) if self.folder_id else None,
-            'search_hash': self.search_hash
+            "key": self.key,
+            "created_time": self.created_time.isoformat(),
+            "expires_time": self.expires_time.isoformat(),
+            "access_count": self.access_count,
+            "last_access_time": self.last_access_time.isoformat(),
+            "size_bytes": self.size_bytes,
+            "folder_id": str(self.folder_id) if self.folder_id else None,
+            "search_hash": self.search_hash,
         }
 
 
 @dataclass
 class CacheStatistics:
     """Cache performance statistics."""
+
     total_requests: int = 0
     cache_hits: int = 0
     cache_misses: int = 0
@@ -100,16 +102,16 @@ class CacheStatistics:
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary representation."""
         return {
-            'total_requests': self.total_requests,
-            'cache_hits': self.cache_hits,
-            'cache_misses': self.cache_misses,
-            'evictions': self.evictions,
-            'memory_usage_bytes': self.memory_usage_bytes,
-            'database_entries': self.database_entries,
-            'average_access_time_ms': self.average_access_time_ms,
-            'hit_rate': self.hit_rate,
-            'memory_hit_rate': self.memory_hit_rate,
-            'database_hit_rate': self.database_hit_rate
+            "total_requests": self.total_requests,
+            "cache_hits": self.cache_hits,
+            "cache_misses": self.cache_misses,
+            "evictions": self.evictions,
+            "memory_usage_bytes": self.memory_usage_bytes,
+            "database_entries": self.database_entries,
+            "average_access_time_ms": self.average_access_time_ms,
+            "hit_rate": self.hit_rate,
+            "memory_hit_rate": self.memory_hit_rate,
+            "database_hit_rate": self.database_hit_rate,
         }
 
 
@@ -161,9 +163,9 @@ class LRUCache:
                 self._remove_entry(key)
 
             # Ensure we have space
-            while (len(self._cache) >= self.max_size or
-                   (self._current_memory_bytes + entry_size >
-                    self.max_memory_bytes)):
+            while len(self._cache) >= self.max_size or (
+                self._current_memory_bytes + entry_size > self.max_memory_bytes
+            ):
                 if not self._evict_least_recently_used():
                     return False
 
@@ -187,22 +189,22 @@ class LRUCache:
         """Get cache statistics."""
         with self._lock:
             return {
-                'size': len(self._cache),
-                'max_size': self.max_size,
-                'memory_usage_bytes': self._current_memory_bytes,
-                'max_memory_bytes': self.max_memory_bytes,
-                'memory_usage_percent': (
+                "size": len(self._cache),
+                "max_size": self.max_size,
+                "memory_usage_bytes": self._current_memory_bytes,
+                "max_memory_bytes": self.max_memory_bytes,
+                "memory_usage_percent": (
                     (self._current_memory_bytes / self.max_memory_bytes) * 100
-                    if self.max_memory_bytes > 0 else 0
-                )
+                    if self.max_memory_bytes > 0
+                    else 0
+                ),
             }
 
     def cleanup_expired(self) -> int:
         """Remove expired entries and return count removed."""
         with self._lock:
             expired_keys = [
-                key for key, entry in self._cache.items()
-                if entry.is_expired()
+                key for key, entry in self._cache.items() if entry.is_expired()
             ]
             for key in expired_keys:
                 self._remove_entry(key)
@@ -227,9 +229,7 @@ class LRUCache:
         """Calculate approximate memory size of entry."""
         try:
             # Serialize data to estimate size
-            data_size = len(
-                json.dumps(entry.data, default=str).encode('utf-8')
-            )
+            data_size = len(json.dumps(entry.data, default=str).encode("utf-8"))
             # Add overhead for metadata
             metadata_size = 200  # Approximate overhead
             return data_size + metadata_size
@@ -266,7 +266,7 @@ class DatabaseCache:
                         WHERE cache_key = ?
                         AND expires_date > CURRENT_TIMESTAMP
                         """,
-                        (key,)
+                        (key,),
                     )
                     row = cursor.fetchone()
                     if row:
@@ -277,31 +277,26 @@ class DatabaseCache:
                             SET hit_count = hit_count + 1
                             WHERE cache_key = ?
                             """,
-                            (key,)
+                            (key,),
                         )
 
                         # Convert to CacheEntry
-                        data = json.loads(row['results_data'])
+                        data = json.loads(row["results_data"])
                         return CacheEntry(
-                            key=row['cache_key'],
+                            key=row["cache_key"],
                             data=data,
-                            created_time=datetime.fromisoformat(
-                                row['created_date']
-                            ),
-                            expires_time=datetime.fromisoformat(
-                                row['expires_date']
-                            ),
-                            access_count=row['hit_count'] + 1,
+                            created_time=datetime.fromisoformat(row["created_date"]),
+                            expires_time=datetime.fromisoformat(row["expires_date"]),
+                            access_count=row["hit_count"] + 1,
                             folder_id=(
-                                UUID(row['folder_id'])
-                                if row['folder_id'] else None
+                                UUID(row["folder_id"]) if row["folder_id"] else None
                             ),
-                            search_hash=row['search_hash']
+                            search_hash=row["search_hash"],
                         )
             except Exception as e:
                 raise CacheException(
                     f"Error retrieving cache entry: {str(e)}",
-                    context={'key': key, 'db_path': str(self.db_path)}
+                    context={"key": key, "db_path": str(self.db_path)},
                 )
         return None
 
@@ -328,14 +323,14 @@ class DatabaseCache:
                             data_json,
                             entry.created_time.isoformat(),
                             entry.expires_time.isoformat(),
-                            entry.access_count
-                        )
+                            entry.access_count,
+                        ),
                     )
                     return True
             except Exception as e:
                 raise CacheException(
                     f"Error storing cache entry: {str(e)}",
-                    context={'key': key, 'db_path': str(self.db_path)}
+                    context={"key": key, "db_path": str(self.db_path)},
                 )
         return False
 
@@ -345,14 +340,12 @@ class DatabaseCache:
             try:
                 with sqlite3.connect(self.db_path) as conn:
                     cursor = conn.execute(
-                        "DELETE FROM search_results_cache WHERE cache_key = ?",
-                        (key,)
+                        "DELETE FROM search_results_cache WHERE cache_key = ?", (key,)
                     )
                     return cursor.rowcount > 0
             except Exception as e:
                 raise CacheException(
-                    f"Error removing cache entry: {str(e)}",
-                    context={'key': key}
+                    f"Error removing cache entry: {str(e)}", context={"key": key}
                 )
 
     def cleanup_expired(self) -> int:
@@ -365,9 +358,7 @@ class DatabaseCache:
                     )
                     return cursor.rowcount
             except Exception as e:
-                raise CacheException(
-                    f"Error cleaning up expired entries: {str(e)}"
-                )
+                raise CacheException(f"Error cleaning up expired entries: {str(e)}")
 
     def get_statistics(self) -> Dict[str, Any]:
         """Get database cache statistics."""
@@ -392,20 +383,17 @@ class DatabaseCache:
 
                     # Database size
                     db_size = (
-                        self.db_path.stat().st_size
-                        if self.db_path.exists() else 0
+                        self.db_path.stat().st_size if self.db_path.exists() else 0
                     )
 
                     return {
-                        'total_entries': total_entries,
-                        'active_entries': active_entries,
-                        'expired_entries': total_entries - active_entries,
-                        'database_size_bytes': db_size
+                        "total_entries": total_entries,
+                        "active_entries": active_entries,
+                        "expired_entries": total_entries - active_entries,
+                        "database_size_bytes": db_size,
                     }
             except Exception as e:
-                raise CacheException(
-                    f"Error getting cache statistics: {str(e)}"
-                )
+                raise CacheException(f"Error getting cache statistics: {str(e)}")
 
     def invalidate_folder_cache(self, folder_id: UUID) -> int:
         """Invalidate all cache entries for a specific folder."""
@@ -414,13 +402,13 @@ class DatabaseCache:
                 with sqlite3.connect(self.db_path) as conn:
                     cursor = conn.execute(
                         "DELETE FROM search_results_cache WHERE folder_id = ?",
-                        (str(folder_id),)
+                        (str(folder_id),),
                     )
                     return cursor.rowcount
             except Exception as e:
                 raise CacheException(
                     f"Error invalidating folder cache: {str(e)}",
-                    context={'folder_id': str(folder_id)}
+                    context={"folder_id": str(folder_id)},
                 )
 
     def _init_database(self) -> None:
@@ -450,7 +438,7 @@ class DatabaseCache:
         except Exception as e:
             raise CacheException(
                 f"Error initializing cache database: {str(e)}",
-                context={'db_path': str(self.db_path)}
+                context={"db_path": str(self.db_path)},
             )
 
 
@@ -470,7 +458,7 @@ class SearchResultCache:
         default_ttl_minutes: int = 30,
         cleanup_interval_minutes: int = 15,
         enable_prefetching: bool = True,
-        max_entry_size_mb: int = 10
+        max_entry_size_mb: int = 10,
     ):
         """
         Initialize search result cache.
@@ -491,9 +479,7 @@ class SearchResultCache:
 
         # Initialize caches
         self.memory_cache = LRUCache(memory_cache_size, memory_cache_mb)
-        self.database_cache = (
-            DatabaseCache(db_cache_path) if db_cache_path else None
-        )
+        self.database_cache = DatabaseCache(db_cache_path) if db_cache_path else None
 
         # Statistics
         self.statistics = CacheStatistics()
@@ -555,7 +541,7 @@ class SearchResultCache:
         data: Any,
         ttl: Optional[timedelta] = None,
         folder_id: Optional[UUID] = None,
-        search_parameters: Optional[SearchParameters] = None
+        search_parameters: Optional[SearchParameters] = None,
     ) -> bool:
         """
         Cache search result.
@@ -583,12 +569,13 @@ class SearchResultCache:
             folder_id=folder_id,
             search_hash=(
                 self._generate_search_hash(search_parameters)
-                if search_parameters else None
-            )
+                if search_parameters
+                else None
+            ),
         )
 
         # Check entry size
-        estimated_size = len(json.dumps(data, default=str).encode('utf-8'))
+        estimated_size = len(json.dumps(data, default=str).encode("utf-8"))
         if estimated_size > self.max_entry_size_bytes:
             return False
 
@@ -606,9 +593,9 @@ class SearchResultCache:
 
             # Update statistics
             if memory_success or db_success:
-                self.statistics.memory_usage_bytes = (
-                    self.memory_cache.get_statistics()['memory_usage_bytes']
-                )
+                self.statistics.memory_usage_bytes = self.memory_cache.get_statistics()[
+                    "memory_usage_bytes"
+                ]
 
             return memory_success or db_success
 
@@ -625,8 +612,7 @@ class SearchResultCache:
         with self._lock:
             memory_removed = self.memory_cache.remove(key)
             db_removed = (
-                self.database_cache.remove(key)
-                if self.database_cache else False
+                self.database_cache.remove(key) if self.database_cache else False
             )
             return memory_removed or db_removed
 
@@ -657,8 +643,8 @@ class SearchResultCache:
 
             # Invalidate from database cache
             if self.database_cache:
-                invalidated_count += (
-                    self.database_cache.invalidate_folder_cache(folder_id)
+                invalidated_count += self.database_cache.invalidate_folder_cache(
+                    folder_id
                 )
 
             return invalidated_count
@@ -683,19 +669,13 @@ class SearchResultCache:
             Dictionary with cleanup statistics
         """
         with self._lock:
-            results = {
-                'memory_expired': 0,
-                'database_expired': 0,
-                'memory_evicted': 0
-            }
+            results = {"memory_expired": 0, "database_expired": 0, "memory_evicted": 0}
 
             # Clean up expired entries
-            results['memory_expired'] = self.memory_cache.cleanup_expired()
+            results["memory_expired"] = self.memory_cache.cleanup_expired()
 
             if self.database_cache:
-                results['database_expired'] = (
-                    self.database_cache.cleanup_expired()
-                )
+                results["database_expired"] = self.database_cache.cleanup_expired()
 
             # Update cleanup time
             self._last_cleanup = datetime.now()
@@ -727,16 +707,12 @@ class SearchResultCache:
 
             # Update memory usage
             memory_stats = self.memory_cache.get_statistics()
-            self.statistics.memory_usage_bytes = (
-
-                memory_stats[\'memory_usage_bytes\']
-
-            )
+            self.statistics.memory_usage_bytes = memory_stats["memory_usage_bytes"]
 
             # Update database entries count
             if self.database_cache:
                 db_stats = self.database_cache.get_statistics()
-                self.statistics.database_entries = db_stats['active_entries']
+                self.statistics.database_entries = db_stats["active_entries"]
 
             return self.statistics
 
@@ -745,72 +721,50 @@ class SearchResultCache:
         try:
             # Create a stable representation of search parameters
             param_dict = {
-                'query': parameters.query,
-                \'search_type\': (
-
-                    parameters.search_type.value
-
-                    if parameters.search_type else None
-
+                "query": parameters.query,
+                "search_type": (
+                    parameters.search_type.value if parameters.search_type else None
                 ),
-                \'root_paths\': (
-
-                    sorted(parameters.root_paths)
-
-                    if parameters.root_paths else []
-
+                "root_paths": (
+                    sorted(parameters.root_paths) if parameters.root_paths else []
                 ),
-                'case_sensitive': parameters.case_sensitive,
-                'include_subdirectories': parameters.include_subdirectories,
-                'file_type_filter': {
-                    \'include_extensions\': (
-
-                        sorted(parameters.file_type_filter.include_extensions)
-
-                        if parameters.file_type_filter.include_extensions else []
-
-                    ),
-                    \'exclude_extensions\': (
-
-                        sorted(parameters.file_type_filter.exclude_extensions)
-
-                        if parameters.file_type_filter.exclude_extensions else []
-
-                    ),
-                    \'mime_types\': (
-
-                        sorted(parameters.file_type_filter.mime_types)
-
-                        if parameters.file_type_filter.mime_types else []
-
-                    )
-                } if parameters.file_type_filter else None
+                "case_sensitive": parameters.case_sensitive,
+                "include_subdirectories": parameters.include_subdirectories,
+                "file_type_filter": (
+                    {
+                        "include_extensions": (
+                            sorted(parameters.file_type_filter.include_extensions)
+                            if parameters.file_type_filter.include_extensions
+                            else []
+                        ),
+                        "exclude_extensions": (
+                            sorted(parameters.file_type_filter.exclude_extensions)
+                            if parameters.file_type_filter.exclude_extensions
+                            else []
+                        ),
+                        "mime_types": (
+                            sorted(parameters.file_type_filter.mime_types)
+                            if parameters.file_type_filter.mime_types
+                            else []
+                        ),
+                    }
+                    if parameters.file_type_filter
+                    else None
+                ),
             }
-
-            # Generate hash
-            param_json = json.dumps(param_dict, sort_keys=True, default=str)
-            return hashlib.sha256(param_json.encode()).hexdigest()
+            key_json = json.dumps(param_dict, sort_keys=True, default=str)
+            return hashlib.sha256(key_json.encode()).hexdigest()[:16]
         except Exception:
-            # Fallback hash
-            return hashlib.sha256(str(parameters).encode()).hexdigest()
-
-    def _record_access_time(self, start_time: float) -> None:
-        """Record access time for performance monitoring."""
-        access_time = time.time() - start_time
-        self._access_times.append(access_time)
-
-        # Keep only recent access times (last 1000)
-        if len(self._access_times) > 1000:
-            self._access_times = self._access_times[-1000:]
+            return hashlib.sha256(str(parameters).encode()).hexdigest()[:16]
 
     def start_background_cleanup(self) -> None:
         """Start background cleanup thread."""
-        if self._cleanup_thread is None or not self._cleanup_thread.is_alive():
-            self._cleanup_thread = threading.Thread(
-                target=self._background_cleanup_worker,
-                daemon=True
-            )
-            self._cleanup_thread.start()
+        if self._cleanup_thread and self._cleanup_thread.is_alive():
+            return
+        self._cleanup_thread = threading.Thread(
+            target=self._background_cleanup_worker, daemon=True
+        )
+        self._cleanup_thread.start()
 
     def stop_background_cleanup(self) -> None:
         """Stop background cleanup thread."""
@@ -823,9 +777,7 @@ class SearchResultCache:
         while not self._shutdown_event.is_set():
             try:
                 # Check if cleanup is needed
-                if (datetime.now() - self._last_cleanup >=
-
-                        self.cleanup_interval):
+                if datetime.now() - self._last_cleanup >= self.cleanup_interval:
                     self.cleanup()
 
                 # Sleep for a short interval
@@ -838,7 +790,7 @@ class SearchResultCache:
 
 def create_cache_key(
     search_parameters: SearchParameters,
-    additional_context: Optional[Dict[str, Any]] = None
+    additional_context: Optional[Dict[str, Any]] = None,
 ) -> str:
     """
     Create standardized cache key for search parameters.
@@ -853,81 +805,61 @@ def create_cache_key(
     try:
         # Base parameters
         key_components = {
-            'query': search_parameters.query or '',
-            \'search_type\': (
-
+            "query": search_parameters.query or "",
+            "search_type": (
                 search_parameters.search_type.value
-
-                if search_parameters.search_type else \'name\'
-
+                if search_parameters.search_type
+                else None
             ),
-            \'root_paths\': (
-
+            "root_paths": (
                 sorted(search_parameters.root_paths)
-
-                if search_parameters.root_paths else []
-
+                if search_parameters.root_paths
+                else []
             ),
-            'case_sensitive': search_parameters.case_sensitive,
-            'include_subdirs': search_parameters.include_subdirectories,
+            "case_sensitive": search_parameters.case_sensitive,
+            "include_subdirs": search_parameters.include_subdirectories,
         }
 
         # File type filter
         if search_parameters.file_type_filter:
-            key_components['file_filter'] = {
-                \'include_ext\': sorted(
-
-                    search_parameters.file_type_filter.include_extensions or []
-
-                ),
-                \'exclude_ext\': sorted(
-
-                    search_parameters.file_type_filter.exclude_extensions or []
-
-                ),
-                \'mime_types\': sorted(
-
-                    search_parameters.file_type_filter.mime_types or []
-
-                )
+            key_components["file_filter"] = {
+                "include_ext": search_parameters.file_type_filter.include_extensions
+                or [],
+                "exclude_ext": search_parameters.file_type_filter.exclude_extensions
+                or [],
+                "mime_types": search_parameters.file_type_filter.mime_types or [],
             }
 
         # Size filter
         if search_parameters.size_filter:
-            key_components['size_filter'] = {
-                'min_size': search_parameters.size_filter.min_size_bytes,
-                'max_size': search_parameters.size_filter.max_size_bytes
+            key_components["size_filter"] = {
+                "min_size": search_parameters.size_filter.min_size_bytes,
+                "max_size": search_parameters.size_filter.max_size_bytes,
             }
 
         # Date filter
         if search_parameters.date_filter:
-            key_components['date_filter'] = {
-                \'start_date\': (
-
+            key_components["date_filter"] = {
+                "start_date": (
                     search_parameters.date_filter.start_date.isoformat()
-
-                    if search_parameters.date_filter.start_date else None
-
+                    if search_parameters.date_filter.start_date
+                    else None
                 ),
-                \'end_date\': (
-
+                "end_date": (
                     search_parameters.date_filter.end_date.isoformat()
-
-                    if search_parameters.date_filter.end_date else None
-
+                    if search_parameters.date_filter.end_date
+                    else None
                 ),
-                \'filter_type\': (
-
+                "filter_type": (
                     search_parameters.date_filter.filter_type.value
-
-                    if search_parameters.date_filter.filter_type else None
-
-                )
+                    if search_parameters.date_filter.filter_type
+                    else None
+                ),
             }
 
         # Additional context
         if additional_context:
-            key_components['context'] = additional_context
+            key_components["context"] = additional_context
 
         # Generate key
         key_json = json.dumps(key_components, sort_keys=True, default=str)
@@ -938,5 +870,5 @@ def create_cache_key(
     except Exception as e:
         raise ValidationException(
             f"Error creating cache key: {str(e)}",
-            context={'search_parameters': str(search_parameters)}
+            context={"search_parameters": str(search_parameters)},
         )

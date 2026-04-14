@@ -54,6 +54,15 @@ try:
         QWidget,
     )
 
+    from src.gui.components.buttons import (
+        DestructiveButton,
+        PrimaryButton,
+        SecondaryButton,
+    )
+    from src.gui.components.inputs import TextInput
+    from src.gui.components.modal import ConfirmationModal, Modal
+    from src.gui.themes import ThemeManager, Typography, token
+
     PYQT5_AVAILABLE = True
 except ImportError:
     PYQT5_AVAILABLE = False
@@ -77,6 +86,11 @@ except ImportError:
     QFont = None
     QIcon = None
     QPixmap = None
+    PrimaryButton = QPushButton if PYQT5_AVAILABLE else None
+    SecondaryButton = QPushButton if PYQT5_AVAILABLE else None
+    DestructiveButton = QPushButton if PYQT5_AVAILABLE else None
+    ConfirmationModal = None
+    Modal = None
 
 # Import RFU core components
 try:
@@ -116,9 +130,7 @@ except ImportError:
 class FolderConfigurationDialog(QDialog):
     """Dialog for creating and editing folder configurations."""
 
-    def __init__(
-        self, parent=None, config: Optional[FolderConfiguration] = None
-    ):
+    def __init__(self, parent=None, config: Optional[FolderConfiguration] = None):
         """Initialize configuration dialog.
 
         Args:
@@ -147,6 +159,7 @@ class FolderConfigurationDialog(QDialog):
 
         # Create tab widget for different configuration sections
         self.tab_widget = QTabWidget()
+        self.tab_widget.setAccessibleName("Folder configuration tabs")
         layout.addWidget(self.tab_widget)
 
         # General tab
@@ -162,9 +175,7 @@ class FolderConfigurationDialog(QDialog):
         self.create_advanced_tab()
 
         # Dialog buttons
-        button_box = QDialogButtonBox(
-            QDialogButtonBox.Ok | QDialogButtonBox.Cancel
-        )
+        button_box = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
         button_box.accepted.connect(self.accept)
         button_box.rejected.connect(self.reject)
         layout.addWidget(button_box)
@@ -174,15 +185,22 @@ class FolderConfigurationDialog(QDialog):
         tab = QWidget()
         layout = QFormLayout(tab)
 
-        # Folder name
-        self.name_edit = QLineEdit()
-        self.name_edit.setPlaceholderText("Enter folder name")
-        layout.addRow("Name:", self.name_edit)
+        # Folder name  (CP-9b)
+        self.name_edit = TextInput(
+            label="Name",
+            placeholder="Enter folder name",
+            accessible_name="Folder name",
+        )
+        self.name_edit.set_validator(
+            lambda t: (True, "") if t.strip() else (False, "Name cannot be empty")
+        )
+        layout.addRow(self.name_edit)
 
         # Description
         self.description_edit = QTextEdit()
         self.description_edit.setMaximumHeight(100)
         self.description_edit.setPlaceholderText("Optional description")
+        self.description_edit.setAccessibleName("Folder description")
         layout.addRow("Description:", self.description_edit)
 
         # Color scheme
@@ -190,6 +208,7 @@ class FolderConfigurationDialog(QDialog):
         self.color_scheme_combo.addItems(
             ["Default", "Blue", "Green", "Orange", "Purple", "Red"]
         )
+        self.color_scheme_combo.setAccessibleName("Folder color scheme")
         layout.addRow("Color Scheme:", self.color_scheme_combo)
 
         # Auto-refresh settings
@@ -198,6 +217,7 @@ class FolderConfigurationDialog(QDialog):
 
         self.auto_refresh_cb = QCheckBox("Enable automatic refresh")
         self.auto_refresh_cb.setChecked(True)
+        self.auto_refresh_cb.setAccessibleName("Enable automatic refresh")
         refresh_layout.addWidget(self.auto_refresh_cb)
 
         interval_layout = QHBoxLayout()
@@ -207,6 +227,7 @@ class FolderConfigurationDialog(QDialog):
         self.refresh_interval_spin.setMaximum(3600)
         self.refresh_interval_spin.setValue(300)
         self.refresh_interval_spin.setSuffix(" seconds")
+        self.refresh_interval_spin.setAccessibleName("Refresh interval in seconds")
         interval_layout.addWidget(self.refresh_interval_spin)
         interval_layout.addStretch()
         refresh_layout.addLayout(interval_layout)
@@ -225,16 +246,17 @@ class FolderConfigurationDialog(QDialog):
         dir_layout = QVBoxLayout(dir_group)
 
         self.directories_list = QListWidget()
+        self.directories_list.setAccessibleName("Configured directory paths")
         dir_layout.addWidget(self.directories_list)
 
         # Directory buttons
         dir_buttons = QHBoxLayout()
 
-        self.add_dir_btn = QPushButton("Add Directory")
+        self.add_dir_btn = SecondaryButton("Add Directory")
         self.add_dir_btn.clicked.connect(self.add_directory)
         dir_buttons.addWidget(self.add_dir_btn)
 
-        self.remove_dir_btn = QPushButton("Remove Selected")
+        self.remove_dir_btn = SecondaryButton("Remove Selected")
         self.remove_dir_btn.clicked.connect(self.remove_directory)
         dir_buttons.addWidget(self.remove_dir_btn)
 
@@ -249,17 +271,21 @@ class FolderConfigurationDialog(QDialog):
 
         self.include_subdirs_cb = QCheckBox("Include subdirectories")
         self.include_subdirs_cb.setChecked(True)
+        self.include_subdirs_cb.setAccessibleName("Include subdirectories")
         options_layout.addWidget(self.include_subdirs_cb)
 
         self.follow_links_cb = QCheckBox("Follow symbolic links")
         self.follow_links_cb.setChecked(True)
+        self.follow_links_cb.setAccessibleName("Follow symbolic links")
         options_layout.addWidget(self.follow_links_cb)
 
         self.include_hidden_cb = QCheckBox("Include hidden files")
+        self.include_hidden_cb.setAccessibleName("Include hidden files")
         options_layout.addWidget(self.include_hidden_cb)
 
         self.monitor_changes_cb = QCheckBox("Monitor for changes")
         self.monitor_changes_cb.setChecked(True)
+        self.monitor_changes_cb.setAccessibleName("Monitor for changes")
         options_layout.addWidget(self.monitor_changes_cb)
 
         layout.addWidget(options_group)
@@ -275,17 +301,20 @@ class FolderConfigurationDialog(QDialog):
         pattern_group = QGroupBox("File Name Pattern")
         pattern_layout = QFormLayout(pattern_group)
 
-        self.filename_pattern_edit = QLineEdit()
-        self.filename_pattern_edit.setPlaceholderText(
-            "Enter pattern (e.g., *.txt)"
+        self.filename_pattern_edit = TextInput(
+            label="Pattern",
+            placeholder="Enter pattern (e.g., *.txt)",
+            accessible_name="Filename pattern",
         )
-        pattern_layout.addRow("Pattern:", self.filename_pattern_edit)
+        pattern_layout.addRow(self.filename_pattern_edit)
 
         pattern_options = QHBoxLayout()
         self.use_regex_cb = QCheckBox("Use regular expressions")
+        self.use_regex_cb.setAccessibleName("Use regular expressions")
         pattern_options.addWidget(self.use_regex_cb)
 
         self.case_sensitive_cb = QCheckBox("Case sensitive")
+        self.case_sensitive_cb.setAccessibleName("Case sensitive search")
         pattern_options.addWidget(self.case_sensitive_cb)
         pattern_options.addStretch()
 
@@ -296,16 +325,18 @@ class FolderConfigurationDialog(QDialog):
         content_group = QGroupBox("Content Search")
         content_layout = QFormLayout(content_group)
 
-        self.content_search_edit = QLineEdit()
-        self.content_search_edit.setPlaceholderText(
-            "Search within file content"
+        self.content_search_edit = TextInput(
+            label="Search term",
+            placeholder="Search within file content",
+            accessible_name="Content search term",
         )
-        content_layout.addRow("Search term:", self.content_search_edit)
+        content_layout.addRow(self.content_search_edit)
 
-        self.index_content_cb = QCheckBox(
+        self.index_content_cb = QCheckBox("Index file contents for faster searching")
+        self.index_content_cb.setChecked(True)
+        self.index_content_cb.setAccessibleName(
             "Index file contents for faster searching"
         )
-        self.index_content_cb.setChecked(True)
         content_layout.addRow(self.index_content_cb)
 
         layout.addWidget(content_group)
@@ -328,6 +359,7 @@ class FolderConfigurationDialog(QDialog):
         self.date_criteria_combo.addItems(
             ["Modified Date", "Created Date", "Accessed Date"]
         )
+        self.date_criteria_combo.setAccessibleName("Date criteria type")
         date_layout.addRow("Date Type:", self.date_criteria_combo)
 
         layout.addWidget(date_group)
@@ -340,6 +372,7 @@ class FolderConfigurationDialog(QDialog):
         self.size_min_spin = QSpinBox()
         self.size_min_spin.setMaximum(999999)
         self.size_min_spin.setSuffix(" KB")
+        self.size_min_spin.setAccessibleName("Minimum file size in kilobytes")
         size_min_layout.addWidget(self.size_min_spin)
         size_min_layout.addStretch()
         size_layout.addRow("Minimum size:", size_min_layout)
@@ -349,6 +382,7 @@ class FolderConfigurationDialog(QDialog):
         self.size_max_spin.setMaximum(999999)
         self.size_max_spin.setValue(100)
         self.size_max_spin.setSuffix(" MB")
+        self.size_max_spin.setAccessibleName("Maximum file size in megabytes")
         size_max_layout.addWidget(self.size_max_spin)
         size_max_layout.addStretch()
         size_layout.addRow("Maximum size:", size_max_layout)
@@ -368,13 +402,16 @@ class FolderConfigurationDialog(QDialog):
 
         self.cache_results_cb = QCheckBox("Cache search results")
         self.cache_results_cb.setChecked(True)
+        self.cache_results_cb.setAccessibleName("Cache search results")
         perf_layout.addRow(self.cache_results_cb)
 
         self.search_archives_cb = QCheckBox("Search compressed archives")
+        self.search_archives_cb.setAccessibleName("Search compressed archives")
         perf_layout.addRow(self.search_archives_cb)
 
         self.include_network_cb = QCheckBox("Include network locations")
         self.include_network_cb.setChecked(True)
+        self.include_network_cb.setAccessibleName("Include network locations")
         perf_layout.addRow(self.include_network_cb)
 
         depth_layout = QHBoxLayout()
@@ -383,6 +420,7 @@ class FolderConfigurationDialog(QDialog):
         self.search_depth_spin.setMaximum(50)
         self.search_depth_spin.setValue(-1)
         self.search_depth_spin.setSpecialValueText("Unlimited")
+        self.search_depth_spin.setAccessibleName("Search depth limit")
         depth_layout.addWidget(self.search_depth_spin)
         depth_layout.addStretch()
         perf_layout.addRow("Search depth:", depth_layout)
@@ -392,6 +430,7 @@ class FolderConfigurationDialog(QDialog):
         self.max_results_spin.setMinimum(100)
         self.max_results_spin.setMaximum(100000)
         self.max_results_spin.setValue(10000)
+        self.max_results_spin.setAccessibleName("Maximum search results")
         max_results_layout.addWidget(self.max_results_spin)
         max_results_layout.addStretch()
         perf_layout.addRow("Maximum results:", max_results_layout)
@@ -402,21 +441,59 @@ class FolderConfigurationDialog(QDialog):
         filter_group = QGroupBox("File Type Filters")
         filter_layout = QVBoxLayout(filter_group)
 
-        # Include extensions
-        include_layout = QHBoxLayout()
-        include_layout.addWidget(QLabel("Include extensions:"))
-        self.include_ext_edit = QLineEdit()
-        self.include_ext_edit.setPlaceholderText("e.g., .txt,.pdf,.docx")
-        include_layout.addWidget(self.include_ext_edit)
-        filter_layout.addLayout(include_layout)
+        # Include extensions  (CP-9b)
+        self.include_ext_edit = TextInput(
+            label="Include extensions",
+            placeholder="e.g., .txt,.pdf,.docx",
+            accessible_name="Include file extensions",
+            accessible_description="Comma-separated list of extensions to include, e.g. .txt,.pdf",
+        )
+        self.include_ext_edit.set_validator(
+            lambda t: (
+                (True, "")
+                if not t.strip()
+                else (
+                    (True, "")
+                    if all(
+                        p.strip().startswith(".") and len(p.strip()) > 1
+                        for p in t.split(",")
+                        if p.strip()
+                    )
+                    else (
+                        False,
+                        "Each extension must start with a dot (e.g. .txt,.pdf)",
+                    )
+                )
+            )
+        )
+        filter_layout.addWidget(self.include_ext_edit)
 
-        # Exclude extensions
-        exclude_layout = QHBoxLayout()
-        exclude_layout.addWidget(QLabel("Exclude extensions:"))
-        self.exclude_ext_edit = QLineEdit()
-        self.exclude_ext_edit.setPlaceholderText("e.g., .tmp,.log,.bak")
-        exclude_layout.addWidget(self.exclude_ext_edit)
-        filter_layout.addLayout(exclude_layout)
+        # Exclude extensions  (CP-9b)
+        self.exclude_ext_edit = TextInput(
+            label="Exclude extensions",
+            placeholder="e.g., .tmp,.log,.bak",
+            accessible_name="Exclude file extensions",
+            accessible_description="Comma-separated list of extensions to exclude, e.g. .tmp,.log",
+        )
+        self.exclude_ext_edit.set_validator(
+            lambda t: (
+                (True, "")
+                if not t.strip()
+                else (
+                    (True, "")
+                    if all(
+                        p.strip().startswith(".") and len(p.strip()) > 1
+                        for p in t.split(",")
+                        if p.strip()
+                    )
+                    else (
+                        False,
+                        "Each extension must start with a dot (e.g. .tmp,.log)",
+                    )
+                )
+            )
+        )
+        filter_layout.addWidget(self.exclude_ext_edit)
 
         layout.addWidget(filter_group)
 
@@ -444,9 +521,7 @@ class FolderConfigurationDialog(QDialog):
         # General tab
         self.name_edit.setText(self.config.name)
         self.description_edit.setPlainText(self.config.description)
-        self.color_scheme_combo.setCurrentText(
-            self.config.color_scheme.title()
-        )
+        self.color_scheme_combo.setCurrentText(self.config.color_scheme.title())
 
         self.auto_refresh_cb.setChecked(self.config.auto_refresh)
         self.refresh_interval_spin.setValue(self.config.refresh_interval)
@@ -472,9 +547,7 @@ class FolderConfigurationDialog(QDialog):
 
         if params.date_from:
             self.date_from_edit.setDate(
-                QDate.fromString(
-                    params.date_from.date().isoformat(), Qt.ISODate
-                )
+                QDate.fromString(params.date_from.date().isoformat(), Qt.ISODate)
             )
         if params.date_to:
             self.date_to_edit.setDate(
@@ -575,9 +648,7 @@ class FolderConfigurationDialog(QDialog):
         return config
 
 
-class AdvancedFoldersWidget(
-    StandardWindow if StandardWindow != QWidget else QWidget
-):
+class AdvancedFoldersWidget(StandardWindow if StandardWindow != QWidget else QWidget):
     """Main Advanced Folders widget for RFU integration."""
 
     # Signals
@@ -617,6 +688,9 @@ class AdvancedFoldersWidget(
         self.refresh_timer = QTimer()
         self.refresh_timer.timeout.connect(self.auto_refresh_current_folder)
 
+        # Register theme-change callback for live re-theming
+        ThemeManager.add_theme_changed_callback(self._on_theme_changed)
+
     def setup_ui(self):
         """Setup the main UI."""
         # Main layout
@@ -654,32 +728,42 @@ class AdvancedFoldersWidget(
         toolbar_layout = QHBoxLayout(self.toolbar)
 
         # New folder button
-        self.new_folder_btn = QPushButton("📁 New Folder")
+        self.new_folder_btn = SecondaryButton("📁 New Folder")
         self.new_folder_btn.clicked.connect(self.create_new_folder)
         toolbar_layout.addWidget(self.new_folder_btn)
 
         # Edit folder button
-        self.edit_folder_btn = QPushButton("✏️ Edit")
+        self.edit_folder_btn = SecondaryButton("✏️ Edit")
         self.edit_folder_btn.clicked.connect(self.edit_current_folder)
         self.edit_folder_btn.setEnabled(False)
         toolbar_layout.addWidget(self.edit_folder_btn)
 
         # Delete folder button
-        self.delete_folder_btn = QPushButton("🗑️ Delete")
-        self.delete_folder_btn.clicked.connect(self.delete_current_folder)
+        self.delete_folder_btn = DestructiveButton("🗑️ Delete")
+        self.delete_folder_btn.set_confirmation_callback(
+            lambda: ConfirmationModal(
+                "Confirm Folder Deletion",
+                "Delete this folder configuration? This cannot be undone.",
+                "Delete",
+                "Cancel",
+                self,
+            ).exec_()
+            == QDialog.Accepted
+        )
+        self.delete_folder_btn.action_confirmed.connect(self.delete_current_folder)
         self.delete_folder_btn.setEnabled(False)
         toolbar_layout.addWidget(self.delete_folder_btn)
 
         toolbar_layout.addWidget(QFrame())  # Separator
 
         # Refresh button
-        self.refresh_btn = QPushButton("🔄 Refresh")
+        self.refresh_btn = SecondaryButton("🔄 Refresh")
         self.refresh_btn.clicked.connect(self.refresh_current_folder)
         self.refresh_btn.setEnabled(False)
         toolbar_layout.addWidget(self.refresh_btn)
 
         # Search button
-        self.search_btn = QPushButton("🔍 Search")
+        self.search_btn = PrimaryButton("🔍 Search")
         self.search_btn.clicked.connect(self.execute_search)
         self.search_btn.setEnabled(False)
         toolbar_layout.addWidget(self.search_btn)
@@ -691,10 +775,11 @@ class AdvancedFoldersWidget(
         self.quick_search_edit.setPlaceholderText("Quick search...")
         self.quick_search_edit.setMaximumWidth(200)
         self.quick_search_edit.returnPressed.connect(self.quick_search)
+        self.quick_search_edit.setAccessibleName("Quick search")
         toolbar_layout.addWidget(self.quick_search_edit)
 
         # Settings button
-        self.settings_btn = QPushButton("⚙️ Settings")
+        self.settings_btn = SecondaryButton("⚙️ Settings")
         self.settings_btn.clicked.connect(self.show_settings)
         toolbar_layout.addWidget(self.settings_btn)
 
@@ -705,12 +790,13 @@ class AdvancedFoldersWidget(
 
         # Panel title
         title_label = QLabel("Advanced Folders")
-        title_label.setFont(QFont("Arial", 12, QFont.Bold))
+        title_label.setFont(Typography.h3())
         layout.addWidget(title_label)
 
         # Folder list
         self.folder_list = QTreeWidget()
         self.folder_list.setHeaderLabels(["Name", "Directories", "Files"])
+        self.folder_list.setAccessibleName("Advanced folders list")
         self.folder_list.itemClicked.connect(self.on_folder_selected)
         layout.addWidget(self.folder_list)
 
@@ -718,7 +804,7 @@ class AdvancedFoldersWidget(
         self.stats_label = QLabel("No folder selected")
         self.stats_label.setWordWrap(True)
         self.stats_label.setStyleSheet(
-            "background-color: #f0f0f0; padding: 10px; border-radius: 5px;"
+            f"background-color: {token('surface')}; padding: 10px; border-radius: 5px;"
         )
         layout.addWidget(self.stats_label)
 
@@ -730,13 +816,13 @@ class AdvancedFoldersWidget(
         # Results header
         header_layout = QHBoxLayout()
         self.results_label = QLabel("Search Results")
-        self.results_label.setFont(QFont("Arial", 12, QFont.Bold))
+        self.results_label.setFont(Typography.h3())
         header_layout.addWidget(self.results_label)
 
         header_layout.addStretch()
 
         # Export button
-        self.export_btn = QPushButton("📤 Export")
+        self.export_btn = SecondaryButton("📤 Export")
         self.export_btn.clicked.connect(self.export_results)
         self.export_btn.setEnabled(False)
         header_layout.addWidget(self.export_btn)
@@ -753,6 +839,7 @@ class AdvancedFoldersWidget(
         self.results_table.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.results_table.setAlternatingRowColors(True)
         self.results_table.setSortingEnabled(True)
+        self.results_table.setAccessibleName("Search results")
 
         # Set columns
         columns = ["Name", "Path", "Size", "Type", "Modified"]
@@ -765,9 +852,7 @@ class AdvancedFoldersWidget(
         header.setSectionResizeMode(1, QHeaderView.Stretch)  # Path
         header.setSectionResizeMode(2, QHeaderView.ResizeToContents)  # Size
         header.setSectionResizeMode(3, QHeaderView.ResizeToContents)  # Type
-        header.setSectionResizeMode(
-            4, QHeaderView.ResizeToContents
-        )  # Modified
+        header.setSectionResizeMode(4, QHeaderView.ResizeToContents)  # Modified
 
         layout.addWidget(self.results_table)
 
@@ -821,9 +906,7 @@ class AdvancedFoldersWidget(
 
             # Start auto-refresh if enabled
             if self.current_folder.auto_refresh:
-                self.refresh_timer.start(
-                    self.current_folder.refresh_interval * 1000
-                )
+                self.refresh_timer.start(self.current_folder.refresh_interval * 1000)
             else:
                 self.refresh_timer.stop()
 
@@ -868,11 +951,12 @@ class AdvancedFoldersWidget(
             # Validate configuration
             errors = config.validate()
             if errors:
-                QMessageBox.warning(
-                    self,
+                Modal(
                     "Validation Error",
                     "Configuration has errors:\n\n" + "\n".join(errors),
-                )
+                    ["OK"],
+                    self,
+                ).exec_()
                 return
 
             # Save configuration
@@ -884,9 +968,12 @@ class AdvancedFoldersWidget(
                 self.status_bar.showMessage(f"Created folder: {config.name}")
 
             except Exception as e:
-                QMessageBox.critical(
-                    self, "Error", f"Failed to create folder:\n{str(e)}"
-                )
+                Modal(
+                    "Error",
+                    f"Failed to create folder:\n{str(e)}",
+                    ["OK"],
+                    self,
+                ).exec_()
 
     def edit_current_folder(self):
         """Edit the current folder configuration."""
@@ -901,11 +988,12 @@ class AdvancedFoldersWidget(
             # Validate configuration
             errors = config.validate()
             if errors:
-                QMessageBox.warning(
-                    self,
+                Modal(
                     "Validation Error",
                     "Configuration has errors:\n\n" + "\n".join(errors),
-                )
+                    ["OK"],
+                    self,
+                ).exec_()
                 return
 
             # Save configuration
@@ -919,40 +1007,35 @@ class AdvancedFoldersWidget(
                 self.status_bar.showMessage(f"Updated folder: {config.name}")
 
             except Exception as e:
-                QMessageBox.critical(
-                    self, "Error", f"Failed to update folder:\n{str(e)}"
-                )
+                Modal(
+                    "Error",
+                    f"Failed to update folder:\n{str(e)}",
+                    ["OK"],
+                    self,
+                ).exec_()
 
     def delete_current_folder(self):
         """Delete the current folder configuration."""
         if not self.current_folder:
             return
 
-        reply = QMessageBox.question(
-            self,
-            "Confirm Delete",
-            f"Are you sure you want to delete the folder configuration '{self.current_folder.name}'?",
-            QMessageBox.Yes | QMessageBox.No,
-            QMessageBox.No,
-        )
+        try:
+            self.folder_manager.delete_folder(self.current_folder.folder_id)
 
-        if reply == QMessageBox.Yes:
-            try:
-                self.folder_manager.delete_folder(
-                    self.current_folder.folder_id
-                )
+            self.current_folder = None
+            self.enable_folder_actions(False)
+            self.clear_results()
+            self.load_folders()
+            self.stats_label.setText("No folder selected")
+            self.status_bar.showMessage("Folder deleted")
 
-                self.current_folder = None
-                self.enable_folder_actions(False)
-                self.clear_results()
-                self.load_folders()
-                self.stats_label.setText("No folder selected")
-                self.status_bar.showMessage("Folder deleted")
-
-            except Exception as e:
-                QMessageBox.critical(
-                    self, "Error", f"Failed to delete folder:\n{str(e)}"
-                )
+        except Exception as e:
+            Modal(
+                "Error",
+                f"Failed to delete folder:\n{str(e)}",
+                ["OK"],
+                self,
+            ).exec_()
 
     def refresh_current_folder(self):
         """Refresh the current folder."""
@@ -988,9 +1071,7 @@ class AdvancedFoldersWidget(
             progress: Search progress information
         """
         if progress.total_files > 0:
-            percentage = int(
-                (progress.files_processed / progress.total_files) * 100
-            )
+            percentage = int((progress.files_processed / progress.total_files) * 100)
             self.progress_bar.setValue(percentage)
 
         self.status_bar.showMessage(
@@ -1022,9 +1103,7 @@ class AdvancedFoldersWidget(
             self.folder_manager.save_configurations()
             self.update_folder_stats()
 
-        self.status_bar.showMessage(
-            f"Search completed: {len(results)} files found"
-        )
+        self.status_bar.showMessage(f"Search completed: {len(results)} files found")
 
     def populate_results_table(self, results: List[FileResult]):
         """Populate results table with search results.
@@ -1081,20 +1160,14 @@ class AdvancedFoldersWidget(
             return
 
         # Update search parameters for quick search
-        original_pattern = (
-            self.current_folder.search_parameters.filename_pattern
-        )
-        self.current_folder.search_parameters.filename_pattern = (
-            f"*{search_term}*"
-        )
+        original_pattern = self.current_folder.search_parameters.filename_pattern
+        self.current_folder.search_parameters.filename_pattern = f"*{search_term}*"
 
         # Execute search
         self.execute_search()
 
         # Restore original pattern
-        self.current_folder.search_parameters.filename_pattern = (
-            original_pattern
-        )
+        self.current_folder.search_parameters.filename_pattern = original_pattern
 
     def export_results(self):
         """Export search results."""
@@ -1118,11 +1191,12 @@ class AdvancedFoldersWidget(
                 self.status_bar.showMessage(f"Results exported to {filename}")
 
             except Exception as e:
-                QMessageBox.critical(
-                    self,
+                Modal(
                     "Export Error",
                     f"Failed to export results:\n{str(e)}",
-                )
+                    ["OK"],
+                    self,
+                ).exec_()
 
     def export_to_csv(self, filename: str):
         """Export results to CSV file.
@@ -1172,9 +1246,7 @@ class AdvancedFoldersWidget(
 
         data = {
             "export_timestamp": datetime.now().isoformat(),
-            "folder_name": (
-                self.current_folder.name if self.current_folder else ""
-            ),
+            "folder_name": (self.current_folder.name if self.current_folder else ""),
             "total_results": len(self.search_results),
             "results": [result.to_dict() for result in self.search_results],
         }
@@ -1185,11 +1257,12 @@ class AdvancedFoldersWidget(
     def show_settings(self):
         """Show Advanced Folders settings."""
         # TODO: Implement settings dialog
-        QMessageBox.information(
-            self,
+        Modal(
             "Settings",
             "Advanced Folders settings dialog will be implemented in the next phase.",
-        )
+            ["OK"],
+            self,
+        ).exec_()
 
     @staticmethod
     def format_size(size_bytes: int) -> str:
@@ -1212,6 +1285,28 @@ class AdvancedFoldersWidget(
         s = round(size_bytes / p, 2)
 
         return f"{s} {size_names[i]}"
+
+    def _on_theme_changed(self, variant: str) -> None:
+        """Re-apply token-driven stylesheets when theme variant changes."""
+        if hasattr(self, "stats_label"):
+            self.stats_label.setStyleSheet(
+                f"background-color: {token('surface')}; padding: 10px; border-radius: 5px;"
+            )
+        for _btn in (
+            "search_btn",
+            "new_folder_btn",
+            "edit_folder_btn",
+            "refresh_btn",
+            "settings_btn",
+            "export_btn",
+            "add_dir_btn",
+            "remove_dir_btn",
+        ):
+            btn = getattr(self, _btn, None)
+            if btn is not None:
+                btn._apply_style()
+        if hasattr(self, "delete_folder_btn"):
+            self.delete_folder_btn._apply_destructive_style()
 
 
 # Integration class for RFU Hub

@@ -14,6 +14,14 @@ from pathlib import Path
 from typing import Callable, Dict, Iterable, cast
 
 from PyQt5.QtGui import QFont, QKeySequence
+
+try:
+    from src.gui.themes import Typography as _Typography
+except ImportError:
+    try:
+        from gui.themes import Typography as _Typography
+    except ImportError:
+        _Typography = None
 from PyQt5.QtWidgets import (
     QAction,
     QApplication,
@@ -240,7 +248,7 @@ class SimpleMenuManager:
         layout = QVBoxLayout(dialog)
         log_text = QTextEdit()
         log_text.setReadOnly(True)
-        log_text.setFont(QFont("Consolas", 9))
+        log_text.setFont(_Typography.monospace() if _Typography else QFont("Consolas", 9))
 
         log_text.setPlainText(self._load_log_content())
         log_text.moveCursor(log_text.textCursor().End)

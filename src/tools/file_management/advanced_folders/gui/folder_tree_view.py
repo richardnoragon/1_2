@@ -32,6 +32,7 @@ from PyQt5.QtWidgets import (
     QAbstractItemView,
     QAction,
     QApplication,
+    QDialog,
     QFrame,
     QHBoxLayout,
     QHeaderView,
@@ -44,6 +45,12 @@ from PyQt5.QtWidgets import (
     QVBoxLayout,
     QWidget,
 )
+
+try:
+    from src.gui.components.modal import ConfirmationModal, Modal
+except ImportError:
+    Modal = None
+    ConfirmationModal = None
 
 from ..core import ConfigurationManager, FolderConfiguration, ValidationResult
 from ..database import AdvancedFoldersDBManager
@@ -217,11 +224,7 @@ class FolderTreeModel(QAbstractItemModel):
                 return "Container"
             elif column == 2:  # Status
                 if node.folder_config:
-                    return (
-                        "Active"
-                        if node.folder_config.is_active
-                        else "Inactive"
-                    )
+                    return "Active" if node.folder_config.is_active else "Inactive"
                 return "N/A"
 
         elif role == Qt.ToolTipRole:
@@ -353,10 +356,7 @@ class FolderTreeModel(QAbstractItemModel):
             folder_config: Updated folder configuration
         """
         for child in self.root_node.children:
-            if (
-                child.folder_config
-                and child.folder_config.id == folder_config.id
-            ):
+            if child.folder_config and child.folder_config.id == folder_config.id:
                 child.folder_config = folder_config
                 child.display_name = folder_config.name
 
@@ -364,9 +364,7 @@ class FolderTreeModel(QAbstractItemModel):
                 index = self.createIndex(child.row(), 0, child)
                 self.dataChanged.emit(index, index)
 
-                self.logger.info(
-                    f"Updated folder configuration: {folder_config.name}"
-                )
+                self.logger.info(f"Updated folder configuration: {folder_config.name}")
                 return
 
         self.logger.warning(
@@ -445,12 +443,8 @@ class FolderTreeView(QTreeView):
         header = self.header()
         header.setStretchLastSection(False)
         header.setSectionResizeMode(0, QHeaderView.Stretch)  # Name column
-        header.setSectionResizeMode(
-            1, QHeaderView.ResizeToContents
-        )  # Type column
-        header.setSectionResizeMode(
-            2, QHeaderView.ResizeToContents
-        )  # Status column
+        header.setSectionResizeMode(1, QHeaderView.ResizeToContents)  # Type column
+        header.setSectionResizeMode(2, QHeaderView.ResizeToContents)  # Status column
 
         # Drag and drop
         self.setDragEnabled(True)
@@ -467,16 +461,12 @@ class FolderTreeView(QTreeView):
 
         # Accessibility
         self.setAccessibleName("Folder Configurations Tree")
-        self.setAccessibleDescription(
-            "Tree view of configured advanced folders"
-        )
+        self.setAccessibleDescription("Tree view of configured advanced folders")
 
     def _connect_signals(self):
         """Connect internal signals."""
         # Selection changes
-        self.selectionModel().currentChanged.connect(
-            self._on_selection_changed
-        )
+        self.selectionModel().currentChanged.connect(self._on_selection_changed)
 
         # Double-click activation
         self.doubleClicked.connect(self._on_double_clicked)
@@ -485,9 +475,7 @@ class FolderTreeView(QTreeView):
         self.folder_model.folderSelected.connect(self.folderSelected)
         self.folder_model.folderActivated.connect(self.folderActivated)
 
-    def _on_selection_changed(
-        self, current: QModelIndex, previous: QModelIndex
-    ):
+    def _on_selection_changed(self, current: QModelIndex, previous: QModelIndex):
         """Handle selection changes.
 
         Args:
@@ -525,9 +513,7 @@ class FolderTreeView(QTreeView):
             # Folder-specific actions
             configure_action = QAction("Configure Folder...", self)
             configure_action.triggered.connect(
-                lambda: self.folderConfigurationRequested.emit(
-                    folder_config.id
-                )
+                lambda: self.folderConfigurationRequested.emit(folder_config.id)
             )
             menu.addAction(configure_action)
 
@@ -569,24 +555,23 @@ class FolderTreeView(QTreeView):
             folder_id: ID of folder to toggle
         """
         try:
-            folder_config = self.folder_model.folder_repository.get_by_id(
-                folder_id
-            )
+            folder_config = self.folder_model.folder_repository.get_by_id(folder_id)
             if folder_config:
                 folder_config.is_active = not folder_config.is_active
                 self.folder_model.folder_repository.update(folder_config)
                 self.folder_model.update_folder_configuration(folder_config)
 
-                status = (
-                    "activated" if folder_config.is_active else "deactivated"
-                )
+                status = "activated" if folder_config.is_active else "deactivated"
                 self.logger.info(f"Folder {folder_config.name} {status}")
 
         except Exception as e:
             self.logger.error(f"Failed to toggle folder activation: {e}")
-            QMessageBox.critical(
-                self, "Error", f"Failed to toggle folder activation: {e}"
-            )
+            Modal(
+                "Error",
+                f"Failed to toggle folder activation: {e}",
+                ["OK"],
+                self,
+            ).exec_()
 
     def _confirm_delete_folder(self, folder_id: str):
         """Confirm and delete folder configuration.
@@ -595,29 +580,31 @@ class FolderTreeView(QTreeView):
             folder_id: ID of folder to delete
         """
         try:
-            folder_config = self.folder_model.folder_repository.get_by_id(
-                folder_id
-            )
+            folder_config = self.folder_model.folder_repository.get_by_id(folder_id)
             if not folder_config:
                 return
 
-            reply = QMessageBox.question(
-                self,
-                "Confirm Delete",
-                f"Are you sure you want to delete the folder configuration '{folder_config.name}'?\n\n"
-                "This will not delete any actual files, only the folder configuration.",
-                QMessageBox.Yes | QMessageBox.No,
-                QMessageBox.No,
-            )
-
-            if reply == QMessageBox.Yes:
+            if (
+                ConfirmationModal(
+                    "Confirm Delete",
+                    f"Are you sure you want to delete the folder configuration '{folder_config.name}'?\n\n"
+                    "This will not delete any actual files, only the folder configuration.",
+                    confirm_text="Delete",
+                    cancel_text="Cancel",
+                    parent=self,
+                ).exec_()
+                == QDialog.Accepted
+            ):
                 self.deleteFolderRequested.emit(folder_id)
 
         except Exception as e:
             self.logger.error(f"Failed to delete folder configuration: {e}")
-            QMessageBox.critical(
-                self, "Error", f"Failed to delete folder configuration: {e}"
-            )
+            Modal(
+                "Error",
+                f"Failed to delete folder configuration: {e}",
+                ["OK"],
+                self,
+            ).exec_()
 
     def refresh(self):
         """Refresh tree view data."""
@@ -674,9 +661,7 @@ class FolderTreeView(QTreeView):
             Selected folder ID or None
         """
         current_index = self.currentIndex()
-        folder_config = self.folder_model.get_folder_configuration(
-            current_index
-        )
+        folder_config = self.folder_model.get_folder_configuration(current_index)
         return folder_config.id if folder_config else None
 
     def get_folder_count(self) -> int:
@@ -730,7 +715,7 @@ class FolderTreeWidget(QWidget):
         # Status label
         self.status_label = QLabel("Ready")
         self.status_label.setStyleSheet(
-            "QLabel { color: #666666; font-size: 11px; }"
+            f"QLabel { color: {token('text_muted')}; font-size: 11px; }"
         )
         layout.addWidget(self.status_label)
 
@@ -752,6 +737,7 @@ class FolderTreeWidget(QWidget):
         self.new_button = QToolButton()
         self.new_button.setText("New")
         self.new_button.setToolTip("Create new folder configuration")
+        self.new_button.setAccessibleName("New folder configuration")
         self.new_button.clicked.connect(self.newFolderRequested.emit)
         toolbar_layout.addWidget(self.new_button)
 
@@ -759,6 +745,7 @@ class FolderTreeWidget(QWidget):
         self.refresh_button = QToolButton()
         self.refresh_button.setText("Refresh")
         self.refresh_button.setToolTip("Refresh folder list")
+        self.refresh_button.setAccessibleName("Refresh folder list")
         self.refresh_button.clicked.connect(self.tree_view.refresh)
         toolbar_layout.addWidget(self.refresh_button)
 
@@ -767,7 +754,7 @@ class FolderTreeWidget(QWidget):
         # Folder count label
         self.count_label = QLabel("0 folders")
         self.count_label.setStyleSheet(
-            "QLabel { color: #666666; font-size: 11px; }"
+            f"QLabel { color: {token('text_muted')}; font-size: 11px; }"
         )
         toolbar_layout.addWidget(self.count_label)
 
@@ -782,20 +769,12 @@ class FolderTreeWidget(QWidget):
             self.folderConfigurationRequested
         )
         self.tree_view.newFolderRequested.connect(self.newFolderRequested)
-        self.tree_view.deleteFolderRequested.connect(
-            self.deleteFolderRequested
-        )
+        self.tree_view.deleteFolderRequested.connect(self.deleteFolderRequested)
 
         # Update count when model changes
-        self.tree_view.folder_model.modelReset.connect(
-            self._update_folder_count
-        )
-        self.tree_view.folder_model.rowsInserted.connect(
-            self._update_folder_count
-        )
-        self.tree_view.folder_model.rowsRemoved.connect(
-            self._update_folder_count
-        )
+        self.tree_view.folder_model.modelReset.connect(self._update_folder_count)
+        self.tree_view.folder_model.rowsInserted.connect(self._update_folder_count)
+        self.tree_view.folder_model.rowsRemoved.connect(self._update_folder_count)
 
     def _update_folder_count(self):
         """Update folder count display."""

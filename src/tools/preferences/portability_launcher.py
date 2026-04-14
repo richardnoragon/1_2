@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Optional, Sequence
 
 try:
+    from src.gui.themes import token
     from PyQt5.QtWidgets import (
         QCheckBox,
         QFileDialog,
@@ -134,7 +135,7 @@ class PreferencePortabilityGUI(QMainWindow):
             warning = QLabel(
                 "AES encryption unavailable: install pyAesCrypt to enable it."
             )
-            warning.setStyleSheet("color: #b9770e;")
+            warning.setStyleSheet(f"color: {token('semantic_warning')};")
             warning.setWordWrap(True)
             tab_layout.addWidget(warning)
 
@@ -191,7 +192,7 @@ class PreferencePortabilityGUI(QMainWindow):
             warning = QLabel(
                 "AES decryption unavailable: install pyAesCrypt to enable it."
             )
-            warning.setStyleSheet("color: #b9770e;")
+            warning.setStyleSheet(f"color: {token('semantic_warning')};")
             warning.setWordWrap(True)
             tab_layout.addWidget(warning)
 

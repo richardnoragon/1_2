@@ -13,6 +13,7 @@ from pathlib import Path
 from typing import Any, Callable, Dict, Optional
 
 from PyQt5.QtCore import QThread, QTimer, pyqtSignal
+from src.gui.themes import token
 from PyQt5.QtWidgets import (
     QApplication,
     QFileDialog,
@@ -125,18 +126,18 @@ class PDFProgressDialog(QProgressDialog):
         self.setStyleSheet(
             """
             QProgressDialog {
-                background-color: #ffffff;
+                background-color: {token('window_background')};
                 font-family: "Segoe UI", Arial, sans-serif;
             }
             QProgressBar {
-                border: 1px solid #dee2e6;
+                border: 1px solid {token('border_light')};
                 border-radius: 4px;
                 text-align: center;
-                background-color: #f8f9fa;
+                background-color: {token('dialog_background')};
                 height: 20px;
             }
             QProgressBar::chunk {
-                background-color: #007bff;
+                background-color: {token('button_primary')};
                 border-radius: 3px;
             }
         """

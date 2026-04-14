@@ -15,10 +15,23 @@ from PyQt5.QtWidgets import (
     QListWidget,
     QMainWindow,
     QMessageBox,
-    QPushButton,
     QVBoxLayout,
     QWidget,
 )
+
+from src.gui.themes import token
+
+try:
+    from src.gui.components.buttons import PrimaryButton, SecondaryButton
+    from src.gui.components.modal import Modal
+
+    _COMPONENTS_AVAILABLE = True
+except ImportError:
+    from PyQt5.QtWidgets import QPushButton as PrimaryButton
+    from PyQt5.QtWidgets import QPushButton as SecondaryButton
+
+    Modal = None
+    _COMPONENTS_AVAILABLE = False
 
 # Import SafeStandardWindow for reliable menu integration
 try:
@@ -39,9 +52,7 @@ except ImportError as e:
     except ImportError:
         # Final fallback - minimal implementation
         class StandardWindow(QMainWindow):
-            def __init__(
-                self, title="Window", window_type="utility", parent=None
-            ):
+            def __init__(self, title="Window", window_type="utility", parent=None):
                 super().__init__(parent)
                 self.setWindowTitle(title)
 
@@ -77,9 +88,7 @@ class DuplicateFinderApp(StandardWindow):
             # Register tool-specific callbacks
             self.menu_manager.register_callback("new_scan", self.clear_results)
             # Override the standard help with our tool-specific help
-            self.menu_manager.register_callback(
-                "show_user_guide", self.show_help
-            )
+            self.menu_manager.register_callback("show_user_guide", self.show_help)
             self.menu_manager.register_callback(
                 "show_preferences", self.show_preferences
             )
@@ -135,20 +144,25 @@ class DuplicateFinderApp(StandardWindow):
         </ul>
         """
 
-        QMessageBox.information(self, "Duplicate Finder Help", help_text)
+        if Modal:
+            Modal("Duplicate Finder Help", help_text, parent=self).exec_()
+        else:
+            QMessageBox.information(self, "Duplicate Finder Help", help_text)
 
     def show_preferences(self):
         """Show Duplicate Finder preferences."""
-        QMessageBox.information(
-            self,
-            "Duplicate Finder Preferences",
+        msg = (
             "Duplicate Finder preferences:\n\n"
             "• Scan depth limits\n"
             "• File type filters\n"
             "• Minimum file size settings\n"
             "• Checksum algorithm options\n\n"
-            "Advanced preferences coming soon!",
+            "Advanced preferences coming soon!"
         )
+        if Modal:
+            Modal("Duplicate Finder Preferences", msg, parent=self).exec_()
+        else:
+            QMessageBox.information(self, "Duplicate Finder Preferences", msg)
 
     def refresh_view(self):
         """Refresh/clear the current scan results."""
@@ -168,16 +182,16 @@ class DuplicateFinderApp(StandardWindow):
         # Add header
         header_label = QLabel("Duplicate File Finder")
         header_label.setStyleSheet(
-            """
-            QLabel {
+            f"""
+            QLabel {{
                 font-size: 18px;
                 font-weight: bold;
-                color: #2c3e50;
+                color: {token('text_primary')};
                 padding: 10px;
-                background-color: #ecf0f1;
+                background-color: {token('background')};
                 border-radius: 5px;
                 margin-bottom: 10px;
-            }
+            }}
         """
         )
         layout.addWidget(header_label)
@@ -186,7 +200,7 @@ class DuplicateFinderApp(StandardWindow):
         dir_group = QGroupBox("Directory Selection")
         dir_layout = QVBoxLayout(dir_group)
 
-        select_button = QPushButton("Select Directory")
+        select_button = SecondaryButton("Select Directory")
         select_button.clicked.connect(self.select_directory)
         dir_layout.addWidget(select_button)
 
@@ -196,7 +210,7 @@ class DuplicateFinderApp(StandardWindow):
         layout.addWidget(dir_group)
 
         # Find button
-        find_button = QPushButton("Find Duplicates")
+        find_button = PrimaryButton("Find Duplicates")
         find_button.clicked.connect(self.find_duplicates)
         layout.addWidget(find_button)
 
@@ -208,9 +222,7 @@ class DuplicateFinderApp(StandardWindow):
 
     def select_directory(self):
         """Select a directory to scan."""
-        dir_path = QFileDialog.getExistingDirectory(
-            self, "Select Directory to Scan"
-        )
+        dir_path = QFileDialog.getExistingDirectory(self, "Select Directory to Scan")
         if dir_path:
             self.selected_directory = dir_path
             self.dir_label.setText(f"Selected: {dir_path}")
@@ -218,9 +230,12 @@ class DuplicateFinderApp(StandardWindow):
     def find_duplicates(self):
         """Find duplicate files in the selected directory."""
         if not self.selected_directory:
-            QMessageBox.warning(
-                self, "Warning", "Please select a directory first."
-            )
+            if Modal:
+                Modal(
+                    "Warning", "Please select a directory first.", parent=self
+                ).exec_()
+            else:
+                QMessageBox.warning(self, "Warning", "Please select a directory first.")
             return
 
         self._prepare_scan()
@@ -230,9 +245,10 @@ class DuplicateFinderApp(StandardWindow):
             self._display_results(duplicates)
 
         except Exception as e:
-            QMessageBox.critical(
-                self, "Error", f"Failed to scan directory: {e}"
-            )
+            if Modal:
+                Modal("Error", f"Failed to scan directory: {e}", parent=self).exec_()
+            else:
+                QMessageBox.critical(self, "Error", f"Failed to scan directory: {e}")
 
     def _prepare_scan(self):
         """Prepare the UI for scanning."""
@@ -271,9 +287,7 @@ class DuplicateFinderApp(StandardWindow):
         self.results_list.clear()
 
         if duplicates:
-            self.results_list.addItem(
-                f"Found {len(duplicates)} duplicate pairs:"
-            )
+            self.results_list.addItem(f"Found {len(duplicates)} duplicate pairs:")
             for original, duplicate in duplicates:
                 self.results_list.addItem(f"Original: {original}")
                 self.results_list.addItem(f"Duplicate: {duplicate}")

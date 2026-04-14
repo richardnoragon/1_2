@@ -9,6 +9,7 @@ import logging
 import sys
 
 try:
+    from src.gui.themes import token
     from PyQt5.QtWidgets import (
         QApplication,
         QFileDialog,
@@ -235,9 +236,9 @@ class SizeAnalyzerGUI(StandardWindow):
             QLabel {
                 font-size: 18px;
                 font-weight: bold;
-                color: #2c3e50;
+                color: {token('text_primary')};
                 padding: 10px;
-                background-color: #ecf0f1;
+                background-color: {token('background')};
                 border-radius: 5px;
                 margin-bottom: 10px;
             }
@@ -253,7 +254,7 @@ class SizeAnalyzerGUI(StandardWindow):
         analysis_layout.addWidget(self.results_list)
 
         self.status_label = QLabel("Idle")
-        self.status_label.setStyleSheet("color: #2c3e50; padding: 4px 0;")
+        self.status_label.setStyleSheet(f"color: {token('text_primary')}; padding: 4px 0;")
         analysis_layout.addWidget(self.status_label)
 
         filter_group = QGroupBox("File Name Range Filter (Optional)")
@@ -291,7 +292,7 @@ class SizeAnalyzerGUI(StandardWindow):
         content_label = QLabel(
             "Use Start Analysis to scan a directory. Results appear above."
         )
-        content_label.setStyleSheet("padding: 20px; color: #666;")
+        content_label.setStyleSheet(f"padding: 20px; color: {token('text_muted')};")
         layout.addWidget(content_label)
 
         # Add action button
@@ -300,7 +301,7 @@ class SizeAnalyzerGUI(StandardWindow):
         self.action_button.setStyleSheet(
             """
             QPushButton {
-                background-color: #3498db;
+                background-color: {token('accent')};
                 color: white;
                 border: none;
                 padding: 10px 20px;
@@ -308,7 +309,7 @@ class SizeAnalyzerGUI(StandardWindow):
                 font-weight: bold;
             }
             QPushButton:hover {
-                background-color: #2980b9;
+                background-color: {token('button_primary_hover')};
             }
         """
         )

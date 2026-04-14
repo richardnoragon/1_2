@@ -159,7 +159,7 @@ class AdvancedCatalogWindow(StandardWindow):
 
         # Header
         header_label = QLabel("Advanced File Catalog Generator")
-        header_font = QFont()
+        header_font = Typography.body()
         header_font.setPointSize(18)
         header_font.setBold(True)
         header_label.setFont(header_font)
@@ -207,7 +207,7 @@ class AdvancedCatalogWindow(StandardWindow):
         self.select_dir_btn = QPushButton("Select Directory")
         self.dir_label = QLabel("No directory selected")
         self.dir_label.setStyleSheet(
-            "QLabel { border: 1px solid gray; padding: 5px; background-color: #f0f0f0; }"
+            f"QLabel { border: 1px solid gray; padding: 5px; background-color: {token('surface')}; }"
         )
         self.recursive_cb = QCheckBox("Include Subdirectories")
         self.recursive_cb.setChecked(True)
@@ -582,7 +582,7 @@ class AdvancedCatalogWindow(StandardWindow):
         ) in self.catalog_data.color_legend.items():
             # Category header
             header = QLabel(category_name)
-            header.setFont(QFont("", 10, QFont.Bold))
+            header.setFont(Typography.body())
             self.legend_layout.addWidget(header)
 
             # Color items

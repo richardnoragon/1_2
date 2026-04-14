@@ -17,6 +17,7 @@ PRIVACY_CLEANER_TEXT = "Privacy Cleaner"
 SECURE_WIPE_LABEL = "Secure Wipe"
 
 try:
+    from src.gui.themes import token
     from PyQt5.QtWidgets import (
         QApplication,
         QCheckBox,
@@ -90,9 +91,9 @@ class PrivacyCleanerGUI(QMainWindow):
             QLabel {
                 font-size: 18px;
                 font-weight: bold;
-                color: #2c3e50;
+                color: {token('text_primary')};
                 padding: 10px;
-                background-color: #ecf0f1;
+                background-color: {token('background')};
                 border-radius: 5px;
                 margin-bottom: 10px;
             }

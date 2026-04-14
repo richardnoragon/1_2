@@ -54,6 +54,7 @@ except ImportError:
     CRYPTO_AVAILABLE = False
 
 try:
+    from src.gui.themes import token
     from PyQt5.QtCore import Qt, QThread, QTimer, pyqtSignal
     from PyQt5.QtGui import QFont, QIcon
     from PyQt5.QtWidgets import (
@@ -1085,9 +1086,9 @@ class NetworkTransferGUI(StandardWindow):
             QLabel {
                 font-size: 20px;
                 font-weight: bold;
-                color: #2c3e50;
+                color: {token('text_primary')};
                 padding: 15px;
-                background-color: #ecf0f1;
+                background-color: {token('background')};
                 border-radius: 8px;
                 margin-bottom: 10px;
             }
@@ -1203,7 +1204,7 @@ class NetworkTransferGUI(StandardWindow):
         self.send_files_btn.setStyleSheet(
             """
             QPushButton {
-                background-color: #27ae60;
+                background-color: {token('semantic_success')};
                 color: white;
                 font-weight: bold;
                 padding: 10px 20px;
@@ -1211,7 +1212,7 @@ class NetworkTransferGUI(StandardWindow):
                 border: none;
             }
             QPushButton:hover {
-                background-color: #229954;
+                background-color: {token('semantic_success')};
             }
         """
         )
@@ -1254,7 +1255,7 @@ class NetworkTransferGUI(StandardWindow):
         self.start_server_btn.setStyleSheet(
             """
             QPushButton {
-                background-color: #3498db;
+                background-color: {token('accent')};
                 color: white;
                 font-weight: bold;
                 padding: 10px 20px;
@@ -1262,7 +1263,7 @@ class NetworkTransferGUI(StandardWindow):
                 border: none;
             }
             QPushButton:hover {
-                background-color: #2980b9;
+                background-color: {token('button_primary_hover')};
             }
         """
         )
@@ -1280,7 +1281,7 @@ class NetworkTransferGUI(StandardWindow):
         status_layout = QVBoxLayout(status_group)
 
         self.server_status = QLabel("Server stopped")
-        self.server_status.setStyleSheet("font-weight: bold; color: #e74c3c;")
+        self.server_status.setStyleSheet(f"font-weight: bold; color: {token('semantic_error')};")
         status_layout.addWidget(self.server_status)
 
         self.transfer_log = QTextEdit()
@@ -2018,7 +2019,7 @@ class NetworkTransferGUI(StandardWindow):
         self.start_server_btn.setEnabled(False)
         self.stop_server_btn.setEnabled(True)
         self.server_status.setText(f"Server running on port {port}")
-        self.server_status.setStyleSheet("font-weight: bold; color: #27ae60;")
+        self.server_status.setStyleSheet(f"font-weight: bold; color: {token('semantic_success')};")
 
         self.transfer_log.append(f"Transfer server started on port {port}")
 
@@ -2032,7 +2033,7 @@ class NetworkTransferGUI(StandardWindow):
         self.start_server_btn.setEnabled(True)
         self.stop_server_btn.setEnabled(False)
         self.server_status.setText("Server stopped")
-        self.server_status.setStyleSheet("font-weight: bold; color: #e74c3c;")
+        self.server_status.setStyleSheet(f"font-weight: bold; color: {token('semantic_error')};")
 
         self.transfer_log.append("Transfer server stopped")
 

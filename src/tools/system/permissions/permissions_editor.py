@@ -179,9 +179,9 @@ class PermissionsEditorGUI(StandardWindow):
             QLabel {
                 font-size: 18px;
                 font-weight: bold;
-                color: #2c3e50;
+                color: {token('text_primary')};
                 padding: 10px;
-                background-color: #ecf0f1;
+                background-color: {token('background')};
                 border-radius: 5px;
                 margin-bottom: 10px;
             }
@@ -201,7 +201,7 @@ class PermissionsEditorGUI(StandardWindow):
         select_file_button.setStyleSheet(
             """
             QPushButton {
-                background-color: #3498db;
+                background-color: {token('accent')};
                 color: white;
                 border: none;
                 padding: 8px 16px;
@@ -209,7 +209,7 @@ class PermissionsEditorGUI(StandardWindow):
                 font-weight: bold;
             }
             QPushButton:hover {
-                background-color: #2980b9;
+                background-color: {token('button_primary_hover')};
             }
         """
         )
@@ -220,7 +220,7 @@ class PermissionsEditorGUI(StandardWindow):
         select_dir_button.setStyleSheet(
             """
             QPushButton {
-                background-color: #e67e22;
+                background-color: {token('semantic_warning')};
                 color: white;
                 border: none;
                 padding: 8px 16px;
@@ -228,7 +228,7 @@ class PermissionsEditorGUI(StandardWindow):
                 font-weight: bold;
             }
             QPushButton:hover {
-                background-color: #d35400;
+                background-color: {token('semantic_warning')};
             }
         """
         )
@@ -238,7 +238,7 @@ class PermissionsEditorGUI(StandardWindow):
 
         self.file_label = QLabel("No file/directory selected")
         self.file_label.setStyleSheet(
-            "padding: 10px; background-color: #f8f9fa; border-radius: 4px;"
+            f"padding: 10px; background-color: {token('dialog_background')}; border-radius: 4px;"
         )
         file_layout.addWidget(self.file_label)
 
@@ -275,7 +275,7 @@ class PermissionsEditorGUI(StandardWindow):
         load_button.setStyleSheet(
             """
             QPushButton {
-                background-color: #27ae60;
+                background-color: {token('semantic_success')};
                 color: white;
                 border: none;
                 padding: 8px 16px;
@@ -283,7 +283,7 @@ class PermissionsEditorGUI(StandardWindow):
                 font-weight: bold;
             }
             QPushButton:hover {
-                background-color: #229954;
+                background-color: {token('semantic_success')};
             }
         """
         )
@@ -294,7 +294,7 @@ class PermissionsEditorGUI(StandardWindow):
         apply_button.setStyleSheet(
             """
             QPushButton {
-                background-color: #e74c3c;
+                background-color: {token('semantic_error')};
                 color: white;
                 border: none;
                 padding: 8px 16px;
@@ -302,7 +302,7 @@ class PermissionsEditorGUI(StandardWindow):
                 font-weight: bold;
             }
             QPushButton:hover {
-                background-color: #c0392b;
+                background-color: {token('semantic_error')};
             }
         """
         )

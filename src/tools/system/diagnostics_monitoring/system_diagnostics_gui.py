@@ -7,35 +7,37 @@ integrating disk health, performance monitoring, battery health, and
 filesystem integrity checks.
 """
 
-import sys
-import os
 import logging
-from typing import Optional, Dict, Any
+import os
+import sys
 from datetime import datetime
+from typing import Any, Dict, Optional
 
 try:
-    from PyQt5.QtWidgets import (
-        QMainWindow,
-        QWidget,
-        QVBoxLayout,
-        QHBoxLayout,
-        QTabWidget,
-        QLabel,
-        QPushButton,
-        QStatusBar,
-        QMessageBox,
-        QSplitter,
-        QGroupBox,
-        QGridLayout,
-        QProgressBar,
-        QTextEdit,
-        QFrame,
-        QApplication,
-        QMenuBar,
-        QAction,
-    )
-    from PyQt5.QtCore import Qt, QTimer, pyqtSignal, QThread
+    from PyQt5.QtCore import Qt, QThread, QTimer, pyqtSignal
     from PyQt5.QtGui import QFont, QIcon, QPixmap
+    from PyQt5.QtWidgets import (
+        QAction,
+        QApplication,
+        QFrame,
+        QGridLayout,
+        QGroupBox,
+        QHBoxLayout,
+        QLabel,
+        QMainWindow,
+        QMenuBar,
+        QMessageBox,
+        QProgressBar,
+        QPushButton,
+        QSplitter,
+        QStatusBar,
+        QTabWidget,
+        QTextEdit,
+        QVBoxLayout,
+        QWidget,
+    )
+
+    from src.gui.themes import token
 
     PYQT5_AVAILABLE = True
 except ImportError:
@@ -77,9 +79,9 @@ except ImportError:
 
 # Import monitoring components
 try:
+    from .monitors.battery.battery_monitor import BatteryMonitor
     from .monitors.disk_health.disk_monitor import DiskHealthMonitor
     from .monitors.performance.performance_monitor import PerformanceMonitor
-    from .monitors.battery.battery_monitor import BatteryMonitor
 
     MONITORS_AVAILABLE = True
 except ImportError:
@@ -90,9 +92,9 @@ except ImportError:
 
 # Import core components
 try:
-    from .core.platform_detector import PlatformDetector
-    from .core.data_collector import DataCollector
     from .core.alert_manager import AlertManager
+    from .core.data_collector import DataCollector
+    from .core.platform_detector import PlatformDetector
 
     CORE_AVAILABLE = True
 except ImportError:
@@ -111,9 +113,7 @@ class SystemDiagnosticsGUI(QMainWindow):
     """
 
     # Signals for hub integration
-    tool_progress_updated = pyqtSignal(
-        str, int, str
-    )  # tool_name, percentage, message
+    tool_progress_updated = pyqtSignal(str, int, str)  # tool_name, percentage, message
     tool_status_changed = pyqtSignal(str, str)  # tool_name, status
     diagnostic_completed = pyqtSignal(dict)  # results
 
@@ -125,9 +125,7 @@ class SystemDiagnosticsGUI(QMainWindow):
             parent: Parent widget
         """
         if not PYQT5_AVAILABLE:
-            raise ImportError(
-                "PyQt5 is required for the System Diagnostics GUI"
-            )
+            raise ImportError("PyQt5 is required for the System Diagnostics GUI")
 
         super().__init__(parent)
 
@@ -166,9 +164,7 @@ class SystemDiagnosticsGUI(QMainWindow):
         """Initialize the user interface."""
         try:
             # Window setup
-            self.setWindowTitle(
-                "System Diagnostics - Richard's File Utilities"
-            )
+            self.setWindowTitle("System Diagnostics - Richard's File Utilities")
             self.setMinimumSize(1000, 700)
             self.resize(1200, 800)
 
@@ -280,7 +276,7 @@ class SystemDiagnosticsGUI(QMainWindow):
             desc_label = QLabel(
                 "Comprehensive system health monitoring and diagnostics"
             )
-            desc_label.setStyleSheet("color: #666666;")
+            desc_label.setStyleSheet(f"color: {token('text_muted')};")
             title_layout.addWidget(desc_label)
 
             header_layout.addLayout(title_layout)
@@ -517,7 +513,7 @@ class SystemDiagnosticsGUI(QMainWindow):
             message_label = QLabel(message)
             message_label.setAlignment(Qt.AlignCenter)
             message_label.setWordWrap(True)
-            message_label.setStyleSheet("color: #666666; padding: 20px;")
+            message_label.setStyleSheet(f"color: {token('text_muted')}; padding: 20px;")
             layout.addWidget(message_label)
 
             layout.addStretch()
@@ -556,24 +552,24 @@ class SystemDiagnosticsGUI(QMainWindow):
             self.setStyleSheet(
                 """
                 QMainWindow {
-                    background-color: #f5f5f5;
+                    background-color: {token('surface')};
                 }
                 QTabWidget::pane {
-                    border: 1px solid #cccccc;
+                    border: 1px solid {token('border')};
                     background-color: white;
                 }
                 QTabBar::tab {
-                    background-color: #e0e0e0;
+                    background-color: {token('border_light')};
                     padding: 8px 16px;
                     margin-right: 2px;
                 }
                 QTabBar::tab:selected {
                     background-color: white;
-                    border-bottom: 2px solid #007acc;
+                    border-bottom: 2px solid {token('button_primary')};
                 }
                 QGroupBox {
                     font-weight: bold;
-                    border: 2px solid #cccccc;
+                    border: 2px solid {token('border')};
                     border-radius: 5px;
                     margin-top: 1ex;
                     padding-top: 10px;
@@ -584,7 +580,7 @@ class SystemDiagnosticsGUI(QMainWindow):
                     padding: 0 5px 0 5px;
                 }
                 QPushButton {
-                    background-color: #007acc;
+                    background-color: {token('button_primary')};
                     color: white;
                     border: none;
                     padding: 8px 16px;
@@ -592,19 +588,19 @@ class SystemDiagnosticsGUI(QMainWindow):
                     font-weight: bold;
                 }
                 QPushButton:hover {
-                    background-color: #005a9e;
+                    background-color: {token('button_primary')};
                 }
                 QPushButton:disabled {
-                    background-color: #cccccc;
-                    color: #666666;
+                    background-color: {token('border')};
+                    color: {token('text_muted')};
                 }
                 QProgressBar {
-                    border: 1px solid #cccccc;
+                    border: 1px solid {token('border')};
                     border-radius: 3px;
                     text-align: center;
                 }
                 QProgressBar::chunk {
-                    background-color: #4CAF50;
+                    background-color: {token('semantic_success')};
                     border-radius: 2px;
                 }
             """
@@ -688,9 +684,7 @@ class SystemDiagnosticsGUI(QMainWindow):
                 self.update_timer.start(5000)  # Update every 5 seconds
 
                 # Emit status change
-                self.tool_status_changed.emit(
-                    "System Diagnostics", "monitoring"
-                )
+                self.tool_status_changed.emit("System Diagnostics", "monitoring")
 
                 self.status_label.setText("Monitoring active")
                 self.logger.info("System monitoring started")
@@ -746,9 +740,7 @@ class SystemDiagnosticsGUI(QMainWindow):
                 self.update_overview_data()
 
                 # Update individual widgets
-                if self.disk_widget and hasattr(
-                    self.disk_widget, "refresh_data"
-                ):
+                if self.disk_widget and hasattr(self.disk_widget, "refresh_data"):
                     self.disk_widget.refresh_data()
 
                 if self.performance_widget and hasattr(
@@ -756,9 +748,7 @@ class SystemDiagnosticsGUI(QMainWindow):
                 ):
                     self.performance_widget.update_display()
 
-                if self.battery_widget and hasattr(
-                    self.battery_widget, "refresh_data"
-                ):
+                if self.battery_widget and hasattr(self.battery_widget, "refresh_data"):
                     self.battery_widget.refresh_data()
 
                 # Update last update time
@@ -857,8 +847,7 @@ class SystemDiagnosticsGUI(QMainWindow):
             QMessageBox.information(
                 self,
                 "Memory Test",
-                "Memory test completed successfully.\n\n"
-                "No memory issues detected.",
+                "Memory test completed successfully.\n\n" "No memory issues detected.",
             )
             self.status_label.setText("Memory test completed")
 
@@ -989,9 +978,7 @@ def create_system_diagnostics_gui(
     """
     try:
         if not PYQT5_AVAILABLE:
-            print(
-                "PyQt5 is not available. Cannot create System Diagnostics GUI."
-            )
+            print("PyQt5 is not available. Cannot create System Diagnostics GUI.")
             return None
 
         gui = SystemDiagnosticsGUI(hub_instance)

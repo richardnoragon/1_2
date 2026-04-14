@@ -1,0 +1,22 @@
+{
+  "session_id": "20251219_165201",
+  "dry_run": true,
+  "summary": {
+    "total_files": 1,
+    "successful_modernizations": 1,
+    "failed": 0,
+    "unchanged": 0,
+    "total_changes": 1
+  },
+  "successful_files": [
+    {
+      "file": "C:\\Users\\HP1\\1_2\\tests\\test_compression_logic.py",
+      "changes": 1,
+      "updates": [
+        "Standalone: compress_decompress -> src.tools.file_operations.compression.compress_decompress"
+      ]
+    }
+  ],
+  "failed_files": [],
+  "timestamp": "2025-12-19T16:52:01.842396"
+}

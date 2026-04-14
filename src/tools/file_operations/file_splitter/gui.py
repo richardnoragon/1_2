@@ -5,6 +5,7 @@ manageable chunks and joining them back together while integrating with the
 shared StandardWindow framework, logging, and configuration helpers.
 """
 
+import math
 import os
 import sys
 from typing import Optional
@@ -29,6 +30,14 @@ try:
 except ImportError:
     print("PyQt5 not available. Please install PyQt5.")
     sys.exit(1)
+
+try:
+    from src.gui.themes import token
+except ImportError:
+
+    def token(key: str) -> str:
+        return ""
+
 
 # Add parent directories to path for imports
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -152,9 +161,9 @@ class FileSplitJoinGUI(StandardWindow):
             QLabel {
                 font-size: 18px;
                 font-weight: bold;
-                color: #2c3e50;
+                color: {token('text_primary')};
                 padding: 10px;
-                background-color: #ecf0f1;
+                background-color: {token('background')};
                 border-radius: 5px;
                 margin-bottom: 10px;
             }
@@ -203,13 +212,22 @@ class FileSplitJoinGUI(StandardWindow):
         self.browse_split_output_button.clicked.connect(self.browse_split_output)
         split_layout.addWidget(self.browse_split_output_button, 2, 2)
 
+        # Preview button (dry run — must precede split button per spec §5.2)
+        self.preview_split_button = QPushButton("🔍 Preview Split (Dry Run)")
+        self.preview_split_button.clicked.connect(self.preview_split)
+        self.preview_split_button.setToolTip(
+            "Calculate how many parts would be created and their sizes "
+            "without writing any files."
+        )
+        split_layout.addWidget(self.preview_split_button, 3, 0, 1, 3)
+
         # Split button
         self.split_button = QPushButton("Split File")
         self.split_button.clicked.connect(self.split_file)
         self.split_button.setStyleSheet(
             """
             QPushButton {
-                background-color: #3498db;
+                background-color: {token('accent')};
                 color: white;
                 border: none;
                 padding: 8px 16px;
@@ -217,10 +235,10 @@ class FileSplitJoinGUI(StandardWindow):
                 font-weight: bold;
             }
             QPushButton:hover {
-                background-color: #2980b9;
+                background-color: {token('button_primary_hover')};
             }
             QPushButton:disabled {
-                background-color: #bdc3c7;
+                background-color: {token('text_disabled')};
             }
         """
         )
@@ -259,7 +277,7 @@ class FileSplitJoinGUI(StandardWindow):
         self.join_button.setStyleSheet(
             """
             QPushButton {
-                background-color: #27ae60;
+                background-color: {token('semantic_success')};
                 color: white;
                 border: none;
                 padding: 8px 16px;
@@ -267,10 +285,10 @@ class FileSplitJoinGUI(StandardWindow):
                 font-weight: bold;
             }
             QPushButton:hover {
-                background-color: #229954;
+                background-color: {token('semantic_success')};
             }
             QPushButton:disabled {
-                background-color: #bdc3c7;
+                background-color: {token('text_disabled')};
             }
         """
         )
@@ -328,6 +346,42 @@ class FileSplitJoinGUI(StandardWindow):
         )
         if file_path:
             self.join_output_edit.setText(file_path)
+
+    def preview_split(self):
+        """Preview split operation without creating files."""
+        input_file = self.split_file_edit.text().strip()
+        if not input_file or not os.path.exists(input_file):
+            QMessageBox.warning(self, "Error", "Please select a valid input file.")
+            return
+
+        chunk_size = self.chunk_size_spin.value()
+        file_size = os.path.getsize(input_file)
+        chunk_bytes = chunk_size * 1024 * 1024
+        num_parts = math.ceil(file_size / chunk_bytes) if chunk_bytes > 0 else 0
+        base_name = os.path.basename(input_file)
+
+        last_part_size = file_size % chunk_bytes if chunk_bytes > 0 else 0
+        if last_part_size == 0 and num_parts > 0:
+            last_part_size = chunk_bytes
+
+        msg = (
+            f"DRY RUN — No files will be created.\n\n"
+            f"File: {base_name}\n"
+            f"Size: {file_size / (1024 ** 2):.2f} MB\n"
+            f"Chunk size: {chunk_size} MB\n"
+            f"Parts: {num_parts}\n"
+        )
+        if num_parts > 1:
+            msg += (
+                f"Parts 1–{num_parts - 1}: {chunk_size} MB each\n"
+                f"Part {num_parts}: {last_part_size / (1024 ** 2):.2f} MB"
+            )
+
+        QMessageBox.information(self, "Preview Split (Dry Run)", msg)
+        self.status_text.append(
+            f"Preview: '{base_name}' ({file_size / (1024 ** 2):.1f} MB) "
+            f"would be split into {num_parts} part(s) of up to {chunk_size} MB each."
+        )
 
     def split_file(self):
         """Start file splitting operation."""

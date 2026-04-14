@@ -1,0 +1,88 @@
+{
+  "session_id": "20251219_164628",
+  "total_files": 7,
+  "processed_files": 7,
+  "successful": 4,
+  "failed": 0,
+  "skipped": 3,
+  "current_index": 7,
+  "file_list": [
+    "C:\\Users\\HP1\\1_2\\tests\\test_empty_folders.py",
+    "C:\\Users\\HP1\\1_2\\tests\\test_compression_logic.py",
+    "C:\\Users\\HP1\\1_2\\tests\\test_secure_delete.py",
+    "C:\\Users\\HP1\\1_2\\tests\\test_file_touch.py",
+    "C:\\Users\\HP1\\1_2\\tests\\test_encryption.py",
+    "C:\\Users\\HP1\\1_2\\tests\\test_checksum.py",
+    "C:\\Users\\HP1\\1_2\\tests\\test_file_operations.py"
+  ],
+  "results": [
+    {
+      "file_path": "C:\\Users\\HP1\\1_2\\tests\\test_empty_folders.py",
+      "status": "completed",
+      "changes_made": 1,
+      "error_message": null,
+      "processing_time_ms": 10.519742965698242,
+      "imports_updated": [
+        "Standalone: empty_folders \u2192 src.tools.analysis.empty_folders.empty_folders"
+      ]
+    },
+    {
+      "file_path": "C:\\Users\\HP1\\1_2\\tests\\test_compression_logic.py",
+      "status": "completed",
+      "changes_made": 1,
+      "error_message": null,
+      "processing_time_ms": 7.023334503173828,
+      "imports_updated": [
+        "Standalone: compress_decompress \u2192 src.tools.file_operations.compression.compress_decompress"
+      ]
+    },
+    {
+      "file_path": "C:\\Users\\HP1\\1_2\\tests\\test_secure_delete.py",
+      "status": "skipped",
+      "changes_made": 0,
+      "error_message": null,
+      "processing_time_ms": 3.5071372985839844,
+      "imports_updated": []
+    },
+    {
+      "file_path": "C:\\Users\\HP1\\1_2\\tests\\test_file_touch.py",
+      "status": "skipped",
+      "changes_made": 0,
+      "error_message": null,
+      "processing_time_ms": 12.543439865112305,
+      "imports_updated": []
+    },
+    {
+      "file_path": "C:\\Users\\HP1\\1_2\\tests\\test_encryption.py",
+      "status": "completed",
+      "changes_made": 2,
+      "error_message": null,
+      "processing_time_ms": 18.054485321044922,
+      "imports_updated": [
+        "Module: file_utilities_2.core \u2192 src.core",
+        "Module: file_utilities_2 \u2192 src"
+      ]
+    },
+    {
+      "file_path": "C:\\Users\\HP1\\1_2\\tests\\test_checksum.py",
+      "status": "completed",
+      "changes_made": 1,
+      "error_message": null,
+      "processing_time_ms": 4.009723663330078,
+      "imports_updated": [
+        "Module: file_utilities_2.core \u2192 src.core"
+      ]
+    },
+    {
+      "file_path": "C:\\Users\\HP1\\1_2\\tests\\test_file_operations.py",
+      "status": "skipped",
+      "changes_made": 0,
+      "error_message": null,
+      "processing_time_ms": 4.0378570556640625,
+      "imports_updated": []
+    }
+  ],
+  "started_at": "2025-12-19T16:46:28.426704",
+  "last_updated": "2025-12-19T16:46:28.559623",
+  "status": "completed"
+}

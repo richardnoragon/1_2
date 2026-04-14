@@ -10,6 +10,7 @@ import zipfile
 from typing import Dict
 
 from PyQt5.QtCore import Qt
+from src.gui.themes import token
 from PyQt5.QtWidgets import (
     QApplication,
     QComboBox,
@@ -439,9 +440,9 @@ class CompressDecompressApp(StandardWindow):
             QLabel {
                 font-size: 18px;
                 font-weight: bold;
-                color: #2c3e50;
+                color: {token('text_primary')};
                 padding: 10px;
-                background-color: #ecf0f1;
+                background-color: {token('background')};
                 border-radius: 5px;
                 margin-bottom: 10px;
             }

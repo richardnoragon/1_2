@@ -12,6 +12,7 @@ import psutil
 from datetime import datetime, timedelta
 
 try:
+    from src.gui.themes import token, Typography
     from PyQt5.QtWidgets import (
         QMainWindow,
         QWidget,
@@ -169,12 +170,12 @@ class SimpleSystemInfoGUI(QMainWindow):
         self.setStyleSheet(
             """
             QMainWindow {
-                background-color: #f5f5f5;
+                background-color: {token('surface')};
                 font-family: 'Segoe UI', Arial, sans-serif;
             }
             QGroupBox {
                 font-weight: bold;
-                border: 2px solid #cccccc;
+                border: 2px solid {token('border')};
                 border-radius: 5px;
                 margin-top: 1ex;
                 padding-top: 10px;
@@ -185,7 +186,7 @@ class SimpleSystemInfoGUI(QMainWindow):
                 padding: 0 5px 0 5px;
             }
             QPushButton {
-                background-color: #3498db;
+                background-color: {token('accent')};
                 color: white;
                 border: none;
                 padding: 8px 16px;
@@ -194,13 +195,13 @@ class SimpleSystemInfoGUI(QMainWindow):
                 font-weight: bold;
             }
             QPushButton:hover {
-                background-color: #2980b9;
+                background-color: {token('button_primary_hover')};
             }
             QPushButton:pressed {
-                background-color: #21618c;
+                background-color: {token('button_primary_pressed')};
             }
             QTextEdit {
-                border: 1px solid #ddd;
+                border: 1px solid {token('border')};
                 border-radius: 4px;
                 padding: 8px;
                 font-family: 'Courier New', monospace;
@@ -208,18 +209,18 @@ class SimpleSystemInfoGUI(QMainWindow):
                 background-color: white;
             }
             QTabWidget::pane {
-                border: 1px solid #cccccc;
+                border: 1px solid {token('border')};
                 border-radius: 4px;
             }
             QTabBar::tab {
-                background-color: #ecf0f1;
+                background-color: {token('background')};
                 padding: 8px 16px;
                 margin-right: 2px;
                 border-top-left-radius: 4px;
                 border-top-right-radius: 4px;
             }
             QTabBar::tab:selected {
-                background-color: #3498db;
+                background-color: {token('accent')};
                 color: white;
             }
         """
@@ -242,7 +243,7 @@ class SimpleSystemInfoGUI(QMainWindow):
         # Title
         title = QLabel("💻 System Information")
         title.setAlignment(Qt.AlignCenter)
-        title.setFont(QFont("Arial", 16, QFont.Bold))
+        title.setFont(Typography.h1())
         layout.addWidget(title)
 
         # Control buttons

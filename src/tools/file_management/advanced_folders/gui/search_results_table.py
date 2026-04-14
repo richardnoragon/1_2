@@ -302,6 +302,10 @@ class SearchResultsModel(QAbstractTableModel):
                 font = QFont()
                 font.setBold(True)
                 return font
+            elif result_item.highlighted:
+                font = QFont()
+                font.setItalic(True)
+                return font
 
         elif role == Qt.TextAlignmentRole:
             if column_name in ["size"]:
@@ -804,6 +808,7 @@ class SearchResultsWidget(QWidget):
         self.export_button = QToolButton()
         self.export_button.setText("Export")
         self.export_button.setToolTip("Export search results")
+        self.export_button.setAccessibleName("Export search results")
         self.export_button.clicked.connect(self._export_results)
         toolbar_layout.addWidget(self.export_button)
 
@@ -811,6 +816,7 @@ class SearchResultsWidget(QWidget):
         self.copy_button = QToolButton()
         self.copy_button.setText("Copy")
         self.copy_button.setToolTip("Copy selected items to clipboard")
+        self.copy_button.setAccessibleName("Copy selected results to clipboard")
         self.copy_button.clicked.connect(self.table.copy_selected_to_clipboard)
         toolbar_layout.addWidget(self.copy_button)
 
@@ -818,6 +824,7 @@ class SearchResultsWidget(QWidget):
         self.select_all_button = QToolButton()
         self.select_all_button.setText("Select All")
         self.select_all_button.setToolTip("Select all results")
+        self.select_all_button.setAccessibleName("Select all search results")
         self.select_all_button.clicked.connect(self.table.select_all_items)
         toolbar_layout.addWidget(self.select_all_button)
 
@@ -825,7 +832,9 @@ class SearchResultsWidget(QWidget):
 
         # Results count label
         self.count_label = QLabel("0 results")
-        self.count_label.setStyleSheet("QLabel { color: #666666; font-size: 11px; }")
+        self.count_label.setStyleSheet(
+            f"QLabel { color: {token('text_muted')}; font-size: 11px; }"
+        )
         toolbar_layout.addWidget(self.count_label)
 
         parent_layout.addWidget(toolbar_frame)
@@ -846,7 +855,7 @@ class SearchResultsWidget(QWidget):
         # Selection info
         self.selection_label = QLabel("No selection")
         self.selection_label.setStyleSheet(
-            "QLabel { color: #666666; font-size: 11px; }"
+            f"QLabel { color: {token('text_muted')}; font-size: 11px; }"
         )
         status_layout.addWidget(self.selection_label)
 

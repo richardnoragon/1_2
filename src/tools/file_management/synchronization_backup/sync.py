@@ -28,7 +28,10 @@ try:
     except ImportError:
         # Fallback functions if imports fail
         def show_error_dialog(parent, title, message):
-            QMessageBox.critical(parent, title, message)
+            if Modal:
+                Modal(title, message, ["OK"], parent).exec_()
+            else:
+                QMessageBox.critical(parent, title, message)
 
         def get_existing_directory(parent, caption):
             from PyQt5.QtWidgets import QFileDialog
@@ -43,12 +46,48 @@ except ImportError:
 
     # Fallback functions for dialogs
     def show_error_dialog(parent, title, message):
-        QMessageBox.critical(parent, title, message)
+        if Modal:
+            Modal(title, message, ["OK"], parent).exec_()
+        else:
+            QMessageBox.critical(parent, title, message)
 
     def get_existing_directory(parent, caption):
         from PyQt5.QtWidgets import QFileDialog
 
         return QFileDialog.getExistingDirectory(parent, caption)
+
+
+try:
+    from src.gui.themes import ThemeManager, token
+except ImportError:
+    ThemeManager = None
+    token = None
+
+try:
+    from PyQt5.QtWidgets import QDialog
+
+    from src.gui.components.modal import ConfirmationModal, Modal
+except ImportError:
+    Modal = None
+    ConfirmationModal = None
+    QDialog = None
+
+try:
+    from src.gui.components.toast import ToastNotification
+except ImportError:
+    ToastNotification = None
+
+try:
+    from src.gui.components.loading_indicator import LoadingIndicator
+except ImportError:
+    LoadingIndicator = None
+
+try:
+    from src.rfu.ui_strings import SynchronizationBackup as _SyncStrings
+except ImportError:
+
+    class _SyncStrings:
+        DRY_RUN_LABEL = "Dry Run (Preview Only)"
 
 
 class SyncWorker(QThread):
@@ -324,6 +363,8 @@ class SyncWindow(StandardWindow):
 
         ui_file: str = os.path.join(os.path.dirname(__file__), "sync.ui")
         uic.loadUi(ui_file, self)
+        if hasattr(self, "dry_run_checkbox"):
+            self.dry_run_checkbox.setText(_SyncStrings.DRY_RUN_LABEL)
 
         self._setup_menu_callbacks()
 
@@ -360,6 +401,26 @@ class SyncWindow(StandardWindow):
         self.compare_pushButton.setEnabled(False)
         self.progress_bar.setValue(0)
 
+        # Register theme-change callback
+        if ThemeManager:
+            ThemeManager.add_theme_changed_callback(self._on_theme_changed)
+
+        # Apply initial token-based stylesheet
+        self._on_theme_changed("light")
+        self._toast = (
+            ToastNotification(self, role="info") if ToastNotification else None
+        )
+        # Loading indicator (spec §8.1, CP-6b / CP-7b/c)
+        self._loading_indicator = None
+        if LoadingIndicator and self.centralWidget():
+            self._loading_indicator = LoadingIndicator(
+                self.centralWidget(),
+                cancellable=True,
+                message="Syncing files...",
+            )
+            _central_layout = self.centralWidget().layout()
+            if _central_layout:
+                _central_layout.insertWidget(0, self._loading_indicator)
         self.show()
 
     def _setup_menu_callbacks(self):
@@ -368,6 +429,56 @@ class SyncWindow(StandardWindow):
             # Register tool-specific callbacks
             self.menu_manager.register_callback("new_sync", self.clear_sync)
             self.menu_manager.register_callback("help_sync", self.show_help)
+
+    def _on_theme_changed(self, variant: str) -> None:
+        """Handle theme change — re-apply token-based stylesheet."""
+        if not token:
+            return
+        self.setStyleSheet(
+            f"""
+            QMainWindow {{
+                background-color: {token('surface')};
+            }}
+            QPushButton {{
+                background-color: {token('button_primary')};
+                color: {token('text_on_primary')};
+                border: none;
+                padding: 8px 16px;
+                border-radius: 4px;
+                min-width: 100px;
+                min-height: 32px;
+            }}
+            QPushButton:hover {{
+                background-color: {token('button_primary_hover')};
+            }}
+            QPushButton:pressed {{
+                background-color: {token('button_primary_pressed')};
+            }}
+            QLabel {{
+                color: {token('text_primary')};
+                font-size: 12px;
+            }}
+            QListView {{
+                background-color: {token('window_background')};
+                border: 1px solid {token('border')};
+                border-radius: 4px;
+                padding: 4px;
+            }}
+            QProgressBar {{
+                border: 1px solid {token('border')};
+                border-radius: 4px;
+                text-align: center;
+            }}
+        """
+        )
+        if hasattr(self, "sync_pushButton"):
+            self.sync_pushButton._apply_style()
+        if hasattr(self, "select_left_pushButton"):
+            self.select_left_pushButton._apply_style()
+        if hasattr(self, "compare_pushButton"):
+            self.compare_pushButton._apply_style()
+        if hasattr(self, "select_right_pushButton"):
+            self.select_right_pushButton._apply_style()
 
     def clear_sync(self):
         """Clear all sync operations for a new task."""
@@ -418,7 +529,7 @@ class SyncWindow(StandardWindow):
         </ul>
         """
 
-        QMessageBox.information(self, "Synchronize Help", help_text)
+        Modal("Synchronize Help", help_text, ["OK"], self).exec_()
 
     def select_directory(self, side: str) -> None:
         """Select a directory for synchronization.
@@ -537,7 +648,10 @@ class SyncWindow(StandardWindow):
                 )
 
             self.sync_pushButton.setEnabled(True)
-            self.status_label.setText("Comparison complete - Ready to sync")
+            if self._toast:
+                self._toast.show_message("Comparison complete - Ready to sync", "info")
+            else:
+                self.status_label.setText("Comparison complete - Ready to sync")
         except OSError as e:
             msg: str = f"Error comparing directories: {str(e)}"
             show_error_dialog(message=msg, title="Error", parent=self)
@@ -640,15 +754,16 @@ class SyncWindow(StandardWindow):
         """Show confirmation dialog for sync operation."""
         message = self._build_confirmation_message(options)
 
-        reply: int = QMessageBox.question(
-            self,
-            "Confirm Sync",
-            "\n".join(message),
-            QMessageBox.Yes | QMessageBox.No,
-            QMessageBox.No,
+        return (
+            ConfirmationModal(
+                "Confirm Sync",
+                "\n".join(message),
+                confirm_text="Yes",
+                cancel_text="Cancel",
+                parent=self,
+            ).exec_()
+            == QDialog.Accepted
         )
-
-        return reply == QMessageBox.Yes
 
     def _build_confirmation_message(self, options: Dict[str, Any]) -> List[str]:
         """Build confirmation message based on sync options."""
@@ -710,6 +825,12 @@ class SyncWindow(StandardWindow):
         self.sync_worker.error.connect(self.handle_error)
         self.sync_worker.finished.connect(self.sync_finished)
         self.sync_worker.preview.connect(self.show_preview)
+
+        # Loading indicator wiring (spec §8.1, CP-6c/d / CP-7c)
+        if self._loading_indicator:
+            self.sync_worker.started.connect(self._loading_indicator.start)
+            self.sync_worker.finished.connect(self._loading_indicator.stop)
+            self._loading_indicator.cancelled.connect(self.sync_worker.stop)
 
     def _disable_ui_during_sync(self) -> None:
         """Disable UI elements during synchronization."""

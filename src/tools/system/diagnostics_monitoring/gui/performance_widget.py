@@ -10,6 +10,7 @@ from datetime import datetime, timedelta
 from typing import Dict, Any, Optional, List
 
 try:
+    from src.gui.themes import token, Typography
     from PyQt5.QtWidgets import (
         QWidget,
         QVBoxLayout,
@@ -241,7 +242,7 @@ class PerformanceWidget(QWidget):
         # CPU usage display
         cpu_layout.addWidget(QLabel("CPU Usage:"), 0, 0)
         self.cpu_usage_label = QLabel("0%")
-        self.cpu_usage_label.setFont(QFont("Arial", 14, QFont.Bold))
+        self.cpu_usage_label.setFont(Typography.h2())
         cpu_layout.addWidget(self.cpu_usage_label, 0, 1)
 
         self.cpu_usage_bar = QProgressBar()
@@ -297,7 +298,7 @@ class PerformanceWidget(QWidget):
         # Memory usage display
         memory_layout.addWidget(QLabel("Memory Usage:"), 0, 0)
         self.memory_usage_label = QLabel("0%")
-        self.memory_usage_label.setFont(QFont("Arial", 14, QFont.Bold))
+        self.memory_usage_label.setFont(Typography.h2())
         memory_layout.addWidget(self.memory_usage_label, 0, 1)
 
         self.memory_usage_bar = QProgressBar()
@@ -474,7 +475,7 @@ class PerformanceWidget(QWidget):
                         text-align: center;
                     }
                     QProgressBar::chunk {
-                        background-color: #4CAF50;
+                        background-color: {token('semantic_success')};
                         border-radius: 2px;
                     }
                 """
@@ -484,7 +485,7 @@ class PerformanceWidget(QWidget):
             group_box_style = """
                 QGroupBox {
                     font-weight: bold;
-                    border: 2px solid #CCCCCC;
+                    border: 2px solid {token('border')};
                     border-radius: 5px;
                     margin-top: 1ex;
                     padding-top: 10px;

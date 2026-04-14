@@ -1,0 +1,302 @@
+{
+  "check": "theming_compliance",
+  "description": "Hard-coded hex color strings in tool source",
+  "scan_root": "C:\\Users\\HP1\\1_2\\src",
+  "total_violations": 42,
+  "violations": [
+    {
+      "file": "C:\\Users\\HP1\\1_2\\src\\core\\theme_security\\test_theme_security.py",
+      "line": 76,
+      "column": 29,
+      "match": "#FF0000",
+      "source": "                'primary': '#FF0000',"
+    },
+    {
+      "file": "C:\\Users\\HP1\\1_2\\src\\core\\theme_security\\test_theme_security.py",
+      "line": 77,
+      "column": 31,
+      "match": "#00FF00",
+      "source": "                'secondary': '#00FF00'"
+    },
+    {
+      "file": "C:\\Users\\HP1\\1_2\\src\\gui\\components\\buttons.py",
+      "line": 123,
+      "column": 24,
+      "match": "#FFFFFF",
+      "source": "                color: #FFFFFF;"
+    },
+    {
+      "file": "C:\\Users\\HP1\\1_2\\src\\gui\\components\\modal.py",
+      "line": 121,
+      "column": 32,
+      "match": "#FFFFFF",
+      "source": "                        color: #FFFFFF;"
+    },
+    {
+      "file": "C:\\Users\\HP1\\1_2\\src\\gui\\components\\toast.py",
+      "line": 118,
+      "column": 24,
+      "match": "#FFFFFF",
+      "source": "                color: #FFFFFF;"
+    },
+    {
+      "file": "C:\\Users\\HP1\\1_2\\src\\gui\\dialogs\\security_preferences_dialog.py",
+      "line": 842,
+      "column": 36,
+      "match": "#fd7e14",
+      "source": "                \"background-color: #fd7e14; color: white;\""
+    },
+    {
+      "file": "C:\\Users\\HP1\\1_2\\src\\gui\\widgets\\empty_state_widget.py",
+      "line": 127,
+      "column": 39,
+      "match": "#106EBE",
+      "source": "                    background-color: #106EBE;"
+    },
+    {
+      "file": "C:\\Users\\HP1\\1_2\\src\\tabbed_hub.py",
+      "line": 944,
+      "column": 35,
+      "match": "#ecf0f1",
+      "source": "                background-color: #ecf0f1;"
+    },
+    {
+      "file": "C:\\Users\\HP1\\1_2\\src\\tabbed_hub.py",
+      "line": 945,
+      "column": 24,
+      "match": "#2c3e50",
+      "source": "                color: #2c3e50;"
+    },
+    {
+      "file": "C:\\Users\\HP1\\1_2\\src\\tabbed_hub.py",
+      "line": 1987,
+      "column": 35,
+      "match": "#f8f9fa",
+      "source": "                background-color: #f8f9fa;"
+    },
+    {
+      "file": "C:\\Users\\HP1\\1_2\\src\\tabbed_hub.py",
+      "line": 1988,
+      "column": 35,
+      "match": "#e9ecef",
+      "source": "                border: 2px solid #e9ecef;"
+    },
+    {
+      "file": "C:\\Users\\HP1\\1_2\\src\\tabbed_hub.py",
+      "line": 1993,
+      "column": 24,
+      "match": "#2c3e50",
+      "source": "                color: #2c3e50;"
+    },
+    {
+      "file": "C:\\Users\\HP1\\1_2\\src\\tabbed_hub.py",
+      "line": 1996,
+      "column": 31,
+      "match": "#3498db",
+      "source": "                border-color: #3498db;"
+    },
+    {
+      "file": "C:\\Users\\HP1\\1_2\\src\\tabbed_hub.py",
+      "line": 2025,
+      "column": 46,
+      "match": "#2ecc71",
+      "source": "            QPushButton:hover {{ background: #2ecc71; }}"
+    },
+    {
+      "file": "C:\\Users\\HP1\\1_2\\src\\tabbed_hub.py",
+      "line": 2043,
+      "column": 46,
+      "match": "#f7a41e",
+      "source": "            QPushButton:hover {{ background: #f7a41e; }}"
+    },
+    {
+      "file": "C:\\Users\\HP1\\1_2\\src\\tabbed_hub.py",
+      "line": 2061,
+      "column": 46,
+      "match": "#4DA6E5",
+      "source": "            QPushButton:hover {{ background: #4DA6E5; }}"
+    },
+    {
+      "file": "C:\\Users\\HP1\\1_2\\src\\tools\\analysis\\config\\config_analyzer.py",
+      "line": 780,
+      "column": 48,
+      "match": "#e8f5e8",
+      "source": "                .recommendations { background: #e8f5e8; padding: 10px; margin: 10px 0; border-radius: 3px; }"
+    },
+    {
+      "file": "C:\\Users\\HP1\\1_2\\src\\tools\\analysis\\config\\config_analyzer.py",
+      "line": 782,
+      "column": 32,
+      "match": "#f57c00",
+      "source": "                .high { color: #f57c00; }"
+    },
+    {
+      "file": "C:\\Users\\HP1\\1_2\\src\\tools\\analysis\\config\\config_analyzer.py",
+      "line": 783,
+      "column": 34,
+      "match": "#fbc02d",
+      "source": "                .medium { color: #fbc02d; }"
+    },
+    {
+      "file": "C:\\Users\\HP1\\1_2\\src\\tools\\analysis\\config\\config_analyzer.py",
+      "line": 784,
+      "column": 31,
+      "match": "#388e3c",
+      "source": "                .low { color: #388e3c; }"
+    },
+    {
+      "file": "C:\\Users\\HP1\\1_2\\src\\tools\\analysis\\empty_folders\\empty_folders.py",
+      "line": 379,
+      "column": 35,
+      "match": "#f1f2f6",
+      "source": "                background-color: #f1f2f6;"
+    },
+    {
+      "file": "C:\\Users\\HP1\\1_2\\src\\tools\\file_management\\advanced_catalog\\catalog\\catalog.py",
+      "line": 285,
+      "column": 25,
+      "match": "#fff",
+      "source": "            background: #fff;"
+    },
+    {
+      "file": "C:\\Users\\HP1\\1_2\\src\\tools\\file_management\\advanced_catalog\\catalog\\catalog.py",
+      "line": 288,
+      "column": 29,
+      "match": "#f44336",
+      "source": "        .duplicate { color: #f44336; }"
+    },
+    {
+      "file": "C:\\Users\\HP1\\1_2\\src\\tools\\file_management\\advanced_catalog\\color_coding_engine.py",
+      "line": 366,
+      "column": 66,
+      "match": "#000",
+      "source": "            \"dots\": \"\"\"background-image: radial-gradient(circle, #000 1px, transparent 1px);"
+    },
+    {
+      "file": "C:\\Users\\HP1\\1_2\\src\\tools\\file_management\\advanced_catalog\\export_engine\\html_exporter.py",
+      "line": 84,
+      "column": 24,
+      "match": "#FFC107",
+      "source": "    --secondary-color: #FFC107;"
+    },
+    {
+      "file": "C:\\Users\\HP1\\1_2\\src\\tools\\file_management\\advanced_catalog\\export_engine\\html_exporter.py",
+      "line": 86,
+      "column": 19,
+      "match": "#212121",
+      "source": "    --text-color: #212121;"
+    },
+    {
+      "file": "C:\\Users\\HP1\\1_2\\src\\tools\\file_management\\advanced_catalog\\export_engine\\html_exporter.py",
+      "line": 323,
+      "column": 64,
+      "match": "#000",
+      "source": "            \"dots\": \"background-image: radial-gradient(circle, #000 1px, transparent 1px); background-size: 8px 8px;\","
+    },
+    {
+      "file": "C:\\Users\\HP1\\1_2\\src\\tools\\file_management\\advanced_catalog\\export_engine\\html_exporter.py",
+      "line": 398,
+      "column": 19,
+      "match": "#000",
+      "source": "    border-color: #000;"
+    },
+    {
+      "file": "C:\\Users\\HP1\\1_2\\src\\tools\\network\\gui.py",
+      "line": 587,
+      "column": 35,
+      "match": "#9C27B0",
+      "source": "                background-color: #9C27B0;"
+    },
+    {
+      "file": "C:\\Users\\HP1\\1_2\\src\\tools\\network\\gui.py",
+      "line": 593,
+      "column": 35,
+      "match": "#7B1FA2",
+      "source": "                background-color: #7B1FA2;"
+    },
+    {
+      "file": "C:\\Users\\HP1\\1_2\\src\\tools\\network\\gui.py",
+      "line": 643,
+      "column": 35,
+      "match": "#FF5722",
+      "source": "                background-color: #FF5722;"
+    },
+    {
+      "file": "C:\\Users\\HP1\\1_2\\src\\tools\\network\\gui.py",
+      "line": 649,
+      "column": 35,
+      "match": "#E64A19",
+      "source": "                background-color: #E64A19;"
+    },
+    {
+      "file": "C:\\Users\\HP1\\1_2\\src\\tools\\network\\gui.py",
+      "line": 690,
+      "column": 35,
+      "match": "#607D8B",
+      "source": "                background-color: #607D8B;"
+    },
+    {
+      "file": "C:\\Users\\HP1\\1_2\\src\\tools\\network\\gui.py",
+      "line": 696,
+      "column": 35,
+      "match": "#455A64",
+      "source": "                background-color: #455A64;"
+    },
+    {
+      "file": "C:\\Users\\HP1\\1_2\\src\\tools\\pdf_tools\\dialogs\\parameter_dialogs.py",
+      "line": 132,
+      "column": 64,
+      "match": "#555",
+      "source": "        self.info_label.setStyleSheet(\"font-size: 10pt; color: #555;\")"
+    },
+    {
+      "file": "C:\\Users\\HP1\\1_2\\src\\tools\\pdf_tools\\dialogs\\security_parameter_dialogs.py",
+      "line": 125,
+      "column": 35,
+      "match": "#106ebe",
+      "source": "                background-color: #106ebe;"
+    },
+    {
+      "file": "C:\\Users\\HP1\\1_2\\src\\tools\\pdf_tools\\widgets\\enhanced_pdf_tools_widget.py",
+      "line": 251,
+      "column": 35,
+      "match": "#5a6268",
+      "source": "                background-color: #5a6268;"
+    },
+    {
+      "file": "C:\\Users\\HP1\\1_2\\src\\tools\\pdf_tools\\widgets\\enhanced_pdf_tools_widget.py",
+      "line": 596,
+      "column": 35,
+      "match": "#004085",
+      "source": "                background-color: #004085;"
+    },
+    {
+      "file": "C:\\Users\\HP1\\1_2\\src\\tools\\security\\security_scanner\\security_scanner.py",
+      "line": 265,
+      "column": 35,
+      "match": "#FF6B35",
+      "source": "                background-color: #FF6B35;"
+    },
+    {
+      "file": "C:\\Users\\HP1\\1_2\\src\\tools\\security\\security_scanner\\security_scanner.py",
+      "line": 274,
+      "column": 35,
+      "match": "#E55A2B",
+      "source": "                background-color: #E55A2B;"
+    },
+    {
+      "file": "C:\\Users\\HP1\\1_2\\src\\tools\\security\\security_scanner\\security_scanner.py",
+      "line": 277,
+      "column": 35,
+      "match": "#CC4F26",
+      "source": "                background-color: #CC4F26;"
+    },
+    {
+      "file": "C:\\Users\\HP1\\1_2\\src\\tools\\system\\process_monitor\\process_monitor.py",
+      "line": 137,
+      "column": 35,
+      "match": "#1e8449",
+      "source": "                background-color: #1e8449;"
+    }
+  ]
+}

@@ -5,30 +5,39 @@ Enhanced Encrypt/Decrypt Tool for Richard's File Utilities
 A comprehensive encrypt/decrypt utility with menu integration and essential functionality.
 """
 
+import hashlib
 import os
 import sys
-import hashlib
 
 try:
     from PyQt5.QtWidgets import (
-        QWidget,
-        QVBoxLayout,
-        QHBoxLayout,
-        QPushButton,
-        QLabel,
-        QListWidget,
-        QProgressBar,
         QApplication,
-        QMessageBox,
+        QCheckBox,
         QFileDialog,
         QGroupBox,
+        QHBoxLayout,
+        QLabel,
         QLineEdit,
-        QTextEdit,
+        QListWidget,
         QMainWindow,
+        QMessageBox,
+        QProgressBar,
+        QPushButton,
+        QTextEdit,
+        QVBoxLayout,
+        QWidget,
     )
 except ImportError:
     print("PyQt5 not available. Please install PyQt5.")
     sys.exit(1)
+
+try:
+    from src.gui.themes import token
+except ImportError:
+
+    def token(key: str) -> str:
+        return ""
+
 
 # Import StandardWindow for menu integration
 try:
@@ -65,12 +74,8 @@ class EnAndDecryptGUI(StandardWindow):
         """Setup tool-specific menu callbacks."""
         if hasattr(self, "menu_manager"):
             # Register tool-specific callbacks
-            self.menu_manager.register_callback(
-                "new_operation", self.clear_operation
-            )
-            self.menu_manager.register_callback(
-                "help_encrypt_decrypt", self.show_help
-            )
+            self.menu_manager.register_callback("new_operation", self.clear_operation)
+            self.menu_manager.register_callback("help_encrypt_decrypt", self.show_help)
 
     def show_help(self):
         """Show comprehensive help for Encrypt/Decrypt tool."""
@@ -170,9 +175,7 @@ class EnAndDecryptGUI(StandardWindow):
         msg_box.setTextFormat(1)  # Rich text format
         msg_box.setText(help_text)
         msg_box.setStandardButtons(QMessageBox.Ok)
-        msg_box.setStyleSheet(
-            "QMessageBox { messagebox-text-interaction-flags: 5; }"
-        )
+        msg_box.setStyleSheet("QMessageBox { messagebox-text-interaction-flags: 5; }")
         msg_box.exec_()
 
     def show_preferences(self):
@@ -200,9 +203,7 @@ class EnAndDecryptGUI(StandardWindow):
         if hasattr(self, "files_list"):
             self.files_list.clear()
         if hasattr(self, "status_label"):
-            self.status_label.setText(
-                "Ready - Select files to encrypt or decrypt"
-            )
+            self.status_label.setText("Ready - Select files to encrypt or decrypt")
         self.selected_files = []
 
     def init_ui(self):
@@ -223,9 +224,9 @@ class EnAndDecryptGUI(StandardWindow):
             QLabel {
                 font-size: 18px;
                 font-weight: bold;
-                color: #2c3e50;
+                color: {token('text_primary')};
                 padding: 10px;
-                background-color: #ecf0f1;
+                background-color: {token('background')};
                 border-radius: 5px;
                 margin-bottom: 10px;
             }
@@ -245,7 +246,7 @@ class EnAndDecryptGUI(StandardWindow):
         self.select_files_button.setStyleSheet(
             """
             QPushButton {
-                background-color: #27ae60;
+                background-color: {token('semantic_success')};
                 color: white;
                 border: none;
                 padding: 8px 16px;
@@ -253,7 +254,7 @@ class EnAndDecryptGUI(StandardWindow):
                 font-weight: bold;
             }
             QPushButton:hover {
-                background-color: #229954;
+                background-color: {token('semantic_success')};
             }
         """
         )
@@ -264,7 +265,7 @@ class EnAndDecryptGUI(StandardWindow):
         self.select_decrypt_button.setStyleSheet(
             """
             QPushButton {
-                background-color: #e74c3c;
+                background-color: {token('semantic_error')};
                 color: white;
                 border: none;
                 padding: 8px 16px;
@@ -272,7 +273,7 @@ class EnAndDecryptGUI(StandardWindow):
                 font-weight: bold;
             }
             QPushButton:hover {
-                background-color: #c0392b;
+                background-color: {token('semantic_error')};
             }
         """
         )
@@ -298,6 +299,16 @@ class EnAndDecryptGUI(StandardWindow):
         security_layout.addWidget(QLabel("Password:"))
         security_layout.addWidget(self.password_edit)
 
+        # Dry run option — must appear before action buttons (spec §5.2)
+        self.dry_run_checkbox = QCheckBox(
+            "🔍 Dry Run (Preview Only — No Files Will Be Encrypted/Decrypted)"
+        )
+        self.dry_run_checkbox.setToolTip(
+            "When checked, shows which files WOULD be processed without "
+            "actually encrypting or decrypting anything"
+        )
+        security_layout.addWidget(self.dry_run_checkbox)
+
         layout.addWidget(security_group)
 
         # Add progress section
@@ -308,10 +319,8 @@ class EnAndDecryptGUI(StandardWindow):
         self.progress_bar.setVisible(False)
         progress_layout.addWidget(self.progress_bar)
 
-        self.status_label = QLabel(
-            "Ready - Select files to encrypt or decrypt"
-        )
-        self.status_label.setStyleSheet("padding: 10px; color: #666;")
+        self.status_label = QLabel("Ready - Select files to encrypt or decrypt")
+        self.status_label.setStyleSheet(f"padding: 10px; color: {token('text_muted')};")
         progress_layout.addWidget(self.status_label)
 
         layout.addWidget(progress_group)
@@ -324,7 +333,7 @@ class EnAndDecryptGUI(StandardWindow):
         self.encrypt_button.setStyleSheet(
             """
             QPushButton {
-                background-color: #3498db;
+                background-color: {token('accent')};
                 color: white;
                 border: none;
                 padding: 10px 20px;
@@ -332,7 +341,7 @@ class EnAndDecryptGUI(StandardWindow):
                 font-weight: bold;
             }
             QPushButton:hover {
-                background-color: #2980b9;
+                background-color: {token('button_primary_hover')};
             }
         """
         )
@@ -343,7 +352,7 @@ class EnAndDecryptGUI(StandardWindow):
         self.decrypt_button.setStyleSheet(
             """
             QPushButton {
-                background-color: #e67e22;
+                background-color: {token('semantic_warning')};
                 color: white;
                 border: none;
                 padding: 10px 20px;
@@ -351,7 +360,7 @@ class EnAndDecryptGUI(StandardWindow):
                 font-weight: bold;
             }
             QPushButton:hover {
-                background-color: #d35400;
+                background-color: {token('semantic_warning')};
             }
         """
         )
@@ -374,9 +383,7 @@ class EnAndDecryptGUI(StandardWindow):
                 self.files_list.addItem(f"🔒 {os.path.basename(file_path)}")
             self.selected_files = files
             self.operation_mode = "encrypt"
-            self.status_label.setText(
-                f"Selected {len(files)} file(s) for encryption"
-            )
+            self.status_label.setText(f"Selected {len(files)} file(s) for encryption")
 
     def select_decrypt_files(self):
         """Select files for decryption."""
@@ -392,9 +399,7 @@ class EnAndDecryptGUI(StandardWindow):
                 self.files_list.addItem(f"🔓 {os.path.basename(file_path)}")
             self.selected_files = files
             self.operation_mode = "decrypt"
-            self.status_label.setText(
-                f"Selected {len(files)} file(s) for decryption"
-            )
+            self.status_label.setText(f"Selected {len(files)} file(s) for decryption")
 
     def encrypt_files(self):
         """Encrypt selected files."""
@@ -411,14 +416,27 @@ class EnAndDecryptGUI(StandardWindow):
             )
             return
 
-        QMessageBox.information(
-            self,
-            "Encrypt Files",
-            f"Encryption functionality will be implemented.\n\n"
-            f"Files to encrypt: {len(self.selected_files)}\n"
-            f"Password: {'*' * len(password)}\n\n"
-            f"This will use AES-256-GCM encryption with PBKDF2 key derivation.",
-        )
+        if hasattr(self, "dry_run_checkbox") and self.dry_run_checkbox.isChecked():
+            items_text = "\n".join(
+                f"  \u2022 {os.path.basename(f)}" for f in self.selected_files
+            )
+            QMessageBox.information(
+                self,
+                "Dry Run Preview — Encrypt",
+                f"DRY RUN \u2014 No files will be encrypted.\n\n"
+                f"The following {len(self.selected_files)} file(s) WOULD be encrypted:\n"
+                f"{items_text}\n\n"
+                f"Algorithm: AES-256-GCM with PBKDF2 key derivation.",
+            )
+        else:
+            QMessageBox.information(
+                self,
+                "Encrypt Files",
+                f"Encryption functionality will be implemented.\n\n"
+                f"Files to encrypt: {len(self.selected_files)}\n"
+                f"Password: {'*' * len(password)}\n\n"
+                f"This will use AES-256-GCM encryption with PBKDF2 key derivation.",
+            )
 
     def decrypt_files(self):
         """Decrypt selected files."""
@@ -435,14 +453,27 @@ class EnAndDecryptGUI(StandardWindow):
             )
             return
 
-        QMessageBox.information(
-            self,
-            "Decrypt Files",
-            f"Decryption functionality will be implemented.\n\n"
-            f"Files to decrypt: {len(self.selected_files)}\n"
-            f"Password: {'*' * len(password)}\n\n"
-            f"This will verify integrity and decrypt using the original algorithm.",
-        )
+        if hasattr(self, "dry_run_checkbox") and self.dry_run_checkbox.isChecked():
+            items_text = "\n".join(
+                f"  \u2022 {os.path.basename(f)}" for f in self.selected_files
+            )
+            QMessageBox.information(
+                self,
+                "Dry Run Preview — Decrypt",
+                f"DRY RUN \u2014 No files will be decrypted.\n\n"
+                f"The following {len(self.selected_files)} file(s) WOULD be decrypted:\n"
+                f"{items_text}\n\n"
+                f"Integrity verification will be performed before decryption.",
+            )
+        else:
+            QMessageBox.information(
+                self,
+                "Decrypt Files",
+                f"Decryption functionality will be implemented.\n\n"
+                f"Files to decrypt: {len(self.selected_files)}\n"
+                f"Password: {'*' * len(password)}\n\n"
+                f"This will verify integrity and decrypt using the original algorithm.",
+            )
 
 
 def main():

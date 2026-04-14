@@ -13,6 +13,7 @@ import webbrowser
 from datetime import datetime
 
 try:
+    from src.gui.themes import token
     from PyQt5.QtWidgets import (
         QApplication,
         QCheckBox,
@@ -237,9 +238,9 @@ class CatalogWindow(StandardWindow):
             QLabel {
                 font-size: 18px;
                 font-weight: bold;
-                color: #2c3e50;
+                color: {token('text_primary')};
                 padding: 10px;
-                background-color: #ecf0f1;
+                background-color: {token('background')};
                 border-radius: 5px;
                 margin-bottom: 10px;
             }
@@ -292,7 +293,7 @@ class CatalogWindow(StandardWindow):
         self.generate_button.setStyleSheet(
             """
             QPushButton {
-                background-color: #27ae60;
+                background-color: {token('semantic_success')};
                 color: white;
                 border: none;
                 padding: 10px 20px;
@@ -301,10 +302,10 @@ class CatalogWindow(StandardWindow):
                 font-size: 14px;
             }
             QPushButton:hover {
-                background-color: #229954;
+                background-color: {token('semantic_success')};
             }
             QPushButton:disabled {
-                background-color: #bdc3c7;
+                background-color: {token('text_disabled')};
             }
         """
         )
@@ -537,15 +538,15 @@ class CatalogWindow(StandardWindow):
             max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
-            background-color: #f8f9fa;
+            background-color: {token('dialog_background')};
         }}
         h1 {{
-            color: #2c3e50;
-            border-bottom: 2px solid #3498db;
+            color: {token('text_primary')};
+            border-bottom: 2px solid {token('accent')};
             padding-bottom: 10px;
         }}
         .info {{
-            background-color: #e8f4fd;
+            background-color: {token('surface_info')};
             padding: 15px;
             border-radius: 5px;
             margin-bottom: 20px;
@@ -559,19 +560,19 @@ class CatalogWindow(StandardWindow):
         th, td {{
             padding: 12px;
             text-align: left;
-            border-bottom: 1px solid #ddd;
+            border-bottom: 1px solid {token('border')};
         }}
         th {{
-            background-color: #3498db;
+            background-color: {token('accent')};
             color: white;
             font-weight: bold;
         }}
         tr:hover {{
-            background-color: #f5f5f5;
+            background-color: {token('surface')};
         }}
         .file-name {{
             font-weight: bold;
-            color: #2c3e50;
+            color: {token('text_primary')};
         }}
         .file-size {{
             text-align: right;

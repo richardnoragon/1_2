@@ -446,16 +446,12 @@ class KeyboardShortcutsManager(QObject):
         try:
             # Check for existing action
             if action_id in self.shortcuts:
-                self.logger.warning(
-                    f"Shortcut action already exists: {action_id}"
-                )
+                self.logger.warning(f"Shortcut action already exists: {action_id}")
                 return False
 
             # Validate shortcut string
             if not self._validate_shortcut(default_shortcut):
-                self.logger.error(
-                    f"Invalid shortcut string: {default_shortcut}"
-                )
+                self.logger.error(f"Invalid shortcut string: {default_shortcut}")
                 return False
 
             # Create shortcut action
@@ -479,9 +475,7 @@ class KeyboardShortcutsManager(QObject):
             # Check for conflicts
             self._check_shortcut_conflicts(action_id, default_shortcut)
 
-            self.logger.debug(
-                f"Registered shortcut: {action_id} -> {default_shortcut}"
-            )
+            self.logger.debug(f"Registered shortcut: {action_id} -> {default_shortcut}")
             return True
 
         except Exception as e:
@@ -521,9 +515,7 @@ class KeyboardShortcutsManager(QObject):
             return True
 
         except Exception as e:
-            self.logger.error(
-                f"Failed to unregister shortcut {action_id}: {e}"
-            )
+            self.logger.error(f"Failed to unregister shortcut {action_id}: {e}")
             return False
 
     def set_shortcut(self, action_id: str, new_shortcut: str) -> bool:
@@ -551,12 +543,8 @@ class KeyboardShortcutsManager(QObject):
                 action_id, new_shortcut, exclude_action=action_id
             )
             if conflicts:
-                self.logger.warning(
-                    f"Shortcut conflict detected: {new_shortcut}"
-                )
-                self.shortcutConflict.emit(
-                    action_id, new_shortcut, conflicts[0]
-                )
+                self.logger.warning(f"Shortcut conflict detected: {new_shortcut}")
+                self.shortcutConflict.emit(action_id, new_shortcut, conflicts[0])
                 return False
 
             # Update shortcut
@@ -875,9 +863,7 @@ class KeyboardShortcutsManager(QObject):
 class KeyboardShortcutsHelpDialog(QDialog):
     """Help dialog for displaying keyboard shortcuts."""
 
-    def __init__(
-        self, parent: QWidget, shortcuts_manager: KeyboardShortcutsManager
-    ):
+    def __init__(self, parent: QWidget, shortcuts_manager: KeyboardShortcutsManager):
         """Initialize help dialog.
 
         Args:
@@ -897,9 +883,7 @@ class KeyboardShortcutsHelpDialog(QDialog):
 
         # Apply accessibility
         self.setAccessibleName("Keyboard Shortcuts Help")
-        self.setAccessibleDescription(
-            "Display of all available keyboard shortcuts"
-        )
+        self.setAccessibleDescription("Display of all available keyboard shortcuts")
 
     def _setup_ui(self):
         """Setup the user interface."""
@@ -917,6 +901,7 @@ class KeyboardShortcutsHelpDialog(QDialog):
         search_label = QLabel("Search:")
         self.search_box = QLineEdit()
         self.search_box.setPlaceholderText("Type to filter shortcuts...")
+        self.search_box.setAccessibleName("Filter shortcuts")
         self.search_box.textChanged.connect(self._filter_shortcuts)
 
         search_layout.addWidget(search_label)
@@ -925,6 +910,7 @@ class KeyboardShortcutsHelpDialog(QDialog):
 
         # Shortcuts table
         self.shortcuts_table = QTableWidget()
+        self.shortcuts_table.setAccessibleName("Keyboard shortcuts")
         self.shortcuts_table.setColumnCount(4)
         self.shortcuts_table.setHorizontalHeaderLabels(
             ["Action", "Shortcut", "Context", "Description"]
@@ -947,9 +933,11 @@ class KeyboardShortcutsHelpDialog(QDialog):
         button_layout = QHBoxLayout()
 
         reset_button = QPushButton("Reset All")
+        reset_button.setAccessibleName("Reset all keyboard shortcuts")
         reset_button.clicked.connect(self._reset_all_shortcuts)
 
         close_button = QPushButton("Close")
+        close_button.setAccessibleName("Close keyboard shortcuts dialog")
         close_button.clicked.connect(self.accept)
         close_button.setDefault(True)
 
@@ -984,9 +972,7 @@ class KeyboardShortcutsHelpDialog(QDialog):
 
             # Description
             description_item = QTableWidgetItem(shortcut_data["description"])
-            description_item.setFlags(
-                description_item.flags() & ~Qt.ItemIsEditable
-            )
+            description_item.setFlags(description_item.flags() & ~Qt.ItemIsEditable)
             self.shortcuts_table.setItem(row, 3, description_item)
 
             row += 1

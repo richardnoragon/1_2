@@ -1,0 +1,166 @@
+{
+  "session_id": "20251219_165200",
+  "timestamp": "2025-12-19T16:52:14.543951",
+  "summary": {
+    "files_validated": 7,
+    "files_passed": 0,
+    "files_failed": 1,
+    "files_error": 6,
+    "total_tests": 8,
+    "tests_passed": 6,
+    "tests_failed": 1,
+    "rollbacks_performed": 0,
+    "avg_coverage_improvement": 0.0
+  },
+  "results": [
+    {
+      "test_file": "C:\\Users\\HP1\\1_2\\tests\\test_empty_folders.py",
+      "status": "error",
+      "tests": {
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "total": 0
+      },
+      "coverage_before": null,
+      "coverage_after": null,
+      "coverage_improvement": 0.0,
+      "error_message": "No tests executed",
+      "rollback_performed": false,
+      "validation_time_ms": 1408.26
+    },
+    {
+      "test_file": "C:\\Users\\HP1\\1_2\\tests\\test_compression_logic.py",
+      "status": "error",
+      "tests": {
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "total": 0
+      },
+      "coverage_before": null,
+      "coverage_after": null,
+      "coverage_improvement": 0.0,
+      "error_message": "No tests executed",
+      "rollback_performed": false,
+      "validation_time_ms": 1288.37
+    },
+    {
+      "test_file": "C:\\Users\\HP1\\1_2\\tests\\test_secure_delete.py",
+      "status": "failed",
+      "tests": {
+        "passed": 6,
+        "failed": 1,
+        "skipped": 1,
+        "total": 8
+      },
+      "coverage_before": null,
+      "coverage_after": null,
+      "coverage_improvement": 0.0,
+      "error_message": "1 test(s) failed",
+      "rollback_performed": false,
+      "validation_time_ms": 2470.8
+    },
+    {
+      "test_file": "C:\\Users\\HP1\\1_2\\tests\\test_checksum.py",
+      "status": "error",
+      "tests": {
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "total": 0
+      },
+      "coverage_before": null,
+      "coverage_after": null,
+      "coverage_improvement": 0.0,
+      "error_message": "No tests executed",
+      "rollback_performed": false,
+      "validation_time_ms": 1957.25
+    },
+    {
+      "test_file": "C:\\Users\\HP1\\1_2\\tests\\test_encryption.py",
+      "status": "error",
+      "tests": {
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "total": 0
+      },
+      "coverage_before": null,
+      "coverage_after": null,
+      "coverage_improvement": 0.0,
+      "error_message": "No tests executed",
+      "rollback_performed": false,
+      "validation_time_ms": 2616.05
+    },
+    {
+      "test_file": "C:\\Users\\HP1\\1_2\\tests\\test_file_operations.py",
+      "status": "error",
+      "tests": {
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "total": 0
+      },
+      "coverage_before": null,
+      "coverage_after": null,
+      "coverage_improvement": 0.0,
+      "error_message": "No tests executed",
+      "rollback_performed": false,
+      "validation_time_ms": 2416.02
+    },
+    {
+      "test_file": "C:\\Users\\HP1\\1_2\\tests\\test_file_touch.py",
+      "status": "error",
+      "tests": {
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "total": 0
+      },
+      "coverage_before": null,
+      "coverage_after": null,
+      "coverage_improvement": 0.0,
+      "error_message": "No tests executed",
+      "rollback_performed": false,
+      "validation_time_ms": 2126.28
+    }
+  ],
+  "passed_files": [],
+  "failed_files": [
+    {
+      "file": "C:\\Users\\HP1\\1_2\\tests\\test_secure_delete.py",
+      "error": "1 test(s) failed"
+    }
+  ],
+  "error_files": [
+    {
+      "file": "C:\\Users\\HP1\\1_2\\tests\\test_empty_folders.py",
+      "error": "No tests executed"
+    },
+    {
+      "file": "C:\\Users\\HP1\\1_2\\tests\\test_compression_logic.py",
+      "error": "No tests executed"
+    },
+    {
+      "file": "C:\\Users\\HP1\\1_2\\tests\\test_checksum.py",
+      "error": "No tests executed"
+    },
+    {
+      "file": "C:\\Users\\HP1\\1_2\\tests\\test_encryption.py",
+      "error": "No tests executed"
+    },
+    {
+      "file": "C:\\Users\\HP1\\1_2\\tests\\test_file_operations.py",
+      "error": "No tests executed"
+    },
+    {
+      "file": "C:\\Users\\HP1\\1_2\\tests\\test_file_touch.py",
+      "error": "No tests executed"
+    }
+  ],
+  "configuration": {
+    "rollback_on_failure": true,
+    "collect_coverage": false
+  }
+}

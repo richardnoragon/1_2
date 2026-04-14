@@ -7,6 +7,7 @@ RESULTS_READY_TEXT = "Network connectivity tools ready. Select a tool above to b
 THIS_TOOL_WILL_PROVIDE_TEXT = "This tool will provide:"
 
 try:
+    from src.gui.themes import token
     from PyQt5.QtWidgets import (
         QApplication,
         QGroupBox,
@@ -116,9 +117,9 @@ class NetworkConnectivityGUI(StandardWindow):
             QLabel {
                 font-size: 18px;
                 font-weight: bold;
-                color: #2c3e50;
+                color: {token('text_primary')};
                 padding: 10px;
-                background-color: #ecf0f1;
+                background-color: {token('background')};
                 border-radius: 5px;
                 margin-bottom: 10px;
             }
@@ -197,7 +198,7 @@ class NetworkConnectivityGUI(StandardWindow):
 
         button_style = """
             QPushButton {
-                background-color: #3498db;
+                background-color: {token('accent')};
                 color: white;
                 border: none;
                 padding: 10px 20px;
@@ -206,7 +207,7 @@ class NetworkConnectivityGUI(StandardWindow):
                 margin: 2px;
             }
             QPushButton:hover {
-                background-color: #2980b9;
+                background-color: {token('button_primary_hover')};
             }
         """
         for button in (bandwidth_button, scan_button, wifi_button):

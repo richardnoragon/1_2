@@ -1,0 +1,18 @@
+{
+  "session_id": "20251220_152827",
+  "timestamp": "2025-12-20T15:28:27.568643",
+  "summary": {
+    "files_analyzed": 1,
+    "files_needing_changes": 0,
+    "total_potential_changes": 0
+  },
+  "file_analyses": [
+    {
+      "file_path": "tests\\unit",
+      "potential_changes": 0,
+      "changes_by_type": {},
+      "imports_needed": [],
+      "warnings": []
+    }
+  ]
+}

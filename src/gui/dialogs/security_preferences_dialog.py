@@ -24,6 +24,8 @@ STANDARD_RECOMMENDED_PROFILE = "Standard (Recommended)"
 # Add the src directory to the Python path for imports
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", ".."))
 
+from src.gui.themes import token
+
 try:
     from PyQt5.QtCore import QDateTime, Qt, QThread, QTimer, pyqtSignal
     from PyQt5.QtGui import QColor, QFont, QIcon, QPalette, QPixmap
@@ -163,8 +165,8 @@ try:
                 """
                 QFrame {
                     background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
-                        stop:0 #f8f9fa, stop:1 #e9ecef);
-                    border: 1px solid #dee2e6;
+                        stop:0 {token('dialog_backgroundf')}, stop:1 {token('border_light')});
+                    border: 1px solid {token('border_light')};
                     border-radius: 8px;
                     margin: 5px;
                     padding: 10px;
@@ -210,7 +212,7 @@ try:
 
             self.emergency_disable_btn = QPushButton("🚨 Emergency Disable All")
             self.emergency_disable_btn.setStyleSheet(
-                "background-color: #dc3545; color: white;"
+                f"background-color: {token('semantic_error')}; color: white;"
             )
             self.emergency_disable_btn.clicked.connect(self.emergency_disable_security)
             quick_actions_layout.addWidget(self.emergency_disable_btn)
@@ -828,7 +830,9 @@ try:
             emergency_buttons = QGridLayout()
 
             self.lockdown_btn = QPushButton("🔒 Security Lockdown")
-            self.lockdown_btn.setStyleSheet("background-color: #dc3545; color: white;")
+            self.lockdown_btn.setStyleSheet(
+                f"background-color: {token('semantic_error')}; color: white;"
+            )
             self.lockdown_btn.clicked.connect(self.security_lockdown)
             emergency_buttons.addWidget(self.lockdown_btn, 0, 0)
 
@@ -838,7 +842,7 @@ try:
 
             self.reset_security_btn = QPushButton("🔄 Reset Security")
             self.reset_security_btn.setStyleSheet(
-                "background-color: #fd7e14; color: white;"
+                f"background-color: {token('color_orange_badge')}; color: white;"
             )
             self.reset_security_btn.clicked.connect(self.reset_security_settings)
             emergency_buttons.addWidget(self.reset_security_btn, 1, 0)
@@ -860,8 +864,8 @@ try:
             widget.setStyleSheet(
                 """
                 QFrame {
-                    background-color: #f8f9fa;
-                    border: 1px solid #dee2e6;
+                    background-color: {token('dialog_background')};
+                    border: 1px solid {token('border_light')};
                     border-radius: 8px;
                     margin: 5px;
                     padding: 10px;
@@ -877,14 +881,18 @@ try:
             title_layout.addStretch()
 
             status_label = QLabel("●")
-            status_label.setStyleSheet("color: #6c757d; font-size: 16px;")
+            status_label.setStyleSheet(
+                f"color: {token('text_muted')}; font-size: 16px;"
+            )
             title_layout.addWidget(status_label)
 
             layout.addLayout(title_layout)
 
             # Status details
             details_label = QLabel("Status: Unknown")
-            details_label.setStyleSheet("font-size: 11px; color: #6c757d;")
+            details_label.setStyleSheet(
+                f"font-size: 11px; color: {token('text_muted')};"
+            )
             layout.addWidget(details_label)
 
             # Store references for updates

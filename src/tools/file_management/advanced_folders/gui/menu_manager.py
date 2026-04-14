@@ -27,6 +27,8 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
+from src.gui.themes import token
+
 
 @dataclass
 class MenuItemDefinition:
@@ -633,9 +635,7 @@ class AdvancedFoldersMenuManager(QObject):
         self.menu_bar.setObjectName("AdvancedFoldersMenuBar")
 
         # Sort menus by position
-        sorted_menus = sorted(
-            self.menu_definitions.values(), key=lambda m: m.position
-        )
+        sorted_menus = sorted(self.menu_definitions.values(), key=lambda m: m.position)
 
         # Create menus
         for menu_def in sorted_menus:
@@ -759,72 +759,72 @@ class AdvancedFoldersMenuManager(QObject):
             menu_bar: Menu bar to style
         """
         menu_bar.setStyleSheet(
-            """
-            QMenuBar {
-                background-color: #f8f9fa;
-                border-bottom: 1px solid #dee2e6;
+            f"""
+            QMenuBar {{
+                background-color: {token('dialog_background')};
+                border-bottom: 1px solid {token('border_light')};
                 padding: 2px 4px;
                 font-size: 14px;
-            }
+            }}
             
-            QMenuBar::item {
+            QMenuBar::item {{
                 background-color: transparent;
                 padding: 6px 12px;
                 margin: 2px;
                 border-radius: 4px;
-            }
+            }}
             
-            QMenuBar::item:selected {
-                background-color: #e9ecef;
-            }
+            QMenuBar::item:selected {{
+                background-color: {token('border_light')};
+            }}
             
-            QMenuBar::item:pressed {
-                background-color: #dee2e6;
-            }
+            QMenuBar::item:pressed {{
+                background-color: {token('border_light')};
+            }}
             
-            QMenu {
+            QMenu {{
                 background-color: white;
-                border: 1px solid #ced4da;
+                border: 1px solid {token('border_light')};
                 border-radius: 6px;
                 padding: 4px 0px;
-            }
+            }}
             
-            QMenu::item {
+            QMenu::item {{
                 padding: 6px 24px 6px 32px;
                 margin: 0px 4px;
                 border-radius: 4px;
-            }
+            }}
             
-            QMenu::item:selected {
-                background-color: #f8f9fa;
-                color: #212529;
-            }
+            QMenu::item:selected {{
+                background-color: {token('dialog_background')};
+                color: {token('text_primary')};
+            }}
             
-            QMenu::item:disabled {
-                color: #6c757d;
-            }
+            QMenu::item:disabled {{
+                color: {token('text_muted')};
+            }}
             
-            QMenu::separator {
+            QMenu::separator {{
                 height: 1px;
-                background-color: #dee2e6;
+                background-color: {token('border_light')};
                 margin: 4px 8px;
-            }
+            }}
             
-            QMenu::indicator {
+            QMenu::indicator {{
                 width: 16px;
                 height: 16px;
                 left: 8px;
-            }
+            }}
             
-            QMenu::indicator:checked {
+            QMenu::indicator:checked {{
                 image: url(:/icons/check.png);
-            }
+            }}
             
-            QMenu::right-arrow {
+            QMenu::right-arrow {{
                 image: url(:/icons/arrow_right.png);
                 width: 12px;
                 height: 12px;
-            }
+            }}
         """
         )
 
@@ -897,9 +897,7 @@ class AdvancedFoldersMenuManager(QObject):
 
                 # Update actual action if menu bar exists
                 if self.menu_bar:
-                    action = self.menu_bar.findChild(
-                        QAction, f"action_{item_id}"
-                    )
+                    action = self.menu_bar.findChild(QAction, f"action_{item_id}")
                     if action:
                         action.setChecked(checked)
 

@@ -35,6 +35,11 @@ venv_backup_*/
 venv_temp/
 virtualenv/
 
+# Archive directories (FE-01 cleanup - prevent recreation)
+archive/
+emergency-backup-*/
+file_utilities_2/
+
 # PyInstaller
 *.manifest
 *.spec
@@ -198,3 +203,6 @@ ehthumbs.db
 Icon?
 Thumbs.db
 .fake
+# Large venv backup archives (exceed GitHub 100 MB limit)
+backups/archive_cleanup_backups/*.zip
+backups/archive_cleanup_backups/venv_*.zip

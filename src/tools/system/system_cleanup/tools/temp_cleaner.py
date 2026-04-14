@@ -1,16 +1,16 @@
 """
 Temporary Files Cleaner Tool
 
-This tool removes temporary files from various system locations to free disk space
+This tool removes temporary files from various system locations to free
+disk space
 and improve system performance. It safely handles files in use and provides
 comprehensive filtering options.
 """
 
-import time
 from pathlib import Path
-from typing import List, Dict, Any, Optional
+from typing import Any, Dict, List
 
-from ..core.cleanup_base import CleanupToolBase, CleanupOperationResult
+from ..core.cleanup_base import CleanupOperationResult, CleanupToolBase
 from ..core.system_locations import SystemLocations
 from ..core.windows_utils import WindowsUtils
 
@@ -107,9 +107,7 @@ class TempFilesCleaner(CleanupToolBase):
                 preview["estimated_size"] += dir_size
 
             except Exception as e:
-                preview["warnings"].append(
-                    f"Error scanning {temp_dir}: {str(e)}"
-                )
+                preview["warnings"].append(f"Error scanning {temp_dir}: {str(e)}")
 
         # Add warnings for system temp if not admin
         if include_system_temp and not WindowsUtils.is_admin():
@@ -127,8 +125,12 @@ class TempFilesCleaner(CleanupToolBase):
         include_system_temp = kwargs.get("include_system_temp", True)
         create_backup = kwargs.get("create_backup", False)
         secure_delete = kwargs.get("secure_delete", False)
+        dry_run = kwargs.get("dry_run", False)
 
-        self._emit_status("Starting temporary files cleanup...")
+        if dry_run:
+            self._emit_status("Starting dry run — no files will be deleted...")
+        else:
+            self._emit_status("Starting temporary files cleanup...")
 
         temp_dirs = self._get_temp_directories(include_system_temp)
         total_deleted = 0
@@ -140,9 +142,7 @@ class TempFilesCleaner(CleanupToolBase):
                 if self._check_should_stop():
                     break
 
-                self._emit_progress(
-                    i, len(temp_dirs), f"Cleaning {temp_dir.name}..."
-                )
+                self._emit_progress(i, len(temp_dirs), f"Cleaning {temp_dir.name}...")
 
                 try:
                     deleted, space_freed = self._clean_temp_directory(
@@ -152,41 +152,52 @@ class TempFilesCleaner(CleanupToolBase):
                         file_extensions,
                         create_backup,
                         secure_delete,
+                        dry_run=dry_run,
                     )
 
                     total_deleted += deleted
                     total_space_freed += space_freed
 
+                    action = "Would delete" if dry_run else "Cleaned"
                     self._emit_status(
-                        f"Cleaned {deleted} files from {temp_dir.name} "
-                        f"({self._format_size(space_freed)} freed)"
+                        f"{action} {deleted} files from {temp_dir.name} "
+                        f"({self._format_size(space_freed)})"
                     )
 
                 except Exception as e:
-                    error_msg = f"Failed to clean {temp_dir}: {str(e)}"
+                    action_word = "scan" if dry_run else "clean"
+                    error_msg = f"Failed to {action_word} {temp_dir}: {str(e)}"
                     errors.append(error_msg)
                     self._emit_error(error_msg)
 
-            self._emit_progress(
-                len(temp_dirs),
-                len(temp_dirs),
-                "Temporary files cleanup complete",
+            complete_msg = (
+                "Dry run complete — no files deleted"
+                if dry_run
+                else "Temporary files cleanup complete"
             )
+            self._emit_progress(len(temp_dirs), len(temp_dirs), complete_msg)
 
             success = len(errors) == 0
-            message = (
-                f"Deleted {total_deleted} temporary files, "
-                f"freed {self._format_size(total_space_freed)}"
-            )
+            if dry_run:
+                message = (
+                    f"Dry run: would delete {total_deleted} temporary files, "
+                    f"freeing {self._format_size(total_space_freed)}"
+                )
+            else:
+                message = (
+                    f"Deleted {total_deleted} temporary files, "
+                    f"freed {self._format_size(total_space_freed)}"
+                )
 
             return CleanupOperationResult(
                 success, message, total_deleted, total_space_freed, errors
             )
 
         except Exception as e:
+            label = "Dry run" if dry_run else "Temp files cleanup"
             return CleanupOperationResult(
                 False,
-                f"Temp files cleanup failed: {str(e)}",
+                f"{label} failed: {str(e)}",
                 total_deleted,
                 total_space_freed,
                 [str(e)],
@@ -228,10 +239,7 @@ class TempFilesCleaner(CleanupToolBase):
             # Also scan for any files older than 1 day
             all_files = self._scan_directory(temp_dir, True, "*")
             for file_path in all_files:
-                if (
-                    file_path not in files
-                    and self._get_file_age_days(file_path) >= 1
-                ):
+                if file_path not in files and self._get_file_age_days(file_path) >= 1:
                     files.append(file_path)
 
         except Exception:
@@ -251,15 +259,11 @@ class TempFilesCleaner(CleanupToolBase):
 
         # Filter by age
         if max_age_days > 0:
-            filtered_files = self._filter_files_by_age(
-                filtered_files, max_age_days
-            )
+            filtered_files = self._filter_files_by_age(filtered_files, max_age_days)
 
         # Filter by size
         if min_size_bytes > 0:
-            filtered_files = self._filter_files_by_size(
-                filtered_files, min_size_bytes
-            )
+            filtered_files = self._filter_files_by_size(filtered_files, min_size_bytes)
 
         # Filter by extension
         if file_extensions:
@@ -277,8 +281,13 @@ class TempFilesCleaner(CleanupToolBase):
         file_extensions: List[str],
         create_backup: bool,
         secure_delete: bool,
+        dry_run: bool = False,
     ) -> tuple:
-        """Clean a specific temp directory."""
+        """Clean a specific temp directory.
+
+        When dry_run is True, enumerates and measures files that would be
+        deleted without removing any files from disk.
+        """
         deleted_count = 0
         space_freed = 0
 
@@ -300,21 +309,27 @@ class TempFilesCleaner(CleanupToolBase):
                     # Get file size before deletion
                     file_size = file_path.stat().st_size
 
-                    # Create backup if requested
-                    if create_backup:
-                        self._backup_file(file_path)
-
-                    # Delete the file
-                    if self._safe_delete_file(file_path, secure_delete):
+                    if dry_run:
+                        # Count what would be deleted without modifying any files  # noqa: E501
                         deleted_count += 1
                         space_freed += file_size
+                    else:
+                        # Create backup if requested
+                        if create_backup:
+                            self._backup_file(file_path)
+
+                        # Delete the file
+                        if self._safe_delete_file(file_path, secure_delete):
+                            deleted_count += 1
+                            space_freed += file_size
 
                 except Exception:
                     # Skip files that can't be deleted
                     continue
 
-            # Clean empty directories
-            self._clean_empty_directories(temp_dir)
+            # Clean empty directories (skip during dry run)
+            if not dry_run:
+                self._clean_empty_directories(temp_dir)
 
         except Exception:
             pass

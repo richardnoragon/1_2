@@ -11,6 +11,7 @@ import sys
 from typing import Any, Dict, List, Optional
 
 try:
+    from src.gui.themes import token
     from PyQt5.QtCore import Qt, QThread, pyqtSignal
     from PyQt5.QtGui import QFont
     from PyQt5.QtWidgets import (
@@ -57,6 +58,7 @@ except ImportError:
 
 # Import enhanced image metadata logic
 from .image_metadata_logic import ImageMetadataLogic, format_exif_value  # noqa: E402
+from src.gui.themes import Typography
 
 
 class ImageMetadataWorkerThread(QThread):
@@ -355,7 +357,7 @@ class ImageMetadataEditorGUI(StandardWindow):
         for i, (field, label) in enumerate(info_fields):
             label_widget = QLabel(f"{label}:")
             value_widget = QLabel("N/A")
-            value_widget.setStyleSheet("QLabel { color: #2c3e50; }")
+            value_widget.setStyleSheet(f"QLabel { color: {token('text_primary')}; }")
 
             self.info_labels[field] = value_widget
 
@@ -393,7 +395,7 @@ class ImageMetadataEditorGUI(StandardWindow):
 
         # Status label
         self.status_label = QLabel("Ready")
-        self.status_label.setStyleSheet("QLabel { color: #27ae60; }")
+        self.status_label.setStyleSheet(f"QLabel { color: {token('semantic_success')}; }")
         progress_layout.addWidget(self.status_label)
 
         parent_layout.addWidget(progress_group)
@@ -409,7 +411,7 @@ class ImageMetadataEditorGUI(StandardWindow):
         self.save_button.setStyleSheet(
             """
             QPushButton {
-                background-color: #27ae60;
+                background-color: {token('semantic_success')};
                 color: white;
                 border: none;
                 padding: 10px 20px;
@@ -417,10 +419,10 @@ class ImageMetadataEditorGUI(StandardWindow):
                 font-weight: bold;
             }
             QPushButton:hover {
-                background-color: #229954;
+                background-color: {token('semantic_success')};
             }
             QPushButton:disabled {
-                background-color: #bdc3c7;
+                background-color: {token('text_disabled')};
             }
         """
         )
@@ -447,7 +449,7 @@ class ImageMetadataEditorGUI(StandardWindow):
         self.cancel_button.setStyleSheet(
             """
             QPushButton {
-                background-color: #e74c3c;
+                background-color: {token('semantic_error')};
                 color: white;
                 border: none;
                 padding: 10px 20px;
@@ -455,7 +457,7 @@ class ImageMetadataEditorGUI(StandardWindow):
                 font-weight: bold;
             }
             QPushButton:hover {
-                background-color: #c0392b;
+                background-color: {token('semantic_error')};
             }
         """
         )
@@ -473,9 +475,9 @@ class ImageMetadataEditorGUI(StandardWindow):
                 QLabel {
                     font-size: 18px;
                     font-weight: bold;
-                    color: #2c3e50;
+                    color: {token('text_primary')};
                     padding: 10px;
-                    background-color: #ecf0f1;
+                    background-color: {token('background')};
                     border-radius: 5px;
                     margin-bottom: 10px;
                 }
@@ -497,7 +499,7 @@ class ImageMetadataEditorGUI(StandardWindow):
 
     def _get_monospace_font(self):
         """Get a monospace font for raw data display."""
-        font = QFont("Courier New", 9)
+        font = Typography.body()
         font.setFixedPitch(True)
         return font
 

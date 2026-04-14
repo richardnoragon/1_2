@@ -1,0 +1,953 @@
+{
+  "backup_id": "file_utilities_2_20251219_181953",
+  "created_at": "2025-12-19T18:19:54.387913",
+  "source_directory": "c:\\Users\\HP1\\1_2\\file_utilities_2",
+  "total_files": 157,
+  "total_size_bytes": 2506735,
+  "archive_format": "zip",
+  "archive_path": "c:\\Users\\HP1\\1_2\\backups\\archive_cleanup_backups\\file_utilities_2_20251219_181953.zip",
+  "files": [
+    {
+      "relative_path": "__init__.py",
+      "size_bytes": 3002,
+      "sha256_hash": "abe60efd1fc9562b659ed22005cf1b82fe6251dadb311ba5ac893df44cd14f68",
+      "modified_time": 1760634008.817518
+    },
+    {
+      "relative_path": "core\\check_sum.py",
+      "size_bytes": 17779,
+      "sha256_hash": "88902ea11547bc1a640b7162e250f584472bb467de78682558ff146720f3b1f2",
+      "modified_time": 1760634008.819318
+    },
+    {
+      "relative_path": "core\\cmsd_logic.py",
+      "size_bytes": 6831,
+      "sha256_hash": "c80f334e5434156fe76bae61897f64b314a58d144257798329f5ecdbf622cc24",
+      "modified_time": 1760634008.8198953
+    },
+    {
+      "relative_path": "core\\encryption_config.py",
+      "size_bytes": 16661,
+      "sha256_hash": "b5a31fbae912f67ebeb75ea5805134f501d5568c3d5fac27231db1eec1bb0812",
+      "modified_time": 1760634008.8204677
+    },
+    {
+      "relative_path": "core\\encryption_logging.py",
+      "size_bytes": 17596,
+      "sha256_hash": "ef752573224a69560129220cbaea21a029f46e6bb7d4632bf4420d8ce5d73515",
+      "modified_time": 1760634008.8216896
+    },
+    {
+      "relative_path": "core\\encryption_logic.py",
+      "size_bytes": 26864,
+      "sha256_hash": "71bf46ca6370b687d4015fddd8c859a229d05a63894a68ed45db0ecb26605428",
+      "modified_time": 1760634008.8222744
+    },
+    {
+      "relative_path": "core\\file_splitter_config.py",
+      "size_bytes": 14615,
+      "sha256_hash": "f0b06331b7b2721e5cbd5db1240e31c6930c50a40597e1e1428608cd9aef9183",
+      "modified_time": 1760634008.823495
+    },
+    {
+      "relative_path": "core\\file_splitter_logging.py",
+      "size_bytes": 3679,
+      "sha256_hash": "c4aab962bbcabf6b89beb2cd204bd4cbc16203325bdd68fb0332575730625d3f",
+      "modified_time": 1760634008.8240943
+    },
+    {
+      "relative_path": "core\\file_splitter_logic.py",
+      "size_bytes": 35330,
+      "sha256_hash": "c2e20bc6ef950a85d234ebbfa25b0cc2a35e65f637b2dc8f15b7127df6affbbd",
+      "modified_time": 1760634008.8252573
+    },
+    {
+      "relative_path": "core\\image_metadata_logic.py",
+      "size_bytes": 20958,
+      "sha256_hash": "de3cf212e397a7cd887fe1779bbfe1c2c47aca215afdf6ff0d869a8061a51bd7",
+      "modified_time": 1760634008.826416
+    },
+    {
+      "relative_path": "core\\secure_delete_config.py",
+      "size_bytes": 14599,
+      "sha256_hash": "c48eb35f8a1b243aaf7eb925e431fbde5e432543ccf4e42fa68c9a0f1bd6a9f8",
+      "modified_time": 1760634008.8270268
+    },
+    {
+      "relative_path": "core\\secure_delete_logging.py",
+      "size_bytes": 17403,
+      "sha256_hash": "ac6850efdb5906db5e862d76de105bec235811ec09e7dddb2642a06968c83c0f",
+      "modified_time": 1760634008.8282588
+    },
+    {
+      "relative_path": "core\\secure_delete_logic.py",
+      "size_bytes": 16796,
+      "sha256_hash": "616d6c9065c1b4e3dfc9c987249b99b474f9d3f9b73fbc7fd3f7fda4e0602c50",
+      "modified_time": 1760634008.8288457
+    },
+    {
+      "relative_path": "core\\size_analyzer_config.py",
+      "size_bytes": 16416,
+      "sha256_hash": "c2c5715a23cd996204243ce76b982270f27f09cd56de469ae87201b126f04189",
+      "modified_time": 1760634008.8294163
+    },
+    {
+      "relative_path": "core\\size_analyzer_logging.py",
+      "size_bytes": 11080,
+      "sha256_hash": "fa09cbc3ae248206b713818873d230a1ad5c1ac61b2bbfa86afaced714b8a607",
+      "modified_time": 1760634008.8306382
+    },
+    {
+      "relative_path": "core\\size_analyzer_logic.py",
+      "size_bytes": 1816,
+      "sha256_hash": "6e9744e3edc1e3a07086dc49adb8b15a8a454cdd702605f14d82b7aeb225eb2b",
+      "modified_time": 1760634008.831324
+    },
+    {
+      "relative_path": "core\\tree_map_logic.py",
+      "size_bytes": 4134,
+      "sha256_hash": "bedb119b950c8bd019d9ae4bee4c8cc04d9aa5fe4d8a9405d64d67cea48203da",
+      "modified_time": 1760634008.8319335
+    },
+    {
+      "relative_path": "core\\__init__.py",
+      "size_bytes": 831,
+      "sha256_hash": "533fabdb17addcfad6b87b076d1ce980435a218c071ea5c0e6caf8e64a0065e3",
+      "modified_time": 1760634008.818098
+    },
+    {
+      "relative_path": "docs\\API_CHANGES_REFERENCE.md",
+      "size_bytes": 23055,
+      "sha256_hash": "2451896817fef097c294b08af46dfd6048de3db8039b108f98ae5fffd626ef9e",
+      "modified_time": 1760667298.5708387
+    },
+    {
+      "relative_path": "docs\\checksum_files.md",
+      "size_bytes": 27727,
+      "sha256_hash": "000fe01aae3c5e3c31e30ab6424bb84dc4103c97c82e19aa99082a5c9d073694",
+      "modified_time": 1760667298.5821736
+    },
+    {
+      "relative_path": "docs\\DOCUMENTATION_INDEX.md",
+      "size_bytes": 8007,
+      "sha256_hash": "d39d31ff61b74b3cc378e729baa22338148a1730cc1c9fe61ab95debd20d45a7",
+      "modified_time": 1760667298.5720046
+    },
+    {
+      "relative_path": "docs\\progress_tracking_guide.md",
+      "size_bytes": 7551,
+      "sha256_hash": "4c0d1d035a48cc389d9b97e63ba02f85c9ac645fc06b7b4e9f12d26ebf65649f",
+      "modified_time": 1760667298.5833583
+    },
+    {
+      "relative_path": "docs\\PYQT5_CONVERSION_SUMMARY.md",
+      "size_bytes": 8128,
+      "sha256_hash": "41476396524ab0c7a20463837b8dfb2087f57e81e1714bfb0851759609216781",
+      "modified_time": 1760667298.5735533
+    },
+    {
+      "relative_path": "docs\\QA_FRAMEWORK_SUMMARY.md",
+      "size_bytes": 11985,
+      "sha256_hash": "fd82ab3ea9149f94c2417b4ebf75466bbaffdf69b6b666373bc723e032286665",
+      "modified_time": 1760667298.5752466
+    },
+    {
+      "relative_path": "docs\\QA_IMPLEMENTATION_GUIDE.md",
+      "size_bytes": 30260,
+      "sha256_hash": "414b93a1aab4d8c2fd87bbd6fc1b0ba249868f37674427c43f27b8b7bfdf3d69",
+      "modified_time": 1760667298.5770097
+    },
+    {
+      "relative_path": "docs\\QA_PROTOCOLS.md",
+      "size_bytes": 33664,
+      "sha256_hash": "a9d54efbab2b99e42a29a817539481d9fe5f07d6477f15f880f794a85e8415c3",
+      "modified_time": 1760667298.5781004
+    },
+    {
+      "relative_path": "docs\\QA_PROTOCOLS_APPENDIX.md",
+      "size_bytes": 23536,
+      "sha256_hash": "0d5cceca69fb4f5bf12f05d02e6b950b92389029edefc5f0fffb0230a33fcff4",
+      "modified_time": 1760667298.579291
+    },
+    {
+      "relative_path": "docs\\QA_QUICK_START.md",
+      "size_bytes": 11800,
+      "sha256_hash": "e8eda305ed91043f1e7e3af6edaa9510a574fab1da86632d15d56ec43dadd643",
+      "modified_time": 1760667298.5804424
+    },
+    {
+      "relative_path": "docs\\README.md",
+      "size_bytes": 7244,
+      "sha256_hash": "c581d32a7dfdc3d2267fb90a15a25efbe7c4f2a4592b334eaaf974fab3866bdb",
+      "modified_time": 1760667298.5816047
+    },
+    {
+      "relative_path": "docs\\size_analyzer_api.md",
+      "size_bytes": 32122,
+      "sha256_hash": "2e2de7794e56294a9c4a0a9816b7ed29f7be3fd5a918624deba64d7c77cd3fa3",
+      "modified_time": 1760667298.5845006
+    },
+    {
+      "relative_path": "docs\\size_analyzer_architecture_diagrams.md",
+      "size_bytes": 24183,
+      "sha256_hash": "e8536e4491a3d843380ad883decba95294988d07cfa0c6ef4e7fd2659a2e5848",
+      "modified_time": 1760667298.5857363
+    },
+    {
+      "relative_path": "docs\\size_analyzer_help.html",
+      "size_bytes": 5571,
+      "sha256_hash": "2d54d450cb181b968eaa3ca44fd9d2214eedf31dbe721decdcab69344f848ec7",
+      "modified_time": 1760634008.845996
+    },
+    {
+      "relative_path": "docs\\size_analyzer_installation.md",
+      "size_bytes": 29045,
+      "sha256_hash": "f673212899081d257c4f7a08e5cb8de4c66a907d5bc7a6252bd19c6f2b441241",
+      "modified_time": 1760667298.5868847
+    },
+    {
+      "relative_path": "docs\\size_analyzer_maintenance.md",
+      "size_bytes": 31254,
+      "sha256_hash": "24c2964032843d6a88a578ec3ac3315b46dded95ab44e020879b0ebd1af7444b",
+      "modified_time": 1760667298.5953193
+    },
+    {
+      "relative_path": "docs\\size_analyzer_testing.md",
+      "size_bytes": 31678,
+      "sha256_hash": "8f81ef8778f962e6f49f6588f8b620efb2e0ec38ff2489a97dcc568a36b10a3d",
+      "modified_time": 1760667298.595884
+    },
+    {
+      "relative_path": "docs\\size_analyzer_troubleshooting.md",
+      "size_bytes": 30379,
+      "sha256_hash": "681b87b0335fac5dd7e73aa3b6bfb0cdce9cefdb0cfe5d1901936df2e34c0fd6",
+      "modified_time": 1760667298.5970159
+    },
+    {
+      "relative_path": "docs\\tree_map_files.md",
+      "size_bytes": 26414,
+      "sha256_hash": "16efd0550e511e8417f76c123b48695fd99d8b38fba926de1e009f8b015a37a6",
+      "modified_time": 1760667298.5981047
+    },
+    {
+      "relative_path": "docs\\__init__.py",
+      "size_bytes": 158,
+      "sha256_hash": "d76301b3a3f5ef754c6022147123f0ef7a4bb438cba03ddad9bef22ab519b336",
+      "modified_time": 1760634008.8413136
+    },
+    {
+      "relative_path": "gui\\advanced_size_analyzer_gui.py",
+      "size_bytes": 44689,
+      "sha256_hash": "d7ad0cf8bcff5e8121cfa3e3b6b6bfabd384f37507601ec8ee71f84433aee55a",
+      "modified_time": 1760634008.854668
+    },
+    {
+      "relative_path": "gui\\check_sum.ui",
+      "size_bytes": 6151,
+      "sha256_hash": "53ad5c57d1f78be9cf6695d2e808cd75408f1dffc4f9c718d3343c67bae23fc0",
+      "modified_time": 1760634008.861555
+    },
+    {
+      "relative_path": "gui\\check_sum_gui.py",
+      "size_bytes": 8618,
+      "sha256_hash": "f8a20fe57883ff9a38fc33603507d3e993af46bb83c83bba48834db9ae61939b",
+      "modified_time": 1760634008.8621352
+    },
+    {
+      "relative_path": "gui\\check_sum_standardized.py",
+      "size_bytes": 18729,
+      "sha256_hash": "77bac8846696480a689ecaf38ca9a9d87a85ead251feb12404ed24b83228fbed",
+      "modified_time": 1760634008.8627098
+    },
+    {
+      "relative_path": "gui\\cmsd.ui",
+      "size_bytes": 7595,
+      "sha256_hash": "cf4012fdc34d1f97d50693450cbe445533b6fb79518c4c7652b67fb42220737b",
+      "modified_time": 1760634008.8638494
+    },
+    {
+      "relative_path": "gui\\cmsd_gui.py",
+      "size_bytes": 9589,
+      "sha256_hash": "2407665f06c6a999bfa9a93037ba6a5fa7be624685b2d8d14b691f44d01149c9",
+      "modified_time": 1760634008.8644538
+    },
+    {
+      "relative_path": "gui\\encryption_gui.py",
+      "size_bytes": 39404,
+      "sha256_hash": "ee8868f7e31d38cfae011ebafee6880f16abc400b6cfd1a0c506d541b709498c",
+      "modified_time": 1760634008.8650303
+    },
+    {
+      "relative_path": "gui\\file_splitter.ui",
+      "size_bytes": 7473,
+      "sha256_hash": "d283196ca5709c88af5a0fadd0ebb1587b5154852edb6a31d4f2121602f5d2bb",
+      "modified_time": 1760634008.8661866
+    },
+    {
+      "relative_path": "gui\\file_splitter_gui.py",
+      "size_bytes": 19648,
+      "sha256_hash": "579efc0b549cf17b2a2c4cccfe0916656bb4b8d2832a7ab8f44cbff35fffa32e",
+      "modified_time": 1760634008.8667517
+    },
+    {
+      "relative_path": "gui\\file_splitter_widget.py",
+      "size_bytes": 16512,
+      "sha256_hash": "dfc07098bd72e8e07af2aea2b7d4079ba59e6d5a65a28c1f4bc61f3d52b5b23e",
+      "modified_time": 1760634008.8678892
+    },
+    {
+      "relative_path": "gui\\image_metadata.ui",
+      "size_bytes": 10628,
+      "sha256_hash": "fc7db1f4ea5700262da6b362d10e31f7c87a84da4a612c1bdd8647088d6e5075",
+      "modified_time": 1760634008.8684657
+    },
+    {
+      "relative_path": "gui\\image_metadata_gui.py",
+      "size_bytes": 21938,
+      "sha256_hash": "68f507229354f2ce487630b65b2ecddc5301ffb8d1d14a2a11d32274f7b6f2e2",
+      "modified_time": 1760634008.8690321
+    },
+    {
+      "relative_path": "gui\\rename.ui",
+      "size_bytes": 9806,
+      "sha256_hash": "7832bad2f6088db94f16a3d2010c9cf0608376c231e05f324bfb39f01f6fe3f7",
+      "modified_time": 1760634008.8701653
+    },
+    {
+      "relative_path": "gui\\rename_gui.py",
+      "size_bytes": 22821,
+      "sha256_hash": "658afc43cdc8a63799dac9e194ce5b891b5e27bfbe08b19c8fc4c87171f1cbe7",
+      "modified_time": 1760634008.8707438
+    },
+    {
+      "relative_path": "gui\\secure_delete.ui",
+      "size_bytes": 2905,
+      "sha256_hash": "b544df294a523784e92a7644f3d2330204bce5d652454e5602dee17913d51d10",
+      "modified_time": 1760634008.8714254
+    },
+    {
+      "relative_path": "gui\\secure_delete_gui.py",
+      "size_bytes": 26622,
+      "sha256_hash": "74929a3b4fd06e9d7d211525d0ef427269e72c7e999c527cfc8cd92e085719e0",
+      "modified_time": 1760634008.872556
+    },
+    {
+      "relative_path": "gui\\size_analyzer.ui",
+      "size_bytes": 10204,
+      "sha256_hash": "e8cc1cc9485bde25e4132f57407e4bb50f550b0b9b9d6cf103d9a2d020c4cc23",
+      "modified_time": 1760634008.8737154
+    },
+    {
+      "relative_path": "gui\\size_analyzer_gui.py",
+      "size_bytes": 33882,
+      "sha256_hash": "38931ab50d3ee85e7b3669b9c96a1b2e0d05689ada92ed0bd94bce4aab8ac7a5",
+      "modified_time": 1763835512.0686586
+    },
+    {
+      "relative_path": "gui\\standard_window.py",
+      "size_bytes": 8675,
+      "sha256_hash": "a15115ce4799e2f9343f92ad30b5bb14be57625a5d371062359f19ba4f822478",
+      "modified_time": 1760634008.875471
+    },
+    {
+      "relative_path": "gui\\tag_viewer_editor.py",
+      "size_bytes": 8114,
+      "sha256_hash": "21152f70ea0ab0353b4b84ed7f86da98661a321f2257e29e0dbcfe4c5b565629",
+      "modified_time": 1760634008.8760319
+    },
+    {
+      "relative_path": "gui\\tag_viewer_editor.ui",
+      "size_bytes": 3752,
+      "sha256_hash": "7c31d1701213a32e8cb5bc4ab68a06079bbb942bc09a59bc943b5a0b1d9597f4",
+      "modified_time": 1760634008.876598
+    },
+    {
+      "relative_path": "gui\\themes.py",
+      "size_bytes": 10671,
+      "sha256_hash": "b4bdd3dca2682bfbf9d479a10b925a07ac1f4c98564ced31e9c4e0f4d417231e",
+      "modified_time": 1760634008.8771534
+    },
+    {
+      "relative_path": "gui\\tree_map.ui",
+      "size_bytes": 2954,
+      "sha256_hash": "9fc7e6723fe224f1062d4fde66bf3d88a7e19869e2aed5df622e1872bcb222fc",
+      "modified_time": 1760634008.8783386
+    },
+    {
+      "relative_path": "gui\\tree_map_gui.py",
+      "size_bytes": 9432,
+      "sha256_hash": "5038950a22250931dac8b8cd6a963cad80da0558945965921dda220e5ebbbc94",
+      "modified_time": 1760634008.8788562
+    },
+    {
+      "relative_path": "gui\\__init__.py",
+      "size_bytes": 929,
+      "sha256_hash": "84e5f9a38a2db75bbd3789aa70efef5ddd548a9b093f3527210b2f018d725e77",
+      "modified_time": 1760634008.8541038
+    },
+    {
+      "relative_path": "integration\\cmsd_connector.py",
+      "size_bytes": 3470,
+      "sha256_hash": "e4fcfaadabb5cd6fbde7211759cca745c8568b4961e1264169819ede95cf6199",
+      "modified_time": 1760634008.8819547
+    },
+    {
+      "relative_path": "integration\\encryption_connector.py",
+      "size_bytes": 15023,
+      "sha256_hash": "82d3395a537f9e8357a914e2a4fdd63041ffdf95325c55276a00bf770e27105c",
+      "modified_time": 1760634008.8825312
+    },
+    {
+      "relative_path": "integration\\file_splitter_connector.py",
+      "size_bytes": 14215,
+      "sha256_hash": "ae5f8220b647b65ac7647aae6138cdfcbd4c4ad6a3b9ed18b7a1b1aa16840e94",
+      "modified_time": 1760634008.8831036
+    },
+    {
+      "relative_path": "integration\\hub_connector.py",
+      "size_bytes": 26044,
+      "sha256_hash": "d5ed11e7da8ce4b50a026f178ef29e3c196b60b5bc1e7adea11b7df4026281cf",
+      "modified_time": 1760634008.884301
+    },
+    {
+      "relative_path": "integration\\secure_delete_connector.py",
+      "size_bytes": 22247,
+      "sha256_hash": "dd23a01073a23522f8249ade08ac322b8efb07cf2321f12bd1f34c2ea9c4ddc7",
+      "modified_time": 1760634008.88549
+    },
+    {
+      "relative_path": "integration\\__init__.py",
+      "size_bytes": 609,
+      "sha256_hash": "5d8c9a356c0d8f5a4285ac636bebc0315abdc3f093d25321ce5f71a98772c2c9",
+      "modified_time": 1760634008.8811507
+    },
+    {
+      "relative_path": "qa_tools\\__init__.py",
+      "size_bytes": 0,
+      "sha256_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "modified_time": 1760634008.8860734
+    },
+    {
+      "relative_path": "tests\\conftest.py",
+      "size_bytes": 17701,
+      "sha256_hash": "1693715ac5a5dba57362717c2800f273d66f674e92fc2c09867ac7ee1cc53130",
+      "modified_time": 1760634008.888013
+    },
+    {
+      "relative_path": "tests\\test_checksum.py",
+      "size_bytes": 13610,
+      "sha256_hash": "dfdb8b73ddee6b0c4804b224db324c784efb74892622242f21abb61d8201d28b",
+      "modified_time": 1758561267.8476014
+    },
+    {
+      "relative_path": "tests\\test_cmsd_core.py",
+      "size_bytes": 4990,
+      "sha256_hash": "523631512913a0db6cc6ee1022c87f95831e8db78afd10878cd3118e02139c49",
+      "modified_time": 1758561267.8476014
+    },
+    {
+      "relative_path": "tests\\test_file_splitter_core.py",
+      "size_bytes": 18246,
+      "sha256_hash": "b6ac875a8adee09f9ccf12e8643a88e7c21acadacc2973367aa2a8d101199cfc",
+      "modified_time": 1758561267.8476014
+    },
+    {
+      "relative_path": "tests\\test_file_splitter_gui.py",
+      "size_bytes": 9067,
+      "sha256_hash": "5ef2c8908bd683065777a637f68efbc2d60475667a441dc50cd7c484c00b5a78",
+      "modified_time": 1758561267.8527646
+    },
+    {
+      "relative_path": "tests\\test_file_splitter_integration.py",
+      "size_bytes": 7520,
+      "sha256_hash": "01185acd685d1537c2c3d4601623a554c183c5ad0dd146bb9cc33d95fbb87927",
+      "modified_time": 1758561267.8527646
+    },
+    {
+      "relative_path": "tests\\test_image_metadata.py",
+      "size_bytes": 21240,
+      "sha256_hash": "4f9cd12d66dbf73b90bcfc8674a8651613bb53b1b66ee0dbf63c791d8a8f10e9",
+      "modified_time": 1758561267.8527646
+    },
+    {
+      "relative_path": "tests\\test_pyqt5_compatibility.py",
+      "size_bytes": 13756,
+      "sha256_hash": "98071bcc9d88f324ab44ab7354320860b4783f2083e5c4e38155ba006eb0857f",
+      "modified_time": 1758561267.8527646
+    },
+    {
+      "relative_path": "tests\\test_rename_gui.py",
+      "size_bytes": 17563,
+      "sha256_hash": "81399eb70c2a7b343167b2be3f6ff5e9a790587d04c095c92ac41900458931c7",
+      "modified_time": 1758561267.8527646
+    },
+    {
+      "relative_path": "tests\\test_secure_delete.py",
+      "size_bytes": 18864,
+      "sha256_hash": "df077a78d0b912bc2b305bbd62e42b82158996260667e8db90c8aa0bb83c9a95",
+      "modified_time": 1758561267.8527646
+    },
+    {
+      "relative_path": "tests\\test_size_analyzer_config.py",
+      "size_bytes": 27341,
+      "sha256_hash": "39628fa381511e27866d9c88e4ee41f818fc79e2b16e155d6a8ff2451666edf0",
+      "modified_time": 1758561267.8527646
+    },
+    {
+      "relative_path": "tests\\test_size_analyzer_core.py",
+      "size_bytes": 21471,
+      "sha256_hash": "a64be18f2c72d384ce8e0e0167c8375473bbce518a5626e1de505e75cdbbceb4",
+      "modified_time": 1758561267.8527646
+    },
+    {
+      "relative_path": "tests\\test_size_analyzer_gui.py",
+      "size_bytes": 21356,
+      "sha256_hash": "4a754550bc908b7d6371ae513fcd0af9ea9db9d893a58306556630dcfad98008",
+      "modified_time": 1758561267.8527646
+    },
+    {
+      "relative_path": "tests\\test_size_analyzer_imports.py",
+      "size_bytes": 19567,
+      "sha256_hash": "988005edf24462008948b8b8ae5efb4c9120c31475ffd185f4909ef6b560ace0",
+      "modified_time": 1758561267.8578334
+    },
+    {
+      "relative_path": "tests\\test_size_analyzer_integration.py",
+      "size_bytes": 23315,
+      "sha256_hash": "4df36645df1a3849ac0b6688266faa0a8f9c85b7d3707907b90a34e2a23bf88b",
+      "modified_time": 1758561267.8578334
+    },
+    {
+      "relative_path": "tests\\test_size_analyzer_performance.py",
+      "size_bytes": 23800,
+      "sha256_hash": "95435b38ef7dbfd1fed97834ebb6a51fcaf07190884ad03770a54c82a1885acd",
+      "modified_time": 1758561267.8578334
+    },
+    {
+      "relative_path": "tests\\__init__.py",
+      "size_bytes": 153,
+      "sha256_hash": "df2710c3131d4e6833790a326718c7048d40327609eeeeb48703e6cad47db215",
+      "modified_time": 1760634008.8866456
+    },
+    {
+      "relative_path": "__pycache__\\__init__.cpython-312.pyc",
+      "size_bytes": 2243,
+      "sha256_hash": "376fcc02bc0808687ccc8884020e654eb6d6666cbe39585ae374bd6cedfb6d6f",
+      "modified_time": 1762028025.6025124
+    },
+    {
+      "relative_path": "__pycache__\\__init__.cpython-313.pyc",
+      "size_bytes": 2243,
+      "sha256_hash": "6ef65cc3d75cfebff116234cffc1f14cf2741557da1ce7385df22c67a1524e64",
+      "modified_time": 1760634015.8559556
+    },
+    {
+      "relative_path": "core\\__pycache__\\check_sum.cpython-312.pyc",
+      "size_bytes": 18599,
+      "sha256_hash": "e7fef1fc2835e064579b93c1f0fcbb7f43cf4292a3584bac8a4fbdb3729887f3",
+      "modified_time": 1762028033.4135065
+    },
+    {
+      "relative_path": "core\\__pycache__\\check_sum.cpython-313.pyc",
+      "size_bytes": 19028,
+      "sha256_hash": "630941f97b0383c71ad1d871e527bcfa6de846333bdea8046244427a4d5157f8",
+      "modified_time": 1760634015.947397
+    },
+    {
+      "relative_path": "core\\__pycache__\\cmsd_logic.cpython-312.pyc",
+      "size_bytes": 9983,
+      "sha256_hash": "b2388d866dca369ae150f822b29762c454d9b0bbf0616287ffadfe1526d9e40c",
+      "modified_time": 1762028033.672176
+    },
+    {
+      "relative_path": "core\\__pycache__\\cmsd_logic.cpython-313.pyc",
+      "size_bytes": 10045,
+      "sha256_hash": "f2e9f4dc83036f21bb12af7ae72cc7986918cfa8cc109068cfb2bf2076f0e3be",
+      "modified_time": 1760634016.0470536
+    },
+    {
+      "relative_path": "core\\__pycache__\\encryption_config.cpython-312.pyc",
+      "size_bytes": 18330,
+      "sha256_hash": "aae2ec339c220a2be6720095b36ea68226092dc2f3b557590a045d6e795ba8d8",
+      "modified_time": 1762028033.3824365
+    },
+    {
+      "relative_path": "core\\__pycache__\\encryption_config.cpython-313.pyc",
+      "size_bytes": 18254,
+      "sha256_hash": "874282eefaf9b999a1e6bd0e9f72ca0192e0fbfda6b10f48747dfd29c499a199",
+      "modified_time": 1760634015.9216857
+    },
+    {
+      "relative_path": "core\\__pycache__\\encryption_logging.cpython-312.pyc",
+      "size_bytes": 23018,
+      "sha256_hash": "09c253dcd29bdb18097025a68d7a76ff72f21314a8dcb1192ee64586f63b525c",
+      "modified_time": 1762028033.3989704
+    },
+    {
+      "relative_path": "core\\__pycache__\\encryption_logging.cpython-313.pyc",
+      "size_bytes": 23192,
+      "sha256_hash": "694982698af37bbcfd9ff4dfa9d27f05806166350e8c894c676c57641ef787d3",
+      "modified_time": 1760634015.933332
+    },
+    {
+      "relative_path": "core\\__pycache__\\encryption_logic.cpython-312.pyc",
+      "size_bytes": 26084,
+      "sha256_hash": "94714f8f2c5eb60e44bd4fd69218c9b933f4970c377b74a1db113413a76e67e1",
+      "modified_time": 1762028033.3663797
+    },
+    {
+      "relative_path": "core\\__pycache__\\encryption_logic.cpython-313.pyc",
+      "size_bytes": 25719,
+      "sha256_hash": "7b1817a32d51f42451988fcd9faca7ec7cde1e3b7a7e91970d5557d6ca38bd44",
+      "modified_time": 1760634015.910735
+    },
+    {
+      "relative_path": "core\\__pycache__\\file_splitter_config.cpython-312.pyc",
+      "size_bytes": 19720,
+      "sha256_hash": "dbd38f2ada74a7feb3b0ec5bafbb4ddea0e0b440e3589f192167fab7f0fd4fcd",
+      "modified_time": 1762028041.078053
+    },
+    {
+      "relative_path": "core\\__pycache__\\file_splitter_config.cpython-313.pyc",
+      "size_bytes": 19550,
+      "sha256_hash": "68ea6679cf055856741aac8b1d0410bcebd4caf7c348cbd103ec68290f8c9aa7",
+      "modified_time": 1760634020.454034
+    },
+    {
+      "relative_path": "core\\__pycache__\\file_splitter_logging.cpython-312.pyc",
+      "size_bytes": 4960,
+      "sha256_hash": "c80223973317371a6dbacde9d7f39cefd0006888c0cb250e34b4b55f640a1009",
+      "modified_time": 1762028041.0905693
+    },
+    {
+      "relative_path": "core\\__pycache__\\file_splitter_logging.cpython-313.pyc",
+      "size_bytes": 4929,
+      "sha256_hash": "68ffa01aa890e7b748300eb3c88680e475e101e22b9a582e3e659250eec6acb6",
+      "modified_time": 1760634020.4627595
+    },
+    {
+      "relative_path": "core\\__pycache__\\file_splitter_logic.cpython-312.pyc",
+      "size_bytes": 32020,
+      "sha256_hash": "e32b25c7bf7fb828bcf142ab14fd5d46b28a90faf58de3e29926f5bf8c65bfee",
+      "modified_time": 1762028041.0625226
+    },
+    {
+      "relative_path": "core\\__pycache__\\file_splitter_logic.cpython-313.pyc",
+      "size_bytes": 32334,
+      "sha256_hash": "67012240a4ff248cb03e1852da665460ea82693058ef2569ebd3d4e9dd95d38d",
+      "modified_time": 1760634020.440882
+    },
+    {
+      "relative_path": "core\\__pycache__\\image_metadata_logic.cpython-312.pyc",
+      "size_bytes": 22673,
+      "sha256_hash": "d1fd006f768bb91fc177ca3aec61a99092e13b2d19f00b4c6802a943cb69fc4e",
+      "modified_time": 1762028033.583009
+    },
+    {
+      "relative_path": "core\\__pycache__\\image_metadata_logic.cpython-313.pyc",
+      "size_bytes": 23085,
+      "sha256_hash": "7f2ee289256c5ac91fc5e74f82fbb73e2d29fc1c74484e131cbb73d0500328e5",
+      "modified_time": 1760634015.963934
+    },
+    {
+      "relative_path": "core\\__pycache__\\secure_delete_config.cpython-312.pyc",
+      "size_bytes": 18134,
+      "sha256_hash": "ed779a5e7cb809f88edbb02e3fc1c752231d0c6858f64a31ef3848fad61c204d",
+      "modified_time": 1762028033.6471453
+    },
+    {
+      "relative_path": "core\\__pycache__\\secure_delete_config.cpython-313.pyc",
+      "size_bytes": 17786,
+      "sha256_hash": "06d3dc05655eacc661dc1edfa2ca93aee052c67ec2b1708c4c5435f99046b64b",
+      "modified_time": 1760634016.0201561
+    },
+    {
+      "relative_path": "core\\__pycache__\\secure_delete_logging.cpython-312.pyc",
+      "size_bytes": 22291,
+      "sha256_hash": "77d70cf26200096058b413026a318df8050a43f707b8b5f8e7204e11eb27eb37",
+      "modified_time": 1762028033.661668
+    },
+    {
+      "relative_path": "core\\__pycache__\\secure_delete_logging.cpython-313.pyc",
+      "size_bytes": 21866,
+      "sha256_hash": "a939d62e069b4ac05bbd3ac96b40e15929af7bbd130c6cf6d644300dc3803a7b",
+      "modified_time": 1760634016.0361116
+    },
+    {
+      "relative_path": "core\\__pycache__\\secure_delete_logic.cpython-312.pyc",
+      "size_bytes": 21681,
+      "sha256_hash": "937fef213ac425236eeab8b145c3a4276571edaa5c68067bfb971a5af283965b",
+      "modified_time": 1762028033.6035488
+    },
+    {
+      "relative_path": "core\\__pycache__\\secure_delete_logic.cpython-313.pyc",
+      "size_bytes": 21624,
+      "sha256_hash": "192a70293f20c1eaee422df39390b2b6a3d74d4c24bb0074a74c6aa62490f920",
+      "modified_time": 1760634015.9804933
+    },
+    {
+      "relative_path": "core\\__pycache__\\size_analyzer_config.cpython-312.pyc",
+      "size_bytes": 18073,
+      "sha256_hash": "440cbdd09da811756fb0c7cc30acc0fbf84092bad339b41e3e02233602300099",
+      "modified_time": 1762028025.6240554
+    },
+    {
+      "relative_path": "core\\__pycache__\\size_analyzer_config.cpython-313.pyc",
+      "size_bytes": 18346,
+      "sha256_hash": "56eed6c8f53d9bb0098cd5c5fe5c94416975fc51ed848ddb69c2fe93d60c466c",
+      "modified_time": 1760634015.8894732
+    },
+    {
+      "relative_path": "core\\__pycache__\\size_analyzer_logging.cpython-312.pyc",
+      "size_bytes": 13889,
+      "sha256_hash": "9798ac5a0544a36d92d25b264f7077b89ce633fadf4db48fa6f5fdf485509b4c",
+      "modified_time": 1762028033.3518648
+    },
+    {
+      "relative_path": "core\\__pycache__\\size_analyzer_logging.cpython-313.pyc",
+      "size_bytes": 14041,
+      "sha256_hash": "867fb32334d1fef718576ea3630effe8f4b1061bdb2245ed4db4507a9ddf1688",
+      "modified_time": 1760634015.8988786
+    },
+    {
+      "relative_path": "core\\__pycache__\\size_analyzer_logic.cpython-312.pyc",
+      "size_bytes": 1717,
+      "sha256_hash": "98efea6e752957c5e66941d52342eb0a7e5ca7d7985e2d0c0345535cecb61b05",
+      "modified_time": 1762028025.6170568
+    },
+    {
+      "relative_path": "core\\__pycache__\\size_analyzer_logic.cpython-313.pyc",
+      "size_bytes": 1702,
+      "sha256_hash": "f3ee11fce72acd51babc6cb8ad15e30f8b85b71bc62ce561cd94cee8a79dcc5c",
+      "modified_time": 1760634015.8788872
+    },
+    {
+      "relative_path": "core\\__pycache__\\tree_map_logic.cpython-312.pyc",
+      "size_bytes": 5243,
+      "sha256_hash": "690c5f8ecdc0e2f579539f6af68fbebb206263f7fcfdc3026849ed89d765039d",
+      "modified_time": 1762028025.6120396
+    },
+    {
+      "relative_path": "core\\__pycache__\\tree_map_logic.cpython-313.pyc",
+      "size_bytes": 5447,
+      "sha256_hash": "43506e94e9875cb4c3cdba02537e24c30f355a809020d4efefb3db479003adfd",
+      "modified_time": 1760634015.8709989
+    },
+    {
+      "relative_path": "core\\__pycache__\\__init__.cpython-312.pyc",
+      "size_bytes": 890,
+      "sha256_hash": "9d46747ab9ed90c86f905dd23fd2767e53d6895cabf624ce3cd2b03f180d1bd8",
+      "modified_time": 1762028025.6065123
+    },
+    {
+      "relative_path": "core\\__pycache__\\__init__.cpython-313.pyc",
+      "size_bytes": 890,
+      "sha256_hash": "7317d24034b04061c6e6a6e11711bf004ddd1b8669384fd16a8e33c3d224dbd4",
+      "modified_time": 1760634015.8627813
+    },
+    {
+      "relative_path": "gui\\charts\\bar_chart.py",
+      "size_bytes": 15205,
+      "sha256_hash": "021b1dc283245f979d49cd6c373f5d0e228cdd447f2c54bad32434be0085ca5f",
+      "modified_time": 1760634008.8571532
+    },
+    {
+      "relative_path": "gui\\charts\\chart_base.py",
+      "size_bytes": 12168,
+      "sha256_hash": "d5a60956a53e33b4e5efe1319d901096718c9f8531b2ee35a31367a6522b48ff",
+      "modified_time": 1760634008.8583436
+    },
+    {
+      "relative_path": "gui\\charts\\pie_chart.py",
+      "size_bytes": 12525,
+      "sha256_hash": "b1e784ac57dc2d81f826e1b6e925cf2438aa46e1438414181e1ccb0a3141bd07",
+      "modified_time": 1760634008.8589344
+    },
+    {
+      "relative_path": "gui\\charts\\timeline_chart.py",
+      "size_bytes": 20383,
+      "sha256_hash": "ff17d7eecf1b9803988eba95775f94ee0a1437628fc9347b429768643c6784b9",
+      "modified_time": 1760634008.8595078
+    },
+    {
+      "relative_path": "gui\\charts\\treemap_chart.py",
+      "size_bytes": 19277,
+      "sha256_hash": "bc34f9f98ebe7d3d91f660087f0ec146e9c091d1bbf2583d6a3d11881bfdf862",
+      "modified_time": 1760634008.8606617
+    },
+    {
+      "relative_path": "gui\\charts\\__init__.py",
+      "size_bytes": 596,
+      "sha256_hash": "a331a92d8354d3e93883287751b69991e6972b5dacbb4c18187b1a2d656216b6",
+      "modified_time": 1760634008.8557591
+    },
+    {
+      "relative_path": "gui\\icons\\size_analyzer.png",
+      "size_bytes": 96,
+      "sha256_hash": "abbd4841ba31f4d7195c0bae44b30cbebbb9c7cc91f3dad94f68614c6ce4bee8",
+      "modified_time": 1758561267.8317835
+    },
+    {
+      "relative_path": "gui\\widgets\\__init__.py",
+      "size_bytes": 527,
+      "sha256_hash": "5c0b8d6e57d6e87010732754d248fe01c5f0adbe914c25b93d1af3b60488b8f1",
+      "modified_time": 1760634008.8800166
+    },
+    {
+      "relative_path": "gui\\__pycache__\\rename_gui.cpython-312.pyc",
+      "size_bytes": 28926,
+      "sha256_hash": "0eff253ca7e3ed0cfb53d1555f27be67a8c5b4f62f7da41e506ce9d738b2c4be",
+      "modified_time": 1762028033.808268
+    },
+    {
+      "relative_path": "gui\\__pycache__\\rename_gui.cpython-313.pyc",
+      "size_bytes": 29251,
+      "sha256_hash": "c5c2432d4c862f6db6210986a43dcb28e6d6b1532a231d4e8600949d1d668774",
+      "modified_time": 1760805881.496414
+    },
+    {
+      "relative_path": "gui\\__pycache__\\secure_delete_gui.cpython-312.pyc",
+      "size_bytes": 33627,
+      "sha256_hash": "ce6b400e605f7b4faa1bb6acc6230fc0fff8ad52153751c382d595f41e9c329c",
+      "modified_time": 1762028033.7877238
+    },
+    {
+      "relative_path": "gui\\__pycache__\\secure_delete_gui.cpython-313.pyc",
+      "size_bytes": 34084,
+      "sha256_hash": "cbaac939ce4d5fc9cab5f98198e715235387de0ae9348ffb21299193d0557c5a",
+      "modified_time": 1760805881.4869044
+    },
+    {
+      "relative_path": "gui\\__pycache__\\size_analyzer_gui.cpython-312.pyc",
+      "size_bytes": 42747,
+      "sha256_hash": "4bb9cb3b5f4ea0708119b001c7235145ba7394a328a949c1df13ba3a14a3f145",
+      "modified_time": 1766145601.0624154
+    },
+    {
+      "relative_path": "gui\\__pycache__\\size_analyzer_gui.cpython-313.pyc",
+      "size_bytes": 43545,
+      "sha256_hash": "cbdcf8c71d65aa9416038770b2b657f1631db53829e7e87143c6be0101e31405",
+      "modified_time": 1760805881.4769487
+    },
+    {
+      "relative_path": "gui\\__pycache__\\standard_window.cpython-312.pyc",
+      "size_bytes": 13274,
+      "sha256_hash": "d39296e0e9c063dd7224e8e89b92dc3061abcc7f39d790a79b9494ffaea4f375",
+      "modified_time": 1762028033.716779
+    },
+    {
+      "relative_path": "gui\\__pycache__\\standard_window.cpython-313.pyc",
+      "size_bytes": 13521,
+      "sha256_hash": "f2381e7735bde589e65ceb9b603095d2df2db998971d60945cc5b6d89e2e9feb",
+      "modified_time": 1760634016.074957
+    },
+    {
+      "relative_path": "gui\\__pycache__\\tag_viewer_editor.cpython-312.pyc",
+      "size_bytes": 10772,
+      "sha256_hash": "588261ca90cd9d4108486209f0aa96b73ba472c06e15702c2b42816aa755c371",
+      "modified_time": 1762028033.7413175
+    },
+    {
+      "relative_path": "gui\\__pycache__\\tag_viewer_editor.cpython-313.pyc",
+      "size_bytes": 10811,
+      "sha256_hash": "fe8c3bb750a3bc0f8b60a7e63a7eedc5163ef1e6aac287cbcf6e8c9db6e64e39",
+      "modified_time": 1760634016.0985215
+    },
+    {
+      "relative_path": "gui\\__pycache__\\themes.cpython-312.pyc",
+      "size_bytes": 13338,
+      "sha256_hash": "aeded610395a9a50e08119866e712d6a41af6d72ad4b61fb9976d72205188d0b",
+      "modified_time": 1762028033.7282941
+    },
+    {
+      "relative_path": "gui\\__pycache__\\themes.cpython-313.pyc",
+      "size_bytes": 13556,
+      "sha256_hash": "2ceb70ce1c0fdd4215bafc4d9f9580fe299de50925ee07bf5c17fc5381dffcb8",
+      "modified_time": 1760634016.0863059
+    },
+    {
+      "relative_path": "gui\\__pycache__\\tree_map_gui.cpython-312.pyc",
+      "size_bytes": 12961,
+      "sha256_hash": "13f063194d465bdf2e89d28281937350dd1483d8ce0806a27ecb3ad352a98786",
+      "modified_time": 1762028033.7012303
+    },
+    {
+      "relative_path": "gui\\__pycache__\\tree_map_gui.cpython-313.pyc",
+      "size_bytes": 13173,
+      "sha256_hash": "cdae8dcb9b8fe8bbc3464861fe740acd5e9e98343383ee5dac3a60168ecb37cc",
+      "modified_time": 1760634016.064345
+    },
+    {
+      "relative_path": "gui\\__pycache__\\__init__.cpython-312.pyc",
+      "size_bytes": 1003,
+      "sha256_hash": "5850a51275a1a243b36e743468348417be48ab7984b0f03be5a232e4d05e9b44",
+      "modified_time": 1762028033.6876993
+    },
+    {
+      "relative_path": "gui\\__pycache__\\__init__.cpython-313.pyc",
+      "size_bytes": 1003,
+      "sha256_hash": "d97ae8669d64eeb495c3039aa2327a8f4c39324a307851d8ba8ce59e794914c0",
+      "modified_time": 1760634016.055071
+    },
+    {
+      "relative_path": "integration\\__pycache__\\encryption_connector.cpython-312.pyc",
+      "size_bytes": 17049,
+      "sha256_hash": "59be12ae212f11a148347384e375144b1aac63c095edd167181bfe980cbb7476",
+      "modified_time": 1762028033.6326096
+    },
+    {
+      "relative_path": "integration\\__pycache__\\encryption_connector.cpython-313.pyc",
+      "size_bytes": 16577,
+      "sha256_hash": "78c4ffb8fa3c54e4fab443e1592f07a5ea3279f175e2c39a31ede7ff8b2c9634",
+      "modified_time": 1760634016.0089185
+    },
+    {
+      "relative_path": "integration\\__pycache__\\file_splitter_connector.cpython-312.pyc",
+      "size_bytes": 15611,
+      "sha256_hash": "07b3e841afa90437b0fb6eb25ea59b643c7efb13588473610e38e9e27fc84b5a",
+      "modified_time": 1762028041.1830072
+    },
+    {
+      "relative_path": "integration\\__pycache__\\file_splitter_connector.cpython-313.pyc",
+      "size_bytes": 15070,
+      "sha256_hash": "02779dfc39b394bf9fccc899b43c71d3921dc685a46edd094d137c3643fe06d0",
+      "modified_time": 1760634020.5019193
+    },
+    {
+      "relative_path": "integration\\__pycache__\\hub_connector.cpython-312.pyc",
+      "size_bytes": 32743,
+      "sha256_hash": "aec6dc4c220ee488f05208cd1dd03d7df1869631077a02bce1734bbd366839b3",
+      "modified_time": 1762028033.6230805
+    },
+    {
+      "relative_path": "integration\\__pycache__\\hub_connector.cpython-313.pyc",
+      "size_bytes": 33054,
+      "sha256_hash": "8300b5b44bd77ecc28c58d019f935045efa7ca82e2029fc216cfc7bdf2ea8808",
+      "modified_time": 1760634015.9981966
+    },
+    {
+      "relative_path": "integration\\__pycache__\\secure_delete_connector.cpython-312.pyc",
+      "size_bytes": 23227,
+      "sha256_hash": "d7d5c690fcfb2da09fb47d956d77a007e9808e5a79e57b95233afeb180a02836",
+      "modified_time": 1762028053.0017302
+    },
+    {
+      "relative_path": "integration\\__pycache__\\secure_delete_connector.cpython-313.pyc",
+      "size_bytes": 22998,
+      "sha256_hash": "03c2ce6035d221c64f6c810dc38acd2eda7bce104ca9dd05b70badc7c4da711b",
+      "modified_time": 1760805898.2160335
+    },
+    {
+      "relative_path": "integration\\__pycache__\\__init__.cpython-312.pyc",
+      "size_bytes": 674,
+      "sha256_hash": "2b62c8f690a1741fdccb3b6a40aef773adec4b5d10732900130a1a9cf2c4b920",
+      "modified_time": 1762028033.6120708
+    },
+    {
+      "relative_path": "integration\\__pycache__\\__init__.cpython-313.pyc",
+      "size_bytes": 674,
+      "sha256_hash": "061076d880d59a3681821819fb98134eca305fd7ae4225803661c528da50d0ec",
+      "modified_time": 1760634015.9873917
+    }
+  ]
+}

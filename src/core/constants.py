@@ -1,3 +1,4 @@
+from src.gui.themes import token
 """Central repository for RFU constants."""
 
 # Application Identity
@@ -47,10 +48,10 @@ PLEASE_WAIT = "Please wait..."
 
 # CSS/Style Constants
 SEGOE_UI_FONT = "Segoe UI"
-TITLE_STYLE_COLOR = "color: #2c3e50; margin-bottom: 5px;"
-SUBTITLE_STYLE_COLOR = "color: #7f8c8d; margin-bottom: 15px;"
-DESCRIPTION_STYLE = "color: #7f8c8d; margin-bottom: 15px; font-size: 10px;"
-SECTION_MARGIN_STYLE = "color: #2c3e50; margin: 10px 0px;"
+TITLE_STYLE_COLOR = f"color: {token('text_primary')}; margin-bottom: 5px;"
+SUBTITLE_STYLE_COLOR = f"color: {token('text_secondary')}; margin-bottom: 15px;"
+DESCRIPTION_STYLE = f"color: {token('text_secondary')}; margin-bottom: 15px; font-size: 10px;"
+SECTION_MARGIN_STYLE = f"color: {token('text_primary')}; margin: 10px 0px;"
 
 # Help and Documentation
 SUGGESTED_SOLUTIONS_HEADER = "\n🔧 Suggested Solutions:\n"

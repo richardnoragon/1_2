@@ -303,6 +303,8 @@ class OrganizeWindow(StandardWindow):
         """Connect UI signals to their respective slots."""
         if hasattr(self, "selectFolderButton"):
             self.selectFolderButton.clicked.connect(self._load_directory)
+        if hasattr(self, "previewPushButton"):
+            self.previewPushButton.clicked.connect(self._preview_organization)
         if hasattr(self, "organizePushButton"):
             self.organizePushButton.clicked.connect(self._organize_files)
         if hasattr(self, "rulesButton"):
@@ -316,6 +318,8 @@ class OrganizeWindow(StandardWindow):
 
     def _set_initial_state(self) -> None:
         """Set the initial state of UI elements."""
+        if hasattr(self, "previewPushButton"):
+            self.previewPushButton.setEnabled(False)
         if hasattr(self, "organizePushButton"):
             self.organizePushButton.setEnabled(False)
         if hasattr(self, "status_label"):
@@ -345,6 +349,8 @@ class OrganizeWindow(StandardWindow):
             if hasattr(self, "directory_label"):
                 self.directory_label.setText(directory)
             self._update_file_list()
+            if hasattr(self, "previewPushButton"):
+                self.previewPushButton.setEnabled(True)
             if hasattr(self, "organizePushButton"):
                 self.organizePushButton.setEnabled(True)
             if hasattr(self, "status_label"):
@@ -399,6 +405,65 @@ class OrganizeWindow(StandardWindow):
         item = QStandardItem(os.path.basename(file_path))
         item.setData(file_path)  # Store full path in item data
         self._list_model.appendRow(item)
+
+    def _preview_organization(self) -> None:
+        """Preview file organization without moving any files (dry run)."""
+        if not self._current_dir:
+            return
+
+        try:
+            files = self._get_file_list()
+            preview_lines = []
+            unmatched = []
+
+            for file_path in sorted(files):
+                file_path_obj = Path(file_path)
+                matched = False
+                for rule in self._rules:
+                    if not rule.enabled:
+                        continue
+                    for pattern in [p.strip() for p in rule.pattern.split(";")]:
+                        if file_path_obj.match(pattern):
+                            preview_lines.append(
+                                f"  {file_path_obj.name}  \u2192  {rule.destination}/"
+                            )
+                            matched = True
+                            break
+                    if matched:
+                        break
+                if not matched:
+                    unmatched.append(file_path_obj.name)
+
+            msg_parts = [
+                f"DRY RUN \u2014 no files will be moved.\n",
+                f"{len(preview_lines)} file(s) would be organized:\n",
+            ]
+            if preview_lines:
+                display = preview_lines[:50]
+                msg_parts.append("\n".join(display))
+                if len(preview_lines) > 50:
+                    msg_parts.append(f"\n\u2026 and {len(preview_lines) - 50} more")
+            else:
+                msg_parts.append("  (none)")
+
+            if unmatched:
+                msg_parts.append(
+                    f"\n\n{len(unmatched)} file(s) would not be moved (no matching rule)."
+                )
+
+            QMessageBox.information(
+                self,
+                "Organization Preview (Dry Run)",
+                "\n".join(msg_parts),
+            )
+
+            if hasattr(self, "status_label"):
+                self.status_label.setText(
+                    f"Preview: {len(preview_lines)} file(s) would be moved"
+                )
+
+        except Exception as e:
+            show_error_dialog(self, "Preview Error", str(e))
 
     def _organize_files(self) -> None:
         """Organize files based on the current rules."""

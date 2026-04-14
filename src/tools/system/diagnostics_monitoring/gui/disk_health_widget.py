@@ -1,28 +1,30 @@
 """Disk health visualization widget for diagnostics monitoring."""
 
 import sys
-from typing import Dict, Any, List, Optional
 from datetime import datetime
+from typing import Any, Dict, List, Optional
 
 try:
+    from PyQt5.QtCore import Qt, QTimer, pyqtSignal
+    from PyQt5.QtGui import QColor, QFont, QPainter, QPalette, QPixmap
     from PyQt5.QtWidgets import (
-        QWidget,
-        QVBoxLayout,
+        QFrame,
+        QGroupBox,
         QHBoxLayout,
         QLabel,
+        QMessageBox,
         QProgressBar,
+        QPushButton,
+        QScrollArea,
+        QSplitter,
+        QTabWidget,
         QTreeWidget,
         QTreeWidgetItem,
-        QTabWidget,
-        QGroupBox,
-        QScrollArea,
-        QFrame,
-        QPushButton,
-        QMessageBox,
-        QSplitter,
+        QVBoxLayout,
+        QWidget,
     )
-    from PyQt5.QtCore import Qt, QTimer, pyqtSignal
-    from PyQt5.QtGui import QFont, QPalette, QColor, QPixmap, QPainter
+
+    from src.gui.themes import token
 
     PYQT5_AVAILABLE = True
 except ImportError:
@@ -37,8 +39,9 @@ except ImportError:
             pass
 
 
-from ..monitors.disk_health.disk_monitor import DiskHealthMonitor
 from core.error_handler import error_handler
+
+from ..monitors.disk_health.disk_monitor import DiskHealthMonitor
 
 
 class DiskHealthWidget(QWidget):
@@ -180,9 +183,7 @@ class DiskHealthWidget(QWidget):
             return panel
 
         except Exception as e:
-            error_handler.handle_error(
-                e, "DiskHealthWidget.create_disk_list_panel"
-            )
+            error_handler.handle_error(e, "DiskHealthWidget.create_disk_list_panel")
             return QWidget()
 
     def create_summary_section(self) -> QGroupBox:
@@ -213,9 +214,7 @@ class DiskHealthWidget(QWidget):
             return group
 
         except Exception as e:
-            error_handler.handle_error(
-                e, "DiskHealthWidget.create_summary_section"
-            )
+            error_handler.handle_error(e, "DiskHealthWidget.create_summary_section")
             return QGroupBox()
 
     def create_disk_details_panel(self) -> QWidget:
@@ -255,9 +254,7 @@ class DiskHealthWidget(QWidget):
             return panel
 
         except Exception as e:
-            error_handler.handle_error(
-                e, "DiskHealthWidget.create_disk_details_panel"
-            )
+            error_handler.handle_error(e, "DiskHealthWidget.create_disk_details_panel")
             return QWidget()
 
     def create_general_tab(self) -> QWidget:
@@ -302,9 +299,7 @@ class DiskHealthWidget(QWidget):
             return tab
 
         except Exception as e:
-            error_handler.handle_error(
-                e, "DiskHealthWidget.create_general_tab"
-            )
+            error_handler.handle_error(e, "DiskHealthWidget.create_general_tab")
             return QWidget()
 
     def create_health_tab(self) -> QWidget:
@@ -381,9 +376,7 @@ class DiskHealthWidget(QWidget):
             return tab
 
         except Exception as e:
-            error_handler.handle_error(
-                e, "DiskHealthWidget.create_performance_tab"
-            )
+            error_handler.handle_error(e, "DiskHealthWidget.create_performance_tab")
             return QWidget()
 
     def create_status_bar(self) -> QHBoxLayout:
@@ -432,7 +425,7 @@ class DiskHealthWidget(QWidget):
                     text-align: center;
                 }
                 QProgressBar::chunk {
-                    background-color: #4CAF50;
+                    background-color: {token('semantic_success')};
                     border-radius: 3px;
                 }
             """
@@ -454,12 +447,8 @@ class DiskHealthWidget(QWidget):
             self.refresh_data()
 
         except Exception as e:
-            error_handler.handle_error(
-                e, "DiskHealthWidget.initialize_monitor"
-            )
-            self.status_label.setText(
-                "Error: Failed to initialize disk monitor"
-            )
+            error_handler.handle_error(e, "DiskHealthWidget.initialize_monitor")
+            self.status_label.setText("Error: Failed to initialize disk monitor")
 
     def refresh_data(self):
         """Refresh disk data."""
@@ -510,9 +499,7 @@ class DiskHealthWidget(QWidget):
             self.healthy_disks_label.setText(f"Healthy: {healthy}")
             self.warning_disks_label.setText(f"Warning: {warning}")
             self.critical_disks_label.setText(f"Critical: {critical}")
-            self.total_capacity_label.setText(
-                f"Total Capacity: {capacity_gb:.1f} GB"
-            )
+            self.total_capacity_label.setText(f"Total Capacity: {capacity_gb:.1f} GB")
             self.total_used_label.setText(f"Total Used: {used_gb:.1f} GB")
 
             # Apply colors
@@ -593,9 +580,7 @@ class DiskHealthWidget(QWidget):
             item.setData(0, Qt.UserRole, (device_id, disk_type, disk))
 
             # Apply health color
-            health_color = QColor(
-                self.health_colors.get(health_status, "#9E9E9E")
-            )
+            health_color = QColor(self.health_colors.get(health_status, "#9E9E9E"))
             item.setForeground(3, health_color)
 
             self.disk_tree.addTopLevelItem(item)
@@ -671,9 +656,7 @@ class DiskHealthWidget(QWidget):
             self.update_performance_details(disk_info)
 
         except Exception as e:
-            error_handler.handle_error(
-                e, "DiskHealthWidget.update_disk_details"
-            )
+            error_handler.handle_error(e, "DiskHealthWidget.update_disk_details")
 
     def update_general_details(self, disk_info: Dict[str, Any]):
         """Update general details.
@@ -699,9 +682,7 @@ class DiskHealthWidget(QWidget):
             self.mount_point_label.setText(f"Mount Point: {mount_point}")
 
         except Exception as e:
-            error_handler.handle_error(
-                e, "DiskHealthWidget.update_general_details"
-            )
+            error_handler.handle_error(e, "DiskHealthWidget.update_general_details")
 
     def update_health_details(self, disk_info: Dict[str, Any]):
         """Update health details.
@@ -716,9 +697,7 @@ class DiskHealthWidget(QWidget):
 
             # Update health status with color
             health_color = self.health_colors.get(health_status, "#9E9E9E")
-            self.health_status_label.setText(
-                f"Status: {health_status.title()}"
-            )
+            self.health_status_label.setText(f"Status: {health_status.title()}")
             self.health_status_label.setStyleSheet(f"color: {health_color}")
 
             # Update temperature
@@ -729,9 +708,7 @@ class DiskHealthWidget(QWidget):
 
             # Update power on hours
             if isinstance(power_on_hours, (int, float)):
-                self.power_on_hours_label.setText(
-                    f"Power On Hours: {power_on_hours:,}"
-                )
+                self.power_on_hours_label.setText(f"Power On Hours: {power_on_hours:,}")
             else:
                 self.power_on_hours_label.setText("Power On Hours: -")
 
@@ -774,9 +751,7 @@ class DiskHealthWidget(QWidget):
                 self.usage_label.setText("Used: - / - (-%)")
 
         except Exception as e:
-            error_handler.handle_error(
-                e, "DiskHealthWidget.update_health_details"
-            )
+            error_handler.handle_error(e, "DiskHealthWidget.update_health_details")
 
     def update_performance_details(self, disk_info: Dict[str, Any]):
         """Update performance details.
@@ -798,14 +773,10 @@ class DiskHealthWidget(QWidget):
                 bytes_written = sectors_written * 512
 
                 self.reads_label.setText(
-                    f"Reads: {reads:,}"
-                    if isinstance(reads, int)
-                    else "Reads: -"
+                    f"Reads: {reads:,}" if isinstance(reads, int) else "Reads: -"
                 )
                 self.writes_label.setText(
-                    f"Writes: {writes:,}"
-                    if isinstance(writes, int)
-                    else "Writes: -"
+                    f"Writes: {writes:,}" if isinstance(writes, int) else "Writes: -"
                 )
                 self.read_bytes_label.setText(
                     f"Bytes Read: {self.format_bytes(bytes_read)}"
@@ -820,9 +791,7 @@ class DiskHealthWidget(QWidget):
                 self.write_bytes_label.setText("Bytes Written: -")
 
         except Exception as e:
-            error_handler.handle_error(
-                e, "DiskHealthWidget.update_performance_details"
-            )
+            error_handler.handle_error(e, "DiskHealthWidget.update_performance_details")
 
     def toggle_auto_refresh(self):
         """Toggle auto-refresh."""
@@ -835,9 +804,7 @@ class DiskHealthWidget(QWidget):
                 self.auto_refresh_button.setText("Auto-Refresh: OFF")
 
         except Exception as e:
-            error_handler.handle_error(
-                e, "DiskHealthWidget.toggle_auto_refresh"
-            )
+            error_handler.handle_error(e, "DiskHealthWidget.toggle_auto_refresh")
 
     def closeEvent(self, event):
         """Handle widget close event.

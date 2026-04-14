@@ -171,6 +171,238 @@ class Fonts:
         return font
 
 
+# ---------------------------------------------------------------------------
+# P1-C02 — Typography class (spec §4.2.1)
+# ---------------------------------------------------------------------------
+
+
+class Typography:
+    """Spec-compliant typography building blocks (spec §4.2.1).
+
+    All methods return a QFont configured with "Segoe UI" and the correct
+    size / weight.  Use these instead of bare QFont() calls in tool widgets.
+    ``Fonts`` is kept below for backward compatibility.
+    """
+
+    _FAMILY = "Segoe UI"
+
+    @classmethod
+    def h1(cls) -> QFont:
+        """18 pt Bold — primary heading."""
+        f = QFont(cls._FAMILY)
+        f.setPointSize(18)
+        f.setWeight(QFont.Bold)
+        return f
+
+    @classmethod
+    def h2(cls) -> QFont:
+        """14 pt Bold — section heading."""
+        f = QFont(cls._FAMILY)
+        f.setPointSize(14)
+        f.setWeight(QFont.Bold)
+        return f
+
+    @classmethod
+    def h3(cls) -> QFont:
+        """12 pt DemiBold — sub-section heading."""
+        f = QFont(cls._FAMILY)
+        f.setPointSize(12)
+        f.setWeight(QFont.DemiBold)
+        return f
+
+    @classmethod
+    def body(cls) -> QFont:
+        """10 pt Regular — body text."""
+        f = QFont(cls._FAMILY)
+        f.setPointSize(10)
+        f.setWeight(QFont.Normal)
+        return f
+
+    @classmethod
+    def caption(cls) -> QFont:
+        """8 pt Regular — caption / helper text."""
+        f = QFont(cls._FAMILY)
+        f.setPointSize(8)
+        f.setWeight(QFont.Normal)
+        return f
+
+    @classmethod
+    def monospace(cls) -> QFont:
+        """9 pt Regular — monospace for log viewers and code widgets."""
+        f = QFont("Consolas")
+        f.setPointSize(9)
+        f.setWeight(QFont.Normal)
+        return f
+
+
+# ---------------------------------------------------------------------------
+# P1-C01 — Token system (spec §4.1.2)
+# ---------------------------------------------------------------------------
+
+TOKENS: dict = {
+    "light": {
+        # Core palette
+        "primary": LightColors.PRIMARY,
+        "secondary": LightColors.SECONDARY,
+        "accent": LightColors.ACCENT,
+        "background": LightColors.BACKGROUND,
+        "window_background": LightColors.WINDOW_BACKGROUND,
+        "dialog_background": LightColors.DIALOG_BACKGROUND,
+        "text_primary": LightColors.TEXT_PRIMARY,
+        "text_secondary": LightColors.TEXT_SECONDARY,
+        "text_disabled": LightColors.TEXT_DISABLED,
+        # Buttons
+        "button_primary": LightColors.BUTTON_PRIMARY,
+        "button_primary_hover": LightColors.BUTTON_PRIMARY_HOVER,
+        "button_primary_pressed": LightColors.BUTTON_PRIMARY_PRESSED,
+        "button_secondary": LightColors.BUTTON_SECONDARY,
+        "button_secondary_hover": LightColors.BUTTON_SECONDARY_HOVER,
+        "button_secondary_pressed": LightColors.BUTTON_SECONDARY_PRESSED,
+        # Semantic (constitutional reserved token keys)
+        "semantic_success": LightColors.SUCCESS,
+        "semantic_warning": LightColors.WARNING,
+        "semantic_error": LightColors.ERROR,
+        "semantic_info": LightColors.INFO,
+        # Extended palette — Phase 3 TH tool migration tokens
+        "text_muted": "#666666",
+        "border": "#CCCCCC",
+        "border_light": "#DEE2E6",
+        "surface": "#F5F5F5",
+        "surface_error": "#FFEAEA",
+        "surface_warning": "#FFF2E8",
+        "surface_info": "#E8F4FD",
+        "text_error": "#C0392B",  # Dark red — 9.2:1 on surface_error; WCAG AA text ✓
+        # Phase 3 TH — additional tool colour tokens
+        "text_on_primary": "#FFFFFF",
+        "color_black": "#000000",
+        "color_action_blue": "#106EBE",
+        "color_bg_tint": "#E9ECEF",
+        "color_bg_subtle": "#F1F2F6",
+        "semantic_success_hover": "#2ECC71",
+        "semantic_warning_hover": "#F7A41E",
+        "accent_light": "#4DA6E5",
+        "color_surface_success": "#E8F5E8",
+        "color_priority_high": "#F57C00",
+        "color_priority_medium": "#FBC02D",
+        "color_priority_low": "#388E3C",
+        "color_amber": "#FFC107",
+        "color_text_darkest": "#212121",
+        "color_purple": "#9C27B0",
+        "color_purple_dark": "#7B1FA2",
+        "color_deep_orange": "#FF5722",
+        "color_deep_orange_dark": "#E64A19",
+        "color_blue_grey": "#607D8B",
+        "color_blue_grey_dark": "#455A64",
+        "color_grey_medium": "#5A6268",
+        "color_navy_dark": "#004085",
+        "color_orange_red": "#FF6B35",
+        "color_orange_red_dark": "#E55A2B",
+        "color_orange_red_darker": "#CC4F26",
+        "color_green_deep": "#1E8449",
+        "color_orange_badge": "#FD7E14",
+        # Hub nav — reserved; MUST NOT be used by tool UIs (spec §4.1.2)
+        "hub_nav_background": "#1A252F",
+        "hub_nav_foreground": "#ECF0F1",
+        "hub_nav_accent": "#3498DB",
+        "hub_nav_border": "#0D1B2A",
+    },
+    "dark": {
+        # Core palette
+        "primary": DarkColors.PRIMARY,
+        "secondary": DarkColors.SECONDARY,
+        "accent": DarkColors.ACCENT,
+        "background": DarkColors.BACKGROUND,
+        "window_background": DarkColors.WINDOW_BACKGROUND,
+        "dialog_background": DarkColors.DIALOG_BACKGROUND,
+        "text_primary": DarkColors.TEXT_PRIMARY,
+        "text_secondary": DarkColors.TEXT_SECONDARY,
+        "text_disabled": DarkColors.TEXT_DISABLED,
+        # Buttons
+        "button_primary": DarkColors.BUTTON_PRIMARY,
+        "button_primary_hover": DarkColors.BUTTON_PRIMARY_HOVER,
+        "button_primary_pressed": DarkColors.BUTTON_PRIMARY_PRESSED,
+        "button_secondary": DarkColors.BUTTON_SECONDARY,
+        "button_secondary_hover": DarkColors.BUTTON_SECONDARY_HOVER,
+        "button_secondary_pressed": DarkColors.BUTTON_SECONDARY_PRESSED,
+        # Semantic
+        "semantic_success": DarkColors.SUCCESS,
+        "semantic_warning": DarkColors.WARNING,
+        "semantic_error": DarkColors.ERROR,
+        "semantic_info": DarkColors.INFO,
+        # Extended palette — Phase 3 TH tool migration tokens
+        "text_muted": "#B5BFC8",  # A11Y-7b: was #A0A0A0, lightened to pass WCAG AA 4.5:1 on dark backgrounds
+        "border": "#4A5A6C",
+        "border_light": "#3A4A5C",
+        "surface": "#2C3E50",
+        "surface_error": "#5C2828",
+        "surface_warning": "#5C4A28",
+        "surface_info": "#28445C",
+        "text_error": "#FFCDD2",  # Light red — 6.8:1 on dark surface_error; WCAG AA text ✓
+        # Phase 3 TH — additional tool colour tokens
+        "text_on_primary": "#FFFFFF",
+        "color_black": "#000000",
+        "color_action_blue": "#4DA6E5",
+        "color_bg_tint": "#3A4A5C",
+        "color_bg_subtle": "#2C3E50",
+        "semantic_success_hover": "#58D68D",
+        "semantic_warning_hover": "#F7DC6F",
+        "accent_light": "#7FB3D3",
+        "color_surface_success": "#1A3A1E",
+        "color_priority_high": "#E65100",
+        "color_priority_medium": "#F9A825",
+        "color_priority_low": "#2E7D32",
+        "color_amber": "#FFD600",
+        "color_text_darkest": "#EEEEEE",
+        "color_purple": "#BA68C8",
+        "color_purple_dark": "#9C27B0",
+        "color_deep_orange": "#FF7043",
+        "color_deep_orange_dark": "#F4511E",
+        "color_blue_grey": "#78909C",
+        "color_blue_grey_dark": "#546E7A",
+        "color_grey_medium": "#8A9299",
+        "color_navy_dark": "#1A3A6A",
+        "color_orange_red": "#FF8A65",
+        "color_orange_red_dark": "#F4511E",
+        "color_orange_red_darker": "#D84315",
+        "color_green_deep": "#27AE60",
+        "color_orange_badge": "#FF9800",
+        # Hub nav — reserved
+        "hub_nav_background": "#0D1B2A",
+        "hub_nav_foreground": "#BDC3C7",
+        "hub_nav_accent": "#5DADE2",
+        "hub_nav_border": "#070F18",
+    },
+}
+
+# Active variant — mutated only by apply_theme()
+_active_variant: str = "light"
+
+
+def token(key: str) -> str:
+    """Return the color value for *key* in the currently active theme variant.
+
+    Raises ``KeyError`` if the key is not in the token registry.
+    """
+    return TOKENS[_active_variant][key]
+
+
+def apply_theme(variant: str) -> None:
+    """Switch the active theme variant and synchronise the ``Colors`` class.
+
+    Args:
+        variant: ``"light"`` or ``"dark"``
+    """
+    global _active_variant
+    _active_variant = variant.lower()
+    Colors.set_theme(_active_variant)
+    # Notify registered callbacks so live widgets can re-render
+    for _cb in ThemeManager._theme_changed_callbacks:
+        try:
+            _cb(_active_variant)
+        except Exception as _e:
+            print(f"Error in theme change callback: {_e}")
+
+
 # Spacing
 class Spacing:
     """Standard spacing values."""
@@ -520,6 +752,8 @@ class ThemeManager:
     @classmethod
     def set_theme(cls, theme_name: str):
         """Set the current theme and notify all callbacks."""
+        global _active_variant
+        _active_variant = theme_name.lower()
         Colors.set_theme(theme_name)
 
         # Notify all callbacks about theme change

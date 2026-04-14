@@ -10,6 +10,25 @@ import sys
 from pathlib import Path
 from typing import List, Optional
 
+from src.gui.themes import token
+
+try:
+    from src.gui.components.buttons import (
+        DestructiveButton,
+        PrimaryButton,
+        SecondaryButton,
+    )
+    from src.gui.components.loading_indicator import LoadingIndicator
+    from src.gui.components.modal import ConfirmationModal, Modal
+
+    _COMPONENTS_AVAILABLE = True
+except ImportError:
+    PrimaryButton = SecondaryButton = DestructiveButton = None
+    Modal = ConfirmationModal = LoadingIndicator = None
+    _COMPONENTS_AVAILABLE = False
+
+from PyQt5.QtWidgets import QPushButton as _QPushButton
+
 try:
     from PyQt5.QtCore import QObject, Qt, QThread, pyqtSignal
     from PyQt5.QtGui import QColor
@@ -52,9 +71,7 @@ except ImportError as e:
     except ImportError:
         # Final fallback - minimal implementation
         class StandardWindow(QMainWindow):
-            def __init__(
-                self, title="Window", window_type="utility", parent=None
-            ):
+            def __init__(self, title="Window", window_type="utility", parent=None):
                 super().__init__(parent)
                 self.setWindowTitle(title)
 
@@ -188,9 +205,7 @@ class EmptyFoldersGUI(StandardWindow):
             # Register tool-specific callbacks
             self.menu_manager.register_callback("new_scan", self.clear_results)
             # Override the standard help with our tool-specific help
-            self.menu_manager.register_callback(
-                "show_user_guide", self.show_help
-            )
+            self.menu_manager.register_callback("show_user_guide", self.show_help)
             self.menu_manager.register_callback(
                 "show_preferences", self.show_preferences
             )
@@ -288,16 +303,16 @@ class EmptyFoldersGUI(StandardWindow):
         # Add header
         header_label = QLabel("Empty Folders Finder")
         header_label.setStyleSheet(
-            """
-            QLabel {
+            f"""
+            QLabel {{
                 font-size: 18px;
                 font-weight: bold;
-                color: #2c3e50;
+                color: {token('text_primary')};
                 padding: 10px;
-                background-color: #ecf0f1;
+                background-color: {token('background')};
                 border-radius: 5px;
                 margin-bottom: 10px;
-            }
+            }}
         """
         )
         layout.addWidget(header_label)
@@ -310,17 +325,18 @@ class EmptyFoldersGUI(StandardWindow):
         path_layout = QHBoxLayout()
         self.path_input = QLabel("No directory selected")
         self.path_input.setStyleSheet(
-            """
-            QLabel {
+            f"""
+            QLabel {{
                 padding: 8px;
-                border: 2px solid #bdc3c7;
+                border: 2px solid {token('text_disabled')};
                 border-radius: 4px;
-                background-color: #f8f9fa;
-                color: #2c3e50;
-            }
+                background-color: {token('dialog_background')};
+                color: {token('text_primary')};
+            }}
         """
         )
-        self.browse_button = QPushButton("Browse...")
+        _Btn = SecondaryButton if _COMPONENTS_AVAILABLE else _QPushButton
+        self.browse_button = _Btn("Browse...")
         self.browse_button.clicked.connect(self.select_directory)
         path_layout.addWidget(self.path_input)
         path_layout.addWidget(self.browse_button)
@@ -328,10 +344,14 @@ class EmptyFoldersGUI(StandardWindow):
 
         # Control buttons
         control_layout = QHBoxLayout()
-        self.scan_button = QPushButton("Scan for Empty Folders")
+        self.scan_button = (PrimaryButton if _COMPONENTS_AVAILABLE else _QPushButton)(
+            "Scan for Empty Folders"
+        )
         self.scan_button.clicked.connect(self.start_scan)
         self.scan_button.setEnabled(False)
-        self.stop_button = QPushButton("Stop")
+        self.stop_button = (SecondaryButton if _COMPONENTS_AVAILABLE else _QPushButton)(
+            "Stop"
+        )
         self.stop_button.clicked.connect(self.stop_operation)
         self.stop_button.setEnabled(False)
         control_layout.addWidget(self.scan_button)
@@ -351,14 +371,23 @@ class EmptyFoldersGUI(StandardWindow):
 
         # List control buttons
         list_control_layout = QHBoxLayout()
-        self.select_all_button = QPushButton("Select All")
+        self.select_all_button = (
+            SecondaryButton if _COMPONENTS_AVAILABLE else _QPushButton
+        )("Select All")
         self.select_all_button.clicked.connect(self.select_all_folders)
         self.select_all_button.setEnabled(False)
-        self.unselect_all_button = QPushButton("Unselect All")
+        self.unselect_all_button = (
+            SecondaryButton if _COMPONENTS_AVAILABLE else _QPushButton
+        )("Unselect All")
         self.unselect_all_button.clicked.connect(self.unselect_all_folders)
         self.unselect_all_button.setEnabled(False)
-        self.delete_button = QPushButton("Delete Selected")
-        self.delete_button.clicked.connect(self.delete_selected)
+        if _COMPONENTS_AVAILABLE:
+            self.delete_button = DestructiveButton("Delete Selected")
+            self.delete_button.set_confirmation_callback(self._confirm_delete)
+            self.delete_button.action_confirmed.connect(self._perform_deletion)
+        else:
+            self.delete_button = _QPushButton("Delete Selected")
+            self.delete_button.clicked.connect(self.delete_selected)
         self.delete_button.setEnabled(False)
 
         list_control_layout.addWidget(self.select_all_button)
@@ -372,29 +401,25 @@ class EmptyFoldersGUI(StandardWindow):
         # Status area
         self.status_label = QLabel("Ready - Select a directory to begin")
         self.status_label.setStyleSheet(
-            """
-            QLabel {
+            f"""
+            QLabel {{
                 padding: 8px;
-                background-color: #f1f2f6;
-                border: 1px solid #ddd;
+                background-color: {token('color_bg_subtle')};
+                border: 1px solid {token('border')};
                 border-radius: 4px;
-                color: #2c3e50;
-            }
+                color: {token('text_primary')};
+            }}
         """
         )
         layout.addWidget(self.status_label)
 
     def select_directory(self):
         """Select directory to scan."""
-        directory = QFileDialog.getExistingDirectory(
-            self, "Select Directory to Scan"
-        )
+        directory = QFileDialog.getExistingDirectory(self, "Select Directory to Scan")
         if directory:
             self.current_path = directory
             self.path_input.setText(directory)
-            self.status_label.setText(
-                f"Selected: {os.path.basename(directory)}"
-            )
+            self.status_label.setText(f"Selected: {os.path.basename(directory)}")
 
             # Clear previous results
             self.results_list.clear()
@@ -405,9 +430,7 @@ class EmptyFoldersGUI(StandardWindow):
     def start_scan(self):
         """Start scanning for empty folders."""
         if not self.current_path:
-            QMessageBox.warning(
-                self, "Error", "Please select a directory first"
-            )
+            QMessageBox.warning(self, "Error", "Please select a directory first")
             return
 
         # Clear previous results
@@ -485,9 +508,7 @@ class EmptyFoldersGUI(StandardWindow):
         """Delete selected empty folders."""
         selected_items = self.results_list.selectedItems()
         if not selected_items:
-            QMessageBox.warning(
-                self, "Error", "Please select folders to delete"
-            )
+            QMessageBox.warning(self, "Error", "Please select folders to delete")
             return
 
         folders_to_delete: List[str] = [

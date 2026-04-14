@@ -19,6 +19,8 @@ project_root = os.path.dirname(
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
+from src.gui.themes import token
+
 try:
     from PyQt5 import uic
     from PyQt5.QtGui import QIcon
@@ -274,18 +276,18 @@ class CatalogWindow(BaseWindow):
             margin: 0 auto;
             padding: 20px;
         }
-        h1 { color: #2196F3; }
+        h1 { color: {token('button_primary')}; }
         .file-list { list-style: none; padding: 0; }
         .file-item {
             padding: 10px;
             margin: 5px 0;
-            border: 1px solid #ddd;
+            border: 1px solid {token('border')};
             border-radius: 4px;
-            background: #fff;
-        }
-        .file-item:hover { background: #f5f5f5; }
-        .duplicate { color: #f44336; }
-        .file-info { color: #666; font-size: 0.9em; }
+            background: {token('window_background')};
+        }}
+        .file-item:hover {{ background: {token('surface')}; }}
+        .duplicate {{ color: {token('semantic_error')}; }}
+        .file-info { color: {token('text_muted')}; font-size: 0.9em; }
     </style>
 </head>
 <body>

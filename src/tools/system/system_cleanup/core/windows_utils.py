@@ -5,16 +5,14 @@ Provides Windows-specific functionality for system operations, registry access,
 service management, and system information retrieval.
 """
 
-import os
-import sys
-import subprocess
 import ctypes
-from ctypes import wintypes
-from pathlib import Path
-from typing import List, Dict, Optional, Tuple
-import winreg
-import tempfile
+import os
 import shutil
+import subprocess
+import sys
+import winreg
+from pathlib import Path
+from typing import Dict, List, Tuple
 
 
 class WindowsUtils:
@@ -192,9 +190,7 @@ class WindowsUtils:
 
             # Delete icon cache files
             for user_dir in cls.get_user_profile_directories():
-                icon_cache_dir = (
-                    user_dir / "AppData" / "Local" / "IconCache.db"
-                )
+                icon_cache_dir = user_dir / "AppData" / "Local" / "IconCache.db"
                 if icon_cache_dir.exists():
                     try:
                         icon_cache_dir.unlink()
@@ -215,9 +211,7 @@ class WindowsUtils:
             font_cache_service = "FontCache"
 
             # Stop font cache service
-            cls.run_command(
-                f"net stop {font_cache_service}", admin_required=True
-            )
+            cls.run_command(f"net stop {font_cache_service}", admin_required=True)
 
             # Delete font cache files
             font_cache_dir = (
@@ -235,9 +229,7 @@ class WindowsUtils:
                     pass
 
             # Start font cache service
-            cls.run_command(
-                f"net start {font_cache_service}", admin_required=True
-            )
+            cls.run_command(f"net start {font_cache_service}", admin_required=True)
             return True
 
         except Exception:
@@ -261,9 +253,7 @@ class WindowsUtils:
             if path.is_file():
                 return path.stat().st_size
             elif path.is_dir():
-                return sum(
-                    f.stat().st_size for f in path.rglob("*") if f.is_file()
-                )
+                return sum(f.stat().st_size for f in path.rglob("*") if f.is_file())
         except Exception:
             pass
         return 0
@@ -306,9 +296,7 @@ class WindowsUtils:
             return False
 
     @classmethod
-    def safe_delete_directory(
-        cls, dir_path: Path, secure: bool = False
-    ) -> bool:
+    def safe_delete_directory(cls, dir_path: Path, secure: bool = False) -> bool:
         """Safely delete a directory and its contents."""
         try:
             if not dir_path.exists():
@@ -338,7 +326,11 @@ class WindowsUtils:
     def create_system_restore_point(cls, description: str) -> bool:
         """Create a system restore point."""
         try:
-            command = f'powershell.exe -Command "Checkpoint-Computer -Description \\"{description}\\" -RestorePointType \\"MODIFY_SETTINGS\\""'
+            command = (
+                f'powershell.exe -Command "Checkpoint-Computer'
+                f' -Description \\"{description}\\"'
+                f' -RestorePointType \\"MODIFY_SETTINGS\\""'
+            )
             success, _ = cls.run_command(command, admin_required=True)
             return success
         except Exception:
@@ -363,9 +355,7 @@ class WindowsUtils:
     def is_process_running(cls, process_name: str) -> bool:
         """Check if a specific process is running."""
         running_processes = cls.get_running_processes()
-        return any(
-            process_name.lower() in proc.lower() for proc in running_processes
-        )
+        return any(process_name.lower() in proc.lower() for proc in running_processes)
 
     @classmethod
     def kill_process(cls, process_name: str) -> bool:
@@ -387,20 +377,16 @@ class WindowsUtils:
             # Check both 32-bit and 64-bit program entries
             registry_paths = [
                 r"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall",
-                r"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall",
+                r"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall",  # noqa: E501
             ]
 
             for reg_path in registry_paths:
                 try:
-                    with winreg.OpenKey(
-                        winreg.HKEY_LOCAL_MACHINE, reg_path
-                    ) as key:
+                    with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, reg_path) as key:
                         for i in range(winreg.QueryInfoKey(key)[0]):
                             try:
                                 subkey_name = winreg.EnumKey(key, i)
-                                with winreg.OpenKey(
-                                    key, subkey_name
-                                ) as subkey:
+                                with winreg.OpenKey(key, subkey_name) as subkey:
                                     try:
                                         name = winreg.QueryValueEx(
                                             subkey, "DisplayName"
@@ -416,11 +402,9 @@ class WindowsUtils:
                                             pass
 
                                         try:
-                                            install_location = (
-                                                winreg.QueryValueEx(
-                                                    subkey, "InstallLocation"
-                                                )[0]
-                                            )
+                                            install_location = winreg.QueryValueEx(
+                                                subkey, "InstallLocation"
+                                            )[0]
                                         except FileNotFoundError:
                                             pass
 
@@ -428,7 +412,7 @@ class WindowsUtils:
                                             {
                                                 "name": name,
                                                 "version": version,
-                                                "install_location": install_location,
+                                                "install_location": install_location,  # noqa: E501
                                                 "registry_key": subkey_name,
                                             }
                                         )
@@ -458,9 +442,7 @@ class WindowsUtils:
             info["windows_directory"] = str(cls.get_windows_directory())
 
             # Get total/free disk space
-            total, used, free = cls.get_disk_usage(
-                Path(cls.get_system_drive())
-            )
+            total, used, free = cls.get_disk_usage(Path(cls.get_system_drive()))
             info["disk_total"] = str(total)
             info["disk_used"] = str(used)
             info["disk_free"] = str(free)

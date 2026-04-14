@@ -834,7 +834,13 @@ class InterfaceSelectionDialog:
 
 
 try:
-    from PyQt5.QtCore import QEasingCurve, QPropertyAnimation, Qt, pyqtSignal, pyqtSlot
+    from PyQt5.QtCore import (
+        QEasingCurve,
+        QPropertyAnimation,
+        Qt,
+        pyqtSignal,
+        pyqtSlot,
+    )
     from PyQt5.QtGui import QFont, QIcon
     from PyQt5.QtWidgets import (
         QApplication,
@@ -1602,7 +1608,12 @@ try:
                 self.logger.warning("Attempting emergency interface fallback")
 
                 # Create minimal emergency interface
-                from PyQt5.QtWidgets import QLabel, QPushButton, QVBoxLayout, QWidget
+                from PyQt5.QtWidgets import (
+                    QLabel,
+                    QPushButton,
+                    QVBoxLayout,
+                    QWidget,
+                )
 
                 emergency_widget = QWidget()
                 layout = QVBoxLayout(emergency_widget)
@@ -2935,6 +2946,12 @@ try:
     def main():
         """Main entry point for the application."""
         print(f"Starting {APP_NAME} with Dual Interface System...")
+
+        # Enable HiDPI scaling (A11Y-5) — must be set before QApplication.
+        if hasattr(Qt, "AA_EnableHighDpiScaling"):
+            QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
+        if hasattr(Qt, "AA_UseHighDpiPixmaps"):
+            QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
 
         app = QApplication(sys.argv)
         app.setApplicationName(APP_NAME)

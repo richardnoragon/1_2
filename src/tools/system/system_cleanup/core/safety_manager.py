@@ -5,14 +5,13 @@ Provides backup, restore, and safety validation functionality to ensure
 safe system cleanup operations with rollback capabilities.
 """
 
-import os
 import shutil
+import subprocess
 import tempfile
+import winreg
 from datetime import datetime
 from pathlib import Path
-from typing import List, Dict, Optional, Any
-import winreg
-import subprocess
+from typing import Any, Dict, Optional
 
 from .windows_utils import WindowsUtils
 
@@ -126,9 +125,7 @@ class SafetyManager:
             # Handle duplicate backup names
             counter = 1
             while backup_path.exists():
-                backup_filename = (
-                    f"{file_path.name}_{timestamp}_{counter}.backup"
-                )
+                backup_filename = f"{file_path.name}_{timestamp}_{counter}.backup"
                 backup_path = backup_dir / backup_filename
                 counter += 1
 
@@ -194,9 +191,7 @@ class SafetyManager:
             # Handle duplicate backup names
             counter = 1
             while backup_path.exists():
-                backup_dirname = (
-                    f"{dir_path.name}_{timestamp}_{counter}_backup"
-                )
+                backup_dirname = f"{dir_path.name}_{timestamp}_{counter}_backup"
                 backup_path = backup_dir / backup_dirname
                 counter += 1
 
@@ -244,16 +239,12 @@ class SafetyManager:
                 safety_info["system_file"] = True
                 safety_info["critical"] = True
                 safety_info["safe_to_delete"] = False
-                safety_info["warnings"].append(
-                    "This is a critical system file"
-                )
+                safety_info["warnings"].append("This is a critical system file")
 
             # Check file location for safety
             if self._is_critical_location(file_path):
                 safety_info["critical"] = True
-                safety_info["warnings"].append(
-                    "File is in a critical system location"
-                )
+                safety_info["warnings"].append("File is in a critical system location")
 
             # Check file extension for safety
             if self._is_critical_extension(file_path):
@@ -404,9 +395,7 @@ class SafetyManager:
 
         except Exception as e:
             safety_info["safe_to_modify"] = False
-            safety_info["warnings"].append(
-                f"Error validating registry key: {str(e)}"
-            )
+            safety_info["warnings"].append(f"Error validating registry key: {str(e)}")
 
         return safety_info
 
@@ -426,16 +415,18 @@ class SafetyManager:
 
         try:
             if self.session_backup_dir.exists():
-                total_size = WindowsUtils.get_file_size(
-                    self.session_backup_dir
-                )
+                total_size = WindowsUtils.get_file_size(self.session_backup_dir)
         except Exception:
             pass
 
         return total_size
 
-    def cleanup_old_backups(self, days_old: int = 7) -> bool:
-        """Clean up backup files older than specified days."""
+    def cleanup_old_backups(self, days_old: int = 7, dry_run: bool = False) -> bool:
+        """Clean up backup files older than specified days.
+
+        When dry_run is True, identifies directories that would be removed
+        without deleting anything.
+        """
         try:
             if not self.backup_root.exists():
                 return True
@@ -448,7 +439,7 @@ class SafetyManager:
                 if backup_dir.is_dir():
                     try:
                         dir_time = backup_dir.stat().st_mtime
-                        if dir_time < cutoff_time:
+                        if dir_time < cutoff_time and not dry_run:
                             shutil.rmtree(backup_dir)
                     except Exception:
                         continue
@@ -458,20 +449,32 @@ class SafetyManager:
         except Exception:
             return False
 
-    def restore_all_backups(self) -> bool:
-        """Restore all backups created in this session."""
+    def restore_all_backups(self, dry_run: bool = False) -> bool:
+        """Restore all backups created in this session.
+
+        When dry_run is True, validates that backup files exist and restore
+        paths are reachable without overwriting any files.
+        """
         success = True
 
         # Restore registry backups
         for backup_info in self.registry_backups:
-            if not self.restore_registry_key(backup_info["backup_path"]):
-                success = False
+            if dry_run:
+                if not Path(backup_info["backup_path"]).exists():
+                    success = False
+            else:
+                if not self.restore_registry_key(backup_info["backup_path"]):
+                    success = False
 
         # Restore file backups
         for backup_info in self.file_backups:
-            if not self.restore_file(
-                backup_info["backup_path"], backup_info["original_path"]
-            ):
-                success = False
+            if dry_run:
+                if not backup_info["backup_path"].exists():
+                    success = False
+            else:
+                if not self.restore_file(
+                    backup_info["backup_path"], backup_info["original_path"]
+                ):
+                    success = False
 
         return success

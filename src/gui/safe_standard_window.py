@@ -9,6 +9,7 @@ import os
 import sys
 
 from PyQt5.QtCore import Qt
+from src.gui.themes import token
 from PyQt5.QtGui import QFont, QIcon, QKeySequence
 from PyQt5.QtWidgets import (
     QAction,
@@ -102,11 +103,11 @@ class SafeStandardWindow(QMainWindow):
         self.setStyleSheet(
             """
             QMainWindow {
-                background-color: #ffffff;
-                color: #2c3e50;
+                background-color: {token('window_background')};
+                color: {token('text_primary')};
             }
             QPushButton {
-                background-color: #3498db;
+                background-color: {token('accent')};
                 color: white;
                 border: none;
                 border-radius: 5px;
@@ -115,20 +116,20 @@ class SafeStandardWindow(QMainWindow):
                 min-height: 30px;
             }
             QPushButton:hover {
-                background-color: #2980b9;
+                background-color: {token('button_primary_hover')};
             }
             QPushButton:pressed {
-                background-color: #21618c;
+                background-color: {token('button_primary_pressed')};
             }
             QPushButton:disabled {
-                background-color: #bdc3c7;
+                background-color: {token('text_disabled')};
             }
             QLabel {
-                color: #2c3e50;
+                color: {token('text_primary')};
             }
             QGroupBox {
                 font-weight: bold;
-                border: 2px solid #34495e;
+                border: 2px solid {token('secondary')};
                 border-radius: 5px;
                 margin-top: 10px;
                 padding-top: 10px;
@@ -155,9 +156,9 @@ class SafeStandardWindow(QMainWindow):
             QLabel {
                 font-size: 16px;
                 font-weight: bold;
-                color: #2c3e50;
+                color: {token('text_primary')};
                 padding: 10px;
-                background-color: #ecf0f1;
+                background-color: {token('background')};
                 border-radius: 5px;
                 margin-bottom: 10px;
             }
@@ -182,13 +183,13 @@ class SafeStandardWindow(QMainWindow):
         progress.setStyleSheet(
             """
             QProgressBar {
-                border: 1px solid #bdc3c7;
+                border: 1px solid {token('text_disabled')};
                 border-radius: 4px;
                 text-align: center;
-                background-color: #f8f9fa;
+                background-color: {token('dialog_background')};
             }
             QProgressBar::chunk {
-                background-color: #3498db;
+                background-color: {token('accent')};
                 border-radius: 3px;
             }
         """

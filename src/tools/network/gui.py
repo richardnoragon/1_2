@@ -5,37 +5,39 @@ This module provides a comprehensive PyQt5 GUI wrapper for all network tools
 using the utilities logic framework.
 """
 
-import sys
 import ipaddress
 import socket
-from typing import Dict, Any, Optional
+import sys
 from dataclasses import dataclass
 from datetime import datetime
+from typing import Any, Dict, Optional
 
+from PyQt5.QtCore import QMutex, QMutexLocker, QThread, pyqtSignal
+from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import (
     QApplication,
-    QWidget,
-    QVBoxLayout,
-    QHBoxLayout,
+    QCheckBox,
+    QComboBox,
+    QFileDialog,
     QGridLayout,
-    QPushButton,
+    QGroupBox,
+    QHBoxLayout,
+    QHeaderView,
     QLabel,
     QLineEdit,
-    QTextEdit,
-    QTabWidget,
-    QGroupBox,
-    QCheckBox,
-    QSpinBox,
-    QComboBox,
+    QMessageBox,
     QProgressBar,
+    QPushButton,
+    QSpinBox,
     QTableWidget,
     QTableWidgetItem,
-    QHeaderView,
-    QMessageBox,
-    QFileDialog,
+    QTabWidget,
+    QTextEdit,
+    QVBoxLayout,
+    QWidget,
 )
-from PyQt5.QtCore import QThread, pyqtSignal, QMutex, QMutexLocker
-from PyQt5.QtGui import QColor
+
+from src.gui.themes import token
 
 # Import the standard window framework
 try:
@@ -46,14 +48,14 @@ except ImportError:
 
 # Import network tools
 try:
-    from ..network_connectivity_complex.tools.port_scanner import PortScanner
     from ..network_connectivity_complex.tools.bandwidth_monitor import (
         BandwidthMonitor,
     )
-    from ..network_connectivity_complex.tools.wifi_analyzer import WiFiAnalyzer
     from ..network_connectivity_complex.tools.lan_file_transfer import (
         LANFileTransfer,
     )
+    from ..network_connectivity_complex.tools.port_scanner import PortScanner
+    from ..network_connectivity_complex.tools.wifi_analyzer import WiFiAnalyzer
 except ImportError:
     # Fallback imports for development
     PortScanner = None
@@ -449,13 +451,13 @@ class NetworkToolsWindow(StandardWindow):
         self.btn_start_scan.setStyleSheet(
             """
             QPushButton {
-                background-color: #4CAF50;
+                background-color: {token('semantic_success')};
                 color: white;
                 font-weight: bold;
                 padding: 8px;
             }
             QPushButton:hover {
-                background-color: #45a049;
+                background-color: {token('semantic_success')};
             }
         """
         )
@@ -519,13 +521,13 @@ class NetworkToolsWindow(StandardWindow):
         self.btn_start_monitor.setStyleSheet(
             """
             QPushButton {
-                background-color: #2196F3;
+                background-color: {token('button_primary')};
                 color: white;
                 font-weight: bold;
                 padding: 8px;
             }
             QPushButton:hover {
-                background-color: #1976D2;
+                background-color: {token('button_primary')};
             }
         """
         )
@@ -541,14 +543,14 @@ class NetworkToolsWindow(StandardWindow):
         stats_layout.addWidget(QLabel("Download Speed:"), 0, 0)
         self.lbl_download_speed = QLabel(DEFAULT_SPEED_LABEL)
         self.lbl_download_speed.setStyleSheet(
-            "font-weight: bold; color: #4CAF50;"
+            f"font-weight: bold; color: {token('semantic_success')};"
         )
         stats_layout.addWidget(self.lbl_download_speed, 0, 1)
 
         stats_layout.addWidget(QLabel("Upload Speed:"), 1, 0)
         self.lbl_upload_speed = QLabel(DEFAULT_SPEED_LABEL)
         self.lbl_upload_speed.setStyleSheet(
-            "font-weight: bold; color: #FF9800;"
+            f"font-weight: bold; color: {token('semantic_warning')};"
         )
         stats_layout.addWidget(self.lbl_upload_speed, 1, 1)
 
@@ -581,16 +583,16 @@ class NetworkToolsWindow(StandardWindow):
 
         self.btn_discover = QPushButton("Discover Hosts")
         self.btn_discover.setStyleSheet(
-            """
-            QPushButton {
-                background-color: #9C27B0;
+            f"""
+            QPushButton {{
+                background-color: {token('color_purple')};
                 color: white;
                 font-weight: bold;
                 padding: 8px;
-            }
-            QPushButton:hover {
-                background-color: #7B1FA2;
-            }
+            }}
+            QPushButton:hover {{
+                background-color: {token('color_purple_dark')};
+            }}
         """
         )
         config_layout.addWidget(self.btn_discover)
@@ -637,16 +639,16 @@ class NetworkToolsWindow(StandardWindow):
 
         self.btn_test_connectivity = QPushButton("Test Connectivity")
         self.btn_test_connectivity.setStyleSheet(
-            """
-            QPushButton {
-                background-color: #FF5722;
+            f"""
+            QPushButton {{
+                background-color: {token('color_deep_orange')};
                 color: white;
                 font-weight: bold;
                 padding: 8px;
-            }
-            QPushButton:hover {
-                background-color: #E64A19;
-            }
+            }}
+            QPushButton:hover {{
+                background-color: {token('color_deep_orange_dark')};
+            }}
         """
         )
         config_layout.addWidget(self.btn_test_connectivity)
@@ -684,16 +686,16 @@ class NetworkToolsWindow(StandardWindow):
 
         self.btn_scan_wifi = QPushButton("Scan WiFi Networks")
         self.btn_scan_wifi.setStyleSheet(
-            """
-            QPushButton {
-                background-color: #607D8B;
+            f"""
+            QPushButton {{
+                background-color: {token('color_blue_grey')};
                 color: white;
                 font-weight: bold;
                 padding: 8px;
-            }
-            QPushButton:hover {
-                background-color: #455A64;
-            }
+            }}
+            QPushButton:hover {{
+                background-color: {token('color_blue_grey_dark')};
+            }}
         """
         )
         config_layout.addWidget(self.btn_scan_wifi)

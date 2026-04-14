@@ -355,7 +355,7 @@ class FilesystemIntegrityWidget(QWidget):
         health_layout = QVBoxLayout(health_group)
 
         self.health_status_label = QLabel("Status: Unknown")
-        self.health_status_label.setFont(QFont("Arial", 12, QFont.Bold))
+        self.health_status_label.setFont(Typography.h3())
         health_layout.addWidget(self.health_status_label)
 
         self.health_details_text = QTextEdit()
@@ -1128,6 +1128,7 @@ if __name__ == "__main__":
     if PYQT_AVAILABLE:
         import sys
         from PyQt5.QtWidgets import QApplication
+        from src.gui.themes import Typography
 
         app = QApplication(sys.argv)
         widget = FilesystemIntegrityWidget()

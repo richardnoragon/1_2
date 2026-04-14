@@ -120,9 +120,7 @@ class PreviewContentLoader(QThread):
         try:
             # Check cache first
             if file_path in self.content_cache:
-                self.contentLoaded.emit(
-                    file_path, self.content_cache[file_path]
-                )
+                self.contentLoaded.emit(file_path, self.content_cache[file_path])
                 return
 
             self.loadingProgress.emit(file_path, 10)
@@ -422,9 +420,7 @@ class PreviewPaneWidget(QWidget):
         self.content_loader = PreviewContentLoader(self)
         self.content_loader.contentLoaded.connect(self._handle_content_loaded)
         self.content_loader.loadingFailed.connect(self._handle_loading_failed)
-        self.content_loader.loadingProgress.connect(
-            self._handle_loading_progress
-        )
+        self.content_loader.loadingProgress.connect(self._handle_loading_progress)
         self.content_loader.start()
 
         # Setup UI
@@ -466,12 +462,12 @@ class PreviewPaneWidget(QWidget):
         # File name label
         self.file_name_label = QLabel("No file selected")
         self.file_name_label.setStyleSheet(
-            "font-weight: bold; color: #333333;"
+            f"font-weight: bold; color: {token('text_primary')};"
         )
 
         # File size label
         self.file_size_label = QLabel("")
-        self.file_size_label.setStyleSheet("color: #666666;")
+        self.file_size_label.setStyleSheet(f"color: {token('text_muted')};")
 
         header_layout.addWidget(self.file_name_label)
         header_layout.addStretch()
@@ -487,6 +483,7 @@ class PreviewPaneWidget(QWidget):
         """
         self.content_tabs = QTabWidget()
         self.content_tabs.setTabPosition(QTabWidget.North)
+        self.content_tabs.setAccessibleName("File preview content tabs")
 
         # Preview tab
         self._create_preview_tab()
@@ -517,11 +514,11 @@ class PreviewPaneWidget(QWidget):
         self.preview_content.setStyleSheet(
             """
             QLabel {
-                color: #666666;
+                color: {token('text_muted')};
                 font-style: italic;
                 padding: 40px;
-                border: 2px dashed #cccccc;
-                background-color: #f8f8f8;
+                border: 2px dashed {token('border')};
+                background-color: {token('surface')};
                 border-radius: 8px;
             }
         """
@@ -543,6 +540,7 @@ class PreviewPaneWidget(QWidget):
         self.metadata_text = QTextEdit()
         self.metadata_text.setReadOnly(True)
         self.metadata_text.setPlainText("No metadata available")
+        self.metadata_text.setAccessibleName("File metadata")
 
         metadata_layout.addWidget(self.metadata_text)
 
@@ -559,6 +557,7 @@ class PreviewPaneWidget(QWidget):
         self.properties_text = QTextEdit()
         self.properties_text.setReadOnly(True)
         self.properties_text.setPlainText("No properties available")
+        self.properties_text.setAccessibleName("File properties")
 
         properties_layout.addWidget(self.properties_text)
 
@@ -579,7 +578,7 @@ class PreviewPaneWidget(QWidget):
 
         # Status label
         self.status_label = QLabel("Ready")
-        self.status_label.setStyleSheet("color: #333333;")
+        self.status_label.setStyleSheet(f"color: {token('text_primary')};")
 
         status_layout.addWidget(self.status_label)
         status_layout.addStretch()
@@ -589,44 +588,44 @@ class PreviewPaneWidget(QWidget):
     def _apply_styling(self):
         """Apply styling to the widget."""
         self.setStyleSheet(
-            """
-            QTabWidget::pane {
-                border: 1px solid #cccccc;
+            f"""
+            QTabWidget::pane {{
+                border: 1px solid {token('border')};
                 background-color: white;
                 border-radius: 4px;
-            }
-            
-            QTabBar::tab {
-                background-color: #e0e0e0;
+            }}
+
+            QTabBar::tab {{
+                background-color: {token('border_light')};
                 padding: 8px 16px;
                 margin-right: 2px;
                 border-top-left-radius: 4px;
                 border-top-right-radius: 4px;
                 min-width: 80px;
-            }
-            
-            QTabBar::tab:selected {
+            }}
+
+            QTabBar::tab:selected {{
                 background-color: white;
-                border-bottom: 2px solid #0078d4;
-                color: #0078d4;
+                border-bottom: 2px solid {token('button_primary')};
+                color: {token('button_primary')};
                 font-weight: bold;
-            }
-            
-            QTabBar::tab:hover {
-                background-color: #f0f0f0;
-            }
-            
-            QScrollArea {
+            }}
+
+            QTabBar::tab:hover {{
+                background-color: {token('surface')};
+            }}
+
+            QScrollArea {{
                 border: none;
                 background-color: white;
-            }
-            
-            QTextEdit {
-                border: 1px solid #cccccc;
+            }}
+
+            QTextEdit {{
+                border: 1px solid {token('border')};
                 background-color: white;
                 font-family: 'Courier New', monospace;
                 font-size: 10pt;
-            }
+            }}
         """
         )
 
@@ -676,9 +675,7 @@ class PreviewPaneWidget(QWidget):
         # Emit signal
         self.previewRequested.emit(file_path)
 
-    def _handle_content_loaded(
-        self, file_path: str, content_data: Dict[str, Any]
-    ):
+    def _handle_content_loaded(self, file_path: str, content_data: Dict[str, Any]):
         """Handle content loaded from background thread.
 
         Args:
@@ -734,24 +731,20 @@ class PreviewPaneWidget(QWidget):
         if file_path != self.current_file_path:
             return
 
-        self.logger.error(
-            f"Failed to load preview for {file_path}: {error_message}"
-        )
+        self.logger.error(f"Failed to load preview for {file_path}: {error_message}")
 
         # Display error
-        self.preview_content.setText(
-            f"Failed to load preview:\n{error_message}"
-        )
+        self.preview_content.setText(f"Failed to load preview:\n{error_message}")
         self.preview_content.setStyleSheet(
-            """
-            QLabel {
-                color: #d32f2f;
+            f"""
+            QLabel {{
+                color: {token('text_error')};
                 font-style: italic;
                 padding: 40px;
-                border: 2px dashed #d32f2f;
-                background-color: #ffeaea;
+                border: 2px dashed {token('semantic_error')};
+                background-color: {token('surface_error')};
                 border-radius: 8px;
-            }
+            }}
         """
         )
 
@@ -786,6 +779,7 @@ class PreviewPaneWidget(QWidget):
             self.preview_content.deleteLater()
             self.preview_content = QTextEdit()
             self.preview_content.setReadOnly(True)
+            self.preview_content.setAccessibleName("File preview content")
             self.preview_scroll.setWidget(self.preview_content)
 
         self.preview_content.setPlainText(content)
@@ -812,9 +806,7 @@ class PreviewPaneWidget(QWidget):
                 self.preview_scroll.setWidget(self.preview_content)
 
             self.preview_content.setPixmap(pixmap)
-            self.preview_content.setStyleSheet(
-                "border: none; background-color: white;"
-            )
+            self.preview_content.setStyleSheet("border: none; background-color: white;")
 
             # Update status with image info
             metadata = content_data.get("metadata", {})
@@ -849,9 +841,7 @@ class PreviewPaneWidget(QWidget):
         """
         self._display_info_preview("Video File", content_data)
 
-    def _display_info_preview(
-        self, file_type: str, content_data: Dict[str, Any]
-    ):
+    def _display_info_preview(self, file_type: str, content_data: Dict[str, Any]):
         """Display info-based preview.
 
         Args:
@@ -870,14 +860,14 @@ class PreviewPaneWidget(QWidget):
 
         info_text = f"""
         <div style="text-align: center; font-family: Arial, sans-serif;">
-            <h2 style="color: #333333; margin-bottom: 20px;">{file_type}</h2>
-            <p style="color: #666666; font-size: 14px; margin: 10px;">
+            <h2 style=f"color: {token('text_primary')}; margin-bottom: 20px;">{file_type}</h2>
+            <p style=f"color: {token('text_muted')}; font-size: 14px; margin: 10px;">
                 <strong>File:</strong> {file_name}
             </p>
-            <p style="color: #666666; font-size: 14px; margin: 10px;">
+            <p style=f"color: {token('text_muted')}; font-size: 14px; margin: 10px;">
                 <strong>Type:</strong> {mime_type}
             </p>
-            <p style="color: #999999; font-size: 12px; margin-top: 20px;">
+            <p style=f"color: {token('text_muted')}; font-size: 12px; margin-top: 20px;">
                 Preview not available for this file type
             </p>
         </div>
@@ -885,14 +875,14 @@ class PreviewPaneWidget(QWidget):
 
         self.preview_content.setText(info_text)
         self.preview_content.setStyleSheet(
-            """
-            QLabel {
-                color: #333333;
+            f"""
+            QLabel {{
+                color: {token('text_primary')};
                 padding: 40px;
-                border: 1px solid #cccccc;
+                border: 1px solid {token('border')};
                 background-color: white;
                 border-radius: 8px;
-            }
+            }}
         """
         )
 
@@ -912,14 +902,14 @@ class PreviewPaneWidget(QWidget):
         error = content_data.get("error", "Unknown error")
         self.preview_content.setText(f"Preview Error:\n{error}")
         self.preview_content.setStyleSheet(
-            """
-            QLabel {
-                color: #d32f2f;
+            f"""
+            QLabel {{
+                color: {token('text_error')};
                 padding: 40px;
-                border: 2px dashed #d32f2f;
-                background-color: #ffeaea;
+                border: 2px dashed {token('semantic_error')};
+                background-color: {token('surface_error')};
                 border-radius: 8px;
-            }
+            }}
         """
         )
 
@@ -942,13 +932,11 @@ class PreviewPaneWidget(QWidget):
         metadata_text = "File Metadata:\n\n"
 
         # Basic file info
+        metadata_text += f"File Name: {content_data.get('file_name', 'Unknown')}\n"
         metadata_text += (
-            f"File Name: {content_data.get('file_name', 'Unknown')}\n"
+            f"File Size: {self._format_file_size(content_data.get('file_size', 0))}\n"
         )
-        metadata_text += f"File Size: {self._format_file_size(content_data.get('file_size', 0))}\n"
-        metadata_text += (
-            f"MIME Type: {content_data.get('mime_type', 'Unknown')}\n"
-        )
+        metadata_text += f"MIME Type: {content_data.get('mime_type', 'Unknown')}\n"
         metadata_text += f"Modified: {self._format_timestamp(content_data.get('modified_time', 0))}\n"
 
         # Type-specific metadata
@@ -970,9 +958,7 @@ class PreviewPaneWidget(QWidget):
         # All available properties
         for key, value in content_data.items():
             if key not in ["content"]:  # Skip binary content
-                properties_text += (
-                    f"{key.replace('_', ' ').title()}: {value}\n"
-                )
+                properties_text += f"{key.replace('_', ' ').title()}: {value}\n"
 
         self.properties_text.setPlainText(properties_text)
 
@@ -1035,11 +1021,11 @@ class PreviewPaneWidget(QWidget):
         self.preview_content.setStyleSheet(
             """
             QLabel {
-                color: #666666;
+                color: {token('text_muted')};
                 font-style: italic;
                 padding: 40px;
-                border: 2px dashed #cccccc;
-                background-color: #f8f8f8;
+                border: 2px dashed {token('border')};
+                background-color: {token('surface')};
                 border-radius: 8px;
             }
         """

@@ -1,0 +1,14 @@
+{
+  "session_id": "20251219_165011",
+  "dry_run": true,
+  "summary": {
+    "total_files": 1,
+    "successful_modernizations": 0,
+    "failed": 0,
+    "unchanged": 1,
+    "total_changes": 0
+  },
+  "successful_files": [],
+  "failed_files": [],
+  "timestamp": "2025-12-19T16:50:11.832483"
+}

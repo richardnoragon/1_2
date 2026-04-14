@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any, Dict, Optional
 
 try:
+    from src.gui.themes import token
     from PyQt5.QtCore import Qt
     from PyQt5.QtWidgets import (
         QDialog,
@@ -67,7 +68,7 @@ if PYQT5_AVAILABLE:
             # Warning header
             warning = QLabel("⚠️ Break-Glass Emergency Access")
             warning.setAlignment(Qt.AlignHCenter)
-            warning.setStyleSheet("font-size: 16px; font-weight: bold; color: #c0392b;")
+            warning.setStyleSheet(f"font-size: 16px; font-weight: bold; color: {token('semantic_error')};")
             layout.addWidget(warning)
 
             # Explanation
@@ -99,7 +100,7 @@ if PYQT5_AVAILABLE:
             self.char_count_label = QLabel(
                 f"0/{self.MIN_JUSTIFICATION_LENGTH} characters"
             )
-            self.char_count_label.setStyleSheet("color: #e74c3c;")
+            self.char_count_label.setStyleSheet(f"color: {token('semantic_error')};")
             layout.addWidget(self.char_count_label)
 
             self.justification_input.textChanged.connect(self._update_char_count)
@@ -107,7 +108,7 @@ if PYQT5_AVAILABLE:
             # Error label
             self.error_label = QLabel("")
             self.error_label.setWordWrap(True)
-            self.error_label.setStyleSheet("color: #e74c3c;")
+            self.error_label.setStyleSheet(f"color: {token('semantic_error')};")
             layout.addWidget(self.error_label)
 
             # Buttons
@@ -132,9 +133,9 @@ if PYQT5_AVAILABLE:
                 f"{count}/{self.MIN_JUSTIFICATION_LENGTH} characters"
             )
             if count >= self.MIN_JUSTIFICATION_LENGTH:
-                self.char_count_label.setStyleSheet("color: #27ae60;")
+                self.char_count_label.setStyleSheet(f"color: {token('semantic_success')};")
             else:
-                self.char_count_label.setStyleSheet("color: #e74c3c;")
+                self.char_count_label.setStyleSheet(f"color: {token('semantic_error')};")
 
         def _submit(self) -> None:
             text = self.justification_input.toPlainText().strip()
@@ -179,7 +180,7 @@ if PYQT5_AVAILABLE:
 
             title = QLabel("Authenticate to continue")
             title.setAlignment(Qt.AlignHCenter)
-            title.setStyleSheet("font-size: 16px; font-weight: bold; color: #2c3e50;")
+            title.setStyleSheet(f"font-size: 16px; font-weight: bold; color: {token('text_primary')};")
             layout.addWidget(title)
 
             subtitle = QLabel("Enter your RFU hub credentials. All logins are audited.")
@@ -210,7 +211,7 @@ if PYQT5_AVAILABLE:
 
             self.feedback_label = QLabel("")
             self.feedback_label.setWordWrap(True)
-            self.feedback_label.setStyleSheet("color: #e74c3c;")
+            self.feedback_label.setStyleSheet(f"color: {token('semantic_error')};")
             layout.addWidget(self.feedback_label)
 
             button_row = QHBoxLayout()
@@ -389,7 +390,7 @@ if PYQT5_AVAILABLE:
 
             self.registration_feedback_label = QLabel("")
             self.registration_feedback_label.setWordWrap(True)
-            self.registration_feedback_label.setStyleSheet("color: #e67e22;")
+            self.registration_feedback_label.setStyleSheet(f"color: {token('semantic_warning')};")
             panel_layout.addWidget(self.registration_feedback_label)
 
             button_row = QHBoxLayout()
@@ -404,7 +405,7 @@ if PYQT5_AVAILABLE:
                 "approves them."
             )
             pending_hint.setWordWrap(True)
-            pending_hint.setStyleSheet("color: #7f8c8d;")
+            pending_hint.setStyleSheet(f"color: {token('text_secondary')};")
             panel_layout.addWidget(pending_hint)
 
             return panel
@@ -422,9 +423,9 @@ if PYQT5_AVAILABLE:
             self, message: str, *, success: bool = False
         ) -> None:
             if success:
-                self.registration_feedback_label.setStyleSheet("color: #27ae60;")
+                self.registration_feedback_label.setStyleSheet(f"color: {token('semantic_success')};")
             else:
-                self.registration_feedback_label.setStyleSheet("color: #e67e22;")
+                self.registration_feedback_label.setStyleSheet(f"color: {token('semantic_warning')};")
             self.registration_feedback_label.setText(message)
 
         def _clear_registration_inputs(self) -> None:

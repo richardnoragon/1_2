@@ -48,11 +48,21 @@ try:
         QWidget,
     )
 
+    from src.gui.components.buttons import PrimaryButton, SecondaryButton
+    from src.gui.components.inputs import TextInput
+
     PYQT5_AVAILABLE = True
 except ImportError:
     PYQT5_AVAILABLE = False
     QWidget = object
     pyqtSignal = None
+    PrimaryButton = None
+    SecondaryButton = None
+
+try:
+    from src.gui.components.modal import Modal
+except ImportError:
+    Modal = None
 
 # Import constants and styling
 try:
@@ -254,15 +264,19 @@ class GeneralConfigTab(BaseConfigTab):
         layout.setSpacing(Layout.ITEM_SPACING)
         layout.setContentsMargins(15, 20, 15, 15)
 
-        # Folder name
-        layout.addWidget(QLabel("Folder Name:"), 0, 0)
-        self.name_edit = QLineEdit()
-        self.name_edit.setPlaceholderText(
-            "Enter a unique name for this folder configuration"
+        # Folder name  (CP-9b)
+        self.name_edit = TextInput(
+            label="Folder Name",
+            placeholder="Enter a unique name for this folder configuration",
+            accessible_name="Folder name",
         )
-        self.name_edit.setStyleSheet(Styles.INPUT_FIELD_STYLE)
+        self.name_edit.set_validator(
+            lambda t: (
+                (True, "") if t.strip() else (False, "Folder name cannot be empty")
+            )
+        )
         self.name_edit.textChanged.connect(self._emit_data_changed)
-        layout.addWidget(self.name_edit, 0, 1)
+        layout.addWidget(self.name_edit, 0, 0, 1, 2)
 
         # Description
         layout.addWidget(QLabel("Description:"), 1, 0, Qt.AlignTop)
@@ -272,6 +286,7 @@ class GeneralConfigTab(BaseConfigTab):
         )
         self.description_edit.setMaximumHeight(80)
         self.description_edit.setStyleSheet(Styles.INPUT_FIELD_STYLE)
+        self.description_edit.setAccessibleName("Folder configuration description")
         self.description_edit.textChanged.connect(self._emit_data_changed)
         layout.addWidget(self.description_edit, 1, 1)
 
@@ -308,24 +323,22 @@ class GeneralConfigTab(BaseConfigTab):
         self.directories_list.setStyleSheet(Styles.LIST_WIDGET_STYLE)
         self.directories_list.setMinimumHeight(150)
         self.directories_list.setSelectionMode(QListWidget.ExtendedSelection)
+        self.directories_list.setAccessibleName("Target directories")
         list_layout.addWidget(self.directories_list)
 
         # Control buttons
         buttons_layout = QVBoxLayout()
         buttons_layout.setSpacing(Layout.BUTTON_SPACING)
 
-        self.add_directory_btn = QPushButton(f"{Icons.ADD} Add Directory")
-        self.add_directory_btn.setStyleSheet(Styles.BUTTON_PRIMARY_STYLE)
+        self.add_directory_btn = PrimaryButton(f"{Icons.ADD} Add Directory")
         self.add_directory_btn.clicked.connect(self._add_directory)
         buttons_layout.addWidget(self.add_directory_btn)
 
-        self.browse_directory_btn = QPushButton("📁 Browse")
-        self.browse_directory_btn.setStyleSheet(Styles.BUTTON_SECONDARY_STYLE)
+        self.browse_directory_btn = SecondaryButton("📁 Browse")
         self.browse_directory_btn.clicked.connect(self._browse_directory)
         buttons_layout.addWidget(self.browse_directory_btn)
 
-        self.remove_directory_btn = QPushButton(f"{Icons.REMOVE} Remove")
-        self.remove_directory_btn.setStyleSheet(Styles.BUTTON_SECONDARY_STYLE)
+        self.remove_directory_btn = SecondaryButton(f"{Icons.REMOVE} Remove")
         self.remove_directory_btn.clicked.connect(self._remove_directory)
         self.remove_directory_btn.setEnabled(False)
         buttons_layout.addWidget(self.remove_directory_btn)
@@ -355,22 +368,30 @@ class GeneralConfigTab(BaseConfigTab):
         self.include_subdirs_cb = QCheckBox("Include subdirectories")
         self.include_subdirs_cb.setChecked(True)
         self.include_subdirs_cb.setStyleSheet(Styles.CHECKBOX_STYLE)
+        self.include_subdirs_cb.setAccessibleName("Include subdirectories")
+        self.include_subdirs_cb.setMinimumHeight(44)  # A11Y-8c
         self.include_subdirs_cb.stateChanged.connect(self._emit_data_changed)
         layout.addWidget(self.include_subdirs_cb)
 
         self.follow_symlinks_cb = QCheckBox("Follow symbolic links")
         self.follow_symlinks_cb.setStyleSheet(Styles.CHECKBOX_STYLE)
+        self.follow_symlinks_cb.setAccessibleName("Follow symbolic links")
+        self.follow_symlinks_cb.setMinimumHeight(44)  # A11Y-8c
         self.follow_symlinks_cb.stateChanged.connect(self._emit_data_changed)
         layout.addWidget(self.follow_symlinks_cb)
 
         self.include_hidden_cb = QCheckBox("Include hidden files")
         self.include_hidden_cb.setStyleSheet(Styles.CHECKBOX_STYLE)
+        self.include_hidden_cb.setAccessibleName("Include hidden files")
+        self.include_hidden_cb.setMinimumHeight(44)  # A11Y-8c
         self.include_hidden_cb.stateChanged.connect(self._emit_data_changed)
         layout.addWidget(self.include_hidden_cb)
 
         self.monitor_changes_cb = QCheckBox("Monitor for file changes")
         self.monitor_changes_cb.setChecked(True)
         self.monitor_changes_cb.setStyleSheet(Styles.CHECKBOX_STYLE)
+        self.monitor_changes_cb.setAccessibleName("Monitor for file changes")
+        self.monitor_changes_cb.setMinimumHeight(44)  # A11Y-8c
         self.monitor_changes_cb.stateChanged.connect(self._emit_data_changed)
         layout.addWidget(self.monitor_changes_cb)
 
@@ -393,11 +414,12 @@ class GeneralConfigTab(BaseConfigTab):
             if path.exists() and path.is_dir():
                 self._add_directory_to_list(str(path))
             else:
-                QMessageBox.warning(
-                    self,
+                Modal(
                     "Invalid Directory",
                     f"The directory '{text}' does not exist or is not a directory.",
-                )
+                    ["OK"],
+                    self,
+                ).exec_()
 
     def _browse_directory(self):
         """Browse for a directory using file dialog."""
@@ -441,9 +463,7 @@ class GeneralConfigTab(BaseConfigTab):
     def _on_directory_selection_changed(self):
         """Handle directory selection changes."""
         has_selection = bool(self.directories_list.selectedItems())
-        self.remove_directory_btn.setEnabled(
-            has_selection and not self.is_read_only
-        )
+        self.remove_directory_btn.setEnabled(has_selection and not self.is_read_only)
 
     def load_configuration(self, configuration):
         """Load configuration data into the general tab."""
@@ -458,9 +478,7 @@ class GeneralConfigTab(BaseConfigTab):
                 self.name_edit.setText(configuration.name or "")
 
             if hasattr(configuration, "description"):
-                self.description_edit.setPlainText(
-                    configuration.description or ""
-                )
+                self.description_edit.setPlainText(configuration.description or "")
 
             # Load directories
             if hasattr(configuration, "directories"):
@@ -470,22 +488,16 @@ class GeneralConfigTab(BaseConfigTab):
 
             # Load options
             if hasattr(configuration, "include_subdirectories"):
-                self.include_subdirs_cb.setChecked(
-                    configuration.include_subdirectories
-                )
+                self.include_subdirs_cb.setChecked(configuration.include_subdirectories)
 
             if hasattr(configuration, "follow_symlinks"):
-                self.follow_symlinks_cb.setChecked(
-                    configuration.follow_symlinks
-                )
+                self.follow_symlinks_cb.setChecked(configuration.follow_symlinks)
 
             if hasattr(configuration, "include_hidden"):
                 self.include_hidden_cb.setChecked(configuration.include_hidden)
 
             if hasattr(configuration, "monitor_changes"):
-                self.monitor_changes_cb.setChecked(
-                    configuration.monitor_changes
-                )
+                self.monitor_changes_cb.setChecked(configuration.monitor_changes)
 
             logger.debug("General configuration loaded successfully")
 
@@ -666,6 +678,7 @@ if __name__ == "__main__":
 
     # Create test tab widget
     tab_widget = QTabWidget()
+    tab_widget.setAccessibleName("Configuration tabs")
 
     # Add tabs
     general_tab = GeneralConfigTab()

@@ -18,6 +18,7 @@ from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional
 
 try:
+    from src.gui.themes import token
     from PyQt5.QtWidgets import (
         QApplication,
         QCheckBox,
@@ -683,9 +684,9 @@ class SecureDeleteGUI(StandardWindow):
             QLabel {
                 font-size: 18px;
                 font-weight: bold;
-                color: #2c3e50;
+                color: {token('text_primary')};
                 padding: 10px;
-                background-color: #ecf0f1;
+                background-color: {token('background')};
                 border-radius: 5px;
                 margin-bottom: 10px;
             }
@@ -705,7 +706,7 @@ class SecureDeleteGUI(StandardWindow):
         self.select_files_button.setStyleSheet(
             """
             QPushButton {
-                background-color: #e74c3c;
+                background-color: {token('semantic_error')};
                 color: white;
                 border: none;
                 padding: 8px 16px;
@@ -713,7 +714,7 @@ class SecureDeleteGUI(StandardWindow):
                 font-weight: bold;
             }
             QPushButton:hover {
-                background-color: #c0392b;
+                background-color: {token('semantic_error')};
             }
         """
         )
@@ -724,7 +725,7 @@ class SecureDeleteGUI(StandardWindow):
         self.select_folder_button.setStyleSheet(
             """
             QPushButton {
-                background-color: #e67e22;
+                background-color: {token('semantic_warning')};
                 color: white;
                 border: none;
                 padding: 8px 16px;
@@ -732,7 +733,7 @@ class SecureDeleteGUI(StandardWindow):
                 font-weight: bold;
             }
             QPushButton:hover {
-                background-color: #d35400;
+                background-color: {token('semantic_warning')};
             }
         """
         )
@@ -774,6 +775,16 @@ class SecureDeleteGUI(StandardWindow):
         self.verify_deletion.setChecked(True)
         security_layout.addWidget(self.verify_deletion)
 
+        # Dry run option
+        self.dry_run_checkbox = QCheckBox(
+            "\U0001f50d Dry Run (Preview Only \u2014 No Files Will Be Deleted)"
+        )
+        self.dry_run_checkbox.setToolTip(
+            "When checked, shows which files WOULD be deleted without "
+            "actually deleting anything"
+        )
+        security_layout.addWidget(self.dry_run_checkbox)
+
         layout.addWidget(security_group)
 
         # Add progress section
@@ -787,7 +798,7 @@ class SecureDeleteGUI(StandardWindow):
         self.status_label = QLabel(
             "Ready - Select files or directories to securely delete"
         )
-        self.status_label.setStyleSheet("padding: 10px; color: #666;")
+        self.status_label.setStyleSheet(f"padding: 10px; color: {token('text_muted')};")
         progress_layout.addWidget(self.status_label)
 
         layout.addWidget(progress_group)
@@ -800,7 +811,7 @@ class SecureDeleteGUI(StandardWindow):
         self.delete_button.setStyleSheet(
             """
             QPushButton {
-                background-color: #dc3545;
+                background-color: {token('semantic_error')};
                 color: white;
                 border: none;
                 padding: 10px 20px;
@@ -808,7 +819,7 @@ class SecureDeleteGUI(StandardWindow):
                 font-weight: bold;
             }
             QPushButton:hover {
-                background-color: #c82333;
+                background-color: {token('semantic_error')};
             }
         """
         )
@@ -882,8 +893,22 @@ class SecureDeleteGUI(StandardWindow):
         )
 
         if reply == QMessageBox.Yes:
-            # Start actual secure deletion
-            self._perform_secure_deletion(method, verify)
+            if hasattr(self, "dry_run_checkbox") and self.dry_run_checkbox.isChecked():
+                items_text = "\n".join(
+                    f"  \u2022 {os.path.basename(f)}" for f in self.selected_files
+                )
+                QMessageBox.information(
+                    self,
+                    "Dry Run Preview",
+                    f"DRY RUN \u2014 No files will be deleted.\n\n"
+                    f"The following {len(self.selected_files)} item(s) WOULD be "
+                    f"securely deleted:\n{items_text}\n\n"
+                    f"Method: {method_text}\n"
+                    f"Verification: {'Enabled' if verify else 'Disabled'}",
+                )
+            else:
+                # Start actual secure deletion
+                self._perform_secure_deletion(method, verify)
 
     def _perform_secure_deletion(self, method: DeletionMethod, verify: bool):
         """Perform the actual secure deletion operation."""

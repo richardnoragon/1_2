@@ -11,6 +11,7 @@ from pathlib import Path
 from typing import Any, Dict, List
 
 from PyQt5.QtCore import QMutex, QMutexLocker, Qt, QThread, pyqtSignal
+from src.gui.themes import token
 from PyQt5.QtWidgets import (
     QAction,
     QApplication,
@@ -356,13 +357,13 @@ class FileRenameWindow(StandardWindow):
         self.btn_rename.setStyleSheet(
             """
             QPushButton {
-                background-color: #4CAF50;
+                background-color: {token('semantic_success')};
                 color: white;
                 font-weight: bold;
                 padding: 8px;
             }
             QPushButton:hover {
-                background-color: #45a049;
+                background-color: {token('semantic_success')};
             }
         """
         )

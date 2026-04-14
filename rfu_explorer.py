@@ -56,21 +56,23 @@ def main():
 
         logger.info("Starting RFU Multi-Pane File Explorer...")
 
+        # Enable HiDPI scaling (A11Y-5) — must be set before QApplication.
+        if hasattr(Qt, "AA_EnableHighDpiScaling"):
+            QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
+        if hasattr(Qt, "AA_UseHighDpiPixmaps"):
+            QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
+
         # Create QApplication
         app = QApplication(sys.argv)
         app.setApplicationName("RFU Multi-Pane File Explorer")
         app.setApplicationVersion("1.0.0")
         app.setOrganizationName("Richard's File Utilities")
 
-        # Set application properties for high DPI support
-        if hasattr(Qt, "AA_EnableHighDpiScaling"):
-            app.setAttribute(Qt.AA_EnableHighDpiScaling, True)
-        if hasattr(Qt, "AA_UseHighDpiPixmaps"):
-            app.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
-
         # Import and create the multi-pane explorer with new architecture
         try:
-            from src.file_explorer.explorer_controller import ExplorerMainWindow
+            from src.file_explorer.explorer_controller import (
+                ExplorerMainWindow,
+            )
 
             # Create main window with enterprise-grade architecture
             explorer = ExplorerMainWindow()
@@ -98,7 +100,9 @@ def main():
             logger.info("Falling back to legacy multi-pane explorer")
 
             try:
-                from src.file_explorer.multi_pane_explorer import MultiPaneFileExplorer
+                from src.file_explorer.multi_pane_explorer import (
+                    MultiPaneFileExplorer,
+                )
 
                 explorer = MultiPaneFileExplorer()
                 explorer.setWindowTitle("RFU Multi-Pane File Explorer - Legacy Mode")

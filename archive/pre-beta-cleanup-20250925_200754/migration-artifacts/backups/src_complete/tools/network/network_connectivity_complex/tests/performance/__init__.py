@@ -1,1 +1,0 @@
-"""Performance and stress tests for network connectivity components."""

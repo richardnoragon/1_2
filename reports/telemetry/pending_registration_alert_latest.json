@@ -1,7 +1,7 @@
 {
-  "captured_at": "2025-11-28T19:15:23.059240",
+  "captured_at": "2025-12-19T12:16:51.442897",
   "channel": "gui",
-  "database_path": "C:\\Users\\HP1\\AppData\\Local\\Temp\\pytest-of-HP1\\pytest-225\\test_post_register_queues_pend0\\identity_contract.sqlite",
+  "database_path": "C:\\Users\\HP1\\AppData\\Local\\Temp\\pytest-of-HP1\\pytest-235\\test_post_register_queues_pend0\\identity_contract.sqlite",
   "metadata": {
     "notes": "qa",
     "purpose": "contract",
@@ -13,6 +13,6 @@
     "pending_demo",
     "pending_contract_user"
   ],
-  "submitted_at": "2025-11-28T19:15:23",
+  "submitted_at": "2025-12-19T12:16:51",
   "username": "pending_contract_user"
 }

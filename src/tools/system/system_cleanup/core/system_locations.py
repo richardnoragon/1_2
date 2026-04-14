@@ -6,7 +6,8 @@ cache directories, log files, and other cleanup targets across Windows.
 """
 
 from pathlib import Path
-from typing import List, Dict, Optional
+from typing import Dict, List
+
 from .windows_utils import WindowsUtils
 
 
@@ -39,9 +40,7 @@ class SystemLocations:
         log_dirs.append(windows_dir / "inf")
 
         # Windows Update Logs
-        log_dirs.append(
-            windows_dir / "SoftwareDistribution" / "DataStore" / "Logs"
-        )
+        log_dirs.append(windows_dir / "SoftwareDistribution" / "DataStore" / "Logs")
         log_dirs.append(windows_dir / "WindowsUpdate.log")
 
         # System Logs
@@ -49,9 +48,7 @@ class SystemLocations:
 
         # User-specific logs
         for user_dir in WindowsUtils.get_user_profile_directories():
-            user_logs = (
-                user_dir / "AppData" / "Local" / "Microsoft" / "Windows"
-            )
+            user_logs = user_dir / "AppData" / "Local" / "Microsoft" / "Windows"
             if user_logs.exists():
                 log_dirs.append(user_logs)
 
@@ -63,7 +60,6 @@ class SystemLocations:
         cache_dirs = []
 
         windows_dir = WindowsUtils.get_windows_directory()
-        system_drive = WindowsUtils.get_system_drive()
 
         # Prefetch files
         prefetch_dir = windows_dir / "Prefetch"
@@ -93,12 +89,7 @@ class SystemLocations:
         # Thumbnail Cache
         for user_dir in WindowsUtils.get_user_profile_directories():
             thumb_cache = (
-                user_dir
-                / "AppData"
-                / "Local"
-                / "Microsoft"
-                / "Windows"
-                / "Explorer"
+                user_dir / "AppData" / "Local" / "Microsoft" / "Windows" / "Explorer"
             )
             if thumb_cache.exists():
                 cache_dirs.append(thumb_cache)
@@ -146,8 +137,6 @@ class SystemLocations:
     @classmethod
     def get_backup_directories(cls) -> List[Path]:
         """Get common backup file directories."""
-        backup_dirs = []
-
         system_drive = WindowsUtils.get_system_drive()
 
         # System backup locations
@@ -186,9 +175,7 @@ class SystemLocations:
             download_dirs.append(wu_download)
 
         # Driver downloads
-        driver_store = (
-            windows_dir / "System32" / "DriverStore" / "FileRepository"
-        )
+        driver_store = windows_dir / "System32" / "DriverStore" / "FileRepository"
         if driver_store.exists():
             download_dirs.append(driver_store)
 
@@ -208,8 +195,6 @@ class SystemLocations:
     @classmethod
     def get_memory_dump_directories(cls) -> List[Path]:
         """Get memory dump and crash dump directories."""
-        dump_dirs = []
-
         system_drive = WindowsUtils.get_system_drive()
         windows_dir = WindowsUtils.get_windows_directory()
 
@@ -225,12 +210,7 @@ class SystemLocations:
         for user_dir in WindowsUtils.get_user_profile_directories():
             user_dumps = [
                 user_dir / "AppData" / "Local" / "CrashDumps",
-                user_dir
-                / "AppData"
-                / "Local"
-                / "Microsoft"
-                / "Windows"
-                / "WER",
+                user_dir / "AppData" / "Local" / "Microsoft" / "Windows" / "WER",
             ]
             dump_locations.extend(user_dumps)
 
@@ -244,12 +224,7 @@ class SystemLocations:
         for user_dir in WindowsUtils.get_user_profile_directories():
             history_locations = [
                 # Recent documents
-                user_dir
-                / "AppData"
-                / "Roaming"
-                / "Microsoft"
-                / "Windows"
-                / "Recent",
+                user_dir / "AppData" / "Roaming" / "Microsoft" / "Windows" / "Recent",
                 # Jump lists
                 user_dir
                 / "AppData"
@@ -267,19 +242,9 @@ class SystemLocations:
                 / "CustomDestinations",
                 # Run dialog history (in registry)
                 # Search history
-                user_dir
-                / "AppData"
-                / "Local"
-                / "Microsoft"
-                / "Windows"
-                / "History",
+                user_dir / "AppData" / "Local" / "Microsoft" / "Windows" / "History",
                 # File Explorer history
-                user_dir
-                / "AppData"
-                / "Local"
-                / "Microsoft"
-                / "Windows"
-                / "Explorer",
+                user_dir / "AppData" / "Local" / "Microsoft" / "Windows" / "Explorer",
             ]
 
             history_dirs.extend([d for d in history_locations if d.exists()])
@@ -295,11 +260,7 @@ class SystemLocations:
 
         # System-wide Start Menu
         system_start_menu = (
-            Path(system_drive)
-            / "ProgramData"
-            / "Microsoft"
-            / "Windows"
-            / "Start Menu"
+            Path(system_drive) / "ProgramData" / "Microsoft" / "Windows" / "Start Menu"
         )
         if system_start_menu.exists():
             shortcut_dirs.append(system_start_menu)
@@ -342,24 +303,22 @@ class SystemLocations:
         return {
             "uninstall_entries": [
                 r"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall",
-                r"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall",
+                r"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall",  # noqa: E501
             ],
             "startup_entries": [
                 r"SOFTWARE\Microsoft\Windows\CurrentVersion\Run",
                 r"SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce",
                 r"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Run",
-                r"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\RunOnce",
+                r"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\RunOnce",  # noqa: E501
             ],
             "file_associations": [
                 r"SOFTWARE\Classes",
                 r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FileExts",
             ],
-            "shared_dlls": [
-                r"SOFTWARE\Microsoft\Windows\CurrentVersion\SharedDLLs"
-            ],
+            "shared_dlls": [r"SOFTWARE\Microsoft\Windows\CurrentVersion\SharedDLLs"],
             "mru_lists": [
-                r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\ComDlg32\OpenSavePidlMRU",
-                r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\ComDlg32\LastVisitedPidlMRU",
+                r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\ComDlg32\OpenSavePidlMRU",  # noqa: E501
+                r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\ComDlg32\LastVisitedPidlMRU",  # noqa: E501
                 r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\RunMRU",
             ],
         }

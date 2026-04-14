@@ -10,6 +10,8 @@ from datetime import datetime
 
 import psutil
 
+from src.gui.themes import Typography, token
+
 try:
     from PyQt5.QtCore import Qt, QThread, QTimer, pyqtSignal
     from PyQt5.QtGui import QFont
@@ -115,56 +117,56 @@ class ProcessMonitorGUI(QMainWindow):
 
         # Apply basic styling
         self.setStyleSheet(
-            """
-            QMainWindow {
-                background-color: #f5f5f5;
+            f"""
+            QMainWindow {{
+                background-color: {token('surface')};
                 font-family: 'Segoe UI', Arial, sans-serif;
-            }
-            QPushButton {
-                background-color: #27ae60;
+            }}
+            QPushButton {{
+                background-color: {token('semantic_success')};
                 color: white;
                 border: none;
                 padding: 8px 16px;
                 font-size: 14px;
                 border-radius: 4px;
                 font-weight: bold;
-            }
-            QPushButton:hover {
-                background-color: #229954;
-            }
-            QPushButton:pressed {
-                background-color: #1e8449;
-            }
-            QPushButton:checked {
-                background-color: #e74c3c;
-            }
-            QTableWidget {
-                border: 1px solid #ddd;
+            }}
+            QPushButton:hover {{
+                background-color: {token('semantic_success')};
+            }}
+            QPushButton:pressed {{
+                background-color: {token('color_green_deep')};
+            }}
+            QPushButton:checked {{
+                background-color: {token('semantic_error')};
+            }}
+            QTableWidget {{
+                border: 1px solid {token('border')};
                 border-radius: 4px;
                 background-color: white;
-                gridline-color: #e0e0e0;
-            }
-            QTableWidget::item {
+                gridline-color: {token('border_light')};
+            }}
+            QTableWidget::item {{
                 padding: 8px;
-                border-bottom: 1px solid #e0e0e0;
-            }
-            QTableWidget::item:selected {
-                background-color: #3498db;
+                border-bottom: 1px solid {token('border_light')};
+            }}
+            QTableWidget::item:selected {{
+                background-color: {token('accent')};
                 color: white;
-            }
-            QHeaderView::section {
-                background-color: #34495e;
+            }}
+            QHeaderView::section {{
+                background-color: {token('secondary')};
                 color: white;
                 padding: 8px;
                 border: none;
                 font-weight: bold;
-            }
-            QLineEdit {
-                border: 1px solid #ddd;
+            }}
+            QLineEdit {{
+                border: 1px solid {token('border')};
                 border-radius: 4px;
                 padding: 8px;
                 font-size: 12px;
-            }
+            }}
         """
         )
 
@@ -185,7 +187,7 @@ class ProcessMonitorGUI(QMainWindow):
         # Title
         title = QLabel("⚡ Process Monitor")
         title.setAlignment(Qt.AlignCenter)
-        title.setFont(QFont("Arial", 16, QFont.Bold))
+        title.setFont(Typography.h1())
         layout.addWidget(title)
 
         # Control panel

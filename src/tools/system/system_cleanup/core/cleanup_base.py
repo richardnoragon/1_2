@@ -5,14 +5,13 @@ This module provides the foundation for all system cleanup tools,
 including common functionality, error handling, and progress tracking.
 """
 
-import os
-from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import List, Dict, Optional, Any
+from typing import Any, Dict, List, Optional
+
 from PyQt5.QtCore import QObject, pyqtSignal
 
-from .windows_utils import WindowsUtils
 from .safety_manager import SafetyManager
+from .windows_utils import WindowsUtils
 
 
 class CleanupOperationResult:
@@ -70,21 +69,15 @@ class CleanupToolBase(QObject):
 
     def estimate_cleanup_size(self, **kwargs) -> int:
         """Estimate the amount of space that can be freed (in bytes)."""
-        raise NotImplementedError(
-            "Subclasses must implement estimate_cleanup_size"
-        )
+        raise NotImplementedError("Subclasses must implement estimate_cleanup_size")
 
     def preview_operation(self, **kwargs) -> Dict[str, Any]:
         """Preview what the operation will do without executing it."""
-        raise NotImplementedError(
-            "Subclasses must implement preview_operation"
-        )
+        raise NotImplementedError("Subclasses must implement preview_operation")
 
     def execute_operation(self, **kwargs) -> CleanupOperationResult:
         """Execute the cleanup operation."""
-        raise NotImplementedError(
-            "Subclasses must implement execute_operation"
-        )
+        raise NotImplementedError("Subclasses must implement execute_operation")
 
     def is_running(self) -> bool:
         """Check if the tool is currently running."""
@@ -128,9 +121,7 @@ class CleanupToolBase(QObject):
     def _validate_windows_system(self) -> bool:
         """Validate that we're running on Windows."""
         if not WindowsUtils.is_windows():
-            self._emit_error(
-                f"{self.name} is only supported on Windows systems."
-            )
+            self._emit_error(f"{self.name} is only supported on Windows systems.")
             return False
         return True
 
@@ -151,9 +142,7 @@ class CleanupToolBase(QObject):
             self._emit_error(f"Failed to delete {file_path}: {str(e)}")
             return False
 
-    def _safe_delete_directory(
-        self, dir_path: Path, secure: bool = False
-    ) -> bool:
+    def _safe_delete_directory(self, dir_path: Path, secure: bool = False) -> bool:
         """Safely delete a directory and its contents."""
         try:
             if not dir_path.exists():
@@ -162,9 +151,7 @@ class CleanupToolBase(QObject):
             return WindowsUtils.safe_delete_directory(dir_path, secure)
 
         except Exception as e:
-            self._emit_error(
-                f"Failed to delete directory {dir_path}: {str(e)}"
-            )
+            self._emit_error(f"Failed to delete directory {dir_path}: {str(e)}")
             return False
 
     def _backup_file(
@@ -204,9 +191,7 @@ class CleanupToolBase(QObject):
         except Exception:
             return 0
 
-    def _filter_files_by_age(
-        self, files: List[Path], max_age_days: int
-    ) -> List[Path]:
+    def _filter_files_by_age(self, files: List[Path], max_age_days: int) -> List[Path]:
         """Filter files by maximum age in days."""
         if max_age_days <= 0:
             return files

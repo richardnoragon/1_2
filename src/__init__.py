@@ -1,4 +1,4 @@
-﻿"""Richard's File Utilities - Source Code Package."""
+"""Richard's File Utilities - Source Code Package."""
 
 import sys
 from pathlib import Path

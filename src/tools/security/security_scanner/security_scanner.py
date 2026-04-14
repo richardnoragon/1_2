@@ -5,30 +5,32 @@ Simple Security Scanner Tool for Richard's File Utilities
 A basic security scanner for common vulnerabilities and system checks.
 """
 
-import sys
 import os
-import socket
 import platform
+import socket
 import subprocess
+import sys
+
+from src.gui.themes import Typography, token
 
 try:
-    from PyQt5.QtWidgets import (
-        QMainWindow,
-        QWidget,
-        QVBoxLayout,
-        QHBoxLayout,
-        QPushButton,
-        QLabel,
-        QProgressBar,
-        QApplication,
-        QMessageBox,
-        QGroupBox,
-        QTextEdit,
-        QCheckBox,
-        QTabWidget,
-    )
     from PyQt5.QtCore import Qt, QThread, pyqtSignal
     from PyQt5.QtGui import QFont
+    from PyQt5.QtWidgets import (
+        QApplication,
+        QCheckBox,
+        QGroupBox,
+        QHBoxLayout,
+        QLabel,
+        QMainWindow,
+        QMessageBox,
+        QProgressBar,
+        QPushButton,
+        QTabWidget,
+        QTextEdit,
+        QVBoxLayout,
+        QWidget,
+    )
 except ImportError:
     print("PyQt5 not available. Please install PyQt5.")
     sys.exit(1)
@@ -80,9 +82,7 @@ class SecurityScanWorker(QThread):
         try:
             info = []
             info.append("=== SYSTEM INFORMATION ===")
-            info.append(
-                f"Operating System: {platform.system()} {platform.release()}"
-            )
+            info.append(f"Operating System: {platform.system()} {platform.release()}")
             info.append(f"Machine Type: {platform.machine()}")
             info.append(f"Python Version: {platform.python_version()}")
             info.append(f"Hostname: {socket.gethostname()}")
@@ -131,12 +131,8 @@ class SecurityScanWorker(QThread):
                     open_ports.append(port)
 
             if open_ports:
-                results.append(
-                    f"Open ports found: {', '.join(map(str, open_ports))}"
-                )
-                results.append(
-                    "⚠️  Review open ports for security implications"
-                )
+                results.append(f"Open ports found: {', '.join(map(str, open_ports))}")
+                results.append("⚠️  Review open ports for security implications")
             else:
                 results.append("✅ No common ports found open on localhost")
 
@@ -184,9 +180,7 @@ class SecurityScanWorker(QThread):
 
                         results.append(f"{directory}: {''.join(perms)}")
                     except Exception as e:
-                        results.append(
-                            f"{directory}: Error checking permissions - {e}"
-                        )
+                        results.append(f"{directory}: Error checking permissions - {e}")
 
             results.append("✅ File permission scan completed")
             return "\n".join(results)
@@ -243,45 +237,45 @@ class SimpleSecurityScannerGUI(QMainWindow):
 
         # Apply basic styling
         self.setStyleSheet(
-            """
-            QMainWindow {
-                background-color: #f5f5f5;
+            f"""
+            QMainWindow {{
+                background-color: {token('surface')};
                 font-family: 'Segoe UI', Arial, sans-serif;
-            }
-            QGroupBox {
+            }}
+            QGroupBox {{
                 font-weight: bold;
-                border: 2px solid #cccccc;
+                border: 2px solid {token('border')};
                 border-radius: 5px;
                 margin-top: 1ex;
                 padding-top: 10px;
-            }
-            QGroupBox::title {
+            }}
+            QGroupBox::title {{
                 subcontrol-origin: margin;
                 left: 10px;
                 padding: 0 5px 0 5px;
-            }
-            QPushButton {
-                background-color: #FF6B35;
+            }}
+            QPushButton {{
+                background-color: {token('color_orange_red')};
                 color: white;
                 border: none;
                 padding: 8px 16px;
                 font-size: 14px;
                 border-radius: 4px;
                 font-weight: bold;
-            }
-            QPushButton:hover {
-                background-color: #E55A2B;
-            }
-            QPushButton:pressed {
-                background-color: #CC4F26;
-            }
-            QTextEdit {
-                border: 1px solid #ddd;
+            }}
+            QPushButton:hover {{
+                background-color: {token('color_orange_red_dark')};
+            }}
+            QPushButton:pressed {{
+                background-color: {token('color_orange_red_darker')};
+            }}
+            QTextEdit {{
+                border: 1px solid {token('border')};
                 border-radius: 4px;
                 padding: 8px;
                 font-family: 'Courier New', monospace;
                 font-size: 11px;
-            }
+            }}
         """
         )
 
@@ -297,7 +291,7 @@ class SimpleSecurityScannerGUI(QMainWindow):
         # Title
         title = QLabel("🔍 Security Scanner")
         title.setAlignment(Qt.AlignCenter)
-        title.setFont(QFont("Arial", 16, QFont.Bold))
+        title.setFont(Typography.h1())
         layout.addWidget(title)
 
         # Scan options

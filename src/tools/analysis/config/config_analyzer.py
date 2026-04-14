@@ -19,6 +19,8 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 
 import yaml
 
+from src.gui.themes import token
+
 
 class ConfigType(Enum):
     """Supported configuration file types."""
@@ -766,23 +768,23 @@ class ConfigurationAnalyzer:
         self, results: List[ConfigAnalysisResult]
     ) -> str:
         """Generate HTML analysis report."""
-        html = """
+        html = f"""
         <!DOCTYPE html>
         <html>
         <head>
             <title>Configuration Analysis Report</title>
             <style>
-                body { font-family: Arial, sans-serif; margin: 20px; }
-                .header { background: #f0f0f0; padding: 20px; border-radius: 5px; }
-                .summary { background: #e8f4fd; padding: 15px; margin: 20px 0; border-radius: 5px; }
-                .file-result { border: 1px solid #ddd; margin: 20px 0; padding: 15px; border-radius: 5px; }
-                .issues { background: #fff2e8; padding: 10px; margin: 10px 0; border-radius: 3px; }
-                .recommendations { background: #e8f5e8; padding: 10px; margin: 10px 0; border-radius: 3px; }
-                .critical { color: #d32f2f; }
-                .high { color: #f57c00; }
-                .medium { color: #fbc02d; }
-                .low { color: #388e3c; }
-                .info { color: #1976d2; }
+                body {{ font-family: Arial, sans-serif; margin: 20px; }}
+                .header {{ background: {token('surface')}; padding: 20px; border-radius: 5px; }}
+                .summary {{ background: {token('surface_info')}; padding: 15px; margin: 20px 0; border-radius: 5px; }}
+                .file-result {{ border: 1px solid {token('border')}; margin: 20px 0; padding: 15px; border-radius: 5px; }}
+                .issues {{ background: {token('surface_warning')}; padding: 10px; margin: 10px 0; border-radius: 3px; }}
+                .recommendations {{ background: {token('color_surface_success')}; padding: 10px; margin: 10px 0; border-radius: 3px; }}
+                .critical {{ color: {token('semantic_error')}; }}
+                .high {{ color: {token('color_priority_high')}; }}
+                .medium {{ color: {token('color_priority_medium')}; }}
+                .low {{ color: {token('color_priority_low')}; }}
+                .info {{ color: {token('button_primary')}; }}
             </style>
         </head>
         <body>

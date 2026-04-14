@@ -1,9 +1,0 @@
-ADVANCED FOLDERS GUI TEST SUITE - SUMMARY REPORT
-============================================================
-
-Execution Start: 2025-09-12 15:01:31
-Execution End: 2025-09-12 15:01:39
-Total Execution Time: 7.97 seconds
-
-TEST CATEGORY RESULTS:
-------------------------------

@@ -1,49 +1,8 @@
 {
   "session_info": {
     "exit_status": 0,
-    "completion_time": "2025-12-18T23:30:04.322835",
-    "total_tests": 8
+    "completion_time": "2026-04-13T16:49:16.392812",
+    "total_tests": 0
   },
-  "test_details": [
-    {
-      "name": "test_hash_with_salt_uses_research_parameters",
-      "file": "test_password_hasher.py",
-      "timestamp": "2025-12-18T23:30:04.062109"
-    },
-    {
-      "name": "test_password_hasher_initializes_argon2_with_research_defaults",
-      "file": "test_password_hasher.py",
-      "timestamp": "2025-12-18T23:30:04.065111"
-    },
-    {
-      "name": "test_hash_with_salt_generates_random_salt_when_not_provided",
-      "file": "test_password_hasher.py",
-      "timestamp": "2025-12-18T23:30:04.143128"
-    },
-    {
-      "name": "test_hash_enforces_non_blank_passwords",
-      "file": "test_password_hasher.py",
-      "timestamp": "2025-12-18T23:30:04.217875"
-    },
-    {
-      "name": "test_generate_temporary_password_respects_length_and_alphabet",
-      "file": "test_password_hasher.py",
-      "timestamp": "2025-12-18T23:30:04.223882"
-    },
-    {
-      "name": "test_needs_rehash_flags_outdated_hash",
-      "file": "test_password_hasher.py",
-      "timestamp": "2025-12-18T23:30:04.291852"
-    },
-    {
-      "name": "test_password_policy_accepts_strong_password",
-      "file": "test_password_hasher.py",
-      "timestamp": "2025-12-18T23:30:04.294850"
-    },
-    {
-      "name": "test_password_policy_rejects_weak_and_breached_passwords",
-      "file": "test_password_hasher.py",
-      "timestamp": "2025-12-18T23:30:04.297851"
-    }
-  ]
+  "test_details": []
 }

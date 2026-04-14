@@ -3,44 +3,46 @@
 System Cleanup GUI for Richard's File Utilities
 
 This module provides a comprehensive system cleanup interface that integrates
-with the existing diagnostics framework while providing cleanup-specific functionality.
+with the existing diagnostics framework while providing
+cleanup-specific functionality.
 """
 
 import logging
-import os
 import sys
-from pathlib import Path
-from typing import Any, Dict, Optional
 
 try:
-    from PyQt5.QtCore import Qt, pyqtSignal
+    from PyQt5.QtCore import pyqtSignal
     from PyQt5.QtGui import QFont
     from PyQt5.QtWidgets import (
         QApplication,
-        QCheckBox,
-        QGridLayout,
         QGroupBox,
-        QHBoxLayout,
         QLabel,
         QMainWindow,
-        QMessageBox,
-        QProgressBar,
         QPushButton,
-        QSpinBox,
-        QTabWidget,
         QTextEdit,
         QVBoxLayout,
         QWidget,
     )
+
+    from src.gui.themes import token
 
     PYQT5_AVAILABLE = True
 except ImportError:
     PYQT5_AVAILABLE = False
     print("PyQt5 not available. System Cleanup GUI will not be functional.")
 
+try:
+    from PyQt5.QtWidgets import QDialog
+
+    from src.gui.components.modal import ConfirmationModal, Modal
+except ImportError:
+    Modal = None
+    ConfirmationModal = None
+    QDialog = None
+
 # Import the comprehensive SystemDiagnosticsGUI as base class
 try:
-    from src.tools.system.diagnostics_monitoring.system_diagnostics_gui import (
+    from src.tools.system.diagnostics_monitoring.system_diagnostics_gui import (  # noqa: E501
         SystemDiagnosticsGUI,
     )
 
@@ -57,7 +59,9 @@ try:
     from src.tools.system.system_cleanup.core.cleanup_base import (
         CleanupOperationResult,
     )
-    from src.tools.system.system_cleanup.core.safety_manager import SafetyManager
+    from src.tools.system.system_cleanup.core.safety_manager import (
+        SafetyManager,
+    )
     from src.tools.system.system_cleanup.core.windows_utils import WindowsUtils
     from src.tools.system.system_cleanup.tools.temp_cleaner import (
         TempFilesCleaner,
@@ -73,10 +77,12 @@ except ImportError:
 
 
 class SystemCleanupGUI(SystemDiagnosticsGUI):
-    """System Cleanup GUI that extends SystemDiagnosticsGUI with cleanup functionality.
+    """System Cleanup GUI that extends SystemDiagnosticsGUI with cleanup
+    functionality.
 
     This class provides a specialized interface for system cleanup operations,
-    including temporary file removal, cache clearing, and other system optimization tasks.
+    including temporary file removal, cache clearing, and other system
+    optimization tasks.
     """
 
     # Cleanup-specific signals
@@ -93,7 +99,7 @@ class SystemCleanupGUI(SystemDiagnosticsGUI):
         if not PYQT5_AVAILABLE:
             raise ImportError("PyQt5 is required for the System Cleanup GUI")
 
-        # Initialize the base class - SystemDiagnosticsGUI handles QMainWindow properly
+        # Initialize the base class - SystemDiagnosticsGUI handles QMainWindow properly  # noqa: E501
         super().__init__(hub_instance, parent)
 
         # Setup logging
@@ -162,20 +168,21 @@ class SystemCleanupGUI(SystemDiagnosticsGUI):
             # Temporary files cleanup
             if "temp_files" in self.cleanup_tools:
                 temp_button = QPushButton("Clean Temporary Files")
+                temp_button.setAccessibleName("Clean Temporary Files")
                 temp_button.clicked.connect(self.run_temp_cleanup)
                 temp_button.setStyleSheet(
-                    """
-                    QPushButton {
-                        background-color: #28a745;
+                    f"""
+                    QPushButton {{
+                        background-color: {token('semantic_success')};
                         color: white;
                         font-weight: bold;
                         padding: 10px 20px;
                         border-radius: 5px;
                         margin: 5px;
-                    }
-                    QPushButton:hover {
-                        background-color: #218838;
-                    }
+                    }}
+                    QPushButton:hover {{
+                        background-color: {token('semantic_success_hover')};
+                    }}
                 """
                 )
                 quick_layout.addWidget(temp_button)
@@ -185,7 +192,7 @@ class SystemCleanupGUI(SystemDiagnosticsGUI):
                 "Additional cleanup tools will be available in future updates"
             )
             placeholder_label.setStyleSheet(
-                "color: #666666; font-style: italic; margin: 10px;"
+                f"color: {token('text_muted')}; font-style: italic; margin: 10px;"  # noqa: E501
             )
             quick_layout.addWidget(placeholder_label)
 
@@ -199,6 +206,7 @@ class SystemCleanupGUI(SystemDiagnosticsGUI):
             self.results_text.setReadOnly(True)
             self.results_text.setMaximumHeight(200)
             self.results_text.setPlainText("No cleanup operations performed yet.")
+            self.results_text.setAccessibleName("Cleanup results")
             results_layout.addWidget(self.results_text)
 
             layout.addWidget(results_group)
@@ -214,24 +222,26 @@ class SystemCleanupGUI(SystemDiagnosticsGUI):
         """Run temporary files cleanup."""
         try:
             if "temp_files" not in self.cleanup_tools:
-                QMessageBox.warning(
-                    self,
+                Modal(
                     "Tool Not Available",
                     "Temporary files cleanup tool is not available.",
-                )
+                    ["OK"],
+                    self,
+                ).exec_()
                 return
 
             # Confirm operation
-            reply = QMessageBox.question(
-                self,
-                "Confirm Cleanup",
-                "Are you sure you want to clean temporary files?\n\n"
-                "This operation will delete temporary files from system directories.",
-                QMessageBox.Yes | QMessageBox.No,
-                QMessageBox.No,
-            )
-
-            if reply != QMessageBox.Yes:
+            if (
+                ConfirmationModal(
+                    "Confirm Cleanup",
+                    "Are you sure you want to clean temporary files?\n\n"
+                    "This operation will delete temporary files from system directories.",  # noqa: E501
+                    confirm_text="Yes",
+                    cancel_text="Cancel",
+                    parent=self,
+                ).exec_()
+                != QDialog.Accepted
+            ):
                 return
 
             # Update results
@@ -254,7 +264,7 @@ class SystemCleanupGUI(SystemDiagnosticsGUI):
 
             # Display results
             if result.success:
-                results_text = f"Temporary files cleanup completed successfully!\n\n"
+                results_text = "Temporary files cleanup completed successfully!\n\n"
                 results_text += f"Files deleted: {result.items_processed}\n"
                 results_text += (
                     f"Space freed: {self._format_size(result.space_freed)}\n"
@@ -262,7 +272,7 @@ class SystemCleanupGUI(SystemDiagnosticsGUI):
                 results_text += f"Message: {result.message}"
 
                 if result.errors:
-                    results_text += f"\n\nWarnings/Errors:\n"
+                    results_text += "\n\nWarnings/Errors:\n"
                     for error in result.errors:
                         results_text += f"• {error}\n"
             else:
@@ -275,23 +285,28 @@ class SystemCleanupGUI(SystemDiagnosticsGUI):
             self.results_text.setPlainText(results_text)
 
             # Show completion message
-            QMessageBox.information(
-                self,
+            Modal(
                 "Cleanup Complete",
                 f"Temporary files cleanup completed.\n\n"
                 f"Files deleted: {result.items_processed}\n"
                 f"Space freed: {self._format_size(result.space_freed)}",
-            )
+                ["OK"],
+                self,
+            ).exec_(
+                self,
+            ).exec_()
 
         except Exception as e:
             self.logger.error(f"Error running temp cleanup: {e}")
-            error_text = f"Error during temporary files cleanup:\n{str(e)}"
-            self.results_text.setPlainText(error_text)
-            QMessageBox.critical(
-                self,
+            Modal(
                 "Cleanup Error",
                 f"An error occurred during cleanup:\n{str(e)}",
-            )
+                ["OK"],
+                self,
+            ).exec_(
+                ["OK"],
+                self,
+            ).exec_()
 
     def _format_size(self, size_bytes: int) -> str:
         """Format size in bytes to human-readable format."""

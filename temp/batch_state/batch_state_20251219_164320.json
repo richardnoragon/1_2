@@ -1,0 +1,22 @@
+{
+  "session_id": "20251219_164320",
+  "total_files": 7,
+  "processed_files": 0,
+  "successful": 0,
+  "failed": 0,
+  "skipped": 0,
+  "current_index": 0,
+  "file_list": [
+    "C:\\Users\\HP1\\1_2\\tests\\test_empty_folders.py",
+    "C:\\Users\\HP1\\1_2\\tests\\test_compression_logic.py",
+    "C:\\Users\\HP1\\1_2\\tests\\test_secure_delete.py",
+    "C:\\Users\\HP1\\1_2\\tests\\test_file_touch.py",
+    "C:\\Users\\HP1\\1_2\\tests\\test_encryption.py",
+    "C:\\Users\\HP1\\1_2\\tests\\test_checksum.py",
+    "C:\\Users\\HP1\\1_2\\tests\\test_file_operations.py"
+  ],
+  "results": [],
+  "started_at": "2025-12-19T16:43:20.278005",
+  "last_updated": "2025-12-19T16:43:20.280004",
+  "status": "interrupted"
+}

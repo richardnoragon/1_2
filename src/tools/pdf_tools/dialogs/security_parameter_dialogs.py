@@ -4,35 +4,38 @@ User interface dialogs for PDF security operations including encryption,
 digital signatures, and access controls.
 """
 
-from PyQt5.QtWidgets import (
-    QDialog,
-    QVBoxLayout,
-    QHBoxLayout,
-    QGridLayout,
-    QFormLayout,
-    QLabel,
-    QLineEdit,
-    QPushButton,
-    QCheckBox,
-    QComboBox,
-    QGroupBox,
-    QSpinBox,
-    QFileDialog,
-    QMessageBox,
-    QTabWidget,
-    QWidget,
-    QScrollArea,
-    QFrame,
+import os
+from typing import Optional, Tuple
+
+from pdf_security_engine import (
+    DigitalSignature,
+    EncryptionLevel,
+    SecuritySettings,
 )
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
-import os
-from typing import Optional, Tuple
-from pdf_security_engine import (
-    SecuritySettings,
-    DigitalSignature,
-    EncryptionLevel,
+from PyQt5.QtWidgets import (
+    QCheckBox,
+    QComboBox,
+    QDialog,
+    QFileDialog,
+    QFormLayout,
+    QFrame,
+    QGridLayout,
+    QGroupBox,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QMessageBox,
+    QPushButton,
+    QScrollArea,
+    QSpinBox,
+    QTabWidget,
+    QVBoxLayout,
+    QWidget,
 )
+
+from src.gui.themes import token
 
 # Constants
 INVALID_INPUT_TITLE = "Invalid Input"
@@ -92,55 +95,55 @@ class BaseSecurityDialog(QDialog):
     def apply_styling(self):
         """Apply consistent styling"""
         self.setStyleSheet(
-            """
-            QDialog {
-                background-color: #f5f5f5;
+            f"""
+            QDialog {{
+                background-color: {token('surface')};
                 font-family: 'Segoe UI', Arial, sans-serif;
                 font-size: 9pt;
-            }
-            QGroupBox {
+            }}
+            QGroupBox {{
                 font-weight: bold;
-                border: 2px solid #cccccc;
+                border: 2px solid {token('border')};
                 border-radius: 8px;
                 margin-top: 10px;
                 padding-top: 10px;
                 background-color: white;
-            }
-            QGroupBox::title {
+            }}
+            QGroupBox::title {{
                 subcontrol-origin: margin;
                 left: 15px;
                 padding: 0 8px 0 8px;
-                color: #333333;
-            }
-            QPushButton {
-                background-color: #0078d4;
+                color: {token('text_primary')};
+            }}
+            QPushButton {{
+                background-color: {token('button_primary')};
                 color: white;
                 border: none;
                 border-radius: 4px;
                 padding: 8px;
                 font-weight: bold;
-            }
-            QPushButton:hover {
-                background-color: #106ebe;
-            }
-            QPushButton:pressed {
-                background-color: #005a9e;
-            }
-            QLineEdit, QTextEdit, QComboBox, QSpinBox {
-                border: 1px solid #cccccc;
+            }}
+            QPushButton:hover {{
+                background-color: {token('color_action_blue')};
+            }}
+            QPushButton:pressed {{
+                background-color: {token('button_primary')};
+            }}
+            QLineEdit, QTextEdit, QComboBox, QSpinBox {{
+                border: 1px solid {token('border')};
                 border-radius: 4px;
                 padding: 6px;
                 background-color: white;
-            }
-            QLineEdit:focus, QTextEdit:focus, QComboBox:focus {
-                border-color: #0078d4;
-            }
-            QCheckBox {
+            }}
+            QLineEdit:focus, QTextEdit:focus, QComboBox:focus {{
+                border-color: {token('button_primary')};
+            }}
+            QCheckBox {{
                 spacing: 8px;
-            }
-            QLabel {
-                color: #333333;
-            }
+            }}
+            QLabel {{
+                color: {token('text_primary')};
+            }}
         """
         )
 
@@ -195,7 +198,7 @@ class PDFEncryptionDialog(BaseSecurityDialog):
             "for most applications."
         )
         encryption_info.setWordWrap(True)
-        encryption_info.setStyleSheet("color: #666666; font-size: 8pt;")
+        encryption_info.setStyleSheet(f"color: {token('text_muted')}; font-size: 8pt;")
         encryption_layout.addWidget(encryption_info)
 
         self.content_layout.addWidget(encryption_group)
@@ -301,7 +304,7 @@ class PDFDecryptionDialog(BaseSecurityDialog):
             "Try the user password first, then the owner password if needed."
         )
         info_label.setWordWrap(True)
-        info_label.setStyleSheet("color: #666666; margin-bottom: 15px;")
+        info_label.setStyleSheet(f"color: {token('text_muted')}; margin-bottom: 15px;")
         self.content_layout.addWidget(info_label)
 
         # Password input

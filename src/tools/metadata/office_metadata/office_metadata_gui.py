@@ -16,6 +16,7 @@ from datetime import datetime
 from typing import Dict, Any
 
 try:
+    from src.gui.themes import token
     from PyQt5.QtWidgets import (
         QApplication,
         QWidget,
@@ -444,10 +445,10 @@ class OfficeMetadataGUI(StandardWindow):
             QLabel {
                 font-size: 20px;
                 font-weight: bold;
-                color: #2c3e50;
+                color: {token('text_primary')};
                 padding: 15px;
                 background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
-                    stop:0 #3498db, stop:1 #2980b9);
+                    stop:0 {token('accentf')}, stop:1 {token('button_primary_hover')});
                 color: white;
                 border-radius: 8px;
                 margin-bottom: 10px;
@@ -463,9 +464,9 @@ class OfficeMetadataGUI(StandardWindow):
             """
             QLabel {
                 font-size: 12px;
-                color: #666;
+                color: {token('text_muted')};
                 padding: 5px 15px;
-                background-color: #f8f9fa;
+                background-color: {token('dialog_background')};
                 border-radius: 4px;
                 margin-bottom: 10px;
             }
@@ -527,7 +528,7 @@ class OfficeMetadataGUI(StandardWindow):
 
         self.status_label = QLabel("Ready - Select a file to analyze metadata")
         self.status_label.setStyleSheet(
-            "color: #666; font-style: italic; padding: 5px;"
+            f"color: {token('text_muted')}; font-style: italic; padding: 5px;"
         )
         status_layout.addWidget(self.status_label)
 
@@ -562,18 +563,18 @@ class OfficeMetadataGUI(StandardWindow):
         self.tab_widget.setStyleSheet(
             """
             QTabWidget::pane {
-                border: 2px solid #bdc3c7;
+                border: 2px solid {token('text_disabled')};
                 border-radius: 6px;
             }
             QTabBar::tab {
-                background: #ecf0f1;
+                background: {token('background')};
                 padding: 8px 16px;
                 margin-right: 2px;
                 border-top-left-radius: 4px;
                 border-top-right-radius: 4px;
             }
             QTabBar::tab:selected {
-                background: #3498db;
+                background: {token('accent')};
                 color: white;
             }
         """

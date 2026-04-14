@@ -65,12 +65,12 @@ class PDFExtractionDialogBase(QDialog):
         self.setStyleSheet(
             """
             QDialog {
-                background-color: #ffffff;
+                background-color: {token('window_background')};
                 font-family: "Segoe UI", Arial, sans-serif;
             }
             QGroupBox {
                 font-weight: bold;
-                border: 2px solid #dee2e6;
+                border: 2px solid {token('border_light')};
                 border-radius: 8px;
                 margin-top: 10px;
                 padding-top: 10px;
@@ -81,7 +81,7 @@ class PDFExtractionDialogBase(QDialog):
                 padding: 0 5px 0 5px;
             }
             QPushButton {
-                background-color: #007bff;
+                background-color: {token('button_primary')};
                 color: white;
                 border: none;
                 padding: 8px 16px;
@@ -89,10 +89,10 @@ class PDFExtractionDialogBase(QDialog):
                 font-weight: bold;
             }
             QPushButton:hover {
-                background-color: #0056b3;
+                background-color: {token('button_primary')};
             }
             QPushButton:disabled {
-                background-color: #6c757d;
+                background-color: {token('text_muted')};
             }
         """
         )

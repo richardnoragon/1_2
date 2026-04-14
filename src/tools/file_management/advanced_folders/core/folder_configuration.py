@@ -143,9 +143,7 @@ class FolderStatistics:
     def from_dict(cls, data: Dict[str, Any]) -> "FolderStatistics":
         """Create instance from dictionary."""
         if "last_scan_time" in data and data["last_scan_time"]:
-            data["last_scan_time"] = datetime.fromisoformat(
-                data["last_scan_time"]
-            )
+            data["last_scan_time"] = datetime.fromisoformat(data["last_scan_time"])
         return cls(**data)
 
 
@@ -162,9 +160,7 @@ class FolderConfiguration:
     directory_paths: List[str] = field(default_factory=list)
 
     # Search configuration
-    search_parameters: SearchParameters = field(
-        default_factory=SearchParameters
-    )
+    search_parameters: SearchParameters = field(default_factory=SearchParameters)
 
     # Sort configuration
     sort_criteria: SortCriteria = SortCriteria.ALPHABETICAL
@@ -214,9 +210,7 @@ class FolderConfiguration:
         data["created_date"] = datetime.fromisoformat(data["created_date"])
         data["modified_date"] = datetime.fromisoformat(data["modified_date"])
         if data.get("last_accessed"):
-            data["last_accessed"] = datetime.fromisoformat(
-                data["last_accessed"]
-            )
+            data["last_accessed"] = datetime.fromisoformat(data["last_accessed"])
 
         # Handle nested objects
         data["search_parameters"] = SearchParameters.from_dict(
@@ -380,34 +374,42 @@ class FolderConfigurationManager:
         self.logger.info(f"Updated folder configuration: {config.name}")
         return True
 
-    def delete_folder(self, folder_id: str) -> bool:
+    def delete_folder(self, folder_id: str, dry_run: bool = False) -> bool:
         """Delete folder configuration.
 
         Args:
             folder_id: Folder configuration ID
+            dry_run: When True, validates the deletion without modifying data.
 
         Returns:
-            bool: True if deletion was successful
+            bool: True if deletion was successful (or would succeed)
         """
         if folder_id in self._configurations:
-            config = self._configurations.pop(folder_id)
-            self.save_configurations()
-            self.logger.info(f"Deleted folder configuration: {config.name}")
+            if dry_run:
+                self.logger.debug(
+                    f"Dry run: would delete folder configuration: "
+                    f"{self._configurations[folder_id].name}"
+                )
+            else:
+                config = self._configurations.pop(folder_id)
+                self.save_configurations()
+                self.logger.info(f"Deleted folder configuration: {config.name}")
             return True
         else:
             self.logger.error(f"Folder not found: {folder_id}")
             return False
 
-    def save_configurations(self) -> bool:
+    def save_configurations(self, dry_run: bool = False) -> bool:
         """Save configurations to file.
 
+        Args:
+            dry_run: When True, validates the data structure without writing
+                     any files to disk.
+
         Returns:
-            bool: True if save was successful
+            bool: True if save was successful (or would succeed)
         """
         try:
-            # Ensure config directory exists
-            self._config_file.parent.mkdir(parents=True, exist_ok=True)
-
             # Convert configurations to serializable format
             data = {
                 "version": "1.0",
@@ -417,6 +419,16 @@ class FolderConfigurationManager:
                 },
                 "export_timestamp": datetime.now().isoformat(),
             }
+
+            if dry_run:
+                self.logger.debug(
+                    "Dry run: configuration serialisation validated; "
+                    "no file written."
+                )
+                return True
+
+            # Ensure config directory exists
+            self._config_file.parent.mkdir(parents=True, exist_ok=True)
 
             # Write to file
             with open(self._config_file, "w", encoding="utf-8") as f:
@@ -452,13 +464,9 @@ class FolderConfigurationManager:
                     config = FolderConfiguration.from_dict(config_data)
                     self._configurations[folder_id] = config
                 except Exception as e:
-                    self.logger.error(
-                        f"Failed to load configuration {folder_id}: {e}"
-                    )
+                    self.logger.error(f"Failed to load configuration {folder_id}: {e}")
 
-            self.logger.info(
-                f"Loaded {len(self._configurations)} configurations"
-            )
+            self.logger.info(f"Loaded {len(self._configurations)} configurations")
             return True
 
         except Exception as e:
@@ -545,18 +553,14 @@ class FolderConfigurationManager:
             # Save merged configurations
             self.save_configurations()
 
-            self.logger.info(
-                f"Imported {len(imported_configs)} configurations"
-            )
+            self.logger.info(f"Imported {len(imported_configs)} configurations")
             return True
 
         except Exception as e:
             self.logger.error(f"Failed to import configurations: {e}")
             return False
 
-    def backup_configurations(
-        self, backup_path: Union[str, Path] = None
-    ) -> bool:
+    def backup_configurations(self, backup_path: Union[str, Path] = None) -> bool:
         """Create backup of configurations.
 
         Args:
@@ -568,8 +572,7 @@ class FolderConfigurationManager:
         if backup_path is None:
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             backup_path = (
-                self._config_file.parent
-                / f"advanced_folders_backup_{timestamp}.json"
+                self._config_file.parent / f"advanced_folders_backup_{timestamp}.json"
             )
 
         return self.export_configurations(backup_path)
@@ -582,8 +585,7 @@ class FolderConfigurationManager:
         """
         total_configs = len(self._configurations)
         total_directories = sum(
-            len(config.directory_paths)
-            for config in self._configurations.values()
+            len(config.directory_paths) for config in self._configurations.values()
         )
 
         # Calculate other statistics
@@ -591,9 +593,7 @@ class FolderConfigurationManager:
             "total_configurations": total_configs,
             "total_directories": total_directories,
             "configurations_with_auto_refresh": sum(
-                1
-                for config in self._configurations.values()
-                if config.auto_refresh
+                1 for config in self._configurations.values() if config.auto_refresh
             ),
             "configurations_with_content_search": sum(
                 1

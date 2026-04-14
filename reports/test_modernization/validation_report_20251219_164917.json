@@ -1,0 +1,45 @@
+{
+  "session_id": "20251219_164917",
+  "timestamp": "2025-12-19T16:49:17.561309",
+  "summary": {
+    "files_validated": 1,
+    "files_passed": 0,
+    "files_failed": 0,
+    "files_error": 1,
+    "total_tests": 0,
+    "tests_passed": 0,
+    "tests_failed": 0,
+    "rollbacks_performed": 0,
+    "avg_coverage_improvement": 0.0
+  },
+  "results": [
+    {
+      "test_file": "tests\\modernization_analysis\\test_empty_folders_modernized.py",
+      "status": "error",
+      "tests": {
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0,
+        "total": 0
+      },
+      "coverage_before": null,
+      "coverage_after": null,
+      "coverage_improvement": 0.0,
+      "error_message": "Modernization failed: usage: import_modernization_script.py [-h] [--dry-run] [--execute]\n                                      [--project-root PROJECT_ROOT]\n                                      [--rollback SESSION_ID] [--validate]\n                                      [files ...]\nimport_modernization_script.py: error: unrecognized arguments: --file\n",
+      "rollback_performed": false,
+      "validation_time_ms": 275.2
+    }
+  ],
+  "passed_files": [],
+  "failed_files": [],
+  "error_files": [
+    {
+      "file": "tests\\modernization_analysis\\test_empty_folders_modernized.py",
+      "error": "Modernization failed: usage: import_modernization_script.py [-h] [--dry-run] [--execute]\n                                      [--project-root PROJECT_ROOT]\n                                      [--rollback SESSION_ID] [--validate]\n                                      [files ...]\nimport_modernization_script.py: error: unrecognized arguments: --file\n"
+    }
+  ],
+  "configuration": {
+    "rollback_on_failure": true,
+    "collect_coverage": false
+  }
+}

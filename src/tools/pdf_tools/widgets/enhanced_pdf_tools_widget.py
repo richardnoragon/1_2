@@ -31,6 +31,8 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
+from src.gui.themes import token
+
 
 class PDFToolsStateManager:
     """
@@ -60,9 +62,7 @@ class PDFToolsStateManager:
         """Get the current working PDF file"""
         return self.current_file
 
-    def save_operation_state(
-        self, tool_name: str, operation: str, parameters: Dict
-    ):
+    def save_operation_state(self, tool_name: str, operation: str, parameters: Dict):
         """Save operation state for history tracking"""
         operation_record = {
             "tool": tool_name,
@@ -133,13 +133,13 @@ class EnhancedPDFToolsWidget(QWidget):
         header_frame = QFrame()
         header_frame.setFrameStyle(QFrame.StyledPanel)
         header_frame.setStyleSheet(
-            """
-            QFrame {
-                background-color: #f8f9fa;
-                border: 1px solid #dee2e6;
+            f"""
+            QFrame {{
+                background-color: {token('dialog_background')};
+                border: 1px solid {token('border_light')};
                 border-radius: 8px;
                 padding: 10px;
-            }
+            }}
         """
         )
 
@@ -151,25 +151,25 @@ class EnhancedPDFToolsWidget(QWidget):
 
         self.current_file_label = QLabel("No file selected")
         self.current_file_label.setStyleSheet(
-            "font-weight: bold; color: #495057;"
+            f"font-weight: bold; color: {token('text_secondary')};"
         )
         file_layout.addWidget(self.current_file_label)
 
         # File selection button
         select_file_btn = QPushButton("Select PDF File")
         select_file_btn.setStyleSheet(
-            """
-            QPushButton {
-                background-color: #007bff;
+            f"""
+            QPushButton {{
+                background-color: {token('button_primary')};
                 color: white;
                 border: none;
                 padding: 8px 16px;
                 border-radius: 4px;
                 font-weight: bold;
-            }
-            QPushButton:hover {
-                background-color: #0056b3;
-            }
+            }}
+            QPushButton:hover {{
+                background-color: {token('button_primary')};
+            }}
         """
         )
         select_file_btn.clicked.connect(self.select_pdf_file)
@@ -206,9 +206,9 @@ class EnhancedPDFToolsWidget(QWidget):
         # Create title
         title_label = QLabel("PDF Tools Categories")
         title_label.setStyleSheet(
-            """
+            f"""
             font: bold 16pt "Segoe UI";
-            color: #212529;
+            color: {token('text_primary')};
             margin: 10px 0;
         """
         )
@@ -237,18 +237,18 @@ class EnhancedPDFToolsWidget(QWidget):
         back_layout = QHBoxLayout()
         self.back_button = QPushButton("← Back to Categories")
         self.back_button.setStyleSheet(
-            """
-            QPushButton {
-                background-color: #6c757d;
+            f"""
+            QPushButton {{
+                background-color: {token('text_muted')};
                 color: white;
                 border: none;
                 padding: 10px 20px;
                 border-radius: 5px;
                 font-weight: bold;
-            }
-            QPushButton:hover {
-                background-color: #5a6268;
-            }
+            }}
+            QPushButton:hover {{
+                background-color: {token('color_grey_medium')};
+            }}
         """
         )
         self.back_button.clicked.connect(self.show_categories)
@@ -259,9 +259,9 @@ class EnhancedPDFToolsWidget(QWidget):
         # Category title label
         self.category_title_label = QLabel()
         self.category_title_label.setStyleSheet(
-            """
+            f"""
             font: bold 14pt "Segoe UI";
-            color: #212529;
+            color: {token('text_primary')};
             margin: 10px 0;
         """
         )
@@ -362,14 +362,14 @@ class EnhancedPDFToolsWidget(QWidget):
         frame.setStyleSheet(
             f"""
             QFrame {{
-                background-color: #ffffff;
-                border: 2px solid #e9ecef;
+                background-color: {token('window_background')};
+                border: 2px solid {token('border_light')};
                 border-radius: 12px;
                 margin: 5px;
             }}
             QFrame:hover {{
                 border-color: {color};
-                background-color: #f8f9fa;
+                background-color: {token('dialog_background')};
             }}
         """
         )
@@ -411,9 +411,9 @@ class EnhancedPDFToolsWidget(QWidget):
         desc_label.setWordWrap(True)
         desc_label.setAlignment(Qt.AlignCenter)
         desc_label.setStyleSheet(
-            """
+            f"""
             font-size: 11pt;
-            color: #6c757d;
+            color: {token('text_muted')};
             font-weight: normal;
         """
         )
@@ -429,9 +429,7 @@ class EnhancedPDFToolsWidget(QWidget):
         self.clear_programs_layout()
 
         # Set category title
-        self.category_title_label.setText(
-            f"{category_name} - Available Programs"
-        )
+        self.category_title_label.setText(f"{category_name} - Available Programs")
 
         # Discover programs in the folder
         programs = self.discover_programs_in_folder(folder_path)
@@ -441,9 +439,9 @@ class EnhancedPDFToolsWidget(QWidget):
             no_programs_label = QLabel("No programs found in this category")
             no_programs_label.setAlignment(Qt.AlignCenter)
             no_programs_label.setStyleSheet(
-                """
+                f"""
                 font-size: 12pt;
-                color: #6c757d;
+                color: {token('text_muted')};
                 margin: 50px;
             """
             )
@@ -471,16 +469,12 @@ class EnhancedPDFToolsWidget(QWidget):
         self.programs_container.setVisible(True)
         # Hide categories (find the parent of categories_layout)
         categories_widget = self.categories_layout.parent()
-        while categories_widget and not hasattr(
-            categories_widget, "setVisible"
-        ):
+        while categories_widget and not hasattr(categories_widget, "setVisible"):
             categories_widget = categories_widget.parent()
         if categories_widget and hasattr(categories_widget, "setVisible"):
             categories_widget.parent().setVisible(False)
 
-    def discover_programs_in_folder(
-        self, folder_path: Path
-    ) -> List[Dict[str, str]]:
+    def discover_programs_in_folder(self, folder_path: Path) -> List[Dict[str, str]]:
         """Discover Python programs in a folder and extract information"""
         programs = []
 
@@ -555,17 +549,17 @@ class EnhancedPDFToolsWidget(QWidget):
         frame = QFrame()
         frame.setFrameStyle(QFrame.StyledPanel)
         frame.setStyleSheet(
-            """
-            QFrame {
-                background-color: #ffffff;
-                border: 2px solid #e9ecef;
+            f"""
+            QFrame {{
+                background-color: {token('window_background')};
+                border: 2px solid {token('border_light')};
                 border-radius: 12px;
                 margin: 5px;
-            }
-            QFrame:hover {
-                border-color: #007bff;
-                background-color: #f8f9fa;
-            }
+            }}
+            QFrame:hover {{
+                border-color: {token('button_primary')};
+                background-color: {token('dialog_background')};
+            }}
         """
         )
         frame.setMinimumHeight(120)
@@ -578,27 +572,25 @@ class EnhancedPDFToolsWidget(QWidget):
         # Program button
         button = QPushButton(name)
         button.setStyleSheet(
-            """
-            QPushButton {
-                background-color: #007bff;
+            f"""
+            QPushButton {{
+                background-color: {token('button_primary')};
                 color: white;
                 font: bold 12pt "Segoe UI";
                 border: none;
                 padding: 10px;
                 border-radius: 6px;
                 min-height: 40px;
-            }
-            QPushButton:hover {
-                background-color: #0056b3;
-            }
-            QPushButton:pressed {
-                background-color: #004085;
-            }
+            }}
+            QPushButton:hover {{
+                background-color: {token('button_primary')};
+            }}
+            QPushButton:pressed {{
+                background-color: {token('color_navy_dark')};
+            }}
         """
         )
-        button.clicked.connect(
-            lambda: self.launch_program(name, file_path, category)
-        )
+        button.clicked.connect(lambda: self.launch_program(name, file_path, category))
         layout.addWidget(button)
 
         # Description
@@ -606,9 +598,9 @@ class EnhancedPDFToolsWidget(QWidget):
         desc_label.setWordWrap(True)
         desc_label.setAlignment(Qt.AlignCenter)
         desc_label.setStyleSheet(
-            """
+            f"""
             font-size: 10pt;
-            color: #6c757d;
+            color: {token('text_muted')};
             font-weight: normal;
         """
         )
@@ -628,9 +620,7 @@ class EnhancedPDFToolsWidget(QWidget):
         self.programs_container.setVisible(False)
         # Show categories container
         categories_widget = self.categories_layout.parent()
-        while categories_widget and not hasattr(
-            categories_widget, "setVisible"
-        ):
+        while categories_widget and not hasattr(categories_widget, "setVisible"):
             categories_widget = categories_widget.parent()
         if categories_widget and hasattr(categories_widget, "setVisible"):
             categories_widget.parent().setVisible(True)
@@ -702,8 +692,8 @@ class EnhancedPDFToolsWidget(QWidget):
         status_frame.setStyleSheet(
             """
             QFrame {
-                background-color: #f8f9fa;
-                border: 1px solid #dee2e6;
+                background-color: {token('dialog_background')};
+                border: 1px solid {token('border_light')};
                 border-radius: 8px;
                 padding: 10px;
             }
@@ -718,14 +708,14 @@ class EnhancedPDFToolsWidget(QWidget):
         self.progress_bar.setStyleSheet(
             """
             QProgressBar {
-                border: 1px solid #dee2e6;
+                border: 1px solid {token('border_light')};
                 border-radius: 4px;
                 text-align: center;
-                background-color: #f8f9fa;
+                background-color: {token('dialog_background')};
                 height: 20px;
             }
             QProgressBar::chunk {
-                background-color: #007bff;
+                background-color: {token('button_primary')};
                 border-radius: 3px;
             }
         """
@@ -734,7 +724,9 @@ class EnhancedPDFToolsWidget(QWidget):
 
         # Status label
         self.status_label = QLabel("Ready")
-        self.status_label.setStyleSheet("font-weight: bold; color: #495057;")
+        self.status_label.setStyleSheet(
+            f"font-weight: bold; color: {token('text_secondary')};"
+        )
         status_layout.addWidget(self.status_label)
 
         self.main_layout.addWidget(status_frame)
@@ -744,12 +736,12 @@ class EnhancedPDFToolsWidget(QWidget):
         self.setStyleSheet(
             """
             QWidget {
-                background-color: #ffffff;
+                background-color: {token('window_background')};
                 font-family: "Segoe UI", Arial, sans-serif;
             }
             QGroupBox {
                 font-weight: bold;
-                border: 2px solid #dee2e6;
+                border: 2px solid {token('border_light')};
                 border-radius: 8px;
                 margin-top: 10px;
                 padding-top: 10px;
@@ -789,9 +781,7 @@ class EnhancedPDFToolsWidget(QWidget):
     def show_recent_files(self):
         """Show recent files menu"""
         if not self.state_manager.recent_files:
-            QMessageBox.information(
-                self, "Recent Files", "No recent files available."
-            )
+            QMessageBox.information(self, "Recent Files", "No recent files available.")
             return
 
         # Create a simple dialog with recent files
@@ -807,15 +797,11 @@ class EnhancedPDFToolsWidget(QWidget):
         file_list = QListWidget()
         for file_path in self.state_manager.recent_files:
             if os.path.exists(file_path):
-                file_list.addItem(
-                    f"{os.path.basename(file_path)} - {file_path}"
-                )
+                file_list.addItem(f"{os.path.basename(file_path)} - {file_path}")
 
         layout.addWidget(file_list)
 
-        buttons = QDialogButtonBox(
-            QDialogButtonBox.Ok | QDialogButtonBox.Cancel
-        )
+        buttons = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
         buttons.accepted.connect(dialog.accept)
         buttons.rejected.connect(dialog.reject)
         layout.addWidget(buttons)

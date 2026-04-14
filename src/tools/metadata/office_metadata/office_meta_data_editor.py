@@ -11,6 +11,7 @@ import sys
 from datetime import datetime
 
 try:
+    from src.gui.themes import token
     from PyQt5.QtCore import Qt, QThread, pyqtSignal
     from PyQt5.QtWidgets import (
         QApplication,
@@ -528,7 +529,7 @@ class OfficeMetaDataEditorGUI(StandardWindow):
         formats_label = QLabel(
             "Supported: DOCX, XLSX, PPTX, DOC, XLS, PPT, PDF"
         )
-        formats_label.setStyleSheet("color: #7f8c8d; font-size: 10px;")
+        formats_label.setStyleSheet(f"color: {token('text_secondary')}; font-size: 10px;")
         selection_layout.addWidget(formats_label, 1, 2, 1, 2)
 
         # Action buttons
@@ -537,7 +538,7 @@ class OfficeMetaDataEditorGUI(StandardWindow):
         self.read_button.setStyleSheet(
             """
             QPushButton {
-                background-color: #3498db;
+                background-color: {token('accent')};
                 color: white;
                 border: none;
                 padding: 8px 16px;
@@ -545,7 +546,7 @@ class OfficeMetaDataEditorGUI(StandardWindow):
                 font-weight: bold;
             }
             QPushButton:hover {
-                background-color: #2980b9;
+                background-color: {token('button_primary_hover')};
             }
         """
         )
@@ -556,7 +557,7 @@ class OfficeMetaDataEditorGUI(StandardWindow):
         self.edit_button.setStyleSheet(
             """
             QPushButton {
-                background-color: #e67e22;
+                background-color: {token('semantic_warning')};
                 color: white;
                 border: none;
                 padding: 8px 16px;
@@ -564,7 +565,7 @@ class OfficeMetaDataEditorGUI(StandardWindow):
                 font-weight: bold;
             }
             QPushButton:hover {
-                background-color: #d35400;
+                background-color: {token('semantic_warning')};
             }
         """
         )

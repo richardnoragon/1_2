@@ -1,0 +1,23 @@
+{
+  "session_id": "20251219_165207",
+  "dry_run": true,
+  "summary": {
+    "total_files": 1,
+    "successful_modernizations": 1,
+    "failed": 0,
+    "unchanged": 0,
+    "total_changes": 2
+  },
+  "successful_files": [
+    {
+      "file": "C:\\Users\\HP1\\1_2\\tests\\test_encryption.py",
+      "changes": 2,
+      "updates": [
+        "Module: file_utilities_2.core -> src.core",
+        "Module: file_utilities_2 -> src"
+      ]
+    }
+  ],
+  "failed_files": [],
+  "timestamp": "2025-12-19T16:52:07.665119"
+}

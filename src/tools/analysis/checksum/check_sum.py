@@ -15,14 +15,29 @@ from PyQt5.QtWidgets import (
     QListWidget,
     QMainWindow,
     QMessageBox,
-    QPushButton,
     QVBoxLayout,
     QWidget,
 )
 
+from src.gui.themes import token
+
+try:
+    from src.gui.components.buttons import PrimaryButton, SecondaryButton
+    from src.gui.components.modal import Modal
+
+    _COMPONENTS_AVAILABLE = True
+except ImportError:
+    from PyQt5.QtWidgets import QPushButton as PrimaryButton
+    from PyQt5.QtWidgets import QPushButton as SecondaryButton
+
+    Modal = None
+    _COMPONENTS_AVAILABLE = False
+
 # Import SafeStandardWindow for reliable menu integration
 try:
-    from src.gui.safe_standard_window import SafeStandardWindow as StandardWindow
+    from src.gui.safe_standard_window import (
+        SafeStandardWindow as StandardWindow,
+    )
 
     STANDARD_WINDOW_AVAILABLE = True
 except ImportError as safe_window_error:
@@ -137,20 +152,35 @@ class ChecksumGUI(StandardWindow):
         </ul>
         """
 
-        QMessageBox.information(self, "Checksum Calculator Help", help_text)
+        if Modal:
+            Modal("Checksum Calculator Help", help_text, parent=self).exec_()
+        else:
+            QMessageBox.information(self, "Checksum Calculator Help", help_text)
 
     def show_preferences(self):
         """Show Checksum Calculator preferences."""
-        QMessageBox.information(
-            self,
-            "Checksum Calculator Preferences",
-            "Checksum Calculator preferences:\n\n"
-            "• Default checksum algorithm\n"
-            "• Output format options\n"
-            "• Progress display settings\n"
-            "• Auto-save results location\n\n"
-            "Advanced preferences coming soon!",
-        )
+        if Modal:
+            Modal(
+                "Checksum Calculator Preferences",
+                "Checksum Calculator preferences:\n\n"
+                "• Default checksum algorithm\n"
+                "• Output format options\n"
+                "• Progress display settings\n"
+                "• Auto-save results location\n\n"
+                "Advanced preferences coming soon!",
+                parent=self,
+            ).exec_()
+        else:
+            QMessageBox.information(
+                self,
+                "Checksum Calculator Preferences",
+                "Checksum Calculator preferences:\n\n"
+                "• Default checksum algorithm\n"
+                "• Output format options\n"
+                "• Progress display settings\n"
+                "• Auto-save results location\n\n"
+                "Advanced preferences coming soon!",
+            )
 
     def refresh_view(self):
         """Refresh/clear the current calculation results."""
@@ -170,16 +200,16 @@ class ChecksumGUI(StandardWindow):
         # Add header
         header_label = QLabel("File Checksum Calculator")
         header_label.setStyleSheet(
-            """
-            QLabel {
+            f"""
+            QLabel {{
                 font-size: 18px;
                 font-weight: bold;
-                color: #2c3e50;
+                color: {token('text_primary')};
                 padding: 10px;
-                background-color: #ecf0f1;
+                background-color: {token('background')};
                 border-radius: 5px;
                 margin-bottom: 10px;
-            }
+            }}
         """
         )
         layout.addWidget(header_label)
@@ -188,7 +218,7 @@ class ChecksumGUI(StandardWindow):
         file_group = QGroupBox("File Selection")
         file_layout = QVBoxLayout(file_group)
 
-        select_button = QPushButton("Select File")
+        select_button = SecondaryButton("Select File")
         select_button.clicked.connect(self.select_file)
         file_layout.addWidget(select_button)
 
@@ -198,7 +228,7 @@ class ChecksumGUI(StandardWindow):
         layout.addWidget(file_group)
 
         # Calculate button
-        calc_button = QPushButton("Calculate MD5 Checksum")
+        calc_button = PrimaryButton("Calculate MD5 Checksum")
         calc_button.clicked.connect(self.calculate_checksum)
         layout.addWidget(calc_button)
 
@@ -220,7 +250,10 @@ class ChecksumGUI(StandardWindow):
     def calculate_checksum(self):
         """Calculate MD5 checksum."""
         if not self.selected_file:
-            QMessageBox.warning(self, "Warning", "Please select a file first.")
+            if Modal:
+                Modal("Warning", "Please select a file first.", parent=self).exec_()
+            else:
+                QMessageBox.warning(self, "Warning", "Please select a file first.")
             return
 
         try:
@@ -234,7 +267,14 @@ class ChecksumGUI(StandardWindow):
             self.results_list.addItem(result)
 
         except Exception as e:
-            QMessageBox.critical(self, "Error", f"Failed to calculate checksum: {e}")
+            if Modal:
+                Modal(
+                    "Error", f"Failed to calculate checksum: {e}", parent=self
+                ).exec_()
+            else:
+                QMessageBox.critical(
+                    self, "Error", f"Failed to calculate checksum: {e}"
+                )
 
 
 def main():

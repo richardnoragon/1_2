@@ -1,0 +1,42 @@
+{
+  "session_id": "20251219_164947",
+  "timestamp": "2025-12-19T16:49:49.151508",
+  "summary": {
+    "files_validated": 1,
+    "files_passed": 1,
+    "files_failed": 0,
+    "files_error": 0,
+    "total_tests": 11,
+    "tests_passed": 9,
+    "tests_failed": 0,
+    "rollbacks_performed": 0,
+    "avg_coverage_improvement": 0.0
+  },
+  "results": [
+    {
+      "test_file": "tests\\modernization_analysis\\test_empty_folders_modernized.py",
+      "status": "passed",
+      "tests": {
+        "passed": 9,
+        "failed": 0,
+        "skipped": 2,
+        "total": 11
+      },
+      "coverage_before": null,
+      "coverage_after": null,
+      "coverage_improvement": 0.0,
+      "error_message": null,
+      "rollback_performed": false,
+      "validation_time_ms": 1781.92
+    }
+  ],
+  "passed_files": [
+    "tests\\modernization_analysis\\test_empty_folders_modernized.py"
+  ],
+  "failed_files": [],
+  "error_files": [],
+  "configuration": {
+    "rollback_on_failure": true,
+    "collect_coverage": false
+  }
+}

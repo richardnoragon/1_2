@@ -117,6 +117,7 @@ class Layout:
     INPUT_HEIGHT = 28
     TAB_HEIGHT = 36
     HEADER_HEIGHT = 40
+    STATUS_BAR_HEIGHT = 24
 
     # Dialog dimensions
     DIALOG_MIN_WIDTH = 600
@@ -150,9 +151,7 @@ class FileTypes:
     SPREADSHEETS = [".xls", ".xlsx", ".csv", ".ods"]
 
     # All categories combined
-    ALL_TYPES = (
-        DOCUMENTS + IMAGES + VIDEOS + AUDIO + ARCHIVES + CODE + SPREADSHEETS
-    )
+    ALL_TYPES = DOCUMENTS + IMAGES + VIDEOS + AUDIO + ARCHIVES + CODE + SPREADSHEETS
 
 
 class Icons:
@@ -338,9 +337,7 @@ class ValidationPatterns:
 
     # File and directory patterns
     FILENAME_PATTERN = r'^[^<>:"/\\|?*]+$'
-    DIRECTORY_PATH_PATTERN = (
-        r'^[a-zA-Z]:\\(?:[^<>:"/\\|?*]+\\)*[^<>:"/\\|?*]*$'
-    )
+    DIRECTORY_PATH_PATTERN = r'^[a-zA-Z]:\\(?:[^<>:"/\\|?*]+\\)*[^<>:"/\\|?*]*$'
 
     # Text patterns
     NON_EMPTY_TEXT = r".+"
@@ -369,12 +366,8 @@ class Messages:
     ERROR_NO_PERMISSION = "Insufficient permissions for: {path}"
 
     # Warning messages
-    WARNING_UNSAVED_CHANGES = (
-        "You have unsaved changes. Do you want to save them?"
-    )
-    WARNING_RESET_SETTINGS = (
-        "This will reset all settings to defaults. Continue?"
-    )
+    WARNING_UNSAVED_CHANGES = "You have unsaved changes. Do you want to save them?"
+    WARNING_RESET_SETTINGS = "This will reset all settings to defaults. Continue?"
     WARNING_LARGE_DIRECTORY = (
         "This directory contains many files. Processing may take time."
     )

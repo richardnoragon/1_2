@@ -1,0 +1,29 @@
+{
+  "session_id": "20251219_163833",
+  "dry_run": true,
+  "summary": {
+    "total_files": 2,
+    "successful_modernizations": 2,
+    "failed": 0,
+    "unchanged": 0,
+    "total_changes": 2
+  },
+  "successful_files": [
+    {
+      "file": "tests\\test_checksum.py",
+      "changes": 1,
+      "updates": [
+        "Module: file_utilities_2.core \u2192 src.core"
+      ]
+    },
+    {
+      "file": "tests\\test_compression_logic.py",
+      "changes": 1,
+      "updates": [
+        "Standalone: compress_decompress \u2192 src.tools.file_operations.compression.compress_decompress"
+      ]
+    }
+  ],
+  "failed_files": [],
+  "timestamp": "2025-12-19T16:38:33.745582"
+}

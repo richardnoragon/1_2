@@ -5,15 +5,16 @@ categorization with support for multiple color schemes.
 """
 
 from typing import Dict, List, Optional
+
 from .catalog_data_model import (
-    FileEntry,
+    AlphabeticalCategory,
     ColorInfo,
-    SortCriteria,
     ColorScheme,
+    DateCategory,
+    FileEntry,
     FileType,
     SizeCategory,
-    DateCategory,
-    AlphabeticalCategory,
+    SortCriteria,
 )
 
 
@@ -363,7 +364,7 @@ class ColorCodingEngine:
     def _get_pattern_css(self, pattern_type: str) -> str:
         """Get CSS for accessibility patterns."""
         patterns = {
-            "dots": """background-image: radial-gradient(circle, #000 1px, transparent 1px);
+            "dots": f"""background-image: radial-gradient(circle, {token('color_black')} 1px, transparent 1px);
     background-size: 8px 8px;""",
             "diagonal": """background-image: repeating-linear-gradient(
         45deg, transparent, transparent 2px, rgba(0,0,0,0.1) 2px, rgba(0,0,0,0.1) 4px);""",

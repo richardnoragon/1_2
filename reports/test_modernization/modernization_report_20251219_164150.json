@@ -1,0 +1,30 @@
+{
+  "session_id": "20251219_164150",
+  "dry_run": true,
+  "summary": {
+    "total_files": 2,
+    "successful_modernizations": 2,
+    "failed": 0,
+    "unchanged": 0,
+    "total_changes": 3
+  },
+  "successful_files": [
+    {
+      "file": "tests\\test_encryption.py",
+      "changes": 2,
+      "updates": [
+        "Module: file_utilities_2.core \u2192 src.core",
+        "Module: file_utilities_2 \u2192 src"
+      ]
+    },
+    {
+      "file": "tests\\test_size_analyzer.py",
+      "changes": 1,
+      "updates": [
+        "Module: file_utilities_2.core \u2192 src.core"
+      ]
+    }
+  ],
+  "failed_files": [],
+  "timestamp": "2025-12-19T16:41:50.875098"
+}

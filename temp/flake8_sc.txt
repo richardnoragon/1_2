@@ -1,0 +1,181 @@
+src/tools/system/system_cleanup/core\cleanup_base.py:8:1: F401 'os' imported but unused
+src/tools/system/system_cleanup/core\cleanup_base.py:9:1: F401 'abc.ABC' imported but unused
+src/tools/system/system_cleanup/core\cleanup_base.py:9:1: F401 'abc.abstractmethod' imported but unused
+src/tools/system/system_cleanup/core\safety_manager.py:8:1: F401 'os' imported but unused
+src/tools/system/system_cleanup/core\safety_manager.py:15:1: F401 'typing.List' imported but unused
+src/tools/system/system_cleanup/core\safety_manager.py:129:80: E501 line too long (82 > 79 characters)
+src/tools/system/system_cleanup/core\safety_manager.py:195:80: E501 line too long (80 > 79 characters)
+src/tools/system/system_cleanup/core\safety_manager.py:243:80: E501 line too long (80 > 79 characters)
+src/tools/system/system_cleanup/core\safety_manager.py:248:80: E501 line too long (87 > 79 characters)
+src/tools/system/system_cleanup/core\safety_manager.py:399:80: E501 line too long (86 > 79 characters)
+src/tools/system/system_cleanup/core\safety_manager.py:419:80: E501 line too long (80 > 79 characters)
+src/tools/system/system_cleanup/core\safety_manager.py:425:80: E501 line too long (84 > 79 characters)
+src/tools/system/system_cleanup/core\system_locations.py:9:1: F401 'typing.Optional' imported but unused
+src/tools/system/system_cleanup/core\system_locations.py:66:9: F841 local variable 'system_drive' is assigned to but never used
+src/tools/system/system_cleanup/core\system_locations.py:149:9: F841 local variable 'backup_dirs' is assigned to but never used
+src/tools/system/system_cleanup/core\system_locations.py:211:9: F841 local variable 'dump_dirs' is assigned to but never used
+src/tools/system/system_cleanup/core\system_locations.py:345:80: E501 line too long (83 > 79 characters)
+src/tools/system/system_cleanup/core\system_locations.py:351:80: E501 line too long (81 > 79 characters)
+src/tools/system/system_cleanup/core\system_locations.py:361:80: E501 line too long (95 > 79 characters)
+src/tools/system/system_cleanup/core\system_locations.py:362:80: E501 line too long (98 > 79 characters)
+src/tools/system/system_cleanup/core\windows_utils.py:12:1: F401 'ctypes.wintypes' imported but unused
+src/tools/system/system_cleanup/core\windows_utils.py:14:1: F401 'typing.Optional' imported but unused
+src/tools/system/system_cleanup/core\windows_utils.py:16:1: F401 'tempfile' imported but unused
+src/tools/system/system_cleanup/core\windows_utils.py:341:80: E501 line too long (143 > 79 characters)
+src/tools/system/system_cleanup/core\windows_utils.py:390:80: E501 line too long (83 > 79 characters)
+src/tools/system/system_cleanup/core\windows_utils.py:431:80: E501 line too long (85 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup.py:6:80: E501 line too long (87 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup.py:10:1: F401 'os' imported but unused
+src/tools/system/system_cleanup/system_cleanup.py:12:1: F401 'pathlib.Path' imported but unused
+src/tools/system/system_cleanup/system_cleanup.py:13:1: F401 'typing.Any' imported but unused
+src/tools/system/system_cleanup/system_cleanup.py:13:1: F401 'typing.Dict' imported but unused
+src/tools/system/system_cleanup/system_cleanup.py:13:1: F401 'typing.Optional' imported but unused
+src/tools/system/system_cleanup/system_cleanup.py:16:5: F401 'PyQt5.QtCore.Qt' imported but unused
+src/tools/system/system_cleanup/system_cleanup.py:18:5: F401 'PyQt5.QtWidgets.QCheckBox' imported but unused
+src/tools/system/system_cleanup/system_cleanup.py:18:5: F401 'PyQt5.QtWidgets.QGridLayout' imported but unused
+src/tools/system/system_cleanup/system_cleanup.py:18:5: F401 'PyQt5.QtWidgets.QHBoxLayout' imported but unused
+src/tools/system/system_cleanup/system_cleanup.py:18:5: F401 'PyQt5.QtWidgets.QMessageBox' imported but unused
+src/tools/system/system_cleanup/system_cleanup.py:18:5: F401 'PyQt5.QtWidgets.QProgressBar' imported but unused
+src/tools/system/system_cleanup/system_cleanup.py:18:5: F401 'PyQt5.QtWidgets.QSpinBox' imported but unused
+src/tools/system/system_cleanup/system_cleanup.py:18:5: F401 'PyQt5.QtWidgets.QTabWidget' imported but unused
+src/tools/system/system_cleanup/system_cleanup.py:54:80: E501 line too long (80 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup.py:89:80: E501 line too long (87 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup.py:92:80: E501 line too long (90 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup.py:109:80: E501 line too long (87 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup.py:137:80: E501 line too long (88 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup.py:202:80: E501 line too long (82 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup.py:215:80: E501 line too long (82 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup.py:245:80: E501 line too long (90 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup.py:255:80: E501 line too long (81 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup.py:274:32: F541 f-string is missing placeholders
+src/tools/system/system_cleanup/system_cleanup.py:274:80: E501 line too long (85 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup.py:282:37: F541 f-string is missing placeholders
+src/tools/system/system_cleanup/system_cleanup.py:286:80: E501 line too long (87 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup.py:308:13: F841 local variable 'error_text' is assigned to but never used
+src/tools/system/system_cleanup/system_cleanup_gui.py:11:1: F401 'os' imported but unused
+src/tools/system/system_cleanup/system_cleanup_gui.py:12:1: F401 'sys' imported but unused
+src/tools/system/system_cleanup/system_cleanup_gui.py:13:1: F401 'datetime.datetime' imported but unused
+src/tools/system/system_cleanup/system_cleanup_gui.py:14:1: F401 'pathlib.Path' imported but unused
+src/tools/system/system_cleanup/system_cleanup_gui.py:15:1: F401 'typing.List' imported but unused
+src/tools/system/system_cleanup/system_cleanup_gui.py:15:1: F401 'typing.Optional' imported but unused
+src/tools/system/system_cleanup/system_cleanup_gui.py:18:5: F401 'PyQt5.QtCore.Qt' imported but unused
+src/tools/system/system_cleanup/system_cleanup_gui.py:18:5: F401 'PyQt5.QtCore.QTimer' imported but unused
+src/tools/system/system_cleanup/system_cleanup_gui.py:19:5: F401 'PyQt5.QtGui.QFont' imported but unused
+src/tools/system/system_cleanup/system_cleanup_gui.py:19:5: F401 'PyQt5.QtGui.QIcon' imported but unused
+src/tools/system/system_cleanup/system_cleanup_gui.py:19:5: F401 'PyQt5.QtGui.QPixmap' imported but unused
+src/tools/system/system_cleanup/system_cleanup_gui.py:20:5: F401 'PyQt5.QtWidgets.QAction' imported but unused
+src/tools/system/system_cleanup/system_cleanup_gui.py:20:5: F401 'PyQt5.QtWidgets.QApplication' imported but unused
+src/tools/system/system_cleanup/system_cleanup_gui.py:20:5: F401 'PyQt5.QtWidgets.QComboBox' imported but unused
+src/tools/system/system_cleanup/system_cleanup_gui.py:20:5: F401 'PyQt5.QtWidgets.QListWidget' imported but unused
+src/tools/system/system_cleanup/system_cleanup_gui.py:20:5: F401 'PyQt5.QtWidgets.QListWidgetItem' imported but unused
+src/tools/system/system_cleanup/system_cleanup_gui.py:20:5: F401 'PyQt5.QtWidgets.QMenuBar' imported but unused
+src/tools/system/system_cleanup/system_cleanup_gui.py:20:5: F401 'PyQt5.QtWidgets.QSplitter' imported but unused
+src/tools/system/system_cleanup/system_cleanup_gui.py:20:5: F401 'PyQt5.QtWidgets.QStatusBar' imported but unused
+src/tools/system/system_cleanup/system_cleanup_gui.py:92:80: E501 line too long (80 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:155:80: E501 line too long (80 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:175:80: E501 line too long (160 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:179:80: E501 line too long (150 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:185:80: E501 line too long (84 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:190:80: E501 line too long (84 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:195:80: E501 line too long (86 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:197:80: E501 line too long (115 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:206:80: E501 line too long (86 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:211:80: E501 line too long (116 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:213:80: E501 line too long (141 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:224:80: E501 line too long (87 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:240:80: E501 line too long (120 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:244:80: E501 line too long (132 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:257:80: E501 line too long (84 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:298:80: E501 line too long (80 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:307:80: E501 line too long (81 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:312:80: E501 line too long (81 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:317:80: E501 line too long (92 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:331:80: E501 line too long (80 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:363:80: E501 line too long (94 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:364:80: E501 line too long (88 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:369:80: E501 line too long (83 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:389:80: E501 line too long (93 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:390:80: E501 line too long (87 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:405:80: E501 line too long (82 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:493:80: E501 line too long (88 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:499:80: E501 line too long (82 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:517:80: E501 line too long (82 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:552:80: E501 line too long (101 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:617:80: E501 line too long (82 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:621:80: E501 line too long (88 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:635:80: E501 line too long (83 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:644:80: E501 line too long (87 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:654:80: E501 line too long (88 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:676:80: E501 line too long (87 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:720:80: E501 line too long (83 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:725:80: E501 line too long (89 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:731:80: E501 line too long (89 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:737:80: E501 line too long (84 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:742:80: E501 line too long (83 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:748:80: E501 line too long (95 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:754:80: E501 line too long (84 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:757:80: E501 line too long (84 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:759:80: E501 line too long (86 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:761:80: E501 line too long (87 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:767:80: E501 line too long (84 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:770:80: E501 line too long (81 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:772:80: E501 line too long (84 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:774:80: E501 line too long (91 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:780:80: E501 line too long (84 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:783:80: E501 line too long (83 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:785:80: E501 line too long (80 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:787:80: E501 line too long (115 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:795:80: E501 line too long (82 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:818:80: E501 line too long (81 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:827:80: E501 line too long (84 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:855:80: E501 line too long (96 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:980:80: E501 line too long (88 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:998:80: E501 line too long (84 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:1004:80: E501 line too long (82 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:1009:80: E501 line too long (81 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:1029:80: E501 line too long (92 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:1077:80: E501 line too long (86 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:1081:80: E501 line too long (87 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:1091:80: E501 line too long (85 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:1097:80: E501 line too long (81 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:1098:80: E501 line too long (81 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:1099:80: E501 line too long (84 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:1100:80: E501 line too long (84 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:1101:80: E501 line too long (81 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:1104:80: E501 line too long (84 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:1105:80: E501 line too long (84 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:1109:80: E501 line too long (81 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:1132:80: E501 line too long (82 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:1140:80: E501 line too long (81 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:1221:80: E501 line too long (80 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:1229:80: E501 line too long (85 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:1235:80: E501 line too long (80 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:1246:80: E501 line too long (86 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:1277:80: E501 line too long (81 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:1279:80: E501 line too long (87 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:1324:80: E501 line too long (81 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:1325:80: E501 line too long (82 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:1329:80: E501 line too long (83 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:1330:80: E501 line too long (83 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:1406:80: E501 line too long (85 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:1539:80: E501 line too long (83 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:1551:80: E501 line too long (84 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:1553:80: E501 line too long (83 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:1559:80: E501 line too long (81 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:1560:80: E501 line too long (81 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:1593:27: F541 f-string is missing placeholders
+src/tools/system/system_cleanup/system_cleanup_gui.py:1597:80: E501 line too long (88 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:1629:80: E501 line too long (84 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:1661:80: E501 line too long (82 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:1718:80: E501 line too long (87 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:1849:80: E501 line too long (86 > 79 characters)
+src/tools/system/system_cleanup/system_cleanup_gui.py:1859:80: E501 line too long (80 > 79 characters)
+src/tools/system/system_cleanup/tools\temp_cleaner.py:4:80: E501 line too long (82 > 79 characters)
+src/tools/system/system_cleanup/tools\temp_cleaner.py:9:1: F401 'time' imported but unused
+src/tools/system/system_cleanup/tools\temp_cleaner.py:11:1: F401 'typing.Optional' imported but unused
+src/tools/system/system_cleanup/tools\temp_cleaner.py:110:80: E501 line too long (82 > 79 characters)
+src/tools/system/system_cleanup/tools\temp_cleaner.py:145:80: E501 line too long (86 > 79 characters)
+src/tools/system/system_cleanup/tools\temp_cleaner.py:242:80: E501 line too long (86 > 79 characters)
+src/tools/system/system_cleanup/tools\temp_cleaner.py:262:80: E501 line too long (84 > 79 characters)
+src/tools/system/system_cleanup/tools\temp_cleaner.py:266:80: E501 line too long (87 > 79 characters)
+src/tools/system/system_cleanup/tools\temp_cleaner.py:313:80: E501 line too long (81 > 79 characters)

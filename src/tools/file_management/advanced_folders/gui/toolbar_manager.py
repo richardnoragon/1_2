@@ -36,6 +36,8 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
+from src.gui.themes import token
+
 
 class ToolbarAction:
     """Single toolbar action with metadata and behavior."""
@@ -87,9 +89,7 @@ class ToolbarAction:
 class ToolbarSection:
     """Logical section of toolbar with related actions."""
 
-    def __init__(
-        self, section_id: str, title: str, actions: List[ToolbarAction]
-    ):
+    def __init__(self, section_id: str, title: str, actions: List[ToolbarAction]):
         """Initialize toolbar section.
 
         Args:
@@ -394,6 +394,9 @@ class AdvancedFoldersToolbar(QObject):
         self.main_toolbar.setIconSize(QSize(24, 24))
         self.main_toolbar.setMovable(True)
         self.main_toolbar.setFloatable(False)
+        self.main_toolbar.setMinimumHeight(
+            44
+        )  # A11Y-8c: WCAG minimum interaction target
 
         # Build toolbar content
         self._build_toolbar_content(self.main_toolbar)
@@ -419,7 +422,9 @@ class AdvancedFoldersToolbar(QObject):
         self.quick_access_bar = QFrame(parent_widget)
         self.quick_access_bar.setObjectName("QuickAccessBar")
         self.quick_access_bar.setFrameStyle(QFrame.StyledPanel | QFrame.Raised)
-        self.quick_access_bar.setMaximumHeight(40)
+        self.quick_access_bar.setMinimumHeight(
+            52
+        )  # A11Y-8c: 44px buttons + 8px vertical margins
 
         layout = QHBoxLayout(self.quick_access_bar)
         layout.setContentsMargins(6, 4, 6, 4)
@@ -436,9 +441,7 @@ class AdvancedFoldersToolbar(QObject):
         for action_id in quick_actions:
             if action_id in self.action_registry:
                 action_def = self.action_registry[action_id]
-                button = self._create_toolbar_button(
-                    action_def, icon_only=True
-                )
+                button = self._create_toolbar_button(action_def, icon_only=True)
                 layout.addWidget(button)
 
         layout.addStretch()
@@ -446,7 +449,7 @@ class AdvancedFoldersToolbar(QObject):
         # Add context indicator
         self.context_label = QLabel("Default Context")
         self.context_label.setStyleSheet(
-            "QLabel { color: #666666; font-size: 11px; }"
+            f"QLabel { color: {token('text_muted')}; font-size: 11px; }"
         )
         layout.addWidget(self.context_label)
 
@@ -523,9 +526,7 @@ class AdvancedFoldersToolbar(QObject):
         if action_def.group:
             if action_def.group not in self.action_groups:
                 self.action_groups[action_def.group] = QActionGroup(self)
-                self.action_groups[action_def.group].setExclusive(
-                    action_def.checkable
-                )
+                self.action_groups[action_def.group].setExclusive(action_def.checkable)
 
             self.action_groups[action_def.group].addAction(qaction)
 
@@ -545,6 +546,12 @@ class AdvancedFoldersToolbar(QObject):
         """
         button = QToolButton()
         button.setObjectName(f"toolbar_btn_{action_def.action_id}")
+        button.setAccessibleName(action_def.title)
+        if (
+            action_def.tooltip
+            and action_def.tooltip.strip() != action_def.title.strip()
+        ):
+            button.setAccessibleDescription(action_def.tooltip)
 
         if not icon_only:
             button.setText(action_def.title)
@@ -572,6 +579,7 @@ class AdvancedFoldersToolbar(QObject):
                 )
             )
 
+        button.setMinimumSize(44, 44)  # A11Y-8c: WCAG minimum interaction target
         return button
 
     def _load_icon(self, icon_path: str) -> QIcon:
@@ -600,48 +608,48 @@ class AdvancedFoldersToolbar(QObject):
             toolbar: Toolbar to style
         """
         toolbar.setStyleSheet(
-            """
-            QToolBar {
-                background-color: #f0f0f0;
-                border: 1px solid #cccccc;
+            f"""
+            QToolBar {{
+                background-color: {token('surface')};
+                border: 1px solid {token('border')};
                 border-radius: 4px;
                 padding: 2px;
                 spacing: 3px;
-            }
+            }}
             
-            QToolBar::separator {
-                background-color: #cccccc;
+            QToolBar::separator {{
+                background-color: {token('border')};
                 width: 1px;
                 margin: 2px 4px;
-            }
+            }}
             
-            QToolButton {
+            QToolButton {{
                 background-color: transparent;
                 border: 1px solid transparent;
                 border-radius: 3px;
                 padding: 4px 8px;
                 margin: 1px;
-            }
+            }}
             
-            QToolButton:hover {
-                background-color: #e0e0e0;
-                border: 1px solid #bfbfbf;
-            }
+            QToolButton:hover {{
+                background-color: {token('border_light')};
+                border: 1px solid {token('text_muted')};
+            }}
             
-            QToolButton:pressed {
-                background-color: #d0d0d0;
-                border: 1px solid #999999;
-            }
+            QToolButton:pressed {{
+                background-color: {token('border_light')};
+                border: 1px solid {token('text_muted')};
+            }}
             
-            QToolButton:checked {
-                background-color: #b3d9ff;
-                border: 1px solid #0078d4;
-            }
+            QToolButton:checked {{
+                background-color: {token('accent')};
+                border: 1px solid {token('button_primary')};
+            }}
             
-            QToolButton:disabled {
-                color: #999999;
+            QToolButton:disabled {{
+                color: {token('text_muted')};
                 background-color: transparent;
-            }
+            }}
         """
         )
 
@@ -744,12 +752,8 @@ class AdvancedFoldersToolbar(QObject):
             # Update action visibility and enabled state
             for action_id, action_def in self.action_registry.items():
                 if action_def.qaction:
-                    action_def.qaction.setVisible(
-                        action_id in rules.get("visible", [])
-                    )
-                    action_def.qaction.setEnabled(
-                        action_id in rules.get("enabled", [])
-                    )
+                    action_def.qaction.setVisible(action_id in rules.get("visible", []))
+                    action_def.qaction.setEnabled(action_id in rules.get("enabled", []))
 
     def enable_action(self, action_id: str, enabled: bool = True):
         """Enable or disable specific action.
@@ -817,15 +821,11 @@ class AdvancedFoldersToolbar(QObject):
 
         # Save action visibility states
         for action_id, action_def in self.action_registry.items():
-            settings.setValue(
-                f"toolbar/action_{action_id}_visible", action_def.visible
-            )
+            settings.setValue(f"toolbar/action_{action_id}_visible", action_def.visible)
 
         # Save section visibility states
         for section_id, section in self.toolbar_sections.items():
-            settings.setValue(
-                f"toolbar/section_{section_id}_visible", section.visible
-            )
+            settings.setValue(f"toolbar/section_{section_id}_visible", section.visible)
 
         self.logger.debug("Toolbar configuration saved")
 
@@ -834,9 +834,7 @@ class AdvancedFoldersToolbar(QObject):
         settings = QSettings("RFU", "AdvancedFolders")
 
         # Load toolbar visibility
-        self.toolbar_visible = settings.value(
-            "toolbar/main_visible", True, type=bool
-        )
+        self.toolbar_visible = settings.value("toolbar/main_visible", True, type=bool)
 
         # Load action visibility states
         for action_id, action_def in self.action_registry.items():

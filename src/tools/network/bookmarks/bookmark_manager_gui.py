@@ -35,6 +35,7 @@ except ImportError:
     LOGGING_AVAILABLE = False
 
 try:
+    from src.gui.themes import token
     from PyQt5.QtCore import QDate, Qt, QThread, QTimer, pyqtSignal
     from PyQt5.QtGui import (
         QFont,
@@ -152,9 +153,9 @@ class BookmarkManagerGUI(QMainWindow):
             QLabel {
                 font-size: 18px;
                 font-weight: bold;
-                color: #2c3e50;
+                color: {token('text_primary')};
                 padding: 10px;
-                background-color: #ecf0f1;
+                background-color: {token('background')};
                 border-radius: 5px;
                 margin-bottom: 10px;
             }
@@ -245,7 +246,7 @@ class BookmarkManagerGUI(QMainWindow):
         # Style the buttons
         button_style = """
             QPushButton {
-                background-color: #3498db;
+                background-color: {token('accent')};
                 color: white;
                 border: none;
                 padding: 8px 16px;
@@ -254,7 +255,7 @@ class BookmarkManagerGUI(QMainWindow):
                 margin: 2px;
             }
             QPushButton:hover {
-                background-color: #2980b9;
+                background-color: {token('button_primary_hover')};
             }
         """
         for button in [

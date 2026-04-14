@@ -1,0 +1,51 @@
+{
+  "session_id": "20251220_172532",
+  "timestamp": "2025-12-20T17:25:32.630766",
+  "summary": {
+    "files_analyzed": 5,
+    "files_needing_changes": 2,
+    "total_potential_changes": 100
+  },
+  "file_analyses": [
+    {
+      "file_path": "tests\\test_compression_logic.py",
+      "potential_changes": 33,
+      "changes_by_type": {
+        "assertion": 33
+      },
+      "imports_needed": [],
+      "warnings": []
+    },
+    {
+      "file_path": "tests\\test_secure_delete.py",
+      "potential_changes": 0,
+      "changes_by_type": {},
+      "imports_needed": [],
+      "warnings": []
+    },
+    {
+      "file_path": "tests\\test_file_touch.py",
+      "potential_changes": 0,
+      "changes_by_type": {},
+      "imports_needed": [],
+      "warnings": []
+    },
+    {
+      "file_path": "tests\\test_checksum.py",
+      "potential_changes": 0,
+      "changes_by_type": {},
+      "imports_needed": [],
+      "warnings": []
+    },
+    {
+      "file_path": "tests\\test_encryption.py",
+      "potential_changes": 67,
+      "changes_by_type": {
+        "import_path": 3,
+        "assertion": 64
+      },
+      "imports_needed": [],
+      "warnings": []
+    }
+  ]
+}

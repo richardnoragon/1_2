@@ -15,6 +15,8 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
+from src.gui.themes import token
+
 
 class EmptyStateWidget(QWidget):
     """
@@ -71,7 +73,7 @@ class EmptyStateWidget(QWidget):
             """
             QLabel {
                 font-size: 48px;
-                color: #999999;
+                color: {token('text_muted')};
             }
             """
         )
@@ -86,7 +88,7 @@ class EmptyStateWidget(QWidget):
             QLabel {
                 font-size: 16px;
                 font-weight: bold;
-                color: #666666;
+                color: {token('text_muted')};
             }
             """
         )
@@ -101,7 +103,7 @@ class EmptyStateWidget(QWidget):
             """
             QLabel {
                 font-size: 13px;
-                color: #888888;
+                color: {token('text_muted')};
                 line-height: 1.4;
             }
             """
@@ -113,21 +115,21 @@ class EmptyStateWidget(QWidget):
             self.action_button = QPushButton(self.action_text)
             self.action_button.setMinimumWidth(120)
             self.action_button.setStyleSheet(
-                """
-                QPushButton {
-                    background-color: #0078D4;
+                f"""
+                QPushButton {{
+                    background-color: {token('button_primary')};
                     color: white;
                     border: none;
                     padding: 8px 16px;
                     border-radius: 4px;
                     font-size: 13px;
-                }
-                QPushButton:hover {
-                    background-color: #106EBE;
-                }
-                QPushButton:pressed {
-                    background-color: #005A9E;
-                }
+                }}
+                QPushButton:hover {{
+                    background-color: {token('color_action_blue')};
+                }}
+                QPushButton:pressed {{
+                    background-color: {token('button_primary')};
+                }}
                 """
             )
             self.action_button.clicked.connect(self.actionClicked.emit)

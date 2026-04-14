@@ -131,6 +131,50 @@ ERROR_RED = "#e74c3c"
 # CSS Style Constants
 TITLE_HEADER_STYLE = f"color: {TEXT_DARK}; margin: 10px 0px;"
 
+# Theme token helper with graceful fallback
+try:
+    from src.gui.themes import Typography, token
+except ImportError:
+    try:
+        from gui.themes import Typography, token
+    except ImportError:
+
+        def token(key: str) -> str:  # type: ignore[misc]
+            return ""
+
+        class Typography:  # type: ignore[no-redef]
+            @staticmethod
+            def monospace():
+                from PyQt5.QtGui import QFont
+
+                return QFont("Consolas", 9)
+
+
+# P1-C16: HubErrorScreen — lazy import to avoid circular deps at module load
+try:
+    from src.gui.components.hub_error_screen import (
+        HubErrorScreen as _HubErrorScreen,
+    )
+
+    _HUB_ERROR_SCREEN_AVAILABLE = True
+except ImportError:
+    _HUB_ERROR_SCREEN_AVAILABLE = False
+    _HubErrorScreen = None
+
+# HUB-1b: ui_strings import for tool label resolution
+try:
+    from src.rfu import ui_strings as _ui_strings
+
+    _UI_STRINGS_AVAILABLE = True
+except ImportError:
+    try:
+        from rfu import ui_strings as _ui_strings  # type: ignore[no-redef]
+
+        _UI_STRINGS_AVAILABLE = True
+    except ImportError:
+        _UI_STRINGS_AVAILABLE = False
+        _ui_strings = None  # type: ignore[assignment]
+
 
 class UtilityWindow(QMainWindow if PYQT5_AVAILABLE else object):
     """Wrapper class to ensure utilities maintain the main window's menu bar."""
@@ -151,8 +195,32 @@ class UtilityWindow(QMainWindow if PYQT5_AVAILABLE else object):
         if hasattr(parent_hub, "menuBar") and parent_hub.menuBar():
             self._clone_menu_bar(parent_hub.menuBar())
 
-        # Set the utility as central widget
-        self.setCentralWidget(utility_widget)
+        # Set the utility as central widget (P1-C16: show HubErrorScreen on failure)
+        try:
+            self.setCentralWidget(utility_widget)
+        except Exception as _init_err:
+            import traceback
+
+            _err_code = type(_init_err).__name__
+            if _HUB_ERROR_SCREEN_AVAILABLE:
+                _err_screen = _HubErrorScreen(title, _err_code, self)
+                _err_screen.retry_requested.connect(
+                    lambda: (
+                        self.parent_hub.relaunch_tool_window(title)
+                        if hasattr(self.parent_hub, "relaunch_tool_window")
+                        else None
+                    )
+                )
+                _err_screen.go_home_requested.connect(
+                    lambda: (
+                        self.parent_hub.show()
+                        if hasattr(self.parent_hub, "show")
+                        else None
+                    )
+                )
+                self.setCentralWidget(_err_screen)
+            else:
+                raise
 
         # Create status bar
         status_bar = self.statusBar()
@@ -902,14 +970,14 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
         badge.setAlignment(Qt.AlignVCenter | Qt.AlignRight)
         badge.setMinimumWidth(200)
         badge.setStyleSheet(
-            """
-            QLabel#preferenceBadge {
+            f"""
+            QLabel#preferenceBadge {{
                 padding: 6px 12px;
                 border-radius: 12px;
-                background-color: #ecf0f1;
-                color: #2c3e50;
+                background-color: {token("color_bg_subtle")};
+                color: {token("primary")};
                 font-weight: bold;
-            }
+            }}
             """
         )
         header_layout.addWidget(badge)
@@ -1902,7 +1970,16 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
             ("💻 System Information", "View system specs", self.open_system_info),
             ("💿 Disk Usage Analyzer", "Analyze disk space", self.open_disk_analyzer),
             ("⚡ Process Monitor", "Monitor processes", self.open_process_monitor),
-            ("🧹 System Cleanup", "Clean system cache", self.open_system_cleanup),
+            (
+                "🧹 "
+                + (
+                    _ui_strings.SystemCleanup.TITLE
+                    if _UI_STRINGS_AVAILABLE
+                    else "System Cleanup"
+                ),
+                "Clean system cache",
+                self.open_system_cleanup,
+            ),
             (
                 "📊 Performance Monitor",
                 "Monitor performance",
@@ -1947,19 +2024,19 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
         self.log_viewer = QTextEdit()
         self.log_viewer.setReadOnly(True)
         self.log_viewer.setStyleSheet(
-            """
-            QTextEdit {
-                background-color: #f8f9fa;
-                border: 2px solid #e9ecef;
+            f"""
+            QTextEdit {{
+                background-color: {token("dialog_background")};
+                border: 2px solid {token("color_bg_tint")};
                 border-radius: 8px;
                 padding: 10px;
                 font-family: 'Consolas', 'Monaco', monospace;
                 font-size: 11px;
-                color: #2c3e50;
-            }
-            QTextEdit:focus {
-                border-color: #3498db;
-            }
+                color: {token("primary")};
+            }}
+            QTextEdit:focus {{
+                border-color: {token("accent")};
+            }}
         """
         )
         self.log_viewer.setMinimumHeight(350)
@@ -1987,7 +2064,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
                 font-weight: bold;
                 min-width: 120px;
             }}
-            QPushButton:hover {{ background: #2ecc71; }}
+            QPushButton:hover {{ background: {token("semantic_success_hover")}; }}
         """
         )
         controls_layout.addWidget(refresh_btn)
@@ -2005,7 +2082,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
                 font-weight: bold;
                 min-width: 120px;
             }}
-            QPushButton:hover {{ background: #f7a41e; }}
+            QPushButton:hover {{ background: {token("semantic_warning_hover")}; }}
         """
         )
         controls_layout.addWidget(clear_btn)
@@ -2023,7 +2100,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
                 font-weight: bold;
                 min-width: 120px;
             }}
-            QPushButton:hover {{ background: #4DA6E5; }}
+            QPushButton:hover {{ background: {token("accent_light")}; }}
         """
         )
         controls_layout.addWidget(export_btn)
@@ -2247,9 +2324,26 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
         self.logger.info("Process Monitor requested")
 
     def open_system_cleanup(self):
-        """Open system cleanup."""
-        self._update_status_bar("System Cleanup - Feature coming soon...")
-        self.logger.info("System Cleanup requested")
+        """Open system cleanup (HUB-2: UtilityWindow-backed launcher)."""
+        _title = (
+            _ui_strings.SystemCleanup.TITLE
+            if _UI_STRINGS_AVAILABLE
+            else "System Cleanup"
+        )
+        try:
+            from src.tools.system.system_cleanup.system_cleanup_gui import (
+                SystemCleanupGUI,
+            )
+
+            tool = SystemCleanupGUI(hub_instance=self)
+            window = UtilityWindow(self, tool, _title)
+            self._system_cleanup_window = window  # keep alive (prevent GC)
+            window.show()
+            self._update_status_bar(f"{_title} opened")
+            self.logger.info(f"{_title} tool opened")
+        except Exception as e:
+            self._update_status_bar(f"Error opening {_title}: {str(e)}")
+            self.logger.error(f"Error opening {_title}: {str(e)}")
 
     def open_performance_monitor(self):
         """Open performance monitor."""
@@ -2262,6 +2356,27 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
         self.logger.info("System Settings requested")
 
     # Hub Integration Methods (from hub.py)
+    def relaunch_tool_window(self, title: str) -> None:
+        """Re-launch a named tool window (HUB-5c: called by HubErrorScreen retry button).
+
+        Dispatches to the appropriate open_* launcher based on the UtilityWindow
+        title.  Only tools whose launchers have been wired appear in the registry.
+        """
+        _launchers = {
+            (
+                _ui_strings.SystemCleanup.TITLE
+                if _UI_STRINGS_AVAILABLE
+                else "System Cleanup"
+            ): self.open_system_cleanup,
+        }
+        fn = _launchers.get(title)
+        if fn is not None:
+            fn()
+        else:
+            self.logger.warning(
+                f"relaunch_tool_window: no launcher registered for '{title}'"
+            )
+
     def register_tool(self, tool_name: str, tool_instance) -> bool:
         """Register a tool with the hub."""
         try:
@@ -2921,7 +3036,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
         # Log display
         self.log_display = QtWidgets.QTextEdit()
         self.log_display.setReadOnly(True)
-        self.log_display.setFont(QtGui.QFont("Consolas", 9))
+        self.log_display.setFont(Typography.monospace())
         layout.addWidget(self.log_display)
 
         return logs_tab
@@ -2975,7 +3090,9 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
         """Open secure delete tool."""
         try:
             try:
-                from src.tools.file_operations.secure_delete import SecureDeleteGUI
+                from src.tools.file_operations.secure_delete import (
+                    SecureDeleteGUI,
+                )
             except ImportError:
                 from tools.file_operations.secure_delete import SecureDeleteGUI
 

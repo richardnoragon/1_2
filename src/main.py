@@ -9,6 +9,7 @@ import os
 import sys
 from pathlib import Path
 
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication
 
 # Add the src directory to Python path for relative imports
@@ -243,6 +244,11 @@ def main():
             get_log_manager().set_level(logging_level)
 
         # Create Qt application with proper cleanup
+        # Enable HiDPI scaling (A11Y-5) — must be set before QApplication.
+        if hasattr(Qt, "AA_EnableHighDpiScaling"):
+            QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
+        if hasattr(Qt, "AA_UseHighDpiPixmaps"):
+            QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
         app = QApplication(sys.argv)
         logger.info("Qt Application initialized")
 
