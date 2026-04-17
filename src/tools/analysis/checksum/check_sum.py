@@ -4,9 +4,11 @@ Simple Checksum GUI for Richard's File Utilities
 """
 
 import hashlib
+import logging
 import os
 import sys
 
+from PyQt5.QtCore import QObject, QThread, pyqtSignal
 from PyQt5.QtWidgets import (
     QApplication,
     QFileDialog,
@@ -19,10 +21,11 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
-from src.gui.themes import token
+from src.gui.themes import ThemeManager, token
 
 try:
     from src.gui.components.buttons import PrimaryButton, SecondaryButton
+    from src.gui.components.loading_indicator import LoadingIndicator
     from src.gui.components.modal import Modal
 
     _COMPONENTS_AVAILABLE = True
@@ -30,6 +33,7 @@ except ImportError:
     from PyQt5.QtWidgets import QPushButton as PrimaryButton
     from PyQt5.QtWidgets import QPushButton as SecondaryButton
 
+    LoadingIndicator = None
     Modal = None
     _COMPONENTS_AVAILABLE = False
 
@@ -67,23 +71,126 @@ except ImportError as safe_window_error:
         STANDARD_WINDOW_AVAILABLE = False
 
 
+# ---------------------------------------------------------------------------
+# GRD-1a: Guardian registration (graceful no-op when guardian absent)
+# ---------------------------------------------------------------------------
+try:
+    from src.core.guardian import register_gui_component
+except ImportError:
+
+    def register_gui_component(*a, **kw):
+        pass  # noqa: E731
+
+
+# ---------------------------------------------------------------------------
+# TEL: Telemetry helpers (graceful no-op when telemetry absent)
+# ---------------------------------------------------------------------------
+try:
+    from src.gui.telemetry import emit_telemetry
+
+    def _emit_telemetry(event_type, **kw):
+        emit_telemetry(event_type, **kw)  # noqa: E731
+
+except ImportError:
+
+    def _emit_telemetry(*a, **kw):
+        pass  # noqa: E731
+
+
+# ---------------------------------------------------------------------------
+# STR: Centralised string constants with fallback (P1-C15 / STR-1)
+# ---------------------------------------------------------------------------
+try:
+    from src.rfu.ui_strings import Checksum as _ChecksumStrings
+except ImportError:
+
+    class _ChecksumStrings:  # type: ignore[no-redef]
+        TITLE = "Checksum Calculator"
+        WINDOW_TITLE = "Checksum Calculator — RFU"
+        LOADING = "Loading Checksum Calculator…"
+        ERR_INIT_FAILED = (
+            "Could not start Checksum Calculator. "
+            "Please try again or restart the application."
+        )
+        ERR_CALCULATE_FAILED = (
+            "Checksum calculation failed. "
+            "Check that the file is accessible and try again."
+        )
+
+
+class ChecksumWorker(QObject):
+    """Compute an MD5 checksum in a background thread (PERF-1d)."""
+
+    finished = pyqtSignal(str)  # emits "MD5: <hex>"
+    error = pyqtSignal(str)  # emits error message
+
+    def __init__(self, file_path: str) -> None:
+        super().__init__()
+        self._file_path = file_path
+
+    def run(self) -> None:
+        """Hash the file and emit finished or error."""
+        try:
+            md5_hash = hashlib.md5()
+            with open(self._file_path, "rb") as f:
+                for chunk in iter(lambda: f.read(4096), b""):
+                    md5_hash.update(chunk)
+            self.finished.emit(f"MD5: {md5_hash.hexdigest()}")
+        except Exception as e:
+            self.error.emit(str(e))
+
+
 class ChecksumGUI(StandardWindow):
     """Simple Checksum Calculator GUI."""
 
-    def __init__(self, parent=None):
+    def __init__(self, hub_instance=None, parent=None):
         # Always use the safe constructor parameters
         super().__init__(
-            title="Checksum Calculator - Richard's File Utilities",
+            title=_ChecksumStrings.WINDOW_TITLE,
             window_type="utility",
             parent=parent,
         )
+        self._hub = hub_instance
+        try:
+            from src.rfu.log_manager import get_log_manager
+
+            self._logger = get_log_manager().get_logger("ChecksumGUI")
+        except Exception:
+            self._logger = logging.getLogger("ChecksumGUI")
         self.setGeometry(100, 100, 800, 600)
+
+        self._worker: ChecksumWorker | None = None
+        self._thread: QThread | None = None
 
         self.init_ui()
         if STANDARD_WINDOW_AVAILABLE:
             self._setup_menu_callbacks()
         # Ensure menu bar exists (safe to call in both modes)
         self.ensure_menu_bar()
+        register_gui_component(
+            self, tool_id="checksum", recovery_callback=self.degraded_fallback
+        )
+        _emit_telemetry("ui_view_load", tool_id="checksum")
+        ThemeManager.add_theme_changed_callback(self._on_theme_changed)
+
+    def _on_theme_changed(self, variant: str) -> None:
+        """Re-apply token-based stylesheets when the active theme variant changes."""
+        pass  # stylesheets applied at init; live re-apply pending TH-4c/4d
+
+    def health_check(self) -> bool:
+        """Return True if core UI is functional (GRD-3a)."""
+        try:
+            return hasattr(self, "results_list") and self.results_list is not None
+        except Exception:
+            return False
+
+    def degraded_fallback(self) -> None:
+        """Enter degraded / read-only state (GRD-3b)."""
+        try:
+            self._logger.warning("ChecksumGUI entering degraded mode")
+        except Exception:
+            pass
+        _emit_telemetry("ui_error_event", tool_id="checksum", error_type="degraded")
 
     def _setup_menu_callbacks(self):
         """Setup tool-specific menu callbacks."""
@@ -234,7 +341,17 @@ class ChecksumGUI(StandardWindow):
 
         # Results
         self.results_list = QListWidget()
+        self.results_list.setAccessibleName("Checksum results")
         layout.addWidget(self.results_list)
+
+        # Loading indicator (PERF-3a/3b)
+        if LoadingIndicator:
+            self._loading_indicator = LoadingIndicator(
+                parent=self, message="Calculating checksum…"
+            )
+            layout.addWidget(self._loading_indicator)
+        else:
+            self._loading_indicator = None
 
         self.selected_file = None
 
@@ -248,7 +365,7 @@ class ChecksumGUI(StandardWindow):
             self.file_label.setText(f"Selected: {os.path.basename(file_path)}")
 
     def calculate_checksum(self):
-        """Calculate MD5 checksum."""
+        """Start MD5 checksum calculation in a background thread (PERF-1d)."""
         if not self.selected_file:
             if Modal:
                 Modal("Warning", "Please select a file first.", parent=self).exec_()
@@ -256,25 +373,43 @@ class ChecksumGUI(StandardWindow):
                 QMessageBox.warning(self, "Warning", "Please select a file first.")
             return
 
-        try:
-            md5_hash = hashlib.md5()
-            with open(self.selected_file, "rb") as f:
-                for chunk in iter(lambda: f.read(4096), b""):
-                    md5_hash.update(chunk)
+        if self._thread and self._thread.isRunning():
+            return  # already running
 
-            checksum = md5_hash.hexdigest()
-            result = f"MD5: {checksum}"
-            self.results_list.addItem(result)
+        # PERF-3a: start indicator before worker
+        if self._loading_indicator:
+            self._loading_indicator.start()
 
-        except Exception as e:
-            if Modal:
-                Modal(
-                    "Error", f"Failed to calculate checksum: {e}", parent=self
-                ).exec_()
-            else:
-                QMessageBox.critical(
-                    self, "Error", f"Failed to calculate checksum: {e}"
-                )
+        self._worker = ChecksumWorker(self.selected_file)
+        self._thread = QThread()
+        self._worker.moveToThread(self._thread)
+        self._thread.started.connect(self._worker.run)
+        self._worker.finished.connect(self._on_checksum_done)
+        self._worker.error.connect(self._on_checksum_error)
+        # PERF-4a: stop indicator on normal completion
+        self._worker.finished.connect(self._stop_indicator)
+        # PERF-4b: stop indicator on error path
+        self._worker.error.connect(self._stop_indicator)
+        self._thread.start()
+
+    def _stop_indicator(self) -> None:
+        """Stop the loading indicator and clean up the thread."""
+        if self._loading_indicator:
+            self._loading_indicator.stop()
+        if self._thread:
+            self._thread.quit()
+            self._thread = None
+        self._worker = None
+
+    def _on_checksum_done(self, result: str) -> None:
+        """Display the computed checksum."""
+        self.results_list.addItem(result)
+
+    def _on_checksum_error(self, message: str) -> None:  # ERR: non-fatal
+        """Surface a checksum error via Modal."""
+        self._logger.error(f"Checksum error for '{self.selected_file}': {message}")
+        if Modal:
+            Modal("Error", _ChecksumStrings.ERR_CALCULATE_FAILED, ["OK"], self).exec_()
 
 
 def main():

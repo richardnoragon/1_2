@@ -6,6 +6,7 @@ using the utilities logic framework.
 """
 
 import ipaddress
+import logging
 import socket
 import sys
 from dataclasses import dataclass
@@ -45,6 +46,81 @@ try:
 except ImportError:
     # Fallback for development
     StandardWindow = QWidget
+
+
+# ---------------------------------------------------------------------------
+# GRD-1a: Guardian registration (graceful no-op when guardian absent)
+# ---------------------------------------------------------------------------
+try:
+    from src.core.guardian import register_gui_component
+except ImportError:
+
+    def register_gui_component(*a, **kw):
+        pass  # noqa: E731
+
+
+# ---------------------------------------------------------------------------
+# TEL: Telemetry helpers (graceful no-op when telemetry absent)
+# ---------------------------------------------------------------------------
+try:
+    from src.gui.telemetry import emit_telemetry
+
+    def _emit_telemetry(event_type, **kw):
+        emit_telemetry(event_type, **kw)  # noqa: E731
+
+except ImportError:
+
+    def _emit_telemetry(*a, **kw):
+        pass  # noqa: E731
+
+
+# ---------------------------------------------------------------------------
+# STR: Centralised string constants with fallback (P1-C15 / STR-1)
+# ---------------------------------------------------------------------------
+try:
+    from src.rfu.ui_strings import NetworkTools as _NetworkToolsStrings
+except ImportError:
+
+    class _NetworkToolsStrings:  # type: ignore[no-redef]
+        TITLE = "Network Tools"
+        WINDOW_TITLE = "Network Tools — RFU"
+        LOADING = "Loading Network Tools…"
+        MODAL_ERROR_TITLE = "Network Error"
+        ERR_INIT_FAILED = (
+            "Could not start Network Tools. "
+            "Please try again or restart the application."
+        )
+        ERR_SCAN_FAILED = "Could not complete network scan. Please try again."
+        ERR_CONNECT_FAILED = "Could not connect to target. Please check connectivity."
+        ERR_PORT_INVALID = (
+            "Invalid port format. "
+            "Please enter comma-separated port numbers (e.g., 80, 443, 8080)."
+        )
+        ERR_NO_TARGET = (
+            "Please enter a target hostname or IP address before starting a scan."
+        )
+
+
+# ---------------------------------------------------------------------------
+# CP: Component Placement — PrimaryButton / SecondaryButton
+# ---------------------------------------------------------------------------
+try:
+    from src.gui.components.buttons import PrimaryButton, SecondaryButton
+
+    _CP_AVAILABLE = True
+except ImportError:
+    PrimaryButton = QPushButton  # type: ignore[misc,assignment]
+    SecondaryButton = QPushButton  # type: ignore[misc,assignment]
+    _CP_AVAILABLE = False
+
+# ---------------------------------------------------------------------------
+# ERR: Modal helper (graceful no-op when modal absent)
+# ---------------------------------------------------------------------------
+try:
+    from src.gui.components.modal import Modal
+except ImportError:
+    Modal = None  # type: ignore[assignment,misc]
+
 
 # Import network tools
 try:
@@ -110,9 +186,7 @@ class NetworkWorkerThread(QThread):
 
         # Initialize tools
         self.port_scanner = PortScanner() if PortScanner else None
-        self.bandwidth_monitor = (
-            BandwidthMonitor() if BandwidthMonitor else None
-        )
+        self.bandwidth_monitor = BandwidthMonitor() if BandwidthMonitor else None
         self.wifi_analyzer = WiFiAnalyzer() if WiFiAnalyzer else None
         self.lan_transfer = LANFileTransfer() if LANFileTransfer else None
 
@@ -130,9 +204,7 @@ class NetworkWorkerThread(QThread):
             elif self.operation_type == "connectivity_test":
                 self._run_connectivity_test()
             else:
-                self.error_occurred.emit(
-                    f"Unknown operation: {self.operation_type}"
-                )
+                self.error_occurred.emit(f"Unknown operation: {self.operation_type}")
 
         except Exception as e:
             self.error_occurred.emit(f"Operation failed: {str(e)}")
@@ -173,9 +245,7 @@ class NetworkWorkerThread(QThread):
                 self.progress_updated.emit(progress, f"Scanning port {port}")
 
             except Exception as e:
-                self.error_occurred.emit(
-                    f"Error scanning port {port}: {str(e)}"
-                )
+                self.error_occurred.emit(f"Error scanning port {port}: {str(e)}")
 
         self.operation_completed.emit(True, "Port scan completed")
 
@@ -285,9 +355,7 @@ class NetworkWorkerThread(QThread):
 
         self.operation_completed.emit(True, "Connectivity test completed")
 
-    def _scan_port(
-        self, target: str, port: int, scan_type: str
-    ) -> Dict[str, str]:
+    def _scan_port(self, target: str, port: int, scan_type: str) -> Dict[str, str]:
         """Scan a single port."""
         try:
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -363,9 +431,16 @@ class NetworkWorkerThread(QThread):
 class NetworkToolsWindow(StandardWindow):
     """Enhanced Network Tools GUI with comprehensive functionality."""
 
-    def __init__(self):
+    def __init__(self, hub_instance=None):
         super().__init__()
-        self.setWindowTitle("Network Tools - Enhanced")
+        self._hub = hub_instance
+        try:
+            from src.rfu.log_manager import get_log_manager
+
+            self._logger = get_log_manager().get_logger("NetworkToolsWindow")
+        except Exception:
+            self._logger = logging.getLogger("NetworkToolsWindow")
+        self.setWindowTitle(_NetworkToolsStrings.WINDOW_TITLE)
         self.setGeometry(100, 100, 1400, 900)
 
         # Initialize components
@@ -375,6 +450,27 @@ class NetworkToolsWindow(StandardWindow):
 
         self.init_ui()
         self.connect_signals()
+        register_gui_component(
+            self, tool_id="network_tools", recovery_callback=self.degraded_fallback
+        )
+        _emit_telemetry("ui_view_load", tool_id="network_tools")
+
+    def health_check(self) -> bool:
+        """Return True if core UI is functional (GRD-3a)."""
+        try:
+            return hasattr(self, "tab_widget") and self.tab_widget is not None
+        except Exception:
+            return False
+
+    def degraded_fallback(self) -> None:
+        """Enter degraded / read-only state (GRD-3b)."""
+        try:
+            self._logger.warning("NetworkToolsWindow entering degraded mode")
+        except Exception:
+            pass
+        _emit_telemetry(
+            "ui_error_event", tool_id="network_tools", error_type="degraded"
+        )
 
     def init_ui(self):
         """Initialize the user interface."""
@@ -386,6 +482,7 @@ class NetworkToolsWindow(StandardWindow):
 
         # Create tab widget for different tools
         self.tab_widget = QTabWidget()
+        self.tab_widget.setAccessibleName("Network tools tabs")
         main_layout.addWidget(self.tab_widget)
 
         # Create tabs
@@ -415,16 +512,22 @@ class NetworkToolsWindow(StandardWindow):
 
         target_layout.addWidget(QLabel("Target:"), 0, 0)
         self.edit_target = QLineEdit()
+        self.edit_target.setAccessibleName("Scan target hostname or IP")
         self.edit_target.setPlaceholderText("192.168.1.1 or example.com")
         target_layout.addWidget(self.edit_target, 0, 1)
 
         target_layout.addWidget(QLabel("Ports:"), 1, 0)
         self.edit_ports = QLineEdit()
+        self.edit_ports.setAccessibleName("Ports to scan")
+        self.edit_ports.setAccessibleDescription(
+            "Comma-separated port numbers or ranges, e.g. 22,80,443"
+        )
         self.edit_ports.setText("22,80,443,21,25,53,110,143,993,995,3389,5900")
         target_layout.addWidget(self.edit_ports, 1, 1)
 
         target_layout.addWidget(QLabel("Scan Type:"), 2, 0)
         self.combo_scan_type = QComboBox()
+        self.combo_scan_type.setAccessibleName("Scan type")
         self.combo_scan_type.addItems(["TCP Connect", "TCP SYN", "UDP"])
         target_layout.addWidget(self.combo_scan_type, 2, 1)
 
@@ -435,32 +538,34 @@ class NetworkToolsWindow(StandardWindow):
         options_layout = QVBoxLayout(options_group)
 
         self.chk_service_detection = QCheckBox("Service Detection")
+        self.chk_service_detection.setAccessibleName("Enable service detection")
+        self.chk_service_detection.setAccessibleDescription(
+            "Identifies the software or service name running on each open port"
+        )
+        self.chk_service_detection.setMinimumHeight(44)
         self.chk_service_detection.setChecked(True)
         options_layout.addWidget(self.chk_service_detection)
 
         self.chk_banner_grab = QCheckBox("Banner Grabbing")
+        self.chk_banner_grab.setAccessibleName("Enable banner grabbing")
+        self.chk_banner_grab.setAccessibleDescription(
+            "Retrieves version banners from open ports; scan takes longer"
+        )
+        self.chk_banner_grab.setMinimumHeight(44)
         options_layout.addWidget(self.chk_banner_grab)
 
         self.chk_stealth_mode = QCheckBox("Stealth Mode")
+        self.chk_stealth_mode.setAccessibleName("Enable stealth mode")
+        self.chk_stealth_mode.setAccessibleDescription(
+            "Reduces scan speed to minimize detection by intrusion prevention systems"
+        )
+        self.chk_stealth_mode.setMinimumHeight(44)
         options_layout.addWidget(self.chk_stealth_mode)
 
         config_layout.addWidget(options_group)
 
         # Scan button
-        self.btn_start_scan = QPushButton("Start Port Scan")
-        self.btn_start_scan.setStyleSheet(
-            """
-            QPushButton {
-                background-color: {token('semantic_success')};
-                color: white;
-                font-weight: bold;
-                padding: 8px;
-            }
-            QPushButton:hover {
-                background-color: {token('semantic_success')};
-            }
-        """
-        )
+        self.btn_start_scan = PrimaryButton("Start Port Scan")
         config_layout.addWidget(self.btn_start_scan)
 
         config_layout.addStretch()
@@ -474,6 +579,7 @@ class NetworkToolsWindow(StandardWindow):
 
         # Results table
         self.table_scan_results = QTableWidget()
+        self.table_scan_results.setAccessibleName("Port scan results table")
         self.table_scan_results.setColumnCount(5)
         self.table_scan_results.setHorizontalHeaderLabels(
             ["Target", "Port", "State", "Service", "Banner"]
@@ -505,6 +611,11 @@ class NetworkToolsWindow(StandardWindow):
 
         config_layout.addWidget(QLabel("Monitor Duration (seconds):"))
         self.spin_duration = QSpinBox()
+        self.spin_duration.setAccessibleName("Monitor duration in seconds")
+        self.spin_duration.setAccessibleDescription(
+            "Total time to monitor network traffic, 10 to 3600 seconds"
+        )
+        self.spin_duration.setMinimumHeight(44)
         self.spin_duration.setMinimum(10)
         self.spin_duration.setMaximum(3600)
         self.spin_duration.setValue(60)
@@ -512,25 +623,17 @@ class NetworkToolsWindow(StandardWindow):
 
         config_layout.addWidget(QLabel("Update Interval (seconds):"))
         self.spin_interval = QSpinBox()
+        self.spin_interval.setAccessibleName("Update interval in seconds")
+        self.spin_interval.setAccessibleDescription(
+            "How often to sample network statistics within the monitor duration"
+        )
+        self.spin_interval.setMinimumHeight(44)
         self.spin_interval.setMinimum(1)
         self.spin_interval.setMaximum(60)
         self.spin_interval.setValue(1)
         config_layout.addWidget(self.spin_interval)
 
-        self.btn_start_monitor = QPushButton("Start Monitoring")
-        self.btn_start_monitor.setStyleSheet(
-            """
-            QPushButton {
-                background-color: {token('button_primary')};
-                color: white;
-                font-weight: bold;
-                padding: 8px;
-            }
-            QPushButton:hover {
-                background-color: {token('button_primary')};
-            }
-        """
-        )
+        self.btn_start_monitor = PrimaryButton("Start Monitoring")
         config_layout.addWidget(self.btn_start_monitor)
 
         config_layout.addStretch()
@@ -559,6 +662,7 @@ class NetworkToolsWindow(StandardWindow):
         # Data log
         layout.addWidget(QLabel("Bandwidth Log:"))
         self.text_bandwidth_log = QTextEdit()
+        self.text_bandwidth_log.setAccessibleName("Bandwidth monitoring log")
         self.text_bandwidth_log.setMaximumHeight(200)
         self.text_bandwidth_log.setReadOnly(True)
         layout.addWidget(self.text_bandwidth_log)
@@ -577,24 +681,12 @@ class NetworkToolsWindow(StandardWindow):
 
         config_layout.addWidget(QLabel("Network:"))
         self.edit_network = QLineEdit()
+        self.edit_network.setAccessibleName("Network range to discover")
         self.edit_network.setText("192.168.1.0/24")
         self.edit_network.setPlaceholderText("192.168.1.0/24")
         config_layout.addWidget(self.edit_network)
 
-        self.btn_discover = QPushButton("Discover Hosts")
-        self.btn_discover.setStyleSheet(
-            f"""
-            QPushButton {{
-                background-color: {token('color_purple')};
-                color: white;
-                font-weight: bold;
-                padding: 8px;
-            }}
-            QPushButton:hover {{
-                background-color: {token('color_purple_dark')};
-            }}
-        """
-        )
+        self.btn_discover = PrimaryButton("Discover Hosts")
         config_layout.addWidget(self.btn_discover)
 
         config_layout.addStretch()
@@ -603,6 +695,7 @@ class NetworkToolsWindow(StandardWindow):
         # Results table
         layout.addWidget(QLabel("Discovered Hosts:"))
         self.table_hosts = QTableWidget()
+        self.table_hosts.setAccessibleName("Discovered network hosts table")
         self.table_hosts.setColumnCount(4)
         self.table_hosts.setHorizontalHeaderLabels(
             ["IP Address", "Hostname", "Status", "Response Time (ms)"]
@@ -631,26 +724,12 @@ class NetworkToolsWindow(StandardWindow):
 
         config_layout.addWidget(QLabel("Test Targets:"))
         self.text_targets = QTextEdit()
+        self.text_targets.setAccessibleName("Connectivity test targets")
         self.text_targets.setMaximumHeight(100)
-        self.text_targets.setText(
-            "8.8.8.8\ngoogle.com\nbing.com\ncloudflare.com"
-        )
+        self.text_targets.setText("8.8.8.8\ngoogle.com\nbing.com\ncloudflare.com")
         config_layout.addWidget(self.text_targets)
 
-        self.btn_test_connectivity = QPushButton("Test Connectivity")
-        self.btn_test_connectivity.setStyleSheet(
-            f"""
-            QPushButton {{
-                background-color: {token('color_deep_orange')};
-                color: white;
-                font-weight: bold;
-                padding: 8px;
-            }}
-            QPushButton:hover {{
-                background-color: {token('color_deep_orange_dark')};
-            }}
-        """
-        )
+        self.btn_test_connectivity = PrimaryButton("Test Connectivity")
         config_layout.addWidget(self.btn_test_connectivity)
 
         layout.addWidget(config_panel)
@@ -658,6 +737,7 @@ class NetworkToolsWindow(StandardWindow):
         # Results table
         layout.addWidget(QLabel("Connectivity Results:"))
         self.table_connectivity = QTableWidget()
+        self.table_connectivity.setAccessibleName("Connectivity test results table")
         self.table_connectivity.setColumnCount(4)
         self.table_connectivity.setHorizontalHeaderLabels(
             ["Target", "Reachable", "Response Time (ms)", "Error"]
@@ -684,23 +764,12 @@ class NetworkToolsWindow(StandardWindow):
         config_panel = QWidget()
         config_layout = QHBoxLayout(config_panel)
 
-        self.btn_scan_wifi = QPushButton("Scan WiFi Networks")
-        self.btn_scan_wifi.setStyleSheet(
-            f"""
-            QPushButton {{
-                background-color: {token('color_blue_grey')};
-                color: white;
-                font-weight: bold;
-                padding: 8px;
-            }}
-            QPushButton:hover {{
-                background-color: {token('color_blue_grey_dark')};
-            }}
-        """
-        )
+        self.btn_scan_wifi = PrimaryButton("Scan WiFi Networks")
         config_layout.addWidget(self.btn_scan_wifi)
 
         self.chk_show_hidden = QCheckBox("Show Hidden Networks")
+        self.chk_show_hidden.setAccessibleName("Show hidden WiFi networks")
+        self.chk_show_hidden.setMinimumHeight(44)
         config_layout.addWidget(self.chk_show_hidden)
 
         config_layout.addStretch()
@@ -709,6 +778,7 @@ class NetworkToolsWindow(StandardWindow):
         # Results table
         layout.addWidget(QLabel("WiFi Networks:"))
         self.table_wifi = QTableWidget()
+        self.table_wifi.setAccessibleName("WiFi networks table")
         self.table_wifi.setColumnCount(3)
         self.table_wifi.setHorizontalHeaderLabels(
             ["SSID", "Signal Strength", "Security"]
@@ -742,12 +812,12 @@ class NetworkToolsWindow(StandardWindow):
         # Action buttons
         btn_layout = QHBoxLayout()
 
-        self.btn_cancel = QPushButton("Cancel Operation")
+        self.btn_cancel = SecondaryButton("Cancel Operation")
         self.btn_cancel.setEnabled(False)
 
-        self.btn_export = QPushButton("Export Results")
+        self.btn_export = SecondaryButton("Export Results")
 
-        self.btn_clear = QPushButton("Clear Results")
+        self.btn_clear = SecondaryButton("Clear Results")
 
         btn_layout.addWidget(self.btn_cancel)
         btn_layout.addWidget(self.btn_export)
@@ -770,9 +840,7 @@ class NetworkToolsWindow(StandardWindow):
         self.btn_discover.clicked.connect(self.start_network_discovery)
 
         # Connectivity test
-        self.btn_test_connectivity.clicked.connect(
-            self.start_connectivity_test
-        )
+        self.btn_test_connectivity.clicked.connect(self.start_connectivity_test)
 
         # WiFi analyzer
         self.btn_scan_wifi.clicked.connect(self.start_wifi_scan)
@@ -785,23 +853,33 @@ class NetworkToolsWindow(StandardWindow):
     def start_port_scan(self):
         """Start port scanning."""
         target = self.edit_target.text().strip()
-        if not target:
-            QMessageBox.warning(self, "Warning", "Please enter a target")
+        if not target:  # ERR: non-fatal — surfaced via Modal; missing user input
+            if Modal:
+                Modal(
+                    _NetworkToolsStrings.MODAL_ERROR_TITLE,
+                    _NetworkToolsStrings.ERR_NO_TARGET,
+                    ["OK"],
+                    self,
+                ).exec_()
             return
 
         ports_text = self.edit_ports.text().strip()
         try:
             ports = [int(p.strip()) for p in ports_text.split(",")]
-        except ValueError:
-            QMessageBox.warning(self, "Warning", "Invalid port format")
+        except ValueError:  # ERR: non-fatal — surfaced via Modal; invalid user input
+            if Modal:
+                Modal(
+                    _NetworkToolsStrings.MODAL_ERROR_TITLE,
+                    _NetworkToolsStrings.ERR_PORT_INVALID,
+                    ["OK"],
+                    self,
+                ).exec_()
             return
 
         parameters = {
             "target": target,
             "ports": ports,
-            "scan_type": self.combo_scan_type.currentText()
-            .lower()
-            .replace(" ", "_"),
+            "scan_type": self.combo_scan_type.currentText().lower().replace(" ", "_"),
             "service_detection": self.chk_service_detection.isChecked(),
             "banner_grab": self.chk_banner_grab.isChecked(),
             "stealth_mode": self.chk_stealth_mode.isChecked(),
@@ -822,7 +900,10 @@ class NetworkToolsWindow(StandardWindow):
         """Start network discovery."""
         network = self.edit_network.text().strip()
         if not network:
-            QMessageBox.warning(self, "Warning", "Please enter a network")
+            if Modal:
+                Modal("Warning", "Please enter a network", ["OK"], self).exec_()
+            else:
+                QMessageBox.warning(self, "Warning", "Please enter a network")
             return
 
         parameters = {"network": network}
@@ -833,7 +914,10 @@ class NetworkToolsWindow(StandardWindow):
         """Start connectivity test."""
         targets_text = self.text_targets.toPlainText().strip()
         if not targets_text:
-            QMessageBox.warning(self, "Warning", "Please enter test targets")
+            if Modal:
+                Modal("Warning", "Please enter test targets", ["OK"], self).exec_()
+            else:
+                QMessageBox.warning(self, "Warning", "Please enter test targets")
             return
 
         targets = [t.strip() for t in targets_text.split("\n") if t.strip()]
@@ -851,9 +935,12 @@ class NetworkToolsWindow(StandardWindow):
     def start_operation(self, operation_type: str, parameters: Dict[str, Any]):
         """Start a network operation."""
         if self.worker_thread and self.worker_thread.isRunning():
-            QMessageBox.warning(
-                self, "Warning", "An operation is already running"
-            )
+            if Modal:
+                Modal(
+                    "Warning", "An operation is already running", ["OK"], self
+                ).exec_()
+            else:
+                QMessageBox.warning(self, "Warning", "An operation is already running")
             return
 
         # Disable relevant buttons
@@ -871,9 +958,7 @@ class NetworkToolsWindow(StandardWindow):
         self.worker_thread.progress_updated.connect(self.on_progress_updated)
         self.worker_thread.scan_result.connect(self.on_scan_result)
         self.worker_thread.bandwidth_data.connect(self.on_bandwidth_data)
-        self.worker_thread.operation_completed.connect(
-            self.on_operation_completed
-        )
+        self.worker_thread.operation_completed.connect(self.on_operation_completed)
         self.worker_thread.error_occurred.connect(self.on_error_occurred)
 
         self.worker_thread.start()
@@ -882,9 +967,9 @@ class NetworkToolsWindow(StandardWindow):
         """Cancel the current operation."""
         if self.worker_thread:
             self.worker_thread.cancel()
-            self.worker_thread.wait()
-
-        self.on_operation_finished()
+            # PERF-2b: do not block-wait on the UI thread.
+            # operation_completed signal → on_operation_completed → on_operation_finished
+            # handles UI cleanup when the worker finishes.
 
     def on_progress_updated(self, progress: int, status: str):
         """Handle progress update."""
@@ -913,9 +998,7 @@ class NetworkToolsWindow(StandardWindow):
         self.lbl_upload_speed.setText(f"{upload_speed:.2f} MB/s")
 
         # Add to log
-        timestamp = datetime.fromisoformat(data["timestamp"]).strftime(
-            "%H:%M:%S"
-        )
+        timestamp = datetime.fromisoformat(data["timestamp"]).strftime("%H:%M:%S")
         log_entry = (
             f"[{timestamp}] Down: {download_speed:.2f} MB/s, "
             f"Up: {upload_speed:.2f} MB/s\n"
@@ -930,11 +1013,17 @@ class NetworkToolsWindow(StandardWindow):
         if success:
             self.lbl_status.setText(f"Completed: {message}")
         else:
-            QMessageBox.warning(self, "Operation Failed", message)
+            if Modal:
+                Modal("Operation Failed", message, ["OK"], self).exec_()
+            else:
+                QMessageBox.warning(self, "Operation Failed", message)
 
     def on_error_occurred(self, error_message: str):
         """Handle error."""
-        QMessageBox.critical(self, "Error", error_message)
+        if Modal:
+            Modal("Error", error_message, ["OK"], self).exec_()
+        else:
+            QMessageBox.critical(self, "Error", error_message)
         self.on_operation_finished()
 
     def on_operation_finished(self):
@@ -1000,20 +1089,14 @@ class NetworkToolsWindow(StandardWindow):
 
         table.setItem(row, 0, QTableWidgetItem(result["target"]))
 
-        reachable_item = QTableWidgetItem(
-            "Yes" if result["reachable"] else "No"
-        )
+        reachable_item = QTableWidgetItem("Yes" if result["reachable"] else "No")
         if result["reachable"]:
-            reachable_item.setBackground(
-                QColor(76, 175, 80, 100)
-            )  # Light green
+            reachable_item.setBackground(QColor(76, 175, 80, 100))  # Light green
         else:
             reachable_item.setBackground(QColor(244, 67, 54, 100))  # Light red
 
         table.setItem(row, 1, reachable_item)
-        table.setItem(
-            row, 2, QTableWidgetItem(f"{result['response_time']:.2f}")
-        )
+        table.setItem(row, 2, QTableWidgetItem(f"{result['response_time']:.2f}"))
         table.setItem(row, 3, QTableWidgetItem(result.get("error", "")))
 
     def clear_operation_results(self, operation_type: str):
@@ -1069,9 +1152,7 @@ class NetworkToolsWindow(StandardWindow):
                         f, "Port Scan Results", self.table_scan_results
                     )
                     self.export_table_data(f, "WiFi Networks", self.table_wifi)
-                    self.export_table_data(
-                        f, "Discovered Hosts", self.table_hosts
-                    )
+                    self.export_table_data(f, "Discovered Hosts", self.table_hosts)
                     self.export_table_data(
                         f, "Connectivity Results", self.table_connectivity
                     )
@@ -1082,14 +1163,29 @@ class NetworkToolsWindow(StandardWindow):
                         f.write("-" * 30 + "\n")
                         f.write(self.text_bandwidth_log.toPlainText())
 
-                QMessageBox.information(
-                    self, "Export Complete", f"Results exported to {file_path}"
-                )
+                if Modal:
+                    Modal(
+                        "Export Complete",
+                        f"Results exported to {file_path}",
+                        ["OK"],
+                        self,
+                    ).exec_()
+                else:
+                    QMessageBox.information(
+                        self, "Export Complete", f"Results exported to {file_path}"
+                    )
 
-            except Exception as e:
-                QMessageBox.critical(
-                    self, "Export Error", f"Failed to export results: {str(e)}"
+            except Exception as e:  # ERR: non-fatal — surfaced via Modal
+                self._logger.error(
+                    f"Error exporting network results: {e}", exc_info=True
                 )
+                if Modal:
+                    Modal(
+                        _NetworkToolsStrings.MODAL_ERROR_TITLE,
+                        _NetworkToolsStrings.ERR_EXPORT_FAILED,
+                        ["OK"],
+                        self,
+                    ).exec_()
 
     def export_table_data(self, file_handle, title: str, table: QTableWidget):
         """Export table data to file."""
@@ -1119,14 +1215,26 @@ class NetworkToolsWindow(StandardWindow):
     def closeEvent(self, event):
         """Handle window close event."""
         if self.worker_thread and self.worker_thread.isRunning():
-            reply = QMessageBox.question(
-                self,
-                "Confirm Close",
-                "Network operation is in progress. Cancel and close?",
-                QMessageBox.Yes | QMessageBox.No,
-            )
+            if Modal:
+                confirmed = (
+                    Modal(
+                        "Confirm Close",
+                        "Network operation is in progress. Cancel and close?",
+                        ["Yes", "No"],
+                        self,
+                    ).exec_()
+                    == 1
+                )  # QDialog.Accepted
+            else:
+                reply = QMessageBox.question(
+                    self,
+                    "Confirm Close",
+                    "Network operation is in progress. Cancel and close?",
+                    QMessageBox.Yes | QMessageBox.No,
+                )
+                confirmed = reply == QMessageBox.Yes
 
-            if reply == QMessageBox.Yes:
+            if confirmed:
                 self.cancel_operation()
                 event.accept()
             else:

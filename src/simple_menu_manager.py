@@ -211,11 +211,14 @@ class SimpleMenuManager:
 
         layout = QVBoxLayout(dialog)
         help_text = QTextEdit()
+        help_text.setAccessibleName("User guide content")
         help_text.setReadOnly(True)
         help_text.setHtml(self._load_help_content())
         layout.addWidget(help_text)
 
         close_btn = QPushButton("Close")
+        close_btn.setAccessibleName("Close user guide")
+        close_btn.setMinimumHeight(44)
         close_btn.clicked.connect(dialog.accept)
         layout.addWidget(close_btn)
 
@@ -229,11 +232,14 @@ class SimpleMenuManager:
 
         layout = QVBoxLayout(dialog)
         shortcuts_text = QTextEdit()
+        shortcuts_text.setAccessibleName("Keyboard shortcuts list")
         shortcuts_text.setReadOnly(True)
         shortcuts_text.setHtml(self._load_shortcuts_content())
         layout.addWidget(shortcuts_text)
 
         close_btn = QPushButton("Close")
+        close_btn.setAccessibleName("Close keyboard shortcuts")
+        close_btn.setMinimumHeight(44)
         close_btn.clicked.connect(dialog.accept)
         layout.addWidget(close_btn)
 
@@ -247,14 +253,19 @@ class SimpleMenuManager:
 
         layout = QVBoxLayout(dialog)
         log_text = QTextEdit()
+        log_text.setAccessibleName("Application log viewer")
         log_text.setReadOnly(True)
-        log_text.setFont(_Typography.monospace() if _Typography else QFont("Consolas", 9))
+        log_text.setFont(
+            _Typography.monospace() if _Typography else QFont("Consolas", 9)
+        )
 
         log_text.setPlainText(self._load_log_content())
         log_text.moveCursor(log_text.textCursor().End)
         layout.addWidget(log_text)
 
         close_btn = QPushButton("Close")
+        close_btn.setAccessibleName("Close log viewer")
+        close_btn.setMinimumHeight(44)
         close_btn.clicked.connect(dialog.accept)
         layout.addWidget(close_btn)
 

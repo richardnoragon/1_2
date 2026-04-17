@@ -300,6 +300,7 @@ TOKENS: dict = {
         "color_orange_red_darker": "#CC4F26",
         "color_green_deep": "#1E8449",
         "color_orange_badge": "#FD7E14",
+        "color_warning_dark": "#D35400",
         # Hub nav — reserved; MUST NOT be used by tool UIs (spec §4.1.2)
         "hub_nav_background": "#1A252F",
         "hub_nav_foreground": "#ECF0F1",
@@ -366,6 +367,7 @@ TOKENS: dict = {
         "color_orange_red_darker": "#D84315",
         "color_green_deep": "#27AE60",
         "color_orange_badge": "#FF9800",
+        "color_warning_dark": "#E65100",
         # Hub nav — reserved
         "hub_nav_background": "#0D1B2A",
         "hub_nav_foreground": "#BDC3C7",

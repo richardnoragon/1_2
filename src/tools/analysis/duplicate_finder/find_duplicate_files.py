@@ -4,9 +4,11 @@ Simple Duplicate Finder GUI for Richard's File Utilities
 """
 
 import hashlib
+import logging
 import os
 import sys
 
+from PyQt5.QtCore import QObject, QThread, pyqtSignal
 from PyQt5.QtWidgets import (
     QApplication,
     QFileDialog,
@@ -19,10 +21,11 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
-from src.gui.themes import token
+from src.gui.themes import ThemeManager, token
 
 try:
     from src.gui.components.buttons import PrimaryButton, SecondaryButton
+    from src.gui.components.loading_indicator import LoadingIndicator
     from src.gui.components.modal import Modal
 
     _COMPONENTS_AVAILABLE = True
@@ -30,6 +33,7 @@ except ImportError:
     from PyQt5.QtWidgets import QPushButton as PrimaryButton
     from PyQt5.QtWidgets import QPushButton as SecondaryButton
 
+    LoadingIndicator = None
     Modal = None
     _COMPONENTS_AVAILABLE = False
 
@@ -62,25 +66,145 @@ except ImportError as e:
         STANDARD_WINDOW_AVAILABLE = False
 
 
+# ---------------------------------------------------------------------------
+# GRD-1a: Guardian registration (graceful no-op when guardian absent)
+# ---------------------------------------------------------------------------
+try:
+    from src.core.guardian import register_gui_component
+except ImportError:
+
+    def register_gui_component(*a, **kw):
+        pass  # noqa: E731
+
+
+# ---------------------------------------------------------------------------
+# TEL: Telemetry helpers (graceful no-op when telemetry absent)
+# ---------------------------------------------------------------------------
+try:
+    from src.gui.telemetry import emit_telemetry
+
+    def _emit_telemetry(event_type, **kw):
+        emit_telemetry(event_type, **kw)  # noqa: E731
+
+except ImportError:
+
+    def _emit_telemetry(*a, **kw):
+        pass  # noqa: E731
+
+
+# ---------------------------------------------------------------------------
+# STR: Centralised string constants with fallback (P1-C15 / STR-1)
+# ---------------------------------------------------------------------------
+try:
+    from src.rfu.ui_strings import DuplicateFinder as _DupFinderStrings
+except ImportError:
+
+    class _DupFinderStrings:  # type: ignore[no-redef]
+        TITLE = "Duplicate Finder"
+        WINDOW_TITLE = "Duplicate Finder — RFU"
+        LOADING = "Loading Duplicate Finder…"
+        ERR_INIT_FAILED = (
+            "Could not start Duplicate Finder. "
+            "Please try again or restart the application."
+        )
+        ERR_SCAN_FAILED = (
+            "Duplicate scan could not be completed. "
+            "Check that the folder is accessible and try again."
+        )
+
+
+class DuplicateScanWorker(QObject):
+    """Scan a directory for duplicate files in a background thread (PERF-1d)."""
+
+    finished = pyqtSignal(list)  # emits list of (original, duplicate) tuples
+    error = pyqtSignal(str)
+
+    def __init__(self, directory: str) -> None:
+        super().__init__()
+        self._directory = directory
+
+    def run(self) -> None:
+        """Walk directory, hash every file, collect duplicates."""
+        try:
+            file_hashes: dict = {}
+            duplicates: list = []
+            for root, _dirs, files in os.walk(self._directory):
+                for file in files:
+                    file_path = os.path.join(root, file)
+                    file_hash = self._get_file_hash(file_path)
+                    if file_hash:
+                        if file_hash in file_hashes:
+                            duplicates.append((file_hashes[file_hash], file_path))
+                        else:
+                            file_hashes[file_hash] = file_path
+            self.finished.emit(duplicates)
+        except Exception as e:
+            self.error.emit(str(e))
+
+    @staticmethod
+    def _get_file_hash(file_path: str):
+        """Return MD5 hex digest or None on error."""
+        try:
+            with open(file_path, "rb") as f:
+                return hashlib.md5(f.read()).hexdigest()
+        except Exception:  # ERR: non-fatal — file skipped
+            return None
+
+
 class DuplicateFinderApp(StandardWindow):
     """Simple Duplicate Finder GUI."""
 
-    def __init__(self, parent=None):
+    def __init__(self, hub_instance=None, parent=None):
         # Always use the safe constructor parameters
         super().__init__(
-            title="Duplicate Finder - Richard's File Utilities",
+            title=_DupFinderStrings.WINDOW_TITLE,
             window_type="utility",
             parent=parent,
         )
+        self._hub = hub_instance
+        try:
+            from src.rfu.log_manager import get_log_manager
+
+            self._logger = get_log_manager().get_logger("DuplicateFinderApp")
+        except Exception:
+            self._logger = logging.getLogger("DuplicateFinderApp")
         self.setGeometry(100, 100, 800, 600)
 
         self.duplicates = {}
         self.selected_directory = None
+        self._worker: DuplicateScanWorker | None = None
+        self._thread: QThread | None = None
         self.init_ui()
         if STANDARD_WINDOW_AVAILABLE:
             self._setup_menu_callbacks()
         # Ensure menu bar exists (safe to call in both modes)
         self.ensure_menu_bar()
+        register_gui_component(
+            self, tool_id="duplicate_finder", recovery_callback=self.degraded_fallback
+        )
+        _emit_telemetry("ui_view_load", tool_id="duplicate_finder")
+        ThemeManager.add_theme_changed_callback(self._on_theme_changed)
+
+    def _on_theme_changed(self, variant: str) -> None:
+        """Re-apply token-based stylesheets when the active theme variant changes."""
+        pass  # stylesheets applied at init; live re-apply pending TH-4c/4d
+
+    def health_check(self) -> bool:
+        """Return True if core UI is functional (GRD-3a)."""
+        try:
+            return hasattr(self, "results_list") and self.results_list is not None
+        except Exception:
+            return False
+
+    def degraded_fallback(self) -> None:
+        """Enter degraded / read-only state (GRD-3b)."""
+        try:
+            self._logger.warning("DuplicateFinderApp entering degraded mode")
+        except Exception:
+            pass
+        _emit_telemetry(
+            "ui_error_event", tool_id="duplicate_finder", error_type="degraded"
+        )
 
     def _setup_menu_callbacks(self):
         """Setup tool-specific menu callbacks."""
@@ -216,7 +340,17 @@ class DuplicateFinderApp(StandardWindow):
 
         # Results
         self.results_list = QListWidget()
+        self.results_list.setAccessibleName("Duplicate files results")
         layout.addWidget(self.results_list)
+
+        # Loading indicator (PERF-3a/3b)
+        if LoadingIndicator:
+            self._loading_indicator = LoadingIndicator(
+                parent=self, message="Scanning for duplicates…"
+            )
+            layout.addWidget(self._loading_indicator)
+        else:
+            self._loading_indicator = None
 
         self.selected_directory = None
 
@@ -228,7 +362,7 @@ class DuplicateFinderApp(StandardWindow):
             self.dir_label.setText(f"Selected: {dir_path}")
 
     def find_duplicates(self):
-        """Find duplicate files in the selected directory."""
+        """Start duplicate scan in a background thread (PERF-1d)."""
         if not self.selected_directory:
             if Modal:
                 Modal(
@@ -238,51 +372,43 @@ class DuplicateFinderApp(StandardWindow):
                 QMessageBox.warning(self, "Warning", "Please select a directory first.")
             return
 
-        self._prepare_scan()
+        if self._thread and self._thread.isRunning():
+            return  # already scanning
 
-        try:
-            duplicates = self._scan_for_duplicates()
-            self._display_results(duplicates)
-
-        except Exception as e:
-            if Modal:
-                Modal("Error", f"Failed to scan directory: {e}", parent=self).exec_()
-            else:
-                QMessageBox.critical(self, "Error", f"Failed to scan directory: {e}")
-
-    def _prepare_scan(self):
-        """Prepare the UI for scanning."""
         self.results_list.clear()
-        self.results_list.addItem("Scanning for duplicates...")
-        QApplication.processEvents()
+        self.results_list.addItem("Scanning for duplicates…")
 
-    def _scan_for_duplicates(self):
-        """Scan directory and return list of duplicate file pairs."""
-        file_hashes = {}
-        duplicates = []
+        # PERF-3a: start indicator before worker
+        if self._loading_indicator:
+            self._loading_indicator.start()
 
-        for root, dirs, files in os.walk(self.selected_directory):
-            for file in files:
-                file_path = os.path.join(root, file)
-                file_hash = self._get_file_hash(file_path)
+        self._worker = DuplicateScanWorker(self.selected_directory)
+        self._thread = QThread()
+        self._worker.moveToThread(self._thread)
+        self._thread.started.connect(self._worker.run)
+        self._worker.finished.connect(self._display_results)
+        self._worker.error.connect(self._on_scan_error)
+        # PERF-4a: stop indicator on normal completion
+        self._worker.finished.connect(self._stop_indicator)
+        # PERF-4b: stop indicator on error path
+        self._worker.error.connect(self._stop_indicator)
+        self._thread.start()
 
-                if file_hash:
-                    if file_hash in file_hashes:
-                        duplicates.append((file_hashes[file_hash], file_path))
-                    else:
-                        file_hashes[file_hash] = file_path
+    def _stop_indicator(self) -> None:
+        """Stop the loading indicator and clean up the thread."""
+        if self._loading_indicator:
+            self._loading_indicator.stop()
+        if self._thread:
+            self._thread.quit()
+            self._thread = None
+        self._worker = None
 
-        return duplicates
+    def _on_scan_error(self, message: str) -> None:  # ERR: non-fatal
+        self._logger.error(f"Duplicate scan error: {message}", exc_info=True)
+        if Modal:
+            Modal("Error", _DupFinderStrings.ERR_SCAN_FAILED, ["OK"], self).exec_()
 
-    def _get_file_hash(self, file_path):
-        """Get MD5 hash of a file, return None if error."""
-        try:
-            with open(file_path, "rb") as f:
-                return hashlib.md5(f.read()).hexdigest()
-        except Exception:
-            return None
-
-    def _display_results(self, duplicates):
+    def _display_results(self, duplicates: list) -> None:
         """Display scan results in the list widget."""
         self.results_list.clear()
 

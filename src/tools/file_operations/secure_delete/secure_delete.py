@@ -18,7 +18,6 @@ from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional
 
 try:
-    from src.gui.themes import token
     from PyQt5.QtWidgets import (
         QApplication,
         QCheckBox,
@@ -37,6 +36,8 @@ try:
         QVBoxLayout,
         QWidget,
     )
+
+    from src.gui.themes import ThemeManager, token
 except ImportError:
     print("PyQt5 not available. Please install PyQt5.")
     sys.exit(1)
@@ -59,6 +60,75 @@ except ImportError:
     # Fallback for standalone execution
     StandardWindow = QMainWindow
     STANDARD_WINDOW_AVAILABLE = False
+
+
+# ---------------------------------------------------------------------------
+# GRD-1a: Guardian registration (graceful no-op when guardian absent)
+# ---------------------------------------------------------------------------
+try:
+    from src.core.guardian import register_gui_component
+except ImportError:
+
+    def register_gui_component(*a, **kw):
+        pass  # noqa: E731
+
+
+# ---------------------------------------------------------------------------
+# TEL: Telemetry helpers (graceful no-op when telemetry absent)
+# ---------------------------------------------------------------------------
+try:
+    from src.gui.telemetry import emit_telemetry
+
+    def _emit_telemetry(event_type, **kw):
+        emit_telemetry(event_type, **kw)  # noqa: E731
+
+except ImportError:
+
+    def _emit_telemetry(*a, **kw):
+        pass  # noqa: E731
+
+
+# ---------------------------------------------------------------------------
+# STR: Centralised string constants with fallback (P1-C15 / STR-1)
+# ---------------------------------------------------------------------------
+try:
+    from src.rfu.ui_strings import SecureDelete as _SDStrings
+except ImportError:
+
+    class _SDStrings:  # type: ignore[no-redef]
+        TITLE = "Secure Delete"
+        WINDOW_TITLE = "Secure Delete — RFU"
+        LOADING = "Loading Secure Delete…"
+        ERR_INIT_FAILED = (
+            "Could not start Secure Delete. "
+            "Please try again or restart the application."
+        )
+        ERR_DELETE_FAILED = (
+            "Secure deletion failed. "
+            "Check that you have permission to delete the selected files."
+        )
+        ERR_NO_FILES = "No files selected for deletion."
+
+
+# ---------------------------------------------------------------------------
+# CP: Shared UI components (graceful fallback when unavailable)
+# ---------------------------------------------------------------------------
+try:
+    from src.gui.components.buttons import (
+        DestructiveButton,
+        PrimaryButton,
+        SecondaryButton,
+    )
+    from src.gui.components.modal import ConfirmationModal, Modal
+    from src.gui.components.toast import ToastNotification
+
+    _CP_AVAILABLE = True
+except ImportError:
+    DestructiveButton = PrimaryButton = SecondaryButton = None  # type: ignore[assignment,misc]
+    Modal = ConfirmationModal = None  # type: ignore[assignment,misc]
+    ToastNotification = None
+    _CP_AVAILABLE = False
+
 
 # Deletion method constants to avoid string literal duplication
 SINGLE_PASS_METHOD = "Single Pass (Quick)"
@@ -144,9 +214,11 @@ class SecureDeleteEngine:
         None,
     ]
 
-    def __init__(
-        self, progress_callback: Optional[Callable[[int, str], None]] = None
-    ):
+    def _on_theme_changed(self, variant: str) -> None:
+        """Re-apply token-based stylesheets when the active theme variant changes."""
+        pass  # stylesheets applied at init; live re-apply pending TH-4c/4d
+
+    def __init__(self, progress_callback: Optional[Callable[[int, str], None]] = None):
         """Initialize the secure delete engine.
 
         Args:
@@ -213,7 +285,9 @@ class SecureDeleteEngine:
                 start_time,
             )
 
-        except Exception as e:
+        except (
+            Exception
+        ) as e:  # ERR: non-fatal — surfaced via result object; deletion fails gracefully
             return self._handle_deletion_error(result, e)
 
     def _expand_file_paths(
@@ -230,9 +304,7 @@ class SecureDeleteEngine:
                 result.errors.append(f"Path not found: {path}")
         return all_files
 
-    def _handle_no_files_result(
-        self, result: SecureDeleteResult
-    ) -> SecureDeleteResult:
+    def _handle_no_files_result(self, result: SecureDeleteResult) -> SecureDeleteResult:
         """Handle case when no valid files are found."""
         result.success = False
         result.message = "No valid files found to delete"
@@ -247,9 +319,7 @@ class SecureDeleteEngine:
     ) -> tuple:
         """Process deletion of all files and return counts."""
         total_files = len(all_files)
-        total_bytes = sum(
-            os.path.getsize(f) for f in all_files if os.path.exists(f)
-        )
+        total_bytes = sum(os.path.getsize(f) for f in all_files if os.path.exists(f))
 
         self._update_progress(
             0,
@@ -268,9 +338,7 @@ class SecureDeleteEngine:
 
             try:
                 file_size = (
-                    os.path.getsize(file_path)
-                    if os.path.exists(file_path)
-                    else 0
+                    os.path.getsize(file_path) if os.path.exists(file_path) else 0
                 )
 
                 self._update_progress(
@@ -278,9 +346,7 @@ class SecureDeleteEngine:
                     f"Deleting: {os.path.basename(file_path)}",
                 )
 
-                file_result = self._secure_delete_file(
-                    file_path, method, verify
-                )
+                file_result = self._secure_delete_file(file_path, method, verify)
 
                 if file_result.success:
                     processed_files += 1
@@ -288,7 +354,9 @@ class SecureDeleteEngine:
                 else:
                     result.errors.extend(file_result.errors)
 
-            except Exception as e:
+            except (
+                Exception
+            ) as e:  # ERR: non-fatal — file skipped; error added to result.errors
                 error_msg = f"Error deleting {file_path}: {str(e)}"
                 result.errors.append(error_msg)
                 self.logger.error(error_msg)
@@ -356,9 +424,7 @@ class SecureDeleteEngine:
 
             # Execute overwrite passes
             if not self._execute_overwrite_passes(file_path, passes):
-                result.errors.append(
-                    f"Overwrite passes failed for {file_path}"
-                )
+                result.errors.append(f"Overwrite passes failed for {file_path}")
 
             # Verify overwrite if requested
             if verify and not self._verify_overwrite(file_path):
@@ -368,7 +434,9 @@ class SecureDeleteEngine:
             # Final deletion
             return self._perform_final_deletion(file_path, file_size, result)
 
-        except Exception as e:
+        except (
+            Exception
+        ) as e:  # ERR: non-fatal — file skipped; error added to result.errors
             result.success = False
             result.errors.append(f"Error processing {file_path}: {str(e)}")
             self.logger.error(f"Error processing {file_path}: {str(e)}")
@@ -410,9 +478,7 @@ class SecureDeleteEngine:
             if self.cancel_requested:
                 return False
 
-            success = self._overwrite_file(
-                file_path, pattern, pass_num, len(passes)
-            )
+            success = self._overwrite_file(file_path, pattern, pass_num, len(passes))
             if not success:
                 return False
 
@@ -429,9 +495,7 @@ class SecureDeleteEngine:
             result.bytes_processed = file_size
             self.logger.info(f"Successfully deleted: {file_path}")
         except OSError as e:
-            result.errors.append(
-                f"Failed to remove file {file_path}: {str(e)}"
-            )
+            result.errors.append(f"Failed to remove file {file_path}: {str(e)}")
             result.success = False
 
         return result
@@ -483,7 +547,9 @@ class SecureDeleteEngine:
 
             return True
 
-        except Exception as e:
+        except (
+            Exception
+        ) as e:  # ERR: non-fatal — returns False; overwrite pass fails; file skipped
             self.logger.error(f"Error overwriting {file_path}: {str(e)}")
             return False
 
@@ -506,7 +572,9 @@ class SecureDeleteEngine:
 
             return True
 
-        except Exception as e:
+        except (
+            Exception
+        ) as e:  # ERR: non-fatal — returns False; verification fails; reported in result
             self.logger.error(f"Error verifying {file_path}: {str(e)}")
             return False
 
@@ -517,10 +585,10 @@ class SecureDeleteEngine:
             for root, dirs, filenames in os.walk(directory):
                 for filename in filenames:
                     files.append(os.path.join(root, filename))
-        except Exception as e:
-            self.logger.error(
-                f"Error scanning directory {directory}: {str(e)}"
-            )
+        except (
+            Exception
+        ) as e:  # ERR: non-fatal — logged only; affected files excluded from list
+            self.logger.error(f"Error scanning directory {directory}: {str(e)}")
 
         return files
 
@@ -534,7 +602,9 @@ class SecureDeleteEngine:
                         self.logger.info(f"Removed empty directory: {root}")
                     except OSError:
                         pass  # Directory not empty or permission denied
-        except Exception as e:
+        except (
+            Exception
+        ) as e:  # ERR: non-fatal — logged only; directory cleanup incomplete
             self.logger.error(f"Error cleaning up directories: {str(e)}")
 
     def _update_progress(self, percentage: int, message: str):
@@ -542,7 +612,9 @@ class SecureDeleteEngine:
         if self.progress_callback:
             try:
                 self.progress_callback(percentage, message)
-            except Exception as e:
+            except (
+                Exception
+            ) as e:  # ERR: non-fatal — logged only; progress callback error ignored
                 self.logger.error(f"Error in progress callback: {str(e)}")
 
     def _format_bytes(self, bytes_count: int) -> str:
@@ -563,32 +635,62 @@ class SecureDeleteEngine:
 class SecureDeleteGUI(StandardWindow):
     """Main window for Secure Delete operations."""
 
-    def __init__(self):
+    def __init__(self, hub_instance=None):
+        self._hub = hub_instance
         if STANDARD_WINDOW_AVAILABLE:
             super().__init__(
-                title="Secure Delete - Richard's File Utilities",
+                title=_SDStrings.WINDOW_TITLE,
                 window_type="utility",
             )
         else:
             super().__init__()
-            self.setWindowTitle("Secure Delete - Richard's File Utilities")
+            self.setWindowTitle(_SDStrings.WINDOW_TITLE)
             self.setGeometry(100, 100, 800, 600)
+
+        try:
+            from src.rfu.log_manager import get_log_manager
+
+            self._logger = get_log_manager().get_logger("SecureDeleteGUI")
+        except Exception:  # ERR: non-fatal — logger fallback to module logger
+            self._logger = logging.getLogger("SecureDeleteGUI")
 
         self.selected_files = []
         self.init_ui()
         if STANDARD_WINDOW_AVAILABLE:
             self._setup_menu_callbacks()
+        register_gui_component(
+            self, tool_id="secure_delete", recovery_callback=self.degraded_fallback
+        )
+        _emit_telemetry("ui_view_load", tool_id="secure_delete")
+        ThemeManager.add_theme_changed_callback(self._on_theme_changed)
+
+    def _on_theme_changed(self, variant: str) -> None:
+        """Re-apply token-based stylesheets when the active theme variant changes."""
+        pass  # stylesheets applied at init; live re-apply deferred (TH-4c/4d)
+
+    def health_check(self) -> bool:
+        """Return True if core UI is functional (GRD-3a)."""
+        try:
+            return hasattr(self, "files_list") and self.files_list is not None
+        except Exception:
+            return False
+
+    def degraded_fallback(self) -> None:
+        """Enter degraded / read-only state (GRD-3b)."""
+        try:
+            self._logger.warning("SecureDeleteGUI entering degraded mode")
+        except Exception:
+            pass
+        _emit_telemetry(
+            "ui_error_event", tool_id="secure_delete", error_type="degraded"
+        )
 
     def _setup_menu_callbacks(self):
         """Setup tool-specific menu callbacks."""
         if hasattr(self, "menu_manager"):
             # Register tool-specific callbacks
-            self.menu_manager.register_callback(
-                "new_deletion", self.clear_selection
-            )
-            self.menu_manager.register_callback(
-                "help_secure_delete", self.show_help
-            )
+            self.menu_manager.register_callback("new_deletion", self.clear_selection)
+            self.menu_manager.register_callback("help_secure_delete", self.show_help)
 
     def show_help(self):
         """Show comprehensive help for Secure Delete tool."""
@@ -631,26 +733,31 @@ class SecureDeleteGUI(StandardWindow):
         requires system-level integration and may need additional libraries for optimal security.</p>
         """
 
-        msg_box = QMessageBox()
-        msg_box.setWindowTitle("Secure Delete Tool - Help")
-        msg_box.setTextFormat(1)  # Rich text format
-        msg_box.setText(help_text)
-        msg_box.setStandardButtons(QMessageBox.Ok)
-        msg_box.exec_()
+        if Modal:
+            Modal("Secure Delete Tool - Help", help_text, ["OK"], parent=self).exec_()
+        else:
+            msg_box = QMessageBox()
+            msg_box.setWindowTitle("Secure Delete Tool - Help")
+            msg_box.setTextFormat(1)  # Rich text format
+            msg_box.setText(help_text)
+            msg_box.setStandardButtons(QMessageBox.Ok)
+            msg_box.exec_()
 
     def show_preferences(self):
         """Show Secure Delete preferences."""
-        QMessageBox.information(
-            self,
-            "Secure Delete Preferences",
+        _msg = (
             "Secure Delete preferences:\n\n"
             "• Default deletion method settings\n"
             "• Overwrite pass count preferences\n"
             "• Verification options\n"
             "• Performance optimization settings\n"
             "• Logging and audit preferences\n\n"
-            "Advanced preferences coming soon!",
+            "Advanced preferences coming soon!"
         )
+        if Modal:
+            Modal("Secure Delete Preferences", _msg, ["OK"], parent=self).exec_()
+        else:
+            QMessageBox.information(self, "Secure Delete Preferences", _msg)
 
     def refresh_view(self):
         """Refresh the current view."""
@@ -701,48 +808,21 @@ class SecureDeleteGUI(StandardWindow):
         # Selection buttons
         button_layout = QHBoxLayout()
 
-        self.select_files_button = QPushButton("Select Files")
+        _SB = SecondaryButton if SecondaryButton else QPushButton
+        self.select_files_button = _SB("Select Files")
         self.select_files_button.clicked.connect(self.select_files)
-        self.select_files_button.setStyleSheet(
-            """
-            QPushButton {
-                background-color: {token('semantic_error')};
-                color: white;
-                border: none;
-                padding: 8px 16px;
-                border-radius: 4px;
-                font-weight: bold;
-            }
-            QPushButton:hover {
-                background-color: {token('semantic_error')};
-            }
-        """
-        )
         button_layout.addWidget(self.select_files_button)
 
-        self.select_folder_button = QPushButton("Select Folder")
+        _SB2 = SecondaryButton if SecondaryButton else QPushButton
+        self.select_folder_button = _SB2("Select Folder")
         self.select_folder_button.clicked.connect(self.select_folder)
-        self.select_folder_button.setStyleSheet(
-            """
-            QPushButton {
-                background-color: {token('semantic_warning')};
-                color: white;
-                border: none;
-                padding: 8px 16px;
-                border-radius: 4px;
-                font-weight: bold;
-            }
-            QPushButton:hover {
-                background-color: {token('semantic_warning')};
-            }
-        """
-        )
         button_layout.addWidget(self.select_folder_button)
 
         file_layout.addLayout(button_layout)
 
         # Selected files list
         self.files_list = QListWidget()
+        self.files_list.setAccessibleName("Files to delete")
         self.files_list.setMaximumHeight(120)
         file_layout.addWidget(QLabel("Selected Items:"))
         file_layout.addWidget(self.files_list)
@@ -757,6 +837,10 @@ class SecureDeleteGUI(StandardWindow):
         method_layout = QHBoxLayout()
         method_layout.addWidget(QLabel("Method:"))
         self.method_combo = QComboBox()
+        self.method_combo.setAccessibleName("Deletion method")
+        self.method_combo.setAccessibleDescription(
+            "DoD 5220.22-M (7-pass) is most secure; random single-pass is fastest"
+        )
         self.method_combo.addItems(
             [
                 SINGLE_PASS_METHOD,
@@ -773,12 +857,22 @@ class SecureDeleteGUI(StandardWindow):
         # Verification option
         self.verify_deletion = QCheckBox("Verify deletion (recommended)")
         self.verify_deletion.setChecked(True)
+        self.verify_deletion.setAccessibleName("Verify deletion")
+        self.verify_deletion.setAccessibleDescription(
+            "Reads back overwritten data to confirm the original content cannot be recovered"
+        )
+        self.verify_deletion.setMinimumHeight(44)
         security_layout.addWidget(self.verify_deletion)
 
         # Dry run option
         self.dry_run_checkbox = QCheckBox(
             "\U0001f50d Dry Run (Preview Only \u2014 No Files Will Be Deleted)"
         )
+        self.dry_run_checkbox.setAccessibleName("Dry run preview mode")
+        self.dry_run_checkbox.setAccessibleDescription(
+            "Shows which files would be deleted without actually removing any files"
+        )
+        self.dry_run_checkbox.setMinimumHeight(44)
         self.dry_run_checkbox.setToolTip(
             "When checked, shows which files WOULD be deleted without "
             "actually deleting anything"
@@ -806,26 +900,19 @@ class SecureDeleteGUI(StandardWindow):
         # Add action buttons
         action_layout = QHBoxLayout()
 
-        self.delete_button = QPushButton("🗑️ Secure Delete")
-        self.delete_button.clicked.connect(self.secure_delete)
-        self.delete_button.setStyleSheet(
-            """
-            QPushButton {
-                background-color: {token('semantic_error')};
-                color: white;
-                border: none;
-                padding: 10px 20px;
-                border-radius: 4px;
-                font-weight: bold;
-            }
-            QPushButton:hover {
-                background-color: {token('semantic_error')};
-            }
-        """
-        )
+        if DestructiveButton:
+            self.delete_button = DestructiveButton("🗑️ Secure Delete")
+            self.delete_button.set_confirmation_callback(self._confirm_secure_delete)
+            self.delete_button.action_confirmed.connect(self._execute_secure_delete)
+        else:
+            self.delete_button = QPushButton("🗑️ Secure Delete")
+            self.delete_button.setAccessibleName("Secure delete selected files")
+            self.delete_button.setMinimumHeight(44)
+            self.delete_button.clicked.connect(self.secure_delete)
         action_layout.addWidget(self.delete_button)
 
-        self.clear_button = QPushButton("Clear Selection")
+        _SB3 = SecondaryButton if SecondaryButton else QPushButton
+        self.clear_button = _SB3("Clear Selection")
         self.clear_button.clicked.connect(self.clear_selection)
         action_layout.addWidget(self.clear_button)
 
@@ -931,26 +1018,22 @@ class SecureDeleteGUI(StandardWindow):
         # Start deletion in a separate thread to keep GUI responsive
         def deletion_worker():
             try:
-                result = engine.secure_delete_files(
-                    self.selected_files, method, verify
-                )
+                result = engine.secure_delete_files(self.selected_files, method, verify)
 
                 # Update GUI with results (use QTimer to run on main thread)
                 from PyQt5.QtCore import QTimer
 
-                QTimer.singleShot(
-                    0, lambda: self._handle_deletion_result(result)
-                )
+                QTimer.singleShot(0, lambda: self._handle_deletion_result(result))
 
-            except Exception as e:
+            except (
+                Exception
+            ) as e:  # ERR: non-fatal — surfaced via SecureDeleteResult; reported in _handle_deletion_result
                 error_result = SecureDeleteResult(
                     success=False,
                     message=f"Unexpected error: {str(e)}",
                     errors=[str(e)],
                 )
-                QTimer.singleShot(
-                    0, lambda: self._handle_deletion_result(error_result)
-                )
+                QTimer.singleShot(0, lambda: self._handle_deletion_result(error_result))
 
         # Start the deletion thread
         deletion_thread = threading.Thread(target=deletion_worker, daemon=True)
@@ -965,17 +1048,23 @@ class SecureDeleteGUI(StandardWindow):
         self.progress_bar.setVisible(False)
 
         if result.success:
-            # Success message
-            QMessageBox.information(
-                self,
-                "✅ Secure Delete Complete",
+            _success_msg = (
                 f"Secure deletion completed successfully!\n\n"
                 f"Files processed: {result.files_processed}\n"
                 f"Data overwritten: {self._format_bytes(result.bytes_processed)}\n"
                 f"Duration: {result.duration:.1f} seconds\n"
                 f"Verification: {'Passed' if result.verification_passed else 'Failed'}\n\n"
-                f"All selected items have been securely deleted.",
+                f"All selected items have been securely deleted."
             )
+            if Modal:
+                Modal(
+                    "✅ Secure Delete Complete",
+                    _success_msg,
+                    ["OK"],
+                    parent=self,
+                ).exec_()
+            else:
+                QMessageBox.information(self, "✅ Secure Delete Complete", _success_msg)
 
             # Clear selection after successful deletion
             self.clear_selection()
@@ -984,19 +1073,19 @@ class SecureDeleteGUI(StandardWindow):
             # Error message
             error_details = "\n".join(result.errors[:5])  # Show first 5 errors
             if len(result.errors) > 5:
-                error_details += (
-                    f"\n... and {len(result.errors) - 5} more errors"
-                )
+                error_details += f"\n... and {len(result.errors) - 5} more errors"
 
-            QMessageBox.critical(
-                self,
-                "❌ Secure Delete Failed",
+            _err_msg = (
                 f"Secure deletion encountered errors:\n\n"
                 f"{result.message}\n\n"
                 f"Files processed: {result.files_processed}\n"
                 f"Errors encountered:\n{error_details}\n\n"
-                f"Some files may not have been deleted.",
+                f"Some files may not have been deleted."
             )
+            if Modal:
+                Modal("❌ Secure Delete Failed", _err_msg, ["OK"], parent=self).exec_()
+            else:
+                QMessageBox.critical(self, "❌ Secure Delete Failed", _err_msg)
 
     def _format_bytes(self, bytes_count: int) -> str:
         """Format byte count for display."""

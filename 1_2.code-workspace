@@ -137,7 +137,37 @@
       "content.splitlines()": true,
       "Tee-Object": true,
       "git remote": true,
-      "git add": true
+      "git add": true,
+      "git commit": true,
+      "git rm": true,
+      "_loading": true,
+      "QThread": true,
+      "Worker": true,
+      "threading": true,
+      "\\.wait\\": true,
+      "time\\.sleep": true,
+      "open\\": true,
+      "os\\.walk\"": true,
+      "time\\.sleep\"": true,
+      "hashlib": true,
+      "start\\(\\)\"": true,
+      "\\": true,
+      "LoadingIndicator": true,
+      "os\\.walk": true,
+      "\\.start\\(\\)": true,
+      "\\.stop\\": true,
+      "\\.encrypt": true,
+      "\\.decrypt\"": true,
+      "449..510": true,
+      "720..745": true,
+      "870..940": true,
+      "395..430": true,
+      "495..540": true,
+      "c:\\Users\\HP1\\1_2\\venv\\Scripts\\python.exe": true,
+      "/^python -c \"\nimport os, re\nfrom pathlib import Path\n\ntools = \\[\n    'src/tools/analysis/checksum/check_sum\\.py',\n    'src/tools/analysis/duplicate_finder/find_duplicate_files\\.py',\n    'src/tools/analysis/size_analyzer/size_analyzer\\.py',\n    'src/tools/analysis/empty_folders/empty_folders\\.py',\n    'src/tools/file_management/finder/file_finder\\.py',\n    'src/tools/file_management/organizer/organize\\.py',\n    'src/tools/file_management/advanced_catalog/advanced_catalog_window\\.py',\n    'src/tools/system/system_diagnostics/system_diagnostics_gui\\.py',\n    'src/tools/system/process_monitor/process_monitor\\.py',\n    'src/tools/system/simple_system_info\\.py',\n    'src/tools/system/software_maintenance/gui/maintenance_hub\\.py',\n    'src/tools/network/gui\\.py',\n    'src/tools/metadata/image_metadata/gui\\.py',\n    'src/tools/metadata/office_metadata/office_metadata_gui\\.py',\n    'src/tools/metadata/file_touch/file_touch\\.py',\n    'src/tools/preferences/portability_launcher\\.py',\n    'src/tools/file_operations/secure_delete/secure_delete\\.py',\n    'src/tools/security/encryption/en_and_decrypt\\.py',\n    'src/tools/security/security_scanner/security_scanner\\.py',\n    'src/tools/security/password_generator/password_generator\\.py',\n    'src/tools/pdf_tools/widgets/enhanced_pdf_tools_widget\\.py',\n    'src/tools/privacy/privacy_tools/gui/privacy_hub\\.py',\n\\]\n\nINTERACTIVE = \\['QPushButton\\(', 'QToolButton\\(', 'QCheckBox\\(', 'QRadioButton\\(', 'QComboBox\\(',\n               'QSpinBox\\(', 'QDoubleSpinBox\\(', 'QLineEdit\\(', 'QTextEdit\\(', 'QPlainTextEdit\\(',\n               'QListWidget\\(', 'QTreeWidget\\(', 'QTableWidget\\(', 'QSlider\\(', 'QTabWidget\\('\\]\n\nfor tool in tools:\n    p = Path\\(tool\\)\n    if not p\\.exists\\(\\):\n        print\\(f'MISSING: \\{tool\\}'\\)\n        continue\n    text = p\\.read_text\\(encoding='utf-8', errors='replace'\\)\n    lines = text\\.splitlines\\(\\)\n    controls = sum\\(1 for line in lines if any\\(w in line for w in INTERACTIVE\\)\\)\n    accessible = text\\.count\\('setAccessibleName'\\)\n    desc = text\\.count\\('setAccessibleDescription'\\)\n    min_h44 = text\\.count\\('setMinimumHeight\\(44\\)'\\)\n    print\\(f'\\{p\\.name:45s\\} controls~=\\{controls:3d\\}  accNames=\\{accessible:3d\\}  accDesc=\\{desc:2d\\}  minH44=\\{min_h44\\}'\\)\n\"$/": {
+        "approve": true,
+        "matchCommandLine": true
+      }
     }
   }
 }

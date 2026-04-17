@@ -11,7 +11,6 @@ from pathlib import Path
 from typing import Any, Dict, List
 
 from PyQt5.QtCore import QMutex, QMutexLocker, Qt, QThread, pyqtSignal
-from src.gui.themes import token
 from PyQt5.QtWidgets import (
     QAction,
     QApplication,
@@ -38,6 +37,8 @@ from PyQt5.QtWidgets import (
     QVBoxLayout,
     QWidget,
 )
+
+from src.gui.themes import token
 
 # Import the standard window framework
 try:
@@ -190,8 +191,14 @@ class FileRenameWindow(StandardWindow):
         # File selection buttons
         btn_layout = QHBoxLayout()
         self.btn_select_files = QPushButton("Select Files")
+        self.btn_select_files.setAccessibleName("Select files to rename")
+        self.btn_select_files.setMinimumHeight(44)
         self.btn_select_folder = QPushButton("Select Folder")
+        self.btn_select_folder.setAccessibleName("Select folder of files to rename")
+        self.btn_select_folder.setMinimumHeight(44)
         self.btn_clear_files = QPushButton("Clear")
+        self.btn_clear_files.setAccessibleName("Clear selected files")
+        self.btn_clear_files.setMinimumHeight(44)
 
         btn_layout.addWidget(self.btn_select_files)
         btn_layout.addWidget(self.btn_select_folder)
@@ -211,6 +218,7 @@ class FileRenameWindow(StandardWindow):
         # Mode selection
         mode_layout.addWidget(QLabel("Mode:"), 0, 0)
         self.combo_mode = QComboBox()
+        self.combo_mode.setAccessibleName("Rename mode")
         self.combo_mode.addItems(
             [
                 "prefix",
@@ -235,18 +243,22 @@ class FileRenameWindow(StandardWindow):
         # Text input
         mode_layout.addWidget(QLabel("Text:"), 1, 0)
         self.edit_text = QLineEdit()
+        self.edit_text.setAccessibleName("Rename text or pattern")
         self.edit_text.setPlaceholderText("Enter text or pattern")
         mode_layout.addWidget(self.edit_text, 1, 1)
 
         # Date format
         mode_layout.addWidget(QLabel("Date Format:"), 2, 0)
         self.edit_date_format = QLineEdit()
+        self.edit_date_format.setAccessibleName("Date format string")
         self.edit_date_format.setPlaceholderText("YYYY-MM-DD_HHMMSS")
         mode_layout.addWidget(self.edit_date_format, 2, 1)
 
         # Counter start
         mode_layout.addWidget(QLabel("Start Counter:"), 3, 0)
         self.spin_counter = QSpinBox()
+        self.spin_counter.setAccessibleName("Counter start value")
+        self.spin_counter.setMinimumHeight(44)
         self.spin_counter.setMinimum(1)
         self.spin_counter.setMaximum(9999)
         self.spin_counter.setValue(1)
@@ -259,19 +271,27 @@ class FileRenameWindow(StandardWindow):
         options_layout = QVBoxLayout(options_group)
 
         self.chk_preview = QCheckBox("Show preview before rename")
+        self.chk_preview.setAccessibleName("Show rename preview")
+        self.chk_preview.setMinimumHeight(44)
         self.chk_preview.setChecked(True)
         options_layout.addWidget(self.chk_preview)
 
         self.chk_backup = QCheckBox("Create backup before rename")
+        self.chk_backup.setAccessibleName("Create backup before rename")
+        self.chk_backup.setMinimumHeight(44)
         options_layout.addWidget(self.chk_backup)
 
         self.chk_recursive = QCheckBox("Include subdirectories")
+        self.chk_recursive.setAccessibleName("Include subdirectories in rename")
+        self.chk_recursive.setMinimumHeight(44)
         options_layout.addWidget(self.chk_recursive)
 
         layout.addWidget(options_group)
 
         # Preview button
         self.btn_preview = QPushButton("Generate Preview")
+        self.btn_preview.setAccessibleName("Generate rename preview")
+        self.btn_preview.setMinimumHeight(44)
         self.btn_preview.setStyleSheet("QPushButton { font-weight: bold; }")
         layout.addWidget(self.btn_preview)
 
@@ -285,6 +305,7 @@ class FileRenameWindow(StandardWindow):
 
         # Tab widget for different views
         self.tab_widget = QTabWidget()
+        self.tab_widget.setAccessibleName("Rename preview tabs")
         layout.addWidget(self.tab_widget)
 
         # Files tab
@@ -294,6 +315,7 @@ class FileRenameWindow(StandardWindow):
         # File list
         files_layout.addWidget(QLabel("Selected Files:"))
         self.list_files = QListWidget()
+        self.list_files.setAccessibleName("Selected files for rename")
         files_layout.addWidget(self.list_files)
 
         self.tab_widget.addTab(files_tab, "Files")
@@ -305,6 +327,7 @@ class FileRenameWindow(StandardWindow):
         # Preview table
         preview_layout.addWidget(QLabel("Rename Preview:"))
         self.table_preview = QTableWidget()
+        self.table_preview.setAccessibleName("Rename preview table")
         self.table_preview.setColumnCount(4)
         self.table_preview.setHorizontalHeaderLabels(
             ["Original Name", "New Name", "Status", "Path"]
@@ -328,6 +351,7 @@ class FileRenameWindow(StandardWindow):
         # Results text
         results_layout.addWidget(QLabel("Operation Results:"))
         self.text_results = QTextEdit()
+        self.text_results.setAccessibleName("Rename operation results")
         self.text_results.setReadOnly(True)
         self.text_results.setMaximumHeight(200)
         results_layout.addWidget(self.text_results)
@@ -354,6 +378,8 @@ class FileRenameWindow(StandardWindow):
         btn_layout = QHBoxLayout()
 
         self.btn_rename = QPushButton("Start Rename")
+        self.btn_rename.setAccessibleName("Start rename operation")
+        self.btn_rename.setMinimumHeight(44)
         self.btn_rename.setStyleSheet(
             """
             QPushButton {
@@ -369,9 +395,13 @@ class FileRenameWindow(StandardWindow):
         )
 
         self.btn_cancel = QPushButton("Cancel")
+        self.btn_cancel.setAccessibleName("Cancel rename operation")
+        self.btn_cancel.setMinimumHeight(44)
         self.btn_cancel.setEnabled(False)
 
         self.btn_reset = QPushButton("Reset")
+        self.btn_reset.setAccessibleName("Reset rename form")
+        self.btn_reset.setMinimumHeight(44)
 
         btn_layout.addWidget(self.btn_rename)
         btn_layout.addWidget(self.btn_cancel)

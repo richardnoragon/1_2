@@ -12,7 +12,6 @@ import sys
 NETWORK_SCANNER_TEXT = "Network Scanner"
 
 try:
-    from src.gui.themes import token
     from PyQt5.QtWidgets import (
         QApplication,
         QCheckBox,
@@ -29,6 +28,8 @@ try:
         QVBoxLayout,
         QWidget,
     )
+
+    from src.gui.themes import token
 except ImportError:
     print("PyQt5 not available. Please install PyQt5.")
     sys.exit(1)
@@ -118,8 +119,9 @@ class NetworkScannerGUI(_BaseWindow):
         target_layout = QHBoxLayout()
         target_layout.addWidget(QLabel("Target Host:"))
         self.target_input = QLineEdit()
+        self.target_input.setAccessibleName("Target host for network scan")
         self.target_input.setPlaceholderText("Enter IP address or hostname")
-        self.target_input.setText("127.0.0.1")  # Default to localhost
+        self.target_input.setText("127.0.0.1")
         target_layout.addWidget(self.target_input)
         config_layout.addLayout(target_layout)
 
@@ -127,11 +129,15 @@ class NetworkScannerGUI(_BaseWindow):
         port_layout = QHBoxLayout()
         port_layout.addWidget(QLabel("Port Range:"))
         self.start_port = QSpinBox()
+        self.start_port.setAccessibleName("Scan start port")
+        self.start_port.setMinimumHeight(44)
         self.start_port.setRange(1, 65535)
         self.start_port.setValue(1)
         port_layout.addWidget(self.start_port)
         port_layout.addWidget(QLabel("to"))
         self.end_port = QSpinBox()
+        self.end_port.setAccessibleName("Scan end port")
+        self.end_port.setMinimumHeight(44)
         self.end_port.setRange(1, 65535)
         self.end_port.setValue(1000)
         port_layout.addWidget(self.end_port)
@@ -140,19 +146,27 @@ class NetworkScannerGUI(_BaseWindow):
         # Scan options
         options_layout = QHBoxLayout()
         self.tcp_scan = QCheckBox("TCP Scan")
+        self.tcp_scan.setAccessibleName("Enable TCP scan")
+        self.tcp_scan.setMinimumHeight(44)
         self.tcp_scan.setChecked(True)
         options_layout.addWidget(self.tcp_scan)
 
         self.udp_scan = QCheckBox("UDP Scan")
+        self.udp_scan.setAccessibleName("Enable UDP scan")
+        self.udp_scan.setMinimumHeight(44)
         options_layout.addWidget(self.udp_scan)
 
         self.service_detection = QCheckBox("Service Detection")
+        self.service_detection.setAccessibleName("Enable service detection")
+        self.service_detection.setMinimumHeight(44)
         options_layout.addWidget(self.service_detection)
 
         config_layout.addLayout(options_layout)
 
         # Scan button
         self.scan_button = QPushButton("Start Network Scan")
+        self.scan_button.setAccessibleName("Start network scan")
+        self.scan_button.setMinimumHeight(44)
         self.scan_button.clicked.connect(self.start_scan)
         config_layout.addWidget(self.scan_button)
 
@@ -163,14 +177,20 @@ class NetworkScannerGUI(_BaseWindow):
         presets_layout = QHBoxLayout(presets_group)
 
         common_ports_btn = QPushButton("Common Ports (1-1000)")
+        common_ports_btn.setAccessibleName("Scan common ports 1 to 1000")
+        common_ports_btn.setMinimumHeight(44)
         common_ports_btn.clicked.connect(self.set_common_ports)
         presets_layout.addWidget(common_ports_btn)
 
         web_ports_btn = QPushButton("Web Ports (80, 443, 8080)")
+        web_ports_btn.setAccessibleName("Scan web ports 80, 443, 8080")
+        web_ports_btn.setMinimumHeight(44)
         web_ports_btn.clicked.connect(self.set_web_ports)
         presets_layout.addWidget(web_ports_btn)
 
         all_ports_btn = QPushButton("All Ports (1-65535)")
+        all_ports_btn.setAccessibleName("Scan all ports 1 to 65535")
+        all_ports_btn.setMinimumHeight(44)
         all_ports_btn.clicked.connect(self.set_all_ports)
         presets_layout.addWidget(all_ports_btn)
 
@@ -181,6 +201,7 @@ class NetworkScannerGUI(_BaseWindow):
         results_layout = QVBoxLayout(results_group)
 
         self.results_text = QTextEdit()
+        self.results_text.setAccessibleName("Network scan results")
         self.results_text.setReadOnly(True)
         self.results_text.setPlainText(
             "Network scanner ready. Configure target and port range, "

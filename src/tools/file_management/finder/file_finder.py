@@ -1,4 +1,5 @@
 import datetime
+import logging
 import os
 import pathlib
 import subprocess
@@ -22,7 +23,7 @@ try:
 except ImportError:  # pragma: no cover - graceful runtime fallback
     PyPDF2 = None
 from PyQt5 import uic
-from PyQt5.QtCore import QDate, QModelIndex, QObject
+from PyQt5.QtCore import QDate, QModelIndex, QObject, QThread, pyqtSignal
 from PyQt5.QtGui import (
     QDragEnterEvent,
     QDropEvent,
@@ -38,10 +39,145 @@ from PyQt5.QtWidgets import (
     QMenu,
 )
 
+from src.gui.themes import ThemeManager, token
+
 from ....gui.common.base_window import BaseWindow
 from ....gui.common.dialogs import get_existing_directory, show_error_dialog
 from ....gui.common.widgets import ProgressWidget
 from ....log_manager import get_log_manager
+
+# ---------------------------------------------------------------------------
+# GRD-1a: Guardian registration (graceful no-op when guardian absent)
+# ---------------------------------------------------------------------------
+try:
+    from src.core.guardian import register_gui_component
+except ImportError:
+
+    def register_gui_component(*a, **kw):
+        pass  # noqa: E731
+
+
+# ---------------------------------------------------------------------------
+# TEL: Telemetry helpers (graceful no-op when telemetry absent)
+# ---------------------------------------------------------------------------
+try:
+    from src.gui.telemetry import emit_telemetry
+
+    def _emit_telemetry(event_type, **kw):
+        emit_telemetry(event_type, **kw)  # noqa: E731
+
+except ImportError:
+
+    def _emit_telemetry(*a, **kw):
+        pass  # noqa: E731
+
+
+# ---------------------------------------------------------------------------
+# STR: Centralised string constants with fallback (P1-C15 / STR-1)
+# ---------------------------------------------------------------------------
+try:
+    from src.rfu.ui_strings import FileFinder as _FileFinderStrings
+except ImportError:
+
+    class _FileFinderStrings:  # type: ignore[no-redef]
+        TITLE = "File Finder"
+        WINDOW_TITLE = "File Finder — RFU"
+        LOADING = "Loading File Finder…"
+        ERR_INIT_FAILED = (
+            "Could not start File Finder. "
+            "Please try again or restart the application."
+        )
+        ERR_SEARCH_FAILED = "Could not complete the file search. Please try again."
+
+
+# ---------------------------------------------------------------------------
+# CP: Component replacement imports (CP-1 through CP-2)
+# ---------------------------------------------------------------------------
+try:
+    from src.gui.components.buttons import PrimaryButton, SecondaryButton
+
+    _CP_AVAILABLE = True
+except ImportError:
+    from PyQt5.QtWidgets import QPushButton as PrimaryButton
+    from PyQt5.QtWidgets import QPushButton as SecondaryButton
+
+    _CP_AVAILABLE = False
+
+
+# ---------------------------------------------------------------------------
+# PERF-1d: Background worker for file search (QThread pattern)
+# ---------------------------------------------------------------------------
+class FileSearchWorker(QObject):
+    """Runs os.walk-based file search off the UI thread."""
+
+    finished = pyqtSignal(list)  # list of relative file paths
+    error = pyqtSignal(str)
+
+    def __init__(
+        self,
+        directory,
+        filetype,
+        from_date,
+        till_date,
+        created,
+        modified,
+        created_modified,
+        office,
+        media,
+        all_files,
+        in_date_range_fn,
+    ):
+        super().__init__()
+        self._directory = directory
+        self._filetype = filetype
+        self._from_date = from_date
+        self._till_date = till_date
+        self._created = created
+        self._modified = modified
+        self._created_modified = created_modified
+        self._office = office
+        self._media = media
+        self._all_files = all_files
+        self._in_date_range_fn = in_date_range_fn
+
+    def run(self):
+        import os
+
+        try:
+            extensions = []
+            if self._office:
+                extensions.extend(["docx", "doc", "xlsx", "xls", "pptx", "ppt"])
+            if self._media:
+                extensions.extend(["mp3", "mp4", "avi", "mkv", "jpg", "png", "gif"])
+            if self._all_files:
+                extensions = ["*"]
+            files = []
+            for root, dirs, filenames in os.walk(self._directory):
+                for filename in filenames:
+                    file_path = os.path.join(root, filename)
+                    relative_path = os.path.relpath(file_path, self._directory)
+                    if extensions != ["*"]:
+                        file_ext = (
+                            filename.split(".")[-1].lower() if "." in filename else ""
+                        )
+                        if (
+                            file_ext not in extensions
+                            and self._filetype not in filename.lower()
+                        ):
+                            continue
+                    if not self._in_date_range_fn(
+                        file_path,
+                        self._from_date,
+                        self._till_date,
+                        self._created,
+                        self._modified,
+                        self._created_modified,
+                    ):
+                        continue
+                    files.append(relative_path)
+            self.finished.emit(sorted(files))
+        except Exception as exc:  # ERR: non-fatal — surfaced via error signal
+            self.error.emit(str(exc))
 
 
 class FileFinderWindow(BaseWindow):
@@ -58,10 +194,12 @@ class FileFinderWindow(BaseWindow):
     Inherits from BaseWindow to maintain consistent GUI behavior.
     """
 
-    def __init__(self, config_manager=None) -> None:
+    def __init__(self, hub_instance=None, config_manager=None) -> None:
         """Initialize the file finder GUI."""
+        self._hub = hub_instance
         self.config_manager = config_manager
         self.logger = get_log_manager().get_logger("FileFinderWindow")
+        self._logger = self.logger  # harmonization alias
         self._signals_ready = False
         self._signals_connected = False
         super().__init__()
@@ -75,6 +213,28 @@ class FileFinderWindow(BaseWindow):
         self._connect_signals()
         self._set_initial_state()
         self._notify_missing_optional_dependencies()
+        register_gui_component(
+            self, tool_id="file_finder", recovery_callback=self.degraded_fallback
+        )
+        _emit_telemetry("ui_view_load", tool_id="file_finder")
+
+    def health_check(self) -> bool:
+        """Return True if core UI is functional (GRD-3a)."""
+        try:
+            return (
+                hasattr(self, "search_pushButton")
+                and self.search_pushButton is not None
+            )
+        except Exception:
+            return False
+
+    def degraded_fallback(self) -> None:
+        """Enter degraded / read-only state (GRD-3b)."""
+        try:
+            self._logger.warning("FileFinderWindow entering degraded mode")
+        except Exception:
+            pass
+        _emit_telemetry("ui_error_event", tool_id="file_finder", error_type="degraded")
 
     def _init_models(self) -> None:
         """Initialize data models and internal state."""
@@ -89,9 +249,11 @@ class FileFinderWindow(BaseWindow):
             if not ui_file.exists():
                 raise FileNotFoundError(f"UI file not found: {ui_file}")
             uic.loadUi(str(ui_file), self)
-        except Exception as e:
-            show_error_dialog(f"Failed to initialize UI: {e}", "Error", self)
-            sys.exit(1)
+        except Exception as e:  # ERR: fatal — UI setup failed; tool cannot render
+            self.logger.error(
+                f"Failed to initialize UI for FileFinderWindow: {e}", exc_info=True
+            )
+            raise
 
     def _validate_ui_components(self) -> None:
         """Ensure required widgets exist and provide minimal fallbacks."""
@@ -128,10 +290,10 @@ class FileFinderWindow(BaseWindow):
         # Ensure hub integrations can always locate the exit action.
         try:
             self._ensure_exit_action()
-        except Exception as exc:  # pragma: no cover - defensive path
-            message = f"Failed to prepare menu actions: {exc}"
-            self.logger.error(message, exc_info=True)
-            show_error_dialog(message, "Initialization Error", self)
+        except (
+            Exception
+        ) as exc:  # ERR: fatal — menu action setup failed; tool cannot render
+            self.logger.error(f"Failed to prepare menu actions: {exc}", exc_info=True)
             raise
 
     def _setup_icons(self) -> None:
@@ -276,7 +438,9 @@ class FileFinderWindow(BaseWindow):
             self.logger.warning(message)
             try:
                 self.statusbar.showMessage(message, 8000)
-            except Exception:
+            except (
+                Exception
+            ):  # ERR: non-fatal — statusbar not available; message skipped
                 # Status bar may not exist in some tests
                 pass
 
@@ -313,9 +477,11 @@ class FileFinderWindow(BaseWindow):
                     os.startfile(full_path)
                 else:  # macOS and Linux
                     subprocess.run(["open", full_path])
-            except Exception as e:
-                self.logger.error(f"Error opening file: {str(e)}")
-                show_error_dialog(self, "Error", f"Could not open file: {str(e)}")
+            except Exception as e:  # ERR: non-fatal — surfaced via statusbar
+                self.logger.error(
+                    f"Error opening file '{full_path}': {e}", exc_info=True
+                )
+                self.statusbar.showMessage(_FileFinderStrings.ERR_OPEN_FAILED, 5000)
 
     # Method to show metadata when a file is selected
     def show_metadata(self, index: QModelIndex) -> None:
@@ -371,26 +537,22 @@ class FileFinderWindow(BaseWindow):
         self.meta_model.setItem(row, 1, QStandardItem(str(value)))
 
     def search(self) -> None:
-        """Perform file search based on current criteria.
+        """Perform file search based on current criteria (off UI thread, PERF-1d)."""
+        if (
+            hasattr(self, "_search_thread")
+            and self._search_thread
+            and self._search_thread.isRunning()
+        ):
+            return  # already searching
 
-        Clears existing results and searches for files matching:
-        - Selected file types (office, media, or all)
-        - Date ranges (created, modified, or both)
-        - File name patterns
-        """
         # clear the model
         self.model.clear()
         self.meta_model.removeRows(0, self.meta_model.rowCount())
 
-        # Use the directory from select_directory method
         directory = self.directory
         filetype = self.filetype_lineEdit.text().strip()
-
-        # Get date range
         from_date = self.from_dateEdit.date().toPyDate()
         till_date = self.till_dateEdit.date().toPyDate()
-
-        # Get checkbox states
         office = self.office_checkBox.isChecked()
         media = self.media_checkBox.isChecked()
         all_files = self.all_checkBox.isChecked()
@@ -402,8 +564,10 @@ class FileFinderWindow(BaseWindow):
             show_error_dialog(self, "Error", "Please select a valid directory")
             return
 
-        # Get files matching criteria
-        files = self.get_files(
+        # PERF-3a: show progress before starting worker
+        self.progress_widget.show()
+
+        self._search_worker = FileSearchWorker(
             directory,
             filetype,
             from_date,
@@ -414,14 +578,36 @@ class FileFinderWindow(BaseWindow):
             office,
             media,
             all_files,
+            self.in_date_range,
         )
+        self._search_thread = QThread()
+        self._search_worker.moveToThread(self._search_thread)
+        self._search_thread.started.connect(self._search_worker.run)
+        self._search_worker.finished.connect(self._on_search_done)
+        self._search_worker.error.connect(self._on_search_error)
+        # PERF-4a/4b: hide progress on both completion and error
+        self._search_worker.finished.connect(self._stop_search_progress)
+        self._search_worker.error.connect(self._stop_search_progress)
+        self._search_thread.start()
 
-        # Display results
+    def _stop_search_progress(self):
+        """Stop progress indicator and clean up search thread."""
+        self.progress_widget.hide()
+        if self._search_thread:
+            self._search_thread.quit()
+            self._search_thread = None
+        self._search_worker = None
+
+    def _on_search_done(self, files: list) -> None:
+        """Display search results after background scan completes."""
         for file_path in files:
             self.model.appendRow(QStandardItem(file_path))
-
         self.statusbar.showMessage(f"Found {len(files)} files", 3000)
         self.logger.info(f"Found {len(files)} files")
+
+    def _on_search_error(self, message: str) -> None:  # ERR: non-fatal
+        self.logger.error(f"File search error: {message}")
+        show_error_dialog(self, "Search Error", _FileFinderStrings.ERR_SEARCH_FAILED)
 
     def search_file_content(self, file_path: str, search_text: str) -> bool:
         """Search for text within file content.
@@ -444,7 +630,9 @@ class FileFinderWindow(BaseWindow):
                 return self.search_pdf_document(str(file_path_obj), search_text)
             else:
                 return False
-        except Exception:
+        except (
+            Exception
+        ):  # ERR: non-fatal — returns False; individual file skipped during content search
             return False
 
     def search_text_file(self, file_path: str, search_text: str) -> bool:
@@ -474,7 +662,9 @@ class FileFinderWindow(BaseWindow):
 
             text = raw_data.decode(encoding, errors="ignore")
             return search_text.lower() in text.lower()
-        except Exception:
+        except (
+            Exception
+        ):  # ERR: non-fatal — returns False; text file content unreadable
             return False
 
     def search_word_document(self, file_path: str, search_text: str) -> bool:
@@ -497,7 +687,7 @@ class FileFinderWindow(BaseWindow):
             document = docx.Document(file_path)
             text_content = " ".join([p.text for p in document.paragraphs])
             return search_text.lower() in text_content.lower()
-        except Exception:
+        except Exception:  # ERR: non-fatal — returns False; Word document unreadable
             return False
 
     def search_pdf_document(self, file_path: str, search_text: str) -> bool:
@@ -521,7 +711,7 @@ class FileFinderWindow(BaseWindow):
                 for page in reader.pages:
                     text_content += page.extract_text()
                 return search_text.lower() in text_content.lower()
-        except Exception:
+        except Exception:  # ERR: non-fatal — returns False; PDF content unreadable
             return False
 
     def get_files(
@@ -634,7 +824,9 @@ class FileFinderWindow(BaseWindow):
                 return True
 
             return from_date <= file_date <= till_date
-        except Exception:
+        except (
+            Exception
+        ):  # ERR: non-fatal — returns False; file stat unavailable; file excluded from results
             return False
 
     def dragEnterEvent(self, event: QDragEnterEvent) -> None:
@@ -717,36 +909,62 @@ class FileFinder(QDialog):
         )
 
         self.pattern_edit = QLineEdit()
+        self.pattern_edit.setAccessibleName("File name pattern")
+        self.pattern_edit.setAccessibleDescription(
+            "Supports wildcards: * matches any characters, ? matches a single character"
+        )
         self.pattern_edit.setPlaceholderText("*.txt")
 
         self.recursive_check = QCheckBox("Recursive")
+        self.recursive_check.setAccessibleName("Recursive search")
+        self.recursive_check.setMinimumHeight(44)
         self.show_hidden_check = QCheckBox("Show Hidden")
+        self.show_hidden_check.setAccessibleName("Show hidden files")
+        self.show_hidden_check.setMinimumHeight(44)
 
         self.type_combo = QComboBox()
+        self.type_combo.setAccessibleName("File type filter")
         self.type_combo.addItems(["All Files", "Text Files", "Images", "Documents"])
 
         self.min_size_spin = QSpinBox()
+        self.min_size_spin.setAccessibleName("Minimum file size")
+        self.min_size_spin.setAccessibleDescription(
+            "In kilobytes; files smaller than this are excluded. Set to 0 for no minimum"
+        )
+        self.min_size_spin.setMinimumHeight(44)
         self.min_size_spin.setMaximum(999999)
         self.max_size_spin = QSpinBox()
+        self.max_size_spin.setAccessibleName("Maximum file size")
+        self.max_size_spin.setAccessibleDescription(
+            "In kilobytes; files larger than this are excluded. Set to 0 for no maximum"
+        )
+        self.max_size_spin.setMinimumHeight(44)
         self.max_size_spin.setMaximum(999999)
         self.max_size_spin.setValue(100)
 
         self.date_edit = QDateEdit()
         self.date_edit.setDate(QDate.currentDate())
         self.use_date_check = QCheckBox("Use Date Filter")
+        self.use_date_check.setAccessibleName("Use date filter")
+        self.use_date_check.setAccessibleDescription(
+            "Enables filtering results by file modification date range"
+        )
+        self.use_date_check.setMinimumHeight(44)
 
-        self.open_button = QPushButton("Open")
-        self.copy_path_button = QPushButton("Copy Path")
-        self.cancel_button = QPushButton("Cancel")
+        self.open_button = PrimaryButton("Open")
+        self.copy_path_button = SecondaryButton("Copy Path")
+        self.cancel_button = SecondaryButton("Cancel")
 
         self.status_bar = QStatusBar()
 
         self.search_dir = QLineEdit()
+        self.search_dir.setAccessibleName("Search directory")
         self.search_dir.setPlaceholderText("Search directory")
 
         self.search_button = self.gui.search_pushButton
 
         self.results_list = QListWidget()
+        self.results_list.setAccessibleName("Search results")
 
         self.gui.model.rowsInserted.connect(self._sync_results_to_wrapper)
         self.gui.model.modelReset.connect(self._sync_results_to_wrapper)
@@ -756,6 +974,11 @@ class FileFinder(QDialog):
 
         self.setWindowTitle("File Finder")
         self.setModal(True)
+        ThemeManager.add_theme_changed_callback(self._on_theme_changed)
+
+    def _on_theme_changed(self, variant: str) -> None:
+        """Re-apply token-based stylesheets when the active theme variant changes."""
+        pass  # stylesheets applied at init; live re-apply pending TH-4c/4d
 
     def _sync_results_to_wrapper(self):
         """Sync data from GUI QListView to wrapper QListWidget"""

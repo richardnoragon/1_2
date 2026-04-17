@@ -6,6 +6,8 @@ categorization with support for multiple color schemes.
 
 from typing import Dict, List, Optional
 
+from src.gui.themes import token
+
 from .catalog_data_model import (
     AlphabeticalCategory,
     ColorInfo,
@@ -26,7 +28,7 @@ class ColorCodingEngine:
         # Size-based colors
         "size": {
             SizeCategory.SMALL.value: ColorInfo(
-                color_hex="#E8F5E8",
+                color_hex="#E8F5E8",  # noqa: TH-1  data-palette constant; not a UI theme colour
                 color_rgb=(232, 245, 232),
                 pattern_type="dots",
                 icon="📄",
@@ -34,7 +36,7 @@ class ColorCodingEngine:
                 category_name="Small Files (<1MB)",
             ),
             SizeCategory.MEDIUM.value: ColorInfo(
-                color_hex="#E3F2FD",
+                color_hex="#E3F2FD",  # noqa: TH-1  data-palette constant; not a UI theme colour
                 color_rgb=(227, 242, 253),
                 pattern_type="diagonal",
                 icon="📋",
@@ -42,7 +44,7 @@ class ColorCodingEngine:
                 category_name="Medium Files (1MB-100MB)",
             ),
             SizeCategory.LARGE.value: ColorInfo(
-                color_hex="#FFF3E0",
+                color_hex="#FFF3E0",  # noqa: TH-1  data-palette constant; not a UI theme colour
                 color_rgb=(255, 243, 224),
                 pattern_type="grid",
                 icon="📊",
@@ -53,7 +55,7 @@ class ColorCodingEngine:
         # Type-based colors
         "type": {
             FileType.DOCUMENT.value: ColorInfo(
-                color_hex="#2196F3",
+                color_hex="#2196F3",  # noqa: TH-1  data-palette constant; not a UI theme colour
                 color_rgb=(33, 150, 243),
                 pattern_type="horizontal",
                 icon="📄",
@@ -61,7 +63,7 @@ class ColorCodingEngine:
                 category_name="Documents",
             ),
             FileType.IMAGE.value: ColorInfo(
-                color_hex="#4CAF50",
+                color_hex="#4CAF50",  # noqa: TH-1  data-palette constant; not a UI theme colour
                 color_rgb=(76, 175, 80),
                 pattern_type="checkerboard",
                 icon="🖼️",
@@ -69,7 +71,7 @@ class ColorCodingEngine:
                 category_name="Images",
             ),
             FileType.VIDEO.value: ColorInfo(
-                color_hex="#F44336",
+                color_hex="#F44336",  # noqa: TH-1  data-palette constant; not a UI theme colour
                 color_rgb=(244, 67, 54),
                 pattern_type="vertical",
                 icon="🎥",
@@ -77,7 +79,7 @@ class ColorCodingEngine:
                 category_name="Videos",
             ),
             FileType.AUDIO.value: ColorInfo(
-                color_hex="#9C27B0",
+                color_hex="#9C27B0",  # noqa: TH-1  data-palette constant; not a UI theme colour
                 color_rgb=(156, 39, 176),
                 pattern_type="waves",
                 icon="🎵",
@@ -85,7 +87,7 @@ class ColorCodingEngine:
                 category_name="Audio Files",
             ),
             FileType.ARCHIVE.value: ColorInfo(
-                color_hex="#FF9800",
+                color_hex="#FF9800",  # noqa: TH-1  data-palette constant; not a UI theme colour
                 color_rgb=(255, 152, 0),
                 pattern_type="crosshatch",
                 icon="📦",
@@ -93,7 +95,7 @@ class ColorCodingEngine:
                 category_name="Archive Files",
             ),
             FileType.EXECUTABLE.value: ColorInfo(
-                color_hex="#607D8B",
+                color_hex="#607D8B",  # noqa: TH-1  data-palette constant; not a UI theme colour
                 color_rgb=(96, 125, 139),
                 pattern_type="solid",
                 icon="⚙️",
@@ -101,7 +103,7 @@ class ColorCodingEngine:
                 category_name="Executable Files",
             ),
             FileType.CODE.value: ColorInfo(
-                color_hex="#795548",
+                color_hex="#795548",  # noqa: TH-1  data-palette constant; not a UI theme colour
                 color_rgb=(121, 85, 72),
                 pattern_type="code",
                 icon="💻",
@@ -109,7 +111,7 @@ class ColorCodingEngine:
                 category_name="Code Files",
             ),
             FileType.DATA.value: ColorInfo(
-                color_hex="#009688",
+                color_hex="#009688",  # noqa: TH-1  data-palette constant; not a UI theme colour
                 color_rgb=(0, 150, 136),
                 pattern_type="data",
                 icon="📊",
@@ -117,7 +119,7 @@ class ColorCodingEngine:
                 category_name="Data Files",
             ),
             FileType.OTHER.value: ColorInfo(
-                color_hex="#E0E0E0",
+                color_hex="#E0E0E0",  # noqa: TH-1  data-palette constant; not a UI theme colour
                 color_rgb=(224, 224, 224),
                 pattern_type="sparse_dots",
                 icon="❓",
@@ -128,7 +130,7 @@ class ColorCodingEngine:
         # Date-based colors
         "date": {
             DateCategory.RECENT.value: ColorInfo(
-                color_hex="#8BC34A",
+                color_hex="#8BC34A",  # noqa: TH-1  data-palette constant; not a UI theme colour
                 color_rgb=(139, 195, 74),
                 pattern_type="fresh",
                 icon="🆕",
@@ -136,7 +138,7 @@ class ColorCodingEngine:
                 category_name="Recent Files (<30 days)",
             ),
             DateCategory.MODERATE.value: ColorInfo(
-                color_hex="#FFEB3B",
+                color_hex="#FFEB3B",  # noqa: TH-1  data-palette constant; not a UI theme colour
                 color_rgb=(255, 235, 59),
                 pattern_type="medium_fade",
                 icon="📅",
@@ -144,7 +146,7 @@ class ColorCodingEngine:
                 category_name="Moderate Age (30-365 days)",
             ),
             DateCategory.OLD.value: ColorInfo(
-                color_hex="#FFCDD2",
+                color_hex="#FFCDD2",  # noqa: TH-1  data-palette constant; not a UI theme colour
                 color_rgb=(255, 205, 210),
                 pattern_type="aged",
                 icon="📜",
@@ -155,7 +157,7 @@ class ColorCodingEngine:
         # Alphabetical colors
         "alphabetical": {
             AlphabeticalCategory.A_E.value: ColorInfo(
-                color_hex="#FFEBEE",
+                color_hex="#FFEBEE",  # noqa: TH-1  data-palette constant; not a UI theme colour
                 color_rgb=(255, 235, 238),
                 pattern_type="light_dots",
                 icon="🅰️",
@@ -163,7 +165,7 @@ class ColorCodingEngine:
                 category_name="A-E Range",
             ),
             AlphabeticalCategory.F_J.value: ColorInfo(
-                color_hex="#FFF3E0",
+                color_hex="#FFF3E0",  # noqa: TH-1  data-palette constant; not a UI theme colour
                 color_rgb=(255, 243, 224),
                 pattern_type="light_diagonal",
                 icon="🅵",
@@ -171,7 +173,7 @@ class ColorCodingEngine:
                 category_name="F-J Range",
             ),
             AlphabeticalCategory.K_O.value: ColorInfo(
-                color_hex="#FFFDE7",
+                color_hex="#FFFDE7",  # noqa: TH-1  data-palette constant; not a UI theme colour
                 color_rgb=(255, 253, 231),
                 pattern_type="light_grid",
                 icon="🅺",
@@ -179,7 +181,7 @@ class ColorCodingEngine:
                 category_name="K-O Range",
             ),
             AlphabeticalCategory.P_T.value: ColorInfo(
-                color_hex="#E8F5E8",
+                color_hex="#E8F5E8",  # noqa: TH-1  data-palette constant; not a UI theme colour
                 color_rgb=(232, 245, 232),
                 pattern_type="light_horizontal",
                 icon="🅿️",
@@ -187,7 +189,7 @@ class ColorCodingEngine:
                 category_name="P-T Range",
             ),
             AlphabeticalCategory.U_Z.value: ColorInfo(
-                color_hex="#E3F2FD",
+                color_hex="#E3F2FD",  # noqa: TH-1  data-palette constant; not a UI theme colour
                 color_rgb=(227, 242, 253),
                 pattern_type="light_vertical",
                 icon="🆄",
@@ -201,7 +203,7 @@ class ColorCodingEngine:
     HIGH_CONTRAST_COLORS = {
         "size": {
             SizeCategory.SMALL.value: ColorInfo(
-                color_hex="#FFFFFF",
+                color_hex="#FFFFFF",  # noqa: TH-1  data-palette constant; not a UI theme colour
                 color_rgb=(255, 255, 255),
                 pattern_type="dots",
                 icon="📄",
@@ -209,7 +211,7 @@ class ColorCodingEngine:
                 category_name="Small Files (<1MB)",
             ),
             SizeCategory.MEDIUM.value: ColorInfo(
-                color_hex="#000080",
+                color_hex="#000080",  # noqa: TH-1  data-palette constant; not a UI theme colour
                 color_rgb=(0, 0, 128),
                 pattern_type="diagonal",
                 icon="📋",
@@ -217,7 +219,7 @@ class ColorCodingEngine:
                 category_name="Medium Files (1MB-100MB)",
             ),
             SizeCategory.LARGE.value: ColorInfo(
-                color_hex="#800000",
+                color_hex="#800000",  # noqa: TH-1  data-palette constant; not a UI theme colour
                 color_rgb=(128, 0, 0),
                 pattern_type="grid",
                 icon="📊",
@@ -245,9 +247,7 @@ class ColorCodingEngine:
             if category_key in color_map:
                 entry.color_category = color_map[category_key]
 
-    def _get_category_key(
-        self, entry: FileEntry, criteria: SortCriteria
-    ) -> str:
+    def _get_category_key(self, entry: FileEntry, criteria: SortCriteria) -> str:
         """Get the category key for an entry based on criteria."""
         if criteria == SortCriteria.ALPHABETICAL:
             return entry.get_alphabetical_category().value
@@ -297,9 +297,7 @@ class ColorCodingEngine:
         color_map = self._get_color_map_for_criteria(sort_criteria)
 
         legend = {
-            self._get_criteria_display_name(sort_criteria): list(
-                color_map.values()
-            )
+            self._get_criteria_display_name(sort_criteria): list(color_map.values())
         }
 
         return legend
@@ -326,9 +324,7 @@ class ColorCodingEngine:
         if enabled:
             self.scheme = ColorScheme.HIGH_CONTRAST
 
-    def get_pattern_for_category(
-        self, category: str, criteria: SortCriteria
-    ) -> str:
+    def get_pattern_for_category(self, category: str, criteria: SortCriteria) -> str:
         """Get pattern type for accessibility."""
         color_info = self.get_color_for_category(category, criteria)
         return color_info.pattern_type if color_info else "none"

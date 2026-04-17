@@ -4,6 +4,7 @@ This module provides functionality to synchronize files between two directories
 with support for mirror, update, and two-way synchronization modes.
 """
 
+import logging
 import os
 import shutil
 import sys
@@ -82,12 +83,61 @@ try:
 except ImportError:
     LoadingIndicator = None
 
+# GRD-1a: ComponentGuardian registration (graceful fallback)
+try:
+    from src.core.guardian import register_gui_component
+
+    _COMPONENT_GUARDIAN_AVAILABLE = True
+except ImportError:
+    _COMPONENT_GUARDIAN_AVAILABLE = False
+
+    def register_gui_component(widget, component_type=None, recovery_callback=None):
+        """No-op stub used when ComponentGuardian is unavailable."""
+        return ""
+
+
+# TEL-1/2/3/4: UI telemetry (spec §9.3)
+try:
+    from src.gui.telemetry import emit_telemetry as _emit_telemetry
+
+    _TELEMETRY_AVAILABLE = True
+except ImportError:
+    _TELEMETRY_AVAILABLE = False
+
+    def _emit_telemetry(event_type: str, *, tool_id: str, **kwargs) -> None:
+        """No-op stub used when ui_telemetry module is unavailable."""
+
+
 try:
     from src.rfu.ui_strings import SynchronizationBackup as _SyncStrings
 except ImportError:
 
     class _SyncStrings:
+        TITLE = "Synchronization & Backup"
+        LOADING = "Loading Synchronization & Backup\u2026"
         DRY_RUN_LABEL = "Dry Run (Preview Only)"
+        WINDOW_TITLE = "Synchronize - Richard's File Utilities"
+        LABEL_NO_DIR_SELECTED = "No directory selected"
+        STATUS_COMPARISON_COMPLETE = "Comparison complete \u2014 ready to sync"
+        STATUS_SYNC_COMPLETE = "Synchronization complete!"
+        STATUS_DRY_RUN_COMPLETE = "Dry run complete \u2014 no files were modified"
+        EMPTY_STATE_NO_FILES = "No files to display \u2014 select a directory first."
+        ERR_CANNOT_READ_DIR = (
+            "Could not read the selected directory. "
+            "Check that the folder exists and you have permission to access it."
+        )
+        ERR_CANNOT_COMPARE = (
+            "Could not compare the directories. "
+            "Check that both folders are accessible and try again."
+        )
+        ERR_CANNOT_START_SYNC = (
+            "Could not start the sync operation. "
+            "Check that both directories are accessible and try again."
+        )
+        ERR_SYNC_FAILED = (
+            "Synchronization encountered an error. "
+            "Some files may not have been copied. Check the log for details."
+        )
 
 
 class SyncWorker(QThread):
@@ -350,16 +400,30 @@ class SyncWorker(QThread):
 class SyncWindow(StandardWindow):
     """Main window for file synchronization operations."""
 
-    def __init__(self) -> None:
-        """Initialize the sync window."""
+    def __init__(self, hub_instance=None) -> None:
+        """Initialize the sync window.
+
+        Args:
+            hub_instance: Optional reference to the parent hub window.
+        """
+        self._hub_instance = hub_instance
+        _title = _SyncStrings.WINDOW_TITLE
         try:
             super().__init__(
-                title="Synchronize - Richard's File Utilities",
+                title=_title,
                 window_type="utility",
             )
         except TypeError:
             super().__init__()
-            self.setWindowTitle("Synchronize - Richard's File Utilities")
+            self.setWindowTitle(_title)
+
+        # ERR-5a: centralised logger for technical detail
+        try:
+            from src.core.log_manager import get_log_manager as _get_lm
+
+            self._logger = _get_lm().get_logger("SynchronizationBackup")
+        except Exception:
+            self._logger = logging.getLogger("SynchronizationBackup")
 
         ui_file: str = os.path.join(os.path.dirname(__file__), "sync.ui")
         uic.loadUi(ui_file, self)
@@ -421,7 +485,23 @@ class SyncWindow(StandardWindow):
             _central_layout = self.centralWidget().layout()
             if _central_layout:
                 _central_layout.insertWidget(0, self._loading_indicator)
-        self.show()
+
+        # GRD-1b/c: register with ComponentGuardian
+        self._guardian_id = register_gui_component(
+            self,
+            component_type="tool_window",
+            recovery_callback=self.degraded_fallback,
+        )
+
+        # TEL-1b: view_load telemetry
+        _emit_telemetry(
+            "ui_view_load",
+            tool_id="synchronization_backup",
+        )
+
+        # Only auto-show when running standalone (not embedded in hub)
+        if hub_instance is None:
+            self.show()
 
     def _setup_menu_callbacks(self):
         """Setup tool-specific menu callbacks."""
@@ -485,8 +565,8 @@ class SyncWindow(StandardWindow):
         # Clear the directory selections and file lists
         self.left_dir = ""
         self.right_dir = ""
-        self.left_directory_label.setText("No directory selected")
-        self.right_directory_label.setText("No directory selected")
+        self.left_directory_label.setText(_SyncStrings.LABEL_NO_DIR_SELECTED)
+        self.right_directory_label.setText(_SyncStrings.LABEL_NO_DIR_SELECTED)
         self.left_model.clear()
         self.right_model.clear()
         self.sync_pushButton.setEnabled(False)
@@ -537,6 +617,12 @@ class SyncWindow(StandardWindow):
         Args:
             side: Either 'left' or 'right' to indicate which directory
         """
+        # TEL-2b: KEY_ACTION — Select Directory
+        _emit_telemetry(
+            "ui_user_action",
+            tool_id="synchronization_backup",
+            action=f"select_{side}_directory",
+        )
         directory: str = get_existing_directory(self, "Select Directory")
         if directory:
             if side == "left":
@@ -569,8 +655,20 @@ class SyncWindow(StandardWindow):
                     item.setToolTip(self.get_file_info(file_path))
                     model.appendRow(item)
         except OSError as e:
-            msg: str = f"Could not read directory: {str(e)}"
-            show_error_dialog(message=msg, title="Error", parent=self)
+            # ERR-5a: log technical detail; ERR-4b: show user-friendly message
+            self._logger.error(
+                "Could not read directory %s: %s", directory, e, exc_info=True
+            )
+            _emit_telemetry(
+                "ui_error_event",
+                tool_id="synchronization_backup",
+                error_code="cannot_read_directory",
+            )
+            show_error_dialog(
+                message=_SyncStrings.ERR_CANNOT_READ_DIR,
+                title=_SyncStrings.TITLE,
+                parent=self,
+            )
 
     def get_file_info(self, file_path: str) -> str:
         """Get formatted file information for display.
@@ -611,6 +709,12 @@ class SyncWindow(StandardWindow):
         if not (self.left_dir and self.right_dir):
             return
 
+        # TEL-2b: KEY_ACTION — Compare
+        _emit_telemetry(
+            "ui_user_action",
+            tool_id="synchronization_backup",
+            action="compare_directories",
+        )
         try:
             left_files: set[str] = set(os.listdir(self.left_dir))
             right_files: set[str] = set(os.listdir(self.right_dir))
@@ -649,12 +753,24 @@ class SyncWindow(StandardWindow):
 
             self.sync_pushButton.setEnabled(True)
             if self._toast:
-                self._toast.show_message("Comparison complete - Ready to sync", "info")
+                self._toast.show_message(
+                    _SyncStrings.STATUS_COMPARISON_COMPLETE, "info"
+                )
             else:
-                self.status_label.setText("Comparison complete - Ready to sync")
+                self.status_label.setText(_SyncStrings.STATUS_COMPARISON_COMPLETE)
         except OSError as e:
-            msg: str = f"Error comparing directories: {str(e)}"
-            show_error_dialog(message=msg, title="Error", parent=self)
+            # ERR-5a: log technical detail; ERR-4b: show user-friendly message
+            self._logger.error("Could not compare directories: %s", e, exc_info=True)
+            _emit_telemetry(
+                "ui_error_event",
+                tool_id="synchronization_backup",
+                error_code="cannot_compare_directories",
+            )
+            show_error_dialog(
+                message=_SyncStrings.ERR_CANNOT_COMPARE,
+                title=_SyncStrings.TITLE,
+                parent=self,
+            )
 
     def _add_list_item(
         self,
@@ -740,6 +856,13 @@ class SyncWindow(StandardWindow):
         if not (self.left_dir and self.right_dir):
             return
 
+        # TEL-2b: KEY_ACTION — Sync
+        _emit_telemetry(
+            "ui_user_action",
+            tool_id="synchronization_backup",
+            action="sync_directories",
+        )
+
         options: Dict[str, Any] = self.get_sync_options()
 
         if not self._confirm_sync_operation(options):
@@ -794,6 +917,13 @@ class SyncWindow(StandardWindow):
 
     def _prepare_and_start_sync(self, options: Dict[str, Any]) -> None:
         """Prepare file lists and start sync worker."""
+        # TEL-4a: performance metric — sync start
+        _emit_telemetry(
+            "ui_performance_metric",
+            tool_id="synchronization_backup",
+            operation="sync",
+            phase="start",
+        )
         left_files, right_files = self._get_file_lists()
 
         self.sync_worker = SyncWorker(
@@ -850,8 +980,18 @@ class SyncWindow(StandardWindow):
 
     def _handle_sync_start_error(self, error: OSError) -> None:
         """Handle errors when starting sync operation."""
-        msg: str = f"Error starting sync: {str(error)}"
-        show_error_dialog(message=msg, title="Error", parent=self)
+        # ERR-5a: log technical detail; ERR-4b: show user-friendly message
+        self._logger.error("Could not start sync operation: %s", error, exc_info=True)
+        _emit_telemetry(
+            "ui_error_event",
+            tool_id="synchronization_backup",
+            error_code="cannot_start_sync",
+        )
+        show_error_dialog(
+            message=_SyncStrings.ERR_CANNOT_START_SYNC,
+            title=_SyncStrings.TITLE,
+            parent=self,
+        )
 
     def show_preview(self, action: str, source: str, target: str) -> None:
         """Show a preview of the sync operation.
@@ -873,6 +1013,19 @@ class SyncWindow(StandardWindow):
 
     def sync_finished(self) -> None:
         """Handle completion of the synchronization process."""
+        # TEL-4b: performance metric — sync stop
+        _emit_telemetry(
+            "ui_performance_metric",
+            tool_id="synchronization_backup",
+            operation="sync",
+            phase="stop",
+        )
+        # TEL-2b: KEY_ACTION — Sync Complete
+        _emit_telemetry(
+            "ui_user_action",
+            tool_id="synchronization_backup",
+            action="sync_complete",
+        )
         # Re-enable all UI elements
         self.sync_pushButton.setEnabled(True)
         self.compare_pushButton.setEnabled(True)
@@ -893,12 +1046,58 @@ class SyncWindow(StandardWindow):
         """Handle synchronization errors.
 
         Args:
-            error_msg: The error message to display
+            error_msg: The technical error message from the sync worker.
         """
+        # ERR-5a: log technical detail
+        self._logger.error("Sync worker error: %s", error_msg)
+        # TEL-3a: error telemetry
+        _emit_telemetry(
+            "ui_error_event",
+            tool_id="synchronization_backup",
+            error_code="sync_worker_error",
+        )
+        # ERR-4b: show user-friendly message
         show_error_dialog(
-            message=f"Sync error: {error_msg}", title="Error", parent=self
+            message=_SyncStrings.ERR_SYNC_FAILED,
+            title=_SyncStrings.TITLE,
+            parent=self,
         )
         self.sync_finished()
+
+    def health_check(self) -> bool:
+        """GRD-2: Return True when the widget can serve requests normally."""
+        try:
+            ok = (
+                self.left_model is not None
+                and self.right_model is not None
+                and self.sync_pushButton is not None
+            )
+            return ok
+        except Exception as e:
+            self._logger.warning("health_check failed: %s", e)
+            return False
+
+    def degraded_fallback(self) -> None:
+        """GRD-3: Enter degraded mode — disable operations, show status."""
+        try:
+            for btn_name in (
+                "sync_pushButton",
+                "compare_pushButton",
+                "select_left_pushButton",
+                "select_right_pushButton",
+            ):
+                btn = getattr(self, btn_name, None)
+                if btn is not None:
+                    btn.setEnabled(False)
+            if hasattr(self, "status_label"):
+                self.status_label.setText(
+                    "Sync & Backup is running in limited mode. Some features are unavailable."
+                )
+            self._logger.warning(
+                "Synchronization & Backup entered degraded fallback mode."
+            )
+        except Exception as e:
+            self._logger.error("degraded_fallback error: %s", e)
 
 
 def main() -> None:

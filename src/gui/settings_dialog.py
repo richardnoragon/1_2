@@ -110,8 +110,7 @@ class SettingsDialog(QDialog):
 
         # Create tab widget
         tab_widget = QTabWidget()
-
-        # Add tabs
+        tab_widget.setAccessibleName("Settings categories")
         tab_widget.addTab(self.create_general_tab(), "General")
         tab_widget.addTab(self.create_duplicates_tab(), "Duplicates")
         tab_widget.addTab(self.create_secure_delete_tab(), "Secure Delete")
@@ -125,10 +124,16 @@ class SettingsDialog(QDialog):
         # Buttons
         button_layout = QHBoxLayout()
         reset_button = QPushButton("Reset All")
+        reset_button.setAccessibleName("Reset all settings to defaults")
+        reset_button.setMinimumHeight(44)
         reset_button.clicked.connect(self.reset_all_settings)
         save_button = QPushButton("Save")
+        save_button.setAccessibleName("Save settings")
+        save_button.setMinimumHeight(44)
         save_button.clicked.connect(self.save_settings)
         cancel_button = QPushButton("Cancel")
+        cancel_button.setAccessibleName("Cancel and close settings")
+        cancel_button.setMinimumHeight(44)
         cancel_button.clicked.connect(self.reject)
 
         button_layout.addWidget(reset_button)
@@ -145,13 +150,18 @@ class SettingsDialog(QDialog):
 
         # Theme selection
         self.theme_combo = QComboBox()
+        self.theme_combo.setAccessibleName("Theme selection")
+        self.theme_combo.setMinimumHeight(44)
         self.theme_combo.addItems(["light", "dark"])
         layout.addRow("Theme:", self.theme_combo)
 
         # Default directory
         dir_layout = QHBoxLayout()
         self.default_dir_edit = QLineEdit()
+        self.default_dir_edit.setAccessibleName("Default directory path")
         browse_button = QPushButton("Browse...")
+        browse_button.setAccessibleName("Browse for default directory")
+        browse_button.setMinimumHeight(44)
         browse_button.clicked.connect(self.browse_default_dir)
         dir_layout.addWidget(self.default_dir_edit)
         dir_layout.addWidget(browse_button)
@@ -159,16 +169,21 @@ class SettingsDialog(QDialog):
 
         # Recent entries limit
         self.recent_spin = QSpinBox()
+        self.recent_spin.setAccessibleName("Maximum recent entries")
+        self.recent_spin.setMinimumHeight(44)
         self.recent_spin.setRange(1, 50)
         layout.addRow("Max Recent Entries:", self.recent_spin)
 
         # Logging settings
         self.log_level_combo = QComboBox()
+        self.log_level_combo.setAccessibleName("Logging level")
+        self.log_level_combo.setMinimumHeight(44)
         self.log_level_combo.addItems(["DEBUG", "INFO", "WARNING", "ERROR"])
         layout.addRow("Logging Level:", self.log_level_combo)
 
         self.debug_check = QCheckBox("Enable Debug Logging")
-        layout.addRow("", self.debug_check)
+        self.debug_check.setAccessibleName("Enable debug logging")
+        self.debug_check.setMinimumHeight(44)
 
         return tab
 
@@ -179,18 +194,23 @@ class SettingsDialog(QDialog):
 
         # Hash algorithm
         self.hash_algo_combo = QComboBox()
+        self.hash_algo_combo.setAccessibleName("Default hash algorithm")
+        self.hash_algo_combo.setMinimumHeight(44)
         self.hash_algo_combo.addItems(["md5", "sha1", "sha256", "sha512"])
         layout.addRow("Default Hash:", self.hash_algo_combo)
 
         # Min file size
         self.min_size_spin = QSpinBox()
+        self.min_size_spin.setAccessibleName("Minimum file size in KB")
+        self.min_size_spin.setMinimumHeight(44)
         self.min_size_spin.setRange(0, 1000000)
         self.min_size_spin.setSuffix(" KB")
         layout.addRow("Minimum File Size:", self.min_size_spin)
 
         # Skip system files
         self.skip_system_check = QCheckBox()
-        layout.addRow("Skip System Files:", self.skip_system_check)
+        self.skip_system_check.setAccessibleName("Skip system files")
+        self.skip_system_check.setMinimumHeight(44)
 
         return tab
 
@@ -201,11 +221,15 @@ class SettingsDialog(QDialog):
 
         # Default passes
         self.default_passes_spin = QSpinBox()
+        self.default_passes_spin.setAccessibleName("Default secure delete passes")
+        self.default_passes_spin.setMinimumHeight(44)
         self.default_passes_spin.setRange(1, 35)
         layout.addRow("Default Passes:", self.default_passes_spin)
 
         # Maximum passes
         self.max_passes_spin = QSpinBox()
+        self.max_passes_spin.setAccessibleName("Maximum secure delete passes")
+        self.max_passes_spin.setMinimumHeight(44)
         self.max_passes_spin.setRange(1, 35)
         layout.addRow("Maximum Passes:", self.max_passes_spin)
 
@@ -218,16 +242,22 @@ class SettingsDialog(QDialog):
 
         # Default format
         self.format_combo = QComboBox()
+        self.format_combo.setAccessibleName("Default compression format")
+        self.format_combo.setMinimumHeight(44)
         self.format_combo.addItems(["zip", "7z", "tar.gz", "tar.bz2"])
         layout.addRow("Default Format:", self.format_combo)
 
         # Compression level
         self.compression_spin = QSpinBox()
+        self.compression_spin.setAccessibleName("Default compression level")
+        self.compression_spin.setMinimumHeight(44)
         self.compression_spin.setRange(0, 9)
         layout.addRow("Default Level:", self.compression_spin)
 
         # Password protection
         self.password_check = QCheckBox()
+        self.password_check.setAccessibleName("Use password protection for compression")
+        self.password_check.setMinimumHeight(44)
         layout.addRow("Use Password Protection:", self.password_check)
 
         return tab
@@ -239,15 +269,21 @@ class SettingsDialog(QDialog):
 
         # Sync mode
         self.sync_mode_combo = QComboBox()
+        self.sync_mode_combo.setAccessibleName("Default sync mode")
+        self.sync_mode_combo.setMinimumHeight(44)
         self.sync_mode_combo.addItems(["two_way", "mirror", "update"])
         layout.addRow("Default Mode:", self.sync_mode_combo)
 
         # Create backups
         self.backup_check = QCheckBox()
+        self.backup_check.setAccessibleName("Create backups during sync")
+        self.backup_check.setMinimumHeight(44)
         layout.addRow("Create Backups:", self.backup_check)
 
         # Skip newer
         self.skip_newer_check = QCheckBox()
+        self.skip_newer_check.setAccessibleName("Skip newer files during sync")
+        self.skip_newer_check.setMinimumHeight(44)
         layout.addRow("Skip Newer Files:", self.skip_newer_check)
 
         return tab
@@ -259,26 +295,40 @@ class SettingsDialog(QDialog):
 
         # Recursive by default
         self.catalog_recursive_check = QCheckBox()
+        self.catalog_recursive_check.setAccessibleName("Catalog recursively by default")
+        self.catalog_recursive_check.setMinimumHeight(44)
         layout.addRow("Recursive by Default:", self.catalog_recursive_check)
 
         # Check duplicates
         self.catalog_duplicates_check = QCheckBox()
+        self.catalog_duplicates_check.setAccessibleName(
+            "Check for duplicates during catalog"
+        )
+        self.catalog_duplicates_check.setMinimumHeight(44)
         layout.addRow("Check Duplicates:", self.catalog_duplicates_check)
 
         # Show file sizes
         self.show_sizes_check = QCheckBox()
+        self.show_sizes_check.setAccessibleName("Show file sizes in catalog")
+        self.show_sizes_check.setMinimumHeight(44)
         layout.addRow("Show File Sizes:", self.show_sizes_check)
 
         # Show dates
         self.show_dates_check = QCheckBox()
+        self.show_dates_check.setAccessibleName("Show dates in catalog")
+        self.show_dates_check.setMinimumHeight(44)
         layout.addRow("Show Dates:", self.show_dates_check)
 
         # Sort settings
         self.sort_by_combo = QComboBox()
+        self.sort_by_combo.setAccessibleName("Default sort field")
+        self.sort_by_combo.setMinimumHeight(44)
         self.sort_by_combo.addItems(["name", "size", "date"])
         layout.addRow("Default Sort By:", self.sort_by_combo)
 
         self.sort_order_combo = QComboBox()
+        self.sort_order_combo.setAccessibleName("Default sort order")
+        self.sort_order_combo.setMinimumHeight(44)
         self.sort_order_combo.addItems(["ascending", "descending"])
         layout.addRow("Default Sort Order:", self.sort_order_combo)
 
@@ -291,14 +341,24 @@ class SettingsDialog(QDialog):
 
         # Recursive by default
         self.organize_recursive_check = QCheckBox()
+        self.organize_recursive_check.setAccessibleName(
+            "Organize files recursively by default"
+        )
+        self.organize_recursive_check.setMinimumHeight(44)
         layout.addRow("Recursive by Default:", self.organize_recursive_check)
 
         # Create category folders
         self.category_folders_check = QCheckBox()
+        self.category_folders_check.setAccessibleName(
+            "Create category folders when organizing"
+        )
+        self.category_folders_check.setMinimumHeight(44)
         layout.addRow("Create Category Folders:", self.category_folders_check)
 
         # Move files
         self.move_files_check = QCheckBox()
+        self.move_files_check.setAccessibleName("Move files when organizing")
+        self.move_files_check.setMinimumHeight(44)
         layout.addRow("Move Files:", self.move_files_check)
 
         return tab

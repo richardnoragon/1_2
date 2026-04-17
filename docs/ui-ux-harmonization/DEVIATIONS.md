@@ -177,3 +177,232 @@ The primary sync action (`sync_pushButton`) already requires user intent (the us
 
 ---
 
+### finder
+
+#### DEV-008 — search_pushButton Not Replaced (Qt Designer .ui File)
+
+| Field | Value |
+|---|---|
+| **Deviation ID** | DEV-008 |
+| **Scope** | `finder` tool — `src/tools/file_management/finder/file_finder.py` / backing `.ui` file |
+| **Document section** | Spec §5.2 (Buttons & Actions) |
+| **Migration task** | CP (CP pass rows 4–25) |
+| **Status** | Accepted — 2026 |
+
+**Spec requirement:** Primary action buttons MUST use `PrimaryButton`.
+
+**Deviation:** The search trigger button (`search_pushButton`) is defined in a Qt Designer `.ui` file and loaded via `uic.loadUi()`. Replacing it with a `PrimaryButton` instance requires either (a) editing the `.ui` XML to use a promoted widget, or (b) post-loading programmatic replacement. Both approaches carry risk of breaking existing signal connections and layout geometry. Button remains as `QPushButton` from `.ui` load.
+
+**Constraints:**
+- If the `.ui` file is redesigned, `search_pushButton` MUST be promoted to `PrimaryButton` at that time.
+
+---
+
+### organizer
+
+#### DEV-009 — QLineEdit Fields in Dialog Layouts Not Replaced with TextInput
+
+| Field | Value |
+|---|---|
+| **Deviation ID** | DEV-009 |
+| **Scope** | `organizer` tool — `src/tools/file_management/organizer/organize.py` (dialog QLineEdit fields) |
+| **Document section** | Spec §5.3 (Form Controls) |
+| **Migration task** | CP (CP pass rows 4–25) |
+| **Status** | Accepted — 2026 |
+
+**Spec requirement (§5.3):** Text input controls MUST use the `TextInput` shared component with a persistent visible label.
+
+**Deviation:** QLineEdit fields in the organizer's rule-editor dialogs are embedded in `QFormLayout` rows alongside `QLabel` pairs. Replacing with `TextInput` (which renders its own internal label) would duplicate the label and require restructuring the form layout. Fields remain as `QLineEdit`.
+
+**Constraints:**
+- If the dialog layout is redesigned, TextInput replacement MUST be evaluated at that time.
+
+---
+
+### advanced_catalog
+
+#### DEV-010 — directory_edit QLineEdit Not Replaced with TextInput
+
+| Field | Value |
+|---|---|
+| **Deviation ID** | DEV-010 |
+| **Scope** | `advanced_catalog` tool — `src/tools/file_management/advanced_catalog/advanced_catalog_window.py` (`directory_edit` in QGridLayout) |
+| **Document section** | Spec §5.3 (Form Controls) |
+| **Migration task** | CP (CP pass rows 4–25) |
+| **Status** | Accepted — 2026 |
+
+**Spec requirement (§5.3):** Text input controls MUST use the `TextInput` shared component.
+
+**Deviation:** `directory_edit` is paired with a `QLabel` in a `QGridLayout` row. Replacing it with `TextInput` would duplicate the label and require layout restructuring. Field remains as `QLineEdit`.
+
+**Constraints:**
+- If the layout row is redesigned, TextInput replacement MUST be evaluated at that time.
+
+---
+
+### system_diagnostics
+
+#### DEV-011 — LoadingIndicator Not Applied (No QThread Operations)
+
+| Field | Value |
+|---|---|
+| **Deviation ID** | DEV-011 |
+| **Scope** | `system_diagnostics` tool — `src/tools/system/diagnostics_monitoring/system_diagnostics_gui.py` |
+| **Document section** | Spec §8.1 (Loading / Progress Indicators) |
+| **Migration task** | CP (CP pass rows 4–25) |
+| **Status** | Accepted — 2026 |
+
+**Spec requirement (§8.1):** Operations that may take ≥ 300 ms MUST display a `LoadingIndicator` wired to the worker's `started` and `finished` signals.
+
+**Deviation:** All diagnostic action methods (`run_system_check`, `check_disk_space`, `run_memory_test`, `run_performance_benchmark`) are placeholder stubs that execute synchronously. No `QThread` worker exists to wire `LoadingIndicator` signals to.
+
+**Constraints:**
+- When any diagnostic method is implemented with a `QThread` worker, `LoadingIndicator` MUST be added for that operation and this deviation MUST be updated or closed.
+
+---
+
+### software_maintenance
+
+#### DEV-012 — LoadingIndicator Not Applied (Integrated progress_bar Present)
+
+| Field | Value |
+|---|---|
+| **Deviation ID** | DEV-012 |
+| **Scope** | `software_maintenance` tool — `src/tools/system/software_maintenance/gui/maintenance_hub.py` |
+| **Document section** | Spec §8.1 (Loading / Progress Indicators) |
+| **Migration task** | CP (CP pass rows 4–25) |
+| **Status** | Accepted — 2026 |
+
+**Spec requirement (§8.1):** Operations that may take ≥ 300 ms MUST display a `LoadingIndicator`.
+
+**Deviation:** The maintenance hub already uses an integrated `QProgressBar` (`self.progress_bar`) and `QLabel` (`self.status_label`) for progress feedback, wired to its own worker signals. Adding a `LoadingIndicator` overlay would duplicate the progress display. The existing progress_bar mechanism satisfies the intent of spec §8.1 for this tool.
+
+**Constraints:**
+- If the integrated progress_bar is removed in a future refactor, `LoadingIndicator` MUST be added as its replacement.
+
+---
+
+### metadata
+
+#### DEV-013 — EXIF/GPS QLineEdit Fields Not Replaced with TextInput
+
+| Field | Value |
+|---|---|
+| **Deviation ID** | DEV-013 |
+| **Scope** | `metadata` tool — `src/tools/metadata/image_metadata/gui.py` (`exif_fields` and `gps_fields` QLineEdit dicts in QGridLayout) |
+| **Document section** | Spec §5.3 (Form Controls) |
+| **Migration task** | CP (CP pass rows 4–25) |
+| **Status** | Accepted — 2026 |
+
+**Spec requirement (§5.3):** Text input controls MUST use the `TextInput` shared component.
+
+**Deviation:** EXIF metadata fields (title, author, subject, keywords, comments, copyright) and GPS coordinate fields are QLineEdit widgets stored in `self.exif_fields` and `self.gps_fields` dicts, each paired with a `QLabel` in a `QGridLayout`. Replacing with `TextInput` would duplicate labels and require restructuring the two-column grid layout. Fields remain as `QLineEdit`.
+
+**Constraints:**
+- If the metadata form layout is redesigned, TextInput replacement MUST be evaluated at that time.
+
+---
+
+### preferences
+
+#### DEV-014 — QLineEdit Form Fields Not Replaced with TextInput
+
+| Field | Value |
+|---|---|
+| **Deviation ID** | DEV-014 |
+| **Scope** | `preferences` tool — `src/tools/preferences/portability_launcher.py` (7 QLineEdit fields in QFormLayout) |
+| **Document section** | Spec §5.3 (Form Controls) |
+| **Migration task** | CP (CP pass rows 4–25) |
+| **Status** | Accepted — 2026 |
+
+**Spec requirement (§5.3):** Text input controls MUST use the `TextInput` shared component.
+
+**Deviation:** Seven QLineEdit fields (`export_user_edit`, `export_dest_edit`, `export_categories_edit`, `export_passphrase_edit`, `import_source_edit`, `import_target_user_edit`, `import_passphrase_edit`) are embedded as the right-hand widget in `QFormLayout` rows with paired `QLabel` entries. Replacing with `TextInput` would duplicate labels and require replacing `QFormLayout` with a `QVBoxLayout` of `TextInput` instances. Fields remain as `QLineEdit`.
+
+**Constraints:**
+- If the export/import form layout is redesigned, TextInput replacement MUST be evaluated at that time.
+
+---
+
+### secure_delete
+
+#### DEV-015 — LoadingIndicator Not Applied (threading.Thread, Not QThread)
+
+| Field | Value |
+|---|---|
+| **Deviation ID** | DEV-015 |
+| **Scope** | `secure_delete` tool — `src/tools/security/secure_delete/secure_delete.py` |
+| **Document section** | Spec §8.1 (Loading / Progress Indicators) |
+| **Migration task** | CP (CP pass rows 4–25) |
+| **Status** | Accepted — 2026 |
+
+**Spec requirement (§8.1):** Operations that may take ≥ 300 ms MUST display a `LoadingIndicator` wired to the worker's `started` and `finished` signals.
+
+**Deviation:** The secure delete background operation uses `threading.Thread` (Python stdlib) rather than `QThread`. The `LoadingIndicator` `start()` and `stop()` methods require wiring to Qt signals; `threading.Thread` has no Qt signal interface. Wiring would require either migrating to `QThread` or bridging via `QMetaObject.invokeMethod`. Both approaches are out of scope for the CP pass.
+
+**Constraints:**
+- When the worker is migrated to `QThread`, `LoadingIndicator` MUST be added and this deviation MUST be closed.
+
+---
+
+### security_scanner
+
+#### DEV-016 — LoadingIndicator Not Applied (QThread Worker Structurally Broken)
+
+| Field | Value |
+|---|---|
+| **Deviation ID** | DEV-016 |
+| **Scope** | `security_scanner` tool — `src/tools/security/security_scanner/security_scanner.py` (`SecurityScanWorker`) |
+| **Document section** | Spec §8.1 (Loading / Progress Indicators) |
+| **Migration task** | CP (CP pass rows 4–25) |
+| **Status** | Accepted — 2026 |
+
+**Spec requirement (§8.1):** Operations that may take ≥ 300 ms MUST display a `LoadingIndicator` wired to the worker's `started` and `finished` signals.
+
+**Deviation:** `SecurityScanWorker` is structurally broken — it does not inherit from `QThread` or `QObject`, has no `run()` method, and does not emit `started`/`finished` signals. Wiring `LoadingIndicator` to this worker is not possible without first rebuilding the worker as a proper `QThread` subclass.
+
+**Constraints:**
+- When `SecurityScanWorker` is rebuilt as a `QThread` subclass, `LoadingIndicator` MUST be added and this deviation MUST be closed.
+
+---
+
+### encryption
+
+#### DEV-017 — password_edit QLineEdit Not Replaced with TextInput
+
+| Field | Value |
+|---|---|
+| **Deviation ID** | DEV-017 |
+| **Scope** | `encryption` tool — `src/tools/security/encryption/en_and_decrypt.py` (`password_edit`) |
+| **Document section** | Spec §5.3 (Form Controls) |
+| **Migration task** | CP (CP pass rows 4–25) |
+| **Status** | Accepted — 2026 |
+
+**Spec requirement (§5.3):** Text input controls MUST use the `TextInput` shared component.
+
+**Deviation:** `password_edit` uses `QLineEdit.Password` echo mode for secure password entry. The `TextInput` shared component does not support echo mode configuration. Replacing with `TextInput` would expose the password as plain text. Field remains as `QLineEdit`.
+
+**Constraints:**
+- If `TextInput` is extended to support echo mode (e.g., a `password=True` parameter), `password_edit` MUST be migrated and this deviation MUST be closed.
+
+---
+
+### pdf_tools
+
+#### DEV-018 — Dynamic-Color Category and Program Card Buttons Not Replaced
+
+| Field | Value |
+|---|---|
+| **Deviation ID** | DEV-018 |
+| **Scope** | `pdf_tools` tool — `src/tools/pdf_tools/widgets/enhanced_pdf_tools_widget.py` (`create_category_button`, `create_program_button`) |
+| **Document section** | Spec §5.2 (Buttons & Actions) |
+| **Migration task** | CP (CP pass rows 4–25) |
+| **Status** | Accepted — 2026 |
+
+**Spec requirement (§5.2):** Action buttons MUST use `PrimaryButton` or `SecondaryButton`.
+
+**Deviation:** The category card buttons in `create_category_button()` and program card buttons in `create_program_button()` are `QPushButton` instances dynamically styled with category-specific colors (green, blue, red, orange, purple, blue-grey). These colors encode category identity; replacing with `PrimaryButton`/`SecondaryButton` (which use a single theme-driven accent color) would remove the visual category distinction and degrade navigability. The card-button pattern is a display/navigation widget, not a primary action trigger.
+
+**Constraints:**
+- If the card layout is redesigned to separate navigation from action semantics, the action trigger within each card MUST use `PrimaryButton` or `SecondaryButton` and this deviation MUST be updated.
+

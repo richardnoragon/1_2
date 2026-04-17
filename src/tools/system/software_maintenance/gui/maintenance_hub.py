@@ -7,6 +7,7 @@ with comprehensive progress tracking and user interaction.
 
 import csv
 import json
+import logging
 import os
 import sys
 from pathlib import Path
@@ -49,7 +50,7 @@ try:
         QWidget,
     )
 
-    from src.gui.themes import token
+    from src.gui.themes import ThemeManager, token
 
     PYQT_AVAILABLE = True
 except ImportError:
@@ -74,6 +75,74 @@ except ImportError:
 if PYQT_AVAILABLE:
     from ..tools.software_deinstaller import SoftwareDeinstaller
     from ..tools.software_updater import SoftwareUpdater
+
+
+# ---------------------------------------------------------------------------
+# GRD-1a: Guardian registration (graceful no-op when guardian absent)
+# ---------------------------------------------------------------------------
+try:
+    from src.core.guardian import register_gui_component
+except ImportError:
+
+    def register_gui_component(*a, **kw):
+        pass  # noqa: E731
+
+
+# ---------------------------------------------------------------------------
+# TEL: Telemetry helpers (graceful no-op when telemetry absent)
+# ---------------------------------------------------------------------------
+try:
+    from src.gui.telemetry import emit_telemetry
+
+    def _emit_telemetry(event_type, **kw):
+        emit_telemetry(event_type, **kw)  # noqa: E731
+
+except ImportError:
+
+    def _emit_telemetry(*a, **kw):
+        pass  # noqa: E731
+
+
+# ---------------------------------------------------------------------------
+# STR: Centralised string constants with fallback (P1-C15 / STR-1)
+# ---------------------------------------------------------------------------
+try:
+    from src.rfu.ui_strings import SoftwareMaintenance as _SoftMainStrings
+except ImportError:
+
+    class _SoftMainStrings:  # type: ignore[no-redef]
+        TITLE = "Software Maintenance"
+        WINDOW_TITLE = "Software Maintenance — RFU"
+        LOADING = "Loading Software Maintenance…"
+        MODAL_ERROR_TITLE = "Software Maintenance"
+        ERR_INIT_FAILED = (
+            "Could not start Software Maintenance. "
+            "Please try again or restart the application."
+        )
+        ERR_SCAN_FAILED = "Could not scan for software. Please try again."
+        ERR_UPDATE_FAILED = "Could not update software. Please try again."
+        ERR_EXPORT_FAILED = (
+            "Could not export. Check that you have write permission to the destination."
+        )
+        ERR_IMPORT_FAILED = (
+            "Could not import. Check that the file is valid and accessible."
+        )
+
+
+# ---------------------------------------------------------------------------
+# ERR: Modal import (graceful no-op when modal absent)
+# ---------------------------------------------------------------------------
+try:
+    from src.gui.components.buttons import PrimaryButton, SecondaryButton
+    from src.gui.components.modal import Modal
+    from src.gui.components.toast import ToastNotification
+
+    _CP_AVAILABLE = True
+except ImportError:
+    Modal = None  # type: ignore[assignment,misc]
+    PrimaryButton = SecondaryButton = None  # type: ignore[assignment,misc]
+    ToastNotification = None
+    _CP_AVAILABLE = False
 
 
 class WorkerThread(QThread):
@@ -140,7 +209,9 @@ class WorkerThread(QThread):
                 self.operation_completed.emit(bool(result), "Operation completed")
             else:
                 self.operation_completed.emit(False, "Failed to initialize tool")
-        except Exception as e:
+        except (
+            Exception
+        ) as e:  # ERR: non-fatal — surfaced via operation_completed signal
             self.operation_completed.emit(False, f"Error: {str(e)}")
 
 
@@ -151,11 +222,18 @@ class SoftwareMaintenanceHub(StandardWindow):
     Enhanced with File menu integration following the File Finder template.
     """
 
-    def __init__(self):
+    def __init__(self, hub_instance=None):
         super().__init__(
-            title="Software Maintenance Toolkit - Richard's File Utilities",
+            title=_SoftMainStrings.WINDOW_TITLE,
             window_type="utility",
         )
+        self._hub = hub_instance
+        try:
+            from src.rfu.log_manager import get_log_manager
+
+            self._logger = get_log_manager().get_logger("SoftwareMaintenanceHub")
+        except Exception:
+            self._logger = logging.getLogger("SoftwareMaintenanceHub")
         if not PYQT_AVAILABLE:
             raise ImportError("PyQt5 is required for the GUI")
         # Initialize tools
@@ -177,6 +255,34 @@ class SoftwareMaintenanceHub(StandardWindow):
         self.status_timer = QTimer()
         self.status_timer.timeout.connect(self.update_status_display)
         self.status_timer.start(1000)  # Update every second
+        register_gui_component(
+            self,
+            tool_id="software_maintenance",
+            recovery_callback=self.degraded_fallback,
+        )
+        _emit_telemetry("ui_view_load", tool_id="software_maintenance")
+        ThemeManager.add_theme_changed_callback(self._on_theme_changed)
+
+    def _on_theme_changed(self, variant: str) -> None:
+        """Re-apply token-based stylesheets when the active theme variant changes."""
+        pass  # stylesheets applied at init; live re-apply pending TH-4c/4d
+
+    def health_check(self) -> bool:
+        """Return True if core UI is functional (GRD-3a)."""
+        try:
+            return self.centralWidget() is not None
+        except Exception:
+            return False
+
+    def degraded_fallback(self) -> None:
+        """Enter degraded / read-only state (GRD-3b)."""
+        try:
+            self._logger.warning("SoftwareMaintenanceHub entering degraded mode")
+        except Exception:
+            pass
+        _emit_telemetry(
+            "ui_error_event", tool_id="software_maintenance", error_type="degraded"
+        )
 
     def _setup_menu_callbacks(self):
         """Setup tool-specific menu callbacks for File menu integration."""
@@ -197,17 +303,31 @@ class SoftwareMaintenanceHub(StandardWindow):
 
     def show_preferences(self):
         """Show Software Maintenance preferences."""
-        QMessageBox.information(
-            self,
-            "Software Maintenance Preferences",
-            "Software Maintenance preferences:\n\n"
-            "• Automatic update checking frequency\n"
-            "• Backup settings before changes\n"
-            "• Security update priorities\n"
-            "• Removal verification options\n"
-            "• System restore point creation\n\n"
-            "Configure these settings in the Settings tab!",
-        )
+        if Modal:
+            Modal(
+                "Software Maintenance Preferences",
+                "Software Maintenance preferences:\n\n"
+                "• Automatic update checking frequency\n"
+                "• Backup settings before changes\n"
+                "• Security update priorities\n"
+                "• Removal verification options\n"
+                "• System restore point creation\n\n"
+                "Configure these settings in the Settings tab!",
+                ["OK"],
+                self,
+            ).exec_()
+        else:
+            QMessageBox.information(
+                self,
+                "Software Maintenance Preferences",
+                "Software Maintenance preferences:\n\n"
+                "• Automatic update checking frequency\n"
+                "• Backup settings before changes\n"
+                "• Security update priorities\n"
+                "• Removal verification options\n"
+                "• System restore point creation\n\n"
+                "Configure these settings in the Settings tab!",
+            )
 
     def refresh_view(self):
         """Refresh the current maintenance data."""
@@ -245,15 +365,24 @@ class SoftwareMaintenanceHub(StandardWindow):
                             current = getattr(update, "current_version", "Unknown")
                             available = getattr(update, "available_version", "Unknown")
                             f.write(f"• {name}: {current} → {available}\n")
-                QMessageBox.information(
-                    self,
-                    "Export Complete",
-                    f"Maintenance report exported to:\n{file_path}",
-                )
-            except Exception as e:
-                QMessageBox.warning(
-                    self, "Export Error", f"Failed to export report:\n{e}"
-                )
+                if ToastNotification:
+                    ToastNotification(parent=self).show_message(
+                        f"Maintenance report exported to: {file_path}", "success"
+                    )
+                else:
+                    QMessageBox.information(
+                        self,
+                        "Export Complete",
+                        f"Maintenance report exported to:\n{file_path}",
+                    )
+            except Exception as e:  # ERR: non-fatal — surfaced via Modal; export failed
+                if Modal:
+                    Modal(
+                        _SoftMainStrings.MODAL_ERROR_TITLE,
+                        _SoftMainStrings.ERR_EXPORT_FAILED,
+                        ["OK"],
+                        self,
+                    ).exec_()
 
     def export_software_list(self):
         """Export software list to CSV format."""
@@ -274,15 +403,27 @@ class SoftwareMaintenanceHub(StandardWindow):
                         version = getattr(info, "version", "Unknown")
                         has_update = name in self.available_updates
                         writer.writerow([name, version, "Yes" if has_update else "No"])
-                QMessageBox.information(
-                    self,
-                    "Export Complete",
-                    f"Software list exported to:\n{file_path}",
+                if ToastNotification:
+                    ToastNotification(parent=self).show_message(
+                        f"Software list exported to: {file_path}", "success"
+                    )
+                else:
+                    QMessageBox.information(
+                        self,
+                        "Export Complete",
+                        f"Software list exported to:\n{file_path}",
+                    )
+            except Exception as e:  # ERR: non-fatal — surfaced via Modal; export failed
+                self._logger.error(
+                    f"Failed to export software list: {e}", exc_info=True
                 )
-            except Exception as e:
-                QMessageBox.warning(
-                    self, "Export Error", f"Failed to export list:\n{e}"
-                )
+                if Modal:
+                    Modal(
+                        _SoftMainStrings.MODAL_ERROR_TITLE,
+                        _SoftMainStrings.ERR_EXPORT_FAILED,
+                        ["OK"],
+                        self,
+                    ).exec_()
 
     def import_software_list(self):
         """Import software configuration or list."""
@@ -300,36 +441,65 @@ class SoftwareMaintenanceHub(StandardWindow):
                     with open(file_path, "r", encoding="utf-8") as f:
                         config = json.load(f)
                     # Process JSON configuration
-                    QMessageBox.information(
-                        self,
-                        "Import Complete",
-                        "Software configuration imported successfully!",
-                    )
+                    if ToastNotification:
+                        ToastNotification(parent=self).show_message(
+                            "Software configuration imported successfully!", "success"
+                        )
+                    else:
+                        QMessageBox.information(
+                            self,
+                            "Import Complete",
+                            "Software configuration imported successfully!",
+                        )
                 elif file_path.endswith(".csv"):
                     # Process CSV import
-                    QMessageBox.information(
-                        self,
-                        "Import Complete",
-                        "Software list imported successfully!",
-                    )
+                    if ToastNotification:
+                        ToastNotification(parent=self).show_message(
+                            "Software list imported successfully!", "success"
+                        )
+                    else:
+                        QMessageBox.information(
+                            self,
+                            "Import Complete",
+                            "Software list imported successfully!",
+                        )
                 else:
-                    QMessageBox.information(
+                    if Modal:
+                        Modal(
+                            "Import",
+                            "Import functionality for this file type coming soon!",
+                            ["OK"],
+                            self,
+                        ).exec_()
+                    else:
+                        QMessageBox.information(
+                            self,
+                            "Import",
+                            "Import functionality for this file type coming soon!",
+                        )
+            except Exception as e:  # ERR: non-fatal — surfaced via Modal; import failed
+                self._logger.error(
+                    f"Failed to import software list: {e}", exc_info=True
+                )
+                if Modal:
+                    Modal(
+                        _SoftMainStrings.MODAL_ERROR_TITLE,
+                        _SoftMainStrings.ERR_IMPORT_FAILED,
+                        ["OK"],
                         self,
-                        "Import",
-                        "Import functionality for this file type coming soon!",
-                    )
-            except Exception as e:
-                QMessageBox.warning(self, "Import Error", f"Failed to import:\n{e}")
+                    ).exec_()
 
     def print_maintenance_report(self):
         """Print maintenance report."""
-        QMessageBox.information(
-            self,
-            "Print Report",
+        _msg = (
             "Print functionality will open the system print dialog.\n\n"
             "For now, you can export the report and print from your "
-            "preferred text editor.",
+            "preferred text editor."
         )
+        if Modal:
+            Modal("Print Report", _msg, ["OK"], self).exec_()
+        else:
+            QMessageBox.information(self, "Print Report", _msg)
         # Future: Implement actual printing functionality
 
     def setup_ui(self):
@@ -341,6 +511,7 @@ class SoftwareMaintenanceHub(StandardWindow):
         layout.addLayout(header_layout)
         # Main content area with tabs
         self.tab_widget = QTabWidget()
+        self.tab_widget.setAccessibleName("Software maintenance tabs")
         layout.addWidget(self.tab_widget)
         # Create tabs
         self.create_updater_tab()
@@ -407,6 +578,7 @@ class SoftwareMaintenanceHub(StandardWindow):
         software_group = self.create_group_box("Installed Software")
         software_layout = QVBoxLayout(software_group)
         self.software_list = QListWidget()
+        self.software_list.setAccessibleName("Installed software list")
         self.software_list.itemChanged.connect(self.on_software_selection_changed)
         software_layout.addWidget(self.software_list)
         content_splitter.addWidget(software_group)
@@ -414,6 +586,7 @@ class SoftwareMaintenanceHub(StandardWindow):
         updates_group = self.create_group_box("Available Updates")
         updates_layout = QVBoxLayout(updates_group)
         self.updates_table = QTableWidget()
+        self.updates_table.setAccessibleName("Available software updates table")
         self.updates_table.setColumnCount(4)
         self.updates_table.setHorizontalHeaderLabels(
             ["Software", "Current", "Available", "Source"]
@@ -421,6 +594,7 @@ class SoftwareMaintenanceHub(StandardWindow):
         updates_layout.addWidget(self.updates_table)
         # Update details
         self.update_details = QTextEdit()
+        self.update_details.setAccessibleName("Update changelog details")
         self.update_details.setMaximumHeight(150)
         self.update_details.setPlaceholderText("Select an update to view changelog...")
         updates_layout.addWidget(self.update_details)
@@ -458,6 +632,7 @@ class SoftwareMaintenanceHub(StandardWindow):
         removal_group = self.create_group_box("Software for Removal")
         removal_layout = QVBoxLayout(removal_group)
         self.removal_list = QListWidget()
+        self.removal_list.setAccessibleName("Software for removal list")
         self.removal_list.itemChanged.connect(self.on_removal_selection_changed)
         removal_layout.addWidget(self.removal_list)
         # Space analysis
@@ -471,6 +646,7 @@ class SoftwareMaintenanceHub(StandardWindow):
         analysis_group = self.create_group_box("Removal Analysis")
         analysis_layout = QVBoxLayout(analysis_group)
         self.analysis_details = QTextEdit()
+        self.analysis_details.setAccessibleName("Software removal analysis")
         self.analysis_details.setPlaceholderText(
             "Select software to view removal analysis..."
         )
@@ -488,27 +664,58 @@ class SoftwareMaintenanceHub(StandardWindow):
         updater_group = QGroupBox("Updater Settings")
         updater_layout = QGridLayout(updater_group)
         self.auto_check_cb = QCheckBox("Enable automatic update checking")
+        self.auto_check_cb.setAccessibleName("Enable automatic update checking")
+        self.auto_check_cb.setMinimumHeight(44)
         updater_layout.addWidget(self.auto_check_cb, 0, 0, 1, 2)
         updater_layout.addWidget(QLabel("Check interval (hours):"), 1, 0)
         self.check_interval_spin = QSpinBox()
+        self.check_interval_spin.setAccessibleName("Update check interval in hours")
+        self.check_interval_spin.setAccessibleDescription(
+            "Sets how frequently the system checks for updates, 1 to 168 hours"
+        )
+        self.check_interval_spin.setMinimumHeight(44)
         self.check_interval_spin.setRange(1, 168)  # 1 hour to 1 week
         self.check_interval_spin.setValue(24)
         updater_layout.addWidget(self.check_interval_spin, 1, 1)
         self.auto_security_cb = QCheckBox("Auto-install security updates")
+        self.auto_security_cb.setAccessibleName("Auto-install security updates")
+        self.auto_security_cb.setAccessibleDescription(
+            "Security updates will be installed automatically without manual approval"
+        )
+        self.auto_security_cb.setMinimumHeight(44)
         updater_layout.addWidget(self.auto_security_cb, 2, 0, 1, 2)
         self.create_restore_points_cb = QCheckBox(
             "Create restore points before updates"
         )
+        self.create_restore_points_cb.setAccessibleName(
+            "Create restore points before updates"
+        )
+        self.create_restore_points_cb.setAccessibleDescription(
+            "Creates a Windows system restore point before each installation"
+        )
+        self.create_restore_points_cb.setMinimumHeight(44)
         updater_layout.addWidget(self.create_restore_points_cb, 3, 0, 1, 2)
         layout.addWidget(updater_group)
         # De-installer settings
         deinstaller_group = QGroupBox("De-Installer Settings")
         deinstaller_layout = QGridLayout(deinstaller_group)
         self.backup_before_removal_cb = QCheckBox("Create backups before removal")
+        self.backup_before_removal_cb.setAccessibleName("Create backups before removal")
+        self.backup_before_removal_cb.setAccessibleDescription(
+            "Saves a copy of installation data before the software is removed"
+        )
+        self.backup_before_removal_cb.setMinimumHeight(44)
         deinstaller_layout.addWidget(self.backup_before_removal_cb, 0, 0, 1, 2)
         self.deep_scan_cb = QCheckBox("Enable deep system scanning")
+        self.deep_scan_cb.setAccessibleName("Enable deep system scanning")
+        self.deep_scan_cb.setAccessibleDescription(
+            "Scans additional registry locations and file paths; takes longer to complete"
+        )
+        self.deep_scan_cb.setMinimumHeight(44)
         deinstaller_layout.addWidget(self.deep_scan_cb, 1, 0, 1, 2)
         self.auto_cleanup_cb = QCheckBox("Automatically clean up leftovers")
+        self.auto_cleanup_cb.setAccessibleName("Automatically clean up leftovers")
+        self.auto_cleanup_cb.setMinimumHeight(44)
         deinstaller_layout.addWidget(self.auto_cleanup_cb, 2, 0, 1, 2)
         layout.addWidget(deinstaller_group)
         # Security settings
@@ -516,17 +723,22 @@ class SoftwareMaintenanceHub(StandardWindow):
         security_layout = QGridLayout(security_group)
         security_layout.addWidget(QLabel("Backup retention (days):"), 0, 0)
         self.backup_retention_spin = QSpinBox()
+        self.backup_retention_spin.setAccessibleName("Backup retention in days")
+        self.backup_retention_spin.setMinimumHeight(44)
         self.backup_retention_spin.setRange(1, 365)
         self.backup_retention_spin.setValue(30)
         security_layout.addWidget(self.backup_retention_spin, 0, 1)
         security_layout.addWidget(QLabel("Max backup size (GB):"), 1, 0)
         self.max_backup_size_spin = QSpinBox()
+        self.max_backup_size_spin.setAccessibleName("Maximum backup size in gigabytes")
+        self.max_backup_size_spin.setMinimumHeight(44)
         self.max_backup_size_spin.setRange(1, 100)
         self.max_backup_size_spin.setValue(10)
         security_layout.addWidget(self.max_backup_size_spin, 1, 1)
         layout.addWidget(security_group)
         # Save settings button
-        save_settings_btn = QPushButton("Save Settings")
+        _SB = SecondaryButton if SecondaryButton else QPushButton
+        save_settings_btn = _SB("Save Settings")
         save_settings_btn.clicked.connect(self.save_settings)
         layout.addWidget(save_settings_btn)
         layout.addStretch()
@@ -540,18 +752,21 @@ class SoftwareMaintenanceHub(StandardWindow):
         log_controls = QHBoxLayout()
         log_controls.addWidget(QLabel("Log Level:"))
         self.log_level_combo = QComboBox()
+        self.log_level_combo.setAccessibleName("Log level filter")
         self.log_level_combo.addItems(["All", "Info", "Warning", "Error"])
         log_controls.addWidget(self.log_level_combo)
         log_controls.addStretch()
-        clear_logs_btn = QPushButton("Clear Logs")
+        _SB2 = SecondaryButton if SecondaryButton else QPushButton
+        clear_logs_btn = _SB2("Clear Logs")
         clear_logs_btn.clicked.connect(self.clear_logs)
         log_controls.addWidget(clear_logs_btn)
-        export_logs_btn = QPushButton("Export Logs")
+        export_logs_btn = _SB2("Export Logs")
         export_logs_btn.clicked.connect(self.export_logs)
         log_controls.addWidget(export_logs_btn)
         layout.addLayout(log_controls)
         # Log display
         self.log_display = QTextEdit()
+        self.log_display.setAccessibleName("Maintenance operation log")
         self.log_display.setReadOnly(True)
         self.log_display.setFont(Typography.body())
         layout.addWidget(self.log_display)

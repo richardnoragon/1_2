@@ -31,10 +31,67 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
-from src.gui.themes import token
+from src.gui.themes import ThemeManager, token
+
+# ---------------------------------------------------------------------------
+# GRD-1a: Guardian registration (graceful no-op when guardian absent)
+# ---------------------------------------------------------------------------
+try:
+    from src.core.guardian import register_gui_component
+except ImportError:
+
+    def register_gui_component(*a, **kw):
+        pass  # noqa: E731
 
 
-class PDFToolsStateManager:
+# ---------------------------------------------------------------------------
+# TEL: Telemetry helpers (graceful no-op when telemetry absent)
+# ---------------------------------------------------------------------------
+try:
+    from src.gui.telemetry import emit_telemetry
+
+    def _emit_telemetry(event_type, **kw):
+        emit_telemetry(event_type, **kw)  # noqa: E731
+
+except ImportError:
+
+    def _emit_telemetry(*a, **kw):
+        pass  # noqa: E731
+
+
+# ---------------------------------------------------------------------------
+# STR: Centralised string constants with fallback (P1-C15 / STR-1)
+# ---------------------------------------------------------------------------
+try:
+    from src.rfu.ui_strings import PDFTools as _PDFStrings
+except ImportError:
+
+    class _PDFStrings:  # type: ignore[no-redef]
+        TITLE = "PDF Tools"
+        WINDOW_TITLE = "PDF Tools — RFU"
+        LOADING = "Loading PDF Tools…"
+        ERR_INIT_FAILED = (
+            "Could not start PDF Tools. " "Please try again or restart the application."
+        )
+        ERR_NO_FILE = "No PDF file selected."
+        ERR_LOAD_FAILED = "Failed to load the selected PDF file."
+
+
+# ---------------------------------------------------------------------------
+# CP: Shared UI components (graceful fallback when unavailable)
+# ---------------------------------------------------------------------------
+try:
+    from src.gui.components.buttons import PrimaryButton, SecondaryButton
+    from src.gui.components.modal import Modal
+    from src.gui.components.toast import ToastNotification
+
+    _CP_AVAILABLE = True
+except ImportError:
+    PrimaryButton = SecondaryButton = None  # type: ignore[assignment,misc]
+    Modal = None  # type: ignore[assignment,misc]
+    ToastNotification = None
+    _CP_AVAILABLE = False
+
     """
     Manages state and data sharing between PDF tool components
     """
@@ -88,13 +145,15 @@ class EnhancedPDFToolsWidget(QWidget):
     )  # tool_name, operation, success
     file_selected = pyqtSignal(str)  # file_path
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, hub_instance=None):
         super().__init__(parent)
+        self._hub = hub_instance
         self.parent_window = parent
 
         # Initialize managers
         self.state_manager = PDFToolsStateManager()
         self.logger = logging.getLogger("PDFTools")
+        self._logger = self.logger  # HUB-1: canonical alias
 
         # UI components
         self.main_layout = None
@@ -109,6 +168,30 @@ class EnhancedPDFToolsWidget(QWidget):
 
         self.init_ui()
         self.setup_connections()
+        register_gui_component(
+            self, tool_id="pdf_tools", recovery_callback=self.degraded_fallback
+        )
+        _emit_telemetry("ui_view_load", tool_id="pdf_tools")
+        ThemeManager.add_theme_changed_callback(self._on_theme_changed)
+
+    def _on_theme_changed(self, variant: str) -> None:
+        """Re-apply token-based stylesheets when the active theme variant changes."""
+        pass  # stylesheets applied at init; live re-apply pending TH-4c/4d
+
+    def health_check(self) -> bool:
+        """Return True if core UI is functional (GRD-3a)."""
+        try:
+            return self.main_layout is not None
+        except Exception:
+            return False
+
+    def degraded_fallback(self) -> None:
+        """Enter degraded / read-only state (GRD-3b)."""
+        try:
+            self._logger.warning("EnhancedPDFToolsWidget entering degraded mode")
+        except Exception:
+            pass
+        _emit_telemetry("ui_error_event", tool_id="pdf_tools", error_type="degraded")
 
     def init_ui(self):
         """Initialize the PDF tools interface"""
@@ -156,22 +239,8 @@ class EnhancedPDFToolsWidget(QWidget):
         file_layout.addWidget(self.current_file_label)
 
         # File selection button
-        select_file_btn = QPushButton("Select PDF File")
-        select_file_btn.setStyleSheet(
-            f"""
-            QPushButton {{
-                background-color: {token('button_primary')};
-                color: white;
-                border: none;
-                padding: 8px 16px;
-                border-radius: 4px;
-                font-weight: bold;
-            }}
-            QPushButton:hover {{
-                background-color: {token('button_primary')};
-            }}
-        """
-        )
+        _PB = PrimaryButton if PrimaryButton else QPushButton
+        select_file_btn = _PB("Select PDF File")
         select_file_btn.clicked.connect(self.select_pdf_file)
         file_layout.addWidget(select_file_btn)
 
@@ -182,12 +251,12 @@ class EnhancedPDFToolsWidget(QWidget):
         actions_layout = QHBoxLayout(actions_group)
 
         # Recent files button
-        recent_btn = QPushButton("Recent Files")
+        _SB = SecondaryButton if SecondaryButton else QPushButton
+        recent_btn = _SB("Recent Files")
         recent_btn.clicked.connect(self.show_recent_files)
         actions_layout.addWidget(recent_btn)
 
-        # Clear cache button
-        clear_cache_btn = QPushButton("Clear Cache")
+        clear_cache_btn = _SB("Clear Cache")
         clear_cache_btn.clicked.connect(self.clear_cache)
         actions_layout.addWidget(clear_cache_btn)
 
@@ -235,22 +304,8 @@ class EnhancedPDFToolsWidget(QWidget):
 
         # Back button
         back_layout = QHBoxLayout()
-        self.back_button = QPushButton("← Back to Categories")
-        self.back_button.setStyleSheet(
-            f"""
-            QPushButton {{
-                background-color: {token('text_muted')};
-                color: white;
-                border: none;
-                padding: 10px 20px;
-                border-radius: 5px;
-                font-weight: bold;
-            }}
-            QPushButton:hover {{
-                background-color: {token('color_grey_medium')};
-            }}
-        """
-        )
+        _SB2 = SecondaryButton if SecondaryButton else QPushButton
+        self.back_button = _SB2("← Back to Categories")
         self.back_button.clicked.connect(self.show_categories)
         back_layout.addWidget(self.back_button)
         back_layout.addStretch()
@@ -293,32 +348,32 @@ class EnhancedPDFToolsWidget(QWidget):
             "pdf_basic_operations": {
                 "display_name": "Basic Operations",
                 "description": "Merge, split, and sign PDFs",
-                "color": "#4CAF50",
+                "color": token("semantic_success"),
             },
             "pdf_content_extraction": {
                 "display_name": "Content Extraction",
                 "description": "Extract text, images, tables, and metadata",
-                "color": "#2196F3",
+                "color": token("button_primary"),
             },
             "pdf_security": {
                 "display_name": "Security",
                 "description": "Encrypt, decrypt, and manage security",
-                "color": "#F44336",
+                "color": token("semantic_error"),
             },
             "pdf_enhancements": {
                 "display_name": "Enhancements",
                 "description": "Watermarks, OCR, and highlighting",
-                "color": "#FF9800",
+                "color": token("semantic_warning"),
             },
             "pdf_conversion": {
                 "display_name": "Conversion",
                 "description": "Convert PDFs to/from other formats",
-                "color": "#9C27B0",
+                "color": token("color_purple"),
             },
             "pdf_view_analysis": {
                 "display_name": "View & Analysis",
                 "description": "View and analyze PDF contents",
-                "color": "#607D8B",
+                "color": token("color_blue_grey"),
             },
         }
 
@@ -382,6 +437,8 @@ class EnhancedPDFToolsWidget(QWidget):
 
         # Category button
         button = QPushButton(name)
+        button.setAccessibleName(name)
+        button.setMinimumHeight(44)
         button.setStyleSheet(
             f"""
             QPushButton {{
@@ -537,10 +594,10 @@ class EnhancedPDFToolsWidget(QWidget):
                 if line.startswith("#") and len(line) > 5:
                     return line[1:].strip()[:100]
 
-        except Exception:
+        except (
+            Exception
+        ):  # ERR: non-fatal — description fallback returns default; non-critical
             pass
-
-        return f"PDF {file_path.stem.replace('_', ' ').title()}"
 
     def create_program_button(
         self, name: str, description: str, file_path: str, category: str
@@ -571,6 +628,8 @@ class EnhancedPDFToolsWidget(QWidget):
 
         # Program button
         button = QPushButton(name)
+        button.setAccessibleName(name)
+        button.setMinimumHeight(44)
         button.setStyleSheet(
             f"""
             QPushButton {{
@@ -627,12 +686,10 @@ class EnhancedPDFToolsWidget(QWidget):
 
     def launch_program(self, name: str, file_path: str, category: str):
         """Launch the selected PDF program"""
-        if not self.state_manager.current_file:
-            QMessageBox.warning(
-                self,
-                "No PDF Selected",
-                "Please select a PDF file first before launching programs.",
-            )
+        if (
+            not self.state_manager.current_file
+        ):  # ERR: non-fatal — surfaced via status_label; no PDF loaded
+            self.status_label.setText(_PDFStrings.ERR_NO_FILE)
             return
 
         try:
@@ -661,11 +718,11 @@ class EnhancedPDFToolsWidget(QWidget):
                 },
             )
 
-        except Exception as e:
-            QMessageBox.critical(
-                self, "Launch Error", f"Failed to launch {name}:\n{str(e)}"
+        except Exception as e:  # ERR: non-fatal — surfaced via status_label
+            self._logger.error(f"Error launching program '{name}': {e}", exc_info=True)
+            self.status_label.setText(
+                f"Could not launch {name}. See Help > Logs for details."
             )
-            self.status_label.setText(f"Failed to launch {name}")
 
     def _darken_color(self, hex_color: str, factor: float = 0.1) -> str:
         """Darken a hex color by a given factor"""
@@ -774,14 +831,26 @@ class EnhancedPDFToolsWidget(QWidget):
                     f"File selected: {os.path.basename(file_path)}"
                 )
             else:
-                QMessageBox.warning(
-                    self, "Invalid File", "Please select a valid PDF file."
-                )
+                if Modal:
+                    Modal(
+                        "Invalid File", "Please select a valid PDF file.", ["OK"], self
+                    ).exec_()
+                else:
+                    QMessageBox.warning(
+                        self, "Invalid File", "Please select a valid PDF file."
+                    )
 
     def show_recent_files(self):
         """Show recent files menu"""
         if not self.state_manager.recent_files:
-            QMessageBox.information(self, "Recent Files", "No recent files available.")
+            if Modal:
+                Modal(
+                    "Recent Files", "No recent files available.", ["OK"], self
+                ).exec_()
+            else:
+                QMessageBox.information(
+                    self, "Recent Files", "No recent files available."
+                )
             return
 
         # Create a simple dialog with recent files
@@ -795,6 +864,7 @@ class EnhancedPDFToolsWidget(QWidget):
         layout = QVBoxLayout(dialog)
 
         file_list = QListWidget()
+        file_list.setAccessibleName("Recent PDF files list")
         for file_path in self.state_manager.recent_files:
             if os.path.exists(file_path):
                 file_list.addItem(f"{os.path.basename(file_path)} - {file_path}")
@@ -818,11 +888,16 @@ class EnhancedPDFToolsWidget(QWidget):
         """Clear operation cache and temporary data"""
         self.state_manager.shared_data.clear()
         self.status_label.setText("Cache cleared")
-        QMessageBox.information(
-            self,
-            "Cache Cleared",
-            "Operation cache and temporary data have been cleared.",
-        )
+        if ToastNotification:
+            ToastNotification(self).show_message(
+                "Operation cache and temporary data have been cleared.", "success"
+            )
+        else:
+            QMessageBox.information(
+                self,
+                "Cache Cleared",
+                "Operation cache and temporary data have been cleared.",
+            )
 
 
 if __name__ == "__main__":

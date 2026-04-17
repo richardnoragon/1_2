@@ -3,41 +3,41 @@
 import json
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Any, List, Optional
+from typing import Any, Dict, List, Optional
 
+from PyQt5.QtCore import Qt, QThread, QTimer, pyqtSignal
+from PyQt5.QtGui import QFont, QIcon, QPalette
 from PyQt5.QtWidgets import (
-    QDialog,
-    QVBoxLayout,
-    QHBoxLayout,
-    QTabWidget,
-    QWidget,
-    QTreeWidget,
-    QTreeWidgetItem,
-    QLabel,
-    QLineEdit,
-    QSpinBox,
-    QDoubleSpinBox,
     QCheckBox,
     QComboBox,
-    QPushButton,
-    QTextEdit,
-    QGroupBox,
-    QFormLayout,
-    QMessageBox,
+    QDialog,
+    QDoubleSpinBox,
     QFileDialog,
-    QSplitter,
+    QFormLayout,
+    QFrame,
+    QGroupBox,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
     QListWidget,
     QListWidgetItem,
+    QMessageBox,
     QProgressBar,
-    QFrame,
+    QPushButton,
+    QSpinBox,
+    QSplitter,
+    QTabWidget,
+    QTextEdit,
+    QTreeWidget,
+    QTreeWidgetItem,
+    QVBoxLayout,
+    QWidget,
 )
-from PyQt5.QtCore import Qt, QThread, pyqtSignal, QTimer
-from PyQt5.QtGui import QFont, QIcon, QPalette
 
-from ...core.config_service import get_config_service, ConfigurationEvent
-from ...core.notification_service import get_notification_service
 from ...config.config_profiles import get_profile_manager
-from ...config.config_validator import get_config_validator, ValidationSeverity
+from ...config.config_validator import ValidationSeverity, get_config_validator
+from ...core.config_service import ConfigurationEvent, get_config_service
+from ...core.notification_service import get_notification_service
 
 
 class ConfigValidationWorker(QThread):
@@ -81,6 +81,7 @@ class ProfileSelectionWidget(QWidget):
         profile_layout = QVBoxLayout(profile_group)
 
         self.profile_list = QListWidget()
+        self.profile_list.setAccessibleName("Configuration profiles list")
         self.profile_list.itemClicked.connect(self._on_profile_selected)
         profile_layout.addWidget(self.profile_list)
 
@@ -88,15 +89,21 @@ class ProfileSelectionWidget(QWidget):
         actions_layout = QHBoxLayout()
 
         self.create_btn = QPushButton("Create from Template")
+        self.create_btn.setAccessibleName("Create profile from template")
+        self.create_btn.setMinimumHeight(44)
         self.create_btn.clicked.connect(self._create_from_template)
         actions_layout.addWidget(self.create_btn)
 
         self.switch_btn = QPushButton("Switch Profile")
+        self.switch_btn.setAccessibleName("Switch to selected profile")
+        self.switch_btn.setMinimumHeight(44)
         self.switch_btn.clicked.connect(self._switch_profile)
         self.switch_btn.setEnabled(False)
         actions_layout.addWidget(self.switch_btn)
 
         self.delete_btn = QPushButton("Delete")
+        self.delete_btn.setAccessibleName("Delete selected profile")
+        self.delete_btn.setMinimumHeight(44)
         self.delete_btn.clicked.connect(self._delete_profile)
         self.delete_btn.setEnabled(False)
         actions_layout.addWidget(self.delete_btn)
@@ -147,9 +154,7 @@ class ProfileSelectionWidget(QWidget):
         if profile:
             self._update_profile_details(profile)
             self.switch_btn.setEnabled(not profile.is_active)
-            self.delete_btn.setEnabled(
-                not profile.is_active and not profile.is_default
-            )
+            self.delete_btn.setEnabled(not profile.is_active and not profile.is_default)
             self.profile_selected.emit(profile.name)
 
     def _update_profile_details(self, profile):
@@ -157,12 +162,8 @@ class ProfileSelectionWidget(QWidget):
         self.name_label.setText(profile.name)
         self.description_label.setText(profile.description)
         self.use_case_label.setText(profile.use_case.title())
-        self.created_label.setText(
-            profile.created_at.strftime("%Y-%m-%d %H:%M")
-        )
-        self.updated_label.setText(
-            profile.updated_at.strftime("%Y-%m-%d %H:%M")
-        )
+        self.created_label.setText(profile.created_at.strftime("%Y-%m-%d %H:%M"))
+        self.updated_label.setText(profile.updated_at.strftime("%Y-%m-%d %H:%M"))
 
     def _create_from_template(self):
         """Create a new profile from template."""
@@ -370,10 +371,13 @@ class ValidationResultsWidget(QWidget):
 
         # Results list
         self.results_list = QListWidget()
+        self.results_list.setAccessibleName("Validation results list")
         layout.addWidget(self.results_list)
 
         # Validation button
         self.validate_btn = QPushButton("Validate Configuration")
+        self.validate_btn.setAccessibleName("Validate configuration")
+        self.validate_btn.setMinimumHeight(44)
         self.validate_btn.clicked.connect(self.validate_requested)
         layout.addWidget(self.validate_btn)
 
@@ -390,9 +394,7 @@ class ValidationResultsWidget(QWidget):
 
         if not results:
             self.summary_label.setText("✓ Configuration is valid")
-            self.summary_label.setStyleSheet(
-                "color: green; font-weight: bold;"
-            )
+            self.summary_label.setStyleSheet("color: green; font-weight: bold;")
             return
 
         # Count by severity
@@ -417,9 +419,7 @@ class ValidationResultsWidget(QWidget):
         if counts["critical"] or counts["error"]:
             self.summary_label.setStyleSheet("color: red; font-weight: bold;")
         elif counts["warning"]:
-            self.summary_label.setStyleSheet(
-                "color: orange; font-weight: bold;"
-            )
+            self.summary_label.setStyleSheet("color: orange; font-weight: bold;")
         else:
             self.summary_label.setStyleSheet("color: blue; font-weight: bold;")
 
@@ -509,8 +509,7 @@ class ConfigurationManagerDialog(QDialog):
 
         # Tab widget
         self.tab_widget = QTabWidget()
-
-        # Configuration tab
+        self.tab_widget.setAccessibleName("Configuration manager tabs")
         config_tab = QWidget()
         config_layout = QVBoxLayout(config_tab)
 
@@ -525,9 +524,7 @@ class ConfigurationManagerDialog(QDialog):
         validation_layout = QVBoxLayout(validation_tab)
 
         self.validation_widget = ValidationResultsWidget()
-        self.validation_widget.validate_requested.connect(
-            self._validate_configuration
-        )
+        self.validation_widget.validate_requested.connect(self._validate_configuration)
         validation_layout.addWidget(self.validation_widget)
 
         self.tab_widget.addTab(validation_tab, "Validation")
@@ -542,25 +539,35 @@ class ConfigurationManagerDialog(QDialog):
         button_layout = QHBoxLayout()
 
         self.save_btn = QPushButton("Save Changes")
+        self.save_btn.setAccessibleName("Save configuration changes")
+        self.save_btn.setMinimumHeight(44)
         self.save_btn.clicked.connect(self._save_configuration)
         self.save_btn.setEnabled(False)
         button_layout.addWidget(self.save_btn)
 
         self.reset_btn = QPushButton("Reset")
+        self.reset_btn.setAccessibleName("Reset configuration")
+        self.reset_btn.setMinimumHeight(44)
         self.reset_btn.clicked.connect(self._reset_configuration)
         button_layout.addWidget(self.reset_btn)
 
         self.export_btn = QPushButton("Export")
+        self.export_btn.setAccessibleName("Export configuration")
+        self.export_btn.setMinimumHeight(44)
         self.export_btn.clicked.connect(self._export_configuration)
         button_layout.addWidget(self.export_btn)
 
         self.import_btn = QPushButton("Import")
+        self.import_btn.setAccessibleName("Import configuration")
+        self.import_btn.setMinimumHeight(44)
         self.import_btn.clicked.connect(self._import_configuration)
         button_layout.addWidget(self.import_btn)
 
         button_layout.addStretch()
 
         self.close_btn = QPushButton("Close")
+        self.close_btn.setAccessibleName("Close configuration manager")
+        self.close_btn.setMinimumHeight(44)
         self.close_btn.clicked.connect(self.accept)
         button_layout.addWidget(self.close_btn)
 
@@ -583,9 +590,7 @@ class ConfigurationManagerDialog(QDialog):
             config = self.config_service.get_configuration()
             self.config_tree.load_configuration(config)
         except Exception as e:
-            QMessageBox.warning(
-                self, "Error", f"Failed to load configuration: {e}"
-            )
+            QMessageBox.warning(self, "Error", f"Failed to load configuration: {e}")
 
     def _on_profile_selected(self, profile_name: str):
         """Handle profile selection."""
@@ -622,14 +627,10 @@ class ConfigurationManagerDialog(QDialog):
                 self.save_btn.setEnabled(False)
                 self._load_current_configuration()
             else:
-                QMessageBox.warning(
-                    self, "Error", "Failed to save configuration"
-                )
+                QMessageBox.warning(self, "Error", "Failed to save configuration")
 
         except Exception as e:
-            QMessageBox.critical(
-                self, "Error", f"Error saving configuration: {e}"
-            )
+            QMessageBox.critical(self, "Error", f"Error saving configuration: {e}")
 
     def _set_nested_value(self, config: Dict[str, Any], path: str, value: Any):
         """Set a nested value in configuration dictionary."""
@@ -673,9 +674,7 @@ class ConfigurationManagerDialog(QDialog):
             self.validation_worker.start()
 
         except Exception as e:
-            QMessageBox.warning(
-                self, "Error", f"Failed to start validation: {e}"
-            )
+            QMessageBox.warning(self, "Error", f"Failed to start validation: {e}")
             self.validation_widget.show_validation_progress(False)
 
     def _on_validation_complete(self, results: List):
@@ -708,9 +707,7 @@ class ConfigurationManagerDialog(QDialog):
                         f"Configuration exported to {file_path}",
                     )
                 else:
-                    QMessageBox.warning(
-                        self, "Error", "Failed to export configuration"
-                    )
+                    QMessageBox.warning(self, "Error", "Failed to export configuration")
 
         except Exception as e:
             QMessageBox.critical(self, "Error", f"Export error: {e}")
@@ -734,9 +731,7 @@ class ConfigurationManagerDialog(QDialog):
                 )
 
                 if reply == QMessageBox.Yes:
-                    success = self.config_service.import_configuration(
-                        file_path
-                    )
+                    success = self.config_service.import_configuration(file_path)
 
                     if success:
                         QMessageBox.information(

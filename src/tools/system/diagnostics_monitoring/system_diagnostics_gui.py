@@ -37,7 +37,7 @@ try:
         QWidget,
     )
 
-    from src.gui.themes import token
+    from src.gui.themes import ThemeManager, Typography, token
 
     PYQT5_AVAILABLE = True
 except ImportError:
@@ -104,6 +104,22 @@ except ImportError:
     AlertManager = None
 
 
+# ---------------------------------------------------------------------------
+# CP: Shared UI components (graceful fallback when unavailable)
+# ---------------------------------------------------------------------------
+try:
+    from src.gui.components.buttons import PrimaryButton, SecondaryButton
+    from src.gui.components.modal import Modal
+    from src.gui.components.toast import ToastNotification
+
+    _CP_AVAILABLE = True
+except ImportError:
+    PrimaryButton = SecondaryButton = None  # type: ignore[assignment,misc]
+    Modal = None  # type: ignore[assignment,misc]
+    ToastNotification = None
+    _CP_AVAILABLE = False
+
+
 class SystemDiagnosticsGUI(QMainWindow):
     """Comprehensive System Diagnostics GUI with integrated monitoring widgets.
 
@@ -159,6 +175,11 @@ class SystemDiagnosticsGUI(QMainWindow):
         # Connect hub signals if available
         if self.hub_instance:
             self.setup_hub_integration()
+        ThemeManager.add_theme_changed_callback(self._on_theme_changed)
+
+    def _on_theme_changed(self, variant: str) -> None:
+        """Re-apply token-based stylesheets when the active theme variant changes."""
+        pass  # stylesheets applied at init; live re-apply pending TH-4c/4d
 
     def init_ui(self):
         """Initialize the user interface."""
@@ -186,6 +207,7 @@ class SystemDiagnosticsGUI(QMainWindow):
 
             # Main content area with tabs
             self.tab_widget = QTabWidget()
+            self.tab_widget.setAccessibleName("Diagnostics tabs")
             main_layout.addWidget(self.tab_widget)
 
             # Create tabs
@@ -267,10 +289,7 @@ class SystemDiagnosticsGUI(QMainWindow):
             title_layout = QVBoxLayout()
 
             title_label = QLabel("System Diagnostics & Monitoring")
-            title_font = QFont()
-            title_font.setPointSize(16)
-            title_font.setBold(True)
-            title_label.setFont(title_font)
+            title_label.setFont(Typography.h1())
             title_layout.addWidget(title_label)
 
             desc_label = QLabel(
@@ -285,11 +304,13 @@ class SystemDiagnosticsGUI(QMainWindow):
             # Control buttons
             controls_layout = QVBoxLayout()
 
-            self.start_button = QPushButton("Start Monitoring")
+            _PB = PrimaryButton if PrimaryButton else QPushButton
+            self.start_button = _PB("Start Monitoring")
             self.start_button.clicked.connect(self.start_monitoring)
             controls_layout.addWidget(self.start_button)
 
-            self.stop_button = QPushButton("Stop Monitoring")
+            _SB = SecondaryButton if SecondaryButton else QPushButton
+            self.stop_button = _SB("Stop Monitoring")
             self.stop_button.clicked.connect(self.stop_monitoring)
             self.stop_button.setEnabled(False)
             controls_layout.addWidget(self.stop_button)
@@ -363,6 +384,7 @@ class SystemDiagnosticsGUI(QMainWindow):
             alerts_layout = QVBoxLayout(alerts_group)
 
             self.alerts_text = QTextEdit()
+            self.alerts_text.setAccessibleName("Recent alerts")
             self.alerts_text.setMaximumHeight(150)
             self.alerts_text.setReadOnly(True)
             self.alerts_text.setPlainText("No alerts at this time.")
@@ -456,6 +478,7 @@ class SystemDiagnosticsGUI(QMainWindow):
             info_layout = QVBoxLayout(info_group)
 
             self.system_info_text = QTextEdit()
+            self.system_info_text.setAccessibleName("Detailed system information")
             self.system_info_text.setReadOnly(True)
             self.system_info_text.setPlainText("Loading system information...")
             info_layout.addWidget(self.system_info_text)
@@ -475,7 +498,8 @@ class SystemDiagnosticsGUI(QMainWindow):
             ]
 
             for i, (text, callback) in enumerate(tools):
-                button = QPushButton(text)
+                _SB2 = SecondaryButton if SecondaryButton else QPushButton
+                button = _SB2(text)
                 button.clicked.connect(callback)
                 tools_layout.addWidget(button, i // 2, i % 2)
 
@@ -502,10 +526,7 @@ class SystemDiagnosticsGUI(QMainWindow):
 
             # Title
             title_label = QLabel(title)
-            title_font = QFont()
-            title_font.setPointSize(14)
-            title_font.setBold(True)
-            title_label.setFont(title_font)
+            title_label.setFont(Typography.h2())
             title_label.setAlignment(Qt.AlignCenter)
             layout.addWidget(title_label)
 
@@ -810,12 +831,17 @@ class SystemDiagnosticsGUI(QMainWindow):
         try:
             self.status_label.setText("Running system check...")
             # Placeholder for system check implementation
-            QMessageBox.information(
-                self,
-                "System Check",
-                "System check completed successfully.\n\n"
-                "No critical issues detected.",
-            )
+            if ToastNotification:
+                ToastNotification(parent=self).show_message(
+                    "System check completed \u2014 no critical issues detected.",
+                    "success",
+                )
+            else:
+                QMessageBox.information(
+                    self,
+                    "System Check",
+                    "System check completed successfully.\n\nNo critical issues detected.",
+                )
             self.status_label.setText("System check completed")
 
         except Exception as e:
@@ -827,12 +853,16 @@ class SystemDiagnosticsGUI(QMainWindow):
         try:
             self.status_label.setText("Checking disk space...")
             # Placeholder for disk space check implementation
-            QMessageBox.information(
-                self,
-                "Disk Space Check",
-                "Disk space check completed.\n\n"
-                "All drives have sufficient free space.",
-            )
+            if ToastNotification:
+                ToastNotification(parent=self).show_message(
+                    "Disk space check completed \u2014 all drives OK.", "success"
+                )
+            else:
+                QMessageBox.information(
+                    self,
+                    "Disk Space Check",
+                    "Disk space check completed.\n\nAll drives have sufficient free space.",
+                )
             self.status_label.setText("Disk space check completed")
 
         except Exception as e:
@@ -844,11 +874,16 @@ class SystemDiagnosticsGUI(QMainWindow):
         try:
             self.status_label.setText("Running memory test...")
             # Placeholder for memory test implementation
-            QMessageBox.information(
-                self,
-                "Memory Test",
-                "Memory test completed successfully.\n\n" "No memory issues detected.",
-            )
+            if ToastNotification:
+                ToastNotification(parent=self).show_message(
+                    "Memory test completed \u2014 no issues detected.", "success"
+                )
+            else:
+                QMessageBox.information(
+                    self,
+                    "Memory Test",
+                    "Memory test completed successfully.\n\nNo memory issues detected.",
+                )
             self.status_label.setText("Memory test completed")
 
         except Exception as e:
@@ -860,12 +895,18 @@ class SystemDiagnosticsGUI(QMainWindow):
         try:
             self.status_label.setText("Running performance benchmark...")
             # Placeholder for performance benchmark implementation
-            QMessageBox.information(
-                self,
-                "Performance Benchmark",
-                "Performance benchmark completed.\n\n"
-                "System performance is within normal parameters.",
-            )
+            if ToastNotification:
+                ToastNotification(parent=self).show_message(
+                    "Performance benchmark completed \u2014 within normal parameters.",
+                    "success",
+                )
+            else:
+                QMessageBox.information(
+                    self,
+                    "Performance Benchmark",
+                    "Performance benchmark completed.\n\n"
+                    "System performance is within normal parameters.",
+                )
             self.status_label.setText("Performance benchmark completed")
 
         except Exception as e:
@@ -900,11 +941,16 @@ class SystemDiagnosticsGUI(QMainWindow):
                     f.write("- Battery Health: Good\n")
                     f.write("- System Stability: Stable\n")
 
-                QMessageBox.information(
-                    self,
-                    "Export Complete",
-                    f"Diagnostic report exported to:\n{filename}",
-                )
+                if ToastNotification:
+                    ToastNotification(parent=self).show_message(
+                        f"Diagnostic report exported to: {filename}", "success"
+                    )
+                else:
+                    QMessageBox.information(
+                        self,
+                        "Export Complete",
+                        f"Diagnostic report exported to:\n{filename}",
+                    )
 
         except Exception as e:
             self.logger.error(f"Error exporting report: {e}")
@@ -913,9 +959,7 @@ class SystemDiagnosticsGUI(QMainWindow):
     def show_about_dialog(self):
         """Show about dialog."""
         try:
-            QMessageBox.about(
-                self,
-                "About System Diagnostics",
+            _about_text = (
                 "System Diagnostics Tool\n"
                 "Part of Richard's File Utilities\n\n"
                 "Version: 1.0.0\n"
@@ -926,8 +970,14 @@ class SystemDiagnosticsGUI(QMainWindow):
                 "• Battery health analysis\n"
                 "• System information display\n"
                 "• Real-time monitoring\n"
-                "• Diagnostic reporting",
+                "• Diagnostic reporting"
             )
+            if Modal:
+                Modal(
+                    "About System Diagnostics", _about_text, ["OK"], parent=self
+                ).exec_()
+            else:
+                QMessageBox.about(self, "About System Diagnostics", _about_text)
 
         except Exception as e:
             self.logger.error(f"Error showing about dialog: {e}")
@@ -940,7 +990,10 @@ class SystemDiagnosticsGUI(QMainWindow):
             message: Error message
         """
         try:
-            QMessageBox.critical(self, title, message)
+            if Modal:
+                Modal(title, message, ["OK"], parent=self).exec_()
+            else:
+                QMessageBox.critical(self, title, message)
         except Exception as e:
             self.logger.error(f"Error showing error message: {e}")
 

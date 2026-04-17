@@ -7,7 +7,6 @@ RESULTS_READY_TEXT = "Network connectivity tools ready. Select a tool above to b
 THIS_TOOL_WILL_PROVIDE_TEXT = "This tool will provide:"
 
 try:
-    from src.gui.themes import token
     from PyQt5.QtWidgets import (
         QApplication,
         QGroupBox,
@@ -23,6 +22,8 @@ try:
         QVBoxLayout,
         QWidget,
     )
+
+    from src.gui.themes import token
 except ImportError:
     print("PyQt5 not available. Please install PyQt5.")
     sys.exit(1)
@@ -134,6 +135,8 @@ class NetworkConnectivityGUI(StandardWindow):
         bandwidth_layout = QVBoxLayout(bandwidth_group)
 
         bandwidth_button = QPushButton("Start Bandwidth Monitoring")
+        bandwidth_button.setAccessibleName("Start bandwidth monitoring")
+        bandwidth_button.setMinimumHeight(44)
         bandwidth_button.clicked.connect(self.start_bandwidth_monitor)
         bandwidth_layout.addWidget(bandwidth_button)
 
@@ -148,6 +151,7 @@ class NetworkConnectivityGUI(StandardWindow):
         target_layout = QHBoxLayout()
         target_layout.addWidget(QLabel("Target:"))
         self.target_input = QLineEdit()
+        self.target_input.setAccessibleName("Target host for port scan")
         self.target_input.setPlaceholderText("Enter IP address or hostname")
         target_layout.addWidget(self.target_input)
         scanner_layout.addLayout(target_layout)
@@ -155,17 +159,23 @@ class NetworkConnectivityGUI(StandardWindow):
         port_layout = QHBoxLayout()
         port_layout.addWidget(QLabel("Port Range:"))
         self.start_port = QSpinBox()
+        self.start_port.setAccessibleName("Start port number")
+        self.start_port.setMinimumHeight(44)
         self.start_port.setRange(1, 65535)
         self.start_port.setValue(1)
         port_layout.addWidget(self.start_port)
         port_layout.addWidget(QLabel("to"))
         self.end_port = QSpinBox()
+        self.end_port.setAccessibleName("End port number")
+        self.end_port.setMinimumHeight(44)
         self.end_port.setRange(1, 65535)
         self.end_port.setValue(1000)
         port_layout.addWidget(self.end_port)
         scanner_layout.addLayout(port_layout)
 
         scan_button = QPushButton("Start Port Scan")
+        scan_button.setAccessibleName("Start port scan")
+        scan_button.setMinimumHeight(44)
         scan_button.clicked.connect(self.start_port_scan)
         scanner_layout.addWidget(scan_button)
 
@@ -175,6 +185,8 @@ class NetworkConnectivityGUI(StandardWindow):
         wifi_layout = QVBoxLayout(wifi_group)
 
         wifi_button = QPushButton("Analyze WiFi Networks")
+        wifi_button.setAccessibleName("Analyze WiFi networks")
+        wifi_button.setMinimumHeight(44)
         wifi_button.clicked.connect(self.analyze_wifi)
         wifi_layout.addWidget(wifi_button)
 
@@ -186,6 +198,7 @@ class NetworkConnectivityGUI(StandardWindow):
         results_layout = QVBoxLayout(results_group)
 
         self.results_text = QTextEdit()
+        self.results_text.setAccessibleName("Network connectivity scan results")
         self.results_text.setReadOnly(True)
         self.results_text.setPlainText(RESULTS_READY_TEXT)
         results_layout.addWidget(self.results_text)

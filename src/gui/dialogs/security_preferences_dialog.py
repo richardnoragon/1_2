@@ -106,6 +106,8 @@ try:
 
             # Create main tab widget
             self.tab_widget = QTabWidget()
+            self.tab_widget.setAccessibleName("Security preferences tabs")
+            self.tab_widget.setMinimumHeight(44)
             layout.addWidget(self.tab_widget)
 
             # Create tabs
@@ -129,14 +131,20 @@ try:
 
             # Action buttons
             self.test_security_btn = QPushButton("🧪 Test Security Features")
+            self.test_security_btn.setAccessibleName("Test security features")
+            self.test_security_btn.setMinimumHeight(44)
             self.test_security_btn.clicked.connect(self.test_security_features)
             button_layout.addWidget(self.test_security_btn)
 
             self.export_config_btn = QPushButton("📤 Export Security Config")
+            self.export_config_btn.setAccessibleName("Export security configuration")
+            self.export_config_btn.setMinimumHeight(44)
             self.export_config_btn.clicked.connect(self.export_security_config)
             button_layout.addWidget(self.export_config_btn)
 
             self.import_config_btn = QPushButton("📥 Import Security Config")
+            self.import_config_btn.setAccessibleName("Import security configuration")
+            self.import_config_btn.setMinimumHeight(44)
             self.import_config_btn.clicked.connect(self.import_security_config)
             button_layout.addWidget(self.import_config_btn)
 
@@ -144,14 +152,20 @@ try:
 
             # Standard dialog buttons
             self.apply_btn = QPushButton("Apply")
+            self.apply_btn.setAccessibleName("Apply security settings")
+            self.apply_btn.setMinimumHeight(44)
             self.apply_btn.clicked.connect(self.apply_settings)
             button_layout.addWidget(self.apply_btn)
 
             self.ok_btn = QPushButton("OK")
+            self.ok_btn.setAccessibleName("Accept and close security preferences")
+            self.ok_btn.setMinimumHeight(44)
             self.ok_btn.clicked.connect(self.accept_settings)
             button_layout.addWidget(self.ok_btn)
 
             self.cancel_btn = QPushButton("Cancel")
+            self.cancel_btn.setAccessibleName("Cancel security preferences")
+            self.cancel_btn.setMinimumHeight(44)
             self.cancel_btn.clicked.connect(self.reject)
             button_layout.addWidget(self.cancel_btn)
 
@@ -211,6 +225,10 @@ try:
             quick_actions_layout.addWidget(QLabel("Quick Actions:"))
 
             self.emergency_disable_btn = QPushButton("🚨 Emergency Disable All")
+            self.emergency_disable_btn.setAccessibleName(
+                "Emergency disable all security features"
+            )
+            self.emergency_disable_btn.setMinimumHeight(44)
             self.emergency_disable_btn.setStyleSheet(
                 f"background-color: {token('semantic_error')}; color: white;"
             )
@@ -218,6 +236,8 @@ try:
             quick_actions_layout.addWidget(self.emergency_disable_btn)
 
             self.refresh_status_btn = QPushButton("🔄 Refresh Status")
+            self.refresh_status_btn.setAccessibleName("Refresh security status")
+            self.refresh_status_btn.setMinimumHeight(44)
             self.refresh_status_btn.clicked.connect(self.refresh_security_status)
             quick_actions_layout.addWidget(self.refresh_status_btn)
 
@@ -242,33 +262,49 @@ try:
 
             # Target version selection
             self.target_version_combo = QComboBox()
+            self.target_version_combo.setAccessibleName("Target migration version")
+            self.target_version_combo.setMinimumHeight(44)
             self.target_version_combo.addItems(["001", "002", "003", "Latest"])
             migration_layout.addRow("Target Version:", self.target_version_combo)
 
             # Migration options
             self.backup_before_migration = QCheckBox("Create backup before migration")
+            self.backup_before_migration.setAccessibleName(
+                "Create backup before migration"
+            )
+            self.backup_before_migration.setMinimumHeight(44)
             self.backup_before_migration.setChecked(True)
             migration_layout.addRow(self.backup_before_migration)
 
             self.validate_migration = QCheckBox("Validate migration integrity")
+            self.validate_migration.setAccessibleName("Validate migration integrity")
+            self.validate_migration.setMinimumHeight(44)
             self.validate_migration.setChecked(True)
             migration_layout.addRow(self.validate_migration)
 
             self.auto_rollback = QCheckBox("Auto-rollback on failure")
+            self.auto_rollback.setAccessibleName("Auto-rollback on failure")
+            self.auto_rollback.setMinimumHeight(44)
             self.auto_rollback.setChecked(True)
             migration_layout.addRow(self.auto_rollback)
 
             # Migration actions
             migration_actions = QHBoxLayout()
             self.execute_migration_btn = QPushButton("🔄 Execute Migration")
+            self.execute_migration_btn.setAccessibleName("Execute database migration")
+            self.execute_migration_btn.setMinimumHeight(44)
             self.execute_migration_btn.clicked.connect(self.execute_migration)
             migration_actions.addWidget(self.execute_migration_btn)
 
             self.rollback_migration_btn = QPushButton("↩️ Rollback Migration")
+            self.rollback_migration_btn.setAccessibleName("Rollback database migration")
+            self.rollback_migration_btn.setMinimumHeight(44)
             self.rollback_migration_btn.clicked.connect(self.rollback_migration)
             migration_actions.addWidget(self.rollback_migration_btn)
 
             self.validate_schema_btn = QPushButton("✅ Validate Schema")
+            self.validate_schema_btn.setAccessibleName("Validate database schema")
+            self.validate_schema_btn.setMinimumHeight(44)
             self.validate_schema_btn.clicked.connect(self.validate_schema)
             migration_actions.addWidget(self.validate_schema_btn)
 
@@ -281,6 +317,7 @@ try:
             history_layout = QVBoxLayout(history_group)
 
             self.migration_history_table = QTableWidget(0, 5)
+            self.migration_history_table.setAccessibleName("Migration history")
             self.migration_history_table.setHorizontalHeaderLabels(
                 ["Version", "Status", "Timestamp", "Duration", "Notes"]
             )
@@ -297,6 +334,7 @@ try:
             progress_layout.addWidget(self.migration_progress_bar)
 
             self.migration_status_text = QTextEdit()
+            self.migration_status_text.setAccessibleName("Migration status output")
             self.migration_status_text.setMaximumHeight(100)
             self.migration_status_text.setReadOnly(True)
             progress_layout.addWidget(self.migration_status_text)
@@ -316,10 +354,16 @@ try:
 
             # Enable theme encryption
             self.enable_theme_encryption = QCheckBox("Enable theme data encryption")
+            self.enable_theme_encryption.setAccessibleName(
+                "Enable theme data encryption"
+            )
+            self.enable_theme_encryption.setMinimumHeight(44)
             encryption_layout.addRow(self.enable_theme_encryption)
 
             # Encryption algorithm selection
             self.encryption_algorithm_combo = QComboBox()
+            self.encryption_algorithm_combo.setAccessibleName("Encryption algorithm")
+            self.encryption_algorithm_combo.setMinimumHeight(44)
             self.encryption_algorithm_combo.addItems(
                 [
                     "AES-256-GCM (Recommended)",
@@ -333,6 +377,8 @@ try:
 
             # Key derivation settings
             self.key_derivation_combo = QComboBox()
+            self.key_derivation_combo.setAccessibleName("Key derivation function")
+            self.key_derivation_combo.setMinimumHeight(44)
             self.key_derivation_combo.addItems(
                 [
                     "PBKDF2-SHA256 (Recommended)",
@@ -345,6 +391,8 @@ try:
 
             # Key derivation iterations
             self.kdf_iterations = QSpinBox()
+            self.kdf_iterations.setAccessibleName("Key derivation function iterations")
+            self.kdf_iterations.setMinimumHeight(44)
             self.kdf_iterations.setRange(10000, 1000000)
             self.kdf_iterations.setValue(100000)
             self.kdf_iterations.setSuffix(" iterations")
@@ -353,14 +401,20 @@ try:
             # Theme encryption actions
             theme_actions = QHBoxLayout()
             self.encrypt_themes_btn = QPushButton("🔒 Encrypt All Themes")
+            self.encrypt_themes_btn.setAccessibleName("Encrypt all themes")
+            self.encrypt_themes_btn.setMinimumHeight(44)
             self.encrypt_themes_btn.clicked.connect(self.encrypt_all_themes)
             theme_actions.addWidget(self.encrypt_themes_btn)
 
             self.decrypt_themes_btn = QPushButton("🔓 Decrypt All Themes")
+            self.decrypt_themes_btn.setAccessibleName("Decrypt all themes")
+            self.decrypt_themes_btn.setMinimumHeight(44)
             self.decrypt_themes_btn.clicked.connect(self.decrypt_all_themes)
             theme_actions.addWidget(self.decrypt_themes_btn)
 
             self.test_encryption_btn = QPushButton("🧪 Test Encryption")
+            self.test_encryption_btn.setAccessibleName("Test theme encryption")
+            self.test_encryption_btn.setMinimumHeight(44)
             self.test_encryption_btn.clicked.connect(self.test_theme_encryption)
             theme_actions.addWidget(self.test_encryption_btn)
 
@@ -376,11 +430,19 @@ try:
             self.enable_corruption_detection = QCheckBox(
                 "Enable automatic corruption detection"
             )
+            self.enable_corruption_detection.setAccessibleName(
+                "Enable automatic corruption detection"
+            )
+            self.enable_corruption_detection.setMinimumHeight(44)
             self.enable_corruption_detection.setChecked(True)
             corruption_layout.addRow(self.enable_corruption_detection)
 
             # Corruption check frequency
             self.corruption_check_frequency = QComboBox()
+            self.corruption_check_frequency.setAccessibleName(
+                "Corruption check frequency"
+            )
+            self.corruption_check_frequency.setMinimumHeight(44)
             self.corruption_check_frequency.addItems(
                 [
                     "On each theme access",
@@ -396,6 +458,10 @@ try:
 
             # Corruption recovery strategy
             self.corruption_recovery_strategy = QComboBox()
+            self.corruption_recovery_strategy.setAccessibleName(
+                "Corruption recovery strategy"
+            )
+            self.corruption_recovery_strategy.setMinimumHeight(44)
             self.corruption_recovery_strategy.addItems(
                 [
                     "Auto-restore from backup",
@@ -411,10 +477,14 @@ try:
             # Corruption actions
             corruption_actions = QHBoxLayout()
             self.scan_corruption_btn = QPushButton("🔍 Scan for Corruption")
+            self.scan_corruption_btn.setAccessibleName("Scan for theme corruption")
+            self.scan_corruption_btn.setMinimumHeight(44)
             self.scan_corruption_btn.clicked.connect(self.scan_theme_corruption)
             corruption_actions.addWidget(self.scan_corruption_btn)
 
             self.repair_corruption_btn = QPushButton("🔧 Repair Corruption")
+            self.repair_corruption_btn.setAccessibleName("Repair theme corruption")
+            self.repair_corruption_btn.setMinimumHeight(44)
             self.repair_corruption_btn.clicked.connect(self.repair_theme_corruption)
             corruption_actions.addWidget(self.repair_corruption_btn)
 
@@ -427,6 +497,7 @@ try:
             status_layout = QVBoxLayout(status_group)
 
             self.theme_security_status = QTextEdit()
+            self.theme_security_status.setAccessibleName("Theme security status")
             self.theme_security_status.setMaximumHeight(150)
             self.theme_security_status.setReadOnly(True)
             status_layout.addWidget(self.theme_security_status)
@@ -448,6 +519,10 @@ try:
             self.enable_directory_security = QCheckBox(
                 "Enable directory access control"
             )
+            self.enable_directory_security.setAccessibleName(
+                "Enable directory access control"
+            )
+            self.enable_directory_security.setMinimumHeight(44)
             access_layout.addRow(self.enable_directory_security)
 
             # Protected directories list
@@ -455,6 +530,9 @@ try:
             protected_dirs_layout.addWidget(QLabel("Protected Directories:"))
 
             self.protected_directories_list = QTreeWidget()
+            self.protected_directories_list.setAccessibleName(
+                "Protected directories list"
+            )
             self.protected_directories_list.setHeaderLabels(
                 ["Directory", "Access Level", "Status"]
             )
@@ -463,16 +541,26 @@ try:
             # Directory management buttons
             dir_buttons = QHBoxLayout()
             self.add_protected_dir_btn = QPushButton("➕ Add Directory")
+            self.add_protected_dir_btn.setAccessibleName("Add protected directory")
+            self.add_protected_dir_btn.setMinimumHeight(44)
             self.add_protected_dir_btn.clicked.connect(self.add_protected_directory)
             dir_buttons.addWidget(self.add_protected_dir_btn)
 
             self.remove_protected_dir_btn = QPushButton("➖ Remove Directory")
+            self.remove_protected_dir_btn.setAccessibleName(
+                "Remove selected protected directory"
+            )
+            self.remove_protected_dir_btn.setMinimumHeight(44)
             self.remove_protected_dir_btn.clicked.connect(
                 self.remove_protected_directory
             )
             dir_buttons.addWidget(self.remove_protected_dir_btn)
 
             self.edit_dir_permissions_btn = QPushButton("✏️ Edit Permissions")
+            self.edit_dir_permissions_btn.setAccessibleName(
+                "Edit directory permissions"
+            )
+            self.edit_dir_permissions_btn.setMinimumHeight(44)
             self.edit_dir_permissions_btn.clicked.connect(
                 self.edit_directory_permissions
             )
@@ -491,10 +579,18 @@ try:
             self.enable_directory_monitoring = QCheckBox(
                 "Enable directory change monitoring"
             )
+            self.enable_directory_monitoring.setAccessibleName(
+                "Enable directory change monitoring"
+            )
+            self.enable_directory_monitoring.setMinimumHeight(44)
             monitoring_layout.addRow(self.enable_directory_monitoring)
 
             # Monitoring sensitivity
             self.monitoring_sensitivity = QSlider(Qt.Horizontal)
+            self.monitoring_sensitivity.setAccessibleName(
+                "Directory monitoring sensitivity"
+            )
+            self.monitoring_sensitivity.setMinimumHeight(44)
             self.monitoring_sensitivity.setRange(1, 5)
             self.monitoring_sensitivity.setValue(3)
             self.monitoring_sensitivity.setTickPosition(QSlider.TicksBelow)
@@ -513,10 +609,16 @@ try:
             self.alert_on_unauthorized_access = QCheckBox(
                 "Alert on unauthorized access attempts"
             )
+            self.alert_on_unauthorized_access.setAccessibleName(
+                "Alert on unauthorized access attempts"
+            )
+            self.alert_on_unauthorized_access.setMinimumHeight(44)
             self.alert_on_unauthorized_access.setChecked(True)
             monitoring_layout.addRow(self.alert_on_unauthorized_access)
 
             self.log_directory_access = QCheckBox("Log all directory access")
+            self.log_directory_access.setAccessibleName("Log all directory access")
+            self.log_directory_access.setMinimumHeight(44)
             self.log_directory_access.setChecked(True)
             monitoring_layout.addRow(self.log_directory_access)
 
@@ -527,16 +629,21 @@ try:
             log_layout = QVBoxLayout(log_group)
 
             self.directory_security_log = QTextEdit()
+            self.directory_security_log.setAccessibleName("Directory security log")
             self.directory_security_log.setMaximumHeight(150)
             self.directory_security_log.setReadOnly(True)
             log_layout.addWidget(self.directory_security_log)
 
             log_buttons = QHBoxLayout()
             self.clear_log_btn = QPushButton("🗑️ Clear Log")
+            self.clear_log_btn.setAccessibleName("Clear directory security log")
+            self.clear_log_btn.setMinimumHeight(44)
             self.clear_log_btn.clicked.connect(self.clear_directory_log)
             log_buttons.addWidget(self.clear_log_btn)
 
             self.export_log_btn = QPushButton("📤 Export Log")
+            self.export_log_btn.setAccessibleName("Export directory security log")
+            self.export_log_btn.setMinimumHeight(44)
             self.export_log_btn.clicked.connect(self.export_directory_log)
             log_buttons.addWidget(self.export_log_btn)
 
@@ -560,11 +667,17 @@ try:
             self.enable_audit_logging = QCheckBox(
                 "Enable comprehensive security audit logging"
             )
+            self.enable_audit_logging.setAccessibleName(
+                "Enable comprehensive security audit logging"
+            )
+            self.enable_audit_logging.setMinimumHeight(44)
             self.enable_audit_logging.setChecked(True)
             config_layout.addRow(self.enable_audit_logging)
 
             # Audit log level
             self.audit_log_level = QComboBox()
+            self.audit_log_level.setAccessibleName("Audit log level")
+            self.audit_log_level.setMinimumHeight(44)
             self.audit_log_level.addItems(
                 ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
             )
@@ -587,6 +700,8 @@ try:
 
             for category in categories:
                 checkbox = QCheckBox(category)
+                checkbox.setAccessibleName(category)
+                checkbox.setMinimumHeight(44)
                 checkbox.setChecked(True)
                 self.audit_categories[category] = checkbox
                 categories_layout.addWidget(checkbox)
@@ -595,12 +710,18 @@ try:
 
             # Audit log rotation
             self.audit_log_max_size = QSpinBox()
+            self.audit_log_max_size.setAccessibleName(
+                "Maximum audit log size in megabytes"
+            )
+            self.audit_log_max_size.setMinimumHeight(44)
             self.audit_log_max_size.setRange(1, 1000)
             self.audit_log_max_size.setValue(50)
             self.audit_log_max_size.setSuffix(" MB")
             config_layout.addRow("Max Log Size:", self.audit_log_max_size)
 
             self.audit_log_backup_count = QSpinBox()
+            self.audit_log_backup_count.setAccessibleName("Audit log backup file count")
+            self.audit_log_backup_count.setMinimumHeight(44)
             self.audit_log_backup_count.setRange(1, 100)
             self.audit_log_backup_count.setValue(10)
             self.audit_log_backup_count.setSuffix(" files")
@@ -617,10 +738,14 @@ try:
             filter_layout.addWidget(QLabel("Filter:"))
 
             self.audit_filter_category = QComboBox()
+            self.audit_filter_category.setAccessibleName("Filter audit log by category")
+            self.audit_filter_category.setMinimumHeight(44)
             self.audit_filter_category.addItems(["All Categories"] + categories)
             filter_layout.addWidget(self.audit_filter_category)
 
             self.audit_filter_level = QComboBox()
+            self.audit_filter_level.setAccessibleName("Filter audit log by level")
+            self.audit_filter_level.setMinimumHeight(44)
             self.audit_filter_level.addItems(
                 ["All Levels", "DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
             )
@@ -631,6 +756,8 @@ try:
             filter_layout.addWidget(self.audit_filter_date)
 
             self.apply_filter_btn = QPushButton("Apply Filter")
+            self.apply_filter_btn.setAccessibleName("Apply audit log filter")
+            self.apply_filter_btn.setMinimumHeight(44)
             self.apply_filter_btn.clicked.connect(self.apply_audit_filter)
             filter_layout.addWidget(self.apply_filter_btn)
 
@@ -639,6 +766,7 @@ try:
 
             # Audit log display
             self.audit_log_table = QTableWidget(0, 6)
+            self.audit_log_table.setAccessibleName("Audit log entries")
             self.audit_log_table.setHorizontalHeaderLabels(
                 ["Timestamp", "Level", "Category", "Event", "User", "Details"]
             )
@@ -648,14 +776,20 @@ try:
             # Audit actions
             audit_actions = QHBoxLayout()
             self.refresh_audit_log_btn = QPushButton("🔄 Refresh")
+            self.refresh_audit_log_btn.setAccessibleName("Refresh audit log")
+            self.refresh_audit_log_btn.setMinimumHeight(44)
             self.refresh_audit_log_btn.clicked.connect(self.refresh_audit_log)
             audit_actions.addWidget(self.refresh_audit_log_btn)
 
             self.export_audit_log_btn = QPushButton("📤 Export Log")
+            self.export_audit_log_btn.setAccessibleName("Export audit log")
+            self.export_audit_log_btn.setMinimumHeight(44)
             self.export_audit_log_btn.clicked.connect(self.export_audit_log)
             audit_actions.addWidget(self.export_audit_log_btn)
 
             self.clear_audit_log_btn = QPushButton("🗑️ Clear Log")
+            self.clear_audit_log_btn.setAccessibleName("Clear audit log")
+            self.clear_audit_log_btn.setMinimumHeight(44)
             self.clear_audit_log_btn.clicked.connect(self.clear_audit_log)
             audit_actions.addWidget(self.clear_audit_log_btn)
 
@@ -730,6 +864,7 @@ try:
             alerts_layout = QVBoxLayout(alerts_group)
 
             self.security_alerts_list = QTreeWidget()
+            self.security_alerts_list.setAccessibleName("Security alerts list")
             self.security_alerts_list.setHeaderLabels(
                 ["Severity", "Category", "Message", "Timestamp"]
             )
@@ -737,10 +872,14 @@ try:
 
             alerts_actions = QHBoxLayout()
             self.dismiss_alert_btn = QPushButton("✅ Dismiss Selected")
+            self.dismiss_alert_btn.setAccessibleName("Dismiss selected security alert")
+            self.dismiss_alert_btn.setMinimumHeight(44)
             self.dismiss_alert_btn.clicked.connect(self.dismiss_security_alert)
             alerts_actions.addWidget(self.dismiss_alert_btn)
 
             self.dismiss_all_alerts_btn = QPushButton("✅ Dismiss All")
+            self.dismiss_all_alerts_btn.setAccessibleName("Dismiss all security alerts")
+            self.dismiss_all_alerts_btn.setMinimumHeight(44)
             self.dismiss_all_alerts_btn.clicked.connect(self.dismiss_all_alerts)
             alerts_actions.addWidget(self.dismiss_all_alerts_btn)
 
@@ -762,6 +901,8 @@ try:
 
             # Security profile selection
             self.security_profile = QComboBox()
+            self.security_profile.setAccessibleName("Security profile")
+            self.security_profile.setMinimumHeight(44)
             self.security_profile.addItems(
                 [
                     "Minimal (Basic protection)",
@@ -779,6 +920,7 @@ try:
 
             # Profile description
             self.profile_description = QTextEdit()
+            self.profile_description.setAccessibleName("Security profile description")
             self.profile_description.setMaximumHeight(80)
             self.profile_description.setReadOnly(True)
             profiles_layout.addRow("Profile Description:", self.profile_description)
@@ -791,6 +933,8 @@ try:
 
             # Security timeouts
             self.session_timeout = QSpinBox()
+            self.session_timeout.setAccessibleName("Session timeout in minutes")
+            self.session_timeout.setMinimumHeight(44)
             self.session_timeout.setRange(5, 1440)  # 5 minutes to 24 hours
             self.session_timeout.setValue(60)
             self.session_timeout.setSuffix(" minutes")
@@ -798,6 +942,8 @@ try:
 
             # Security validation frequency
             self.validation_frequency = QComboBox()
+            self.validation_frequency.setAccessibleName("Security validation frequency")
+            self.validation_frequency.setMinimumHeight(44)
             self.validation_frequency.addItems(
                 [
                     "Continuous",
@@ -812,11 +958,15 @@ try:
 
             # Memory security
             self.secure_memory_wiping = QCheckBox("Enable secure memory wiping")
+            self.secure_memory_wiping.setAccessibleName("Enable secure memory wiping")
+            self.secure_memory_wiping.setMinimumHeight(44)
             self.secure_memory_wiping.setChecked(True)
             advanced_layout.addRow(self.secure_memory_wiping)
 
             # Debug mode
             self.security_debug_mode = QCheckBox("Enable security debug mode")
+            self.security_debug_mode.setAccessibleName("Enable security debug mode")
+            self.security_debug_mode.setMinimumHeight(44)
             advanced_layout.addRow(self.security_debug_mode)
 
             layout.addWidget(advanced_group)
@@ -830,6 +980,8 @@ try:
             emergency_buttons = QGridLayout()
 
             self.lockdown_btn = QPushButton("🔒 Security Lockdown")
+            self.lockdown_btn.setAccessibleName("Activate security lockdown")
+            self.lockdown_btn.setMinimumHeight(44)
             self.lockdown_btn.setStyleSheet(
                 f"background-color: {token('semantic_error')}; color: white;"
             )
@@ -837,10 +989,14 @@ try:
             emergency_buttons.addWidget(self.lockdown_btn, 0, 0)
 
             self.force_backup_btn = QPushButton("💾 Force Backup")
+            self.force_backup_btn.setAccessibleName("Force security backup")
+            self.force_backup_btn.setMinimumHeight(44)
             self.force_backup_btn.clicked.connect(self.force_security_backup)
             emergency_buttons.addWidget(self.force_backup_btn, 0, 1)
 
             self.reset_security_btn = QPushButton("🔄 Reset Security")
+            self.reset_security_btn.setAccessibleName("Reset security settings")
+            self.reset_security_btn.setMinimumHeight(44)
             self.reset_security_btn.setStyleSheet(
                 f"background-color: {token('color_orange_badge')}; color: white;"
             )
@@ -848,6 +1004,8 @@ try:
             emergency_buttons.addWidget(self.reset_security_btn, 1, 0)
 
             self.security_audit_btn = QPushButton("🔍 Security Audit")
+            self.security_audit_btn.setAccessibleName("Run security audit")
+            self.security_audit_btn.setMinimumHeight(44)
             self.security_audit_btn.clicked.connect(self.run_security_audit)
             emergency_buttons.addWidget(self.security_audit_btn, 1, 1)
 

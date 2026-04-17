@@ -1,35 +1,37 @@
-#!/usr/bin/env python3
 """
 Simple System Information Tool for Richard's File Utilities
 
 A comprehensive system information viewer with hardware and software details.
 """
 
-import sys
+import logging
 import os
 import platform
-import psutil
+import sys
 from datetime import datetime, timedelta
 
+import psutil
+
 try:
-    from src.gui.themes import token, Typography
-    from PyQt5.QtWidgets import (
-        QMainWindow,
-        QWidget,
-        QVBoxLayout,
-        QHBoxLayout,
-        QPushButton,
-        QLabel,
-        QTextEdit,
-        QApplication,
-        QMessageBox,
-        QGroupBox,
-        QTabWidget,
-        QGridLayout,
-        QProgressBar,
-    )
-    from PyQt5.QtCore import Qt, QThread, pyqtSignal, QTimer
+    from PyQt5.QtCore import Qt, QThread, QTimer, pyqtSignal
     from PyQt5.QtGui import QFont
+    from PyQt5.QtWidgets import (
+        QApplication,
+        QGridLayout,
+        QGroupBox,
+        QHBoxLayout,
+        QLabel,
+        QMainWindow,
+        QMessageBox,
+        QProgressBar,
+        QPushButton,
+        QTabWidget,
+        QTextEdit,
+        QVBoxLayout,
+        QWidget,
+    )
+
+    from src.gui.themes import ThemeManager, Typography, token
 except ImportError:
     print("PyQt5 not available. Please install PyQt5.")
     sys.exit(1)
@@ -55,9 +57,9 @@ class SystemInfoWorker(QThread):
                 "Processor": platform.processor(),
                 "Hostname": platform.node(),
                 "Python Version": platform.python_version(),
-                "Boot Time": datetime.fromtimestamp(
-                    psutil.boot_time()
-                ).strftime("%Y-%m-%d %H:%M:%S"),
+                "Boot Time": datetime.fromtimestamp(psutil.boot_time()).strftime(
+                    "%Y-%m-%d %H:%M:%S"
+                ),
                 "Uptime": str(
                     timedelta(
                         seconds=int(
@@ -75,9 +77,7 @@ class SystemInfoWorker(QThread):
             info["cpu"] = {
                 "Physical Cores": psutil.cpu_count(logical=False),
                 "Logical Cores": psutil.cpu_count(logical=True),
-                "Max Frequency": (
-                    f"{cpu_freq.max:.2f} MHz" if cpu_freq else "N/A"
-                ),
+                "Max Frequency": (f"{cpu_freq.max:.2f} MHz" if cpu_freq else "N/A"),
                 "Current Frequency": (
                     f"{cpu_freq.current:.2f} MHz" if cpu_freq else "N/A"
                 ),
@@ -112,9 +112,7 @@ class SystemInfoWorker(QThread):
                         "Usage": f"{(usage.used / usage.total) * 100:.1f}%",
                     }
                 except PermissionError:
-                    disk_info[f"{partition.device}"] = {
-                        "Error": "Permission denied"
-                    }
+                    disk_info[f"{partition.device}"] = {"Error": "Permission denied"}
             info["disks"] = disk_info
 
             # Network information
@@ -139,10 +137,7 @@ class SystemInfoWorker(QThread):
             ):
                 try:
                     proc_info = proc.info
-                    if (
-                        proc_info["cpu_percent"] > 0
-                        or proc_info["memory_percent"] > 0
-                    ):
+                    if proc_info["cpu_percent"] > 0 or proc_info["memory_percent"] > 0:
                         processes.append(proc_info)
                 except (psutil.NoSuchProcess, psutil.AccessDenied):
                     pass
@@ -151,41 +146,115 @@ class SystemInfoWorker(QThread):
             processes.sort(key=lambda x: x["cpu_percent"], reverse=True)
             info["processes"] = processes[:10]
 
-        except Exception as e:
+        except (
+            Exception
+        ) as e:  # ERR: non-fatal — surfaced via info_ready signal error key
             info["error"] = str(e)
 
         self.info_ready.emit(info)
 
 
+# ---------------------------------------------------------------------------
+# GRD-1a: Guardian registration (graceful no-op when guardian absent)
+# ---------------------------------------------------------------------------
+try:
+    from src.core.guardian import register_gui_component
+except ImportError:
+
+    def register_gui_component(*a, **kw):
+        pass  # noqa: E731
+
+
+# ---------------------------------------------------------------------------
+# TEL: Telemetry helpers (graceful no-op when telemetry absent)
+# ---------------------------------------------------------------------------
+try:
+    from src.gui.telemetry import emit_telemetry
+
+    def _emit_telemetry(event_type, **kw):
+        emit_telemetry(event_type, **kw)  # noqa: E731
+
+except ImportError:
+
+    def _emit_telemetry(*a, **kw):
+        pass  # noqa: E731
+
+
+# ---------------------------------------------------------------------------
+# STR: Centralised string constants with fallback (P1-C15 / STR-1)
+# ---------------------------------------------------------------------------
+try:
+    from src.rfu.ui_strings import SystemInfo as _SysInfoStrings
+except ImportError:
+
+    class _SysInfoStrings:  # type: ignore[no-redef]
+        TITLE = "System Information"
+        WINDOW_TITLE = "System Information — RFU"
+        LOADING = "Loading System Information…"
+        MODAL_ERROR_TITLE = "System Information"
+        ERR_INIT_FAILED = (
+            "Could not start System Information. "
+            "Please try again or restart the application."
+        )
+        ERR_GATHER_FAILED = "Could not gather system information. Please try again."
+        ERR_EXPORT_FAILED = "Could not export system information. Check that you have write permission to the destination."
+
+
+# ---------------------------------------------------------------------------
+# ERR: Modal import (graceful no-op when modal absent)
+# ---------------------------------------------------------------------------
+try:
+    from src.gui.components.buttons import PrimaryButton, SecondaryButton
+    from src.gui.components.loading_indicator import LoadingIndicator
+    from src.gui.components.modal import Modal
+    from src.gui.components.toast import ToastNotification
+
+    _CP_AVAILABLE = True
+except ImportError:
+    Modal = None  # type: ignore[assignment,misc]
+    PrimaryButton = QPushButton
+    SecondaryButton = QPushButton
+    LoadingIndicator = None
+    ToastNotification = None
+    _CP_AVAILABLE = False
+
+
 class SimpleSystemInfoGUI(QMainWindow):
     """Simple System Information GUI."""
 
-    def __init__(self):
+    def __init__(self, hub_instance=None):
         super().__init__()
-        self.setWindowTitle("System Information - Richard's File Utilities")
+        self._hub = hub_instance
+        try:
+            from src.rfu.log_manager import get_log_manager
+
+            self._logger = get_log_manager().get_logger("SimpleSystemInfoGUI")
+        except Exception:
+            self._logger = logging.getLogger("SimpleSystemInfoGUI")
+        self.setWindowTitle(_SysInfoStrings.WINDOW_TITLE)
         self.setMinimumSize(900, 700)
         self.resize(1000, 800)
 
         # Apply basic styling
         self.setStyleSheet(
-            """
-            QMainWindow {
+            f"""
+            QMainWindow {{
                 background-color: {token('surface')};
                 font-family: 'Segoe UI', Arial, sans-serif;
-            }
-            QGroupBox {
+            }}
+            QGroupBox {{
                 font-weight: bold;
                 border: 2px solid {token('border')};
                 border-radius: 5px;
                 margin-top: 1ex;
                 padding-top: 10px;
-            }
-            QGroupBox::title {
+            }}
+            QGroupBox::title {{
                 subcontrol-origin: margin;
                 left: 10px;
                 padding: 0 5px 0 5px;
-            }
-            QPushButton {
+            }}
+            QPushButton {{
                 background-color: {token('accent')};
                 color: white;
                 border: none;
@@ -193,36 +262,36 @@ class SimpleSystemInfoGUI(QMainWindow):
                 font-size: 14px;
                 border-radius: 4px;
                 font-weight: bold;
-            }
-            QPushButton:hover {
+            }}
+            QPushButton:hover {{
                 background-color: {token('button_primary_hover')};
-            }
-            QPushButton:pressed {
+            }}
+            QPushButton:pressed {{
                 background-color: {token('button_primary_pressed')};
-            }
-            QTextEdit {
+            }}
+            QTextEdit {{
                 border: 1px solid {token('border')};
                 border-radius: 4px;
                 padding: 8px;
                 font-family: 'Courier New', monospace;
                 font-size: 11px;
                 background-color: white;
-            }
-            QTabWidget::pane {
+            }}
+            QTabWidget::pane {{
                 border: 1px solid {token('border')};
                 border-radius: 4px;
-            }
-            QTabBar::tab {
+            }}
+            QTabBar::tab {{
                 background-color: {token('background')};
                 padding: 8px 16px;
                 margin-right: 2px;
                 border-top-left-radius: 4px;
                 border-top-right-radius: 4px;
-            }
-            QTabBar::tab:selected {
+            }}
+            QTabBar::tab:selected {{
                 background-color: {token('accent')};
                 color: white;
-            }
+            }}
         """
         )
 
@@ -233,6 +302,30 @@ class SimpleSystemInfoGUI(QMainWindow):
         # Setup auto-refresh timer
         self.timer = QTimer()
         self.timer.timeout.connect(self._load_system_info)
+        register_gui_component(
+            self, tool_id="system_info", recovery_callback=self.degraded_fallback
+        )
+        _emit_telemetry("ui_view_load", tool_id="system_info")
+        ThemeManager.add_theme_changed_callback(self._on_theme_changed)
+
+    def _on_theme_changed(self, variant: str) -> None:
+        """Re-apply token-based stylesheets when the active theme variant changes."""
+        pass  # stylesheets applied at init; live re-apply pending TH-4c/4d
+
+    def health_check(self) -> bool:
+        """Return True if core UI is functional (GRD-3a)."""
+        try:
+            return self.centralWidget() is not None
+        except Exception:
+            return False
+
+    def degraded_fallback(self) -> None:
+        """Enter degraded / read-only state (GRD-3b)."""
+        try:
+            self._logger.warning("SimpleSystemInfoGUI entering degraded mode")
+        except Exception:
+            pass
+        _emit_telemetry("ui_error_event", tool_id="system_info", error_type="degraded")
 
     def _setup_ui(self):
         """Setup the user interface."""
@@ -249,16 +342,16 @@ class SimpleSystemInfoGUI(QMainWindow):
         # Control buttons
         button_layout = QHBoxLayout()
 
-        self.refresh_btn = QPushButton("🔄 Refresh")
+        self.refresh_btn = PrimaryButton("🔄 Refresh")
         self.refresh_btn.clicked.connect(self._load_system_info)
         button_layout.addWidget(self.refresh_btn)
 
-        self.auto_refresh_btn = QPushButton("⏱️ Auto Refresh (5s)")
+        self.auto_refresh_btn = SecondaryButton("⏱️ Auto Refresh (5s)")
         self.auto_refresh_btn.clicked.connect(self._toggle_auto_refresh)
         self.auto_refresh_btn.setCheckable(True)
         button_layout.addWidget(self.auto_refresh_btn)
 
-        self.export_btn = QPushButton("💾 Export Info")
+        self.export_btn = SecondaryButton("💾 Export Info")
         self.export_btn.clicked.connect(self._export_info)
         button_layout.addWidget(self.export_btn)
 
@@ -267,36 +360,51 @@ class SimpleSystemInfoGUI(QMainWindow):
 
         # Tab widget for different information categories
         self.tab_widget = QTabWidget()
+        self.tab_widget.setAccessibleName("System information tabs")
         layout.addWidget(self.tab_widget)
 
         # System tab
         self.system_text = QTextEdit()
+        self.system_text.setAccessibleName("System information")
         self.system_text.setReadOnly(True)
         self.tab_widget.addTab(self.system_text, "System")
 
         # Hardware tab
         self.hardware_text = QTextEdit()
+        self.hardware_text.setAccessibleName("Hardware information")
         self.hardware_text.setReadOnly(True)
         self.tab_widget.addTab(self.hardware_text, "Hardware")
 
         # Storage tab
         self.storage_text = QTextEdit()
+        self.storage_text.setAccessibleName("Storage information")
         self.storage_text.setReadOnly(True)
         self.tab_widget.addTab(self.storage_text, "Storage")
 
         # Network tab
         self.network_text = QTextEdit()
+        self.network_text.setAccessibleName("Network information")
         self.network_text.setReadOnly(True)
         self.tab_widget.addTab(self.network_text, "Network")
 
         # Processes tab
         self.processes_text = QTextEdit()
+        self.processes_text.setAccessibleName("Top processes information")
         self.processes_text.setReadOnly(True)
         self.tab_widget.addTab(self.processes_text, "Top Processes")
 
         # Status bar
         self.status_bar = self.statusBar()
         self.status_bar.showMessage("Ready")
+
+        # Loading indicator for background info collection (CP-6)
+        if LoadingIndicator:
+            self._loading = LoadingIndicator(
+                parent=self, message="Loading system information…"
+            )
+            layout.addWidget(self._loading)
+        else:
+            self._loading = None
 
     def _load_system_info(self):
         """Load system information in background thread."""
@@ -305,6 +413,8 @@ class SimpleSystemInfoGUI(QMainWindow):
 
         self.refresh_btn.setEnabled(False)
         self.status_bar.showMessage("Loading system information...")
+        if self._loading:
+            self._loading.start()
 
         self.worker = SystemInfoWorker()
         self.worker.info_ready.connect(self._display_info)
@@ -314,11 +424,21 @@ class SimpleSystemInfoGUI(QMainWindow):
     def _display_info(self, info):
         """Display collected system information."""
         if "error" in info:
-            QMessageBox.warning(
-                self,
-                "Error",
-                f"Failed to collect system info: {info['error']}",
-            )
+            if self._loading:
+                self._loading.stop()
+            if Modal:
+                Modal(
+                    "Error",
+                    f"Failed to collect system info: {info['error']}",
+                    ["OK"],
+                    parent=self,
+                ).exec_()
+            else:
+                QMessageBox.warning(
+                    self,
+                    "Error",
+                    f"Failed to collect system info: {info['error']}",
+                )
             return
 
         # System information
@@ -362,9 +482,7 @@ class SimpleSystemInfoGUI(QMainWindow):
         # Process information
         if "processes" in info:
             processes_text = "=== TOP PROCESSES (CPU Usage) ===\n\n"
-            processes_text += (
-                f"{'PID':<8} {'Name':<25} {'CPU%':<8} {'Memory%':<8}\n"
-            )
+            processes_text += f"{'PID':<8} {'Name':<25} {'CPU%':<8} {'Memory%':<8}\n"
             processes_text += "-" * 55 + "\n"
             for proc in info["processes"]:
                 processes_text += f"{proc['pid']:<8} {proc['name'][:24]:<25} {proc['cpu_percent']:<8.1f} {proc['memory_percent']:<8.1f}\n"
@@ -374,6 +492,8 @@ class SimpleSystemInfoGUI(QMainWindow):
         """Handle load completion."""
         self.refresh_btn.setEnabled(True)
         self.status_bar.showMessage("System information updated")
+        if self._loading:
+            self._loading.stop()
 
     def _toggle_auto_refresh(self):
         """Toggle auto-refresh timer."""
@@ -389,12 +509,8 @@ class SimpleSystemInfoGUI(QMainWindow):
     def _export_info(self):
         """Export system information to text file."""
         try:
-            filename = (
-                f"system_info_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
-            )
-            filepath = os.path.join(
-                os.path.expanduser("~"), "Desktop", filename
-            )
+            filename = f"system_info_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
+            filepath = os.path.join(os.path.expanduser("~"), "Desktop", filename)
 
             with open(filepath, "w") as f:
                 f.write("SYSTEM INFORMATION REPORT\n")
@@ -418,17 +534,27 @@ class SimpleSystemInfoGUI(QMainWindow):
                     f.write(content)
                     f.write("\n\n")
 
-            QMessageBox.information(
-                self,
-                "Export Successful",
-                f"System information exported to:\n{filepath}",
+            if ToastNotification:
+                ToastNotification(parent=self).show_message(
+                    f"Exported to {filepath}", "success"
+                )
+            else:
+                QMessageBox.information(
+                    self,
+                    "Export Successful",
+                    f"System information exported to:\n{filepath}",
+                )
+        except Exception as e:  # ERR: non-fatal — surfaced via Modal; export failed
+            self._logger.error(
+                f"Failed to export system information: {e}", exc_info=True
             )
-        except Exception as e:
-            QMessageBox.warning(
-                self,
-                "Export Failed",
-                f"Failed to export system information:\n{str(e)}",
-            )
+            if Modal:
+                Modal(
+                    _SysInfoStrings.MODAL_ERROR_TITLE,
+                    _SysInfoStrings.ERR_EXPORT_FAILED,
+                    ["OK"],
+                    self,
+                ).exec_()
 
 
 def main():

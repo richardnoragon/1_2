@@ -155,7 +155,9 @@ def parse_exif_value(
         try:
             # Assume UTF-8 is the most likely intended encoding
             return value_str.encode("utf-8")
-        except Exception:
+        except (
+            Exception
+        ):  # ERR: non-fatal — exception re-raised as ValueError to calling code
             raise ValueError(f"Cannot encode '{value_str}' back to bytes for this tag.")
     elif isinstance(original_type, int):
         try:
@@ -343,7 +345,9 @@ class ImageMetadataLogic(QObject):
             self.metadata_loaded.emit(processed_metadata)
             return processed_metadata
 
-        except Exception as e:
+        except (
+            Exception
+        ) as e:  # ERR: non-fatal — surfaced via error_occurred signal; exception also re-raised
             error_msg = f"Error loading metadata: {str(e)}"
             self.error_occurred.emit(error_msg)
 
@@ -472,7 +476,9 @@ class ImageMetadataLogic(QObject):
             ):
                 try:
                     exif_bytes = piexif.dump(new_exif_dict)
-                except Exception as dump_e:
+                except (
+                    Exception
+                ) as dump_e:  # ERR: non-fatal — exception re-raised as ValueError; propagates to outer handler
                     raise ValueError(f"Error converting data to EXIF format: {dump_e}")
 
             # Insert the bytes back into the image file
@@ -491,10 +497,14 @@ class ImageMetadataLogic(QObject):
                         f"EXIF data successfully saved to {filename}.",
                     )
                 return True
-            except Exception as insert_e:
+            except (
+                Exception
+            ) as insert_e:  # ERR: non-fatal — exception re-raised as IOError; propagates to outer handler
                 raise IOError(f"Error writing EXIF data to file: {insert_e}")
 
-        except Exception as e:
+        except (
+            Exception
+        ) as e:  # ERR: non-fatal — surfaced via error_occurred and metadata_saved signals
             error_msg = f"Error saving metadata: {str(e)}"
             self.error_occurred.emit(error_msg)
             self.metadata_saved.emit(False, error_msg)
@@ -514,7 +524,9 @@ class ImageMetadataLogic(QObject):
                     "Unsupported format: {fmt}. Only JPEG/TIFF supported by "
                     "piexif.".format(fmt=fmt)
                 )
-        except Exception as pil_e:
+        except (
+            Exception
+        ) as pil_e:  # ERR: non-fatal — exception re-raised as ValueError to calling code
             raise ValueError(f"Cannot open or verify image file: {pil_e}")
 
     def _process_metadata_for_display(
@@ -624,7 +636,7 @@ class ImageMetadataWorker(QThread):
             elif self.operation == "save":
                 modified_data = self.kwargs.get("modified_data", {})
                 self.logic.save_image_metadata(self.file_path, modified_data)
-        except Exception as e:
+        except Exception as e:  # ERR: non-fatal — surfaced via metadata_error signal
             self.metadata_error.emit(str(e))
 
     def cancel(self):

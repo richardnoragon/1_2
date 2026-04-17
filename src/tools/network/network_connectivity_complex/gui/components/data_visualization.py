@@ -1,28 +1,28 @@
 """Data visualization components for network connectivity tools."""
 
 import time
-from datetime import datetime, timedelta
-from typing import List, Dict, Any, Optional, Tuple
 from collections import deque
+from datetime import datetime, timedelta
+from typing import Any, Dict, List, Optional, Tuple
 
+from PyQt5.QtCore import Qt, QThread, QTimer, pyqtSignal, pyqtSlot
+from PyQt5.QtGui import QBrush, QColor, QFont, QPainter, QPen
 from PyQt5.QtWidgets import (
-    QWidget,
-    QVBoxLayout,
+    QComboBox,
+    QFrame,
     QHBoxLayout,
+    QHeaderView,
     QLabel,
     QProgressBar,
+    QPushButton,
+    QSizePolicy,
     QTableWidget,
     QTableWidgetItem,
-    QHeaderView,
-    QFrame,
-    QSizePolicy,
-    QPushButton,
-    QComboBox,
+    QVBoxLayout,
+    QWidget,
 )
-from PyQt5.QtCore import Qt, QTimer, pyqtSignal, QThread, pyqtSlot
-from PyQt5.QtGui import QPainter, QPen, QBrush, QColor, QFont
 
-from gui.themes import ThemeManager, Colors, Fonts, Spacing
+from gui.themes import Colors, Fonts, Spacing, ThemeManager
 
 
 class RealTimeChart(QWidget):
@@ -156,9 +156,7 @@ class RealTimeChart(QWidget):
 
         # Get drawing area
         rect = self.rect()
-        chart_rect = rect.adjusted(
-            self.margin, self.margin, -self.margin, -self.margin
-        )
+        chart_rect = rect.adjusted(self.margin, self.margin, -self.margin, -self.margin)
 
         # Draw background
         painter.fillRect(rect, QBrush(QColor(Colors.WINDOW_BACKGROUND)))
@@ -167,7 +165,9 @@ class RealTimeChart(QWidget):
         if self.title:
             painter.setPen(QPen(QColor(Colors.TEXT_PRIMARY)))
             painter.setFont(
-                QFont(Fonts.DEFAULT_FAMILY, Fonts.HEADER_SIZE, Fonts.BOLD)
+                QFont(
+                    Fonts.DEFAULT_FAMILY, Fonts.HEADER_SIZE, Fonts.BOLD
+                )  # noqa: TH-3  uses Fonts class (theme-aware family)
             )
             title_rect = rect.adjusted(0, 0, 0, -rect.height() + 30)
             painter.drawText(title_rect, Qt.AlignCenter, self.title)
@@ -211,7 +211,9 @@ class RealTimeChart(QWidget):
         painter.drawLine(rect.bottomLeft(), rect.topLeft())
 
         # Y-axis labels
-        painter.setFont(QFont(Fonts.DEFAULT_FAMILY, Fonts.SMALL_SIZE))
+        painter.setFont(
+            QFont(Fonts.DEFAULT_FAMILY, Fonts.SMALL_SIZE)
+        )  # noqa: TH-3  uses Fonts class (theme-aware family)
         for i in range(6):
             y = rect.bottom() - (rect.height() * i / 5)
             value = self.y_min + (self.y_max - self.y_min) * i / 5
@@ -237,9 +239,7 @@ class RealTimeChart(QWidget):
                     break
 
                 x = rect.left() + (rect.width() * i / max(1, len(data) - 1))
-                y_ratio = (value - self.y_min) / max(
-                    1, self.y_max - self.y_min
-                )
+                y_ratio = (value - self.y_min) / max(1, self.y_max - self.y_min)
                 y = rect.bottom() - (rect.height() * y_ratio)
                 points.append((x, y))
 
@@ -257,7 +257,9 @@ class RealTimeChart(QWidget):
         legend_x = rect.right() - 150
         legend_y = rect.top() + 50
 
-        painter.setFont(QFont(Fonts.DEFAULT_FAMILY, Fonts.SMALL_SIZE))
+        painter.setFont(
+            QFont(Fonts.DEFAULT_FAMILY, Fonts.SMALL_SIZE)
+        )  # noqa: TH-3  uses Fonts class (theme-aware family)
 
         for i, (series_name, color) in enumerate(self.colors.items()):
             y = legend_y + (i * 20)
@@ -415,7 +417,9 @@ class StatusIndicator(QWidget):
 
         # Status dot
         self.status_dot = QLabel("●")
-        self.status_dot.setFont(QFont(Fonts.DEFAULT_FAMILY, 16))
+        self.status_dot.setFont(
+            QFont(Fonts.DEFAULT_FAMILY, 16)
+        )  # noqa: TH-3  uses Fonts family; size 16 not in Typography scale
         layout.addWidget(self.status_dot)
 
         # Status text

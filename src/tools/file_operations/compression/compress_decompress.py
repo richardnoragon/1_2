@@ -10,7 +10,6 @@ import zipfile
 from typing import Dict
 
 from PyQt5.QtCore import Qt
-from src.gui.themes import token
 from PyQt5.QtWidgets import (
     QApplication,
     QComboBox,
@@ -22,6 +21,8 @@ from PyQt5.QtWidgets import (
     QPushButton,
     QSlider,
 )
+
+from src.gui.themes import token
 
 # Import StandardWindow for menu integration
 try:
@@ -56,19 +57,13 @@ except ImportError:
             def show_warning_dialog(self, title, message):
                 QMessageBox.warning(self, title, message)
 
-            def get_file_path(
-                self, title="Select File", file_filter="All Files (*)"
-            ):
-                return QFileDialog.getOpenFileName(
-                    self, title, "", file_filter
-                )[0]
+            def get_file_path(self, title="Select File", file_filter="All Files (*)"):
+                return QFileDialog.getOpenFileName(self, title, "", file_filter)[0]
 
             def get_save_file_path(
                 self, title="Save File", file_filter="All Files (*)"
             ):
-                return QFileDialog.getSaveFileName(
-                    self, title, "", file_filter
-                )[0]
+                return QFileDialog.getSaveFileName(self, title, "", file_filter)[0]
 
 
 # Archive format constants
@@ -133,12 +128,8 @@ class CompressDecompressApp(StandardWindow):
             self.menu_manager.register_callback(
                 "open_file", self.load_compression_settings
             )
-            self.menu_manager.register_callback(
-                "export_data", self.export_archive_list
-            )
-            self.menu_manager.register_callback(
-                "import_data", self.import_archive_list
-            )
+            self.menu_manager.register_callback("export_data", self.export_archive_list)
+            self.menu_manager.register_callback("import_data", self.import_archive_list)
             self.menu_manager.register_callback(
                 "print_document", self.print_compression_report
             )
@@ -147,9 +138,7 @@ class CompressDecompressApp(StandardWindow):
             self.menu_manager.register_callback("cut", self.cut_text)
             self.menu_manager.register_callback("copy", self.copy_text)
             self.menu_manager.register_callback("paste", self.paste_text)
-            self.menu_manager.register_callback(
-                "select_all", self.select_all_text
-            )
+            self.menu_manager.register_callback("select_all", self.select_all_text)
             self.menu_manager.register_callback("find", self.find_in_paths)
 
             # View menu callbacks
@@ -161,17 +150,13 @@ class CompressDecompressApp(StandardWindow):
             self.menu_manager.register_callback(
                 "show_options", self.show_compression_options
             )
-            self.menu_manager.register_callback(
-                "verify_archive", self.verify_archive
-            )
+            self.menu_manager.register_callback("verify_archive", self.verify_archive)
             self.menu_manager.register_callback(
                 "batch_operations", self.show_batch_operations
             )
 
             # Help menu callbacks
-            self.menu_manager.register_callback(
-                "help_compression", self.show_help
-            )
+            self.menu_manager.register_callback("help_compression", self.show_help)
 
     def new_compression_session(self):
         """Start a new compression session."""
@@ -233,9 +218,7 @@ class CompressDecompressApp(StandardWindow):
                 if index >= 0:
                     self.comboFormat.setCurrentIndex(index)
 
-                self.sliderCompLevel.setValue(
-                    settings.get("compression_level", 6)
-                )
+                self.sliderCompLevel.setValue(settings.get("compression_level", 6))
 
                 self.show_info_dialog(
                     "Settings Loaded",
@@ -456,8 +439,11 @@ class CompressDecompressApp(StandardWindow):
         # Folder selection
         folder_layout = QHBoxLayout()
         self.lineEditFolder = QLineEdit()
+        self.lineEditFolder.setAccessibleName("Folder to compress")
         self.lineEditFolder.setPlaceholderText("Select folder to compress...")
         self.buttonBrowseFolder = QPushButton("Browse Folder")
+        self.buttonBrowseFolder.setAccessibleName("Browse for folder to compress")
+        self.buttonBrowseFolder.setMinimumHeight(44)
         self.buttonBrowseFolder.clicked.connect(self.browse_folder)
         folder_layout.addWidget(self.lineEditFolder)
         folder_layout.addWidget(self.buttonBrowseFolder)
@@ -466,8 +452,11 @@ class CompressDecompressApp(StandardWindow):
         # Output file selection
         output_layout = QHBoxLayout()
         self.lineEditOutput = QLineEdit()
+        self.lineEditOutput.setAccessibleName("Output archive file")
         self.lineEditOutput.setPlaceholderText("Select output archive file...")
         self.buttonBrowseOutput = QPushButton("Browse Output")
+        self.buttonBrowseOutput.setAccessibleName("Browse for output archive file")
+        self.buttonBrowseOutput.setMinimumHeight(44)
         self.buttonBrowseOutput.clicked.connect(self.browse_output)
         output_layout.addWidget(self.lineEditOutput)
         output_layout.addWidget(self.buttonBrowseOutput)
@@ -477,10 +466,9 @@ class CompressDecompressApp(StandardWindow):
         format_layout = QHBoxLayout()
         format_layout.addWidget(QLabel("Format:"))
         self.comboFormat = QComboBox()
+        self.comboFormat.setAccessibleName("Compression format")
         self.comboFormat.addItems([FORMAT_ZIP, FORMAT_TAR_GZ, FORMAT_TAR_BZ2])
-        self.comboFormat.currentTextChanged.connect(
-            self.update_output_extension
-        )
+        self.comboFormat.currentTextChanged.connect(self.update_output_extension)
         format_layout.addWidget(self.comboFormat)
         layout.addLayout(format_layout)
 
@@ -488,6 +476,7 @@ class CompressDecompressApp(StandardWindow):
         password_layout = QHBoxLayout()
         password_layout.addWidget(QLabel("Password (optional):"))
         self.lineEditPassword = QLineEdit()
+        self.lineEditPassword.setAccessibleName("Archive password")
         self.lineEditPassword.setEchoMode(QLineEdit.Password)
         password_layout.addWidget(self.lineEditPassword)
         layout.addLayout(password_layout)
@@ -496,6 +485,8 @@ class CompressDecompressApp(StandardWindow):
         level_layout = QHBoxLayout()
         level_layout.addWidget(QLabel("Compression Level:"))
         self.sliderCompLevel = QSlider(Qt.Orientation.Horizontal)
+        self.sliderCompLevel.setAccessibleName("Compression level")
+        self.sliderCompLevel.setMinimumHeight(44)
         self.sliderCompLevel.setRange(1, 9)
         self.sliderCompLevel.setValue(6)
         level_layout.addWidget(self.sliderCompLevel)
@@ -503,6 +494,8 @@ class CompressDecompressApp(StandardWindow):
 
         # Compress button
         self.buttonCompress = QPushButton("Compress")
+        self.buttonCompress.setAccessibleName("Compress files")
+        self.buttonCompress.setMinimumHeight(44)
         self.buttonCompress.clicked.connect(self.compress_files)
         layout.addWidget(self.buttonCompress)
 
@@ -512,10 +505,13 @@ class CompressDecompressApp(StandardWindow):
         # Archive file selection
         decomp_layout = QHBoxLayout()
         self.lineEditDecompress = QLineEdit()
-        self.lineEditDecompress.setPlaceholderText(
-            "Select archive to decompress..."
-        )
+        self.lineEditDecompress.setAccessibleName("Archive to decompress")
+        self.lineEditDecompress.setPlaceholderText("Select archive to decompress...")
         self.buttonBrowseDecompress = QPushButton("Browse Archive")
+        self.buttonBrowseDecompress.setAccessibleName(
+            "Browse for archive to decompress"
+        )
+        self.buttonBrowseDecompress.setMinimumHeight(44)
         self.buttonBrowseDecompress.clicked.connect(self.browse_decompress)
         decomp_layout.addWidget(self.lineEditDecompress)
         decomp_layout.addWidget(self.buttonBrowseDecompress)
@@ -523,6 +519,8 @@ class CompressDecompressApp(StandardWindow):
 
         # Decompress button
         self.buttonDecompress = QPushButton("Decompress")
+        self.buttonDecompress.setAccessibleName("Decompress archive")
+        self.buttonDecompress.setMinimumHeight(44)
         self.buttonDecompress.clicked.connect(self.decompress_files)
         layout.addWidget(self.buttonDecompress)
 
@@ -587,13 +585,9 @@ class CompressDecompressApp(StandardWindow):
                     folder_path, output_path, password, compression_level
                 )
             elif format_type == FORMAT_TAR_GZ:
-                self._compress_targz(
-                    folder_path, output_path, compression_level
-                )
+                self._compress_targz(folder_path, output_path, compression_level)
             elif format_type == FORMAT_TAR_BZ2:
-                self._compress_tarbz2(
-                    folder_path, output_path, compression_level
-                )
+                self._compress_tarbz2(folder_path, output_path, compression_level)
 
             show_info_dialog(
                 title="Success",
@@ -608,9 +602,7 @@ class CompressDecompressApp(StandardWindow):
                 parent=self,
             )
 
-    def _compress_zip(
-        self, folder_path, output_path, password, compression_level
-    ):
+    def _compress_zip(self, folder_path, output_path, password, compression_level):
         """Compress files into a ZIP archive."""
         compression = zipfile.ZIP_DEFLATED
         with zipfile.ZipFile(
@@ -629,16 +621,12 @@ class CompressDecompressApp(StandardWindow):
 
     def _compress_targz(self, folder_path, output_path, compression_level):
         """Compress files into a tar.gz archive."""
-        with tarfile.open(
-            output_path, "w:gz", compresslevel=compression_level
-        ) as tar:
+        with tarfile.open(output_path, "w:gz", compresslevel=compression_level) as tar:
             tar.add(folder_path, arcname=".")
 
     def _compress_tarbz2(self, folder_path, output_path, compression_level):
         """Compress files into a tar.bz2 archive."""
-        with tarfile.open(
-            output_path, "w:bz2", compresslevel=compression_level
-        ) as tar:
+        with tarfile.open(output_path, "w:bz2", compresslevel=compression_level) as tar:
             tar.add(folder_path, arcname=".")
 
     def browse_decompress(self):

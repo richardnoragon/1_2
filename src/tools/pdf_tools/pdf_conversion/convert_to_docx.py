@@ -2,24 +2,26 @@
 import os
 import sys
 from pathlib import Path
-from PyQt5 import QtWidgets, QtGui
+
+from log_config import setup_logger
+from PyQt5 import QtGui, QtWidgets
 from PyQt5.QtWidgets import (
-    QMainWindow,
+    QAction,
     QApplication,
     QFileDialog,
-    QMessageBox,
-    QMenuBar,
+    QMainWindow,
     QMenu,
-    QAction,
+    QMenuBar,
+    QMessageBox,
 )
-from log_config import setup_logger
 
 # Set up logger
 logger = setup_logger(__name__)
 
 try:
-    from pdf2docx import parse
     from typing import Tuple
+
+    from pdf2docx import parse
 except ImportError as e:
     logger.critical("Required package not found: %s", str(e))
     print(
@@ -38,14 +40,10 @@ def convert_pdf2docx(input_file: str, output_file: str, pages: Tuple = None):
         if pages:
             pages = [int(i) for i in list(pages) if i.isnumeric()]
 
-        logger.info(
-            "Converting PDF to DOCX: %s -> %s", input_file, output_file
-        )
+        logger.info("Converting PDF to DOCX: %s -> %s", input_file, output_file)
         logger.debug("Pages to convert: %s", pages if pages else "all")
 
-        result = parse(
-            pdf_file=input_file, docx_with_path=output_file, pages=pages
-        )
+        result = parse(pdf_file=input_file, docx_with_path=output_file, pages=pages)
 
         summary = {
             "File": input_file,
@@ -84,17 +82,13 @@ def move_files(input_file: str, output_file: str, folder_name: str):
     """Moves converted files to folder"""
     try:
         if not os.path.exists(folder_name):
-            logger.warning(
-                "Destination folder does not exist: %s", folder_name
-            )
+            logger.warning("Destination folder does not exist: %s", folder_name)
             return False
 
         import shutil
 
         logger.info("Moving files to %s", folder_name)
-        shutil.move(
-            input_file, os.path.join(folder_name, os.path.basename(input_file))
-        )
+        shutil.move(input_file, os.path.join(folder_name, os.path.basename(input_file)))
         shutil.move(
             output_file,
             os.path.join(folder_name, os.path.basename(output_file)),
@@ -113,9 +107,7 @@ class ConvertWindow(QMainWindow):
             self.initUI()
             logger.info("PDF to DOCX converter initialized")
         except Exception as e:
-            logger.error(
-                "Failed to initialize PDF to DOCX converter: %s", str(e)
-            )
+            logger.error("Failed to initialize PDF to DOCX converter: %s", str(e))
             raise
 
     def initUI(self):
@@ -124,7 +116,9 @@ class ConvertWindow(QMainWindow):
             self.setGeometry(100, 100, 600, 400)
 
             # Set font for the entire application
-            app_font = QtGui.QFont()
+            app_font = (
+                QtGui.QFont()
+            )  # noqa: TH-3  application-wide font set once at startup; not per-widget theme
             app_font.setPointSize(12)
             QApplication.setFont(app_font)
 
@@ -152,9 +146,7 @@ class ConvertWindow(QMainWindow):
             layout = QtWidgets.QVBoxLayout(central_widget)
 
             # Add widgets
-            self.status_label = QtWidgets.QLabel(
-                "Select a PDF file to convert"
-            )
+            self.status_label = QtWidgets.QLabel("Select a PDF file to convert")
             layout.addWidget(self.status_label)
 
             select_button = QtWidgets.QPushButton("Select PDF")
@@ -200,15 +192,11 @@ class ConvertWindow(QMainWindow):
                     QMessageBox.critical(
                         self, "Error", f"Error converting file: {str(e)}"
                     )
-                    self.status_label.setText(
-                        "Error occurred during conversion"
-                    )
+                    self.status_label.setText("Error occurred during conversion")
 
         except Exception as e:
             logger.error("Error in file selection: %s", str(e))
-            QMessageBox.critical(
-                self, "Error", f"Error selecting file: {str(e)}"
-            )
+            QMessageBox.critical(self, "Error", f"Error selecting file: {str(e)}")
 
 
 if __name__ == "__main__":

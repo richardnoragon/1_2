@@ -523,6 +523,7 @@ if PYQT5_AVAILABLE:
 
             # User table
             self.user_table = QTableWidget()
+            self.user_table.setAccessibleName("User accounts list")
             self.user_table.setColumnCount(5)
             self.user_table.setHorizontalHeaderLabels(
                 ["", "Username", "Role", "Status", "Protection"]
@@ -541,11 +542,15 @@ if PYQT5_AVAILABLE:
             button_layout = QHBoxLayout()
 
             self.delete_button = QPushButton("Delete User")
+            self.delete_button.setAccessibleName("Delete selected user")
+            self.delete_button.setMinimumHeight(44)
             self.delete_button.setEnabled(False)
             self.delete_button.clicked.connect(self._on_delete_clicked)
             button_layout.addWidget(self.delete_button)
 
             self.disable_button = QPushButton("Disable User")
+            self.disable_button.setAccessibleName("Disable selected user")
+            self.disable_button.setMinimumHeight(44)
             self.disable_button.setEnabled(False)
             self.disable_button.clicked.connect(self._on_disable_clicked)
             button_layout.addWidget(self.disable_button)
@@ -569,6 +574,8 @@ if PYQT5_AVAILABLE:
             self.break_glass_log_button = QPushButton(
                 f"{EMERGENCY_ICON} View Break-Glass Usage Log"
             )
+            self.break_glass_log_button.setAccessibleName("View break-glass usage log")
+            self.break_glass_log_button.setMinimumHeight(44)
             self.break_glass_log_button.clicked.connect(self._on_view_break_glass_log)
             layout.addWidget(self.break_glass_log_button)
 

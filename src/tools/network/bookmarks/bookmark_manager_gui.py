@@ -35,7 +35,6 @@ except ImportError:
     LOGGING_AVAILABLE = False
 
 try:
-    from src.gui.themes import token
     from PyQt5.QtCore import QDate, Qt, QThread, QTimer, pyqtSignal
     from PyQt5.QtGui import (
         QFont,
@@ -81,6 +80,8 @@ try:
         QVBoxLayout,
         QWidget,
     )
+
+    from src.gui.themes import token
 except ImportError as e:
     print(f"PyQt5 import error: {e}")
     sys.exit(1)
@@ -174,23 +175,28 @@ class BookmarkManagerGUI(QMainWindow):
         # Title input
         add_layout.addWidget(QLabel("Title:"), 0, 0)
         self.title_input = QLineEdit()
+        self.title_input.setAccessibleName("New bookmark title")
         self.title_input.setPlaceholderText("Enter bookmark title")
         add_layout.addWidget(self.title_input, 0, 1)
 
         # URL input
         add_layout.addWidget(QLabel("URL:"), 1, 0)
         self.url_input = QLineEdit()
+        self.url_input.setAccessibleName("New bookmark URL")
         self.url_input.setPlaceholderText("Enter bookmark URL")
         add_layout.addWidget(self.url_input, 1, 1)
 
         # Category input
         add_layout.addWidget(QLabel("Category:"), 2, 0)
         self.category_input = QLineEdit()
+        self.category_input.setAccessibleName("New bookmark category")
         self.category_input.setPlaceholderText("Enter category (optional)")
         add_layout.addWidget(self.category_input, 2, 1)
 
         # Add button
         add_button = QPushButton("Add Bookmark")
+        add_button.setAccessibleName("Add bookmark")
+        add_button.setMinimumHeight(44)
         add_button.clicked.connect(self.add_bookmark)
         add_layout.addWidget(add_button, 3, 0, 1, 2)
 
@@ -202,20 +208,28 @@ class BookmarkManagerGUI(QMainWindow):
 
         # Import/Export buttons
         import_button = QPushButton("Import Bookmarks")
+        import_button.setAccessibleName("Import bookmarks")
+        import_button.setMinimumHeight(44)
         import_button.clicked.connect(self.import_bookmarks)
         tools_layout.addWidget(import_button)
 
         export_button = QPushButton("Export Bookmarks")
+        export_button.setAccessibleName("Export bookmarks")
+        export_button.setMinimumHeight(44)
         export_button.clicked.connect(self.export_bookmarks)
         tools_layout.addWidget(export_button)
 
         # Search button
         search_button = QPushButton("Search Bookmarks")
+        search_button.setAccessibleName("Search bookmarks")
+        search_button.setMinimumHeight(44)
         search_button.clicked.connect(self.search_bookmarks)
         tools_layout.addWidget(search_button)
 
         # Organize button
         organize_button = QPushButton("Organize Bookmarks")
+        organize_button.setAccessibleName("Organize bookmarks")
+        organize_button.setMinimumHeight(44)
         organize_button.clicked.connect(self.organize_bookmarks)
         tools_layout.addWidget(organize_button)
 
@@ -228,6 +242,7 @@ class BookmarkManagerGUI(QMainWindow):
         results_layout = QVBoxLayout(results_group)
 
         self.results_text = QTextEdit()
+        self.results_text.setAccessibleName("Bookmark manager status and information")
         self.results_text.setReadOnly(True)
         self.results_text.setPlainText(
             "Bookmark Manager ready. Use the tools above to manage your bookmarks.\n\n"

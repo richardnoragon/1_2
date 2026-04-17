@@ -763,9 +763,9 @@ class LogViewerDialog(QDialog):
 
         # Log text area
         self.log_text = QTextEdit()
+        self.log_text.setAccessibleName("Log file contents")
         self.log_text.setReadOnly(True)
         self.log_text.setFont(Typography.monospace())
-        layout.addWidget(self.log_text)
 
         # Load logs
         self._load_logs()
@@ -774,12 +774,16 @@ class LogViewerDialog(QDialog):
         button_layout = QHBoxLayout()
 
         refresh_btn = QPushButton("Refresh")
+        refresh_btn.setAccessibleName("Refresh log view")
+        refresh_btn.setMinimumHeight(44)
         refresh_btn.clicked.connect(self._load_logs)
         button_layout.addWidget(refresh_btn)
 
         button_layout.addStretch()
 
         close_btn = QPushButton("Close")
+        close_btn.setAccessibleName("Close log viewer")
+        close_btn.setMinimumHeight(44)
         close_btn.clicked.connect(self.accept)
         button_layout.addWidget(close_btn)
 
@@ -816,10 +820,8 @@ class HelpDialog(QDialog):
         layout = QVBoxLayout(self)
 
         help_text = QTextEdit()
+        help_text.setAccessibleName("Help documentation")
         help_text.setReadOnly(True)
-        help_text.setHtml(
-            """
-        <h2>Richard's File Utilities - User Guide</h2>
         
         <h3>Getting Started</h3>
         <p>Welcome to Richard's File Utilities! This comprehensive toolkit provides
@@ -853,6 +855,8 @@ class HelpDialog(QDialog):
 
         # Close button
         close_btn = QPushButton("Close")
+        close_btn.setAccessibleName("Close help dialog")
+        close_btn.setMinimumHeight(44)
         close_btn.clicked.connect(self.accept)
         layout.addWidget(close_btn)
 
@@ -872,6 +876,7 @@ class KeyboardShortcutsDialog(QDialog):
         layout = QVBoxLayout(self)
 
         shortcuts_text = QTextEdit()
+        shortcuts_text.setAccessibleName("Keyboard shortcuts reference")
         shortcuts_text.setReadOnly(True)
         shortcuts_text.setHtml(
             """
@@ -919,6 +924,8 @@ class KeyboardShortcutsDialog(QDialog):
 
         # Close button
         close_btn = QPushButton("Close")
+        close_btn.setAccessibleName("Close keyboard shortcuts dialog")
+        close_btn.setMinimumHeight(44)
         close_btn.clicked.connect(self.accept)
         layout.addWidget(close_btn)
 
@@ -938,9 +945,8 @@ class SystemInfoDialog(QDialog):
         layout = QVBoxLayout(self)
 
         info_text = QTextEdit()
+        info_text.setAccessibleName("System information")
         info_text.setReadOnly(True)
-
-        # Gather system information
         import platform
 
         import PyQt5.QtCore
@@ -971,6 +977,8 @@ class SystemInfoDialog(QDialog):
 
         # Close button
         close_btn = QPushButton("Close")
+        close_btn.setAccessibleName("Close system information dialog")
+        close_btn.setMinimumHeight(44)
         close_btn.clicked.connect(self.accept)
         layout.addWidget(close_btn)
 
@@ -1025,6 +1033,8 @@ class AboutDialog(QDialog):
 
         # Close button
         close_btn = QPushButton("Close")
+        close_btn.setAccessibleName("Close about dialog")
+        close_btn.setMinimumHeight(44)
         close_btn.clicked.connect(self.accept)
         layout.addWidget(close_btn)
 

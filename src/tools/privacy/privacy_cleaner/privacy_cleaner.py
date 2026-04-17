@@ -17,7 +17,6 @@ PRIVACY_CLEANER_TEXT = "Privacy Cleaner"
 SECURE_WIPE_LABEL = "Secure Wipe"
 
 try:
-    from src.gui.themes import token
     from PyQt5.QtWidgets import (
         QApplication,
         QCheckBox,
@@ -32,6 +31,8 @@ try:
         QVBoxLayout,
         QWidget,
     )
+
+    from src.gui.themes import token
 except ImportError:
     print("PyQt5 not available. Please install PyQt5.")
     sys.exit(1)
@@ -103,6 +104,7 @@ class PrivacyCleanerGUI(QMainWindow):
 
         # Create tab widget for different privacy tools
         tab_widget = QTabWidget()
+        tab_widget.setAccessibleName("Privacy tool categories")
         self.main_layout.addWidget(tab_widget)
 
         # Browser Cleanup Tab
@@ -126,6 +128,7 @@ class PrivacyCleanerGUI(QMainWindow):
         results_layout = QVBoxLayout(results_group)
 
         self.results_text = QTextEdit()
+        self.results_text.setAccessibleName("Cleanup results and status")
         self.results_text.setReadOnly(True)
         self.results_text.setPlainText(
             (
@@ -160,24 +163,36 @@ class PrivacyCleanerGUI(QMainWindow):
 
         # Checkboxes for cleanup options
         self.clear_cookies = QCheckBox("Clear Cookies")
+        self.clear_cookies.setAccessibleName("Clear browser cookies")
+        self.clear_cookies.setMinimumHeight(44)
         self.clear_cookies.setChecked(True)
         browser_layout.addWidget(self.clear_cookies)
 
         self.clear_cache = QCheckBox("Clear Cache")
+        self.clear_cache.setAccessibleName("Clear browser cache")
+        self.clear_cache.setMinimumHeight(44)
         self.clear_cache.setChecked(True)
         browser_layout.addWidget(self.clear_cache)
 
         self.clear_history = QCheckBox("Clear Browsing History")
+        self.clear_history.setAccessibleName("Clear browsing history")
+        self.clear_history.setMinimumHeight(44)
         browser_layout.addWidget(self.clear_history)
 
         self.clear_downloads = QCheckBox("Clear Download History")
+        self.clear_downloads.setAccessibleName("Clear download history")
+        self.clear_downloads.setMinimumHeight(44)
         browser_layout.addWidget(self.clear_downloads)
 
         self.clear_passwords = QCheckBox("Clear Saved Passwords")
+        self.clear_passwords.setAccessibleName("Clear saved passwords")
+        self.clear_passwords.setMinimumHeight(44)
         browser_layout.addWidget(self.clear_passwords)
 
         # Cleanup button
         cleanup_browser_btn = QPushButton("Clean Browser Data")
+        cleanup_browser_btn.setAccessibleName("Clean browser data")
+        cleanup_browser_btn.setMinimumHeight(44)
         cleanup_browser_btn.clicked.connect(self.cleanup_browser_data)
         browser_layout.addWidget(cleanup_browser_btn)
 
@@ -197,23 +212,33 @@ class PrivacyCleanerGUI(QMainWindow):
 
         # Temp files
         self.clear_temp = QCheckBox("Clear Temporary Files")
+        self.clear_temp.setAccessibleName("Clear temporary files")
+        self.clear_temp.setMinimumHeight(44)
         self.clear_temp.setChecked(True)
         system_layout.addWidget(self.clear_temp)
 
         # Log files
         self.clear_logs = QCheckBox("Clear Log Files")
+        self.clear_logs.setAccessibleName("Clear log files")
+        self.clear_logs.setMinimumHeight(44)
         system_layout.addWidget(self.clear_logs)
 
         # Recycle bin
         self.empty_recycle = QCheckBox("Empty Recycle Bin")
+        self.empty_recycle.setAccessibleName("Empty recycle bin")
+        self.empty_recycle.setMinimumHeight(44)
         system_layout.addWidget(self.empty_recycle)
 
         # Registry cleanup (Windows only)
         self.clean_registry = QCheckBox("Clean Registry (Windows)")
+        self.clean_registry.setAccessibleName("Clean Windows registry")
+        self.clean_registry.setMinimumHeight(44)
         system_layout.addWidget(self.clean_registry)
 
         # Cleanup button
         cleanup_system_btn = QPushButton("Clean System Data")
+        cleanup_system_btn.setAccessibleName("Clean system data")
+        cleanup_system_btn.setMinimumHeight(44)
         cleanup_system_btn.clicked.connect(self.cleanup_system_data)
         system_layout.addWidget(cleanup_system_btn)
 
@@ -233,26 +258,38 @@ class PrivacyCleanerGUI(QMainWindow):
 
         # File type options
         self.scrub_images = QCheckBox("Remove EXIF data from images")
+        self.scrub_images.setAccessibleName("Remove EXIF data from images")
+        self.scrub_images.setMinimumHeight(44)
         self.scrub_images.setChecked(True)
         metadata_layout.addWidget(self.scrub_images)
 
         self.scrub_documents = QCheckBox("Remove metadata from documents")
+        self.scrub_documents.setAccessibleName("Remove metadata from documents")
+        self.scrub_documents.setMinimumHeight(44)
         self.scrub_documents.setChecked(True)
         metadata_layout.addWidget(self.scrub_documents)
 
         self.scrub_audio = QCheckBox("Remove metadata from audio files")
+        self.scrub_audio.setAccessibleName("Remove metadata from audio files")
+        self.scrub_audio.setMinimumHeight(44)
         metadata_layout.addWidget(self.scrub_audio)
 
         self.scrub_video = QCheckBox("Remove metadata from video files")
+        self.scrub_video.setAccessibleName("Remove metadata from video files")
+        self.scrub_video.setMinimumHeight(44)
         metadata_layout.addWidget(self.scrub_video)
 
         # File selection button
         select_files_btn = QPushButton("Select Files to Scrub")
+        select_files_btn.setAccessibleName("Select files to scrub metadata")
+        select_files_btn.setMinimumHeight(44)
         select_files_btn.clicked.connect(self.select_files_for_scrubbing)
         metadata_layout.addWidget(select_files_btn)
 
         # Scrub button
         scrub_btn = QPushButton("Scrub Metadata")
+        scrub_btn.setAccessibleName("Scrub metadata from selected files")
+        scrub_btn.setMinimumHeight(44)
         scrub_btn.clicked.connect(self.scrub_metadata)
         metadata_layout.addWidget(scrub_btn)
 
@@ -277,22 +314,32 @@ class PrivacyCleanerGUI(QMainWindow):
 
         # Wipe level options
         self.wipe_single = QCheckBox("Single Pass (Fast)")
+        self.wipe_single.setAccessibleName("Single pass wipe")
+        self.wipe_single.setMinimumHeight(44)
         self.wipe_single.setChecked(True)
         wipe_layout.addWidget(self.wipe_single)
 
         self.wipe_triple = QCheckBox("Triple Pass (Secure)")
+        self.wipe_triple.setAccessibleName("Triple pass secure wipe")
+        self.wipe_triple.setMinimumHeight(44)
         wipe_layout.addWidget(self.wipe_triple)
 
         self.wipe_dod = QCheckBox("DoD 5220.22-M (Military Grade)")
+        self.wipe_dod.setAccessibleName("DoD military grade wipe")
+        self.wipe_dod.setMinimumHeight(44)
         wipe_layout.addWidget(self.wipe_dod)
 
         # File selection
         select_wipe_files_btn = QPushButton("Select Files/Folders to Wipe")
+        select_wipe_files_btn.setAccessibleName("Select files or folders to wipe")
+        select_wipe_files_btn.setMinimumHeight(44)
         select_wipe_files_btn.clicked.connect(self.select_files_for_wiping)
         wipe_layout.addWidget(select_wipe_files_btn)
 
         # Wipe button
         wipe_btn = QPushButton(SECURE_WIPE_LABEL)
+        wipe_btn.setAccessibleName("Securely wipe selected files")
+        wipe_btn.setMinimumHeight(44)
         wipe_btn.clicked.connect(self.secure_wipe)
         wipe_layout.addWidget(wipe_btn)
 

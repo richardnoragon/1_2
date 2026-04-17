@@ -1,28 +1,43 @@
 """Network Connectivity Hub - Main interface for all network tools."""
 
 from typing import Any, Dict, List, Optional
+
+from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
+from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtWidgets import (
-    QWidget,
-    QVBoxLayout,
+    QFrame,
+    QGroupBox,
     QHBoxLayout,
     QLabel,
     QPushButton,
-    QTabWidget,
-    QSplitter,
-    QGroupBox,
-    QFrame,
     QScrollArea,
+    QSplitter,
+    QTabWidget,
+    QVBoxLayout,
+    QWidget,
 )
-from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
-from PyQt5.QtGui import QIcon, QPixmap
 
 from gui.common.standard_window import StandardWindow
-from gui.themes import ThemeManager, Colors, Spacing
+from gui.themes import Colors, Spacing, ThemeManager
+
 from .components.data_visualization import StatusIndicator
+
+# ---------------------------------------------------------------------------
+# CP: Component replacement imports (CP-1)
+# ---------------------------------------------------------------------------
+try:
+    from src.gui.components.buttons import PrimaryButton
+
+    _CP_AVAILABLE = True
+except ImportError:
+    from PyQt5.QtWidgets import QPushButton as PrimaryButton
+
+    _CP_AVAILABLE = False
+
 from .widgets.bandwidth_monitor_widget import BandwidthMonitorWidget
+from .widgets.lan_file_transfer_widget import LANFileTransferWidget
 from .widgets.port_scanner_widget import PortScannerWidget
 from .widgets.wifi_analyzer_widget import WiFiAnalyzerWidget
-from .widgets.lan_file_transfer_widget import LANFileTransferWidget
 
 
 class NetworkToolCard(QWidget):
@@ -56,6 +71,11 @@ class NetworkToolCard(QWidget):
 
         self._setup_ui()
         self._connect_signals()
+        ThemeManager.add_theme_changed_callback(self._on_theme_changed)
+
+    def _on_theme_changed(self, variant: str) -> None:
+        """Re-apply token-based stylesheets when the active theme variant changes."""
+        pass  # stylesheets applied at init; live re-apply pending TH-4c/4d
 
     def _setup_ui(self):
         """Setup card UI."""
@@ -112,8 +132,7 @@ class NetworkToolCard(QWidget):
         layout.addStretch()
 
         # Launch button
-        self.launch_button = QPushButton("Launch")
-        ThemeManager.style_primary_button(self.launch_button)
+        self.launch_button = PrimaryButton("Launch")
         self.launch_button.setMaximumWidth(100)
         layout.addWidget(self.launch_button, alignment=Qt.AlignRight)
 
@@ -270,6 +289,7 @@ class NetworkConnectivityHub(StandardWindow):
         """Setup hub UI."""
         # Create main tab widget
         self.tab_widget = QTabWidget()
+        self.tab_widget.setAccessibleName("Network connectivity tool tabs")
         self.tab_widget.setTabPosition(QTabWidget.North)
         self.tab_widget.setMovable(True)
         self.tab_widget.setTabsClosable(True)
@@ -470,9 +490,7 @@ class NetworkConnectivityHub(StandardWindow):
                 if hasattr(widget, "close"):
                     widget.close()
 
-                self.show_info_message(
-                    f"Closed {self._get_tool_title(tool_name)}"
-                )
+                self.show_info_message(f"Closed {self._get_tool_title(tool_name)}")
 
         except Exception as e:
             self.show_error_message(f"Error closing tool tab: {e}")

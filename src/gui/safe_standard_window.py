@@ -9,7 +9,6 @@ import os
 import sys
 
 from PyQt5.QtCore import Qt
-from src.gui.themes import token
 from PyQt5.QtGui import QFont, QIcon, QKeySequence
 from PyQt5.QtWidgets import (
     QAction,
@@ -27,6 +26,8 @@ from PyQt5.QtWidgets import (
     QVBoxLayout,
     QWidget,
 )
+
+from src.gui.themes import token
 
 
 class SafeStandardWindow(QMainWindow):
@@ -169,6 +170,8 @@ class SafeStandardWindow(QMainWindow):
     def create_button(self, text, callback=None, primary=True):
         """Create a standard button."""
         button = QPushButton(text)
+        button.setAccessibleName(text)
+        button.setMinimumHeight(44)
         if callback:
             button.clicked.connect(callback)
         return button
@@ -220,9 +223,7 @@ class SafeStandardWindow(QMainWindow):
         """Show directory selection dialog."""
         return QFileDialog.getExistingDirectory(self, title)
 
-    def get_save_file_path(
-        self, title="Save File", file_filter="All Files (*)"
-    ):
+    def get_save_file_path(self, title="Save File", file_filter="All Files (*)"):
         """Show save file dialog."""
         return QFileDialog.getSaveFileName(self, title, "", file_filter)[0]
 

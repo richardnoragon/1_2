@@ -13,7 +13,6 @@ A comprehensive clipboard management tool that provides:
 import sys
 
 try:
-    from src.gui.themes import token
     from PyQt5.QtCore import QTimer
     from PyQt5.QtWidgets import (
         QApplication,
@@ -33,6 +32,8 @@ try:
         QVBoxLayout,
         QWidget,
     )
+
+    from src.gui.themes import token
 except ImportError:
     print("PyQt5 not available. Please install PyQt5.")
     sys.exit(1)
@@ -111,6 +112,7 @@ class EnhancedClipboardGUI(QMainWindow):
 
         # Create tab widget for different clipboard features
         tab_widget = QTabWidget()
+        tab_widget.setAccessibleName("Clipboard feature tabs")
         self.main_layout.addWidget(tab_widget)
 
         # Clipboard History Tab
@@ -134,6 +136,7 @@ class EnhancedClipboardGUI(QMainWindow):
         status_layout = QVBoxLayout(status_group)
 
         self.status_text = QTextEdit()
+        self.status_text.setAccessibleName("Clipboard status")
         self.status_text.setReadOnly(True)
         self.status_text.setMaximumHeight(100)
         self.status_text.setPlainText(
@@ -156,17 +159,22 @@ class EnhancedClipboardGUI(QMainWindow):
         # History size setting
         controls_layout.addWidget(QLabel("History Size:"))
         self.history_size_combo = QComboBox()
+        self.history_size_combo.setAccessibleName("Clipboard history size")
         self.history_size_combo.addItems(["10", "25", "50", "100", "200"])
         self.history_size_combo.setCurrentText("50")
         controls_layout.addWidget(self.history_size_combo)
 
         # Auto-monitor checkbox
         self.auto_monitor = QCheckBox("Auto Monitor")
+        self.auto_monitor.setAccessibleName("Auto-monitor clipboard")
+        self.auto_monitor.setMinimumHeight(44)
         self.auto_monitor.setChecked(True)
         controls_layout.addWidget(self.auto_monitor)
 
         # Clear history button
         clear_btn = QPushButton("Clear History")
+        clear_btn.setAccessibleName("Clear clipboard history")
+        clear_btn.setMinimumHeight(44)
         clear_btn.clicked.connect(self.clear_history)
         controls_layout.addWidget(clear_btn)
 
@@ -178,6 +186,7 @@ class EnhancedClipboardGUI(QMainWindow):
         history_layout = QVBoxLayout(history_group)
 
         self.history_list = QListWidget()
+        self.history_list.setAccessibleName("Clipboard history list")
         self.history_list.itemDoubleClicked.connect(self.restore_from_history)
         history_layout.addWidget(self.history_list)
 
@@ -198,9 +207,9 @@ class EnhancedClipboardGUI(QMainWindow):
         slot_buttons_layout = QHBoxLayout()
         for i in range(1, 6):
             slot_btn = QPushButton(f"Slot {i}")
-            slot_btn.clicked.connect(
-                lambda checked, slot=i: self.save_to_slot(slot)
-            )
+            slot_btn.setAccessibleName(f"Save to slot {i}")
+            slot_btn.setMinimumHeight(44)
+            slot_btn.clicked.connect(lambda checked, slot=i: self.save_to_slot(slot))
             slot_buttons_layout.addWidget(slot_btn)
 
         controls_layout.addLayout(slot_buttons_layout)
@@ -209,6 +218,8 @@ class EnhancedClipboardGUI(QMainWindow):
         restore_buttons_layout = QHBoxLayout()
         for i in range(1, 6):
             restore_btn = QPushButton(f"Restore {i}")
+            restore_btn.setAccessibleName(f"Restore from slot {i}")
+            restore_btn.setMinimumHeight(44)
             restore_btn.clicked.connect(
                 lambda checked, slot=i: self.restore_from_slot(slot)
             )
@@ -222,6 +233,7 @@ class EnhancedClipboardGUI(QMainWindow):
         slots_display_layout = QVBoxLayout(slots_display_group)
 
         self.slots_list = QListWidget()
+        self.slots_list.setAccessibleName("Clipboard slot contents")
         slots_display_layout.addWidget(self.slots_list)
 
         layout.addWidget(slots_display_group)
@@ -240,6 +252,7 @@ class EnhancedClipboardGUI(QMainWindow):
 
         # Text input area
         self.text_input = QTextEdit()
+        self.text_input.setAccessibleName("Text to manipulate")
         self.text_input.setPlaceholderText(
             "Paste or type text here for manipulation..."
         )
@@ -249,18 +262,26 @@ class EnhancedClipboardGUI(QMainWindow):
         button_layout = QHBoxLayout()
 
         uppercase_btn = QPushButton("UPPERCASE")
+        uppercase_btn.setAccessibleName("Convert to uppercase")
+        uppercase_btn.setMinimumHeight(44)
         uppercase_btn.clicked.connect(self.convert_uppercase)
         button_layout.addWidget(uppercase_btn)
 
         lowercase_btn = QPushButton("lowercase")
+        lowercase_btn.setAccessibleName("Convert to lowercase")
+        lowercase_btn.setMinimumHeight(44)
         lowercase_btn.clicked.connect(self.convert_lowercase)
         button_layout.addWidget(lowercase_btn)
 
         title_case_btn = QPushButton("Title Case")
+        title_case_btn.setAccessibleName("Convert to title case")
+        title_case_btn.setMinimumHeight(44)
         title_case_btn.clicked.connect(self.convert_title_case)
         button_layout.addWidget(title_case_btn)
 
         remove_spaces_btn = QPushButton("Remove Spaces")
+        remove_spaces_btn.setAccessibleName("Remove extra spaces")
+        remove_spaces_btn.setMinimumHeight(44)
         remove_spaces_btn.clicked.connect(self.remove_spaces)
         button_layout.addWidget(remove_spaces_btn)
 
@@ -270,14 +291,20 @@ class EnhancedClipboardGUI(QMainWindow):
         button_layout2 = QHBoxLayout()
 
         remove_lines_btn = QPushButton("Remove Empty Lines")
+        remove_lines_btn.setAccessibleName("Remove empty lines")
+        remove_lines_btn.setMinimumHeight(44)
         remove_lines_btn.clicked.connect(self.remove_empty_lines)
         button_layout2.addWidget(remove_lines_btn)
 
         sort_lines_btn = QPushButton("Sort Lines")
+        sort_lines_btn.setAccessibleName("Sort lines alphabetically")
+        sort_lines_btn.setMinimumHeight(44)
         sort_lines_btn.clicked.connect(self.sort_lines)
         button_layout2.addWidget(sort_lines_btn)
 
         word_count_btn = QPushButton("Word Count")
+        word_count_btn.setAccessibleName("Show word count")
+        word_count_btn.setMinimumHeight(44)
         word_count_btn.clicked.connect(self.show_word_count)
         button_layout2.addWidget(word_count_btn)
 
@@ -301,14 +328,20 @@ class EnhancedClipboardGUI(QMainWindow):
         button_layout = QHBoxLayout()
 
         analyze_btn = QPushButton("Analyze Current Clipboard")
+        analyze_btn.setAccessibleName("Analyze current clipboard content")
+        analyze_btn.setMinimumHeight(44)
         analyze_btn.clicked.connect(self.analyze_clipboard)
         button_layout.addWidget(analyze_btn)
 
         history_stats_btn = QPushButton("History Statistics")
+        history_stats_btn.setAccessibleName("Show clipboard history statistics")
+        history_stats_btn.setMinimumHeight(44)
         history_stats_btn.clicked.connect(self.show_history_stats)
         button_layout.addWidget(history_stats_btn)
 
         data_types_btn = QPushButton("Data Types Report")
+        data_types_btn.setAccessibleName("Show clipboard data types report")
+        data_types_btn.setMinimumHeight(44)
         data_types_btn.clicked.connect(self.show_data_types)
         button_layout.addWidget(data_types_btn)
 
@@ -316,6 +349,7 @@ class EnhancedClipboardGUI(QMainWindow):
 
         # Analysis results
         self.analysis_results = QTextEdit()
+        self.analysis_results.setAccessibleName("Clipboard analysis results")
         self.analysis_results.setReadOnly(True)
         self.analysis_results.setPlainText(
             "Clipboard analysis results will appear here.\n"
@@ -334,9 +368,7 @@ class EnhancedClipboardGUI(QMainWindow):
 
         # Placeholder for clipboard monitoring
         # In a real implementation, this would check the system clipboard
-        self.status_text.append(
-            "Monitoring clipboard... (Implementation ready)"
-        )
+        self.status_text.append("Monitoring clipboard... (Implementation ready)")
 
     def clear_history(self):
         """Clear clipboard history."""
@@ -363,9 +395,7 @@ class EnhancedClipboardGUI(QMainWindow):
 
     def save_to_slot(self, slot_number):
         """Save current clipboard to a slot."""
-        self.status_text.append(
-            f"Saved current clipboard to slot {slot_number}"
-        )
+        self.status_text.append(f"Saved current clipboard to slot {slot_number}")
         self.update_slots_display()
 
         QMessageBox.information(
@@ -454,9 +484,7 @@ class EnhancedClipboardGUI(QMainWindow):
         """Analyze current clipboard content."""
         self.analysis_results.clear()
         self.analysis_results.append("=== Clipboard Analysis ===")
-        self.analysis_results.append(
-            "Analysis functionality ready for implementation."
-        )
+        self.analysis_results.append("Analysis functionality ready for implementation.")
         self.analysis_results.append("")
         self.analysis_results.append("This tool will analyze:")
         self.analysis_results.append("• Data types in clipboard")

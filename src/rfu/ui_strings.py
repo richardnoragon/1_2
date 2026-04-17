@@ -26,7 +26,18 @@ class Hub:
 
 class FileFinder:
     TITLE = "File Finder"
+    WINDOW_TITLE = "File Finder — RFU"
     LOADING = "Loading File Finder…"
+    MODAL_ERROR_TITLE = "File Finder"
+    ERR_INIT_FAILED = (
+        "Could not start File Finder. " "Please try again or restart the application."
+    )
+    ERR_SEARCH_FAILED = (
+        "File search could not be completed. "
+        "Check that the folder is accessible and try again."
+    )
+    ERR_OPEN_FAILED = "Could not open the selected file. Check that the file still exists and you have permission to open it."
+    ERR_METADATA_FAILED = "Could not load file metadata."
 
 
 class FileRenamer:
@@ -81,12 +92,38 @@ class QuickMover:
 
 class SizeAnalyzer:
     TITLE = "Size Analyzer"
+    WINDOW_TITLE = "Size Analyzer — RFU"
     LOADING = "Loading Size Analyzer…"
+    MODAL_ERROR_TITLE = "Size Analyzer"
+    ERR_INIT_FAILED = (
+        "Could not start Size Analyzer. " "Please try again or restart the application."
+    )
+    ERR_ANALYSIS_FAILED = (
+        "Size analysis could not be completed. "
+        "Check that the folder is accessible and try again."
+    )
+    ERR_FILTER_INVALID = (
+        "Invalid name filter. "
+        "Please enter a valid file name pattern or leave the filter empty."
+    )
+    ERR_EXPORT_FAILED = (
+        "Could not export analysis results. "
+        "Check that you have write permission to the chosen location."
+    )
 
 
 class DuplicateFinder:
     TITLE = "Duplicate Finder"
+    WINDOW_TITLE = "Duplicate Finder — RFU"
     LOADING = "Loading Duplicate Finder…"
+    ERR_INIT_FAILED = (
+        "Could not start Duplicate Finder. "
+        "Please try again or restart the application."
+    )
+    ERR_SCAN_FAILED = (
+        "Duplicate scan could not be completed. "
+        "Check that the folder is accessible and try again."
+    )
 
 
 class FileComparison:
@@ -186,18 +223,125 @@ class SynchronizationBackup:
     TITLE = "Synchronization & Backup"
     LOADING = "Loading Synchronization & Backup…"
     DRY_RUN_LABEL = "Dry Run (Preview Only)"
+    WINDOW_TITLE = "Synchronize - Richard's File Utilities"
+    # Labels
+    LABEL_NO_DIR_SELECTED = "No directory selected"
+    # Status messages
+    STATUS_COMPARISON_COMPLETE = "Comparison complete — ready to sync"
+    STATUS_SYNC_COMPLETE = "Synchronization complete!"
+    STATUS_DRY_RUN_COMPLETE = "Dry run complete — no files were modified"
+    # Empty state messages (ERR-6c: actionable)
+    EMPTY_STATE_NO_FILES = "No files to display — select a directory first."
+    # User-friendly error messages (ERR-4b: clear, actionable, non-technical)
+    ERR_CANNOT_READ_DIR = (
+        "Could not read the selected directory. "
+        "Check that the folder exists and you have permission to access it."
+    )
+    ERR_CANNOT_COMPARE = (
+        "Could not compare the directories. "
+        "Check that both folders are accessible and try again."
+    )
+    ERR_CANNOT_START_SYNC = (
+        "Could not start the sync operation. "
+        "Check that both directories are accessible and try again."
+    )
+    ERR_SYNC_FAILED = (
+        "Synchronization encountered an error. "
+        "Some files may not have been copied. Check the log for details."
+    )
 
 
 class Organizer:
     TITLE = "File Organizer"
+    WINDOW_TITLE = "File Organizer — RFU"
     LOADING = "Loading File Organizer…"
     DRY_RUN_LABEL = "Dry Run (Preview Only)"
+    MODAL_ERROR_TITLE = "Error"
+    ERR_INIT_FAILED = (
+        "Could not start File Organizer. "
+        "Please try again or restart the application."
+    )
+    ERR_ORGANIZE_FAILED = (
+        "File organization could not be completed. "
+        "Check that the source folder is accessible and try again."
+    )
+    ERR_SAVE_SETTINGS_FAILED = (
+        "Could not save organizer settings. "
+        "Check that the destination folder is writable and try again."
+    )
+    ERR_LOAD_SETTINGS_FAILED = (
+        "Could not load organizer settings. "
+        "Check that the file is a valid settings file and try again."
+    )
+    ERR_EXPORT_RESULTS_FAILED = (
+        "Could not export results. "
+        "Check that you have write permission to the chosen location."
+    )
+    ERR_PREVIEW_FAILED = (
+        "Could not generate a preview. "
+        "Make sure the source folder is accessible and try again."
+    )
+    ERR_READ_DIR_FAILED = (
+        "Could not read the source directory. "
+        "Check that the folder exists and you have the required permissions."
+    )
+    ERR_UNDO_FAILED = (
+        "Could not undo the last organization. "
+        "The files may have already been moved or deleted."
+    )
 
 
 class AdvancedFolders:
     TITLE = "Advanced Folders"
     LOADING = "Loading Advanced Folders…"
     DRY_RUN_LABEL = "Dry Run (Preview Only)"
+    WINDOW_TITLE = "Advanced Folders - Richard's File Utilities"
+    # Buttons
+    BTN_NEW_FOLDER = "📁 New Folder"
+    BTN_EDIT_FOLDER = "✏️ Edit"
+    BTN_DELETE_FOLDER = "🗑️ Delete"
+    BTN_REFRESH = "🔄 Refresh"
+    BTN_SEARCH = "🔍 Search"
+    BTN_EXPORT = "📤 Export"
+    BTN_SETTINGS = "⚙️ Settings"
+    # Labels
+    LABEL_NO_FOLDER_SELECTED = "No folder selected"
+    LABEL_PANEL_TITLE = "Advanced Folders"
+    LABEL_RESULTS_TITLE = "Search Results"
+    # Empty state messages (ERR-6c: actionable)
+    EMPTY_STATE_NO_FOLDER = (
+        "No folder selected — choose a folder from the list on the left."
+    )
+    EMPTY_STATE_NO_RESULTS = "No results found — try adjusting your search filter or select a different folder."
+    # Modal titles
+    MODAL_ERROR_TITLE = "Error"
+    MODAL_VALIDATION_TITLE = "Validation Error"
+    MODAL_SETTINGS_TITLE = "Settings"
+    # User-friendly error messages (ERR-4b: clear, actionable, non-technical)
+    ERR_CREATE_FAILED = (
+        "Could not create the folder configuration. "
+        "Check that your settings are valid and try again."
+    )
+    ERR_UPDATE_FAILED = (
+        "Could not update the folder configuration. "
+        "Check that your settings are valid and try again."
+    )
+    ERR_DELETE_FAILED = (
+        "Could not delete the folder configuration. "
+        "Please try again or restart the application."
+    )
+    ERR_EXPORT_FAILED = (
+        "Could not export results. "
+        "Check that you have write permission to the chosen location."
+    )
+    ERR_SEARCH_FAILED = (
+        "Search could not be completed. "
+        "Check that the configured directories exist and are accessible."
+    )
+    # Status messages
+    STATUS_READY = "Ready"
+    STATUS_SEARCHING = "Searching…"
+    STATUS_FOLDER_DELETED = "Folder deleted"
 
 
 # ---------------------------------------------------------------------------
@@ -339,8 +483,19 @@ class SystemCleanup:
 
 class SoftwareMaintenance:
     TITLE = "Software Maintenance"
+    WINDOW_TITLE = "Software Maintenance — RFU"
     LOADING = "Loading Software Maintenance…"
     DRY_RUN_LABEL = "Dry Run (Preview Only)"
+    MODAL_ERROR_TITLE = "Software Maintenance"
+    ERR_INIT_FAILED = (
+        "Could not start Software Maintenance. "
+        "Please try again or restart the application."
+    )
+    ERR_SCAN_FAILED = "Software scan could not be completed. Please try again."
+    ERR_EXPORT_FAILED = (
+        "Could not export. Check that you have write permission to the destination."
+    )
+    ERR_IMPORT_FAILED = "Could not import. Check that the file is valid and accessible."
 
 
 # ---------------------------------------------------------------------------
@@ -350,8 +505,28 @@ class SoftwareMaintenance:
 
 class NetworkTools:
     TITLE = "Network Tools"
+    WINDOW_TITLE = "Network Tools — RFU"
     LOADING = "Loading Network Tools…"
     DRY_RUN_LABEL = "Dry Run (Preview Only)"
+    MODAL_ERROR_TITLE = "Network Error"
+    ERR_INIT_FAILED = (
+        "Could not start Network Tools. " "Please try again or restart the application."
+    )
+    ERR_OPERATION_FAILED = (
+        "Network operation could not be completed. "
+        "Check your network connection and try again."
+    )
+    ERR_PORT_INVALID = (
+        "Invalid port format. "
+        "Please enter comma-separated port numbers (e.g., 80, 443, 8080)."
+    )
+    ERR_EXPORT_FAILED = (
+        "Could not export results. "
+        "Check that you have write permission to the chosen location."
+    )
+    ERR_NO_TARGET = (
+        "Please enter a target hostname or IP address before starting a scan."
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -361,8 +536,53 @@ class NetworkTools:
 
 class FileOperations:
     TITLE = "File Operations"
+    WINDOW_TITLE = "File Operations — RFU"
     LOADING = "Loading File Operations…"
     DRY_RUN_LABEL = "Dry Run (Preview Only)"
+    HEADER = "File Operations"
+    DESC = "Tools for file manipulation, splitting, copying, and synchronization"
+    ERR_INIT_FAILED = "Could not open the File Operations tools. Please try again."
+
+
+class Logs:
+    TITLE = "Logs"
+    WINDOW_TITLE = "Application Logs — RFU"
+    LOADING = "Loading Logs…"
+    HEADER = "Application Logs"
+    DESC = "Real-time application logs and system monitoring"
+    BTN_REFRESH = "🔄 Refresh Logs"
+    BTN_CLEAR = "🗑️ Clear Display"
+    BTN_EXPORT = "💾 Export Logs"
+    ERR_LOAD_FAILED = "Could not load log file."
+    ERR_EXPORT_FAILED = "Could not export logs."
+
+
+class FileSplitter:
+    TITLE = "File Splitter"
+    WINDOW_TITLE = "File Splitter — RFU"
+    LOADING = "Loading File Splitter…"
+    ERR_INIT_FAILED = (
+        "Could not start File Splitter. " "Please try again or restart the application."
+    )
+
+
+class BatchRename:
+    TITLE = "Batch Rename"
+    WINDOW_TITLE = "Batch Rename — RFU"
+    LOADING = "Loading Batch Rename…"
+    ERR_INIT_FAILED = (
+        "Could not start Batch Rename. " "Please try again or restart the application."
+    )
+
+
+class CompressionTools:
+    TITLE = "Compression Tools"
+    WINDOW_TITLE = "Compression Tools — RFU"
+    LOADING = "Loading Compression Tools…"
+    ERR_INIT_FAILED = (
+        "Could not start Compression Tools. "
+        "Please try again or restart the application."
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -374,3 +594,333 @@ class Privacy:
     TITLE = "Privacy Tools"
     LOADING = "Loading Privacy Tools…"
     DRY_RUN_LABEL = "Dry Run (Preview Only)"
+
+
+# ---------------------------------------------------------------------------
+# Tier 2 tools — added during Phase 3 harmonization
+# ---------------------------------------------------------------------------
+
+
+class Checksum:
+    TITLE = "Checksum Calculator"
+    WINDOW_TITLE = "Checksum Calculator — RFU"
+    LOADING = "Loading Checksum Calculator…"
+    ERR_INIT_FAILED = (
+        "Could not start Checksum Calculator. "
+        "Please try again or restart the application."
+    )
+    ERR_CALCULATE_FAILED = (
+        "Checksum calculation failed. "
+        "Check that the file is accessible and try again."
+    )
+
+
+class EmptyFolders:
+    TITLE = "Empty Folders Finder"
+    WINDOW_TITLE = "Empty Folders Finder — RFU"
+    LOADING = "Loading Empty Folders Finder…"
+    ERR_INIT_FAILED = (
+        "Could not start Empty Folders Finder. "
+        "Please try again or restart the application."
+    )
+    ERR_SCAN_FAILED = (
+        "Empty folders scan could not be completed. "
+        "Check that the directory is accessible and try again."
+    )
+    ERR_DELETE_FAILED = (
+        "Could not delete the selected folders. " "Check permissions and try again."
+    )
+
+
+class AdvancedCatalog:
+    TITLE = "Advanced File Catalog"
+    WINDOW_TITLE = "Advanced File Catalog — RFU"
+    LOADING = "Loading Advanced File Catalog…"
+    ERR_INIT_FAILED = (
+        "Could not start Advanced File Catalog. "
+        "Please try again or restart the application."
+    )
+    ERR_SCAN_FAILED = (
+        "Catalog scan could not be completed. "
+        "Check that the directory is accessible and try again."
+    )
+    ERR_EXPORT_FAILED = (
+        "Catalog export could not be completed. "
+        "Check that you have write permission to the destination."
+    )
+
+
+class SystemDiagnostics:
+    TITLE = "System Diagnostics"
+    WINDOW_TITLE = "System Diagnostics — RFU"
+    LOADING = "Loading System Diagnostics…"
+    ERR_INIT_FAILED = (
+        "Could not start System Diagnostics. "
+        "Please try again or restart the application."
+    )
+    ERR_GATHER_FAILED = "Could not gather system information. Please try again."
+
+
+class ProcessMonitor:
+    TITLE = "Process Monitor"
+    WINDOW_TITLE = "Process Monitor — RFU"
+    LOADING = "Loading Process Monitor…"
+    ERR_INIT_FAILED = (
+        "Could not start Process Monitor. "
+        "Please try again or restart the application."
+    )
+    ERR_REFRESH_FAILED = (
+        "Could not retrieve process list. "
+        "Some processes may require administrator access."
+    )
+
+
+class SystemInfo:
+    TITLE = "System Information"
+    WINDOW_TITLE = "System Information — RFU"
+    LOADING = "Loading System Information…"
+    MODAL_ERROR_TITLE = "System Information"
+    ERR_INIT_FAILED = (
+        "Could not start System Information. "
+        "Please try again or restart the application."
+    )
+    ERR_GATHER_FAILED = "Could not gather system information. Please try again."
+    ERR_EXPORT_FAILED = "Could not export system information. Check that you have write permission to the destination."
+
+
+class PreferencePortability:
+    TITLE = "Preference Portability"
+    WINDOW_TITLE = "Preference Portability — RFU"
+    LOADING = "Loading Preference Portability…"
+    MODAL_ERROR_TITLE = "Preference Portability"
+    ERR_INIT_FAILED = (
+        "Could not start Preference Portability. "
+        "Please try again or restart the application."
+    )
+    ERR_EXPORT_FAILED = (
+        "Preference export failed. "
+        "Check that you have write permission to the destination."
+    )
+    ERR_IMPORT_FAILED = (
+        "Preference import failed. "
+        "Check that the source file is valid and accessible."
+    )
+
+
+class ImageMetadata:
+    TITLE = "Image Metadata Editor"
+    WINDOW_TITLE = "Image Metadata Editor — RFU"
+    LOADING = "Loading Image Metadata Editor…"
+    MODAL_ERROR_TITLE = "Image Metadata Editor"
+    ERR_INIT_FAILED = (
+        "Could not start Image Metadata Editor. "
+        "Please try again or restart the application."
+    )
+    ERR_LOAD_FAILED = (
+        "Failed to load image metadata. "
+        "Check that the file is a supported image format."
+    )
+    ERR_SAVE_FAILED = (
+        "Failed to save image metadata. "
+        "Check that you have write permission to the file."
+    )
+
+
+class OfficeMetadata:
+    TITLE = "Office Metadata Tools"
+    WINDOW_TITLE = "Office Metadata Tools — RFU"
+    LOADING = "Loading Office Metadata Tools…"
+    ERR_INIT_FAILED = (
+        "Could not start Office Metadata Tools. "
+        "Please try again or restart the application."
+    )
+    ERR_LOAD_FAILED = (
+        "Failed to load office document metadata. "
+        "Check that the file is a supported office format."
+    )
+    ERR_SAVE_FAILED = (
+        "Failed to save office document metadata. "
+        "Check that you have write permission to the file."
+    )
+
+
+class FileTouch:
+    TITLE = "File Touch"
+    WINDOW_TITLE = "File Touch — RFU"
+    LOADING = "Loading File Touch…"
+    MODAL_ERROR_TITLE = "File Touch"
+    ERR_INIT_FAILED = (
+        "Could not start File Touch. " "Please try again or restart the application."
+    )
+    ERR_FETCH_FAILED = (
+        "Failed to fetch file timestamps. "
+        "Check that the file exists and is accessible."
+    )
+    ERR_APPLY_FAILED = (
+        "Failed to apply timestamp changes. "
+        "Check that you have write permission to the file."
+    )
+
+
+class SecureDelete:
+    TITLE = "Secure Delete"
+    WINDOW_TITLE = "Secure Delete — RFU"
+    LOADING = "Loading Secure Delete…"
+    ERR_INIT_FAILED = (
+        "Could not start Secure Delete. " "Please try again or restart the application."
+    )
+    ERR_DELETE_FAILED = (
+        "Secure deletion failed. "
+        "Check that you have permission to delete the selected files."
+    )
+    ERR_NO_FILES = "No files selected for deletion."
+
+
+class Encryption:
+    TITLE = "Encrypt / Decrypt"
+    WINDOW_TITLE = "Encrypt / Decrypt — RFU"
+    LOADING = "Loading Encrypt / Decrypt…"
+    ERR_INIT_FAILED = (
+        "Could not start Encrypt / Decrypt. "
+        "Please try again or restart the application."
+    )
+    ERR_OPERATION_FAILED = (
+        "Encryption/decryption operation failed. "
+        "Check your password and file permissions."
+    )
+    ERR_NO_FILES = "No files selected for the operation."
+
+
+class SecurityScanner:
+    TITLE = "Security Scanner"
+    WINDOW_TITLE = "Security Scanner — RFU"
+    LOADING = "Loading Security Scanner…"
+    ERR_INIT_FAILED = (
+        "Could not start Security Scanner. "
+        "Please try again or restart the application."
+    )
+    ERR_SCAN_FAILED = (
+        "Security scan failed. "
+        "Some scan modules may not be available on this system."
+    )
+
+
+class PasswordGenerator:
+    TITLE = "Password Generator"
+    WINDOW_TITLE = "Password Generator — RFU"
+    LOADING = "Loading Password Generator…"
+    ERR_INIT_FAILED = (
+        "Could not start Password Generator. "
+        "Please try again or restart the application."
+    )
+
+
+class PDFTools:
+    TITLE = "PDF Tools"
+    WINDOW_TITLE = "PDF Tools — RFU"
+    LOADING = "Loading PDF Tools…"
+    ERR_INIT_FAILED = (
+        "Could not start PDF Tools. " "Please try again or restart the application."
+    )
+    ERR_NO_FILE = "No PDF file selected."
+    ERR_LOAD_FAILED = "Failed to load the selected PDF file."
+
+
+class Privacy:
+    TITLE = "Privacy Tools"
+    WINDOW_TITLE = "Privacy Tools — RFU"
+    LOADING = "Loading Privacy Tools…"
+    MODAL_ERROR_TITLE = "Privacy Tools"
+    ERR_INIT_FAILED = (
+        "Could not start Privacy Tools. " "Please try again or restart the application."
+    )
+    ERR_CLEAN_FAILED = (
+        "Privacy clean operation failed. "
+        "Check that you have the required permissions."
+    )
+    ERR_PREVIEW_FAILED = (
+        "Could not preview the operation. "
+        "Check that you have the required permissions."
+    )
+
+
+class SecureDelete:
+    TITLE = "Secure Delete"
+    WINDOW_TITLE = "Secure Delete — RFU"
+    LOADING = "Loading Secure Delete…"
+    ERR_INIT_FAILED = (
+        "Could not start Secure Delete. " "Please try again or restart the application."
+    )
+    ERR_DELETE_FAILED = (
+        "Secure deletion failed. "
+        "Check that you have permission to delete the selected files."
+    )
+    ERR_NO_FILES = "No files selected for deletion."
+
+
+class Encryption:
+    TITLE = "Encrypt / Decrypt"
+    WINDOW_TITLE = "Encrypt / Decrypt — RFU"
+    LOADING = "Loading Encrypt / Decrypt…"
+    ERR_INIT_FAILED = (
+        "Could not start Encrypt / Decrypt. "
+        "Please try again or restart the application."
+    )
+    ERR_OPERATION_FAILED = (
+        "Encryption/decryption operation failed. "
+        "Check your password and file permissions."
+    )
+    ERR_NO_FILES = "No files selected for the operation."
+
+
+class SecurityScanner:
+    TITLE = "Security Scanner"
+    WINDOW_TITLE = "Security Scanner — RFU"
+    LOADING = "Loading Security Scanner…"
+    ERR_INIT_FAILED = (
+        "Could not start Security Scanner. "
+        "Please try again or restart the application."
+    )
+    ERR_SCAN_FAILED = (
+        "Security scan failed. "
+        "Some scan modules may not be available on this system."
+    )
+
+
+class PasswordGenerator:
+    TITLE = "Password Generator"
+    WINDOW_TITLE = "Password Generator — RFU"
+    LOADING = "Loading Password Generator…"
+    ERR_INIT_FAILED = (
+        "Could not start Password Generator. "
+        "Please try again or restart the application."
+    )
+
+
+class PDFTools:
+    TITLE = "PDF Tools"
+    WINDOW_TITLE = "PDF Tools — RFU"
+    LOADING = "Loading PDF Tools…"
+    ERR_INIT_FAILED = (
+        "Could not start PDF Tools. " "Please try again or restart the application."
+    )
+    ERR_NO_FILE = "No PDF file selected."
+    ERR_LOAD_FAILED = "Failed to load the selected PDF file."
+
+
+class Privacy:
+    TITLE = "Privacy Tools"
+    WINDOW_TITLE = "Privacy Tools — RFU"
+    LOADING = "Loading Privacy Tools…"
+    MODAL_ERROR_TITLE = "Privacy Tools"
+    ERR_INIT_FAILED = (
+        "Could not start Privacy Tools. " "Please try again or restart the application."
+    )
+    ERR_CLEAN_FAILED = (
+        "Privacy clean operation failed. "
+        "Check that you have the required permissions."
+    )
+    ERR_PREVIEW_FAILED = (
+        "Could not preview the operation. "
+        "Check that you have the required permissions."
+    )

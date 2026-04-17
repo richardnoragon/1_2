@@ -7,33 +7,35 @@ for various office formats. Integrated with the StandardWindow framework
 for consistent UI.
 """
 
+import json
+import logging
 import os
 import sys
-import json
-import zipfile
 import xml.etree.ElementTree as ET
+import zipfile
 from datetime import datetime
-from typing import Dict, Any
+from typing import Any, Dict
 
 try:
-    from src.gui.themes import token
+    from PyQt5.QtCore import Qt, QThread, pyqtSignal
     from PyQt5.QtWidgets import (
         QApplication,
-        QWidget,
-        QVBoxLayout,
-        QHBoxLayout,
-        QTabWidget,
-        QPushButton,
-        QLabel,
-        QTextEdit,
         QFileDialog,
+        QGroupBox,
+        QHBoxLayout,
+        QLabel,
         QMessageBox,
+        QProgressBar,
+        QPushButton,
         QTableWidget,
         QTableWidgetItem,
-        QProgressBar,
-        QGroupBox,
+        QTabWidget,
+        QTextEdit,
+        QVBoxLayout,
+        QWidget,
     )
-    from PyQt5.QtCore import Qt, QThread, pyqtSignal
+
+    from src.gui.themes import ThemeManager, token
 except ImportError:
     print("PyQt5 not available. Please install PyQt5 to use the GUI features.")
     sys.exit(1)
@@ -48,6 +50,52 @@ except ImportError:
     from PyQt5.QtWidgets import QMainWindow as StandardWindow
 
     STANDARD_WINDOW_AVAILABLE = False
+
+try:
+    from src.log_manager import get_log_manager as _get_log_manager
+except ImportError:
+    _get_log_manager = None
+
+try:
+    from src.rfu.ui_strings import OfficeMetadata as _OMStrings
+except ImportError:
+
+    class _OMStrings:
+        """Fallback string constants — mirrors src/rfu/ui_strings.OfficeMetadata."""
+
+        TITLE = "Office Metadata Tools"
+        WINDOW_TITLE = "Office Metadata Tools — RFU"
+        LOADING = "Loading Office Metadata Tools…"
+        ERR_INIT_FAILED = (
+            "Could not start Office Metadata Tools. "
+            "Please try again or restart the application."
+        )
+        ERR_LOAD_FAILED = (
+            "Failed to load office document metadata. "
+            "Check that the file is a supported office format."
+        )
+        ERR_SAVE_FAILED = (
+            "Failed to save office document metadata. "
+            "Check that you have write permission to the file."
+        )
+
+
+# ---------------------------------------------------------------------------
+# CP: Component Placement — PrimaryButton / SecondaryButton / Modal
+# ---------------------------------------------------------------------------
+try:
+    from src.gui.components.buttons import PrimaryButton, SecondaryButton
+
+    _CP_AVAILABLE = True
+except ImportError:
+    PrimaryButton = QPushButton  # type: ignore[misc,assignment]
+    SecondaryButton = QPushButton  # type: ignore[misc,assignment]
+    _CP_AVAILABLE = False
+
+try:
+    from src.gui.components.modal import Modal
+except ImportError:
+    Modal = None  # type: ignore[assignment,misc]
 
 
 class OfficeMetadataLogic:
@@ -101,9 +149,7 @@ class OfficeMetadataLogic:
                 if "docProps/custom.xml" in zip_file.namelist():
                     custom_xml = zip_file.read("docProps/custom.xml")
                     metadata["custom_properties"] = (
-                        OfficeMetadataLogic._parse_custom_properties(
-                            custom_xml
-                        )
+                        OfficeMetadataLogic._parse_custom_properties(custom_xml)
                     )
 
                 # Security analysis
@@ -111,7 +157,9 @@ class OfficeMetadataLogic:
                     OfficeMetadataLogic._analyze_security_metadata(metadata)
                 )
 
-        except Exception as e:
+        except (
+            Exception
+        ) as e:  # ERR: non-fatal — exception re-raised to calling GUI handler
             raise Exception(f"Error reading OOXML file: {e}")
 
         return metadata
@@ -150,9 +198,7 @@ class OfficeMetadataLogic:
             "filename": os.path.basename(file_path),
             "filepath": file_path,
             "size": stat.st_size,
-            "size_formatted": OfficeMetadataLogic._format_file_size(
-                stat.st_size
-            ),
+            "size_formatted": OfficeMetadataLogic._format_file_size(stat.st_size),
             "created": datetime.fromtimestamp(stat.st_ctime).isoformat(),
             "modified": datetime.fromtimestamp(stat.st_mtime).isoformat(),
             "accessed": datetime.fromtimestamp(stat.st_atime).isoformat(),
@@ -204,7 +250,9 @@ class OfficeMetadataLogic:
 
             return properties
 
-        except Exception as e:
+        except (
+            Exception
+        ) as e:  # ERR: non-fatal — returns error dict; error key surfaced in metadata display
             return {"error": f"Error parsing core properties: {e}"}
 
     @staticmethod
@@ -243,7 +291,9 @@ class OfficeMetadataLogic:
 
             return properties
 
-        except Exception as e:
+        except (
+            Exception
+        ) as e:  # ERR: non-fatal — returns error dict; error key surfaced in metadata display
             return {"error": f"Error parsing app properties: {e}"}
 
     @staticmethod
@@ -262,7 +312,9 @@ class OfficeMetadataLogic:
 
             return properties
 
-        except Exception as e:
+        except (
+            Exception
+        ) as e:  # ERR: non-fatal — returns error dict; error key surfaced in metadata display
             return {"error": f"Error parsing custom properties: {e}"}
 
     @staticmethod
@@ -288,13 +340,9 @@ class OfficeMetadataLogic:
         # Check application properties for company info
         app_props = metadata.get("app_properties", {})
         if app_props.get("Company"):
-            security_info["privacy_concerns"].append(
-                f"Company: {app_props['Company']}"
-            )
+            security_info["privacy_concerns"].append(f"Company: {app_props['Company']}")
         if app_props.get("Manager"):
-            security_info["privacy_concerns"].append(
-                f"Manager: {app_props['Manager']}"
-            )
+            security_info["privacy_concerns"].append(f"Manager: {app_props['Manager']}")
 
         # Check for potentially sensitive custom properties
         custom_props = metadata.get("custom_properties", {})
@@ -348,9 +396,7 @@ class MetadataWorker(QThread):
     def run(self):
         """Run the metadata operation."""
         try:
-            self.status_updated.emit(
-                f"Processing: {os.path.basename(self.file_path)}"
-            )
+            self.status_updated.emit(f"Processing: {os.path.basename(self.file_path)}")
             self.progress_updated.emit(20)
 
             if self.operation_type == "extract":
@@ -368,18 +414,25 @@ class MetadataWorker(QThread):
 class OfficeMetadataGUI(StandardWindow):
     """Enhanced Office Metadata Tools GUI with comprehensive features."""
 
-    def __init__(self):
+    def __init__(self, hub_instance=None):
         if STANDARD_WINDOW_AVAILABLE:
             super().__init__(
-                title="Office Metadata Tools - Richard's File Utilities",
+                title=_OMStrings.WINDOW_TITLE,
                 window_type="utility",
             )
         else:
             super().__init__()
-            self.setWindowTitle(
-                "Office Metadata Tools - Richard's File Utilities"
-            )
+            self.setWindowTitle(_OMStrings.WINDOW_TITLE)
             self.setGeometry(100, 100, 1400, 900)
+
+        self._hub = hub_instance
+        if _get_log_manager is not None:
+            try:
+                self._logger = _get_log_manager().get_logger("OfficeMetadataGUI")
+            except Exception:
+                self._logger = logging.getLogger("OfficeMetadataGUI")
+        else:
+            self._logger = logging.getLogger("OfficeMetadataGUI")
 
         self.current_file = None
         self.current_metadata = {}
@@ -390,27 +443,64 @@ class OfficeMetadataGUI(StandardWindow):
         if STANDARD_WINDOW_AVAILABLE:
             self._setup_menu_callbacks()
 
+        self.register_gui_component(
+            tool_id="office_metadata",
+            recovery_callback=self.degraded_fallback,
+        )
+        self._emit_telemetry("ui_view_load", tool_id="office_metadata")
+        ThemeManager.add_theme_changed_callback(self._on_theme_changed)
+
+    # ── GRD : ComponentGuardian integration ──────────────────────────
+
+    def _on_theme_changed(self, variant: str) -> None:
+        """Re-apply token-based stylesheets when the active theme variant changes."""
+        pass  # stylesheets applied at init; live re-apply pending TH-4c/4d
+
+    def register_gui_component(self, tool_id: str, recovery_callback=None) -> None:
+        """Register this widget with ComponentGuardian (no-op if unavailable)."""
+        try:
+            from src.core.guardian.component_guardian import ComponentGuardian
+
+            ComponentGuardian.instance().register(
+                tool_id, self, recovery_callback=recovery_callback
+            )
+        except Exception:
+            pass
+
+    # ── TEL : telemetry stub ──────────────────────────────────────────
+    def _emit_telemetry(self, event_type: str, **kwargs) -> None:
+        """Emit a telemetry event (no-op stub until TEL infrastructure lands)."""
+        try:
+            from src.core.telemetry import emit_telemetry
+
+            emit_telemetry(event_type, **kwargs)
+        except Exception:
+            pass
+
+    def health_check(self) -> bool:
+        """Return True if core widgets are present and functional."""
+        return hasattr(self, "tab_widget") and self.tab_widget is not None
+
+    def degraded_fallback(self) -> None:
+        """Show a minimal error state when the component fails to load."""
+        try:
+            QMessageBox.warning(
+                self,
+                _OMStrings.TITLE,
+                _OMStrings.ERR_INIT_FAILED,
+            )
+        except Exception:
+            pass
+
     def _setup_menu_callbacks(self):
         """Setup tool-specific menu callbacks."""
         if hasattr(self, "menu_manager"):
-            self.menu_manager.register_callback(
-                "open_office_file", self.open_file
-            )
-            self.menu_manager.register_callback(
-                "save_metadata", self.save_metadata
-            )
-            self.menu_manager.register_callback(
-                "export_metadata", self.export_metadata
-            )
-            self.menu_manager.register_callback(
-                "batch_process", self.batch_process
-            )
-            self.menu_manager.register_callback(
-                "security_scan", self.security_scan
-            )
-            self.menu_manager.register_callback(
-                "help_office_metadata", self.show_help
-            )
+            self.menu_manager.register_callback("open_office_file", self.open_file)
+            self.menu_manager.register_callback("save_metadata", self.save_metadata)
+            self.menu_manager.register_callback("export_metadata", self.export_metadata)
+            self.menu_manager.register_callback("batch_process", self.batch_process)
+            self.menu_manager.register_callback("security_scan", self.security_scan)
+            self.menu_manager.register_callback("help_office_metadata", self.show_help)
 
     def init_ui(self):
         """Initialize the user interface."""
@@ -483,16 +573,12 @@ class OfficeMetadataGUI(StandardWindow):
         file_group = QGroupBox("File Operations")
         file_layout = QHBoxLayout(file_group)
 
-        open_button = QPushButton("📂 Open File")
+        open_button = PrimaryButton("📂 Open File")
         open_button.clicked.connect(self.open_file)
-        open_button.setStyleSheet(self._get_button_style("#3498db", "#2980b9"))
         file_layout.addWidget(open_button)
 
-        batch_button = QPushButton("📁 Batch Process")
+        batch_button = SecondaryButton("📁 Batch Process")
         batch_button.clicked.connect(self.batch_process)
-        batch_button.setStyleSheet(
-            self._get_button_style("#9b59b6", "#8e44ad")
-        )
         file_layout.addWidget(batch_button)
 
         control_layout.addWidget(file_group)
@@ -501,23 +587,16 @@ class OfficeMetadataGUI(StandardWindow):
         analysis_group = QGroupBox("Analysis & Export")
         analysis_layout = QHBoxLayout(analysis_group)
 
-        security_button = QPushButton("🔒 Security Scan")
+        security_button = SecondaryButton("🔒 Security Scan")
         security_button.clicked.connect(self.security_scan)
-        security_button.setStyleSheet(
-            self._get_button_style("#e74c3c", "#c0392b")
-        )
         analysis_layout.addWidget(security_button)
 
-        export_button = QPushButton("📤 Export Metadata")
+        export_button = SecondaryButton("📤 Export Metadata")
         export_button.clicked.connect(self.export_metadata)
-        export_button.setStyleSheet(
-            self._get_button_style("#e67e22", "#d35400")
-        )
         analysis_layout.addWidget(export_button)
 
-        save_button = QPushButton("💾 Save Changes")
+        save_button = SecondaryButton("💾 Save Changes")
         save_button.clicked.connect(self.save_metadata)
-        save_button.setStyleSheet(self._get_button_style("#27ae60", "#229954"))
         analysis_layout.addWidget(save_button)
 
         control_layout.addWidget(analysis_group)
@@ -560,6 +639,7 @@ class OfficeMetadataGUI(StandardWindow):
     def create_tab_interface(self, layout):
         """Create the tabbed interface for metadata display."""
         self.tab_widget = QTabWidget()
+        self.tab_widget.setAccessibleName("Metadata tabs")
         self.tab_widget.setStyleSheet(
             """
             QTabWidget::pane {
@@ -608,6 +688,7 @@ class OfficeMetadataGUI(StandardWindow):
         layout = QVBoxLayout(self.file_info_tab)
 
         self.file_info_table = QTableWidget()
+        self.file_info_table.setAccessibleName("File information table")
         self.file_info_table.setColumnCount(2)
         self.file_info_table.setHorizontalHeaderLabels(["Property", "Value"])
         self.file_info_table.horizontalHeader().setStretchLastSection(True)
@@ -621,12 +702,11 @@ class OfficeMetadataGUI(StandardWindow):
         layout = QVBoxLayout(self.core_props_tab)
 
         self.core_props_table = QTableWidget()
+        self.core_props_table.setAccessibleName("Core properties table")
         self.core_props_table.setColumnCount(2)
         self.core_props_table.setHorizontalHeaderLabels(["Property", "Value"])
         self.core_props_table.horizontalHeader().setStretchLastSection(True)
-        self.core_props_table.itemDoubleClicked.connect(
-            self.edit_metadata_item
-        )
+        self.core_props_table.itemDoubleClicked.connect(self.edit_metadata_item)
         layout.addWidget(self.core_props_table)
 
     def create_app_properties_tab(self):
@@ -637,6 +717,7 @@ class OfficeMetadataGUI(StandardWindow):
         layout = QVBoxLayout(self.app_props_tab)
 
         self.app_props_table = QTableWidget()
+        self.app_props_table.setAccessibleName("Application properties table")
         self.app_props_table.setColumnCount(2)
         self.app_props_table.setHorizontalHeaderLabels(["Property", "Value"])
         self.app_props_table.horizontalHeader().setStretchLastSection(True)
@@ -653,9 +734,9 @@ class OfficeMetadataGUI(StandardWindow):
         controls = QWidget()
         controls_layout = QHBoxLayout(controls)
 
-        add_button = QPushButton("➕ Add Property")
+        add_button = SecondaryButton("➕ Add Property")
         add_button.clicked.connect(self.add_custom_property)
-        remove_button = QPushButton("➖ Remove Property")
+        remove_button = SecondaryButton("➖ Remove Property")
         remove_button.clicked.connect(self.remove_custom_property)
 
         controls_layout.addWidget(add_button)
@@ -665,14 +746,11 @@ class OfficeMetadataGUI(StandardWindow):
         layout.addWidget(controls)
 
         self.custom_props_table = QTableWidget()
+        self.custom_props_table.setAccessibleName("Custom properties table")
         self.custom_props_table.setColumnCount(2)
-        self.custom_props_table.setHorizontalHeaderLabels(
-            ["Property", "Value"]
-        )
+        self.custom_props_table.setHorizontalHeaderLabels(["Property", "Value"])
         self.custom_props_table.horizontalHeader().setStretchLastSection(True)
-        self.custom_props_table.itemDoubleClicked.connect(
-            self.edit_metadata_item
-        )
+        self.custom_props_table.itemDoubleClicked.connect(self.edit_metadata_item)
         layout.addWidget(self.custom_props_table)
 
     def create_security_tab(self):
@@ -684,6 +762,7 @@ class OfficeMetadataGUI(StandardWindow):
 
         # Security analysis results
         self.security_text = QTextEdit()
+        self.security_text.setAccessibleName("Security analysis results")
         self.security_text.setReadOnly(True)
         layout.addWidget(self.security_text)
 
@@ -695,6 +774,7 @@ class OfficeMetadataGUI(StandardWindow):
         layout = QVBoxLayout(self.raw_data_tab)
 
         self.raw_data_text = QTextEdit()
+        self.raw_data_text.setAccessibleName("Raw metadata")
         self.raw_data_text.setReadOnly(True)
         self.raw_data_text.setStyleSheet(
             "font-family: 'Courier New', monospace; font-size: 11px;"
@@ -721,15 +801,9 @@ class OfficeMetadataGUI(StandardWindow):
 
             # Create and start metadata worker
             self.metadata_worker = MetadataWorker(file_path, "extract")
-            self.metadata_worker.progress_updated.connect(
-                self.progress_bar.setValue
-            )
-            self.metadata_worker.status_updated.connect(
-                self.status_label.setText
-            )
-            self.metadata_worker.metadata_extracted.connect(
-                self.display_metadata
-            )
+            self.metadata_worker.progress_updated.connect(self.progress_bar.setValue)
+            self.metadata_worker.status_updated.connect(self.status_label.setText)
+            self.metadata_worker.metadata_extracted.connect(self.display_metadata)
             self.metadata_worker.error_occurred.connect(self.handle_error)
             self.metadata_worker.finished.connect(self.worker_finished)
 
@@ -745,21 +819,15 @@ class OfficeMetadataGUI(StandardWindow):
 
         # Core Properties
         if "core_properties" in metadata:
-            self.populate_table(
-                self.core_props_table, metadata["core_properties"]
-            )
+            self.populate_table(self.core_props_table, metadata["core_properties"])
 
         # Application Properties
         if "app_properties" in metadata:
-            self.populate_table(
-                self.app_props_table, metadata["app_properties"]
-            )
+            self.populate_table(self.app_props_table, metadata["app_properties"])
 
         # Custom Properties
         if "custom_properties" in metadata:
-            self.populate_table(
-                self.custom_props_table, metadata["custom_properties"]
-            )
+            self.populate_table(self.custom_props_table, metadata["custom_properties"])
 
         # Security Analysis
         if "security_info" in metadata:
@@ -839,91 +907,165 @@ class OfficeMetadataGUI(StandardWindow):
 
     def handle_error(self, error_message):
         """Handle worker errors."""
-        QMessageBox.critical(
-            self, "Error", f"Error processing file:\n{error_message}"
-        )
+        if Modal:
+            Modal(
+                "Error", f"Error processing file:\n{error_message}", ["OK"], self
+            ).exec_()
+        else:
+            QMessageBox.critical(
+                self, "Error", f"Error processing file:\n{error_message}"
+            )
         self.status_label.setText("Error - Failed to process file")
 
     def edit_metadata_item(self, item):
         """Handle editing of metadata items."""
         if item.column() == 1:  # Only allow editing of value column
-            QMessageBox.information(
-                self,
-                "Edit Metadata",
-                "Metadata editing will be available in a future version.\n\n"
-                "This will allow you to modify metadata values and save "
-                "changes back to the document.",
-            )
+            if Modal:
+                Modal(
+                    "Edit Metadata",
+                    "Metadata editing will be available in a future version.\n\n"
+                    "This will allow you to modify metadata values and save "
+                    "changes back to the document.",
+                    ["OK"],
+                    self,
+                ).exec_()
+            else:
+                QMessageBox.information(
+                    self,
+                    "Edit Metadata",
+                    "Metadata editing will be available in a future version.\n\n"
+                    "This will allow you to modify metadata values and save "
+                    "changes back to the document.",
+                )
 
     def add_custom_property(self):
         """Add a new custom property."""
-        QMessageBox.information(
-            self,
-            "Add Custom Property",
-            "Custom property addition will be available in a future version.",
-        )
+        if Modal:
+            Modal(
+                "Add Custom Property",
+                "Custom property addition will be available in a future version.",
+                ["OK"],
+                self,
+            ).exec_()
+        else:
+            QMessageBox.information(
+                self,
+                "Add Custom Property",
+                "Custom property addition will be available in a future version.",
+            )
 
     def remove_custom_property(self):
         """Remove selected custom property."""
-        QMessageBox.information(
-            self,
-            "Remove Custom Property",
-            "Custom property removal will be available in a future version.",
-        )
+        if Modal:
+            Modal(
+                "Remove Custom Property",
+                "Custom property removal will be available in a future version.",
+                ["OK"],
+                self,
+            ).exec_()
+        else:
+            QMessageBox.information(
+                self,
+                "Remove Custom Property",
+                "Custom property removal will be available in a future version.",
+            )
 
     def batch_process(self):
         """Process multiple files in batch."""
-        QMessageBox.information(
-            self,
-            "Batch Processing",
-            "Batch processing will be available in a future version.\n\n"
-            "This will allow you to:\n"
-            "• Process multiple files simultaneously\n"
-            "• Apply metadata templates\n"
-            "• Generate batch reports\n"
-            "• Clean metadata from multiple files",
-        )
+        if Modal:
+            Modal(
+                "Batch Processing",
+                "Batch processing will be available in a future version.\n\n"
+                "This will allow you to:\n"
+                "• Process multiple files simultaneously\n"
+                "• Apply metadata templates\n"
+                "• Generate batch reports\n"
+                "• Clean metadata from multiple files",
+                ["OK"],
+                self,
+            ).exec_()
+        else:
+            QMessageBox.information(
+                self,
+                "Batch Processing",
+                "Batch processing will be available in a future version.\n\n"
+                "This will allow you to:\n"
+                "• Process multiple files simultaneously\n"
+                "• Apply metadata templates\n"
+                "• Generate batch reports\n"
+                "• Clean metadata from multiple files",
+            )
 
     def security_scan(self):
         """Perform detailed security scan."""
         if not self.current_metadata:
-            QMessageBox.warning(
-                self, "Warning", "No file is currently loaded."
-            )
+            if Modal:
+                Modal("Warning", "No file is currently loaded.", ["OK"], self).exec_()
+            else:
+                QMessageBox.warning(self, "Warning", "No file is currently loaded.")
             return
 
         # Switch to security analysis tab
         self.tab_widget.setCurrentWidget(self.security_tab)
 
-        QMessageBox.information(
-            self,
-            "Security Scan",
-            "Enhanced security scanning features will be available "
-            "in a future version, including:\n\n"
-            "• Deep metadata analysis\n"
-            "• Hidden content detection\n"
-            "• Privacy risk assessment\n"
-            "• Automated cleaning recommendations",
-        )
+        if Modal:
+            Modal(
+                "Security Scan",
+                "Enhanced security scanning features will be available "
+                "in a future version, including:\n\n"
+                "• Deep metadata analysis\n"
+                "• Hidden content detection\n"
+                "• Privacy risk assessment\n"
+                "• Automated cleaning recommendations",
+                ["OK"],
+                self,
+            ).exec_()
+        else:
+            QMessageBox.information(
+                self,
+                "Security Scan",
+                "Enhanced security scanning features will be available "
+                "in a future version, including:\n\n"
+                "• Deep metadata analysis\n"
+                "• Hidden content detection\n"
+                "• Privacy risk assessment\n"
+                "• Automated cleaning recommendations",
+            )
 
     def save_metadata(self):
         """Save metadata changes back to file."""
         if not self.current_file:
-            QMessageBox.warning(self, "Warning", "No file is currently open.")
+            if Modal:
+                Modal("Warning", "No file is currently open.", ["OK"], self).exec_()
+            else:
+                QMessageBox.warning(self, "Warning", "No file is currently open.")
             return
 
-        QMessageBox.information(
-            self,
-            "Save Metadata",
-            "Metadata saving functionality will be implemented "
-            "in a future version.\n\nThis will allow you to "
-            "save edited metadata back to the original document.",
-        )
+        if Modal:
+            Modal(
+                "Save Metadata",
+                "Metadata saving functionality will be implemented "
+                "in a future version.\n\nThis will allow you to "
+                "save edited metadata back to the original document.",
+                ["OK"],
+                self,
+            ).exec_()
+        else:
+            QMessageBox.information(
+                self,
+                "Save Metadata",
+                "Metadata saving functionality will be implemented "
+                "in a future version.\n\nThis will allow you to "
+                "save edited metadata back to the original document.",
+            )
 
     def export_metadata(self):
         """Export metadata to external file."""
         if not self.current_metadata:
-            QMessageBox.warning(self, "Warning", "No metadata to export.")
+            if Modal:
+                Modal("Warning", "No metadata to export.", ["OK"], self).exec_()
+            else:
+                QMessageBox.warning(self, "Warning", "No metadata to export.")
             return
 
         filename, file_type = QFileDialog.getSaveFileName(
@@ -947,9 +1089,7 @@ class OfficeMetadataGUI(StandardWindow):
                 elif filename.endswith(".txt"):
                     with open(filename, "w", encoding="utf-8") as f:
                         f.write(
-                            json.dumps(
-                                self.current_metadata, indent=2, default=str
-                            )
+                            json.dumps(self.current_metadata, indent=2, default=str)
                         )
                 else:
                     # Default to JSON format
@@ -962,16 +1102,32 @@ class OfficeMetadataGUI(StandardWindow):
                             ensure_ascii=False,
                         )
 
-                QMessageBox.information(
-                    self,
-                    "Export Successful",
-                    f"Metadata exported to:\n{filename}",
-                )
+                if Modal:
+                    Modal(
+                        "Export Successful",
+                        f"Metadata exported to:\n{filename}",
+                        ["OK"],
+                        self,
+                    ).exec_()
+                else:
+                    QMessageBox.information(
+                        self,
+                        "Export Successful",
+                        f"Metadata exported to:\n{filename}",
+                    )
 
             except Exception as e:
-                QMessageBox.critical(
-                    self, "Export Error", f"Error exporting metadata:\n{e}"
-                )
+                if Modal:
+                    Modal(
+                        "Export Error",
+                        f"Error exporting metadata:\n{e}",
+                        ["OK"],
+                        self,
+                    ).exec_()
+                else:
+                    QMessageBox.critical(
+                        self, "Export Error", f"Error exporting metadata:\n{e}"
+                    )
 
     def show_help(self):
         """Show comprehensive help for Office Metadata Tools."""
@@ -1028,13 +1184,21 @@ class OfficeMetadataGUI(StandardWindow):
         and advanced security scanning features are in development.</p>
         """
 
-        msg_box = QMessageBox()
-        msg_box.setWindowTitle("Office Metadata Tools - Help")
-        msg_box.setTextFormat(Qt.RichText)
-        msg_box.setText(help_text)
-        msg_box.setStandardButtons(QMessageBox.Ok)
-        msg_box.resize(800, 600)
-        msg_box.exec_()
+        if Modal:
+            Modal(
+                "Office Metadata Tools - Help",
+                help_text,
+                ["OK"],
+                self,
+            ).exec_()
+        else:
+            msg_box = QMessageBox()
+            msg_box.setWindowTitle("Office Metadata Tools - Help")
+            msg_box.setTextFormat(Qt.RichText)
+            msg_box.setText(help_text)
+            msg_box.setStandardButtons(QMessageBox.Ok)
+            msg_box.resize(800, 600)
+            msg_box.exec_()
 
 
 def main():

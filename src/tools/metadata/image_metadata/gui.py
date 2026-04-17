@@ -6,12 +6,12 @@ using the enhanced utilities logic while maintaining compatibility with the
 existing tools interface.
 """
 
+import logging
 import os
 import sys
 from typing import Any, Dict, List, Optional
 
 try:
-    from src.gui.themes import token
     from PyQt5.QtCore import Qt, QThread, pyqtSignal
     from PyQt5.QtGui import QFont
     from PyQt5.QtWidgets import (
@@ -34,6 +34,8 @@ try:
         QVBoxLayout,
         QWidget,
     )
+
+    from src.gui.themes import ThemeManager, token
 except ImportError:
     print("PyQt5 not available. Please install PyQt5.")
     sys.exit(1)
@@ -56,9 +58,58 @@ except ImportError:
     StandardWindow = QMainWindow
     HAS_STANDARD_WINDOW = False
 
-# Import enhanced image metadata logic
-from .image_metadata_logic import ImageMetadataLogic, format_exif_value  # noqa: E402
 from src.gui.themes import Typography
+
+# Import enhanced image metadata logic
+from .image_metadata_logic import (  # noqa: E402
+    ImageMetadataLogic,
+    format_exif_value,
+)
+
+try:
+    from src.log_manager import get_log_manager as _get_log_manager
+except ImportError:
+    _get_log_manager = None
+
+try:
+    from src.rfu.ui_strings import ImageMetadata as _IMStrings
+except ImportError:
+
+    class _IMStrings:
+        """Fallback string constants — mirrors src/rfu/ui_strings.ImageMetadata."""
+
+        TITLE = "Image Metadata Editor"
+        WINDOW_TITLE = "Image Metadata Editor — RFU"
+        LOADING = "Loading Image Metadata Editor…"
+        MODAL_ERROR_TITLE = "Image Metadata Editor"
+        ERR_INIT_FAILED = (
+            "Could not start Image Metadata Editor. "
+            "Please try again or restart the application."
+        )
+        ERR_LOAD_FAILED = (
+            "Failed to load image metadata. "
+            "Check that the file is a supported image format."
+        )
+        ERR_SAVE_FAILED = (
+            "Failed to save image metadata. "
+            "Check that you have write permission to the file."
+        )
+
+
+# ---------------------------------------------------------------------------
+# CP: Shared UI components (graceful fallback when unavailable)
+# ---------------------------------------------------------------------------
+try:
+    from src.gui.components.buttons import PrimaryButton, SecondaryButton
+    from src.gui.components.modal import ConfirmationModal, Modal
+    from src.gui.components.toast import ToastNotification
+
+    _CP_AVAILABLE = True
+except ImportError:
+    PrimaryButton = SecondaryButton = None  # type: ignore[assignment,misc]
+    Modal = ConfirmationModal = None  # type: ignore[assignment,misc]
+    ToastNotification = None
+    _CP_AVAILABLE = False
 
 
 class ImageMetadataWorkerThread(QThread):
@@ -119,7 +170,9 @@ class ImageMetadataWorkerThread(QThread):
             message = f"Processed {processed} of {total_files} files"
             self.operation_completed.emit(True, message)
 
-        except Exception as e:
+        except (
+            Exception
+        ) as e:  # ERR: non-fatal — surfaced via operation_completed signal
             self.operation_completed.emit(False, f"Error: {str(e)}")
 
     def stop(self):
@@ -131,13 +184,22 @@ class ImageMetadataEditorGUI(StandardWindow):
     """Professional Image Metadata Editor GUI with comprehensive
     functionality."""
 
-    def __init__(self):
+    def __init__(self, hub_instance=None):
         # Initialize with proper window title based on available base class
         if HAS_STANDARD_WINDOW:
-            super().__init__(title="Image Metadata Editor - Richard's File Utilities")
+            super().__init__(title=_IMStrings.WINDOW_TITLE)
         else:
             super().__init__()
-            self.setWindowTitle("Image Metadata Editor - Richard's File Utilities")
+            self.setWindowTitle(_IMStrings.WINDOW_TITLE)
+
+        self._hub = hub_instance
+        if _get_log_manager is not None:
+            try:
+                self._logger = _get_log_manager().get_logger("ImageMetadataEditorGUI")
+            except Exception:  # ERR: non-fatal — logger fallback to module logger
+                self._logger = logging.getLogger("ImageMetadataEditorGUI")
+        else:
+            self._logger = logging.getLogger("ImageMetadataEditorGUI")
 
         # Initialize instance variables
         self.worker: Optional[ImageMetadataWorkerThread] = None
@@ -150,6 +212,62 @@ class ImageMetadataEditorGUI(StandardWindow):
         self.init_ui()
         self._setup_menu_callbacks()
         self._connect_signals()
+
+        self.register_gui_component(
+            tool_id="image_metadata",
+            recovery_callback=self.degraded_fallback,
+        )
+        self._emit_telemetry("ui_view_load", tool_id="image_metadata")
+        ThemeManager.add_theme_changed_callback(self._on_theme_changed)
+
+    def _on_theme_changed(self, variant: str) -> None:
+        """Re-apply token-based stylesheets when the active theme variant changes."""
+        pass  # stylesheets applied at init; live re-apply deferred (TH-4c/4d)
+
+    # ── GRD : ComponentGuardian integration ──────────────────────────
+    def register_gui_component(self, tool_id: str, recovery_callback=None) -> None:
+        """Register this widget with ComponentGuardian (no-op if unavailable)."""
+        try:
+            from src.core.guardian.component_guardian import ComponentGuardian
+
+            ComponentGuardian.instance().register(
+                tool_id, self, recovery_callback=recovery_callback
+            )
+        except Exception:
+            pass
+
+    # ── TEL : telemetry stub ──────────────────────────────────────────
+    def _emit_telemetry(self, event_type: str, **kwargs) -> None:
+        """Emit a telemetry event (no-op stub until TEL infrastructure lands)."""
+        try:
+            from src.core.telemetry import emit_telemetry
+
+            emit_telemetry(event_type, **kwargs)
+        except Exception:
+            pass
+
+    def health_check(self) -> bool:
+        """Return True if core widgets are present and functional."""
+        return hasattr(self, "metadata_tabs") and self.metadata_tabs is not None
+
+    def degraded_fallback(self) -> None:
+        """Show a minimal error state when the component fails to load."""
+        try:
+            if Modal:
+                Modal(
+                    _IMStrings.TITLE,
+                    _IMStrings.ERR_INIT_FAILED,
+                    ["OK"],
+                    self,
+                ).exec_()
+            else:
+                QMessageBox.warning(
+                    self,
+                    _IMStrings.TITLE,
+                    _IMStrings.ERR_INIT_FAILED,
+                )
+        except Exception:
+            pass
 
     def _setup_menu_callbacks(self):
         """Setup tool-specific menu callbacks."""
@@ -216,12 +334,14 @@ class ImageMetadataEditorGUI(StandardWindow):
         file_layout = QVBoxLayout(file_group)
 
         # Browse button
-        self.browse_button = QPushButton("Browse for Images")
+        _SB = SecondaryButton if SecondaryButton else QPushButton
+        self.browse_button = _SB("Browse for Images")
         self.browse_button.clicked.connect(self.browse_files)
         file_layout.addWidget(self.browse_button)
 
         # File list
         self.file_list = QTreeWidget()
+        self.file_list.setAccessibleName("Image files list")
         self.file_list.setHeaderLabels(["Files", "Status"])
         self.file_list.itemClicked.connect(self._on_file_selected)
         file_layout.addWidget(self.file_list)
@@ -237,12 +357,13 @@ class ImageMetadataEditorGUI(StandardWindow):
         actions_group = QGroupBox("Quick Actions")
         actions_layout = QVBoxLayout(actions_group)
 
-        self.load_metadata_button = QPushButton("Load Metadata")
+        _SB2 = SecondaryButton if SecondaryButton else QPushButton
+        self.load_metadata_button = _SB2("Load Metadata")
         self.load_metadata_button.clicked.connect(self.load_current_metadata)
         self.load_metadata_button.setEnabled(False)
         actions_layout.addWidget(self.load_metadata_button)
 
-        self.batch_process_button = QPushButton("Batch Process")
+        self.batch_process_button = _SB2("Batch Process")
         self.batch_process_button.clicked.connect(self.batch_process_files)
         self.batch_process_button.setEnabled(False)
         actions_layout.addWidget(self.batch_process_button)
@@ -257,6 +378,7 @@ class ImageMetadataEditorGUI(StandardWindow):
 
         # Create tab widget for different metadata types
         self.metadata_tabs = QTabWidget()
+        self.metadata_tabs.setAccessibleName("Metadata tabs")
 
         # EXIF tab
         self.exif_tab = self._create_exif_tab()
@@ -299,6 +421,7 @@ class ImageMetadataEditorGUI(StandardWindow):
         for i, (field, label) in enumerate(common_fields):
             label_widget = QLabel(f"{label}:")
             edit_widget = QLineEdit()
+            edit_widget.setAccessibleName(label)
             edit_widget.setPlaceholderText(f"Enter {label.lower()}")
 
             self.exif_fields[field] = edit_widget
@@ -324,6 +447,7 @@ class ImageMetadataEditorGUI(StandardWindow):
         for i, (field, label) in enumerate(gps_field_names):
             label_widget = QLabel(f"{label}:")
             edit_widget = QLineEdit()
+            edit_widget.setAccessibleName(label)
             edit_widget.setPlaceholderText(f"Enter {label.lower()}")
 
             self.gps_fields[field] = edit_widget
@@ -377,6 +501,7 @@ class ImageMetadataEditorGUI(StandardWindow):
 
         # Raw data display
         self.raw_data_text = QTextEdit()
+        self.raw_data_text.setAccessibleName("Raw metadata")
         self.raw_data_text.setReadOnly(True)
         self.raw_data_text.setFont(self._get_monospace_font())
         layout.addWidget(self.raw_data_text)
@@ -395,7 +520,9 @@ class ImageMetadataEditorGUI(StandardWindow):
 
         # Status label
         self.status_label = QLabel("Ready")
-        self.status_label.setStyleSheet(f"QLabel { color: {token('semantic_success')}; }")
+        self.status_label.setStyleSheet(
+            f"QLabel { color: {token('semantic_success')}; }"
+        )
         progress_layout.addWidget(self.status_label)
 
         parent_layout.addWidget(progress_group)
@@ -405,62 +532,27 @@ class ImageMetadataEditorGUI(StandardWindow):
         button_layout = QHBoxLayout()
 
         # Save button
-        self.save_button = QPushButton("Save Metadata")
+        _PB = PrimaryButton if PrimaryButton else QPushButton
+        self.save_button = _PB("Save Metadata")
         self.save_button.clicked.connect(self.save_current_metadata)
         self.save_button.setEnabled(False)
-        self.save_button.setStyleSheet(
-            """
-            QPushButton {
-                background-color: {token('semantic_success')};
-                color: white;
-                border: none;
-                padding: 10px 20px;
-                border-radius: 5px;
-                font-weight: bold;
-            }
-            QPushButton:hover {
-                background-color: {token('semantic_success')};
-            }
-            QPushButton:disabled {
-                background-color: {token('text_disabled')};
-            }
-        """
-        )
         button_layout.addWidget(self.save_button)
 
-        # Clear button
-        self.clear_button = QPushButton("Clear Fields")
+        _SB3 = SecondaryButton if SecondaryButton else QPushButton
+        self.clear_button = _SB3("Clear Fields")
         self.clear_button.clicked.connect(self.clear_metadata_fields)
         button_layout.addWidget(self.clear_button)
 
-        # Refresh button
-        self.refresh_button = QPushButton("Refresh")
+        self.refresh_button = _SB3("Refresh")
         self.refresh_button.clicked.connect(self.load_current_metadata)
         self.refresh_button.setEnabled(False)
         button_layout.addWidget(self.refresh_button)
 
-        # Add spacer
         button_layout.addStretch()
 
-        # Cancel button (for operations)
-        self.cancel_button = QPushButton("Cancel Operation")
+        self.cancel_button = _SB3("Cancel Operation")
         self.cancel_button.clicked.connect(self.cancel_operation)
         self.cancel_button.setVisible(False)
-        self.cancel_button.setStyleSheet(
-            """
-            QPushButton {
-                background-color: {token('semantic_error')};
-                color: white;
-                border: none;
-                padding: 10px 20px;
-                border-radius: 5px;
-                font-weight: bold;
-            }
-            QPushButton:hover {
-                background-color: {token('semantic_error')};
-            }
-        """
-        )
         button_layout.addWidget(self.cancel_button)
 
         parent_layout.addLayout(button_layout)
@@ -550,8 +642,9 @@ class ImageMetadataEditorGUI(StandardWindow):
             info += f"Path: {file_path}"
 
             self.file_info_label.setText(info)
-        except Exception as e:
-            self.file_info_label.setText(f"Error reading file info: {str(e)}")
+        except Exception as e:  # ERR: non-fatal — surfaced via file_info_label
+            self._logger.error(f"Error reading file info: {e}", exc_info=True)
+            self.file_info_label.setText(_IMStrings.ERR_LOAD_FAILED)
 
     def _format_file_size(self, size_bytes: int) -> str:
         """Format file size in human readable format."""
@@ -564,7 +657,10 @@ class ImageMetadataEditorGUI(StandardWindow):
     def load_current_metadata(self):
         """Load metadata for the currently selected file."""
         if not hasattr(self, "current_file_path"):
-            QMessageBox.warning(self, "Warning", "No file selected.")
+            if Modal:
+                Modal("Warning", "No file selected.", ["OK"], self).exec_()
+            else:
+                QMessageBox.warning(self, "Warning", "No file selected.")
             return
 
         self._set_ui_enabled(False)
@@ -574,8 +670,9 @@ class ImageMetadataEditorGUI(StandardWindow):
         try:
             metadata = self.metadata_logic.load_image_metadata(self.current_file_path)
             self._on_metadata_loaded(metadata)
-        except Exception as e:
-            self._on_error(f"Failed to load metadata: {str(e)}")
+        except Exception as e:  # ERR: non-fatal — surfaced via _on_error dialog
+            self._logger.error(f"Failed to load metadata: {e}", exc_info=True)
+            self._on_error(_IMStrings.ERR_LOAD_FAILED)
 
     def _on_metadata_loaded(self, metadata: Dict[str, Any]):
         """Handle metadata loaded signal."""
@@ -631,14 +728,20 @@ class ImageMetadataEditorGUI(StandardWindow):
     def save_current_metadata(self):
         """Save the current metadata modifications."""
         if not hasattr(self, "current_file_path"):
-            QMessageBox.warning(self, "Warning", "No file selected.")
+            if Modal:
+                Modal("Warning", "No file selected.", ["OK"], self).exec_()
+            else:
+                QMessageBox.warning(self, "Warning", "No file selected.")
             return
 
         # Collect modified metadata
         modified_data = self._collect_metadata_updates()
 
         if not modified_data:
-            QMessageBox.information(self, "Information", "No changes to save.")
+            if Modal:
+                Modal("Information", "No changes to save.", ["OK"], self).exec_()
+            else:
+                QMessageBox.information(self, "Information", "No changes to save.")
             return
 
         self._set_ui_enabled(False)
@@ -649,8 +752,9 @@ class ImageMetadataEditorGUI(StandardWindow):
                 self.current_file_path, modified_data
             )
             self._on_metadata_saved(success, "Metadata saved successfully")
-        except Exception as e:
-            self._on_error(f"Failed to save metadata: {str(e)}")
+        except Exception as e:  # ERR: non-fatal — surfaced via _on_error dialog
+            self._logger.error(f"Failed to save metadata: {e}", exc_info=True)
+            self._on_error(_IMStrings.ERR_SAVE_FAILED)
 
     def _collect_metadata_updates(self) -> Dict[str, Any]:
         """Collect metadata updates from the form fields."""
@@ -684,18 +788,27 @@ class ImageMetadataEditorGUI(StandardWindow):
 
         if success:
             self.status_label.setText("Metadata saved successfully")
-            QMessageBox.information(self, "Success", message)
+            if ToastNotification:
+                ToastNotification(parent=self).show_message(message, "success")
+            else:
+                QMessageBox.information(self, "Success", message)
             # Reload to show saved changes
             self.load_current_metadata()
         else:
             self.status_label.setText("Failed to save metadata")
-            QMessageBox.warning(self, "Error", message)
+            if Modal:
+                Modal("Error", message, ["OK"], self).exec_()
+            else:
+                QMessageBox.warning(self, "Error", message)
 
     def _on_error(self, error_message: str):
         """Handle error signal."""
         self._set_ui_enabled(True)
         self.status_label.setText("Error occurred")
-        QMessageBox.critical(self, "Error", error_message)
+        if Modal:
+            Modal("Error", error_message, ["OK"], self).exec_()
+        else:
+            QMessageBox.critical(self, "Error", error_message)
 
     def _on_progress_update(self, percentage: int):
         """Handle progress update signal."""
@@ -721,28 +834,49 @@ class ImageMetadataEditorGUI(StandardWindow):
     def batch_process_files(self):
         """Process multiple files in batch."""
         if not self.selected_files:
-            QMessageBox.warning(self, "Warning", "No files selected.")
+            if Modal:
+                Modal("Warning", "No files selected.", ["OK"], self).exec_()
+            else:
+                QMessageBox.warning(self, "Warning", "No files selected.")
             return
 
         # Get metadata updates
         updates = self._collect_metadata_updates()
         if not updates:
-            QMessageBox.information(
-                self, "Information", "No metadata changes to apply in batch."
-            )
+            if Modal:
+                Modal(
+                    "Information",
+                    "No metadata changes to apply in batch.",
+                    ["OK"],
+                    self,
+                ).exec_()
+            else:
+                QMessageBox.information(
+                    self, "Information", "No metadata changes to apply in batch."
+                )
             return
 
         # Confirm batch operation
-        reply = QMessageBox.question(
-            self,
-            "Confirm Batch Operation",
-            f"Apply metadata changes to {len(self.selected_files)} files?",
-            QMessageBox.Yes | QMessageBox.No,
-            QMessageBox.No,
-        )
-
-        if reply != QMessageBox.Yes:
-            return
+        if ConfirmationModal:
+            dlg = ConfirmationModal(
+                "Confirm Batch Operation",
+                f"Apply metadata changes to {len(self.selected_files)} files?",
+                confirm_text="Apply",
+                cancel_text="Cancel",
+                parent=self,
+            )
+            if not dlg.exec_():
+                return
+        else:
+            reply = QMessageBox.question(
+                self,
+                "Confirm Batch Operation",
+                f"Apply metadata changes to {len(self.selected_files)} files?",
+                QMessageBox.Yes | QMessageBox.No,
+                QMessageBox.No,
+            )
+            if reply != QMessageBox.Yes:
+                return
 
         # Start batch processing
         self._start_batch_operation(self.selected_files, "save", updates)
@@ -784,20 +918,27 @@ class ImageMetadataEditorGUI(StandardWindow):
         self._cleanup_operation()
 
         if success:
-            QMessageBox.information(self, "Batch Complete", message)
+            if ToastNotification:
+                ToastNotification(parent=self).show_message(message, "success")
+            else:
+                QMessageBox.information(self, "Batch Complete", message)
         else:
-            QMessageBox.warning(self, "Batch Error", message)
+            if Modal:
+                Modal("Batch Error", message, ["OK"], self).exec_()
+            else:
+                QMessageBox.warning(self, "Batch Error", message)
 
     def cancel_operation(self):
         """Cancel the current operation."""
         if self.worker and self.worker.isRunning():
             self.worker.stop()
-            self.worker.wait(3000)  # Wait up to 3 seconds
-            if self.worker.isRunning():
-                self.worker.terminate()
-
-        self._cleanup_operation()
-        self.status_label.setText("Operation cancelled")
+            # PERF-2b: do not block-wait or terminate on the UI thread.
+            # operation_completed signal → _on_batch_completed → _cleanup_operation
+            # handles UI cleanup when the worker finishes.
+            self.status_label.setText("Cancelling…")
+        else:
+            self._cleanup_operation()
+            self.status_label.setText("Operation cancelled")
 
     def _cleanup_operation(self):
         """Cleanup after operation completion or cancellation."""

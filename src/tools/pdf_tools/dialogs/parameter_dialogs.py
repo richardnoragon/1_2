@@ -51,8 +51,6 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
-from src.gui.themes import token
-
 # Set up logger
 logger = logging.getLogger(__name__)
 
@@ -115,11 +113,11 @@ class FilePreviewWidget(QWidget):
         self.preview_label.setStyleSheet(
             """
             QLabel {
-                border: 2px dashed {token('border')};
+                border: 2px dashed #ccc;
                 border-radius: 8px;
                 padding: 20px;
-                background-color: {token('surface')};
-                color: {token('text_muted')};
+                background-color: #f9f9f9;
+                color: #666;
                 font-size: 12pt;
             }
         """
@@ -130,7 +128,7 @@ class FilePreviewWidget(QWidget):
         # File info
         self.info_label = QLabel("")
         self.info_label.setWordWrap(True)
-        self.info_label.setStyleSheet(f"font-size: 10pt; color: {token('text_muted')};")
+        self.info_label.setStyleSheet("font-size: 10pt; color: #555;")
         layout.addWidget(self.info_label)
 
     def update_preview(self, file_path: str, page_count: int = 0, file_size: int = 0):
@@ -196,20 +194,28 @@ class PDFMergeDialog(QDialog):
         file_buttons_layout = QHBoxLayout()
 
         self.add_files_btn = QPushButton("Add Files")
+        self.add_files_btn.setAccessibleName("Add PDF files to merge list")
+        self.add_files_btn.setMinimumHeight(44)
         self.add_files_btn.clicked.connect(self.add_files)
         file_buttons_layout.addWidget(self.add_files_btn)
 
         self.remove_file_btn = QPushButton("Remove")
+        self.remove_file_btn.setAccessibleName("Remove selected file from merge list")
+        self.remove_file_btn.setMinimumHeight(44)
         self.remove_file_btn.clicked.connect(self.remove_selected_file)
         self.remove_file_btn.setEnabled(False)
         file_buttons_layout.addWidget(self.remove_file_btn)
 
         self.move_up_btn = QPushButton("↑")
+        self.move_up_btn.setAccessibleName("Move file up in merge order")
+        self.move_up_btn.setMinimumHeight(44)
         self.move_up_btn.clicked.connect(self.move_file_up)
         self.move_up_btn.setEnabled(False)
         file_buttons_layout.addWidget(self.move_up_btn)
 
         self.move_down_btn = QPushButton("↓")
+        self.move_down_btn.setAccessibleName("Move file down in merge order")
+        self.move_down_btn.setMinimumHeight(44)
         self.move_down_btn.clicked.connect(self.move_file_down)
         self.move_down_btn.setEnabled(False)
         file_buttons_layout.addWidget(self.move_down_btn)
@@ -222,17 +228,25 @@ class PDFMergeDialog(QDialog):
         options_layout = QFormLayout(options_group)
 
         self.preserve_bookmarks_cb = QCheckBox("Preserve bookmarks")
+        self.preserve_bookmarks_cb.setAccessibleName("Preserve bookmarks")
+        self.preserve_bookmarks_cb.setMinimumHeight(44)
         self.preserve_bookmarks_cb.setChecked(True)
         options_layout.addRow(self.preserve_bookmarks_cb)
 
         self.preserve_metadata_cb = QCheckBox("Preserve metadata")
+        self.preserve_metadata_cb.setAccessibleName("Preserve metadata")
+        self.preserve_metadata_cb.setMinimumHeight(44)
         self.preserve_metadata_cb.setChecked(True)
         options_layout.addRow(self.preserve_metadata_cb)
 
         self.optimize_output_cb = QCheckBox("Optimize output file")
+        self.optimize_output_cb.setAccessibleName("Optimize output file")
+        self.optimize_output_cb.setMinimumHeight(44)
         options_layout.addRow(self.optimize_output_cb)
 
         self.custom_ranges_cb = QCheckBox("Use custom page ranges")
+        self.custom_ranges_cb.setAccessibleName("Use custom page ranges")
+        self.custom_ranges_cb.setMinimumHeight(44)
         self.custom_ranges_cb.toggled.connect(self.toggle_custom_ranges)
         options_layout.addRow(self.custom_ranges_cb)
 
@@ -244,10 +258,13 @@ class PDFMergeDialog(QDialog):
 
         output_file_layout = QHBoxLayout()
         self.output_file_edit = QLineEdit()
+        self.output_file_edit.setAccessibleName("Merged output file")
         self.output_file_edit.setPlaceholderText("Select output file...")
         output_file_layout.addWidget(self.output_file_edit)
 
         self.browse_output_btn = QPushButton("Browse")
+        self.browse_output_btn.setAccessibleName("Browse for merged output file")
+        self.browse_output_btn.setMinimumHeight(44)
         self.browse_output_btn.clicked.connect(self.browse_output_file)
         output_file_layout.addWidget(self.browse_output_btn)
 
@@ -268,6 +285,7 @@ class PDFMergeDialog(QDialog):
 
         # File details
         self.details_text = QTextEdit()
+        self.details_text.setAccessibleName("File details")
         self.details_text.setMaximumHeight(100)
         self.details_text.setReadOnly(True)
         preview_layout.addWidget(self.details_text)
@@ -284,10 +302,11 @@ class PDFMergeDialog(QDialog):
             "Leave empty to include all pages."
         )
         ranges_help.setWordWrap(True)
-        ranges_help.setStyleSheet(f"color: {token('text_muted')}; font-size: 9pt;")
+        ranges_help.setStyleSheet("color: #666; font-size: 9pt;")
         ranges_layout.addWidget(ranges_help)
 
         self.ranges_list = QListWidget()
+        self.ranges_list.setAccessibleName("Custom page ranges list")
         ranges_layout.addWidget(self.ranges_list)
 
         right_layout.addWidget(self.ranges_group)
@@ -300,16 +319,20 @@ class PDFMergeDialog(QDialog):
         buttons_layout.addStretch()
 
         self.cancel_btn = QPushButton("Cancel")
+        self.cancel_btn.setAccessibleName("Cancel merge operation")
+        self.cancel_btn.setMinimumHeight(44)
         self.cancel_btn.clicked.connect(self.reject)
         buttons_layout.addWidget(self.cancel_btn)
 
         self.merge_btn = QPushButton("Merge PDFs")
+        self.merge_btn.setAccessibleName("Merge PDF files")
+        self.merge_btn.setMinimumHeight(44)
         self.merge_btn.clicked.connect(self.accept)
         self.merge_btn.setEnabled(False)
         self.merge_btn.setStyleSheet(
             """
             QPushButton {
-                background-color: {token('button_primary')};
+                background-color: #007bff;
                 color: white;
                 font-weight: bold;
                 padding: 8px 16px;
@@ -317,10 +340,10 @@ class PDFMergeDialog(QDialog):
                 border-radius: 4px;
             }
             QPushButton:hover {
-                background-color: {token('button_primary')};
+                background-color: #0056b3;
             }
             QPushButton:disabled {
-                background-color: {token('border')};
+                background-color: #ccc;
             }
         """
         )
@@ -335,12 +358,12 @@ class PDFMergeDialog(QDialog):
         self.setStyleSheet(
             """
             QDialog {
-                background-color: {token('window_background')};
+                background-color: #ffffff;
                 font-family: "Segoe UI", Arial, sans-serif;
             }
             QGroupBox {
                 font-weight: bold;
-                border: 2px solid {token('border_light')};
+                border: 2px solid #dee2e6;
                 border-radius: 8px;
                 margin-top: 10px;
                 padding-top: 10px;
@@ -352,21 +375,21 @@ class PDFMergeDialog(QDialog):
             }
             QPushButton {
                 padding: 6px 12px;
-                border: 1px solid {token('border')};
+                border: 1px solid #ccc;
                 border-radius: 4px;
-                background-color: {token('dialog_background')};
+                background-color: #f8f9fa;
             }
             QPushButton:hover {
-                background-color: {token('border_light')};
+                background-color: #e9ecef;
             }
             QListWidget {
-                border: 1px solid {token('border_light')};
+                border: 1px solid #dee2e6;
                 border-radius: 4px;
-                background-color: {token('window_background')};
+                background-color: #ffffff;
             }
             QLineEdit {
                 padding: 6px;
-                border: 1px solid {token('border_light')};
+                border: 1px solid #dee2e6;
                 border-radius: 4px;
             }
         """
@@ -557,20 +580,21 @@ class PDFSplitDialog(QDialog):
 
         input_file_layout = QHBoxLayout()
         self.input_file_edit = QLineEdit()
+        self.input_file_edit.setAccessibleName("Input PDF file to split")
         self.input_file_edit.setPlaceholderText("Select PDF file to split...")
         self.input_file_edit.textChanged.connect(self.on_input_file_changed)
         input_file_layout.addWidget(self.input_file_edit)
 
         self.browse_input_btn = QPushButton("Browse")
+        self.browse_input_btn.setAccessibleName("Browse for PDF file to split")
+        self.browse_input_btn.setMinimumHeight(44)
         self.browse_input_btn.clicked.connect(self.browse_input_file)
         input_file_layout.addWidget(self.browse_input_btn)
 
         input_layout.addRow("PDF File:", input_file_layout)
 
         self.file_info_label = QLabel("")
-        self.file_info_label.setStyleSheet(
-            f"color: {token('text_muted')}; font-size: 10pt;"
-        )
+        self.file_info_label.setStyleSheet("color: #666; font-size: 10pt;")
         input_layout.addRow(self.file_info_label)
 
         layout.addWidget(input_group)
@@ -583,6 +607,8 @@ class PDFSplitDialog(QDialog):
 
         # By page count
         self.pages_radio = QRadioButton("Split by page count")
+        self.pages_radio.setAccessibleName("Split method: by page count")
+        self.pages_radio.setMinimumHeight(44)
         self.pages_radio.setChecked(True)
         self.pages_radio.toggled.connect(self.on_method_changed)
         self.method_group.addButton(self.pages_radio)
@@ -592,6 +618,8 @@ class PDFSplitDialog(QDialog):
         pages_layout.addSpacing(20)
         pages_layout.addWidget(QLabel("Pages per file:"))
         self.pages_spinbox = QSpinBox()
+        self.pages_spinbox.setAccessibleName("Pages per output file")
+        self.pages_spinbox.setMinimumHeight(44)
         self.pages_spinbox.setMinimum(1)
         self.pages_spinbox.setMaximum(1000)
         self.pages_spinbox.setValue(1)
@@ -601,6 +629,8 @@ class PDFSplitDialog(QDialog):
 
         # By page ranges
         self.ranges_radio = QRadioButton("Split by page ranges")
+        self.ranges_radio.setAccessibleName("Split method: by page ranges")
+        self.ranges_radio.setMinimumHeight(44)
         self.ranges_radio.toggled.connect(self.on_method_changed)
         self.method_group.addButton(self.ranges_radio)
         method_layout.addWidget(self.ranges_radio)
@@ -609,6 +639,7 @@ class PDFSplitDialog(QDialog):
         ranges_layout.addSpacing(20)
         ranges_layout.addWidget(QLabel("Page ranges:"))
         self.ranges_edit = QLineEdit()
+        self.ranges_edit.setAccessibleName("Page ranges to split at")
         self.ranges_edit.setPlaceholderText("e.g., 1-10,11-20,21-30")
         self.ranges_edit.setEnabled(False)
         ranges_layout.addWidget(self.ranges_edit)
@@ -616,12 +647,16 @@ class PDFSplitDialog(QDialog):
 
         # By bookmarks
         self.bookmarks_radio = QRadioButton("Split by bookmarks (chapter-based)")
+        self.bookmarks_radio.setAccessibleName("Split method: by bookmarks")
+        self.bookmarks_radio.setMinimumHeight(44)
         self.bookmarks_radio.toggled.connect(self.on_method_changed)
         self.method_group.addButton(self.bookmarks_radio)
         method_layout.addWidget(self.bookmarks_radio)
 
         # By file size
         self.size_radio = QRadioButton("Split by file size")
+        self.size_radio.setAccessibleName("Split method: by file size")
+        self.size_radio.setMinimumHeight(44)
         self.size_radio.toggled.connect(self.on_method_changed)
         self.method_group.addButton(self.size_radio)
         method_layout.addWidget(self.size_radio)
@@ -630,6 +665,8 @@ class PDFSplitDialog(QDialog):
         size_layout.addSpacing(20)
         size_layout.addWidget(QLabel("Max size per file:"))
         self.size_spinbox = QSpinBox()
+        self.size_spinbox.setAccessibleName("Maximum size per output file in MB")
+        self.size_spinbox.setMinimumHeight(44)
         self.size_spinbox.setMinimum(1)
         self.size_spinbox.setMaximum(100)
         self.size_spinbox.setValue(5)
@@ -646,6 +683,7 @@ class PDFSplitDialog(QDialog):
         preview_layout = QVBoxLayout(preview_group)
 
         self.preview_text = QTextEdit()
+        self.preview_text.setAccessibleName("Split preview")
         self.preview_text.setMaximumHeight(100)
         self.preview_text.setReadOnly(True)
         self.preview_text.setPlaceholderText("Split preview will appear here...")
@@ -659,17 +697,21 @@ class PDFSplitDialog(QDialog):
 
         output_dir_layout = QHBoxLayout()
         self.output_dir_edit = QLineEdit()
+        self.output_dir_edit.setAccessibleName("Split output directory")
         self.output_dir_edit.setPlaceholderText("Select output directory...")
         self.output_dir_edit.textChanged.connect(self.update_split_button)
         output_dir_layout.addWidget(self.output_dir_edit)
 
         self.browse_output_btn = QPushButton("Browse")
+        self.browse_output_btn.setAccessibleName("Browse for split output directory")
+        self.browse_output_btn.setMinimumHeight(44)
         self.browse_output_btn.clicked.connect(self.browse_output_directory)
         output_dir_layout.addWidget(self.browse_output_btn)
 
         output_layout.addRow("Output Directory:", output_dir_layout)
 
         self.naming_edit = QLineEdit("split_{index}.pdf")
+        self.naming_edit.setAccessibleName("Split output file naming pattern")
         output_layout.addRow("Naming Pattern:", self.naming_edit)
 
         layout.addWidget(output_group)
@@ -679,16 +721,20 @@ class PDFSplitDialog(QDialog):
         buttons_layout.addStretch()
 
         self.cancel_btn = QPushButton("Cancel")
+        self.cancel_btn.setAccessibleName("Cancel split operation")
+        self.cancel_btn.setMinimumHeight(44)
         self.cancel_btn.clicked.connect(self.reject)
         buttons_layout.addWidget(self.cancel_btn)
 
         self.split_btn = QPushButton("Split PDF")
+        self.split_btn.setAccessibleName("Split PDF into parts")
+        self.split_btn.setMinimumHeight(44)
         self.split_btn.clicked.connect(self.accept)
         self.split_btn.setEnabled(False)
         self.split_btn.setStyleSheet(
             """
             QPushButton {
-                background-color: {token('semantic_success')};
+                background-color: #28a745;
                 color: white;
                 font-weight: bold;
                 padding: 8px 16px;
@@ -696,10 +742,10 @@ class PDFSplitDialog(QDialog):
                 border-radius: 4px;
             }
             QPushButton:hover {
-                background-color: {token('semantic_success')};
+                background-color: #218838;
             }
             QPushButton:disabled {
-                background-color: {token('border')};
+                background-color: #ccc;
             }
         """
         )
@@ -714,12 +760,12 @@ class PDFSplitDialog(QDialog):
         self.setStyleSheet(
             """
             QDialog {
-                background-color: {token('window_background')};
+                background-color: #ffffff;
                 font-family: "Segoe UI", Arial, sans-serif;
             }
             QGroupBox {
                 font-weight: bold;
-                border: 2px solid {token('border_light')};
+                border: 2px solid #dee2e6;
                 border-radius: 8px;
                 margin-top: 10px;
                 padding-top: 10px;
@@ -731,20 +777,20 @@ class PDFSplitDialog(QDialog):
             }
             QPushButton {
                 padding: 6px 12px;
-                border: 1px solid {token('border')};
+                border: 1px solid #ccc;
                 border-radius: 4px;
-                background-color: {token('dialog_background')};
+                background-color: #f8f9fa;
             }
             QPushButton:hover {
-                background-color: {token('border_light')};
+                background-color: #e9ecef;
             }
             QLineEdit {
                 padding: 6px;
-                border: 1px solid {token('border_light')};
+                border: 1px solid #dee2e6;
                 border-radius: 4px;
             }
             QTextEdit {
-                border: 1px solid {token('border_light')};
+                border: 1px solid #dee2e6;
                 border-radius: 4px;
             }
         """
@@ -907,11 +953,14 @@ class PDFSignDialog(QDialog):
         # PDF file
         pdf_file_layout = QHBoxLayout()
         self.pdf_file_edit = QLineEdit()
+        self.pdf_file_edit.setAccessibleName("PDF file to sign")
         self.pdf_file_edit.setPlaceholderText("Select PDF file to sign...")
         self.pdf_file_edit.textChanged.connect(self.update_sign_button)
         pdf_file_layout.addWidget(self.pdf_file_edit)
 
         self.browse_pdf_btn = QPushButton("Browse")
+        self.browse_pdf_btn.setAccessibleName("Browse for PDF file to sign")
+        self.browse_pdf_btn.setMinimumHeight(44)
         self.browse_pdf_btn.clicked.connect(self.browse_pdf_file)
         pdf_file_layout.addWidget(self.browse_pdf_btn)
 
@@ -920,11 +969,14 @@ class PDFSignDialog(QDialog):
         # Signature file
         sig_file_layout = QHBoxLayout()
         self.sig_file_edit = QLineEdit()
+        self.sig_file_edit.setAccessibleName("Signature image file")
         self.sig_file_edit.setPlaceholderText("Select signature image...")
         self.sig_file_edit.textChanged.connect(self.update_sign_button)
         sig_file_layout.addWidget(self.sig_file_edit)
 
         self.browse_sig_btn = QPushButton("Browse")
+        self.browse_sig_btn.setAccessibleName("Browse for signature image file")
+        self.browse_sig_btn.setMinimumHeight(44)
         self.browse_sig_btn.clicked.connect(self.browse_signature_file)
         sig_file_layout.addWidget(self.browse_sig_btn)
 
@@ -957,6 +1009,8 @@ class PDFSignDialog(QDialog):
 
         for text, value, row, col in positions:
             radio = QRadioButton(text)
+            radio.setAccessibleName(f"Position: {text}")
+            radio.setMinimumHeight(44)
             radio.setProperty("position_value", value)
             if value == "bottom_right":
                 radio.setChecked(True)
@@ -967,6 +1021,8 @@ class PDFSignDialog(QDialog):
         custom_layout = QHBoxLayout()
         custom_layout.addWidget(QLabel("X:"))
         self.custom_x_spin = QSpinBox()
+        self.custom_x_spin.setAccessibleName("Custom signature X position")
+        self.custom_x_spin.setMinimumHeight(44)
         self.custom_x_spin.setRange(0, 1000)
         self.custom_x_spin.setValue(100)
         self.custom_x_spin.setEnabled(False)
@@ -974,6 +1030,8 @@ class PDFSignDialog(QDialog):
 
         custom_layout.addWidget(QLabel("Y:"))
         self.custom_y_spin = QSpinBox()
+        self.custom_y_spin.setAccessibleName("Custom signature Y position")
+        self.custom_y_spin.setMinimumHeight(44)
         self.custom_y_spin.setRange(0, 1000)
         self.custom_y_spin.setValue(100)
         self.custom_y_spin.setEnabled(False)
@@ -993,25 +1051,34 @@ class PDFSignDialog(QDialog):
         self.pages_group = QButtonGroup()
 
         self.all_pages_radio = QRadioButton("All pages")
+        self.all_pages_radio.setAccessibleName("Sign all pages")
+        self.all_pages_radio.setMinimumHeight(44)
         self.all_pages_radio.setChecked(True)
         self.pages_group.addButton(self.all_pages_radio)
         pages_layout.addWidget(self.all_pages_radio)
 
         self.first_page_radio = QRadioButton("First page only")
+        self.first_page_radio.setAccessibleName("Sign first page only")
+        self.first_page_radio.setMinimumHeight(44)
         self.pages_group.addButton(self.first_page_radio)
         pages_layout.addWidget(self.first_page_radio)
 
         self.last_page_radio = QRadioButton("Last page only")
+        self.last_page_radio.setAccessibleName("Sign last page only")
+        self.last_page_radio.setMinimumHeight(44)
         self.pages_group.addButton(self.last_page_radio)
         pages_layout.addWidget(self.last_page_radio)
 
         self.custom_pages_radio = QRadioButton("Custom pages:")
+        self.custom_pages_radio.setAccessibleName("Sign custom pages")
+        self.custom_pages_radio.setMinimumHeight(44)
         self.pages_group.addButton(self.custom_pages_radio)
         pages_layout.addWidget(self.custom_pages_radio)
 
         custom_pages_layout = QHBoxLayout()
         custom_pages_layout.addSpacing(20)
         self.custom_pages_edit = QLineEdit()
+        self.custom_pages_edit.setAccessibleName("Custom page numbers to sign")
         self.custom_pages_edit.setPlaceholderText("e.g., 1,3,5")
         self.custom_pages_edit.setEnabled(False)
         custom_pages_layout.addWidget(self.custom_pages_edit)
@@ -1028,6 +1095,8 @@ class PDFSignDialog(QDialog):
         # Size
         size_layout = QHBoxLayout()
         self.width_spin = QSpinBox()
+        self.width_spin.setAccessibleName("Signature width")
+        self.width_spin.setMinimumHeight(44)
         self.width_spin.setRange(10, 500)
         self.width_spin.setValue(100)
         self.width_spin.setSuffix(" pt")
@@ -1036,6 +1105,8 @@ class PDFSignDialog(QDialog):
         size_layout.addWidget(QLabel("×"))
 
         self.height_spin = QSpinBox()
+        self.height_spin.setAccessibleName("Signature height")
+        self.height_spin.setMinimumHeight(44)
         self.height_spin.setRange(10, 500)
         self.height_spin.setValue(50)
         self.height_spin.setSuffix(" pt")
@@ -1045,6 +1116,8 @@ class PDFSignDialog(QDialog):
 
         # Transparency
         self.transparency_slider = QSlider(Qt.Horizontal)
+        self.transparency_slider.setAccessibleName("Signature transparency")
+        self.transparency_slider.setMinimumHeight(44)
         self.transparency_slider.setRange(0, 100)
         self.transparency_slider.setValue(80)
         self.transparency_slider.valueChanged.connect(self.update_transparency_label)
@@ -1058,17 +1131,22 @@ class PDFSignDialog(QDialog):
 
         # Digital signature
         self.digital_sig_cb = QCheckBox("Add digital signature (requires certificate)")
+        self.digital_sig_cb.setAccessibleName("Add digital signature")
+        self.digital_sig_cb.setMinimumHeight(44)
         self.digital_sig_cb.toggled.connect(self.toggle_certificate)
         options_layout.addRow(self.digital_sig_cb)
 
         # Certificate file
         cert_layout = QHBoxLayout()
         self.cert_file_edit = QLineEdit()
+        self.cert_file_edit.setAccessibleName("Certificate file for digital signature")
         self.cert_file_edit.setPlaceholderText("Select certificate file...")
         self.cert_file_edit.setEnabled(False)
         cert_layout.addWidget(self.cert_file_edit)
 
         self.browse_cert_btn = QPushButton("Browse")
+        self.browse_cert_btn.setAccessibleName("Browse for certificate file")
+        self.browse_cert_btn.setMinimumHeight(44)
         self.browse_cert_btn.clicked.connect(self.browse_certificate_file)
         self.browse_cert_btn.setEnabled(False)
         cert_layout.addWidget(self.browse_cert_btn)
@@ -1092,11 +1170,11 @@ class PDFSignDialog(QDialog):
         self.preview_label.setStyleSheet(
             """
             QLabel {
-                border: 2px dashed {token('border')};
+                border: 2px dashed #ccc;
                 border-radius: 8px;
                 padding: 40px;
-                background-color: {token('surface')};
-                color: {token('text_muted')};
+                background-color: #f9f9f9;
+                color: #666;
                 font-size: 12pt;
             }
         """
@@ -1115,6 +1193,7 @@ class PDFSignDialog(QDialog):
 
         output_file_layout = QHBoxLayout()
         self.output_file_edit = QLineEdit()
+        self.output_file_edit.setAccessibleName("Signed output file")
         self.output_file_edit.setPlaceholderText(
             "Output file will be auto-generated..."
         )
@@ -1122,6 +1201,8 @@ class PDFSignDialog(QDialog):
         output_file_layout.addWidget(self.output_file_edit)
 
         self.browse_output_btn = QPushButton("Browse")
+        self.browse_output_btn.setAccessibleName("Browse for signed output file")
+        self.browse_output_btn.setMinimumHeight(44)
         self.browse_output_btn.clicked.connect(self.browse_output_file)
         output_file_layout.addWidget(self.browse_output_btn)
 
@@ -1134,16 +1215,20 @@ class PDFSignDialog(QDialog):
         buttons_layout.addStretch()
 
         self.cancel_btn = QPushButton("Cancel")
+        self.cancel_btn.setAccessibleName("Cancel sign operation")
+        self.cancel_btn.setMinimumHeight(44)
         self.cancel_btn.clicked.connect(self.reject)
         buttons_layout.addWidget(self.cancel_btn)
 
         self.sign_btn = QPushButton("Sign Document")
+        self.sign_btn.setAccessibleName("Sign PDF document")
+        self.sign_btn.setMinimumHeight(44)
         self.sign_btn.clicked.connect(self.accept)
         self.sign_btn.setEnabled(False)
         self.sign_btn.setStyleSheet(
             """
             QPushButton {
-                background-color: {token('semantic_error')};
+                background-color: #dc3545;
                 color: white;
                 font-weight: bold;
                 padding: 8px 16px;
@@ -1151,10 +1236,10 @@ class PDFSignDialog(QDialog):
                 border-radius: 4px;
             }
             QPushButton:hover {
-                background-color: {token('semantic_error')};
+                background-color: #c82333;
             }
             QPushButton:disabled {
-                background-color: {token('border')};
+                background-color: #ccc;
             }
         """
         )
@@ -1169,12 +1254,12 @@ class PDFSignDialog(QDialog):
         self.setStyleSheet(
             """
             QDialog {
-                background-color: {token('window_background')};
+                background-color: #ffffff;
                 font-family: "Segoe UI", Arial, sans-serif;
             }
             QGroupBox {
                 font-weight: bold;
-                border: 2px solid {token('border_light')};
+                border: 2px solid #dee2e6;
                 border-radius: 8px;
                 margin-top: 10px;
                 padding-top: 10px;
@@ -1186,16 +1271,16 @@ class PDFSignDialog(QDialog):
             }
             QPushButton {
                 padding: 6px 12px;
-                border: 1px solid {token('border')};
+                border: 1px solid #ccc;
                 border-radius: 4px;
-                background-color: {token('dialog_background')};
+                background-color: #f8f9fa;
             }
             QPushButton:hover {
-                background-color: {token('border_light')};
+                background-color: #e9ecef;
             }
             QLineEdit {
                 padding: 6px;
-                border: 1px solid {token('border_light')};
+                border: 1px solid #dee2e6;
                 border-radius: 4px;
             }
         """

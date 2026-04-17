@@ -190,6 +190,8 @@ class StandardWindow(QMainWindow):
     def create_button(self, text, callback=None, primary=True):
         """Create a standard button."""
         button = QPushButton(text)
+        button.setAccessibleName(text)
+        button.setMinimumHeight(44)
         if primary:
             ThemeManager.style_primary_button(button)
         else:
@@ -359,6 +361,8 @@ class StandardDialog(QDialog):
     def create_button(self, text, callback=None, primary=True):
         """Create a standard button."""
         button = QPushButton(text)
+        button.setAccessibleName(text)
+        button.setMinimumHeight(44)
         if primary:
             ThemeManager.style_primary_button(button)
         else:
@@ -422,6 +426,8 @@ class StandardUtilityWidget(QWidget):
     def create_button(self, text, callback=None, primary=True):
         """Create a standard button."""
         button = QPushButton(text)
+        button.setAccessibleName(text)
+        button.setMinimumHeight(44)
         if primary:
             ThemeManager.style_primary_button(button)
         else:

@@ -9,7 +9,6 @@ import logging
 import sys
 
 try:
-    from src.gui.themes import token
     from PyQt5.QtWidgets import (
         QApplication,
         QFileDialog,
@@ -24,6 +23,8 @@ try:
         QVBoxLayout,
         QWidget,
     )
+
+    from src.gui.themes import ThemeManager, token
 except ImportError:
     print("PyQt5 not available. Please install PyQt5.")
     sys.exit(1)
@@ -54,12 +55,16 @@ SIZE_ANALYZER_LABEL = "Size Analyzer"
 # Import SafeStandardWindow for reliable menu integration
 try:
     # Add the correct path for imports
-    from ....gui.safe_standard_window import SafeStandardWindow as StandardWindow
+    from ....gui.safe_standard_window import (
+        SafeStandardWindow as StandardWindow,
+    )
 
     STANDARD_WINDOW_AVAILABLE = True
 except ImportError:
     try:
-        from src.gui.safe_standard_window import SafeStandardWindow as StandardWindow
+        from src.gui.safe_standard_window import (
+            SafeStandardWindow as StandardWindow,
+        )
 
         STANDARD_WINDOW_AVAILABLE = True
     except ImportError as safe_error:
@@ -94,19 +99,93 @@ except ImportError:
                 STANDARD_WINDOW_AVAILABLE = False
 
 
+# ---------------------------------------------------------------------------
+# GRD-1a: Guardian registration (graceful no-op when guardian absent)
+# ---------------------------------------------------------------------------
+try:
+    from src.core.guardian import register_gui_component
+except ImportError:
+
+    def register_gui_component(*a, **kw):
+        pass  # noqa: E731
+
+
+# ---------------------------------------------------------------------------
+# TEL: Telemetry helpers (graceful no-op when telemetry absent)
+# ---------------------------------------------------------------------------
+try:
+    from src.gui.telemetry import emit_telemetry
+
+    def _emit_telemetry(event_type, **kw):
+        emit_telemetry(event_type, **kw)  # noqa: E731
+
+except ImportError:
+
+    def _emit_telemetry(*a, **kw):
+        pass  # noqa: E731
+
+
+# ---------------------------------------------------------------------------
+# STR: Centralised string constants with fallback (P1-C15 / STR-1)
+# ---------------------------------------------------------------------------
+try:
+    from src.rfu.ui_strings import SizeAnalyzer as _SizeAnalyzerStrings
+except ImportError:
+
+    class _SizeAnalyzerStrings:  # type: ignore[no-redef]
+        TITLE = "Size Analyzer"
+        WINDOW_TITLE = "Size Analyzer — RFU"
+        LOADING = "Loading Size Analyzer…"
+        MODAL_ERROR_TITLE = "Size Analyzer"
+        ERR_INIT_FAILED = (
+            "Could not start Size Analyzer. "
+            "Please try again or restart the application."
+        )
+        ERR_ANALYSIS_FAILED = "Could not analyze directory. Please try again."
+        ERR_FILTER_INVALID = (
+            "Invalid name filter. "
+            "Please enter a valid file name pattern or leave the filter empty."
+        )
+        ERR_EXPORT_FAILED = (
+            "Could not export analysis results. "
+            "Check that you have write permission to the chosen location."
+        )
+
+
+# ---------------------------------------------------------------------------
+# ERR: Modal helper (graceful no-op when modal absent)
+# ---------------------------------------------------------------------------
+try:
+    from src.gui.components.buttons import PrimaryButton, SecondaryButton
+    from src.gui.components.loading_indicator import LoadingIndicator
+    from src.gui.components.modal import Modal
+    from src.gui.components.toast import ToastNotification
+
+    _CP_AVAILABLE = True
+except ImportError:
+    Modal = None  # type: ignore[assignment,misc]
+    PrimaryButton = QPushButton
+    SecondaryButton = QPushButton
+    LoadingIndicator = None
+    ToastNotification = None
+    _CP_AVAILABLE = False
+
+
 class SizeAnalyzerGUI(StandardWindow):
     """Main window for Size Analyzer operations."""
 
-    def __init__(self, parent=None):
+    def __init__(self, hub_instance=None, parent=None):
         # Always use the safe constructor parameters
         super().__init__(
-            title="Size Analyzer - Richard's File Utilities",
+            title=_SizeAnalyzerStrings.WINDOW_TITLE,
             window_type="utility",
             parent=parent,
         )
+        self._hub = hub_instance
         self.setGeometry(100, 100, 800, 600)
 
         self.logger = self._init_logger()
+        self._logger = self.logger  # harmonization alias
         self.analysis_results = {}
         self.analyzer = SizeAnalyzer()
         self.analyzer.operation_cancelled.connect(self._handle_analysis_cancelled)
@@ -119,6 +198,32 @@ class SizeAnalyzerGUI(StandardWindow):
             self._setup_menu_callbacks()
         # Ensure menu bar exists (safe to call in both modes)
         self.ensure_menu_bar()
+        register_gui_component(
+            self, tool_id="size_analyzer", recovery_callback=self.degraded_fallback
+        )
+        _emit_telemetry("ui_view_load", tool_id="size_analyzer")
+        ThemeManager.add_theme_changed_callback(self._on_theme_changed)
+
+    def _on_theme_changed(self, variant: str) -> None:
+        """Re-apply token-based stylesheets when the active theme variant changes."""
+        pass  # stylesheets applied at init; live re-apply pending TH-4c/4d
+
+    def health_check(self) -> bool:
+        """Return True if core UI is functional (GRD-3a)."""
+        try:
+            return hasattr(self, "results_list") and self.results_list is not None
+        except Exception:
+            return False
+
+    def degraded_fallback(self) -> None:
+        """Enter degraded / read-only state (GRD-3b)."""
+        try:
+            self._logger.warning("SizeAnalyzerGUI entering degraded mode")
+        except Exception:
+            pass
+        _emit_telemetry(
+            "ui_error_event", tool_id="size_analyzer", error_type="degraded"
+        )
 
     def _setup_menu_callbacks(self):
         """Setup tool-specific menu callbacks."""
@@ -199,20 +304,25 @@ class SizeAnalyzerGUI(StandardWindow):
         </ul>
         """
 
-        QMessageBox.information(self, "Size Analyzer Help", help_text)
+        if Modal:
+            Modal("Size Analyzer Help", help_text, ["OK"], parent=self).exec_()
+        else:
+            QMessageBox.information(self, "Size Analyzer Help", help_text)
 
     def show_preferences(self):
         """Show Size Analyzer preferences."""
-        QMessageBox.information(
-            self,
-            "Size Analyzer Preferences",
+        _msg = (
             "Size Analyzer preferences:\n\n"
             "• Analysis depth limits\n"
             "• File type filters\n"
             "• Size display units\n"
             "• Sort and grouping options\n\n"
-            "Advanced preferences coming soon!",
+            "Advanced preferences coming soon!"
         )
+        if Modal:
+            Modal("Size Analyzer Preferences", _msg, ["OK"], parent=self).exec_()
+        else:
+            QMessageBox.information(self, "Size Analyzer Preferences", _msg)
 
     def refresh_view(self):
         """Refresh/clear the current analysis results."""
@@ -251,10 +361,13 @@ class SizeAnalyzerGUI(StandardWindow):
         analysis_layout = QVBoxLayout(analysis_group)
 
         self.results_list = QListWidget()
+        self.results_list.setAccessibleName("Analysis results")
         analysis_layout.addWidget(self.results_list)
 
         self.status_label = QLabel("Idle")
-        self.status_label.setStyleSheet(f"color: {token('text_primary')}; padding: 4px 0;")
+        self.status_label.setStyleSheet(
+            f"color: {token('text_primary')}; padding: 4px 0;"
+        )
         analysis_layout.addWidget(self.status_label)
 
         filter_group = QGroupBox("File Name Range Filter (Optional)")
@@ -263,10 +376,12 @@ class SizeAnalyzerGUI(StandardWindow):
 
         start_label = QLabel("Start:")
         self.start_range_input = QLineEdit()
+        self.start_range_input.setAccessibleName("Start of range")
         self.start_range_input.setPlaceholderText("e.g., A or 100")
 
         end_label = QLabel("End:")
         self.end_range_input = QLineEdit()
+        self.end_range_input.setAccessibleName("End of range")
         self.end_range_input.setPlaceholderText("e.g., D or 399")
 
         for widget in (
@@ -279,11 +394,11 @@ class SizeAnalyzerGUI(StandardWindow):
 
         analysis_layout.addWidget(filter_group)
 
-        self.analyze_button = QPushButton("Start Analysis")
+        self.analyze_button = PrimaryButton("Start Analysis")
         self.analyze_button.clicked.connect(self.start_analysis)
         analysis_layout.addWidget(self.analyze_button)
 
-        self.cancel_button = QPushButton("Stop Analysis")
+        self.cancel_button = SecondaryButton("Stop Analysis")
         self.cancel_button.setEnabled(False)
         self.cancel_button.clicked.connect(self.stop_analysis)
         analysis_layout.addWidget(self.cancel_button)
@@ -295,24 +410,19 @@ class SizeAnalyzerGUI(StandardWindow):
         content_label.setStyleSheet(f"padding: 20px; color: {token('text_muted')};")
         layout.addWidget(content_label)
 
+        # Loading indicator for background analysis (CP-6)
+        if LoadingIndicator:
+            self._loading = LoadingIndicator(
+                parent=self, cancellable=True, message="Analyzing…"
+            )
+            self._loading.cancelled.connect(self.stop_analysis)
+            layout.addWidget(self._loading)
+        else:
+            self._loading = None
+
         # Add action button
-        self.action_button = QPushButton("Execute Action")
+        self.action_button = SecondaryButton("Execute Action")
         self.action_button.clicked.connect(self.execute_action)
-        self.action_button.setStyleSheet(
-            """
-            QPushButton {
-                background-color: {token('accent')};
-                color: white;
-                border: none;
-                padding: 10px 20px;
-                border-radius: 4px;
-                font-weight: bold;
-            }
-            QPushButton:hover {
-                background-color: {token('button_primary_hover')};
-            }
-        """
-        )
         layout.addWidget(self.action_button)
 
     def start_analysis(self):
@@ -321,7 +431,10 @@ class SizeAnalyzerGUI(StandardWindow):
             warning_text = (
                 "An analysis is already running. Please wait for it to finish."
             )
-            QMessageBox.warning(self, SIZE_ANALYZER_LABEL, warning_text)
+            if Modal:
+                Modal(SIZE_ANALYZER_LABEL, warning_text, ["OK"], parent=self).exec_()
+            else:
+                QMessageBox.warning(self, SIZE_ANALYZER_LABEL, warning_text)
             return
 
         if self._worker_signals_connected:
@@ -334,8 +447,17 @@ class SizeAnalyzerGUI(StandardWindow):
 
         try:
             start_value, end_value = self._get_name_range_filters()
-        except ValueError as error:
-            QMessageBox.warning(self, SIZE_ANALYZER_LABEL, str(error))
+        except (
+            ValueError
+        ) as error:  # ERR: non-fatal — surfaced via Modal; invalid filter input
+            self.logger.error(f"Invalid name range filter: {error}", exc_info=True)
+            if Modal:
+                Modal(
+                    _SizeAnalyzerStrings.MODAL_ERROR_TITLE,
+                    _SizeAnalyzerStrings.ERR_FILTER_INVALID,
+                    ["OK"],
+                    self,
+                ).exec_()
             return
 
         name_range = None
@@ -375,11 +497,19 @@ class SizeAnalyzerGUI(StandardWindow):
     def stop_analysis(self):
         """Allow the user to cancel the running analysis."""
         if not self.worker_thread or not self.worker_thread.isRunning():
-            QMessageBox.information(
-                self,
-                SIZE_ANALYZER_LABEL,
-                "No analysis is currently running.",
-            )
+            if Modal:
+                Modal(
+                    SIZE_ANALYZER_LABEL,
+                    "No analysis is currently running.",
+                    ["OK"],
+                    parent=self,
+                ).exec_()
+            else:
+                QMessageBox.information(
+                    self,
+                    SIZE_ANALYZER_LABEL,
+                    "No analysis is currently running.",
+                )
             return
 
         self.status_label.setText("Cancelling analysis...")
@@ -392,11 +522,19 @@ class SizeAnalyzerGUI(StandardWindow):
     def execute_action(self):
         """Main action method for this tool."""
         if not self.analysis_results:
-            QMessageBox.information(
-                self,
-                SIZE_ANALYZER_LABEL,
-                "Run an analysis before exporting results.",
-            )
+            if Modal:
+                Modal(
+                    SIZE_ANALYZER_LABEL,
+                    "Run an analysis before exporting results.",
+                    ["OK"],
+                    parent=self,
+                ).exec_()
+            else:
+                QMessageBox.information(
+                    self,
+                    SIZE_ANALYZER_LABEL,
+                    "Run an analysis before exporting results.",
+                )
             return
 
         export_path, _ = QFileDialog.getSaveFileName(
@@ -414,17 +552,25 @@ class SizeAnalyzerGUI(StandardWindow):
                 self.analysis_results,
                 export_path,
             )
-            QMessageBox.information(
-                self,
-                SIZE_ANALYZER_LABEL,
-                f"Analysis results exported to:\n{export_path}",
-            )
-        except OSError as exc:
-            QMessageBox.critical(
-                self,
-                "Export Failed",
-                f"Unable to export analysis results:\n{exc}",
-            )
+            if ToastNotification:
+                ToastNotification(parent=self).show_message(
+                    f"Exported to {export_path}", "success"
+                )
+            else:
+                QMessageBox.information(
+                    self,
+                    SIZE_ANALYZER_LABEL,
+                    f"Analysis results exported to:\n{export_path}",
+                )
+        except OSError as exc:  # ERR: non-fatal — surfaced via Modal
+            self.logger.error(f"Error exporting analysis results: {exc}", exc_info=True)
+            if Modal:
+                Modal(
+                    _SizeAnalyzerStrings.MODAL_ERROR_TITLE,
+                    _SizeAnalyzerStrings.ERR_EXPORT_FAILED,
+                    ["OK"],
+                    self,
+                ).exec_()
 
     def _prompt_drive_selection(self) -> str | None:
         """Show a directory picker so the user can choose the drive/folder."""
@@ -515,6 +661,8 @@ class SizeAnalyzerGUI(StandardWindow):
 
         self.status_label.setText("Analysis complete.")
         self._set_analysis_running(False)
+        if ToastNotification:
+            ToastNotification(parent=self).show_message("Analysis complete", "success")
         if self.logger:
             self.logger.info(
                 "Analysis finished: files=%s total_bytes=%s",
@@ -526,7 +674,10 @@ class SizeAnalyzerGUI(StandardWindow):
         """Show errors and restore UI state."""
         self.status_label.setText("Analysis failed.")
         self.results_list.addItem(error_message)
-        QMessageBox.critical(self, SIZE_ANALYZER_LABEL, error_message)
+        if Modal:
+            Modal(SIZE_ANALYZER_LABEL, error_message, ["OK"], parent=self).exec_()
+        else:
+            QMessageBox.critical(self, SIZE_ANALYZER_LABEL, error_message)
         self._set_analysis_running(False)
         if self.logger:
             self.logger.error("Analysis error: %s", error_message)
@@ -542,7 +693,10 @@ class SizeAnalyzerGUI(StandardWindow):
         if self.worker_thread:
             try:
                 self.worker_thread.deleteLater()
-            except (RuntimeError, TypeError) as error:
+            except (
+                RuntimeError,
+                TypeError,
+            ) as error:  # ERR: non-fatal — worker deletion failed; GC will clean up
                 if self.logger:
                     self.logger.warning("Failed to schedule worker deletion: %s", error)
         self.worker_thread = None
@@ -569,6 +723,11 @@ class SizeAnalyzerGUI(StandardWindow):
             self.start_range_input.setEnabled(not running)
         if hasattr(self, "end_range_input"):
             self.end_range_input.setEnabled(not running)
+        if hasattr(self, "_loading") and self._loading:
+            if running:
+                self._loading.start()
+            else:
+                self._loading.stop()
         if self.logger:
             self.logger.debug("UI state updated (running=%s)", running)
 
@@ -606,7 +765,10 @@ class SizeAnalyzerGUI(StandardWindow):
         for signal, slot in self._worker_signal_pairs:
             try:
                 signal.disconnect(slot)
-            except (TypeError, RuntimeError):
+            except (
+                TypeError,
+                RuntimeError,
+            ):  # ERR: non-fatal — stale signal disconnect; loop continues
                 continue
 
         self._worker_signal_pairs = []

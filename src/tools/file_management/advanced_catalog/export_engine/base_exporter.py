@@ -5,10 +5,10 @@ for all export formats.
 """
 
 from abc import ABC, abstractmethod
+from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Dict, Any, Optional
-from datetime import datetime
+from typing import Any, Dict, Optional
 
 
 class ExportFormat(Enum):
@@ -113,7 +113,7 @@ class BaseExporter(ABC):
         """Get hex color for an entry."""
         if entry.color_category and self.color_preservation:
             return entry.color_category.color_hex
-        return "#FFFFFF"
+        return "#FFFFFF"  # noqa: TH-1  export-data fallback; document colours are not UI-theme-dependent
 
     def _get_color_rgb(self, entry) -> tuple:
         """Get RGB color for an entry."""
@@ -161,9 +161,7 @@ class BaseExporter(ABC):
                 parent_dir.mkdir(parents=True, exist_ok=True)
 
             # Test write access by creating a temporary file
-            test_file = (
-                parent_dir / f".test_write_{datetime.now().timestamp()}"
-            )
+            test_file = parent_dir / f".test_write_{datetime.now().timestamp()}"
             test_file.touch()
             test_file.unlink()
 

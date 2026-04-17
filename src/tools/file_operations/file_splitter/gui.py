@@ -188,16 +188,21 @@ class FileSplitJoinGUI(StandardWindow):
         # Input file selection
         split_layout.addWidget(QLabel("File to Split:"), 0, 0)
         self.split_file_edit = QLineEdit()
+        self.split_file_edit.setAccessibleName("File to split")
         self.split_file_edit.setPlaceholderText("Select file to split...")
         split_layout.addWidget(self.split_file_edit, 0, 1)
 
         self.browse_split_button = QPushButton("Browse")
+        self.browse_split_button.setAccessibleName("Browse for file to split")
+        self.browse_split_button.setMinimumHeight(44)
         self.browse_split_button.clicked.connect(self.browse_split_file)
         split_layout.addWidget(self.browse_split_button, 0, 2)
 
         # Chunk size
         split_layout.addWidget(QLabel("Chunk Size (MB):"), 1, 0)
         self.chunk_size_spin = QSpinBox()
+        self.chunk_size_spin.setAccessibleName("Chunk size in megabytes")
+        self.chunk_size_spin.setMinimumHeight(44)
         self.chunk_size_spin.setRange(1, 2048)
         self.chunk_size_spin.setValue(100)
         split_layout.addWidget(self.chunk_size_spin, 1, 1)
@@ -205,15 +210,24 @@ class FileSplitJoinGUI(StandardWindow):
         # Output directory
         split_layout.addWidget(QLabel("Output Directory:"), 2, 0)
         self.split_output_edit = QLineEdit()
+        self.split_output_edit.setAccessibleName("Split output directory")
         self.split_output_edit.setPlaceholderText("Same as input file")
         split_layout.addWidget(self.split_output_edit, 2, 1)
 
         self.browse_split_output_button = QPushButton("Browse")
+        self.browse_split_output_button.setAccessibleName(
+            "Browse for split output directory"
+        )
+        self.browse_split_output_button.setMinimumHeight(44)
         self.browse_split_output_button.clicked.connect(self.browse_split_output)
         split_layout.addWidget(self.browse_split_output_button, 2, 2)
 
         # Preview button (dry run — must precede split button per spec §5.2)
         self.preview_split_button = QPushButton("🔍 Preview Split (Dry Run)")
+        self.preview_split_button.setAccessibleName(
+            "Preview split without creating files"
+        )
+        self.preview_split_button.setMinimumHeight(44)
         self.preview_split_button.clicked.connect(self.preview_split)
         self.preview_split_button.setToolTip(
             "Calculate how many parts would be created and their sizes "
@@ -223,6 +237,8 @@ class FileSplitJoinGUI(StandardWindow):
 
         # Split button
         self.split_button = QPushButton("Split File")
+        self.split_button.setAccessibleName("Split file into parts")
+        self.split_button.setMinimumHeight(44)
         self.split_button.clicked.connect(self.split_file)
         self.split_button.setStyleSheet(
             """
@@ -254,25 +270,33 @@ class FileSplitJoinGUI(StandardWindow):
         # First part file selection
         join_layout.addWidget(QLabel("First Part File:"), 0, 0)
         self.join_file_edit = QLineEdit()
+        self.join_file_edit.setAccessibleName("First part file to join")
         self.join_file_edit.setPlaceholderText("Select first part file (.part001)...")
         join_layout.addWidget(self.join_file_edit, 0, 1)
 
         self.browse_join_button = QPushButton("Browse")
+        self.browse_join_button.setAccessibleName("Browse for first part file to join")
+        self.browse_join_button.setMinimumHeight(44)
         self.browse_join_button.clicked.connect(self.browse_join_file)
         join_layout.addWidget(self.browse_join_button, 0, 2)
 
         # Output file
         join_layout.addWidget(QLabel("Output File:"), 1, 0)
         self.join_output_edit = QLineEdit()
+        self.join_output_edit.setAccessibleName("Join output file")
         self.join_output_edit.setPlaceholderText("Auto-detected from metadata")
         join_layout.addWidget(self.join_output_edit, 1, 1)
 
         self.browse_join_output_button = QPushButton("Browse")
+        self.browse_join_output_button.setAccessibleName("Browse for join output file")
+        self.browse_join_output_button.setMinimumHeight(44)
         self.browse_join_output_button.clicked.connect(self.browse_join_output)
         join_layout.addWidget(self.browse_join_output_button, 1, 2)
 
         # Join button
         self.join_button = QPushButton("Join Files")
+        self.join_button.setAccessibleName("Join file parts")
+        self.join_button.setMinimumHeight(44)
         self.join_button.clicked.connect(self.join_files)
         self.join_button.setStyleSheet(
             """
@@ -308,6 +332,7 @@ class FileSplitJoinGUI(StandardWindow):
 
         # Status text
         self.status_text = QTextEdit()
+        self.status_text.setAccessibleName("Operation progress status")
         self.status_text.setMaximumHeight(100)
         self.status_text.setReadOnly(True)
         progress_layout.addWidget(self.status_text)

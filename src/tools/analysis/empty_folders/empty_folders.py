@@ -5,12 +5,13 @@ Empty Folders Finder for Richard's File Utilities
 A streamlined empty folders finder utility with essential functionality.
 """
 
+import logging
 import os
 import sys
 from pathlib import Path
 from typing import List, Optional
 
-from src.gui.themes import token
+from src.gui.themes import ThemeManager, token
 
 try:
     from src.gui.components.buttons import (
@@ -81,6 +82,53 @@ except ImportError as e:
         STANDARD_WINDOW_AVAILABLE = False
 
 
+# ---------------------------------------------------------------------------
+# GRD-1a: Guardian registration (graceful no-op when guardian absent)
+# ---------------------------------------------------------------------------
+try:
+    from src.core.guardian import register_gui_component
+except ImportError:
+
+    def register_gui_component(*a, **kw):
+        pass  # noqa: E731
+
+
+# ---------------------------------------------------------------------------
+# TEL: Telemetry helpers (graceful no-op when telemetry absent)
+# ---------------------------------------------------------------------------
+try:
+    from src.gui.telemetry import emit_telemetry
+
+    def _emit_telemetry(event_type, **kw):
+        emit_telemetry(event_type, **kw)  # noqa: E731
+
+except ImportError:
+
+    def _emit_telemetry(*a, **kw):
+        pass  # noqa: E731
+
+
+# ---------------------------------------------------------------------------
+# STR: Centralised string constants with fallback (P1-C15 / STR-1)
+# ---------------------------------------------------------------------------
+try:
+    from src.rfu.ui_strings import EmptyFolders as _EmptyFoldersStrings
+except ImportError:
+
+    class _EmptyFoldersStrings:  # type: ignore[no-redef]
+        TITLE = "Empty Folders Finder"
+        WINDOW_TITLE = "Empty Folders Finder — RFU"
+        LOADING = "Loading Empty Folders Finder…"
+        ERR_INIT_FAILED = (
+            "Could not start Empty Folders Finder. "
+            "Please try again or restart the application."
+        )
+        ERR_SCAN_FAILED = "Could not scan the selected directory. Please try again."
+        ERR_DELETE_FAILED = (
+            "Could not delete the selected folder. Please check permissions."
+        )
+
+
 class EmptyFolderLogic(QObject):
     """Handles the logic for finding and deleting empty folders."""
 
@@ -121,7 +169,9 @@ class EmptyFolderLogic(QObject):
                         empty_folders.append(root)
                         folder_name = os.path.basename(root)
                         self.progress_updated.emit(f"Found: {folder_name}")
-                except OSError:
+                except (
+                    OSError
+                ):  # ERR: non-fatal — inaccessible directory skipped during scan
                     continue
 
             if self._is_running:
@@ -130,7 +180,9 @@ class EmptyFolderLogic(QObject):
                     f"Scan complete. Found {len(empty_folders)} empty folders."
                 )
 
-        except Exception as e:
+        except (
+            Exception
+        ) as e:  # ERR: non-fatal — surfaced via error_occurred signal to GUI
             self.error_occurred.emit(str(e))
         finally:
             self.finished.emit(True)
@@ -162,7 +214,9 @@ class EmptyFolderLogic(QObject):
                 else:
                     self.deletion_update.emit(folder, False)
                     failed_count += 1
-            except Exception as e:
+            except (
+                Exception
+            ) as e:  # ERR: non-fatal — surfaced via deletion_update signal; per-folder error
                 self.deletion_update.emit(folder, False)
                 failed_count += 1
                 msg = f"Failed to delete {folder}: {str(e)}"
@@ -179,13 +233,20 @@ class EmptyFolderLogic(QObject):
 class EmptyFoldersGUI(StandardWindow):
     """Main window for Empty Folders operations."""
 
-    def __init__(self, parent=None):
+    def __init__(self, hub_instance=None, parent=None):
         # Always use the safe constructor parameters
         super().__init__(
-            title="Empty Folders Finder - Richard's File Utilities",
+            title=_EmptyFoldersStrings.WINDOW_TITLE,
             window_type="utility",
             parent=parent,
         )
+        self._hub = hub_instance
+        try:
+            from src.rfu.log_manager import get_log_manager
+
+            self._logger = get_log_manager().get_logger("EmptyFoldersGUI")
+        except Exception:
+            self._logger = logging.getLogger("EmptyFoldersGUI")
         self.setGeometry(100, 100, 800, 600)
 
         self.current_path: Optional[str] = None
@@ -198,6 +259,32 @@ class EmptyFoldersGUI(StandardWindow):
             self._setup_menu_callbacks()
         # Ensure menu bar exists (safe to call in both modes)
         self.ensure_menu_bar()
+        register_gui_component(
+            self, tool_id="empty_folders", recovery_callback=self.degraded_fallback
+        )
+        _emit_telemetry("ui_view_load", tool_id="empty_folders")
+        ThemeManager.add_theme_changed_callback(self._on_theme_changed)
+
+    def _on_theme_changed(self, variant: str) -> None:
+        """Re-apply token-based stylesheets when the active theme variant changes."""
+        pass  # stylesheets applied at init; live re-apply pending TH-4c/4d
+
+    def health_check(self) -> bool:
+        """Return True if core UI is functional (GRD-3a)."""
+        try:
+            return hasattr(self, "folder_list") and self.folder_list is not None
+        except Exception:
+            return False
+
+    def degraded_fallback(self) -> None:
+        """Enter degraded / read-only state (GRD-3b)."""
+        try:
+            self._logger.warning("EmptyFoldersGUI entering degraded mode")
+        except Exception:
+            pass
+        _emit_telemetry(
+            "ui_error_event", tool_id="empty_folders", error_type="degraded"
+        )
 
     def _setup_menu_callbacks(self):
         """Setup tool-specific menu callbacks."""
@@ -270,20 +357,25 @@ class EmptyFoldersGUI(StandardWindow):
         </ul>
         """
 
-        QMessageBox.information(self, "Empty Folders Finder Help", help_text)
+        if Modal:
+            Modal("Empty Folders Finder Help", help_text, ["OK"], parent=self).exec_()
+        else:
+            QMessageBox.information(self, "Empty Folders Finder Help", help_text)
 
     def show_preferences(self):
         """Show Empty Folders preferences."""
-        QMessageBox.information(
-            self,
-            "Empty Folders Finder Preferences",
+        _msg = (
             "Empty Folders Finder preferences:\n\n"
             "• Scan depth limits\n"
             "• Directory exclusion filters\n"
             "• Deletion confirmation options\n"
             "• Progress display settings\n\n"
-            "Advanced preferences coming soon!",
+            "Advanced preferences coming soon!"
         )
+        if Modal:
+            Modal("Empty Folders Finder Preferences", _msg, ["OK"], parent=self).exec_()
+        else:
+            QMessageBox.information(self, "Empty Folders Finder Preferences", _msg)
 
     def refresh_view(self):
         """Refresh/clear the current scan results."""
@@ -366,6 +458,7 @@ class EmptyFoldersGUI(StandardWindow):
         results_layout = QVBoxLayout(results_group)
 
         self.results_list = QListWidget()
+        self.results_list.setAccessibleName("Empty folders list")
         self.results_list.setSelectionMode(QAbstractItemView.ExtendedSelection)
         results_layout.addWidget(self.results_list)
 
@@ -413,6 +506,13 @@ class EmptyFoldersGUI(StandardWindow):
         )
         layout.addWidget(self.status_label)
 
+        # Loading indicator (PERF-3a/3b)
+        if LoadingIndicator:
+            self._loading_indicator = LoadingIndicator(parent=self, message="Working…")
+            layout.addWidget(self._loading_indicator)
+        else:
+            self._loading_indicator = None
+
     def select_directory(self):
         """Select directory to scan."""
         directory = QFileDialog.getExistingDirectory(self, "Select Directory to Scan")
@@ -430,7 +530,12 @@ class EmptyFoldersGUI(StandardWindow):
     def start_scan(self):
         """Start scanning for empty folders."""
         if not self.current_path:
-            QMessageBox.warning(self, "Error", "Please select a directory first")
+            if Modal:
+                Modal(
+                    "Error", "Please select a directory first", ["OK"], parent=self
+                ).exec_()
+            else:
+                QMessageBox.warning(self, "Error", "Please select a directory first")
             return
 
         # Clear previous results
@@ -443,6 +548,10 @@ class EmptyFoldersGUI(StandardWindow):
         self.scan_button.setEnabled(False)
         self.stop_button.setEnabled(True)
         self.delete_button.setEnabled(False)
+
+        # PERF-3a: start indicator before worker
+        if self._loading_indicator:
+            self._loading_indicator.start()
 
         # Create and start scan thread
         self.logic = EmptyFolderLogic()
@@ -484,7 +593,9 @@ class EmptyFoldersGUI(StandardWindow):
                     display_path = os.path.relpath(folder, self.current_path)
                     if display_path == ".":
                         display_path = os.path.basename(folder)
-                except ValueError:
+                except (
+                    ValueError
+                ):  # ERR: non-fatal — path display fallback; full path used instead
                     display_path = folder
             else:
                 display_path = folder
@@ -508,7 +619,12 @@ class EmptyFoldersGUI(StandardWindow):
         """Delete selected empty folders."""
         selected_items = self.results_list.selectedItems()
         if not selected_items:
-            QMessageBox.warning(self, "Error", "Please select folders to delete")
+            if Modal:
+                Modal(
+                    "Error", "Please select folders to delete", ["OK"], parent=self
+                ).exec_()
+            else:
+                QMessageBox.warning(self, "Error", "Please select folders to delete")
             return
 
         folders_to_delete: List[str] = [
@@ -516,17 +632,29 @@ class EmptyFoldersGUI(StandardWindow):
         ]
 
         # Confirm deletion
-        reply = QMessageBox.question(
-            self,
-            "Confirm Deletion",
-            f"Delete {len(folders_to_delete)} empty folders?\n\n"
-            "This action cannot be undone.",
-            QMessageBox.Yes | QMessageBox.No,
-            QMessageBox.No,
-        )
-
-        if reply != QMessageBox.Yes:
-            return
+        if ConfirmationModal:
+            dlg = ConfirmationModal(
+                "Confirm Deletion",
+                f"Delete {len(folders_to_delete)} empty folder"
+                f"{'s' if len(folders_to_delete) != 1 else ''}?\n\n"
+                "This action cannot be undone.",
+                confirm_text="Delete",
+                cancel_text="Cancel",
+                parent=self,
+            )
+            if not dlg.exec_():  # 0 = cancelled
+                return
+        else:
+            reply = QMessageBox.question(
+                self,
+                "Confirm Deletion",
+                f"Delete {len(folders_to_delete)} empty folders?\n\n"
+                "This action cannot be undone.",
+                QMessageBox.Yes | QMessageBox.No,
+                QMessageBox.No,
+            )
+            if reply != QMessageBox.Yes:
+                return
 
         self.status_label.setText("Deleting folders...")
 
@@ -534,6 +662,10 @@ class EmptyFoldersGUI(StandardWindow):
         self.delete_button.setEnabled(False)
         self.scan_button.setEnabled(False)
         self.stop_button.setEnabled(True)
+
+        # PERF-3a: start indicator before worker
+        if self._loading_indicator:
+            self._loading_indicator.start()
 
         # Create and start delete thread
         self.logic = EmptyFolderLogic()
@@ -576,6 +708,10 @@ class EmptyFoldersGUI(StandardWindow):
 
     def operation_complete(self):
         """Handle operation completion - common cleanup."""
+        # PERF-4a: stop indicator on normal completion
+        if self._loading_indicator:
+            self._loading_indicator.stop()
+
         # Re-enable buttons
         self.scan_button.setEnabled(True)
         self.stop_button.setEnabled(False)
@@ -599,7 +735,13 @@ class EmptyFoldersGUI(StandardWindow):
 
     def handle_error(self, error_message: str):
         """Handle errors."""
-        QMessageBox.critical(self, "Error", error_message)
+        # PERF-4b: stop indicator on error path
+        if self._loading_indicator:
+            self._loading_indicator.stop()
+        if Modal:
+            Modal("Error", error_message, ["OK"], parent=self).exec_()
+        else:
+            QMessageBox.critical(self, "Error", error_message)
         self.operation_complete()
 
 

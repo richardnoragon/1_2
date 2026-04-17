@@ -1,33 +1,35 @@
 """Bandwidth Monitor Widget for real-time network speed monitoring."""
 
 from datetime import datetime, timedelta
-from typing import Dict, Any, Optional, List
+from typing import Any, Dict, List, Optional
+
+from PyQt5.QtCore import Qt, QTimer, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import (
-    QWidget,
-    QVBoxLayout,
+    QCheckBox,
+    QComboBox,
+    QFrame,
+    QGroupBox,
     QHBoxLayout,
     QLabel,
     QPushButton,
-    QGroupBox,
-    QComboBox,
     QSpinBox,
-    QCheckBox,
-    QTabWidget,
     QSplitter,
-    QFrame,
+    QTabWidget,
+    QVBoxLayout,
+    QWidget,
 )
-from PyQt5.QtCore import Qt, QTimer, pyqtSignal, pyqtSlot
 
 from gui.common.standard_window import StandardWindow
-from gui.themes import ThemeManager, Colors, Spacing, Dimensions
+from gui.themes import Colors, Dimensions, Spacing, ThemeManager
+
+from ...tools.bandwidth_monitor import BandwidthMonitor
 from ..components.data_visualization import (
-    RealTimeChart,
-    ProgressIndicator,
-    StatusIndicator,
     DataTable,
+    ProgressIndicator,
+    RealTimeChart,
+    StatusIndicator,
 )
 from ..components.network_interface_selector import NetworkInterfaceSelector
-from ...tools.bandwidth_monitor import BandwidthMonitor
 
 
 class BandwidthStatisticsWidget(QWidget):
@@ -175,10 +177,14 @@ class BandwidthControlPanel(QWidget):
         button_layout = QHBoxLayout()
 
         self.start_button = QPushButton("Start Monitoring")
+        self.start_button.setAccessibleName("Start bandwidth monitoring")
+        self.start_button.setMinimumHeight(44)
         ThemeManager.style_primary_button(self.start_button)
         button_layout.addWidget(self.start_button)
 
         self.stop_button = QPushButton("Stop Monitoring")
+        self.stop_button.setAccessibleName("Stop bandwidth monitoring")
+        self.stop_button.setMinimumHeight(44)
         ThemeManager.style_secondary_button(self.stop_button)
         self.stop_button.setEnabled(False)
         button_layout.addWidget(self.stop_button)
@@ -200,6 +206,8 @@ class BandwidthControlPanel(QWidget):
         interval_layout.addWidget(interval_label)
 
         self.interval_spinbox = QSpinBox()
+        self.interval_spinbox.setAccessibleName("Update interval in milliseconds")
+        self.interval_spinbox.setMinimumHeight(44)
         self.interval_spinbox.setRange(100, 10000)
         self.interval_spinbox.setValue(1000)
         self.interval_spinbox.setSuffix(" ms")
@@ -210,6 +218,8 @@ class BandwidthControlPanel(QWidget):
 
         # Enable alerts
         self.alerts_checkbox = QCheckBox("Enable Speed Alerts")
+        self.alerts_checkbox.setAccessibleName("Enable speed alerts")
+        self.alerts_checkbox.setMinimumHeight(44)
         self.alerts_checkbox.setChecked(True)
         settings_layout.addWidget(self.alerts_checkbox)
 
@@ -228,6 +238,7 @@ class BandwidthControlPanel(QWidget):
         format_layout.addWidget(format_label)
 
         self.format_combo = QComboBox()
+        self.format_combo.setAccessibleName("Export format")
         self.format_combo.addItems(["CSV", "JSON"])
         ThemeManager.style_input_field(self.format_combo)
         format_layout.addWidget(self.format_combo)
@@ -236,6 +247,8 @@ class BandwidthControlPanel(QWidget):
 
         # Export button
         self.export_button = QPushButton("Export Data")
+        self.export_button.setAccessibleName("Export bandwidth data")
+        self.export_button.setMinimumHeight(44)
         ThemeManager.style_secondary_button(self.export_button)
         export_layout.addWidget(self.export_button)
 
@@ -269,9 +282,7 @@ class BandwidthControlPanel(QWidget):
 
         format_type = self.format_combo.currentText().lower()
         file_filter = (
-            "CSV files (*.csv)"
-            if format_type == "csv"
-            else "JSON files (*.json)"
+            "CSV files (*.csv)" if format_type == "csv" else "JSON files (*.json)"
         )
         default_name = f"bandwidth_data.{format_type}"
 
@@ -360,6 +371,7 @@ class BandwidthMonitorWidget(StandardWindow):
 
         # Tab widget for different views
         self.tab_widget = QTabWidget()
+        self.tab_widget.setAccessibleName("Bandwidth monitor views")
         right_layout.addWidget(self.tab_widget)
 
         # Real-time chart tab
@@ -408,9 +420,7 @@ class BandwidthMonitorWidget(StandardWindow):
         try:
             success = self.bandwidth_monitor.start_monitoring(interface_names)
             if success:
-                self.status_indicator.set_status(
-                    "running", "Monitoring active"
-                )
+                self.status_indicator.set_status("running", "Monitoring active")
                 self.show_success_message("Bandwidth monitoring started")
             else:
                 self.status_indicator.set_status("error", "Failed to start")
@@ -443,9 +453,7 @@ class BandwidthMonitorWidget(StandardWindow):
             format_type: Export format ('csv' or 'json')
         """
         try:
-            success = self.bandwidth_monitor.export_data(
-                file_path, format_type
-            )
+            success = self.bandwidth_monitor.export_data(file_path, format_type)
             if success:
                 self.show_success_message(f"Data exported to {file_path}")
             else:
@@ -464,9 +472,7 @@ class BandwidthMonitorWidget(StandardWindow):
             # Update monitoring interval
             if "monitoring_interval" in settings:
                 interval_ms = settings["monitoring_interval"]
-                self.bandwidth_monitor.set_monitoring_interval(
-                    interval_ms / 1000.0
-                )
+                self.bandwidth_monitor.set_monitoring_interval(interval_ms / 1000.0)
 
             # Update alert settings
             if "enable_alerts" in settings:

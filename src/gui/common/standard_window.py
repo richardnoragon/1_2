@@ -4,20 +4,20 @@ Standard base window class for all RFU utilities.
 This provides consistent styling, layout, and behavior across all GUI windows.
 """
 
-from PyQt5.QtWidgets import (
-    QMainWindow,
-    QVBoxLayout,
-    QHBoxLayout,
-    QWidget,
-    QPushButton,
-    QLabel,
-    QStatusBar,
-)
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QFont
+from PyQt5.QtWidgets import (
+    QHBoxLayout,
+    QLabel,
+    QMainWindow,
+    QPushButton,
+    QStatusBar,
+    QVBoxLayout,
+    QWidget,
+)
 
-from gui.themes import ThemeManager, Colors, Fonts, Spacing, Dimensions
 from core.error_handler import error_handler
+from gui.themes import Colors, Dimensions, Fonts, Spacing, ThemeManager
 
 
 class StandardWindow(QMainWindow):
@@ -44,9 +44,7 @@ class StandardWindow(QMainWindow):
         self.central_widget = QWidget()
         self.setCentralWidget(self.central_widget)
 
-        self.main_layout = ThemeManager.create_standard_layout(
-            self.central_widget
-        )
+        self.main_layout = ThemeManager.create_standard_layout(self.central_widget)
 
         # Create standard UI elements
         self._create_header()
@@ -92,6 +90,8 @@ class StandardWindow(QMainWindow):
 
         # Standard buttons
         self.close_button = QPushButton("Close")
+        self.close_button.setAccessibleName("Close window")
+        self.close_button.setMinimumHeight(44)
         ThemeManager.style_secondary_button(self.close_button)
         self.close_button.clicked.connect(self.close)
         self.footer_layout.addWidget(self.close_button)
@@ -157,6 +157,8 @@ class StandardWindow(QMainWindow):
             QPushButton: The created button
         """
         button = QPushButton(text)
+        button.setAccessibleName(text)
+        button.setMinimumHeight(44)
         ThemeManager.style_primary_button(button)
         if callback:
             button.clicked.connect(callback)
@@ -176,6 +178,8 @@ class StandardWindow(QMainWindow):
             QPushButton: The created button
         """
         button = QPushButton(text)
+        button.setAccessibleName(text)
+        button.setMinimumHeight(44)
         ThemeManager.style_secondary_button(button)
         if callback:
             button.clicked.connect(callback)
@@ -208,8 +212,8 @@ class StandardWindow(QMainWindow):
 
     def show_busy_cursor(self):
         """Show busy cursor."""
-        from PyQt5.QtGui import QCursor
         from PyQt5.QtCore import Qt
+        from PyQt5.QtGui import QCursor
 
         QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
 

@@ -2,11 +2,11 @@
 
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 from typing import Optional, Sequence
 
 try:
-    from src.gui.themes import token
     from PyQt5.QtWidgets import (
         QCheckBox,
         QFileDialog,
@@ -21,6 +21,8 @@ try:
         QVBoxLayout,
         QWidget,
     )
+
+    from src.gui.themes import ThemeManager, token
 except ImportError as exc:  # pragma: no cover - GUI dependency
     raise RuntimeError("PyQt5 is required for Preference Portability GUI") from exc
 
@@ -32,14 +34,77 @@ from src.core.preferences.portability import (
 )
 from src.log_manager import get_log_manager
 
+# ---------------------------------------------------------------------------
+# GRD-1a: Guardian registration (graceful no-op when guardian absent)
+# ---------------------------------------------------------------------------
+try:
+    from src.core.guardian import register_gui_component
+except ImportError:
+
+    def register_gui_component(*a, **kw):
+        pass  # noqa: E731
+
+
+# ---------------------------------------------------------------------------
+# TEL: Telemetry helpers (graceful no-op when telemetry absent)
+# ---------------------------------------------------------------------------
+try:
+    from src.gui.telemetry import emit_telemetry
+
+    def _emit_telemetry(event_type, **kw):
+        emit_telemetry(event_type, **kw)  # noqa: E731
+
+except ImportError:
+
+    def _emit_telemetry(*a, **kw):
+        pass  # noqa: E731
+
+
+# ---------------------------------------------------------------------------
+# STR: Centralised string constants with fallback (P1-C15 / STR-1)
+# ---------------------------------------------------------------------------
+try:
+    from src.rfu.ui_strings import PreferencePortability as _PrefPortStrings
+except ImportError:
+
+    class _PrefPortStrings:  # type: ignore[no-redef]
+        TITLE = "Preference Portability"
+        WINDOW_TITLE = "Preference Portability — RFU"
+        LOADING = "Loading Preference Portability…"
+        MODAL_ERROR_TITLE = "Preference Portability"
+        ERR_INIT_FAILED = (
+            "Could not start Preference Portability. "
+            "Please try again or restart the application."
+        )
+        ERR_EXPORT_FAILED = "Could not export preferences. Please try again."
+        ERR_IMPORT_FAILED = "Could not import preferences. Please try again."
+
+
+# ---------------------------------------------------------------------------
+# ERR: Modal import (graceful no-op when modal absent)
+# ---------------------------------------------------------------------------
+try:
+    from src.gui.components.buttons import PrimaryButton, SecondaryButton
+    from src.gui.components.modal import Modal
+    from src.gui.components.toast import ToastNotification
+
+    _CP_AVAILABLE = True
+except ImportError:
+    Modal = None  # type: ignore[assignment,misc]
+    PrimaryButton = SecondaryButton = None  # type: ignore[assignment,misc]
+    ToastNotification = None
+    _CP_AVAILABLE = False
+
 
 class PreferencePortabilityGUI(QMainWindow):
     """Simple interface for exporting and importing preference payloads."""
 
-    def __init__(self, parent: Optional[QWidget] = None) -> None:
+    def __init__(self, hub_instance=None, parent: Optional[QWidget] = None) -> None:
         super().__init__(parent)
+        self._hub = hub_instance
         self.logger = get_log_manager().get_logger("PreferencePortabilityGUI")
-        self.setWindowTitle("Preference Portability")
+        self._logger = self.logger  # harmonization alias
+        self.setWindowTitle(_PrefPortStrings.WINDOW_TITLE)
         self.resize(640, 520)
 
         # Widget references initialised for static analysis linting.
@@ -62,6 +127,36 @@ class PreferencePortabilityGUI(QMainWindow):
         status_bar = self.statusBar()
         if status_bar is not None:
             status_bar.showMessage("Ready")
+        register_gui_component(
+            self,
+            tool_id="preference_portability",
+            recovery_callback=self.degraded_fallback,
+        )
+        _emit_telemetry("ui_view_load", tool_id="preference_portability")
+        ThemeManager.add_theme_changed_callback(self._on_theme_changed)
+
+    def _on_theme_changed(self, variant: str) -> None:
+        """Re-apply token-based stylesheets when the active theme variant changes."""
+        pass  # stylesheets applied at init; live re-apply deferred (TH-4c/4d)
+
+    def health_check(self) -> bool:
+        """Return True if core UI is functional (GRD-3a)."""
+        try:
+            return hasattr(self, "tabs") and self.tabs is not None
+        except Exception:
+            return False
+
+    def degraded_fallback(self) -> None:
+        """Enter degraded / read-only state (GRD-3b)."""
+        try:
+            self._logger.warning("PreferencePortabilityGUI entering degraded mode")
+        except Exception:
+            pass
+        _emit_telemetry(
+            "ui_error_event",
+            tool_id="preference_portability",
+            error_type="degraded",
+        )
 
     def _init_ui(self) -> None:
         central = QWidget(self)
@@ -74,6 +169,7 @@ class PreferencePortabilityGUI(QMainWindow):
         layout.addWidget(header)
 
         self.tabs = QTabWidget()
+        self.tabs.setAccessibleName("Import/Export tabs")
         layout.addWidget(self.tabs)
 
         self._build_export_tab()
@@ -90,26 +186,40 @@ class PreferencePortabilityGUI(QMainWindow):
         form = QFormLayout()
 
         self.export_user_edit = QLineEdit()
+        self.export_user_edit.setAccessibleName("Export user identifier")
         self.export_user_edit.setPlaceholderText("User identifier (required)")
         form.addRow("User ID", self.export_user_edit)
 
         self.export_dest_edit = QLineEdit()
+        self.export_dest_edit.setAccessibleName("Export destination directory")
         self.export_dest_edit.setPlaceholderText("Destination directory (optional)")
-        dest_button = QPushButton("Browse…")
+        _SB = SecondaryButton if SecondaryButton else QPushButton
+        dest_button = _SB("Browse…")
         dest_button.clicked.connect(self._browse_export_destination)
         dest_row = self._wrap_with_row(self.export_dest_edit, dest_button)
         form.addRow("Destination", dest_row)
 
         self.export_categories_edit = QLineEdit()
+        self.export_categories_edit.setAccessibleName("Export categories filter")
         self.export_categories_edit.setPlaceholderText(
             "Comma separated categories (optional)"
         )
         form.addRow("Categories", self.export_categories_edit)
 
         self.export_skip_encrypted = QCheckBox("Skip encrypted rows")
+        self.export_skip_encrypted.setAccessibleName("Skip encrypted rows")
+        self.export_skip_encrypted.setAccessibleDescription(
+            "Rows with encrypted content will not be included in the exported file"
+        )
+        self.export_skip_encrypted.setMinimumHeight(44)
         form.addRow("Encrypted", self.export_skip_encrypted)
 
         self.export_encrypt = QCheckBox("Encrypt exported payload")
+        self.export_encrypt.setAccessibleName("Encrypt exported payload")
+        self.export_encrypt.setAccessibleDescription(
+            "Encrypts the export file with a passphrase; enter the passphrase in the field below"
+        )
+        self.export_encrypt.setMinimumHeight(44)
         self.export_encrypt.toggled.connect(self._on_export_encrypt_toggled)
         if not AES_AVAILABLE:
             self.export_encrypt.setEnabled(False)
@@ -117,13 +227,18 @@ class PreferencePortabilityGUI(QMainWindow):
         form.addRow("Encryption", self.export_encrypt)
 
         self.export_passphrase_edit = QLineEdit()
+        self.export_passphrase_edit.setAccessibleName("Export passphrase")
+        self.export_passphrase_edit.setAccessibleDescription(
+            "Required when Encrypt exported payload is enabled"
+        )
         self.export_passphrase_edit.setEchoMode(QLineEdit.Password)
         self.export_passphrase_edit.setEnabled(False)
         form.addRow("Passphrase", self.export_passphrase_edit)
 
         tab_layout.addLayout(form)
 
-        self.export_button = QPushButton("Export Preferences")
+        _PB = PrimaryButton if PrimaryButton else QPushButton
+        self.export_button = _PB("Export Preferences")
         self.export_button.clicked.connect(self._handle_export)
         button_row = QHBoxLayout()
         button_row.addStretch(1)
@@ -150,8 +265,10 @@ class PreferencePortabilityGUI(QMainWindow):
         form = QFormLayout()
 
         self.import_source_edit = QLineEdit()
+        self.import_source_edit.setAccessibleName("Import source file path")
         self.import_source_edit.setPlaceholderText("Export file path (required)")
-        source_button = QPushButton("Browse…")
+        _SB2 = SecondaryButton if SecondaryButton else QPushButton
+        source_button = _SB2("Browse…")
         source_button.clicked.connect(self._browse_import_source)
         source_row = self._wrap_with_row(
             self.import_source_edit,
@@ -160,13 +277,26 @@ class PreferencePortabilityGUI(QMainWindow):
         form.addRow("Source", source_row)
 
         self.import_target_user_edit = QLineEdit()
+        self.import_target_user_edit.setAccessibleName("Import target user")
         self.import_target_user_edit.setPlaceholderText("Override user (optional)")
         form.addRow("Target User", self.import_target_user_edit)
 
         self.import_allow_overwrite = QCheckBox("Allow overwriting existing values")
+        self.import_allow_overwrite.setAccessibleName(
+            "Allow overwriting existing values"
+        )
+        self.import_allow_overwrite.setAccessibleDescription(
+            "Existing settings with matching keys will be replaced by imported values"
+        )
+        self.import_allow_overwrite.setMinimumHeight(44)
         form.addRow("Overwrite", self.import_allow_overwrite)
 
         self.import_decrypt = QCheckBox("Decrypt payload with passphrase")
+        self.import_decrypt.setAccessibleName("Decrypt payload with passphrase")
+        self.import_decrypt.setAccessibleDescription(
+            "Must be enabled if the export file was created with encryption"
+        )
+        self.import_decrypt.setMinimumHeight(44)
         self.import_decrypt.toggled.connect(self._on_import_decrypt_toggled)
         if not AES_AVAILABLE:
             self.import_decrypt.setEnabled(False)
@@ -174,13 +304,18 @@ class PreferencePortabilityGUI(QMainWindow):
         form.addRow("Decryption", self.import_decrypt)
 
         self.import_passphrase_edit = QLineEdit()
+        self.import_passphrase_edit.setAccessibleName("Import passphrase")
+        self.import_passphrase_edit.setAccessibleDescription(
+            "Enter the passphrase that was used when the export file was created"
+        )
         self.import_passphrase_edit.setEchoMode(QLineEdit.Password)
         self.import_passphrase_edit.setEnabled(False)
         form.addRow("Passphrase", self.import_passphrase_edit)
 
         tab_layout.addLayout(form)
 
-        self.import_button = QPushButton("Import Preferences")
+        _PB2 = PrimaryButton if PrimaryButton else QPushButton
+        self.import_button = _PB2("Import Preferences")
         self.import_button.clicked.connect(self._handle_import)
         button_row = QHBoxLayout()
         button_row.addStretch(1)
@@ -209,11 +344,19 @@ class PreferencePortabilityGUI(QMainWindow):
 
     def _on_export_encrypt_toggled(self, checked: bool) -> None:
         if checked and not AES_AVAILABLE:
-            QMessageBox.warning(
-                self,
-                "Encryption Unavailable",
-                "Install pyAesCrypt to enable encrypted exports.",
-            )
+            if Modal:
+                Modal(
+                    "Encryption Unavailable",
+                    "Install pyAesCrypt to enable encrypted exports.",
+                    ["OK"],
+                    self,
+                ).exec_()
+            else:
+                QMessageBox.warning(
+                    self,
+                    "Encryption Unavailable",
+                    "Install pyAesCrypt to enable encrypted exports.",
+                )
             self.export_encrypt.setChecked(False)
             return
         self.export_passphrase_edit.setEnabled(checked)
@@ -222,11 +365,19 @@ class PreferencePortabilityGUI(QMainWindow):
 
     def _on_import_decrypt_toggled(self, checked: bool) -> None:
         if checked and not AES_AVAILABLE:
-            QMessageBox.warning(
-                self,
-                "Decryption Unavailable",
-                "Install pyAesCrypt to enable encrypted imports.",
-            )
+            if Modal:
+                Modal(
+                    "Decryption Unavailable",
+                    "Install pyAesCrypt to enable encrypted imports.",
+                    ["OK"],
+                    self,
+                ).exec_()
+            else:
+                QMessageBox.warning(
+                    self,
+                    "Decryption Unavailable",
+                    "Install pyAesCrypt to enable encrypted imports.",
+                )
             self.import_decrypt.setChecked(False)
             return
         self.import_passphrase_edit.setEnabled(checked)
@@ -253,11 +404,12 @@ class PreferencePortabilityGUI(QMainWindow):
     def _handle_export(self) -> None:
         user_id = self.export_user_edit.text().strip()
         if not user_id:
-            QMessageBox.warning(
-                self,
-                "Missing Information",
-                "User ID is required.",
-            )
+            if Modal:
+                Modal(
+                    "Missing Information", "User ID is required.", ["OK"], self
+                ).exec_()
+            else:
+                QMessageBox.warning(self, "Missing Information", "User ID is required.")
             return
 
         destination_text = self.export_dest_edit.text().strip()
@@ -269,11 +421,19 @@ class PreferencePortabilityGUI(QMainWindow):
         encrypt = self.export_encrypt.isChecked()
         passphrase = self.export_passphrase_edit.text() if encrypt else None
         if encrypt and not passphrase:
-            QMessageBox.warning(
-                self,
-                "Missing Passphrase",
-                "Enter a passphrase when encryption is enabled.",
-            )
+            if Modal:
+                Modal(
+                    "Missing Passphrase",
+                    "Enter a passphrase when encryption is enabled.",
+                    ["OK"],
+                    self,
+                ).exec_()
+            else:
+                QMessageBox.warning(
+                    self,
+                    "Missing Passphrase",
+                    "Enter a passphrase when encryption is enabled.",
+                )
             return
 
         self.logger.info(
@@ -294,27 +454,49 @@ class PreferencePortabilityGUI(QMainWindow):
                 include_encrypted=not skip_encrypted,
                 passphrase=passphrase,
             )
-        except PreferencePortabilityError as exc:
-            QMessageBox.critical(self, "Export Failed", str(exc))
+        except (
+            PreferencePortabilityError
+        ) as exc:  # ERR: non-fatal — surfaced via Modal; export failed
             self.logger.error("Export failed: %s", exc, exc_info=True)
+            if Modal:
+                Modal(
+                    _PrefPortStrings.MODAL_ERROR_TITLE,
+                    _PrefPortStrings.ERR_EXPORT_FAILED,
+                    ["OK"],
+                    self,
+                ).exec_()
             return
-        except (ValueError, OSError) as exc:  # pragma: no cover - defensive
-            QMessageBox.critical(self, "Export Failed", str(exc))
+        except (
+            ValueError,
+            OSError,
+        ) as exc:  # ERR: non-fatal — surfaced via Modal; unexpected export failure  # pragma: no cover - defensive
             self.logger.error(
                 "Unexpected export failure: %s",
                 exc,
                 exc_info=True,
             )
+            if Modal:
+                Modal(
+                    _PrefPortStrings.MODAL_ERROR_TITLE,
+                    _PrefPortStrings.ERR_EXPORT_FAILED,
+                    ["OK"],
+                    self,
+                ).exec_()
             return
 
         status_bar = self.statusBar()
         if status_bar is not None:
             status_bar.showMessage(f"Export completed: {export_path}", 5000)
-        QMessageBox.information(
-            self,
-            "Export Completed",
-            f"Preferences exported to:\n{export_path}",
-        )
+        if ToastNotification:
+            ToastNotification(parent=self).show_message(
+                f"Preferences exported to: {export_path}", "success"
+            )
+        else:
+            QMessageBox.information(
+                self,
+                "Export Completed",
+                f"Preferences exported to:\n{export_path}",
+            )
         self.logger.info(
             "preference_portability_gui_export_completed user_id=%s path=%s "
             "encrypt=%s skip_encrypted=%s categories=%s",
@@ -328,20 +510,29 @@ class PreferencePortabilityGUI(QMainWindow):
     def _handle_import(self) -> None:
         source_text = self.import_source_edit.text().strip()
         if not source_text:
-            QMessageBox.warning(
-                self,
-                "Missing Information",
-                "Select an export file to import.",
-            )
+            if Modal:
+                Modal(
+                    "Missing Information",
+                    "Select an export file to import.",
+                    ["OK"],
+                    self,
+                ).exec_()
+            else:
+                QMessageBox.warning(
+                    self, "Missing Information", "Select an export file to import."
+                )
             return
 
         source_path = Path(source_text)
         if not source_path.exists():
-            QMessageBox.warning(
-                self,
-                "Invalid Source",
-                "Selected file does not exist.",
-            )
+            if Modal:
+                Modal(
+                    "Invalid Source", "Selected file does not exist.", ["OK"], self
+                ).exec_()
+            else:
+                QMessageBox.warning(
+                    self, "Invalid Source", "Selected file does not exist."
+                )
             return
 
         target_user = self.import_target_user_edit.text().strip() or None
@@ -350,11 +541,19 @@ class PreferencePortabilityGUI(QMainWindow):
         decrypt = self.import_decrypt.isChecked()
         passphrase = self.import_passphrase_edit.text() if decrypt else None
         if decrypt and not passphrase:
-            QMessageBox.warning(
-                self,
-                "Missing Passphrase",
-                "Enter a passphrase when decryption is enabled.",
-            )
+            if Modal:
+                Modal(
+                    "Missing Passphrase",
+                    "Enter a passphrase when decryption is enabled.",
+                    ["OK"],
+                    self,
+                ).exec_()
+            else:
+                QMessageBox.warning(
+                    self,
+                    "Missing Passphrase",
+                    "Enter a passphrase when decryption is enabled.",
+                )
             return
 
         self.logger.info(
@@ -373,17 +572,34 @@ class PreferencePortabilityGUI(QMainWindow):
                 target_user_id=target_user,
                 allow_overwrite=allow_overwrite,
             )
-        except PreferencePortabilityError as exc:
-            QMessageBox.critical(self, "Import Failed", str(exc))
+        except (
+            PreferencePortabilityError
+        ) as exc:  # ERR: non-fatal — surfaced via Modal; import failed
             self.logger.error("Import failed: %s", exc, exc_info=True)
+            if Modal:
+                Modal(
+                    _PrefPortStrings.MODAL_ERROR_TITLE,
+                    _PrefPortStrings.ERR_IMPORT_FAILED,
+                    ["OK"],
+                    self,
+                ).exec_()
             return
-        except (ValueError, OSError) as exc:  # pragma: no cover - defensive
-            QMessageBox.critical(self, "Import Failed", str(exc))
+        except (
+            ValueError,
+            OSError,
+        ) as exc:  # ERR: non-fatal — surfaced via Modal; unexpected import failure  # pragma: no cover - defensive
             self.logger.error(
                 "Unexpected import failure: %s",
                 exc,
                 exc_info=True,
             )
+            if Modal:
+                Modal(
+                    _PrefPortStrings.MODAL_ERROR_TITLE,
+                    _PrefPortStrings.ERR_IMPORT_FAILED,
+                    ["OK"],
+                    self,
+                ).exec_()
             return
 
         status_bar = self.statusBar()
@@ -392,13 +608,22 @@ class PreferencePortabilityGUI(QMainWindow):
                 f"Import applied {result['applied']} entries",
                 5000,
             )
-        QMessageBox.information(
-            self,
-            "Import Completed",
-            (
-                "Imported {applied} entries (skipped {skipped}) for " "user {user_id}."
-            ).format(**result),
-        )
+        if ToastNotification:
+            ToastNotification(parent=self).show_message(
+                "Imported {applied} entries (skipped {skipped}) for user {user_id}.".format(
+                    **result
+                ),
+                "success",
+            )
+        else:
+            QMessageBox.information(
+                self,
+                "Import Completed",
+                (
+                    "Imported {applied} entries (skipped {skipped}) for "
+                    "user {user_id}."
+                ).format(**result),
+            )
         self.logger.info(
             "preference_portability_gui_import_completed source=%s user_id=%s "
             "applied=%d skipped=%d",

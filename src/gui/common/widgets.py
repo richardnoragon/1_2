@@ -1,24 +1,25 @@
 """Common widget utilities and custom widgets."""
 
-from typing import Optional, List, Union, Callable
 from pathlib import Path
+from typing import Callable, List, Optional, Union
+
+from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtWidgets import (
-    QProgressBar,
-    QLabel,
-    QWidget,
-    QVBoxLayout,
-    QHBoxLayout,
-    QPushButton,
+    QCheckBox,
+    QDoubleSpinBox,
     QFileDialog,
     QFrame,
-    QSpacerItem,
-    QSizePolicy,
+    QHBoxLayout,
+    QLabel,
     QLineEdit,
+    QProgressBar,
+    QPushButton,
+    QSizePolicy,
+    QSpacerItem,
     QSpinBox,
-    QDoubleSpinBox,
-    QCheckBox,
+    QVBoxLayout,
+    QWidget,
 )
-from PyQt5.QtCore import Qt, pyqtSignal
 
 from core.error_handler import error_handler
 
@@ -63,6 +64,8 @@ class ProgressWidget(QWidget):
 
         if self.show_cancel:
             self.cancel_button = QPushButton("Cancel", self)
+            self.cancel_button.setAccessibleName("Cancel operation")
+            self.cancel_button.setMinimumHeight(44)
             self.cancel_button.clicked.connect(self.cancelled.emit)
             h_layout.addWidget(self.cancel_button)
 
@@ -126,10 +129,13 @@ class FileSelectionWidget(QWidget):
         layout.addWidget(self.label)
 
         self.path_edit = QLineEdit(self)
+        self.path_edit.setAccessibleName("File or directory path")
         self.path_edit.textChanged.connect(self._on_path_changed)
         layout.addWidget(self.path_edit)
 
         self.browse_button = QPushButton("Browse...", self)
+        self.browse_button.setAccessibleName("Browse for file or directory")
+        self.browse_button.setMinimumHeight(44)
         self.browse_button.clicked.connect(self._browse)
         layout.addWidget(self.browse_button)
 
@@ -138,13 +144,9 @@ class FileSelectionWidget(QWidget):
         if self.mode == "directory":
             path = get_existing_directory(self, "Select Directory")
         elif self.mode == "file_save":
-            path, _ = get_save_file_name(
-                self, "Save File", filter=self.file_filter
-            )
+            path, _ = get_save_file_name(self, "Save File", filter=self.file_filter)
         else:  # file_open
-            path, _ = get_open_file_name(
-                self, "Open File", filter=self.file_filter
-            )
+            path, _ = get_open_file_name(self, "Open File", filter=self.file_filter)
 
         if path:
             self.set_path(path)
@@ -205,6 +207,8 @@ class CollapsibleWidget(QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
 
         self.toggle_button = QPushButton(title, self)
+        self.toggle_button.setAccessibleName(title)
+        self.toggle_button.setMinimumHeight(44)
         self.toggle_button.setCheckable(True)
         self.toggle_button.setChecked(self.expanded)
         self.toggle_button.clicked.connect(self._on_toggle)

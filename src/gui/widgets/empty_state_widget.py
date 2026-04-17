@@ -113,6 +113,8 @@ class EmptyStateWidget(QWidget):
         # Action button (optional)
         if self.action_text:
             self.action_button = QPushButton(self.action_text)
+            self.action_button.setAccessibleName(self.action_text)
+            self.action_button.setMinimumHeight(44)
             self.action_button.setMinimumWidth(120)
             self.action_button.setStyleSheet(
                 f"""

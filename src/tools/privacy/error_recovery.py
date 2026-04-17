@@ -5,12 +5,15 @@ Privacy Tools Error Recovery System
 Provides comprehensive error handling and recovery mechanisms for privacy tools.
 """
 
+import logging
 import sys
 import traceback
-import logging
 from pathlib import Path
-from typing import Optional, Dict, Any, Callable
+from typing import Any, Callable, Dict, Optional
+
 from PyQt5.QtWidgets import QApplication, QMessageBox
+
+from src.gui.themes import token
 
 
 class PrivacyToolsErrorRecovery:
@@ -48,9 +51,7 @@ class PrivacyToolsErrorRecovery:
 
         return logger
 
-    def handle_error(
-        self, error: Exception, context: str = ""
-    ) -> Optional[Any]:
+    def handle_error(self, error: Exception, context: str = "") -> Optional[Any]:
         """Handle errors with appropriate recovery strategies."""
         error_type = type(error).__name__
 
@@ -63,9 +64,7 @@ class PrivacyToolsErrorRecovery:
         else:
             return self._handle_generic_error(error, context)
 
-    def _handle_import_error(
-        self, error: ImportError, context: str
-    ) -> Optional[Any]:
+    def _handle_import_error(self, error: ImportError, context: str) -> Optional[Any]:
         """Handle import errors with fallback mechanisms."""
         error_msg = str(error)
 
@@ -88,9 +87,7 @@ class PrivacyToolsErrorRecovery:
         self, error: ModuleNotFoundError, context: str
     ) -> Optional[Any]:
         """Handle module not found errors."""
-        module_name = (
-            str(error).split("'")[1] if "'" in str(error) else "unknown"
-        )
+        module_name = str(error).split("'")[1] if "'" in str(error) else "unknown"
 
         self.logger.info(f"Module not found: {module_name}")
 
@@ -116,9 +113,7 @@ class PrivacyToolsErrorRecovery:
 
         return self._show_attribute_error_dialog(error, context)
 
-    def _handle_type_error(
-        self, error: TypeError, context: str
-    ) -> Optional[Any]:
+    def _handle_type_error(self, error: TypeError, context: str) -> Optional[Any]:
         """Handle type errors, especially metaclass conflicts."""
         if "metaclass conflict" in str(error):
             self.logger.info("Metaclass conflict detected")
@@ -126,15 +121,11 @@ class PrivacyToolsErrorRecovery:
 
         return self._show_type_error_dialog(error, context)
 
-    def _handle_runtime_error(
-        self, error: RuntimeError, context: str
-    ) -> Optional[Any]:
+    def _handle_runtime_error(self, error: RuntimeError, context: str) -> Optional[Any]:
         """Handle runtime errors."""
         return self._show_runtime_error_dialog(error, context)
 
-    def _handle_generic_error(
-        self, error: Exception, context: str
-    ) -> Optional[Any]:
+    def _handle_generic_error(self, error: Exception, context: str) -> Optional[Any]:
         """Handle generic errors."""
         return self._show_generic_error_dialog(error, context)
 
@@ -152,9 +143,9 @@ class PrivacyToolsErrorRecovery:
     def _create_minimal_theme(self) -> Dict[str, Any]:
         """Create minimal theme fallback."""
         return {
-            "primary_color": "#3498db",
-            "background_color": "#f5f5f5",
-            "text_color": "#2c3e50",
+            "primary_color": token("accent"),
+            "background_color": token("surface"),
+            "text_color": token("text_primary"),
             "font_family": "Arial",
             "font_size": 10,
         }
@@ -207,9 +198,7 @@ class PrivacyToolsErrorRecovery:
             print(f"Module Not Found: {module_name}")
             print(f"Install with: {suggestion}")
 
-    def _show_attribute_error_dialog(
-        self, error: AttributeError, context: str
-    ):
+    def _show_attribute_error_dialog(self, error: AttributeError, context: str):
         """Show attribute error dialog."""
         try:
             app = QApplication.instance() or QApplication(sys.argv)
@@ -263,14 +252,10 @@ class PrivacyToolsErrorRecovery:
                 f"Please report this issue with the error details.",
             )
         except Exception:
-            print(
-                f"Unexpected Error in {context}: {type(error).__name__}: {error}"
-            )
+            print(f"Unexpected Error in {context}: {type(error).__name__}: {error}")
 
 
-def safe_import(
-    module_name: str, fallback: Optional[Any] = None
-) -> Optional[Any]:
+def safe_import(module_name: str, fallback: Optional[Any] = None) -> Optional[Any]:
     """Safely import a module with error recovery."""
     recovery = PrivacyToolsErrorRecovery()
 

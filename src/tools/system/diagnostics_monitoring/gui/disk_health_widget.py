@@ -24,7 +24,7 @@ try:
         QWidget,
     )
 
-    from src.gui.themes import token
+    from src.gui.themes import ThemeManager, Typography, token
 
     PYQT5_AVAILABLE = True
 except ImportError:
@@ -123,10 +123,7 @@ class DiskHealthWidget(QWidget):
 
             # Title
             title_label = QLabel("Disk Health Monitor")
-            title_font = QFont()
-            title_font.setPointSize(16)
-            title_font.setBold(True)
-            title_label.setFont(title_font)
+            title_label.setFont(Typography.h1())
             header_layout.addWidget(title_label)
 
             # Spacer
@@ -134,11 +131,15 @@ class DiskHealthWidget(QWidget):
 
             # Refresh button
             self.refresh_button = QPushButton("Refresh")
+            self.refresh_button.setAccessibleName("Refresh disk data")
+            self.refresh_button.setMinimumHeight(44)
             self.refresh_button.clicked.connect(self.refresh_data)
             header_layout.addWidget(self.refresh_button)
 
             # Auto-refresh toggle
             self.auto_refresh_button = QPushButton("Auto-Refresh: ON")
+            self.auto_refresh_button.setAccessibleName("Toggle auto-refresh")
+            self.auto_refresh_button.setMinimumHeight(44)
             self.auto_refresh_button.setCheckable(True)
             self.auto_refresh_button.setChecked(True)
             self.auto_refresh_button.clicked.connect(self.toggle_auto_refresh)
@@ -162,10 +163,7 @@ class DiskHealthWidget(QWidget):
 
             # Panel title
             title_label = QLabel("Disk Overview")
-            title_font = QFont()
-            title_font.setPointSize(12)
-            title_font.setBold(True)
-            title_label.setFont(title_font)
+            title_label.setFont(Typography.h3())
             layout.addWidget(title_label)
 
             # Summary section
@@ -174,6 +172,7 @@ class DiskHealthWidget(QWidget):
 
             # Disk tree
             self.disk_tree = QTreeWidget()
+            self.disk_tree.setAccessibleName("Disk overview tree")
             self.disk_tree.setHeaderLabels(
                 ["Device", "Type", "Size", "Health", "Usage"]
             )
@@ -229,14 +228,12 @@ class DiskHealthWidget(QWidget):
 
             # Panel title
             self.details_title = QLabel("Select a disk to view details")
-            title_font = QFont()
-            title_font.setPointSize(12)
-            title_font.setBold(True)
-            self.details_title.setFont(title_font)
+            self.details_title.setFont(Typography.h3())
             layout.addWidget(self.details_title)
 
             # Details tabs
             self.details_tabs = QTabWidget()
+            self.details_tabs.setAccessibleName("Disk detail tabs")
             layout.addWidget(self.details_tabs)
 
             # General tab
@@ -410,10 +407,10 @@ class DiskHealthWidget(QWidget):
         try:
             # Health status colors
             self.health_colors = {
-                "healthy": "#4CAF50",  # Green
-                "warning": "#FF9800",  # Orange
-                "critical": "#F44336",  # Red
-                "unknown": "#9E9E9E",  # Gray
+                "healthy": token("semantic_success"),  # Green
+                "warning": token("semantic_warning"),  # Orange
+                "critical": token("semantic_error"),  # Red
+                "unknown": token("text_disabled"),  # Gray
             }
 
             # Apply styles to progress bars
@@ -580,7 +577,9 @@ class DiskHealthWidget(QWidget):
             item.setData(0, Qt.UserRole, (device_id, disk_type, disk))
 
             # Apply health color
-            health_color = QColor(self.health_colors.get(health_status, "#9E9E9E"))
+            health_color = QColor(
+                self.health_colors.get(health_status, token("text_disabled"))
+            )
             item.setForeground(3, health_color)
 
             self.disk_tree.addTopLevelItem(item)
@@ -696,7 +695,7 @@ class DiskHealthWidget(QWidget):
             power_on_hours = disk_info.get("power_on_hours", "-")
 
             # Update health status with color
-            health_color = self.health_colors.get(health_status, "#9E9E9E")
+            health_color = self.health_colors.get(health_status, token("text_disabled"))
             self.health_status_label.setText(f"Status: {health_status.title()}")
             self.health_status_label.setStyleSheet(f"color: {health_color}")
 

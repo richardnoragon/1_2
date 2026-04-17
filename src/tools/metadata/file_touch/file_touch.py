@@ -1,20 +1,21 @@
+import logging
 import os
-import sys
 import platform
+import sys
 from datetime import datetime, timezone
-from typing import Dict, Optional, Any
 from pathlib import Path
+from typing import Any, Dict, Optional
 
-from PyQt5.QtCore import QObject, pyqtSignal, QDateTime
+from PyQt5 import uic
+from PyQt5.QtCore import QDateTime, QObject, pyqtSignal
+from PyQt5.QtGui import QDragEnterEvent, QDropEvent
 from PyQt5.QtWidgets import (
     QApplication,
     QComboBox,
-    QLabel,
     QInputDialog,
+    QLabel,
     QMessageBox,
 )
-from PyQt5 import uic
-from PyQt5.QtGui import QDragEnterEvent, QDropEvent
 
 # Add parent directories to path for imports
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -23,20 +24,64 @@ project_root = os.path.dirname(
 )
 sys.path.append(project_root)
 
-# Import shared components
-from src.log_manager import LogManager
+from src.config.config_manager import ConfigManager
 from src.gui.common.base_window import BaseWindow
 from src.gui.common.dialogs import (
+    get_open_file_name,
     show_error_dialog,
     show_info_dialog,
-    get_open_file_name,
 )
-from src.config.config_manager import ConfigManager
+
+# Import shared components
+from src.log_manager import LogManager
 
 # Note: Reliably *setting* creation time is platform-specific and often
 # requires extra privileges or libraries (like pywin32 on Windows).
 
 SELECT_PROFILE_TEXT = "Select Profile..."
+
+try:
+    from src.log_manager import get_log_manager as _get_log_manager
+except ImportError:
+    _get_log_manager = None
+
+try:
+    from src.rfu.ui_strings import FileTouch as _FTStrings
+except ImportError:
+
+    class _FTStrings:
+        """Fallback string constants — mirrors src/rfu/ui_strings.FileTouch."""
+
+        TITLE = "File Touch"
+        WINDOW_TITLE = "File Touch — RFU"
+        LOADING = "Loading File Touch…"
+        MODAL_ERROR_TITLE = "File Touch"
+        ERR_INIT_FAILED = (
+            "Could not start File Touch. "
+            "Please try again or restart the application."
+        )
+        ERR_FETCH_FAILED = (
+            "Failed to fetch file timestamps. "
+            "Check that the file exists and is accessible."
+        )
+        ERR_APPLY_FAILED = (
+            "Failed to apply timestamp changes. "
+            "Check that you have write permission to the file."
+        )
+
+
+try:
+    from src.gui.components.modal import Modal
+except ImportError:
+    Modal = None  # type: ignore[assignment,misc]
+
+try:
+    from src.gui.themes import ThemeManager as _ThemeManager
+
+    _THEME_AVAILABLE = True
+except ImportError:
+    _ThemeManager = None  # type: ignore[assignment,misc]
+    _THEME_AVAILABLE = False
 
 
 class FileTouchLogic(QObject):
@@ -75,22 +120,15 @@ class FileTouchLogic(QObject):
 
             # Access Time (atime)
             atime_ts = stat_result.st_atime
-            atime_dt = datetime.fromtimestamp(
-                atime_ts, tz=timezone.utc
-            ).astimezone()
+            atime_dt = datetime.fromtimestamp(atime_ts, tz=timezone.utc).astimezone()
 
             # Modification Time (mtime)
             mtime_ts = stat_result.st_mtime
-            mtime_dt = datetime.fromtimestamp(
-                mtime_ts, tz=timezone.utc
-            ).astimezone()
+            mtime_dt = datetime.fromtimestamp(mtime_ts, tz=timezone.utc).astimezone()
 
             # Creation Time (birthtime or ctime)
             ctime_dt: Optional[datetime] = None
-            if (
-                hasattr(stat_result, "st_birthtime")
-                and stat_result.st_birthtime
-            ):
+            if hasattr(stat_result, "st_birthtime") and stat_result.st_birthtime:
                 ctime_ts = stat_result.st_birthtime
                 ctime_dt = datetime.fromtimestamp(
                     ctime_ts, tz=timezone.utc
@@ -112,20 +150,22 @@ class FileTouchLogic(QObject):
             self.operation_result.emit(True, msg)
             self.logger.info(f"Timestamps fetched for: {filepath}")
 
-        except FileNotFoundError as e:
+        except (
+            FileNotFoundError
+        ) as e:  # ERR: non-fatal — surfaced via error_occurred signal
             self.error_occurred.emit(str(e))
             self.operation_result.emit(False, str(e))
             self.logger.error(f"File not found: {e}")
-        except ValueError as e:
+        except ValueError as e:  # ERR: non-fatal — surfaced via error_occurred signal
             self.error_occurred.emit(str(e))
             self.operation_result.emit(False, str(e))
             self.logger.error(f"Invalid file path: {e}")
-        except PermissionError:
+        except PermissionError:  # ERR: non-fatal — surfaced via error_occurred signal
             err_msg = f"Permission denied: {filepath}"
             self.error_occurred.emit(err_msg)
             self.operation_result.emit(False, err_msg)
             self.logger.error(err_msg)
-        except Exception as e:
+        except Exception as e:  # ERR: non-fatal — surfaced via error_occurred signal
             self.error_occurred.emit(str(e))
             self.operation_result.emit(False, str(e))
             self.logger.error(f"Unexpected error: {e}", exc_info=True)
@@ -147,18 +187,78 @@ class FileTouchWindow(BaseWindow):
     Inherits from BaseWindow to maintain consistent GUI behavior.
     """
 
-    def __init__(self, config_manager=None) -> None:
+    def __init__(self, hub_instance=None, config_manager=None) -> None:
         """Initialize the file touch window."""
         super().__init__()
+        self._hub = hub_instance
         self.config_manager = config_manager or ConfigManager()
         self.logger = LogManager().get_logger("FileTouch")
+        if _get_log_manager is not None:
+            try:
+                self._logger = _get_log_manager().get_logger("FileTouchWindow")
+            except Exception:
+                self._logger = self.logger
+        else:
+            self._logger = self.logger
         self.logger.info("Initializing File Touch Window")
+        self.setWindowTitle(_FTStrings.WINDOW_TITLE)
 
         self._init_models()
         self._setup_ui()
         self._setup_icons()
         self._connect_signals()
         self._set_initial_state()
+
+        self.register_gui_component(
+            tool_id="file_touch",
+            recovery_callback=self.degraded_fallback,
+        )
+        self._emit_telemetry("ui_view_load", tool_id="file_touch")
+        if _THEME_AVAILABLE and _ThemeManager is not None:
+            _ThemeManager.add_theme_changed_callback(self._on_theme_changed)
+
+    def _on_theme_changed(self, variant: str) -> None:
+        """Re-apply token-based stylesheets when the active theme variant changes."""
+        pass  # stylesheets applied at init; live re-apply deferred (TH-4c/4d)
+
+    # ── GRD : ComponentGuardian integration ──────────────────────────
+    def register_gui_component(self, tool_id: str, recovery_callback=None) -> None:
+        """Register this widget with ComponentGuardian (no-op if unavailable)."""
+        try:
+            from src.core.guardian.component_guardian import ComponentGuardian
+
+            ComponentGuardian.instance().register(
+                tool_id, self, recovery_callback=recovery_callback
+            )
+        except Exception:
+            pass
+
+    # ── TEL : telemetry stub ──────────────────────────────────────────
+    def _emit_telemetry(self, event_type: str, **kwargs) -> None:
+        """Emit a telemetry event (no-op stub until TEL infrastructure lands)."""
+        try:
+            from src.core.telemetry import emit_telemetry
+
+            emit_telemetry(event_type, **kwargs)
+        except Exception:
+            pass
+
+    def health_check(self) -> bool:
+        """Return True if the central widget is present and functional."""
+        return self.centralWidget() is not None
+
+    def degraded_fallback(self) -> None:
+        """Show a minimal error state when the component fails to load."""
+        try:
+            from PyQt5.QtWidgets import QMessageBox
+
+            QMessageBox.warning(
+                self,
+                _FTStrings.TITLE,
+                _FTStrings.ERR_INIT_FAILED,
+            )
+        except Exception:
+            pass
 
     def _init_models(self) -> None:
         """Initialize data models and internal state."""
@@ -173,12 +273,9 @@ class FileTouchWindow(BaseWindow):
                 raise FileNotFoundError(f"UI file not found: {ui_file}")
             uic.loadUi(str(ui_file), self)
             self.logger.info(f"UI loaded from {ui_file}")
-        except Exception as e:
-            self.logger.error(
-                f"Failed to load UI file: {ui_file}", exc_info=True
-            )
-            show_error_dialog(self, "Error", f"Failed to initialize UI: {e}")
-            sys.exit(1)
+        except Exception as e:  # ERR: fatal — UI setup failed; tool cannot render
+            self.logger.error(f"Failed to load UI file: {ui_file}", exc_info=True)
+            raise
 
     def _setup_icons(self) -> None:
         """Setup icons and UI styling."""
@@ -214,7 +311,9 @@ class FileTouchWindow(BaseWindow):
 
         # Add profile combo box to toolbar if toolbar exists
         if hasattr(self, "toolBar"):
-            self.profileCombo: QComboBox = QComboBox(self)
+            self.profileCombo = QComboBox(self)
+            self.profileCombo.setAccessibleName("Timestamp profile")
+            self.profileCombo.setMinimumHeight(44)
             self.toolBar.addWidget(QLabel("Profile: "))
             self.toolBar.addWidget(self.profileCombo)
 
@@ -270,28 +369,20 @@ class FileTouchWindow(BaseWindow):
 
         name: str
         ok: bool
-        name, ok = QInputDialog.getText(
-            self, "Save Profile", "Enter profile name:"
-        )
+        name, ok = QInputDialog.getText(self, "Save Profile", "Enter profile name:")
         if ok and name:
             settings: Dict[str, int] = {
-                "access_time": (
-                    self.accessTimeEdit.dateTime().toSecsSinceEpoch()
-                ),
+                "access_time": (self.accessTimeEdit.dateTime().toSecsSinceEpoch()),
                 "modification_time": (
                     self.modificationTimeEdit.dateTime().toSecsSinceEpoch()
                 ),
-                "creation_time": (
-                    self.creationTimeEdit.dateTime().toSecsSinceEpoch()
-                ),
+                "creation_time": (self.creationTimeEdit.dateTime().toSecsSinceEpoch()),
             }
             self.config_manager.save_profile(name, "file_touch", settings)
             self.update_profile_list()
             if hasattr(self, "profileCombo"):
                 self.profileCombo.setCurrentText(name)
-            show_info_dialog(
-                self, "Success", f"Profile '{name}' saved successfully!"
-            )
+            show_info_dialog(self, "Success", f"Profile '{name}' saved successfully!")
             self.logger.info(f"Profile '{name}' saved")
 
     def load_profile(self, profile_name: str) -> None:
@@ -317,9 +408,7 @@ class FileTouchWindow(BaseWindow):
                 QDateTime.fromSecsSinceEpoch(int(settings["access_time"]))
             )
             self.modificationTimeEdit.setDateTime(
-                QDateTime.fromSecsSinceEpoch(
-                    int(settings["modification_time"])
-                )
+                QDateTime.fromSecsSinceEpoch(int(settings["modification_time"]))
             )
             self.creationTimeEdit.setDateTime(
                 QDateTime.fromSecsSinceEpoch(int(settings["creation_time"]))
@@ -382,15 +471,11 @@ class FileTouchWindow(BaseWindow):
                     self.refresh_timestamps()
                 self.logger.info(f"File dropped: {path}")
             else:
-                show_error_dialog(
-                    self, "Error", "Please drop a file, not a folder"
-                )
+                show_error_dialog(self, "Error", "Please drop a file, not a folder")
 
     def browse_file(self) -> None:
         """Open file dialog to select a file"""
-        file_path = get_open_file_name(
-            self, "Select File", "", "All Files (*.*)"
-        )
+        file_path = get_open_file_name(self, "Select File", "", "All Files (*.*)")
         if file_path and hasattr(self, "filePathEdit"):
             self.filePathEdit.setText(file_path)
             self.logger.info(f"File selected: {file_path}")
@@ -454,13 +539,19 @@ class FileTouchWindow(BaseWindow):
 
             self.logger.info(f"Timestamps refreshed for: {file_path}")
 
-        except Exception as e:
-            show_error_dialog(self, "Error", str(e))
+        except Exception as e:  # ERR: non-fatal — surfaced via Modal and status bar
+            self.logger.error(f"Error refreshing timestamps: {e}", exc_info=True)
+            if Modal:
+                Modal(
+                    _FTStrings.MODAL_ERROR_TITLE,
+                    _FTStrings.ERR_FETCH_FAILED,
+                    ["OK"],
+                    self,
+                ).exec_()
             if hasattr(self, "statusBar"):
-                self.statusBar().showMessage("Error loading timestamps")
+                self.statusBar().showMessage(_FTStrings.ERR_FETCH_FAILED)
             if hasattr(self, "applyButton"):
                 self.applyButton.setEnabled(False)
-            self.logger.error(f"Error refreshing timestamps: {e}")
 
     def apply_changes(self) -> None:
         """Apply the timestamp changes to the file"""
@@ -480,9 +571,7 @@ class FileTouchWindow(BaseWindow):
                 raise ValueError("Timestamp editors not available")
 
             atime: int = self.accessTimeEdit.dateTime().toSecsSinceEpoch()
-            mtime: int = (
-                self.modificationTimeEdit.dateTime().toSecsSinceEpoch()
-            )
+            mtime: int = self.modificationTimeEdit.dateTime().toSecsSinceEpoch()
 
             # Update access and modification times
             os.utime(file_path, (atime, mtime))
@@ -495,11 +584,17 @@ class FileTouchWindow(BaseWindow):
             self.refresh_timestamps()  # Refresh to show actual changes
             self.logger.info(f"Timestamps updated for: {file_path}")
 
-        except Exception as e:
-            show_error_dialog(self, "Error", str(e))
+        except Exception as e:  # ERR: non-fatal — surfaced via Modal and status bar
+            self.logger.error(f"Error applying changes: {e}", exc_info=True)
+            if Modal:
+                Modal(
+                    _FTStrings.MODAL_ERROR_TITLE,
+                    _FTStrings.ERR_APPLY_FAILED,
+                    ["OK"],
+                    self,
+                ).exec_()
             if hasattr(self, "statusBar"):
-                self.statusBar().showMessage("Error updating timestamps")
-            self.logger.error(f"Error applying changes: {e}")
+                self.statusBar().showMessage(_FTStrings.ERR_APPLY_FAILED)
 
     def save_settings(self) -> None:
         """Save current settings for future sessions."""
@@ -519,9 +614,9 @@ class FileTouchWindow(BaseWindow):
 class FileTouchGUI(FileTouchWindow):
     """Compatibility class that maintains the original class name for backward compatibility."""
 
-    def __init__(self) -> None:
+    def __init__(self, hub_instance=None) -> None:
         """Initialize with default config manager."""
-        super().__init__()
+        super().__init__(hub_instance=hub_instance)
 
 
 def main() -> None:

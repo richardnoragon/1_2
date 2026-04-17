@@ -778,28 +778,33 @@ class BookmarkDialog(QDialog):
         # Title
         form_layout.addWidget(QLabel("Title:"), 0, 0)
         self.title_edit = QLineEdit()
+        self.title_edit.setAccessibleName("Bookmark title")
         form_layout.addWidget(self.title_edit, 0, 1)
 
         # URL
         form_layout.addWidget(QLabel("URL:"), 1, 0)
         self.url_edit = QLineEdit()
+        self.url_edit.setAccessibleName("Bookmark URL")
         form_layout.addWidget(self.url_edit, 1, 1)
 
         # Description
         form_layout.addWidget(QLabel("Description:"), 2, 0)
         self.description_edit = QTextEdit()
+        self.description_edit.setAccessibleName("Bookmark description")
         self.description_edit.setMaximumHeight(100)
         form_layout.addWidget(self.description_edit, 2, 1)
 
         # Tags
         form_layout.addWidget(QLabel("Tags:"), 3, 0)
         self.tags_edit = QLineEdit()
+        self.tags_edit.setAccessibleName("Bookmark tags")
         self.tags_edit.setPlaceholderText("Enter tags separated by commas")
         form_layout.addWidget(self.tags_edit, 3, 1)
 
         # Folder
         form_layout.addWidget(QLabel("Folder:"), 4, 0)
         self.folder_edit = QLineEdit()
+        self.folder_edit.setAccessibleName("Bookmark folder")
         self.folder_edit.setText("Default")
         form_layout.addWidget(self.folder_edit, 4, 1)
 
@@ -935,16 +940,22 @@ class BookmarkManagerGUI(QMainWindow):
 
         # Add bookmark button
         add_btn = QPushButton("Add Bookmark")
+        add_btn.setAccessibleName("Add bookmark")
+        add_btn.setMinimumHeight(44)
         add_btn.clicked.connect(self.add_bookmark)
         toolbar_layout.addWidget(add_btn)
 
         # Edit bookmark button
         edit_btn = QPushButton("Edit")
+        edit_btn.setAccessibleName("Edit bookmark")
+        edit_btn.setMinimumHeight(44)
         edit_btn.clicked.connect(self.edit_bookmark)
         toolbar_layout.addWidget(edit_btn)
 
         # Delete bookmark button
         delete_btn = QPushButton("Delete")
+        delete_btn.setAccessibleName("Delete bookmark")
+        delete_btn.setMinimumHeight(44)
         delete_btn.clicked.connect(self.delete_bookmark)
         toolbar_layout.addWidget(delete_btn)
 
@@ -952,11 +963,15 @@ class BookmarkManagerGUI(QMainWindow):
 
         # Import button
         import_btn = QPushButton("Import")
+        import_btn.setAccessibleName("Import bookmarks")
+        import_btn.setMinimumHeight(44)
         import_btn.clicked.connect(self.import_bookmarks)
         toolbar_layout.addWidget(import_btn)
 
         # Export button
         export_btn = QPushButton("Export")
+        export_btn.setAccessibleName("Export bookmarks")
+        export_btn.setMinimumHeight(44)
         export_btn.clicked.connect(self.export_bookmarks)
         toolbar_layout.addWidget(export_btn)
 
@@ -967,6 +982,7 @@ class BookmarkManagerGUI(QMainWindow):
         toolbar_layout.addWidget(search_label)
 
         self.search_box = QLineEdit()
+        self.search_box.setAccessibleName("Search bookmarks")
         self.search_box.setPlaceholderText("Search bookmarks...")
         self.search_box.textChanged.connect(self.search_bookmarks)
         toolbar_layout.addWidget(self.search_box)
@@ -983,6 +999,7 @@ class BookmarkManagerGUI(QMainWindow):
         filter_layout = QVBoxLayout(filter_group)
 
         self.search_field_combo = QComboBox()
+        self.search_field_combo.setAccessibleName("Search field filter")
         self.search_field_combo.addItems(
             ["All Fields", "Title", "URL", "Tags", "Description"]
         )
@@ -996,6 +1013,7 @@ class BookmarkManagerGUI(QMainWindow):
         folders_layout = QVBoxLayout(folders_group)
 
         self.folders_list = QListWidget()
+        self.folders_list.setAccessibleName("Bookmark folders list")
         self.folders_list.itemClicked.connect(self.filter_by_folder)
         folders_layout.addWidget(self.folders_list)
 
@@ -1006,6 +1024,7 @@ class BookmarkManagerGUI(QMainWindow):
         tags_layout = QVBoxLayout(tags_group)
 
         self.tags_list = QListWidget()
+        self.tags_list.setAccessibleName("Bookmark tags list")
         self.tags_list.itemClicked.connect(self.filter_by_tag)
         tags_layout.addWidget(self.tags_list)
 
@@ -1022,6 +1041,7 @@ class BookmarkManagerGUI(QMainWindow):
 
         # Bookmark table
         self.bookmark_table = QTableWidget()
+        self.bookmark_table.setAccessibleName("Bookmarks table")
         self.bookmark_table.setColumnCount(6)
         self.bookmark_table.setHorizontalHeaderLabels(
             ["Title", "URL", "Tags", "Folder", "Created", "Actions"]

@@ -402,10 +402,12 @@ class SearchDialog(QDialog):
         search_layout = QFormLayout(search_group)
 
         self.search_edit = QLineEdit()
+        self.search_edit.setAccessibleName("Search text")
         search_layout.addRow("Find:", self.search_edit)
 
         # Replace section
         self.replace_edit = QLineEdit()
+        self.replace_edit.setAccessibleName("Replacement text")
         search_layout.addRow("Replace:", self.replace_edit)
 
         # Options
@@ -413,9 +415,17 @@ class SearchDialog(QDialog):
         options_layout = QVBoxLayout(options_group)
 
         self.case_sensitive_cb = QCheckBox("Case sensitive")
+        self.case_sensitive_cb.setAccessibleName("Case sensitive search")
+        self.case_sensitive_cb.setMinimumHeight(44)
         self.whole_words_cb = QCheckBox("Whole words only")
+        self.whole_words_cb.setAccessibleName("Whole words only search")
+        self.whole_words_cb.setMinimumHeight(44)
         self.use_regex_cb = QCheckBox("Use regular expressions")
+        self.use_regex_cb.setAccessibleName("Use regular expressions in search")
+        self.use_regex_cb.setMinimumHeight(44)
         self.wrap_around_cb = QCheckBox("Wrap around")
+        self.wrap_around_cb.setAccessibleName("Wrap around search")
+        self.wrap_around_cb.setMinimumHeight(44)
         self.wrap_around_cb.setChecked(True)
 
         options_layout.addWidget(self.case_sensitive_cb)
@@ -426,10 +436,20 @@ class SearchDialog(QDialog):
         # Buttons
         button_layout = QHBoxLayout()
         self.find_next_btn = QPushButton("Find Next")
+        self.find_next_btn.setAccessibleName("Find next match")
+        self.find_next_btn.setMinimumHeight(44)
         self.find_prev_btn = QPushButton("Find Previous")
+        self.find_prev_btn.setAccessibleName("Find previous match")
+        self.find_prev_btn.setMinimumHeight(44)
         self.replace_btn = QPushButton("Replace")
+        self.replace_btn.setAccessibleName("Replace current match")
+        self.replace_btn.setMinimumHeight(44)
         self.replace_all_btn = QPushButton("Replace All")
+        self.replace_all_btn.setAccessibleName("Replace all matches")
+        self.replace_all_btn.setMinimumHeight(44)
         self.close_btn = QPushButton("Close")
+        self.close_btn.setAccessibleName("Close search dialog")
+        self.close_btn.setMinimumHeight(44)
 
         button_layout.addWidget(self.find_next_btn)
         button_layout.addWidget(self.find_prev_btn)
@@ -480,7 +500,9 @@ class TextEditor(QPlainTextEdit):
 
     def apply_settings(self):
         """Apply editor settings."""
-        font = QFont(self.settings.font_family, self.settings.font_size)
+        font = QFont(
+            self.settings.font_family, self.settings.font_size
+        )  # noqa: TH-3  user-configurable editor font
         font.setFixedPitch(True)
         self.setFont(font)
 
@@ -684,6 +706,7 @@ class EnhancedEditor(StandardWindow):
         outline_layout = QVBoxLayout(outline_group)
 
         self.outline_tree = QTreeWidget()
+        self.outline_tree.setAccessibleName("Document structure outline")
         self.outline_tree.setHeaderLabel("Structure")
         outline_layout.addWidget(self.outline_tree)
 
@@ -694,6 +717,7 @@ class EnhancedEditor(StandardWindow):
         recent_layout = QVBoxLayout(recent_group)
 
         self.recent_list = QListWidget()
+        self.recent_list.setAccessibleName("Recent files list")
         self.recent_list.itemDoubleClicked.connect(self.open_recent_file)
         recent_layout.addWidget(self.recent_list)
 
@@ -708,6 +732,7 @@ class EnhancedEditor(StandardWindow):
 
         # Tab widget for multiple documents
         self.tab_widget = QTabWidget()
+        self.tab_widget.setAccessibleName("Open document tabs")
         self.tab_widget.setTabsClosable(True)
         self.tab_widget.setMovable(True)
         self.tab_widget.tabCloseRequested.connect(self.close_document_tab)
@@ -729,6 +754,7 @@ class EnhancedEditor(StandardWindow):
         pattern_layout = QHBoxLayout()
         pattern_layout.addWidget(QLabel("Pattern:"))
         self.file_search_pattern = QLineEdit()
+        self.file_search_pattern.setAccessibleName("File search pattern")
         self.file_search_pattern.setPlaceholderText("*.py")
         pattern_layout.addWidget(self.file_search_pattern)
         finder_layout.addLayout(pattern_layout)
@@ -736,24 +762,32 @@ class EnhancedEditor(StandardWindow):
         directory_layout = QHBoxLayout()
         directory_layout.addWidget(QLabel("Directory:"))
         self.file_search_directory = QLineEdit()
+        self.file_search_directory.setAccessibleName("File search directory")
         self.file_search_directory.setText(str(Path.cwd()))
         directory_layout.addWidget(self.file_search_directory)
         browse_button = QPushButton("Browse")
+        browse_button.setAccessibleName("Browse for file search directory")
+        browse_button.setMinimumHeight(44)
         browse_button.clicked.connect(self.choose_file_search_directory)
         directory_layout.addWidget(browse_button)
         finder_layout.addLayout(directory_layout)
 
         options_layout = QHBoxLayout()
         self.file_search_recursive = QCheckBox("Recursive")
+        self.file_search_recursive.setAccessibleName("Search files recursively")
+        self.file_search_recursive.setMinimumHeight(44)
         self.file_search_recursive.setChecked(True)
         options_layout.addWidget(self.file_search_recursive)
         finder_layout.addLayout(options_layout)
 
         self.file_search_button = QPushButton("Search Files")
+        self.file_search_button.setAccessibleName("Search for files")
+        self.file_search_button.setMinimumHeight(44)
         self.file_search_button.clicked.connect(self.perform_file_search)
         finder_layout.addWidget(self.file_search_button)
 
         self.file_search_results = QListWidget()
+        self.file_search_results.setAccessibleName("File search results")
         self.file_search_results.itemDoubleClicked.connect(self.open_file_from_search)
         finder_layout.addWidget(self.file_search_results)
 
@@ -764,6 +798,7 @@ class EnhancedEditor(StandardWindow):
         search_layout = QVBoxLayout(search_group)
 
         self.search_results = QListWidget()
+        self.search_results.setAccessibleName("Text search results")
         self.search_results.itemDoubleClicked.connect(self.goto_search_result)
         search_layout.addWidget(self.search_results)
 
@@ -1771,6 +1806,7 @@ class PreferencesDialog(QDialog):
 
         # Create tab widget for different categories
         tab_widget = QTabWidget()
+        tab_widget.setAccessibleName("Preferences categories")
         layout.addWidget(tab_widget)
 
         # Editor tab
@@ -1801,6 +1837,7 @@ class PreferencesDialog(QDialog):
         font_layout = QFormLayout(font_group)
 
         self.font_family_combo = QComboBox()
+        self.font_family_combo.setAccessibleName("Editor font family")
         font_db = QFontDatabase()
         for family in font_db.families():
             if font_db.isFixedPitch(family):
@@ -1808,6 +1845,8 @@ class PreferencesDialog(QDialog):
         font_layout.addRow("Font Family:", self.font_family_combo)
 
         self.font_size_spin = QSpinBox()
+        self.font_size_spin.setAccessibleName("Editor font size")
+        self.font_size_spin.setMinimumHeight(44)
         self.font_size_spin.setRange(6, 72)
         font_layout.addRow("Font Size:", self.font_size_spin)
 
@@ -1818,13 +1857,19 @@ class PreferencesDialog(QDialog):
         indent_layout = QFormLayout(indent_group)
 
         self.tab_width_spin = QSpinBox()
+        self.tab_width_spin.setAccessibleName("Tab width in spaces")
+        self.tab_width_spin.setMinimumHeight(44)
         self.tab_width_spin.setRange(1, 16)
         indent_layout.addRow("Tab Width:", self.tab_width_spin)
 
         self.use_spaces_check = QCheckBox("Use spaces instead of tabs")
+        self.use_spaces_check.setAccessibleName("Use spaces instead of tabs")
+        self.use_spaces_check.setMinimumHeight(44)
         indent_layout.addRow(self.use_spaces_check)
 
         self.auto_indent_check = QCheckBox("Auto-indent new lines")
+        self.auto_indent_check.setAccessibleName("Auto-indent new lines")
+        self.auto_indent_check.setMinimumHeight(44)
         indent_layout.addRow(self.auto_indent_check)
 
         layout.addWidget(indent_group)
@@ -1841,12 +1886,18 @@ class PreferencesDialog(QDialog):
         display_layout = QVBoxLayout(display_group)
 
         self.word_wrap_check = QCheckBox("Word wrap")
+        self.word_wrap_check.setAccessibleName("Word wrap")
+        self.word_wrap_check.setMinimumHeight(44)
         display_layout.addWidget(self.word_wrap_check)
 
         self.line_numbers_check = QCheckBox("Show line numbers")
+        self.line_numbers_check.setAccessibleName("Show line numbers")
+        self.line_numbers_check.setMinimumHeight(44)
         display_layout.addWidget(self.line_numbers_check)
 
         self.show_whitespace_check = QCheckBox("Show whitespace")
+        self.show_whitespace_check.setAccessibleName("Show whitespace characters")
+        self.show_whitespace_check.setMinimumHeight(44)
         display_layout.addWidget(self.show_whitespace_check)
 
         layout.addWidget(display_group)
@@ -1856,6 +1907,8 @@ class PreferencesDialog(QDialog):
         syntax_layout = QVBoxLayout(syntax_group)
 
         self.syntax_highlighting_check = QCheckBox("Enable syntax highlighting")
+        self.syntax_highlighting_check.setAccessibleName("Enable syntax highlighting")
+        self.syntax_highlighting_check.setMinimumHeight(44)
         syntax_layout.addWidget(self.syntax_highlighting_check)
 
         layout.addWidget(syntax_group)

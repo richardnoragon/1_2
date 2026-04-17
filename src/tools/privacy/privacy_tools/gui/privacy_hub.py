@@ -5,52 +5,151 @@ Main interface for accessing all privacy cleaning tools.
 Provides a unified interface with tabs for each tool category.
 """
 
+import logging
 import sys
 from pathlib import Path
 from typing import Dict, List, Optional
-from PyQt5.QtWidgets import (
-    QMainWindow,
-    QWidget,
-    QVBoxLayout,
-    QHBoxLayout,
-    QTabWidget,
-    QLabel,
-    QPushButton,
-    QGroupBox,
-    QCheckBox,
-    QComboBox,
-    QSpinBox,
-    QLineEdit,
-    QTextEdit,
-    QProgressBar,
-    QMessageBox,
-    QListWidget,
-    QListWidgetItem,
-    QSplitter,
-    QFrame,
-)
+
 from PyQt5.QtCore import Qt, QThread, pyqtSignal
 from PyQt5.QtGui import QFont, QIcon
+from PyQt5.QtWidgets import (
+    QCheckBox,
+    QComboBox,
+    QDialog,
+    QFrame,
+    QGroupBox,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QListWidget,
+    QListWidgetItem,
+    QMainWindow,
+    QMessageBox,
+    QProgressBar,
+    QPushButton,
+    QSpinBox,
+    QSplitter,
+    QTabWidget,
+    QTextEdit,
+    QVBoxLayout,
+    QWidget,
+)
 
 # Import the main project's GUI components
-sys.path.append(str(Path(__file__).parent.parent.parent.parent.parent))
-from gui.standard_window import StandardWindow
-from gui.themes import ThemeManager, Colors, Fonts
+try:
+    from src.gui.standard_window import StandardWindow
+
+    STANDARD_WINDOW_AVAILABLE = True
+except ImportError:
+    StandardWindow = QMainWindow
+    STANDARD_WINDOW_AVAILABLE = False
+
+try:
+    from src.gui.themes import Colors, Fonts, ThemeManager
+except ImportError:
+    ThemeManager = None
+    Colors = None
+    Fonts = None
+
+
+# ---------------------------------------------------------------------------
+# GRD-1a: Guardian registration (graceful no-op when guardian absent)
+# ---------------------------------------------------------------------------
+try:
+    from src.core.guardian import register_gui_component
+except ImportError:
+
+    def register_gui_component(*a, **kw):
+        pass  # noqa: E731
+
+
+# ---------------------------------------------------------------------------
+# TEL: Telemetry helpers (graceful no-op when telemetry absent)
+# ---------------------------------------------------------------------------
+try:
+    from src.gui.telemetry import emit_telemetry
+
+    def _emit_telemetry(event_type, **kw):
+        emit_telemetry(event_type, **kw)  # noqa: E731
+
+except ImportError:
+
+    def _emit_telemetry(*a, **kw):
+        pass  # noqa: E731
+
+
+# ---------------------------------------------------------------------------
+# STR: Centralised string constants with fallback (P1-C15 / STR-1)
+# ---------------------------------------------------------------------------
+try:
+    from src.rfu.ui_strings import Privacy as _PrivStrings
+except ImportError:
+
+    class _PrivStrings:  # type: ignore[no-redef]
+        TITLE = "Privacy Tools"
+        WINDOW_TITLE = "Privacy Tools — RFU"
+        LOADING = "Loading Privacy Tools…"
+        MODAL_ERROR_TITLE = "Privacy Tools"
+        ERR_INIT_FAILED = (
+            "Could not start Privacy Tools. "
+            "Please try again or restart the application."
+        )
+        ERR_CLEAN_FAILED = (
+            "Privacy clean operation failed. "
+            "Check that you have the required permissions."
+        )
+        ERR_PREVIEW_FAILED = (
+            "Could not preview the operation. "
+            "Check that you have the required permissions."
+        )
+
+
+# ---------------------------------------------------------------------------
+# CP: Component Placement — PrimaryButton / SecondaryButton
+# ---------------------------------------------------------------------------
+try:
+    from src.gui.components.buttons import PrimaryButton, SecondaryButton
+
+    _CP_AVAILABLE = True
+except ImportError:
+    PrimaryButton = QPushButton  # type: ignore[misc,assignment]
+    SecondaryButton = QPushButton  # type: ignore[misc,assignment]
+    _CP_AVAILABLE = False
+
+try:
+    from src.gui.components.modal import ConfirmationModal, Modal
+except ImportError:
+    Modal = None  # type: ignore[assignment,misc]
+    ConfirmationModal = None  # type: ignore[assignment,misc]
+
+
+from ..core.browser_detector import BrowserDetector
+from ..core.platform_utils import PlatformUtils
+from ..tools.delete_cookies import DeleteCookiesTool
 
 # Import privacy tools
 from ..tools.secure_empty_trash import SecureEmptyTrashTool
-from ..tools.delete_cookies import DeleteCookiesTool
-from ..core.browser_detector import BrowserDetector
-from ..core.platform_utils import PlatformUtils
 
 
 class PrivacyToolsHub(StandardWindow):
     """Main hub for privacy cleaning tools."""
 
-    def __init__(self):
-        super().__init__("Privacy Tools - Richard's File Utilities")
+    def __init__(self, hub_instance=None):
+        self._hub = hub_instance
+        if STANDARD_WINDOW_AVAILABLE:
+            super().__init__("Privacy Tools - Richard's File Utilities")
+        else:
+            super().__init__()
+            self.setWindowTitle(_PrivStrings.WINDOW_TITLE)
         self.setMinimumSize(900, 700)
         self.resize(1000, 800)
+
+        try:
+            from src.rfu.log_manager import get_log_manager
+
+            self._logger = get_log_manager().get_logger("PrivacyToolsHub")
+        except Exception:  # ERR: non-fatal — logger fallback to module logger
+            self._logger = logging.getLogger("PrivacyToolsHub")
 
         # Initialize tools
         self.tools = {
@@ -67,11 +166,47 @@ class PrivacyToolsHub(StandardWindow):
         self._setup_ui()
         self._connect_signals()
         self._refresh_browser_info()
+        register_gui_component(
+            self, tool_id="privacy_tools", recovery_callback=self.degraded_fallback
+        )
+        _emit_telemetry("ui_view_load", tool_id="privacy_tools")
+        ThemeManager.add_theme_changed_callback(self._on_theme_changed)
+
+    def create_button(self, text, callback=None, primary=True):
+        """Override to use CP components when available (CP-1)."""
+        if _CP_AVAILABLE:
+            btn = PrimaryButton(text) if primary else SecondaryButton(text)
+            if callback:
+                btn.clicked.connect(callback)
+            return btn
+        return super().create_button(text, callback, primary)
+
+    def _on_theme_changed(self, variant: str) -> None:
+        """Re-apply token-based stylesheets when the active theme variant changes."""
+        pass  # stylesheets applied at init; live re-apply pending TH-4c/4d
+
+    def health_check(self) -> bool:
+        """Return True if core UI is functional (GRD-3a)."""
+        try:
+            return hasattr(self, "tab_widget") and self.tab_widget is not None
+        except Exception:
+            return False
+
+    def degraded_fallback(self) -> None:
+        """Enter degraded / read-only state (GRD-3b)."""
+        try:
+            self._logger.warning("PrivacyToolsHub entering degraded mode")
+        except Exception:
+            pass
+        _emit_telemetry(
+            "ui_error_event", tool_id="privacy_tools", error_type="degraded"
+        )
 
     def _setup_ui(self):
         """Setup the user interface."""
         # Create main tab widget
         self.tab_widget = QTabWidget()
+        self.tab_widget.setAccessibleName("Privacy tools tabs")
         self.main_layout.addWidget(self.tab_widget)
 
         # Create tabs for each tool category
@@ -95,15 +230,11 @@ class PrivacyToolsHub(StandardWindow):
         system_group = self.create_group_box("System Information")
         system_layout = QVBoxLayout()
 
-        platform_label = QLabel(
-            f"Platform: {PlatformUtils.get_platform().title()}"
-        )
+        platform_label = QLabel(f"Platform: {PlatformUtils.get_platform().title()}")
         ThemeManager.style_label(platform_label)
         system_layout.addWidget(platform_label)
 
-        admin_status = (
-            "Administrator" if PlatformUtils.is_admin() else "Standard User"
-        )
+        admin_status = "Administrator" if PlatformUtils.is_admin() else "Standard User"
         admin_label = QLabel(f"Privileges: {admin_status}")
         ThemeManager.style_label(admin_label)
         system_layout.addWidget(admin_label)
@@ -116,10 +247,11 @@ class PrivacyToolsHub(StandardWindow):
         browser_layout = QVBoxLayout()
 
         self.browser_list = QListWidget()
+        self.browser_list.setAccessibleName("Detected browsers list")
         browser_layout.addWidget(self.browser_list)
 
         refresh_btn = self.create_button(
-            "Refresh Browser Info", self._refresh_browser_info
+            "Refresh Browser Info", self._refresh_browser_info, primary=False
         )
         browser_layout.addWidget(refresh_btn)
 
@@ -153,10 +285,18 @@ class PrivacyToolsHub(StandardWindow):
         options_group = self.create_group_box("Options")
         options_layout = QVBoxLayout()
 
-        self.trash_secure_check = QCheckBox(
-            "Secure deletion (overwrite files)"
+        self.trash_secure_check = QCheckBox("Secure deletion (overwrite files)")
+        self.trash_secure_check.setAccessibleName("Secure deletion")
+        self.trash_secure_check.setAccessibleDescription(
+            "Overwrites file content before deletion to prevent data recovery"
         )
+        self.trash_secure_check.setMinimumHeight(44)
         self.trash_backup_check = QCheckBox("Create backup before deletion")
+        self.trash_backup_check.setAccessibleName("Create backup before deletion")
+        self.trash_backup_check.setAccessibleDescription(
+            "Creates a copy of files before they are permanently deleted"
+        )
+        self.trash_backup_check.setMinimumHeight(44)
 
         options_layout.addWidget(self.trash_secure_check)
         options_layout.addWidget(self.trash_backup_check)
@@ -168,11 +308,12 @@ class PrivacyToolsHub(StandardWindow):
         preview_layout = QVBoxLayout()
 
         self.trash_preview_text = QTextEdit()
+        self.trash_preview_text.setAccessibleName("Trash operation preview")
         self.trash_preview_text.setMaximumHeight(150)
         preview_layout.addWidget(self.trash_preview_text)
 
         preview_btn = self.create_button(
-            "Preview Operation", self._preview_trash_operation
+            "Preview Operation", self._preview_trash_operation, primary=False
         )
         preview_layout.addWidget(preview_btn)
 
@@ -211,6 +352,8 @@ class PrivacyToolsHub(StandardWindow):
         for browser in ["chrome", "firefox", "edge", "safari"]:
             checkbox = QCheckBox(browser.title())
             checkbox.setChecked(True)
+            checkbox.setAccessibleName(f"{browser.title()} browser")
+            checkbox.setMinimumHeight(44)
             self.browser_checkboxes[browser] = checkbox
             browser_layout.addWidget(checkbox)
 
@@ -225,9 +368,11 @@ class PrivacyToolsHub(StandardWindow):
         domain_layout = QHBoxLayout()
         domain_layout.addWidget(QLabel("Domain filter:"))
         self.domain_filter_edit = QLineEdit()
-        self.domain_filter_edit.setPlaceholderText(
-            "e.g., google.com (optional)"
+        self.domain_filter_edit.setAccessibleName("Domain filter")
+        self.domain_filter_edit.setAccessibleDescription(
+            "Enter a domain to delete only cookies from that site; leave blank for all"
         )
+        self.domain_filter_edit.setPlaceholderText("e.g., google.com (optional)")
         domain_layout.addWidget(self.domain_filter_edit)
         filter_layout.addLayout(domain_layout)
 
@@ -235,6 +380,11 @@ class PrivacyToolsHub(StandardWindow):
         age_layout = QHBoxLayout()
         age_layout.addWidget(QLabel("Delete cookies older than:"))
         self.age_spinbox = QSpinBox()
+        self.age_spinbox.setAccessibleName("Delete cookies older than (days)")
+        self.age_spinbox.setAccessibleDescription(
+            "Only cookies older than this many days are deleted; 0 deletes all"
+        )
+        self.age_spinbox.setMinimumHeight(44)
         self.age_spinbox.setRange(0, 365)
         self.age_spinbox.setValue(0)
         self.age_spinbox.setSuffix(" days (0 = all)")
@@ -243,6 +393,11 @@ class PrivacyToolsHub(StandardWindow):
 
         # Backup option
         self.cookies_backup_check = QCheckBox("Create backup before deletion")
+        self.cookies_backup_check.setAccessibleName("Create cookies backup")
+        self.cookies_backup_check.setAccessibleDescription(
+            "Saves a backup of all cookies before any deletion takes place"
+        )
+        self.cookies_backup_check.setMinimumHeight(44)
         filter_layout.addWidget(self.cookies_backup_check)
 
         filter_group.setLayout(filter_layout)
@@ -253,11 +408,12 @@ class PrivacyToolsHub(StandardWindow):
         preview_layout = QVBoxLayout()
 
         self.cookies_preview_text = QTextEdit()
+        self.cookies_preview_text.setAccessibleName("Cookies operation preview")
         self.cookies_preview_text.setMaximumHeight(150)
         preview_layout.addWidget(self.cookies_preview_text)
 
         preview_btn = self.create_button(
-            "Preview Operation", self._preview_cookies_operation
+            "Preview Operation", self._preview_cookies_operation, primary=False
         )
         preview_layout.addWidget(preview_btn)
 
@@ -287,9 +443,7 @@ class PrivacyToolsHub(StandardWindow):
         header = self.create_header("Delete Browser History")
         layout.addWidget(header)
 
-        info_label = QLabel(
-            "Browser history deletion tool will be implemented here."
-        )
+        info_label = QLabel("Browser history deletion tool will be implemented here.")
         ThemeManager.style_label(info_label)
         layout.addWidget(info_label)
 
@@ -303,9 +457,7 @@ class PrivacyToolsHub(StandardWindow):
         header = self.create_header("Delete File History")
         layout.addWidget(header)
 
-        info_label = QLabel(
-            "File history deletion tool will be implemented here."
-        )
+        info_label = QLabel("File history deletion tool will be implemented here.")
         ThemeManager.style_label(info_label)
         layout.addWidget(info_label)
 
@@ -319,9 +471,7 @@ class PrivacyToolsHub(StandardWindow):
         header = self.create_header("Delete Browser Downloads")
         layout.addWidget(header)
 
-        info_label = QLabel(
-            "Browser downloads deletion tool will be implemented here."
-        )
+        info_label = QLabel("Browser downloads deletion tool will be implemented here.")
         ThemeManager.style_label(info_label)
         layout.addWidget(info_label)
 
@@ -364,14 +514,10 @@ class PrivacyToolsHub(StandardWindow):
         secure_delete = self.trash_secure_check.isChecked()
 
         try:
-            preview = self.tools["trash"].preview_operation(
-                secure_delete=secure_delete
-            )
+            preview = self.tools["trash"].preview_operation(secure_delete=secure_delete)
 
             preview_text = f"Platform: {preview['platform'].title()}\n"
-            preview_text += (
-                f"Secure deletion: {'Yes' if secure_delete else 'No'}\n"
-            )
+            preview_text += f"Secure deletion: {'Yes' if secure_delete else 'No'}\n"
             preview_text += f"Items to delete: {len(preview['trash_items'])}\n"
 
             if preview["trash_items"]:
@@ -390,10 +536,15 @@ class PrivacyToolsHub(StandardWindow):
 
             self.trash_preview_text.setPlainText(preview_text)
 
-        except Exception as e:
-            self.show_error_dialog(
-                "Preview Error", f"Failed to preview operation: {str(e)}"
-            )
+        except Exception as e:  # ERR: non-fatal — surfaced via Modal
+            self._logger.error("Trash preview failed", exc_info=True)
+            if Modal:
+                Modal(
+                    _PrivStrings.MODAL_ERROR_TITLE,
+                    _PrivStrings.ERR_PREVIEW_FAILED,
+                    ["OK"],
+                    self,
+                ).exec_()
 
     def _preview_cookies_operation(self):
         """Preview cookies deletion operation."""
@@ -404,9 +555,7 @@ class PrivacyToolsHub(StandardWindow):
         ]
 
         domain_filter = self.domain_filter_edit.text().strip() or None
-        days_old = (
-            self.age_spinbox.value() if self.age_spinbox.value() > 0 else None
-        )
+        days_old = self.age_spinbox.value() if self.age_spinbox.value() > 0 else None
 
         try:
             preview = self.tools["cookies"].preview_operation(
@@ -436,10 +585,15 @@ class PrivacyToolsHub(StandardWindow):
 
             self.cookies_preview_text.setPlainText(preview_text)
 
-        except Exception as e:
-            self.show_error_dialog(
-                "Preview Error", f"Failed to preview operation: {str(e)}"
-            )
+        except Exception as e:  # ERR: non-fatal — surfaced via Modal
+            self._logger.error("Cookies preview failed", exc_info=True)
+            if Modal:
+                Modal(
+                    _PrivStrings.MODAL_ERROR_TITLE,
+                    _PrivStrings.ERR_PREVIEW_FAILED,
+                    ["OK"],
+                    self,
+                ).exec_()
 
     def _execute_trash_operation(self):
         """Execute trash emptying operation."""
@@ -471,9 +625,7 @@ class PrivacyToolsHub(StandardWindow):
             return
 
         domain_filter = self.domain_filter_edit.text().strip() or None
-        days_old = (
-            self.age_spinbox.value() if self.age_spinbox.value() > 0 else None
-        )
+        days_old = self.age_spinbox.value() if self.age_spinbox.value() > 0 else None
         create_backup = self.cookies_backup_check.isChecked()
 
         self.cookies_progress.setVisible(True)
@@ -491,16 +643,28 @@ class PrivacyToolsHub(StandardWindow):
 
     def _quick_clean_all(self):
         """Execute quick clean of all privacy data."""
-        reply = QMessageBox.question(
-            self,
-            "Quick Clean All",
-            "This will delete cookies from all browsers and empty the trash.\n"
-            "Are you sure you want to continue?",
-            QMessageBox.Yes | QMessageBox.No,
-            QMessageBox.No,
-        )
+        if ConfirmationModal:
+            dlg = ConfirmationModal(
+                "Quick Clean All",
+                "This will delete cookies from all browsers and empty the trash.\n"
+                "Are you sure you want to continue?",
+                confirm_text="Continue",
+                cancel_text="Cancel",
+                parent=self,
+            )
+            confirmed = dlg.exec_() == QDialog.Accepted
+        else:
+            reply = QMessageBox.question(
+                self,
+                "Quick Clean All",
+                "This will delete cookies from all browsers and empty the trash.\n"
+                "Are you sure you want to continue?",
+                QMessageBox.Yes | QMessageBox.No,
+                QMessageBox.No,
+            )
+            confirmed = reply == QMessageBox.Yes
 
-        if reply == QMessageBox.Yes:
+        if confirmed:
             # Set all browser checkboxes
             for checkbox in self.browser_checkboxes.values():
                 checkbox.setChecked(True)
@@ -555,15 +719,25 @@ class PrivacyToolsHub(StandardWindow):
     def closeEvent(self, event):
         """Handle window close event."""
         if self.current_thread and self.current_thread.isRunning():
-            reply = QMessageBox.question(
-                self,
-                "Operation in Progress",
-                "An operation is currently running. Do you want to stop it and exit?",
-                QMessageBox.Yes | QMessageBox.No,
-                QMessageBox.No,
-            )
+            if Modal:
+                dlg = Modal(
+                    "Operation in Progress",
+                    "An operation is currently running. Do you want to stop it and exit?",
+                    ["Yes", "No"],
+                    parent=self,
+                )
+                confirmed = dlg.exec_() == QDialog.Accepted
+            else:
+                reply = QMessageBox.question(
+                    self,
+                    "Operation in Progress",
+                    "An operation is currently running. Do you want to stop it and exit?",
+                    QMessageBox.Yes | QMessageBox.No,
+                    QMessageBox.No,
+                )
+                confirmed = reply == QMessageBox.Yes
 
-            if reply == QMessageBox.Yes:
+            if confirmed:
                 # Stop all tools
                 for tool in self.tools.values():
                     tool.stop_operation()

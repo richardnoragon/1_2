@@ -10,7 +10,6 @@ the suite and can be expanded later.
 import sys
 
 try:
-    from src.gui.themes import token
     from PyQt5.QtWidgets import (
         QApplication,
         QLabel,
@@ -20,6 +19,8 @@ try:
         QVBoxLayout,
         QWidget,
     )
+
+    from src.gui.themes import token
 except ImportError:  # pragma: no cover - runtime guard
     print("PyQt5 not available. Please install PyQt5.")
     sys.exit(1)
@@ -69,10 +70,14 @@ class SecurityPreferencesGUI(QMainWindow):
         layout.addWidget(desc)
 
         test_btn = QPushButton("Run Security Self-Check")
+        test_btn.setAccessibleName("Run security self-check")
+        test_btn.setMinimumHeight(44)
         test_btn.clicked.connect(self._run_self_check)
         layout.addWidget(test_btn)
 
         help_btn = QPushButton("Show Help")
+        help_btn.setAccessibleName("Show security help")
+        help_btn.setMinimumHeight(44)
         help_btn.clicked.connect(self._show_help)
         layout.addWidget(help_btn)
 

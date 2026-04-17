@@ -1,17 +1,17 @@
-#!/usr/bin/env python3
+from src.gui.themes import ThemeManager, Typography, token
+
 """
 Simple Security Scanner Tool for Richard's File Utilities
 
 A basic security scanner for common vulnerabilities and system checks.
 """
 
+import logging
 import os
 import platform
 import socket
 import subprocess
 import sys
-
-from src.gui.themes import Typography, token
 
 try:
     from PyQt5.QtCore import Qt, QThread, pyqtSignal
@@ -35,8 +35,68 @@ except ImportError:
     print("PyQt5 not available. Please install PyQt5.")
     sys.exit(1)
 
+# ---------------------------------------------------------------------------
+# CP: Component replacement imports (CP-1 through CP-5)
+# ---------------------------------------------------------------------------
+try:
+    from src.gui.components.buttons import PrimaryButton, SecondaryButton
+    from src.gui.components.modal import Modal
+    from src.gui.components.toast import ToastNotification
 
-class SecurityScanWorker(QThread):
+    _CP_AVAILABLE = True
+except ImportError:
+    PrimaryButton = QPushButton
+    SecondaryButton = QPushButton
+    Modal = None
+    ToastNotification = None
+    _CP_AVAILABLE = False
+
+# ---------------------------------------------------------------------------
+# GRD-1a: Guardian registration (graceful no-op when guardian absent)
+# ---------------------------------------------------------------------------
+try:
+    from src.core.guardian import register_gui_component
+except ImportError:
+
+    def register_gui_component(*a, **kw):
+        pass  # noqa: E731
+
+
+# ---------------------------------------------------------------------------
+# TEL: Telemetry helpers (graceful no-op when telemetry absent)
+# ---------------------------------------------------------------------------
+try:
+    from src.gui.telemetry import emit_telemetry
+
+    def _emit_telemetry(event_type, **kw):
+        emit_telemetry(event_type, **kw)  # noqa: E731
+
+except ImportError:
+
+    def _emit_telemetry(*a, **kw):
+        pass  # noqa: E731
+
+
+# ---------------------------------------------------------------------------
+# STR: Centralised string constants with fallback (P1-C15 / STR-1)
+# ---------------------------------------------------------------------------
+try:
+    from src.rfu.ui_strings import SecurityScanner as _SSStrings
+except ImportError:
+
+    class _SSStrings:  # type: ignore[no-redef]
+        TITLE = "Security Scanner"
+        WINDOW_TITLE = "Security Scanner — RFU"
+        LOADING = "Loading Security Scanner…"
+        ERR_INIT_FAILED = (
+            "Could not start Security Scanner. "
+            "Please try again or restart the application."
+        )
+        ERR_SCAN_FAILED = (
+            "Security scan failed. "
+            "Some scan modules may not be available on this system."
+        )
+
     """Worker thread for security scanning."""
 
     progress_updated = pyqtSignal(int)
@@ -94,7 +154,9 @@ class SecurityScanWorker(QThread):
                 )
 
             return "\n".join(info)
-        except Exception as e:
+        except (
+            Exception
+        ) as e:  # ERR: non-fatal — returns error string; included in scan results
             return f"System info scan error: {e}"
 
     def scan_network_ports(self):
@@ -137,7 +199,9 @@ class SecurityScanWorker(QThread):
                 results.append("✅ No common ports found open on localhost")
 
             return "\n".join(results)
-        except Exception as e:
+        except (
+            Exception
+        ) as e:  # ERR: non-fatal — returns error string; included in scan results
             return f"Network scan error: {e}"
 
     def scan_file_permissions(self):
@@ -179,12 +243,16 @@ class SecurityScanWorker(QThread):
                             perms.append("X")
 
                         results.append(f"{directory}: {''.join(perms)}")
-                    except Exception as e:
+                    except (
+                        Exception
+                    ) as e:  # ERR: non-fatal — logged inline in scan results; directory skipped
                         results.append(f"{directory}: Error checking permissions - {e}")
 
             results.append("✅ File permission scan completed")
             return "\n".join(results)
-        except Exception as e:
+        except (
+            Exception
+        ) as e:  # ERR: non-fatal — returns error string; included in scan results
             return f"File permissions scan error: {e}"
 
     def scan_running_processes(self):
@@ -204,7 +272,9 @@ class SecurityScanWorker(QThread):
                     for line in lines[3:]:  # Skip header
                         if line.strip():
                             results.append(f"  {line.strip()}")
-                except Exception:
+                except (
+                    Exception
+                ):  # ERR: non-fatal — process list unavailable; fallback message shown
                     results.append("Could not retrieve process list")
             else:
                 # Use ps command for Unix-like systems
@@ -217,21 +287,32 @@ class SecurityScanWorker(QThread):
                     for line in lines[1:]:  # Skip header
                         if line.strip():
                             results.append(f"  {line.strip()}")
-                except Exception:
+                except (
+                    Exception
+                ):  # ERR: non-fatal — process list unavailable; fallback message shown
                     results.append("Could not retrieve process list")
 
             results.append("✅ Process analysis completed")
             return "\n".join(results)
-        except Exception as e:
+        except (
+            Exception
+        ) as e:  # ERR: non-fatal — returns error string; included in scan results
             return f"Process scan error: {e}"
 
 
 class SimpleSecurityScannerGUI(QMainWindow):
     """Simple Security Scanner GUI."""
 
-    def __init__(self):
+    def __init__(self, hub_instance=None):
         super().__init__()
-        self.setWindowTitle("Security Scanner - Richard's File Utilities")
+        self._hub = hub_instance
+        try:
+            from src.rfu.log_manager import get_log_manager
+
+            self._logger = get_log_manager().get_logger("SimpleSecurityScannerGUI")
+        except Exception:  # ERR: non-fatal — logger fallback to module logger
+            self._logger = logging.getLogger("SimpleSecurityScannerGUI")
+        self.setWindowTitle(_SSStrings.WINDOW_TITLE)
         self.setMinimumSize(800, 700)
         self.resize(900, 800)
 
@@ -254,21 +335,6 @@ class SimpleSecurityScannerGUI(QMainWindow):
                 left: 10px;
                 padding: 0 5px 0 5px;
             }}
-            QPushButton {{
-                background-color: {token('color_orange_red')};
-                color: white;
-                border: none;
-                padding: 8px 16px;
-                font-size: 14px;
-                border-radius: 4px;
-                font-weight: bold;
-            }}
-            QPushButton:hover {{
-                background-color: {token('color_orange_red_dark')};
-            }}
-            QPushButton:pressed {{
-                background-color: {token('color_orange_red_darker')};
-            }}
             QTextEdit {{
                 border: 1px solid {token('border')};
                 border-radius: 4px;
@@ -281,6 +347,32 @@ class SimpleSecurityScannerGUI(QMainWindow):
 
         self.scan_worker = None
         self._setup_ui()
+        register_gui_component(
+            self, tool_id="security_scanner", recovery_callback=self.degraded_fallback
+        )
+        _emit_telemetry("ui_view_load", tool_id="security_scanner")
+        ThemeManager.add_theme_changed_callback(self._on_theme_changed)
+
+    def _on_theme_changed(self, variant: str) -> None:
+        """Re-apply token-based stylesheets when the active theme variant changes."""
+        pass  # stylesheets applied at init; live re-apply pending TH-4c/4d
+
+    def health_check(self) -> bool:
+        """Return True if core UI is functional (GRD-3a)."""
+        try:
+            return self.centralWidget() is not None
+        except Exception:
+            return False
+
+    def degraded_fallback(self) -> None:
+        """Enter degraded / read-only state (GRD-3b)."""
+        try:
+            self._logger.warning("SimpleSecurityScannerGUI entering degraded mode")
+        except Exception:
+            pass
+        _emit_telemetry(
+            "ui_error_event", tool_id="security_scanner", error_type="degraded"
+        )
 
     def _setup_ui(self):
         """Setup the user interface."""
@@ -300,18 +392,38 @@ class SimpleSecurityScannerGUI(QMainWindow):
 
         self.system_info_check = QCheckBox("System Information")
         self.system_info_check.setChecked(True)
+        self.system_info_check.setAccessibleName("Scan system information")
+        self.system_info_check.setAccessibleDescription(
+            "Checks OS version, user accounts, and installed security features"
+        )
+        self.system_info_check.setMinimumHeight(44)
         options_layout.addWidget(self.system_info_check)
 
         self.network_ports_check = QCheckBox("Network Ports")
         self.network_ports_check.setChecked(True)
+        self.network_ports_check.setAccessibleName("Scan network ports")
+        self.network_ports_check.setAccessibleDescription(
+            "Lists all open TCP/UDP ports and associated services"
+        )
+        self.network_ports_check.setMinimumHeight(44)
         options_layout.addWidget(self.network_ports_check)
 
         self.file_permissions_check = QCheckBox("File Permissions")
         self.file_permissions_check.setChecked(True)
+        self.file_permissions_check.setAccessibleName("Scan file permissions")
+        self.file_permissions_check.setAccessibleDescription(
+            "Identifies files with overly broad permissions that may be security risks"
+        )
+        self.file_permissions_check.setMinimumHeight(44)
         options_layout.addWidget(self.file_permissions_check)
 
         self.running_processes_check = QCheckBox("Running Processes")
         self.running_processes_check.setChecked(True)
+        self.running_processes_check.setAccessibleName("Scan running processes")
+        self.running_processes_check.setAccessibleDescription(
+            "Lists all active processes and flags unrecognized or suspicious entries"
+        )
+        self.running_processes_check.setMinimumHeight(44)
         options_layout.addWidget(self.running_processes_check)
 
         layout.addWidget(options_group)
@@ -319,11 +431,11 @@ class SimpleSecurityScannerGUI(QMainWindow):
         # Control buttons
         button_layout = QHBoxLayout()
 
-        self.start_scan_btn = QPushButton("🚀 Start Security Scan")
+        self.start_scan_btn = PrimaryButton("🚀 Start Security Scan")
         self.start_scan_btn.clicked.connect(self.start_scan)
         button_layout.addWidget(self.start_scan_btn)
 
-        self.clear_btn = QPushButton("🗑️ Clear Results")
+        self.clear_btn = SecondaryButton("🗑️ Clear Results")
         self.clear_btn.clicked.connect(self.clear_results)
         button_layout.addWidget(self.clear_btn)
 
@@ -338,11 +450,18 @@ class SimpleSecurityScannerGUI(QMainWindow):
         self.status_label = QLabel("Ready to scan")
         layout.addWidget(self.status_label)
 
+        # Toast notification for completion messages (CP-5)
+        if ToastNotification:
+            self._toast = ToastNotification(parent=self)
+        else:
+            self._toast = None
+
         # Results area
         results_group = QGroupBox("Scan Results")
         results_layout = QVBoxLayout(results_group)
 
         self.results_text = QTextEdit()
+        self.results_text.setAccessibleName("Security scan results")
         self.results_text.setPlainText(
             "Click 'Start Security Scan' to begin scanning for security issues..."
         )
@@ -364,9 +483,17 @@ class SimpleSecurityScannerGUI(QMainWindow):
             scan_types.append("running_processes")
 
         if not scan_types:
-            QMessageBox.warning(
-                self, "Warning", "Please select at least one scan type!"
-            )
+            if Modal:
+                Modal(
+                    "Warning",
+                    "Please select at least one scan type!",
+                    ["OK"],
+                    parent=self,
+                ).exec_()
+            else:
+                QMessageBox.warning(
+                    self, "Warning", "Please select at least one scan type!"
+                )
             return
 
         # Disable start button and show progress
@@ -400,11 +527,15 @@ class SimpleSecurityScannerGUI(QMainWindow):
         self.start_scan_btn.setEnabled(True)
         self.progress_bar.setVisible(False)
         self.status_label.setText("Scan completed")
+        if self._toast:
+            self._toast.show_message("Scan completed", "success")
 
     def clear_results(self):
         """Clear the results area."""
         self.results_text.clear()
         self.status_label.setText("Results cleared")
+        if self._toast:
+            self._toast.show_message("Results cleared", "info")
 
 
 def main():

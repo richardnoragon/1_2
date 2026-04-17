@@ -197,6 +197,8 @@ class PermissionsEditorGUI(StandardWindow):
         button_layout = QHBoxLayout()
 
         select_file_button = QPushButton("Select File")
+        select_file_button.setAccessibleName("Select file to edit permissions")
+        select_file_button.setMinimumHeight(44)
         select_file_button.clicked.connect(self.select_file)
         select_file_button.setStyleSheet(
             """
@@ -216,6 +218,8 @@ class PermissionsEditorGUI(StandardWindow):
         button_layout.addWidget(select_file_button)
 
         select_dir_button = QPushButton("Select Directory")
+        select_dir_button.setAccessibleName("Select directory to edit permissions")
+        select_dir_button.setMinimumHeight(44)
         select_dir_button.clicked.connect(self.select_directory)
         select_dir_button.setStyleSheet(
             """
@@ -249,10 +253,16 @@ class PermissionsEditorGUI(StandardWindow):
         perms_layout = QVBoxLayout(perms_group)
 
         self.read_check = QCheckBox("Read (r) - View file contents or list directory")
+        self.read_check.setAccessibleName("Read permission")
+        self.read_check.setMinimumHeight(44)
         self.write_check = QCheckBox(
             "Write (w) - Modify file contents or directory structure"
         )
+        self.write_check.setAccessibleName("Write permission")
+        self.write_check.setMinimumHeight(44)
         self.execute_check = QCheckBox("Execute (x) - Run file or access directory")
+        self.execute_check.setAccessibleName("Execute permission")
+        self.execute_check.setMinimumHeight(44)
 
         for checkbox in [
             self.read_check,
@@ -271,6 +281,8 @@ class PermissionsEditorGUI(StandardWindow):
         control_layout = QHBoxLayout()
 
         load_button = QPushButton("Load Current Permissions")
+        load_button.setAccessibleName("Load current permissions")
+        load_button.setMinimumHeight(44)
         load_button.clicked.connect(self.load_permissions)
         load_button.setStyleSheet(
             """
@@ -290,6 +302,8 @@ class PermissionsEditorGUI(StandardWindow):
         control_layout.addWidget(load_button)
 
         apply_button = QPushButton("Apply Permissions")
+        apply_button.setAccessibleName("Apply selected permissions")
+        apply_button.setMinimumHeight(44)
         apply_button.clicked.connect(self.apply_permissions)
         apply_button.setStyleSheet(
             """
@@ -309,6 +323,8 @@ class PermissionsEditorGUI(StandardWindow):
         control_layout.addWidget(apply_button)
 
         clear_button = QPushButton("Clear Selection")
+        clear_button.setAccessibleName("Clear file selection")
+        clear_button.setMinimumHeight(44)
         clear_button.clicked.connect(self.clear_selection)
         control_layout.addWidget(clear_button)
 
@@ -319,6 +335,7 @@ class PermissionsEditorGUI(StandardWindow):
         status_layout = QVBoxLayout(status_group)
 
         self.status_list = QListWidget()
+        self.status_list.setAccessibleName("Permissions operation log")
         self.status_list.setMaximumHeight(150)
         status_layout.addWidget(self.status_list)
 

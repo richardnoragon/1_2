@@ -13,7 +13,6 @@ import webbrowser
 from datetime import datetime
 
 try:
-    from src.gui.themes import token
     from PyQt5.QtWidgets import (
         QApplication,
         QCheckBox,
@@ -31,6 +30,8 @@ try:
         QVBoxLayout,
         QWidget,
     )
+
+    from src.gui.themes import ThemeManager, token
 except ImportError:
     print("PyQt5 not available. Please install PyQt5.")
     sys.exit(1)
@@ -61,6 +62,22 @@ except ImportError:
             self.main_layout = QVBoxLayout(self.central_widget)
 
 
+# ---------------------------------------------------------------------------
+# CP: Shared UI components (graceful fallback when unavailable)
+# ---------------------------------------------------------------------------
+try:
+    from src.gui.components.buttons import PrimaryButton, SecondaryButton
+    from src.gui.components.modal import ConfirmationModal, Modal
+    from src.gui.components.toast import ToastNotification
+
+    _CP_AVAILABLE = True
+except ImportError:
+    PrimaryButton = SecondaryButton = None  # type: ignore[assignment,misc]
+    Modal = ConfirmationModal = None  # type: ignore[assignment,misc]
+    ToastNotification = None
+    _CP_AVAILABLE = False
+
+
 class CatalogWindow(StandardWindow):
     """Simplified Catalog Files GUI with essential functionality."""
 
@@ -73,6 +90,11 @@ class CatalogWindow(StandardWindow):
         self.last_catalog_path = ""
         self.init_ui()
         self._setup_menu_callbacks()
+        ThemeManager.add_theme_changed_callback(self._on_theme_changed)
+
+    def _on_theme_changed(self, variant: str) -> None:
+        """Re-apply token-based stylesheets when the active theme variant changes."""
+        pass  # stylesheets applied at init; live re-apply pending TH-4c/4d
 
     def _setup_menu_callbacks(self):
         """Setup tool-specific menu callbacks."""
@@ -141,11 +163,26 @@ class CatalogWindow(StandardWindow):
                 with open(file_path, "w", encoding="utf-8") as f:
                     json.dump(settings, f, indent=2)
 
-                QMessageBox.information(
-                    self, "Success", f"Settings exported to {file_path}"
-                )
+                if ToastNotification:
+                    ToastNotification(parent=self).show_message(
+                        f"Settings exported to {file_path}", "success"
+                    )
+                else:
+                    QMessageBox.information(
+                        self, "Success", f"Settings exported to {file_path}"
+                    )
             except Exception as e:
-                QMessageBox.warning(self, "Error", f"Failed to export settings: {e}")
+                if Modal:
+                    Modal(
+                        "Error",
+                        f"Failed to export settings: {e}",
+                        ["OK"],
+                        parent=self,
+                    ).exec_()
+                else:
+                    QMessageBox.warning(
+                        self, "Error", f"Failed to export settings: {e}"
+                    )
 
     def show_help(self):
         """Show help dialog for File Catalog tool."""
@@ -202,29 +239,42 @@ class CatalogWindow(StandardWindow):
         </ul>
         """
 
-        QMessageBox.information(self, "File Catalog Help", help_text)
+        if Modal:
+            Modal("File Catalog Help", help_text, ["OK"], parent=self).exec_()
+        else:
+            QMessageBox.information(self, "File Catalog Help", help_text)
 
     def show_preferences(self):
         """Show Catalog tool preferences."""
-        QMessageBox.information(
-            self,
-            "Catalog Preferences",
+        _msg = (
             "Catalog tool preferences:\n\n"
             "• Default output formats\n"
             "• Custom HTML templates\n"
             "• File type filters\n"
             "• Catalog metadata options\n\n"
-            "Advanced preferences coming soon!",
+            "Advanced preferences coming soon!"
         )
+        if Modal:
+            Modal("Catalog Preferences", _msg, ["OK"], parent=self).exec_()
+        else:
+            QMessageBox.information(self, "Catalog Preferences", _msg)
 
     def refresh_view(self):
         """Refresh the current directory preview."""
         if self.current_directory:
             self.load_directory_preview()
         else:
-            QMessageBox.information(
-                self, "Refresh", "Select a directory first to refresh."
-            )
+            if Modal:
+                Modal(
+                    "Refresh",
+                    "Select a directory first to refresh.",
+                    ["OK"],
+                    parent=self,
+                ).exec_()
+            else:
+                QMessageBox.information(
+                    self, "Refresh", "Select a directory first to refresh."
+                )
 
     def init_ui(self):
         """Initialize the user interface."""
@@ -254,10 +304,12 @@ class CatalogWindow(StandardWindow):
 
         dir_layout.addWidget(QLabel("Directory to Catalog:"), 0, 0)
         self.directory_edit = QLineEdit()
+        self.directory_edit.setAccessibleName("Directory to catalog")
         self.directory_edit.setPlaceholderText("Select a directory to catalog...")
         dir_layout.addWidget(self.directory_edit, 0, 1)
 
-        self.browse_button = QPushButton("Browse")
+        _SB = SecondaryButton if SecondaryButton else QPushButton
+        self.browse_button = _SB("Browse")
         self.browse_button.clicked.connect(self.browse_directory)
         dir_layout.addWidget(self.browse_button, 0, 2)
 
@@ -269,18 +321,26 @@ class CatalogWindow(StandardWindow):
 
         self.recursive_check = QCheckBox("Include subdirectories")
         self.recursive_check.setChecked(True)
+        self.recursive_check.setAccessibleName("Include subdirectories")
+        self.recursive_check.setMinimumHeight(44)
         options_layout.addWidget(self.recursive_check, 0, 0)
 
         self.show_sizes_check = QCheckBox("Show file sizes")
         self.show_sizes_check.setChecked(True)
+        self.show_sizes_check.setAccessibleName("Show file sizes")
+        self.show_sizes_check.setMinimumHeight(44)
         options_layout.addWidget(self.show_sizes_check, 0, 1)
 
         self.show_dates_check = QCheckBox("Show modification dates")
         self.show_dates_check.setChecked(True)
+        self.show_dates_check.setAccessibleName("Show modification dates")
+        self.show_dates_check.setMinimumHeight(44)
         options_layout.addWidget(self.show_dates_check, 1, 0)
 
         self.show_hidden_check = QCheckBox("Include hidden files")
         self.show_hidden_check.setChecked(False)
+        self.show_hidden_check.setAccessibleName("Include hidden files")
+        self.show_hidden_check.setMinimumHeight(44)
         options_layout.addWidget(self.show_hidden_check, 1, 1)
 
         layout.addWidget(options_group)
@@ -288,30 +348,13 @@ class CatalogWindow(StandardWindow):
         # Create action buttons
         button_layout = QHBoxLayout()
 
-        self.generate_button = QPushButton("Generate Catalog")
+        _PB = PrimaryButton if PrimaryButton else QPushButton
+        self.generate_button = _PB("Generate Catalog")
         self.generate_button.clicked.connect(self.generate_catalog)
-        self.generate_button.setStyleSheet(
-            """
-            QPushButton {
-                background-color: {token('semantic_success')};
-                color: white;
-                border: none;
-                padding: 10px 20px;
-                border-radius: 4px;
-                font-weight: bold;
-                font-size: 14px;
-            }
-            QPushButton:hover {
-                background-color: {token('semantic_success')};
-            }
-            QPushButton:disabled {
-                background-color: {token('text_disabled')};
-            }
-        """
-        )
         button_layout.addWidget(self.generate_button)
 
-        self.open_catalog_button = QPushButton("Open Last Catalog")
+        _SB2 = SecondaryButton if SecondaryButton else QPushButton
+        self.open_catalog_button = _SB2("Open Last Catalog")
         self.open_catalog_button.clicked.connect(self.open_catalog)
         self.open_catalog_button.setEnabled(False)
         button_layout.addWidget(self.open_catalog_button)
@@ -326,10 +369,12 @@ class CatalogWindow(StandardWindow):
         preview_layout.addWidget(self.status_label)
 
         self.file_list = QListWidget()
+        self.file_list.setAccessibleName("File preview list")
         self.file_list.itemClicked.connect(self.show_file_info)
         preview_layout.addWidget(self.file_list)
 
         self.file_info_text = QTextEdit()
+        self.file_info_text.setAccessibleName("File information")
         self.file_info_text.setMaximumHeight(80)
         self.file_info_text.setReadOnly(True)
         preview_layout.addWidget(self.file_info_text)
@@ -359,11 +404,19 @@ class CatalogWindow(StandardWindow):
             self._update_status_after_load(file_count)
 
         except Exception as e:
-            QMessageBox.warning(
-                self,
-                "Error",
-                f"Could not load directory: {e}",
-            )
+            if Modal:
+                Modal(
+                    "Error",
+                    f"Could not load directory: {e}",
+                    ["OK"],
+                    parent=self,
+                ).exec_()
+            else:
+                QMessageBox.warning(
+                    self,
+                    "Error",
+                    f"Could not load directory: {e}",
+                )
             self.status_label.setText("Error loading directory")
 
     def _load_files_preview(self):
@@ -457,13 +510,31 @@ class CatalogWindow(StandardWindow):
     def generate_catalog(self):
         """Generate HTML catalog of the directory."""
         if not self.current_directory:
-            QMessageBox.warning(
-                self, "Warning", "Please select a directory to catalog."
-            )
+            if Modal:
+                Modal(
+                    "Warning",
+                    "Please select a directory to catalog.",
+                    ["OK"],
+                    parent=self,
+                ).exec_()
+            else:
+                QMessageBox.warning(
+                    self, "Warning", "Please select a directory to catalog."
+                )
             return
 
         if not os.path.exists(self.current_directory):
-            QMessageBox.warning(self, "Warning", "Selected directory does not exist.")
+            if Modal:
+                Modal(
+                    "Warning",
+                    "Selected directory does not exist.",
+                    ["OK"],
+                    parent=self,
+                ).exec_()
+            else:
+                QMessageBox.warning(
+                    self, "Warning", "Selected directory does not exist."
+                )
             return
 
         try:
@@ -491,26 +562,45 @@ class CatalogWindow(StandardWindow):
             self.status_label.setText(f"Catalog generated: {catalog_filename}")
 
             # Ask if user wants to open the catalog
-            reply = QMessageBox.question(
-                self,
-                "Catalog Generated",
-                (
+            if ConfirmationModal:
+                dlg = ConfirmationModal(
+                    "Catalog Generated",
                     f"Catalog has been created:\n{catalog_path}\n\n"
-                    "Would you like to open it now?"
-                ),
-                QMessageBox.Yes | QMessageBox.No,
-                QMessageBox.Yes,
-            )
-
-            if reply == QMessageBox.Yes:
-                self.open_catalog()
+                    "Would you like to open it now?",
+                    confirm_text="Open Catalog",
+                    cancel_text="Later",
+                    parent=self,
+                )
+                if dlg.exec_():
+                    self.open_catalog()
+            else:
+                reply = QMessageBox.question(
+                    self,
+                    "Catalog Generated",
+                    (
+                        f"Catalog has been created:\n{catalog_path}\n\n"
+                        "Would you like to open it now?"
+                    ),
+                    QMessageBox.Yes | QMessageBox.No,
+                    QMessageBox.Yes,
+                )
+                if reply == QMessageBox.Yes:
+                    self.open_catalog()
 
         except Exception as e:
-            QMessageBox.warning(
-                self,
-                "Error",
-                f"Failed to generate catalog: {e}",
-            )
+            if Modal:
+                Modal(
+                    "Error",
+                    f"Failed to generate catalog: {e}",
+                    ["OK"],
+                    parent=self,
+                ).exec_()
+            else:
+                QMessageBox.warning(
+                    self,
+                    "Error",
+                    f"Failed to generate catalog: {e}",
+                )
             self.status_label.setText("Catalog generation failed")
 
     def create_html_catalog(self):
@@ -745,13 +835,29 @@ class CatalogWindow(StandardWindow):
             try:
                 webbrowser.open(f"file:///{self.last_catalog_path}")
             except Exception as e:
-                QMessageBox.warning(
-                    self,
-                    "Error",
-                    f"Could not open catalog: {e}",
-                )
+                if Modal:
+                    Modal(
+                        "Error",
+                        f"Could not open catalog: {e}",
+                        ["OK"],
+                        parent=self,
+                    ).exec_()
+                else:
+                    QMessageBox.warning(
+                        self,
+                        "Error",
+                        f"Could not open catalog: {e}",
+                    )
         else:
-            QMessageBox.warning(self, "Error", "No catalog file available to open.")
+            if Modal:
+                Modal(
+                    "Error",
+                    "No catalog file available to open.",
+                    ["OK"],
+                    parent=self,
+                ).exec_()
+            else:
+                QMessageBox.warning(self, "Error", "No catalog file available to open.")
 
 
 def main():

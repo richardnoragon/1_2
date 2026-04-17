@@ -7,32 +7,33 @@ performance including CPU, memory, and process analysis with real-time charts.
 import logging
 import sys
 from datetime import datetime, timedelta
-from typing import Dict, Any, Optional, List
+from typing import Any, Dict, List, Optional
 
 try:
-    from src.gui.themes import token, Typography
+    from PyQt5.QtCore import Qt, QTimer, pyqtSignal
+    from PyQt5.QtGui import QColor, QFont, QPalette
     from PyQt5.QtWidgets import (
-        QWidget,
-        QVBoxLayout,
+        QCheckBox,
+        QComboBox,
+        QFrame,
+        QGridLayout,
+        QGroupBox,
         QHBoxLayout,
-        QTabWidget,
         QLabel,
         QProgressBar,
+        QPushButton,
+        QScrollArea,
+        QSpinBox,
+        QSplitter,
         QTableWidget,
         QTableWidgetItem,
-        QSplitter,
-        QGroupBox,
-        QGridLayout,
-        QPushButton,
-        QCheckBox,
-        QSpinBox,
-        QFrame,
-        QScrollArea,
+        QTabWidget,
         QTextEdit,
-        QComboBox,
+        QVBoxLayout,
+        QWidget,
     )
-    from PyQt5.QtCore import QTimer, Qt, pyqtSignal
-    from PyQt5.QtGui import QFont, QPalette, QColor
+
+    from src.gui.themes import Typography, token
 
     PYQT5_AVAILABLE = True
 except ImportError:
@@ -86,9 +87,7 @@ class PerformanceWidget(QWidget):
         """
         super().__init__(parent)
 
-        self.logger = logging.getLogger(
-            "RFU.DiagnosticsMonitoring.PerformanceWidget"
-        )
+        self.logger = logging.getLogger("RFU.DiagnosticsMonitoring.PerformanceWidget")
 
         # Performance monitor instance
         self.performance_monitor = None
@@ -167,6 +166,8 @@ class PerformanceWidget(QWidget):
 
         # Auto-refresh control
         self.auto_refresh_cb = QCheckBox("Auto Refresh")
+        self.auto_refresh_cb.setAccessibleName("Auto refresh")
+        self.auto_refresh_cb.setMinimumHeight(44)
         self.auto_refresh_cb.setChecked(self.auto_refresh)
         self.auto_refresh_cb.toggled.connect(self.toggle_auto_refresh)
         layout.addWidget(self.auto_refresh_cb)
@@ -174,6 +175,8 @@ class PerformanceWidget(QWidget):
         # Refresh interval
         layout.addWidget(QLabel("Interval (s):"))
         self.interval_spin = QSpinBox()
+        self.interval_spin.setAccessibleName("Refresh interval in seconds")
+        self.interval_spin.setMinimumHeight(44)
         self.interval_spin.setRange(1, 60)
         self.interval_spin.setValue(self.update_interval // 1000)
         self.interval_spin.valueChanged.connect(self.change_update_interval)
@@ -181,6 +184,8 @@ class PerformanceWidget(QWidget):
 
         # Manual refresh button
         self.refresh_btn = QPushButton("Refresh Now")
+        self.refresh_btn.setAccessibleName("Refresh performance data now")
+        self.refresh_btn.setMinimumHeight(44)
         self.refresh_btn.clicked.connect(self.manual_refresh)
         layout.addWidget(self.refresh_btn)
 
@@ -188,11 +193,15 @@ class PerformanceWidget(QWidget):
 
         # Display options
         self.per_core_cb = QCheckBox("Show Per-Core CPU")
+        self.per_core_cb.setAccessibleName("Show per-core CPU usage")
+        self.per_core_cb.setMinimumHeight(44)
         self.per_core_cb.setChecked(self.show_per_core)
         self.per_core_cb.toggled.connect(self.toggle_per_core_display)
         layout.addWidget(self.per_core_cb)
 
         self.processes_cb = QCheckBox("Show Processes")
+        self.processes_cb.setAccessibleName("Show top processes")
+        self.processes_cb.setMinimumHeight(44)
         self.processes_cb.setChecked(self.show_processes)
         self.processes_cb.toggled.connect(self.toggle_process_display)
         layout.addWidget(self.processes_cb)
@@ -210,6 +219,7 @@ class PerformanceWidget(QWidget):
 
         # Tab widget for different views
         self.overview_tabs = QTabWidget()
+        self.overview_tabs.setAccessibleName("Performance overview tabs")
         layout.addWidget(self.overview_tabs)
 
         # CPU tab
@@ -274,6 +284,7 @@ class PerformanceWidget(QWidget):
         cpu_chart_layout = QVBoxLayout(cpu_chart_group)
 
         self.cpu_chart_text = QTextEdit()
+        self.cpu_chart_text.setAccessibleName("CPU usage history chart")
         self.cpu_chart_text.setMaximumHeight(150)
         self.cpu_chart_text.setReadOnly(True)
         cpu_chart_layout.addWidget(self.cpu_chart_text)
@@ -343,6 +354,7 @@ class PerformanceWidget(QWidget):
         memory_chart_layout = QVBoxLayout(memory_chart_group)
 
         self.memory_chart_text = QTextEdit()
+        self.memory_chart_text.setAccessibleName("Memory usage history chart")
         self.memory_chart_text.setMaximumHeight(150)
         self.memory_chart_text.setReadOnly(True)
         memory_chart_layout.addWidget(self.memory_chart_text)
@@ -387,6 +399,7 @@ class PerformanceWidget(QWidget):
         metrics_layout = QVBoxLayout(metrics_group)
 
         self.metrics_text = QTextEdit()
+        self.metrics_text.setAccessibleName("Performance metrics")
         self.metrics_text.setReadOnly(True)
         metrics_layout.addWidget(self.metrics_text)
 
@@ -412,6 +425,7 @@ class PerformanceWidget(QWidget):
         process_controls.addWidget(QLabel("Sort by:"))
 
         self.sort_combo = QComboBox()
+        self.sort_combo.setAccessibleName("Sort processes by")
         self.sort_combo.addItems(["CPU", "Memory"])
         self.sort_combo.currentTextChanged.connect(self.change_process_sort)
         process_controls.addWidget(self.sort_combo)
@@ -421,6 +435,7 @@ class PerformanceWidget(QWidget):
 
         # Process table
         self.process_table = QTableWidget()
+        self.process_table.setAccessibleName("Top processes table")
         self.process_table.setColumnCount(5)
         self.process_table.setHorizontalHeaderLabels(
             ["PID", "Name", "CPU %", "Memory %", "Status"]
@@ -667,9 +682,7 @@ class PerformanceWidget(QWidget):
                 progress.setRange(0, 100)
                 progress.setValue(int(usage))
                 progress.setFormat(f"{usage:.1f}%")
-                self.per_core_layout.addWidget(
-                    progress, i // 4, (i % 4) * 2 + 1
-                )
+                self.per_core_layout.addWidget(progress, i // 4, (i % 4) * 2 + 1)
 
         except Exception as e:
             self.logger.error(f"Error updating per-core display: {e}")
@@ -819,9 +832,7 @@ class PerformanceWidget(QWidget):
                 self.process_table.setItem(row, 1, name_item)
 
                 # CPU %
-                cpu_item = QTableWidgetItem(
-                    f"{process.get('cpu_percent', 0):.1f}%"
-                )
+                cpu_item = QTableWidgetItem(f"{process.get('cpu_percent', 0):.1f}%")
                 self.process_table.setItem(row, 2, cpu_item)
 
                 # Memory %
@@ -868,9 +879,7 @@ class PerformanceWidget(QWidget):
                 self.cpu_history = self.cpu_history[-self.max_history_points :]
 
             if len(self.memory_history) > self.max_history_points:
-                self.memory_history = self.memory_history[
-                    -self.max_history_points :
-                ]
+                self.memory_history = self.memory_history[-self.max_history_points :]
 
         except Exception as e:
             self.logger.error(f"Error storing history data: {e}")
@@ -895,9 +904,7 @@ class PerformanceWidget(QWidget):
             # Update memory chart
             if self.memory_history:
                 memory_text = "Memory Usage History (last 60 points):\n"
-                recent_memory = self.memory_history[
-                    -20:
-                ]  # Show last 20 points
+                recent_memory = self.memory_history[-20:]  # Show last 20 points
 
                 for i, point in enumerate(recent_memory):
                     time_str = point["time"].strftime("%H:%M:%S")

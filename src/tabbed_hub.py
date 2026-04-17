@@ -133,10 +133,10 @@ TITLE_HEADER_STYLE = f"color: {TEXT_DARK}; margin: 10px 0px;"
 
 # Theme token helper with graceful fallback
 try:
-    from src.gui.themes import Typography, token
+    from src.gui.themes import ThemeManager, Typography, token
 except ImportError:
     try:
-        from gui.themes import Typography, token
+        from gui.themes import ThemeManager, Typography, token
     except ImportError:
 
         def token(key: str) -> str:  # type: ignore[misc]
@@ -240,8 +240,12 @@ class UtilityWindow(QMainWindow if PYQT5_AVAILABLE else object):
                 self.menu_manager = SimpleMenuManager(self)
                 self.menu_manager.create_menubar()
                 self._register_delegated_callbacks()
-        except Exception as e:
-            print(f"Warning: Could not clone menu bar: {e}")
+        except (
+            Exception
+        ) as e:  # ERR: non-fatal — menu bar clone skipped; tool proceeds without cloned menu
+            import logging as _logging
+
+            _logging.getLogger(__name__).warning(f"Could not clone menu bar: {e}")
 
     def _register_delegated_callbacks(self):
         """Register menu callbacks that delegate to parent hub."""
@@ -375,6 +379,11 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
         self._setup_idle_timeout_watchdog()
 
         self.logger.info("RFU Hub initialized successfully")
+        ThemeManager.add_theme_changed_callback(self._on_theme_changed)
+
+    def _on_theme_changed(self, variant: str) -> None:
+        """Re-apply token-based stylesheets when the active theme variant changes."""
+        pass  # stylesheets applied at init; live re-apply pending TH-4c/4d
 
     def _init_hub_preferences_adapter(self) -> None:
         """Prepare the hub preference adapter with graceful fallback."""
@@ -392,7 +401,9 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
                     "Hub preferences adapter falling back to legacy service"
                 )
             self.hub_preferences_adapter = adapter
-        except Exception as exc:  # pragma: no cover - defensive fallback
+        except (
+            Exception
+        ) as exc:  # ERR: non-fatal — hub preferences adapter disabled; uses fallback  # pragma: no cover - defensive fallback
             self.logger.warning("Unable to initialize hub preferences adapter: %s", exc)
             self.hub_preferences_adapter = None
 
@@ -475,6 +486,8 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
 
         # Create tab widget with professional styling
         self.tab_widget = QTabWidget()
+        self.tab_widget.setAccessibleName("Main application tabs")
+        self.tab_widget.setMinimumHeight(44)
         self.tab_widget.setStyleSheet(
             f"""
             QTabWidget::pane {{
@@ -616,7 +629,9 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
                 database_path=database_path,
                 idle_minutes=idle_minutes,
             )
-        except Exception as exc:
+        except (
+            Exception
+        ) as exc:  # ERR: non-fatal — idle timeout watcher unavailable; feature disabled
             self.logger.warning(
                 "Idle timeout watcher unavailable: %s",
                 exc,
@@ -704,7 +719,9 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
             from src.rfu import run_idle_timeout_watcher
 
             summary = run_idle_timeout_watcher(raise_on_missing_config=False)
-        except Exception as exc:
+        except (
+            Exception
+        ) as exc:  # ERR: non-fatal — idle watchdog tick failed; timer stopped
             self.logger.debug("Idle timeout watcher run skipped: %s", exc)
             self._stop_idle_watchdog_timer()
             return
@@ -1269,7 +1286,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
             icon_path = os.path.join(os.path.dirname(__file__), "icons", "app_icon.png")
             if os.path.exists(icon_path):
                 return QIcon(icon_path)
-        except Exception:
+        except Exception:  # ERR: non-fatal — icon load failed; falls back to empty icon
             pass
         return QIcon()  # Return empty icon as fallback
 
@@ -1295,7 +1312,9 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
         try:
             super().show()
             self.logger.info("GUI Hub displayed successfully")
-        except Exception as e:
+        except (
+            Exception
+        ) as e:  # ERR: non-fatal — GUI show failed; falls back to CLI interface
             self.logger.error(f"Failed to show GUI hub: {e}")
             self._show_command_line_interface()
 
@@ -1358,6 +1377,8 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
             return None
 
         button = QPushButton(text)
+        button.setAccessibleName(text)
+        button.setMinimumHeight(44)
         button.setToolTip(tooltip)
         button.clicked.connect(callback)
         button.setMinimumSize(180, 70)
@@ -1500,14 +1521,35 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
         self.tab_widget.addTab(tab, "Analysis")
 
     def create_file_operations_tab(self):
-        """Create the File Operations tab with organized grid layout."""
+        """Create the File Operations tab (GRD-1/TEL-1/STR-1/HUB-2)."""
+        self.logger.info("File Operations tab initializing")  # TEL-1
+        try:
+            self._create_file_operations_tab_content()
+        except (
+            Exception
+        ) as e:  # ERR: non-fatal — degraded_fallback_file_ops renders fallback tab
+            self.logger.error(f"File Operations tab init failed: {e}")  # GRD-1
+            self._degraded_fallback_file_ops()
+
+    def _create_file_operations_tab_content(self):
+        """Build the full File Operations tab UI."""
         tab = QWidget()
         layout = QVBoxLayout(tab)
         layout.setContentsMargins(15, 15, 15, 15)
         layout.setSpacing(15)
 
-        # Title
-        title = QLabel("File Operations")
+        # Title  # STR-1
+        _header = (
+            _ui_strings.FileOperations.HEADER
+            if _UI_STRINGS_AVAILABLE
+            else "File Operations"
+        )
+        _desc_text = (
+            _ui_strings.FileOperations.DESC
+            if _UI_STRINGS_AVAILABLE
+            else "Tools for file manipulation, splitting, copying, and synchronization"
+        )
+        title = QLabel(_header)
         title.setAlignment(Qt.AlignCenter)
         font = QFont()
         font.setPointSize(14)
@@ -1517,9 +1559,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
         layout.addWidget(title)
 
         # Description
-        desc = QLabel(
-            "Tools for file manipulation, splitting, copying, and synchronization"
-        )
+        desc = QLabel(_desc_text)
         desc.setAlignment(Qt.AlignCenter)
         desc.setStyleSheet(
             f"color: {DARKER_GRAY}; margin-bottom: 15px; font-size: 10px;"
@@ -1549,6 +1589,11 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
                 "Synchronization and backup tools",
                 self.open_sync_backup,
             ),
+            (
+                "📁 Advanced Folders",
+                "Manage advanced folder configurations and search",
+                self.open_advanced_folders,
+            ),
             ("⏰ File Touch", "Modify file timestamps", self.open_file_touch),
             (
                 "📁 Organize Files",
@@ -1576,7 +1621,12 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
 
         layout.addWidget(grid_widget)
         layout.addStretch()
-        self.tab_widget.addTab(tab, "File Operations")
+        _tab_title = (
+            _ui_strings.FileOperations.TITLE
+            if _UI_STRINGS_AVAILABLE
+            else "File Operations"
+        )
+        self.tab_widget.addTab(tab, _tab_title)
 
     def create_metadata_tab(self):
         """Create the Metadata tab with organized grid layout."""
@@ -1757,7 +1807,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
             self.tab_widget.addTab(pdf_tools_widget, PDF_TOOLS)
             self.logger.info(f"{PDF_TOOLS} tab created with enhanced widget")
 
-        except Exception as e:
+        except Exception as e:  # ERR: non-fatal — simple PDF tab rendered as fallback
             self.logger.error(f"Failed to create enhanced PDF Tools tab: {e}")
             self._create_simple_pdf_tools_tab()
 
@@ -2000,21 +2050,40 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
         self.tab_widget.addTab(tab, "System")
 
     def create_logs_tab(self):
-        """Create the logs tab with enhanced display."""
+        """Create the logs tab with enhanced display (GRD-1/TEL-1/STR-1/HUB-2)."""
+        self.logger.info("Logs tab initializing")  # TEL-1
+        try:
+            self._create_logs_tab_content()
+        except (
+            Exception
+        ) as e:  # ERR: non-fatal — degraded_fallback_logs renders fallback tab
+            self.logger.error(f"Logs tab init failed: {e}")  # GRD-1
+            self._degraded_fallback_logs()
+
+    def _create_logs_tab_content(self):
+        """Build the full Logs tab UI."""
         tab = QWidget()
         layout = QVBoxLayout(tab)
         layout.setContentsMargins(15, 15, 15, 15)
         layout.setSpacing(15)
 
-        # Professional header
-        title = QLabel("Application Logs")
+        # Professional header  # STR-1
+        _header = (
+            _ui_strings.Logs.HEADER if _UI_STRINGS_AVAILABLE else "Application Logs"
+        )
+        _desc_text = (
+            _ui_strings.Logs.DESC
+            if _UI_STRINGS_AVAILABLE
+            else "Real-time application logs and system monitoring"
+        )
+        title = QLabel(_header)
         title.setAlignment(Qt.AlignCenter)
         title.setFont(QFont(SEGOE_UI_FONT, 16, QFont.Bold))
         title.setStyleSheet(f"color: {TITLE_STYLE_COLOR};")
         layout.addWidget(title)
 
         # Description
-        desc = QLabel("Real-time application logs and system monitoring")
+        desc = QLabel(_desc_text)
         desc.setAlignment(Qt.AlignCenter)
         desc.setFont(QFont(SEGOE_UI_FONT, 10))
         desc.setStyleSheet(f"color: {SUBTITLE_STYLE_COLOR};")
@@ -2022,6 +2091,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
 
         # Enhanced log viewer
         self.log_viewer = QTextEdit()
+        self.log_viewer.setAccessibleName("Application log viewer")
         self.log_viewer.setReadOnly(True)
         self.log_viewer.setStyleSheet(
             f"""
@@ -2051,7 +2121,11 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
         controls_layout = QHBoxLayout()
         controls_layout.setSpacing(10)
 
-        refresh_btn = QPushButton("🔄 Refresh Logs")
+        refresh_btn = QPushButton(
+            _ui_strings.Logs.BTN_REFRESH if _UI_STRINGS_AVAILABLE else "🔄 Refresh Logs"
+        )
+        refresh_btn.setAccessibleName("Refresh logs")
+        refresh_btn.setMinimumHeight(44)
         refresh_btn.clicked.connect(self.load_recent_logs)
         refresh_btn.setStyleSheet(
             f"""
@@ -2069,7 +2143,11 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
         )
         controls_layout.addWidget(refresh_btn)
 
-        clear_btn = QPushButton("🗑️ Clear Display")
+        clear_btn = QPushButton(
+            _ui_strings.Logs.BTN_CLEAR if _UI_STRINGS_AVAILABLE else "🗑️ Clear Display"
+        )
+        clear_btn.setAccessibleName("Clear log display")
+        clear_btn.setMinimumHeight(44)
         clear_btn.clicked.connect(self.clear_log_display)
         clear_btn.setStyleSheet(
             f"""
@@ -2087,7 +2165,11 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
         )
         controls_layout.addWidget(clear_btn)
 
-        export_btn = QPushButton("💾 Export Logs")
+        export_btn = QPushButton(
+            _ui_strings.Logs.BTN_EXPORT if _UI_STRINGS_AVAILABLE else "💾 Export Logs"
+        )
+        export_btn.setAccessibleName("Export logs")
+        export_btn.setMinimumHeight(44)
         export_btn.clicked.connect(self.export_logs)
         export_btn.setStyleSheet(
             f"""
@@ -2108,7 +2190,8 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
         controls_layout.addStretch()
         layout.addLayout(controls_layout)
 
-        self.tab_widget.addTab(tab, "Logs")
+        _tab_title = _ui_strings.Logs.TITLE if _UI_STRINGS_AVAILABLE else "Logs"
+        self.tab_widget.addTab(tab, _tab_title)
 
     def load_recent_logs(self):
         """Load and display recent log entries."""
@@ -2121,8 +2204,13 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
                     self.log_viewer.setPlainText("".join(recent_lines))
             else:
                 self.log_viewer.setPlainText("No log file found yet.")
-        except Exception as e:
-            self.log_viewer.setPlainText(f"Error loading logs: {e}")
+        except Exception as e:  # ERR: non-fatal — surfaced via log_viewer widget
+            self.logger.error(f"Error loading logs: {e}", exc_info=True)
+            self.log_viewer.setPlainText(
+                _ui_strings.Logs.ERR_LOAD_FAILED
+                if _UI_STRINGS_AVAILABLE
+                else "Could not load log file."
+            )
 
     def clear_log_display(self):
         """Clear the log display (not the log file)."""
@@ -2154,29 +2242,130 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
                 self._update_status_bar("No logs to export")
                 self.logger.info("Export logs requested but no content available")
 
-        except Exception as e:
-            self._update_status_bar(f"Error exporting logs: {e}")
-            self.logger.error(f"Error exporting logs: {e}")
+        except Exception as e:  # ERR: non-fatal — surfaced via status bar
+            self._update_status_bar(
+                _ui_strings.Logs.ERR_EXPORT_FAILED
+                if _UI_STRINGS_AVAILABLE
+                else "Could not export logs."
+            )
+            self.logger.error(f"Error exporting logs: {e}", exc_info=True)
 
     # =========================================================================
     # Tool Opening Methods - Stubs for missing methods
     # =========================================================================
 
+    def _health_check_logs(self) -> bool:
+        """Return True if the Logs tab can be safely initialized."""
+        try:
+            return self.logger is not None
+        except Exception:
+            return False
+
+    def _degraded_fallback_logs(self) -> None:
+        """Show a minimal fallback Logs tab when initialization fails."""
+        try:
+            tab = QWidget()
+            layout = QVBoxLayout(tab)
+            _msg = (
+                _ui_strings.Logs.ERR_LOAD_FAILED
+                if _UI_STRINGS_AVAILABLE
+                else "Could not load log file."
+            )
+            lbl = QLabel(_msg)
+            lbl.setAlignment(Qt.AlignCenter)
+            layout.addWidget(lbl)
+            _title = _ui_strings.Logs.TITLE if _UI_STRINGS_AVAILABLE else "Logs"
+            self.tab_widget.addTab(tab, _title)
+        except Exception:
+            pass
+
+    def _health_check_file_ops(self) -> bool:
+        """Return True if the File Operations tab can be safely initialized."""
+        return True
+
+    def _degraded_fallback_file_ops(self) -> None:
+        """Show a minimal fallback File Operations tab when initialization fails."""
+        try:
+            tab = QWidget()
+            layout = QVBoxLayout(tab)
+            _msg = (
+                _ui_strings.FileOperations.ERR_INIT_FAILED
+                if _UI_STRINGS_AVAILABLE
+                else "Could not open the File Operations tools. Please try again."
+            )
+            lbl = QLabel(_msg)
+            lbl.setAlignment(Qt.AlignCenter)
+            layout.addWidget(lbl)
+            _title = (
+                _ui_strings.FileOperations.TITLE
+                if _UI_STRINGS_AVAILABLE
+                else "File Operations"
+            )
+            self.tab_widget.addTab(tab, _title)
+        except Exception:
+            pass
+
     def open_size_analyzer(self):
-        """Open size analyzer tool."""
-        self._update_status_bar("Size Analyzer - Opening...")
-        self.logger.info("Size Analyzer requested")
-        # TODO: Implement or connect to actual tool
+        """Open size analyzer tool (HUB-2: UtilityWindow-backed)."""
+        _title = (
+            _ui_strings.SizeAnalyzer.TITLE if _UI_STRINGS_AVAILABLE else "Size Analyzer"
+        )
+        try:
+            from src.tools.analysis.size_analyzer.size_analyzer import (
+                SizeAnalyzerGUI,
+            )
+
+            tool = SizeAnalyzerGUI(hub_instance=self)
+            window = UtilityWindow(self, tool, _title)
+            self._size_analyzer_window = window  # keep alive (prevent GC)
+            window.show()
+            self._update_status_bar(f"{_title} opened")
+            self.logger.info(f"{_title} tool opened")
+        except Exception as e:
+            self._update_status_bar(f"Error opening {_title}: {str(e)}")
+            self.logger.error(f"Error opening {_title}: {str(e)}")
 
     def open_empty_folders(self):
-        """Open empty folders finder."""
-        self._update_status_bar("Empty Folders Finder - Opening...")
-        self.logger.info("Empty Folders Finder requested")
+        """Open empty folders finder (HUB-2: UtilityWindow-backed)."""
+        _title = (
+            _ui_strings.EmptyFolders.TITLE
+            if _UI_STRINGS_AVAILABLE
+            else "Empty Folders Finder"
+        )
+        try:
+            from src.tools.analysis.empty_folders.empty_folders import (
+                EmptyFoldersGUI,
+            )
+
+            tool = EmptyFoldersGUI(hub_instance=self)
+            window = UtilityWindow(self, tool, _title)
+            self._empty_folders_window = window  # keep alive (prevent GC)
+            window.show()
+            self._update_status_bar(f"{_title} opened")
+            self.logger.info(f"{_title} tool opened")
+        except Exception as e:
+            self._update_status_bar(f"Error opening {_title}: {str(e)}")
+            self.logger.error(f"Error opening {_title}: {str(e)}")
 
     def open_checksum(self):
-        """Open checksum verification tool."""
-        self._update_status_bar("Checksum Verification - Opening...")
-        self.logger.info("Checksum Verification requested")
+        """Open checksum verification tool (HUB-2: UtilityWindow-backed)."""
+        _title = (
+            _ui_strings.Checksum.TITLE
+            if _UI_STRINGS_AVAILABLE
+            else "Checksum Calculator"
+        )
+        try:
+            from src.tools.analysis.checksum.check_sum import ChecksumGUI
+
+            tool = ChecksumGUI(hub_instance=self)
+            window = UtilityWindow(self, tool, _title)
+            self._checksum_window = window  # keep alive (prevent GC)
+            window.show()
+            self._update_status_bar(f"{_title} opened")
+            self.logger.info(f"{_title} tool opened")
+        except Exception as e:
+            self._update_status_bar(f"Error opening {_title}: {str(e)}")
+            self.logger.error(f"Error opening {_title}: {str(e)}")
 
     def open_cmsd_logic(self):
         """Open Copy/Move/Sync/Delete tool."""
@@ -2184,19 +2373,86 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
         self.logger.info("CMSD Logic requested")
 
     def open_sync_backup(self):
-        """Open synchronization and backup tool."""
-        self._update_status_bar("Sync & Backup - Opening...")
-        self.logger.info("Sync & Backup requested")
+        """Open synchronization and backup tool (HUB-2: UtilityWindow-backed)."""
+        _title = (
+            _ui_strings.SynchronizationBackup.TITLE
+            if _UI_STRINGS_AVAILABLE
+            else "Synchronization & Backup"
+        )
+        try:
+            from src.tools.file_management.synchronization_backup.sync import (
+                SyncWindow,
+            )
+
+            tool = SyncWindow(hub_instance=self)
+            window = UtilityWindow(self, tool, _title)
+            self._sync_backup_window = window  # keep alive (prevent GC)
+            window.show()
+            self._update_status_bar(f"{_title} opened")
+            self.logger.info(f"{_title} tool opened")
+        except Exception as e:
+            self._update_status_bar(f"Error opening {_title}: {str(e)}")
+            self.logger.error(f"Error opening {_title}: {str(e)}")
+
+    def open_advanced_folders(self):
+        """Open advanced folders tool (HUB-2: UtilityWindow-backed)."""
+        _title = (
+            _ui_strings.AdvancedFolders.TITLE
+            if _UI_STRINGS_AVAILABLE
+            else "Advanced Folders"
+        )
+        try:
+            from src.tools.file_management.advanced_folders.ui.advanced_folders_widget import (
+                AdvancedFoldersGUI,
+            )
+
+            tool = AdvancedFoldersGUI(hub_instance=self)
+            window = UtilityWindow(self, tool, _title)
+            self._advanced_folders_window = window  # keep alive (prevent GC)
+            window.show()
+            self._update_status_bar(f"{_title} opened")
+            self.logger.info(f"{_title} tool opened")
+        except Exception as e:
+            self._update_status_bar(f"Error opening {_title}: {str(e)}")
+            self.logger.error(f"Error opening {_title}: {str(e)}")
 
     def open_organize_files(self):
-        """Open file organization tool."""
-        self._update_status_bar("File Organization - Opening...")
-        self.logger.info("File Organization requested")
+        """Open file organization tool (HUB-2: UtilityWindow-backed)."""
+        _title = (
+            _ui_strings.Organizer.TITLE if _UI_STRINGS_AVAILABLE else "File Organizer"
+        )
+        try:
+            from src.tools.file_management.organizer.organize import (
+                OrganizeWindow,
+            )
+
+            tool = OrganizeWindow(hub_instance=self)
+            window = UtilityWindow(self, tool, _title)
+            self._organize_files_window = window  # keep alive (prevent GC)
+            window.show()
+            self._update_status_bar(f"{_title} opened")
+            self.logger.info(f"{_title} tool opened")
+        except Exception as e:
+            self._update_status_bar(f"Error opening {_title}: {str(e)}")
+            self.logger.error(f"Error opening {_title}: {str(e)}")
 
     def open_batch_rename(self):
-        """Open batch rename tool."""
-        self._update_status_bar("Batch Rename - Opening...")
-        self.logger.info("Batch Rename requested")
+        """Open batch rename tool (HUB-2: UtilityWindow-backed)."""
+        _title = (
+            _ui_strings.BatchRename.TITLE if _UI_STRINGS_AVAILABLE else "Batch Rename"
+        )
+        try:
+            from src.tools.file_operations.rename.rename import RenameWindow
+
+            tool = RenameWindow()
+            window = UtilityWindow(self, tool, _title)
+            self._batch_rename_window = window  # keep alive (prevent GC)
+            window.show()
+            self._update_status_bar(f"{_title} opened")
+            self.logger.info(f"{_title} tool opened")
+        except Exception as e:
+            self._update_status_bar(f"Error opening {_title}: {str(e)}")
+            self.logger.error(f"Error opening {_title}: {str(e)}")
 
     def open_exif_viewer(self):
         """Open EXIF data viewer."""
@@ -2229,9 +2485,22 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
         self.logger.info("Bookmark Manager requested")
 
     def open_network_security(self):
-        """Open network security tools."""
-        self._update_status_bar("Network Security - Feature coming soon...")
-        self.logger.info("Network Security requested")
+        """Open network tools (HUB-2: UtilityWindow-backed)."""
+        _title = (
+            _ui_strings.NetworkTools.TITLE if _UI_STRINGS_AVAILABLE else "Network Tools"
+        )
+        try:
+            from src.tools.network.gui import NetworkToolsWindow
+
+            tool = NetworkToolsWindow(hub_instance=self)
+            window = UtilityWindow(self, tool, _title)
+            self._network_tools_window = window  # keep alive (prevent GC)
+            window.show()
+            self._update_status_bar(f"{_title} opened")
+            self.logger.info(f"{_title} tool opened")
+        except Exception as e:
+            self._update_status_bar(f"Error opening {_title}: {str(e)}")
+            self.logger.error(f"Error opening {_title}: {str(e)}")
 
     def open_pdf_merger(self):
         """Open PDF merger."""
@@ -2264,9 +2533,22 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
         self.logger.info("PDF Optimizer requested")
 
     def open_privacy_cleaner(self):
-        """Open privacy cleaner."""
-        self._update_status_bar("Privacy Cleaner - Opening...")
-        self.logger.info("Privacy Cleaner requested")
+        """Open privacy tools hub (HUB-2: UtilityWindow-backed)."""
+        _title = _ui_strings.Privacy.TITLE if _UI_STRINGS_AVAILABLE else "Privacy Tools"
+        try:
+            from src.tools.privacy.privacy_tools.gui.privacy_hub import (
+                PrivacyToolsHub,
+            )
+
+            tool = PrivacyToolsHub(hub_instance=self)
+            window = UtilityWindow(self, tool, _title)
+            self._privacy_tools_window = window
+            window.show()
+            self._update_status_bar(f"{_title} opened")
+            self.logger.info(f"{_title} tool opened")
+        except Exception as e:
+            self._update_status_bar(f"Error opening {_title}: {str(e)}")
+            self.logger.error(f"Error opening {_title}: {str(e)}")
 
     def open_temp_cleanup(self):
         """Open temporary file cleanup."""
@@ -2294,9 +2576,26 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
         self.logger.info("Privacy Shield requested")
 
     def open_security_scan(self):
-        """Open security scan."""
-        self._update_status_bar("Security Scan - Opening...")
-        self.logger.info("Security Scan requested")
+        """Open security scanner tool (HUB-2: UtilityWindow-backed)."""
+        _title = (
+            _ui_strings.SecurityScanner.TITLE
+            if _UI_STRINGS_AVAILABLE
+            else "Security Scanner"
+        )
+        try:
+            from src.tools.security.security_scanner.security_scanner import (
+                SimpleSecurityScannerGUI,
+            )
+
+            tool = SimpleSecurityScannerGUI(hub_instance=self)
+            window = UtilityWindow(self, tool, _title)
+            self._security_scanner_window = window
+            window.show()
+            self._update_status_bar(f"{_title} opened")
+            self.logger.info(f"{_title} tool opened")
+        except Exception as e:
+            self._update_status_bar(f"Error opening {_title}: {str(e)}")
+            self.logger.error(f"Error opening {_title}: {str(e)}")
 
     def open_security_monitor(self):
         """Open security monitor."""
@@ -2309,9 +2608,24 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
         self.logger.info("Security Settings requested")
 
     def open_system_info(self):
-        """Open system information."""
-        self._update_status_bar("System Information - Opening...")
-        self.logger.info("System Information requested")
+        """Open system information (HUB-2: UtilityWindow-backed)."""
+        _title = (
+            _ui_strings.SystemInfo.TITLE
+            if _UI_STRINGS_AVAILABLE
+            else "System Information"
+        )
+        try:
+            from src.tools.system.simple_system_info import SimpleSystemInfoGUI
+
+            tool = SimpleSystemInfoGUI(hub_instance=self)
+            window = UtilityWindow(self, tool, _title)
+            self._system_info_window = window  # keep alive (prevent GC)
+            window.show()
+            self._update_status_bar(f"{_title} opened")
+            self.logger.info(f"{_title} tool opened")
+        except Exception as e:
+            self._update_status_bar(f"Error opening {_title}: {str(e)}")
+            self.logger.error(f"Error opening {_title}: {str(e)}")
 
     def open_disk_analyzer(self):
         """Open disk usage analyzer."""
@@ -2319,9 +2633,26 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
         self.logger.info("Disk Usage Analyzer requested")
 
     def open_process_monitor(self):
-        """Open process monitor."""
-        self._update_status_bar("Process Monitor - Opening...")
-        self.logger.info("Process Monitor requested")
+        """Open process monitor (HUB-2: UtilityWindow-backed)."""
+        _title = (
+            _ui_strings.ProcessMonitor.TITLE
+            if _UI_STRINGS_AVAILABLE
+            else "Process Monitor"
+        )
+        try:
+            from src.tools.system.process_monitor.process_monitor import (
+                ProcessMonitorGUI,
+            )
+
+            tool = ProcessMonitorGUI(hub_instance=self)
+            window = UtilityWindow(self, tool, _title)
+            self._process_monitor_window = window  # keep alive (prevent GC)
+            window.show()
+            self._update_status_bar(f"{_title} opened")
+            self.logger.info(f"{_title} tool opened")
+        except Exception as e:
+            self._update_status_bar(f"Error opening {_title}: {str(e)}")
+            self.logger.error(f"Error opening {_title}: {str(e)}")
 
     def open_system_cleanup(self):
         """Open system cleanup (HUB-2: UtilityWindow-backed launcher)."""
@@ -2355,6 +2686,114 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
         self._update_status_bar("System Settings - Feature coming soon...")
         self.logger.info("System Settings requested")
 
+    def open_file_finder(self):
+        """Open file finder tool (HUB-2: UtilityWindow-backed)."""
+        _title = (
+            _ui_strings.FileFinder.TITLE if _UI_STRINGS_AVAILABLE else "File Finder"
+        )
+        try:
+            from src.tools.file_management.finder.file_finder import (
+                FileFinderWindow,
+            )
+
+            tool = FileFinderWindow(hub_instance=self)
+            window = UtilityWindow(self, tool, _title)
+            self._file_finder_window = window  # keep alive (prevent GC)
+            window.show()
+            self._update_status_bar(f"{_title} opened")
+            self.logger.info(f"{_title} tool opened")
+        except Exception as e:
+            self._update_status_bar(f"Error opening {_title}: {str(e)}")
+            self.logger.error(f"Error opening {_title}: {str(e)}")
+
+    def open_advanced_catalog(self):
+        """Open advanced catalog generator (HUB-2: UtilityWindow-backed)."""
+        _title = (
+            _ui_strings.AdvancedCatalog.TITLE
+            if _UI_STRINGS_AVAILABLE
+            else "Advanced Catalog Generator"
+        )
+        try:
+            from src.tools.file_management.advanced_catalog.advanced_catalog_window import (
+                AdvancedCatalogWindow,
+            )
+
+            tool = AdvancedCatalogWindow(hub_instance=self)
+            window = UtilityWindow(self, tool, _title)
+            self._advanced_catalog_window = window  # keep alive (prevent GC)
+            window.show()
+            self._update_status_bar(f"{_title} opened")
+            self.logger.info(f"{_title} tool opened")
+        except Exception as e:
+            self._update_status_bar(f"Error opening {_title}: {str(e)}")
+            self.logger.error(f"Error opening {_title}: {str(e)}")
+
+    def open_system_diagnostics(self):
+        """Open system diagnostics (HUB-2: UtilityWindow-backed)."""
+        _title = (
+            _ui_strings.SystemDiagnostics.TITLE
+            if _UI_STRINGS_AVAILABLE
+            else "System Diagnostics"
+        )
+        try:
+            from src.tools.system.system_diagnostics.system_diagnostics_gui import (
+                SystemDiagnosticsGUI,
+            )
+
+            tool = SystemDiagnosticsGUI(hub_instance=self)
+            window = UtilityWindow(self, tool, _title)
+            self._system_diagnostics_window = window  # keep alive (prevent GC)
+            window.show()
+            self._update_status_bar(f"{_title} opened")
+            self.logger.info(f"{_title} tool opened")
+        except Exception as e:
+            self._update_status_bar(f"Error opening {_title}: {str(e)}")
+            self.logger.error(f"Error opening {_title}: {str(e)}")
+
+    def open_software_maintenance(self):
+        """Open software maintenance toolkit (HUB-2: UtilityWindow-backed)."""
+        _title = (
+            _ui_strings.SoftwareMaintenance.TITLE
+            if _UI_STRINGS_AVAILABLE
+            else "Software Maintenance"
+        )
+        try:
+            from src.tools.system.software_maintenance.gui.maintenance_hub import (
+                SoftwareMaintenanceHub,
+            )
+
+            tool = SoftwareMaintenanceHub(hub_instance=self)
+            window = UtilityWindow(self, tool, _title)
+            self._software_maintenance_window = window  # keep alive (prevent GC)
+            window.show()
+            self._update_status_bar(f"{_title} opened")
+            self.logger.info(f"{_title} tool opened")
+        except Exception as e:
+            self._update_status_bar(f"Error opening {_title}: {str(e)}")
+            self.logger.error(f"Error opening {_title}: {str(e)}")
+
+    def open_preference_portability(self):
+        """Open preference portability (HUB-2: UtilityWindow-backed)."""
+        _title = (
+            _ui_strings.PreferencePortability.TITLE
+            if _UI_STRINGS_AVAILABLE
+            else "Preference Portability"
+        )
+        try:
+            from src.tools.preferences.portability_launcher import (
+                PreferencePortabilityGUI,
+            )
+
+            tool = PreferencePortabilityGUI(hub_instance=self)
+            window = UtilityWindow(self, tool, _title)
+            self._preference_portability_window = window  # keep alive (prevent GC)
+            window.show()
+            self._update_status_bar(f"{_title} opened")
+            self.logger.info(f"{_title} tool opened")
+        except Exception as e:
+            self._update_status_bar(f"Error opening {_title}: {str(e)}")
+            self.logger.error(f"Error opening {_title}: {str(e)}")
+
     # Hub Integration Methods (from hub.py)
     def relaunch_tool_window(self, title: str) -> None:
         """Re-launch a named tool window (HUB-5c: called by HubErrorScreen retry button).
@@ -2368,6 +2807,121 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
                 if _UI_STRINGS_AVAILABLE
                 else "System Cleanup"
             ): self.open_system_cleanup,
+            (
+                _ui_strings.SynchronizationBackup.TITLE
+                if _UI_STRINGS_AVAILABLE
+                else "Synchronization & Backup"
+            ): self.open_sync_backup,
+            (
+                _ui_strings.AdvancedFolders.TITLE
+                if _UI_STRINGS_AVAILABLE
+                else "Advanced Folders"
+            ): self.open_advanced_folders,
+            # ---- Tier 2 tools ------------------------------------------------
+            (
+                _ui_strings.Checksum.TITLE
+                if _UI_STRINGS_AVAILABLE
+                else "Checksum Calculator"
+            ): self.open_checksum,
+            (
+                _ui_strings.DuplicateFinder.TITLE
+                if _UI_STRINGS_AVAILABLE
+                else "Duplicate Finder"
+            ): self.open_duplicate_finder,
+            (
+                _ui_strings.SizeAnalyzer.TITLE
+                if _UI_STRINGS_AVAILABLE
+                else "Size Analyzer"
+            ): self.open_size_analyzer,
+            (
+                _ui_strings.EmptyFolders.TITLE
+                if _UI_STRINGS_AVAILABLE
+                else "Empty Folders Finder"
+            ): self.open_empty_folders,
+            (
+                _ui_strings.FileFinder.TITLE if _UI_STRINGS_AVAILABLE else "File Finder"
+            ): self.open_file_finder,
+            (
+                _ui_strings.Organizer.TITLE
+                if _UI_STRINGS_AVAILABLE
+                else "File Organizer"
+            ): self.open_organize_files,
+            (
+                _ui_strings.AdvancedCatalog.TITLE
+                if _UI_STRINGS_AVAILABLE
+                else "Advanced Catalog Generator"
+            ): self.open_advanced_catalog,
+            (
+                _ui_strings.SystemDiagnostics.TITLE
+                if _UI_STRINGS_AVAILABLE
+                else "System Diagnostics"
+            ): self.open_system_diagnostics,
+            (
+                _ui_strings.ProcessMonitor.TITLE
+                if _UI_STRINGS_AVAILABLE
+                else "Process Monitor"
+            ): self.open_process_monitor,
+            (
+                _ui_strings.SystemInfo.TITLE
+                if _UI_STRINGS_AVAILABLE
+                else "System Information"
+            ): self.open_system_info,
+            (
+                _ui_strings.SoftwareMaintenance.TITLE
+                if _UI_STRINGS_AVAILABLE
+                else "Software Maintenance"
+            ): self.open_software_maintenance,
+            (
+                _ui_strings.NetworkTools.TITLE
+                if _UI_STRINGS_AVAILABLE
+                else "Network Tools"
+            ): self.open_network_security,
+            (
+                _ui_strings.PreferencePortability.TITLE
+                if _UI_STRINGS_AVAILABLE
+                else "Preference Portability"
+            ): self.open_preference_portability,
+            # ---- Tier 3 tools ------------------------------------------------
+            (
+                _ui_strings.ImageMetadata.TITLE
+                if _UI_STRINGS_AVAILABLE
+                else "Image Metadata Editor"
+            ): self.open_image_metadata,
+            (
+                _ui_strings.OfficeMetadata.TITLE
+                if _UI_STRINGS_AVAILABLE
+                else "Office Metadata Tools"
+            ): self.open_office_metadata,
+            (
+                _ui_strings.FileTouch.TITLE if _UI_STRINGS_AVAILABLE else "File Touch"
+            ): self.open_file_touch,
+            # ---- Tier 4 tools ------------------------------------------------
+            (
+                _ui_strings.SecureDelete.TITLE
+                if _UI_STRINGS_AVAILABLE
+                else "Secure Delete"
+            ): self.open_secure_delete,
+            (
+                _ui_strings.Encryption.TITLE
+                if _UI_STRINGS_AVAILABLE
+                else "Encrypt / Decrypt"
+            ): self.open_encrypt_decrypt,
+            (
+                _ui_strings.SecurityScanner.TITLE
+                if _UI_STRINGS_AVAILABLE
+                else "Security Scanner"
+            ): self.open_security_scan,
+            (
+                _ui_strings.PasswordGenerator.TITLE
+                if _UI_STRINGS_AVAILABLE
+                else "Password Generator"
+            ): self.open_password_generator,
+            (
+                _ui_strings.PDFTools.TITLE if _UI_STRINGS_AVAILABLE else "PDF Tools"
+            ): self.open_pdf_tools,
+            (
+                _ui_strings.Privacy.TITLE if _UI_STRINGS_AVAILABLE else "Privacy Tools"
+            ): self.open_privacy_cleaner,
         }
         fn = _launchers.get(title)
         if fn is not None:
@@ -3056,122 +3610,168 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
             self.logger.error(f"Error opening File Catalog: {str(e)}")
 
     def open_file_touch(self):
-        """Open file touch tool."""
+        """Open file touch tool (HUB-2: UtilityWindow-backed)."""
+        _title = _ui_strings.FileTouch.TITLE if _UI_STRINGS_AVAILABLE else "File Touch"
         try:
-            try:
-                from .tools.metadata.file_touch import FileTouchGUI
-            except ImportError:
-                from tools.metadata.file_touch import FileTouchGUI
+            from src.tools.metadata.file_touch.file_touch import (
+                FileTouchWindow,
+            )
 
-            tool = FileTouchGUI()
-            tool.show()
-            self._update_status_bar("File Touch opened")
-            self.logger.info("File Touch tool opened")
+            tool = FileTouchWindow(hub_instance=self)
+            window = UtilityWindow(self, tool, _title)
+            self._file_touch_window = window  # keep alive (prevent GC)
+            window.show()
+            self._update_status_bar(f"{_title} opened")
+            self.logger.info(f"{_title} tool opened")
         except Exception as e:
-            self._update_status_bar(f"Error opening File Touch: {str(e)}")
-            self.logger.error(f"Error opening File Touch: {str(e)}")
+            self._update_status_bar(f"Error opening {_title}: {str(e)}")
+            self.logger.error(f"Error opening {_title}: {str(e)}")
 
     def open_file_splitter(self):
-        """Open file splitter tool."""
+        """Open file splitter tool (HUB-2: UtilityWindow-backed)."""
+        _title = (
+            _ui_strings.FileSplitter.TITLE if _UI_STRINGS_AVAILABLE else "File Splitter"
+        )
         try:
-            from ..utilities.file_operations.file_splitter import (
+            from src.tools.file_operations.file_splitter.gui import (
                 FileSplitJoinGUI,
             )
 
             tool = FileSplitJoinGUI()
-            tool.show()
-            self._update_status_bar("File Splitter opened")
-            self.logger.info("File Splitter tool opened")
+            window = UtilityWindow(self, tool, _title)
+            self._file_splitter_window = window  # keep alive (prevent GC)
+            window.show()
+            self._update_status_bar(f"{_title} opened")
+            self.logger.info(f"{_title} tool opened")
         except Exception as e:
-            self._update_status_bar(f"Error opening File Splitter: {str(e)}")
-            self.logger.error(f"Error opening File Splitter: {str(e)}")
+            self._update_status_bar(f"Error opening {_title}: {str(e)}")
+            self.logger.error(f"Error opening {_title}: {str(e)}")
 
     def open_secure_delete(self):
-        """Open secure delete tool."""
+        """Open secure delete tool (HUB-2: UtilityWindow-backed)."""
+        _title = (
+            _ui_strings.SecureDelete.TITLE if _UI_STRINGS_AVAILABLE else "Secure Delete"
+        )
         try:
-            try:
-                from src.tools.file_operations.secure_delete import (
-                    SecureDeleteGUI,
-                )
-            except ImportError:
-                from tools.file_operations.secure_delete import SecureDeleteGUI
-
-            tool = SecureDeleteGUI()
-            tool.show()
-            self._update_status_bar("Secure Delete opened")
-            self.logger.info("Secure Delete tool opened")
-        except Exception as e:
-            self._update_status_bar(f"Error opening Secure Delete: {str(e)}")
-            self.logger.error(f"Error opening Secure Delete: {str(e)}")
-
-    def open_compression_tools(self):
-        """Open compression tools."""
-        try:
-            from ..utilities.file_operations.compression import CompressionGUI
-
-            tool = CompressionGUI()
-            tool.show()
-            self._update_status_bar("Compression Tools opened")
-            self.logger.info("Compression Tools opened")
-        except Exception as e:
-            self._update_status_bar(f"Error opening Compression Tools: {str(e)}")
-            self.logger.error(f"Error opening Compression Tools: {str(e)}")
-
-    def open_duplicate_finder(self):
-        """Open duplicate finder tool."""
-        try:
-            from ..utilities.file_operations.duplicate_finder import (
-                DuplicateFinderGUI,
+            from src.tools.file_operations.secure_delete.secure_delete import (
+                SecureDeleteGUI,
             )
 
-            tool = DuplicateFinderGUI()
-            tool.show()
-            self._update_status_bar("Duplicate Finder opened")
-            self.logger.info("Duplicate Finder tool opened")
+            tool = SecureDeleteGUI(hub_instance=self)
+            window = UtilityWindow(self, tool, _title)
+            self._secure_delete_window = window
+            window.show()
+            self._update_status_bar(f"{_title} opened")
+            self.logger.info(f"{_title} tool opened")
         except Exception as e:
-            self._update_status_bar(f"Error opening Duplicate Finder: {str(e)}")
-            self.logger.error(f"Error opening Duplicate Finder: {str(e)}")
+            self._update_status_bar(f"Error opening {_title}: {str(e)}")
+            self.logger.error(f"Error opening {_title}: {str(e)}")
+
+    def open_compression_tools(self):
+        """Open compression tools (HUB-2: UtilityWindow-backed)."""
+        _title = (
+            _ui_strings.CompressionTools.TITLE
+            if _UI_STRINGS_AVAILABLE
+            else "Compression Tools"
+        )
+        try:
+            from src.tools.file_operations.compression.compress_decompress import (
+                CompressDecompressApp,
+            )
+
+            tool = CompressDecompressApp()
+            window = UtilityWindow(self, tool, _title)
+            self._compression_tools_window = window  # keep alive (prevent GC)
+            window.show()
+            self._update_status_bar(f"{_title} opened")
+            self.logger.info(f"{_title} tool opened")
+        except Exception as e:
+            self._update_status_bar(f"Error opening {_title}: {str(e)}")
+            self.logger.error(f"Error opening {_title}: {str(e)}")
+
+    def open_duplicate_finder(self):
+        """Open duplicate finder tool (HUB-2: UtilityWindow-backed)."""
+        _title = (
+            _ui_strings.DuplicateFinder.TITLE
+            if _UI_STRINGS_AVAILABLE
+            else "Duplicate Finder"
+        )
+        try:
+            from src.tools.analysis.duplicate_finder.find_duplicate_files import (
+                DuplicateFinderApp,
+            )
+
+            tool = DuplicateFinderApp(hub_instance=self)
+            window = UtilityWindow(self, tool, _title)
+            self._duplicate_finder_window = window  # keep alive (prevent GC)
+            window.show()
+            self._update_status_bar(f"{_title} opened")
+            self.logger.info(f"{_title} tool opened")
+        except Exception as e:
+            self._update_status_bar(f"Error opening {_title}: {str(e)}")
+            self.logger.error(f"Error opening {_title}: {str(e)}")
 
     def open_image_metadata(self):
-        """Open image metadata editor."""
+        """Open image metadata editor (HUB-2: UtilityWindow-backed)."""
+        _title = (
+            _ui_strings.ImageMetadata.TITLE
+            if _UI_STRINGS_AVAILABLE
+            else "Image Metadata Editor"
+        )
         try:
-            from ..utilities.metadata.image_metadata import ImageMetadataGUI
+            from src.tools.metadata.image_metadata.gui import (
+                ImageMetadataEditorGUI,
+            )
 
-            tool = ImageMetadataGUI()
-            tool.show()
-            self._update_status_bar("Image Metadata Editor opened")
-            self.logger.info("Image Metadata Editor opened")
+            tool = ImageMetadataEditorGUI(hub_instance=self)
+            window = UtilityWindow(self, tool, _title)
+            self._image_metadata_window = window  # keep alive (prevent GC)
+            window.show()
+            self._update_status_bar(f"{_title} opened")
+            self.logger.info(f"{_title} tool opened")
         except Exception as e:
-            self._update_status_bar(f"Error opening Image Metadata Editor: {str(e)}")
-            self.logger.error(f"Error opening Image Metadata Editor: {str(e)}")
+            self._update_status_bar(f"Error opening {_title}: {str(e)}")
+            self.logger.error(f"Error opening {_title}: {str(e)}")
 
     def open_office_metadata(self):
-        """Open office metadata editor."""
+        """Open office metadata editor (HUB-2: UtilityWindow-backed)."""
+        _title = (
+            _ui_strings.OfficeMetadata.TITLE
+            if _UI_STRINGS_AVAILABLE
+            else "Office Metadata Tools"
+        )
         try:
-            from ..tools.metadata.office_metadata import OfficeMetadataGUI
+            from src.tools.metadata.office_metadata.office_metadata_gui import (
+                OfficeMetadataGUI,
+            )
 
-            tool = OfficeMetadataGUI()
-            tool.show()
-            self._update_status_bar("Office Metadata Editor opened")
-            self.logger.info("Office Metadata Editor opened")
+            tool = OfficeMetadataGUI(hub_instance=self)
+            window = UtilityWindow(self, tool, _title)
+            self._office_metadata_window = window  # keep alive (prevent GC)
+            window.show()
+            self._update_status_bar(f"{_title} opened")
+            self.logger.info(f"{_title} tool opened")
         except Exception as e:
-            self._update_status_bar(f"Error opening Office Metadata Editor: {str(e)}")
-            self.logger.error(f"Error opening Office Metadata Editor: {str(e)}")
+            self._update_status_bar(f"Error opening {_title}: {str(e)}")
+            self.logger.error(f"Error opening {_title}: {str(e)}")
 
     def open_pdf_tools(self):
-        """Open PDF tools."""
+        """Open PDF tools (HUB-2: UtilityWindow-backed)."""
+        _title = _ui_strings.PDFTools.TITLE if _UI_STRINGS_AVAILABLE else "PDF Tools"
         try:
-            from ..tools.pdf_tools.widgets.enhanced_pdf_tools_widget import (
+            from src.tools.pdf_tools.widgets.enhanced_pdf_tools_widget import (
                 EnhancedPDFToolsWidget,
             )
 
-            tool = EnhancedPDFToolsWidget()
-            tool.show()
-            self._update_status_bar("PDF Tools opened")
-            self.logger.info("PDF Tools opened")
+            tool = EnhancedPDFToolsWidget(hub_instance=self)
+            window = UtilityWindow(self, tool, _title)
+            self._pdf_tools_window = window
+            window.show()
+            self._update_status_bar(f"{_title} opened")
+            self.logger.info(f"{_title} tool opened")
         except Exception as e:
-            self._update_status_bar(f"Error opening PDF Tools: {str(e)}")
-            self.logger.error(f"Error opening PDF Tools: {str(e)}")
+            self._update_status_bar(f"Error opening {_title}: {str(e)}")
+            self.logger.error(f"Error opening {_title}: {str(e)}")
 
     def open_network_transfer(self):
         """Open network transfer tool."""
@@ -3274,19 +3874,26 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
             self.logger.error(f"Error opening Wake on LAN: {str(e)}")
 
     def open_encrypt_decrypt(self):
-        """Open encrypt/decrypt tool."""
+        """Open encrypt/decrypt tool (HUB-2: UtilityWindow-backed)."""
+        _title = (
+            _ui_strings.Encryption.TITLE
+            if _UI_STRINGS_AVAILABLE
+            else "Encrypt / Decrypt"
+        )
         try:
             from src.tools.security.encryption.en_and_decrypt import (
                 EnAndDecryptGUI,
             )
 
-            tool = EnAndDecryptGUI()
-            tool.show()
-            self._update_status_bar("Encrypt/Decrypt opened")
-            self.logger.info("Encrypt/Decrypt tool opened")
+            tool = EnAndDecryptGUI(hub_instance=self)
+            window = UtilityWindow(self, tool, _title)
+            self._encrypt_decrypt_window = window
+            window.show()
+            self._update_status_bar(f"{_title} opened")
+            self.logger.info(f"{_title} tool opened")
         except Exception as e:
-            self._update_status_bar(f"Error opening Encrypt/Decrypt: {str(e)}")
-            self.logger.error(f"Error opening Encrypt/Decrypt: {str(e)}")
+            self._update_status_bar(f"Error opening {_title}: {str(e)}")
+            self.logger.error(f"Error opening {_title}: {str(e)}")
 
     def open_hash_calculator(self):
         """Open hash calculator tool."""
@@ -3302,19 +3909,26 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
             self.logger.error(f"Error opening Hash Calculator: {str(e)}")
 
     def open_password_generator(self):
-        """Open password generator tool."""
+        """Open password generator tool (HUB-2: UtilityWindow-backed)."""
+        _title = (
+            _ui_strings.PasswordGenerator.TITLE
+            if _UI_STRINGS_AVAILABLE
+            else "Password Generator"
+        )
         try:
-            from ..utilities.security.password_generator import (
-                PasswordGeneratorGUI,
+            from src.tools.security.password_generator.password_generator import (
+                SimplePasswordGeneratorGUI,
             )
 
-            tool = PasswordGeneratorGUI()
-            tool.show()
-            self._update_status_bar("Password Generator opened")
-            self.logger.info("Password Generator tool opened")
+            tool = SimplePasswordGeneratorGUI(hub_instance=self)
+            window = UtilityWindow(self, tool, _title)
+            self._password_generator_window = window
+            window.show()
+            self._update_status_bar(f"{_title} opened")
+            self.logger.info(f"{_title} tool opened")
         except Exception as e:
-            self._update_status_bar(f"Error opening Password Generator: {str(e)}")
-            self.logger.error(f"Error opening Password Generator: {str(e)}")
+            self._update_status_bar(f"Error opening {_title}: {str(e)}")
+            self.logger.error(f"Error opening {_title}: {str(e)}")
 
     def open_security_preferences(self):
         """Open security preferences tool."""

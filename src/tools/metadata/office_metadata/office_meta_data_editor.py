@@ -11,7 +11,6 @@ import sys
 from datetime import datetime
 
 try:
-    from src.gui.themes import token
     from PyQt5.QtCore import Qt, QThread, pyqtSignal
     from PyQt5.QtWidgets import (
         QApplication,
@@ -34,6 +33,8 @@ try:
         QVBoxLayout,
         QWidget,
     )
+
+    from src.gui.themes import token
 except ImportError:
     print("PyQt5 not available. Please install PyQt5.")
     sys.exit(1)
@@ -86,19 +87,13 @@ except ImportError:
                 )
                 return header
 
-            def get_file_path(
-                self, title="Select File", file_filter="All Files (*)"
-            ):
-                return QFileDialog.getOpenFileName(
-                    self, title, "", file_filter
-                )[0]
+            def get_file_path(self, title="Select File", file_filter="All Files (*)"):
+                return QFileDialog.getOpenFileName(self, title, "", file_filter)[0]
 
             def get_save_file_path(
                 self, title="Save File", file_filter="All Files (*)"
             ):
-                return QFileDialog.getSaveFileName(
-                    self, title, "", file_filter
-                )[0]
+                return QFileDialog.getSaveFileName(self, title, "", file_filter)[0]
 
             def get_directory_path(self, title="Select Directory"):
                 return QFileDialog.getExistingDirectory(self, title)
@@ -166,12 +161,8 @@ class OfficeMetadataWorker(QThread):
                 "filename": os.path.basename(file_path),
                 "filepath": file_path,
                 "size": stat_info.st_size,
-                "modified": datetime.fromtimestamp(
-                    stat_info.st_mtime
-                ).isoformat(),
-                "created": datetime.fromtimestamp(
-                    stat_info.st_ctime
-                ).isoformat(),
+                "modified": datetime.fromtimestamp(stat_info.st_mtime).isoformat(),
+                "created": datetime.fromtimestamp(stat_info.st_ctime).isoformat(),
                 "extension": os.path.splitext(file_path)[1].lower(),
             }
 
@@ -224,18 +215,12 @@ class OfficeMetadataWorker(QThread):
                         "title": root.find(".//dc:title", namespaces),
                         "creator": root.find(".//dc:creator", namespaces),
                         "subject": root.find(".//dc:subject", namespaces),
-                        "description": root.find(
-                            ".//dc:description", namespaces
-                        ),
+                        "description": root.find(".//dc:description", namespaces),
                         "keywords": root.find(".//cp:keywords", namespaces),
                         "category": root.find(".//cp:category", namespaces),
                         "created": root.find(".//dcterms:created", namespaces),
-                        "modified": root.find(
-                            ".//dcterms:modified", namespaces
-                        ),
-                        "lastModifiedBy": root.find(
-                            ".//cp:lastModifiedBy", namespaces
-                        ),
+                        "modified": root.find(".//dcterms:modified", namespaces),
+                        "lastModifiedBy": root.find(".//cp:lastModifiedBy", namespaces),
                         "revision": root.find(".//cp:revision", namespaces),
                     }
 
@@ -289,9 +274,7 @@ class OfficeMetadataWorker(QThread):
                         name = prop.get("name")
                         value_elem = prop.find(".//*")
                         if name and value_elem is not None:
-                            metadata["custom_properties"][name] = (
-                                value_elem.text or ""
-                            )
+                            metadata["custom_properties"][name] = value_elem.text or ""
 
                 except Exception:
                     # Custom properties file might not exist
@@ -419,9 +402,7 @@ class OfficeMetaDataEditorGUI(StandardWindow):
 
     def __init__(self):
         super().__init__()
-        self.setWindowTitle(
-            "Office Metadata Editor - Richard's File Utilities"
-        )
+        self.setWindowTitle("Office Metadata Editor - Richard's File Utilities")
         self.worker = None
         self.selected_files = []
         self.current_metadata = {}
@@ -441,9 +422,7 @@ class OfficeMetaDataEditorGUI(StandardWindow):
             self.menu_manager.register_callback(
                 "open_file", self.load_metadata_settings
             )
-            self.menu_manager.register_callback(
-                "export_data", self.export_metadata
-            )
+            self.menu_manager.register_callback("export_data", self.export_metadata)
             self.menu_manager.register_callback(
                 "import_data", self.import_metadata_settings
             )
@@ -455,9 +434,7 @@ class OfficeMetaDataEditorGUI(StandardWindow):
             self.menu_manager.register_callback("cut", self.cut_text)
             self.menu_manager.register_callback("copy", self.copy_text)
             self.menu_manager.register_callback("paste", self.paste_text)
-            self.menu_manager.register_callback(
-                "select_all", self.select_all_text
-            )
+            self.menu_manager.register_callback("select_all", self.select_all_text)
             self.menu_manager.register_callback("find", self.find_metadata)
 
             # View menu callbacks
@@ -477,9 +454,7 @@ class OfficeMetaDataEditorGUI(StandardWindow):
             )
 
             # Help menu callbacks
-            self.menu_manager.register_callback(
-                "help_metadata", self.show_help
-            )
+            self.menu_manager.register_callback("help_metadata", self.show_help)
 
     def init_ui(self):
         """Initialize the user interface."""
@@ -507,33 +482,42 @@ class OfficeMetaDataEditorGUI(StandardWindow):
         # File input
         selection_layout.addWidget(QLabel("Files:"), 0, 0)
         self.files_edit = QLineEdit()
+        self.files_edit.setAccessibleName("Document files path")
         self.files_edit.setPlaceholderText("Select office documents...")
         self.files_edit.setReadOnly(True)
         selection_layout.addWidget(self.files_edit, 0, 1)
 
         # Browse buttons
         self.browse_files_button = QPushButton("Browse Documents")
+        self.browse_files_button.setAccessibleName("Browse for documents")
+        self.browse_files_button.setMinimumHeight(44)
         self.browse_files_button.clicked.connect(self.browse_files)
         selection_layout.addWidget(self.browse_files_button, 0, 2)
 
         self.browse_folder_button = QPushButton("Browse Folder")
+        self.browse_folder_button.setAccessibleName("Browse for folder")
+        self.browse_folder_button.setMinimumHeight(44)
         self.browse_folder_button.clicked.connect(self.browse_folder)
         selection_layout.addWidget(self.browse_folder_button, 0, 3)
 
         # Options
         self.recursive_check = QCheckBox("Include subdirectories")
         self.recursive_check.setChecked(False)
+        self.recursive_check.setAccessibleName("Include subdirectories")
+        self.recursive_check.setMinimumHeight(44)
         selection_layout.addWidget(self.recursive_check, 1, 0, 1, 2)
 
         # Supported formats info
-        formats_label = QLabel(
-            "Supported: DOCX, XLSX, PPTX, DOC, XLS, PPT, PDF"
+        formats_label = QLabel("Supported: DOCX, XLSX, PPTX, DOC, XLS, PPT, PDF")
+        formats_label.setStyleSheet(
+            f"color: {token('text_secondary')}; font-size: 10px;"
         )
-        formats_label.setStyleSheet(f"color: {token('text_secondary')}; font-size: 10px;")
         selection_layout.addWidget(formats_label, 1, 2, 1, 2)
 
         # Action buttons
         self.read_button = QPushButton("Read Metadata")
+        self.read_button.setAccessibleName("Read metadata")
+        self.read_button.setMinimumHeight(44)
         self.read_button.clicked.connect(self.read_metadata)
         self.read_button.setStyleSheet(
             """
@@ -553,6 +537,8 @@ class OfficeMetaDataEditorGUI(StandardWindow):
         selection_layout.addWidget(self.read_button, 2, 0, 1, 2)
 
         self.edit_button = QPushButton("Edit Metadata")
+        self.edit_button.setAccessibleName("Edit metadata")
+        self.edit_button.setMinimumHeight(44)
         self.edit_button.clicked.connect(self.edit_metadata)
         self.edit_button.setStyleSheet(
             """
@@ -592,11 +578,15 @@ class OfficeMetaDataEditorGUI(StandardWindow):
         actions_layout = QVBoxLayout(actions_group)
 
         self.export_button = QPushButton("Export Metadata")
+        self.export_button.setAccessibleName("Export metadata")
+        self.export_button.setMinimumHeight(44)
         self.export_button.clicked.connect(self.export_metadata)
         self.export_button.setEnabled(False)
         actions_layout.addWidget(self.export_button)
 
         self.clear_button = QPushButton("Clear Results")
+        self.clear_button.setAccessibleName("Clear results")
+        self.clear_button.setMinimumHeight(44)
         self.clear_button.clicked.connect(self.clear_results)
         actions_layout.addWidget(self.clear_button)
 
@@ -610,6 +600,7 @@ class OfficeMetaDataEditorGUI(StandardWindow):
 
         # Metadata tabs
         self.metadata_tabs = QTabWidget()
+        self.metadata_tabs.setAccessibleName("Metadata tabs")
 
         # File list tab
         self.file_list_tab = QWidget()
@@ -617,9 +608,8 @@ class OfficeMetaDataEditorGUI(StandardWindow):
 
         file_list_layout.addWidget(QLabel("Processed Documents:"))
         self.file_tree = QTreeWidget()
-        self.file_tree.setHeaderLabels(
-            ["Filename", "Type", "Size", "Modified"]
-        )
+        self.file_tree.setAccessibleName("Document files list")
+        self.file_tree.setHeaderLabels(["Filename", "Type", "Size", "Modified"])
         self.file_tree.itemClicked.connect(self.show_file_metadata)
         file_list_layout.addWidget(self.file_tree)
 
@@ -631,6 +621,7 @@ class OfficeMetaDataEditorGUI(StandardWindow):
 
         builtin_layout.addWidget(QLabel("Built-in Properties:"))
         self.builtin_table = QTableWidget()
+        self.builtin_table.setAccessibleName("Built-in properties table")
         self.builtin_table.setColumnCount(2)
         self.builtin_table.setHorizontalHeaderLabels(["Property", "Value"])
         builtin_layout.addWidget(self.builtin_table)
@@ -643,6 +634,7 @@ class OfficeMetaDataEditorGUI(StandardWindow):
 
         document_layout.addWidget(QLabel("Document Properties:"))
         self.document_table = QTableWidget()
+        self.document_table.setAccessibleName("Document properties table")
         self.document_table.setColumnCount(2)
         self.document_table.setHorizontalHeaderLabels(["Property", "Value"])
         document_layout.addWidget(self.document_table)
@@ -655,6 +647,7 @@ class OfficeMetaDataEditorGUI(StandardWindow):
 
         custom_layout.addWidget(QLabel("Custom Properties:"))
         self.custom_table = QTableWidget()
+        self.custom_table.setAccessibleName("Custom properties table")
         self.custom_table.setColumnCount(2)
         self.custom_table.setHorizontalHeaderLabels(["Property", "Value"])
         custom_layout.addWidget(self.custom_table)
@@ -702,23 +695,19 @@ class OfficeMetaDataEditorGUI(StandardWindow):
                 for root, dirs, filenames in os.walk(folder):
                     for filename in filenames:
                         if any(
-                            filename.lower().endswith(ext)
-                            for ext in office_extensions
+                            filename.lower().endswith(ext) for ext in office_extensions
                         ):
                             files.append(os.path.join(root, filename))
             else:
                 for filename in os.listdir(folder):
                     file_path = os.path.join(folder, filename)
                     if os.path.isfile(file_path) and any(
-                        filename.lower().endswith(ext)
-                        for ext in office_extensions
+                        filename.lower().endswith(ext) for ext in office_extensions
                     ):
                         files.append(file_path)
 
             self.selected_files = files
-            self.files_edit.setText(
-                f"Folder: {folder} ({len(files)} documents)"
-            )
+            self.files_edit.setText(f"Folder: {folder} ({len(files)} documents)")
             self.edit_button.setEnabled(True)
 
     def read_metadata(self):
@@ -759,9 +748,7 @@ class OfficeMetaDataEditorGUI(StandardWindow):
             self.status_label.setText("Updating document metadata...")
 
         # Start worker thread
-        self.worker = OfficeMetadataWorker(
-            self.selected_files, operation, updates
-        )
+        self.worker = OfficeMetadataWorker(self.selected_files, operation, updates)
         self.worker.progress_updated.connect(self.update_progress)
         self.worker.file_processed.connect(self.add_result)
         self.worker.finished.connect(self.operation_finished)
@@ -808,9 +795,7 @@ class OfficeMetaDataEditorGUI(StandardWindow):
             modified = metadata["file_info"].get("modified", "")
             if modified:
                 try:
-                    dt = datetime.fromisoformat(
-                        modified.replace("Z", "+00:00")
-                    )
+                    dt = datetime.fromisoformat(modified.replace("Z", "+00:00"))
                     item.setText(3, dt.strftime("%Y-%m-%d %H:%M"))
                 except:
                     item.setText(3, "Unknown")
@@ -858,9 +843,7 @@ class OfficeMetaDataEditorGUI(StandardWindow):
                     row = self.builtin_table.rowCount()
                     self.builtin_table.insertRow(row)
                     self.builtin_table.setItem(row, 0, QTableWidgetItem(key))
-                    self.builtin_table.setItem(
-                        row, 1, QTableWidgetItem(str(value))
-                    )
+                    self.builtin_table.setItem(row, 1, QTableWidgetItem(str(value)))
 
             # Update document properties table
             self.document_table.setRowCount(0)
@@ -869,9 +852,7 @@ class OfficeMetaDataEditorGUI(StandardWindow):
                     row = self.document_table.rowCount()
                     self.document_table.insertRow(row)
                     self.document_table.setItem(row, 0, QTableWidgetItem(key))
-                    self.document_table.setItem(
-                        row, 1, QTableWidgetItem(str(value))
-                    )
+                    self.document_table.setItem(row, 1, QTableWidgetItem(str(value)))
 
             # Update custom properties table
             self.custom_table.setRowCount(0)
@@ -880,9 +861,7 @@ class OfficeMetaDataEditorGUI(StandardWindow):
                     row = self.custom_table.rowCount()
                     self.custom_table.insertRow(row)
                     self.custom_table.setItem(row, 0, QTableWidgetItem(key))
-                    self.custom_table.setItem(
-                        row, 1, QTableWidgetItem(str(value))
-                    )
+                    self.custom_table.setItem(row, 1, QTableWidgetItem(str(value)))
 
             # Resize table columns
             for table in [
@@ -909,9 +888,7 @@ class OfficeMetaDataEditorGUI(StandardWindow):
             try:
                 with open(file_path, "w") as f:
                     if file_path.endswith(".json"):
-                        json.dump(
-                            self.current_metadata, f, indent=2, default=str
-                        )
+                        json.dump(self.current_metadata, f, indent=2, default=str)
                     else:
                         f.write("Office Document Metadata Export\n")
                         f.write("=" * 50 + "\n\n")
@@ -922,9 +899,7 @@ class OfficeMetaDataEditorGUI(StandardWindow):
                         ) in self.current_metadata.items():
                             f.write(f"Document: {file_path}\n")
                             f.write("-" * 30 + "\n")
-                            f.write(
-                                json.dumps(metadata, indent=2, default=str)
-                            )
+                            f.write(json.dumps(metadata, indent=2, default=str))
                             f.write("\n\n")
 
                 QMessageBox.information(
@@ -932,9 +907,7 @@ class OfficeMetaDataEditorGUI(StandardWindow):
                 )
 
             except Exception as e:
-                QMessageBox.warning(
-                    self, "Error", f"Failed to export metadata: {e}"
-                )
+                QMessageBox.warning(self, "Error", f"Failed to export metadata: {e}")
 
     def clear_results(self):
         """Clear all results."""
@@ -991,9 +964,7 @@ class OfficeMetaDataEditorGUI(StandardWindow):
                     settings = json.load(f)
 
                 self.selected_files = settings.get("selected_files", [])
-                self.recursive_check.setChecked(
-                    settings.get("recursive_search", False)
-                )
+                self.recursive_check.setChecked(settings.get("recursive_search", False))
 
                 if self.selected_files:
                     self.files_edit.setText(

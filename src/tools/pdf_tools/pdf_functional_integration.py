@@ -13,13 +13,14 @@ from pathlib import Path
 from typing import Any, Callable, Dict, Optional
 
 from PyQt5.QtCore import QThread, QTimer, pyqtSignal
-from src.gui.themes import token
 from PyQt5.QtWidgets import (
     QApplication,
     QFileDialog,
     QMessageBox,
     QProgressDialog,
 )
+
+from src.gui.themes import token
 
 # Import our PDF operation components
 try:
@@ -193,9 +194,7 @@ class PDFFunctionalIntegration:
 
             # Validate input files
             self.logger.info(f"Validating {len(input_files)} input files")
-            validation_results = PDFValidator.validate_multiple_files(
-                input_files
-            )
+            validation_results = PDFValidator.validate_multiple_files(input_files)
             invalid_files = [
                 f for f, v in validation_results.items() if not v["valid_pdf"]
             ]
@@ -207,9 +206,7 @@ class PDFFunctionalIntegration:
                         for f in invalid_files
                     ]
                 )
-                QMessageBox.critical(
-                    self.parent_widget, "Invalid PDF Files", error_msg
-                )
+                QMessageBox.critical(self.parent_widget, "Invalid PDF Files", error_msg)
                 return
 
             # Start merge operation in background thread
@@ -380,9 +377,7 @@ class PDFFunctionalIntegration:
             )
 
         except Exception as e:
-            self.logger.error(
-                f"Error in text extraction operation: {e}", exc_info=True
-            )
+            self.logger.error(f"Error in text extraction operation: {e}", exc_info=True)
             QMessageBox.critical(
                 self.parent_widget,
                 "Text Extraction Error",
@@ -552,24 +547,18 @@ class PDFFunctionalIntegration:
             )
 
         except Exception as e:
-            self.logger.error(
-                f"Error in link extraction operation: {e}", exc_info=True
-            )
+            self.logger.error(f"Error in link extraction operation: {e}", exc_info=True)
             QMessageBox.critical(
                 self.parent_widget,
                 "Link Extraction Error",
                 f"Failed to start link extraction: {str(e)}",
             )
 
-    def start_pdf_operation(
-        self, operation_name: str, operation_func, *args, **kwargs
-    ):
+    def start_pdf_operation(self, operation_name: str, operation_func, *args, **kwargs):
         """Start a PDF operation in background thread with progress dialog"""
         try:
             # Create and show progress dialog
-            self.progress_dialog = PDFProgressDialog(
-                operation_name, self.parent_widget
-            )
+            self.progress_dialog = PDFProgressDialog(operation_name, self.parent_widget)
             self.progress_dialog.show()
 
             # Create and start operation thread
@@ -594,9 +583,7 @@ class PDFFunctionalIntegration:
             # Start the operation
             self.current_operation_thread.start()
 
-            self.logger.info(
-                f"Started {operation_name} operation in background thread"
-            )
+            self.logger.info(f"Started {operation_name} operation in background thread")
 
         except Exception as e:
             self.logger.error(f"Error starting operation: {e}", exc_info=True)
@@ -654,9 +641,7 @@ class PDFFunctionalIntegration:
             )
 
         except Exception as e:
-            self.logger.error(
-                f"Error handling operation failure: {e}", exc_info=True
-            )
+            self.logger.error(f"Error handling operation failure: {e}", exc_info=True)
 
     def cancel_operation(self):
         """Cancel the current operation"""
@@ -667,9 +652,7 @@ class PDFFunctionalIntegration:
             ):
                 self.logger.info("Cancelling PDF operation")
                 self.current_operation_thread.terminate()
-                self.current_operation_thread.wait(
-                    3000
-                )  # Wait up to 3 seconds
+                self.current_operation_thread.wait(3000)  # Wait up to 3 seconds
 
                 if self.current_operation_thread.isRunning():
                     self.current_operation_thread.kill()
@@ -681,9 +664,7 @@ class PDFFunctionalIntegration:
                 self.progress_dialog = None
 
         except Exception as e:
-            self.logger.error(
-                f"Error cancelling operation: {e}", exc_info=True
-            )
+            self.logger.error(f"Error cancelling operation: {e}", exc_info=True)
 
     def show_operation_success(self, result: OperationResult):
         """Show success message with operation details"""
@@ -694,9 +675,7 @@ class PDFFunctionalIntegration:
             message = f"{operation_name} operation completed successfully!\n\n"
 
             if result.processing_time:
-                message += (
-                    f"Processing time: {result.processing_time:.2f} seconds\n"
-                )
+                message += f"Processing time: {result.processing_time:.2f} seconds\n"
 
             if result.output_files:
                 message += f"Output files ({len(result.output_files)}):\n"
@@ -705,17 +684,11 @@ class PDFFunctionalIntegration:
 
             if result.details:
                 if "total_pages" in result.details:
-                    message += (
-                        f"Total pages: {result.details['total_pages']}\n"
-                    )
+                    message += f"Total pages: {result.details['total_pages']}\n"
                 if "files_created" in result.details:
-                    message += (
-                        f"Files created: {result.details['files_created']}\n"
-                    )
+                    message += f"Files created: {result.details['files_created']}\n"
                 if "pages_signed" in result.details:
-                    message += (
-                        f"Pages signed: {result.details['pages_signed']}\n"
-                    )
+                    message += f"Pages signed: {result.details['pages_signed']}\n"
 
             # Show success dialog
             msg_box = QMessageBox(self.parent_widget)
@@ -738,14 +711,10 @@ class PDFFunctionalIntegration:
             else:
                 msg_box.exec_()
 
-            self.logger.info(
-                f"{operation_name} operation completed successfully"
-            )
+            self.logger.info(f"{operation_name} operation completed successfully")
 
         except Exception as e:
-            self.logger.error(
-                f"Error showing success message: {e}", exc_info=True
-            )
+            self.logger.error(f"Error showing success message: {e}", exc_info=True)
 
     def show_operation_error(self, result: OperationResult):
         """Show error message with details"""
@@ -762,18 +731,14 @@ class PDFFunctionalIntegration:
             message += "• Files are not open in other applications\n"
             message += "• Sufficient disk space is available"
 
-            QMessageBox.critical(
-                self.parent_widget, "Operation Failed", message
-            )
+            QMessageBox.critical(self.parent_widget, "Operation Failed", message)
 
             self.logger.error(
                 f"{operation_name} operation failed: {result.error_message}"
             )
 
         except Exception as e:
-            self.logger.error(
-                f"Error showing error message: {e}", exc_info=True
-            )
+            self.logger.error(f"Error showing error message: {e}", exc_info=True)
 
     def open_output_folder(self, file_path: str):
         """Open the output folder containing the result file"""
@@ -1007,9 +972,7 @@ class PDFFunctionalIntegration:
             )
 
             if not input_file:
-                self.logger.info(
-                    "No input file selected for security analysis"
-                )
+                self.logger.info("No input file selected for security analysis")
                 return
 
             # Get security information
@@ -1017,9 +980,7 @@ class PDFFunctionalIntegration:
 
             if result.success:
                 # Show security info dialog
-                PDFSecurityInfoDialog(
-                    self.parent_widget, result.security_info
-                ).exec_()
+                PDFSecurityInfoDialog(self.parent_widget, result.security_info).exec_()
             else:
                 QMessageBox.critical(
                     self.parent_widget,
@@ -1134,6 +1095,7 @@ class PDFFunctionalIntegration:
             # Watermark text
             layout.addWidget(QLabel("Watermark Text:"))
             text_edit = QLineEdit()
+            text_edit.setAccessibleName("Watermark text")
             text_edit.setText("CONFIDENTIAL")
             layout.addWidget(text_edit)
 
@@ -1141,6 +1103,8 @@ class PDFFunctionalIntegration:
             layout.addWidget(QLabel("Opacity (0-100%):"))
             opacity_layout = QHBoxLayout()
             opacity_slider = QSlider()
+            opacity_slider.setAccessibleName("Watermark opacity")
+            opacity_slider.setMinimumHeight(44)
             opacity_slider.setOrientation(Qt.Horizontal)
             opacity_slider.setRange(0, 100)
             opacity_slider.setValue(50)
@@ -1153,16 +1117,13 @@ class PDFFunctionalIntegration:
             layout.addLayout(opacity_layout)
 
             # Pages
-            layout.addWidget(
-                QLabel("Pages (comma-separated, leave empty for all):")
-            )
+            layout.addWidget(QLabel("Pages (comma-separated, leave empty for all):"))
             pages_edit = QLineEdit()
+            pages_edit.setAccessibleName("Pages to apply watermark to")
             layout.addWidget(pages_edit)
 
             # Buttons
-            buttons = QDialogButtonBox(
-                QDialogButtonBox.Ok | QDialogButtonBox.Cancel
-            )
+            buttons = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
             buttons.accepted.connect(dialog.accept)
             buttons.rejected.connect(dialog.reject)
             layout.addWidget(buttons)
@@ -1180,8 +1141,7 @@ class PDFFunctionalIntegration:
             if pages_edit.text().strip():
                 try:
                     pages = tuple(
-                        int(p.strip()) - 1
-                        for p in pages_edit.text().split(",")
+                        int(p.strip()) - 1 for p in pages_edit.text().split(",")
                     )
                 except ValueError:
                     QMessageBox.warning(
@@ -1192,9 +1152,7 @@ class PDFFunctionalIntegration:
                     return
 
             # Show progress
-            progress = PDFProgressDialog(
-                "Adding Watermark", self.parent_widget
-            )
+            progress = PDFProgressDialog("Adding Watermark", self.parent_widget)
             progress.update_progress(0, "Preparing watermark...")
             progress.show()
 
@@ -1226,9 +1184,7 @@ class PDFFunctionalIntegration:
                 )
             except ImportError:
                 # Fallback implementation using PyMuPDF directly
-                progress.update_progress(
-                    50, "Applying watermark (fallback)..."
-                )
+                progress.update_progress(50, "Applying watermark (fallback)...")
                 success = self._add_watermark_fallback(
                     input_file, watermark_text, pages, opacity
                 )
@@ -1236,9 +1192,7 @@ class PDFFunctionalIntegration:
             progress.close()
 
             if success:
-                output_file = (
-                    os.path.splitext(input_file)[0] + "_watermarked.pdf"
-                )
+                output_file = os.path.splitext(input_file)[0] + "_watermarked.pdf"
                 QMessageBox.information(
                     self.parent_widget,
                     "Watermark Complete",
@@ -1309,33 +1263,33 @@ class PDFFunctionalIntegration:
             # Search text (optional)
             layout.addWidget(QLabel("Search Text (optional):"))
             search_edit = QLineEdit()
-            search_edit.setPlaceholderText(
-                "Enter text to search and highlight..."
-            )
+            search_edit.setAccessibleName("Text to search and highlight")
+            search_edit.setPlaceholderText("Enter text to search and highlight...")
             layout.addWidget(search_edit)
 
             # Action type
             layout.addWidget(QLabel("Action for found text:"))
             action_combo = QComboBox()
+            action_combo.setAccessibleName("OCR action for found text")
+            action_combo.setMinimumHeight(44)
             action_combo.addItems(["Highlight", "Redact"])
             layout.addWidget(action_combo)
 
             # Pages
-            layout.addWidget(
-                QLabel("Pages (comma-separated, leave empty for all):")
-            )
+            layout.addWidget(QLabel("Pages (comma-separated, leave empty for all):"))
             pages_edit = QLineEdit()
+            pages_edit.setAccessibleName("Pages to apply OCR to")
             layout.addWidget(pages_edit)
 
             # Generate output
             generate_output_check = QCheckBox("Generate text output file")
+            generate_output_check.setAccessibleName("Generate text output file")
+            generate_output_check.setMinimumHeight(44)
             generate_output_check.setChecked(True)
             layout.addWidget(generate_output_check)
 
             # Buttons
-            buttons = QDialogButtonBox(
-                QDialogButtonBox.Ok | QDialogButtonBox.Cancel
-            )
+            buttons = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
             buttons.accepted.connect(dialog.accept)
             buttons.rejected.connect(dialog.reject)
             layout.addWidget(buttons)
@@ -1345,9 +1299,7 @@ class PDFFunctionalIntegration:
                 return
 
             # Get parameters
-            search_text = (
-                search_edit.text() if search_edit.text().strip() else None
-            )
+            search_text = search_edit.text() if search_edit.text().strip() else None
             action = action_combo.currentText()
             generate_output = generate_output_check.isChecked()
 
@@ -1355,9 +1307,7 @@ class PDFFunctionalIntegration:
             pages = None
             if pages_edit.text().strip():
                 try:
-                    pages = tuple(
-                        int(p.strip()) for p in pages_edit.text().split(",")
-                    )
+                    pages = tuple(int(p.strip()) for p in pages_edit.text().split(","))
                 except ValueError:
                     QMessageBox.warning(
                         self.parent_widget,
@@ -1408,9 +1358,7 @@ class PDFFunctionalIntegration:
                 )
             except ImportError:
                 # Fallback implementation
-                progress.update_progress(
-                    20, "Processing document (fallback)..."
-                )
+                progress.update_progress(20, "Processing document (fallback)...")
                 success = self._perform_ocr_fallback(
                     input_file, search_text, action, pages, generate_output
                 )
@@ -1426,9 +1374,7 @@ class PDFFunctionalIntegration:
                     if os.path.exists(content_file):
                         message += f"\nText content: {content_file}"
 
-                QMessageBox.information(
-                    self.parent_widget, "OCR Complete", message
-                )
+                QMessageBox.information(self.parent_widget, "OCR Complete", message)
 
                 # Open output folder
                 if output_file:
@@ -1498,14 +1444,15 @@ class PDFFunctionalIntegration:
             # Search text
             layout.addWidget(QLabel("Search Text:"))
             search_edit = QLineEdit()
-            search_edit.setPlaceholderText(
-                "Enter text to search and highlight..."
-            )
+            search_edit.setAccessibleName("Text to search and highlight")
+            search_edit.setPlaceholderText("Enter text to search and highlight...")
             layout.addWidget(search_edit)
 
             # Action type
             layout.addWidget(QLabel("Action:"))
             action_combo = QComboBox()
+            action_combo.setAccessibleName("Highlight action type")
+            action_combo.setMinimumHeight(44)
             action_combo.addItems(
                 [
                     "Highlight",
@@ -1522,6 +1469,8 @@ class PDFFunctionalIntegration:
             # Color selection
             layout.addWidget(QLabel("Color:"))
             color_combo = QComboBox()
+            color_combo.setAccessibleName("Highlight color")
+            color_combo.setMinimumHeight(44)
             color_combo.addItems(["Yellow", "Red", "Green", "Blue", "Purple"])
             layout.addWidget(color_combo)
 
@@ -1529,6 +1478,8 @@ class PDFFunctionalIntegration:
             layout.addWidget(QLabel("Opacity (0-100%):"))
             opacity_layout = QHBoxLayout()
             opacity_slider = QSlider()
+            opacity_slider.setAccessibleName("Highlight opacity")
+            opacity_slider.setMinimumHeight(44)
             opacity_slider.setOrientation(Qt.Horizontal)
             opacity_slider.setRange(0, 100)
             opacity_slider.setValue(80)
@@ -1541,16 +1492,13 @@ class PDFFunctionalIntegration:
             layout.addLayout(opacity_layout)
 
             # Pages
-            layout.addWidget(
-                QLabel("Pages (comma-separated, leave empty for all):")
-            )
+            layout.addWidget(QLabel("Pages (comma-separated, leave empty for all):"))
             pages_edit = QLineEdit()
+            pages_edit.setAccessibleName("Pages to highlight")
             layout.addWidget(pages_edit)
 
             # Buttons
-            buttons = QDialogButtonBox(
-                QDialogButtonBox.Ok | QDialogButtonBox.Cancel
-            )
+            buttons = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
             buttons.accepted.connect(dialog.accept)
             buttons.rejected.connect(dialog.reject)
             layout.addWidget(buttons)
@@ -1572,9 +1520,7 @@ class PDFFunctionalIntegration:
                 return
 
             # Get parameters
-            search_text = (
-                search_edit.text() if search_edit.text().strip() else None
-            )
+            search_text = search_edit.text() if search_edit.text().strip() else None
             action = action_combo.currentText()
             color = color_combo.currentText().lower()
             opacity = opacity_slider.value() / 100.0
@@ -1592,8 +1538,7 @@ class PDFFunctionalIntegration:
             if pages_edit.text().strip():
                 try:
                     pages = tuple(
-                        str(int(p.strip()))
-                        for p in pages_edit.text().split(",")
+                        str(int(p.strip())) for p in pages_edit.text().split(",")
                     )
                 except ValueError:
                     QMessageBox.warning(
@@ -1604,9 +1549,7 @@ class PDFFunctionalIntegration:
                     return
 
             # Show progress
-            progress = PDFProgressDialog(
-                "Highlighting Content", self.parent_widget
-            )
+            progress = PDFProgressDialog("Highlighting Content", self.parent_widget)
             progress.update_progress(0, "Preparing highlighting...")
             progress.show()
 
@@ -1630,9 +1573,7 @@ class PDFFunctionalIntegration:
                 progress.update_progress(30, "Processing document...")
 
                 # Generate output file
-                output_file = (
-                    os.path.splitext(input_file)[0] + "_highlighted.pdf"
-                )
+                output_file = os.path.splitext(input_file)[0] + "_highlighted.pdf"
 
                 # Perform highlighting
                 if action == "Remove":
@@ -1653,12 +1594,8 @@ class PDFFunctionalIntegration:
                     )
             except ImportError:
                 # Fallback implementation
-                progress.update_progress(
-                    30, "Processing document (fallback)..."
-                )
-                output_file = (
-                    os.path.splitext(input_file)[0] + "_highlighted.pdf"
-                )
+                progress.update_progress(30, "Processing document (fallback)...")
+                output_file = os.path.splitext(input_file)[0] + "_highlighted.pdf"
                 success = self._highlight_content_fallback(
                     input_file, search_text, action, color, opacity, pages
                 )
@@ -1735,26 +1672,26 @@ class PDFFunctionalIntegration:
             # Output file
             layout.addWidget(QLabel("Output DOCX File:"))
             output_edit = QLineEdit()
+            output_edit.setAccessibleName("DOCX output file path")
             output_edit.setText(os.path.splitext(input_file)[0] + ".docx")
             layout.addWidget(output_edit)
 
             # Pages
-            layout.addWidget(
-                QLabel("Pages (comma-separated, leave empty for all):")
-            )
+            layout.addWidget(QLabel("Pages (comma-separated, leave empty for all):"))
             pages_edit = QLineEdit()
+            pages_edit.setAccessibleName("Pages to convert to DOCX")
             layout.addWidget(pages_edit)
 
             # Create output folder option
-            create_folder_check = QCheckBox(
+            create_folder_check = QCheckBox("Create output folder for converted files")
+            create_folder_check.setAccessibleName(
                 "Create output folder for converted files"
             )
+            create_folder_check.setMinimumHeight(44)
             layout.addWidget(create_folder_check)
 
             # Buttons
-            buttons = QDialogButtonBox(
-                QDialogButtonBox.Ok | QDialogButtonBox.Cancel
-            )
+            buttons = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
             buttons.accepted.connect(dialog.accept)
             buttons.rejected.connect(dialog.reject)
             layout.addWidget(buttons)
@@ -1770,9 +1707,7 @@ class PDFFunctionalIntegration:
             pages = None
             if pages_edit.text().strip():
                 try:
-                    pages = tuple(
-                        int(p.strip()) for p in pages_edit.text().split(",")
-                    )
+                    pages = tuple(int(p.strip()) for p in pages_edit.text().split(","))
                 except ValueError:
                     QMessageBox.warning(
                         self.parent_widget,
@@ -1782,9 +1717,7 @@ class PDFFunctionalIntegration:
                     return
 
             # Show progress
-            progress = PDFProgressDialog(
-                "Converting to DOCX", self.parent_widget
-            )
+            progress = PDFProgressDialog("Converting to DOCX", self.parent_widget)
             progress.update_progress(0, "Preparing conversion...")
             progress.show()
 
@@ -1821,9 +1754,7 @@ class PDFFunctionalIntegration:
 
             except ImportError:
                 progress.close()
-                success = self._convert_to_docx_fallback(
-                    input_file, output_file, pages
-                )
+                success = self._convert_to_docx_fallback(input_file, output_file, pages)
 
                 if success:
                     QMessageBox.information(
@@ -1839,9 +1770,7 @@ class PDFFunctionalIntegration:
                     )
 
         except Exception as e:
-            self.logger.error(
-                f"PDF to DOCX conversion failed: {e}", exc_info=True
-            )
+            self.logger.error(f"PDF to DOCX conversion failed: {e}", exc_info=True)
             QMessageBox.critical(
                 self.parent_widget,
                 "Conversion Error",
@@ -1887,33 +1816,35 @@ class PDFFunctionalIntegration:
             # Output directory
             layout.addWidget(QLabel("Output Directory:"))
             output_edit = QLineEdit()
+            output_edit.setAccessibleName("Output directory for converted images")
             output_edit.setText("converted_images")
             layout.addWidget(output_edit)
 
             # Image format
             layout.addWidget(QLabel("Image Format:"))
             format_combo = QComboBox()
+            format_combo.setAccessibleName("Image output format")
+            format_combo.setMinimumHeight(44)
             format_combo.addItems(["PNG", "JPEG", "BMP", "TIFF"])
             layout.addWidget(format_combo)
 
             # Pages
-            layout.addWidget(
-                QLabel("Pages (comma-separated, leave empty for all):")
-            )
+            layout.addWidget(QLabel("Pages (comma-separated, leave empty for all):"))
             pages_edit = QLineEdit()
+            pages_edit.setAccessibleName("Pages to convert to images")
             layout.addWidget(pages_edit)
 
             # Quality/DPI
             layout.addWidget(QLabel("DPI (Image Quality):"))
             dpi_combo = QComboBox()
+            dpi_combo.setAccessibleName("Image DPI quality")
+            dpi_combo.setMinimumHeight(44)
             dpi_combo.addItems(["150", "300", "600", "1200"])
             dpi_combo.setCurrentText("300")
             layout.addWidget(dpi_combo)
 
             # Buttons
-            buttons = QDialogButtonBox(
-                QDialogButtonBox.Ok | QDialogButtonBox.Cancel
-            )
+            buttons = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
             buttons.accepted.connect(dialog.accept)
             buttons.rejected.connect(dialog.reject)
             layout.addWidget(buttons)
@@ -1931,8 +1862,7 @@ class PDFFunctionalIntegration:
             if pages_edit.text().strip():
                 try:
                     pages = tuple(
-                        int(p.strip()) - 1
-                        for p in pages_edit.text().split(",")
+                        int(p.strip()) - 1 for p in pages_edit.text().split(",")
                     )
                 except ValueError:
                     QMessageBox.warning(
@@ -1943,9 +1873,7 @@ class PDFFunctionalIntegration:
                     return
 
             # Show progress
-            progress = PDFProgressDialog(
-                "Converting to Images", self.parent_widget
-            )
+            progress = PDFProgressDialog("Converting to Images", self.parent_widget)
             progress.update_progress(0, "Preparing conversion...")
             progress.show()
 
@@ -1999,9 +1927,7 @@ class PDFFunctionalIntegration:
                     )
 
         except Exception as e:
-            self.logger.error(
-                f"PDF to Image conversion failed: {e}", exc_info=True
-            )
+            self.logger.error(f"PDF to Image conversion failed: {e}", exc_info=True)
             QMessageBox.critical(
                 self.parent_widget,
                 "Conversion Error",
@@ -2038,6 +1964,7 @@ class PDFFunctionalIntegration:
 
             # Create tabs for different input methods
             tab_widget = QTabWidget()
+            tab_widget.setAccessibleName("HTML to PDF input method")
             layout.addWidget(tab_widget)
 
             # URL Tab
@@ -2045,6 +1972,7 @@ class PDFFunctionalIntegration:
             url_layout = QVBoxLayout(url_tab)
             url_layout.addWidget(QLabel("Website URL:"))
             url_edit = QLineEdit()
+            url_edit.setAccessibleName("Website URL")
             url_edit.setPlaceholderText("https://example.com")
             url_layout.addWidget(url_edit)
             tab_widget.addTab(url_tab, "From URL")
@@ -2055,7 +1983,10 @@ class PDFFunctionalIntegration:
             file_layout.addWidget(QLabel("HTML File:"))
             file_input_layout = QHBoxLayout()
             file_edit = QLineEdit()
+            file_edit.setAccessibleName("HTML input file path")
             browse_btn = QPushButton("Browse")
+            browse_btn.setAccessibleName("Browse for HTML file")
+            browse_btn.setMinimumHeight(44)
 
             def browse_html_file():
                 filename, _ = QFileDialog.getOpenFileName(
@@ -2078,6 +2009,7 @@ class PDFFunctionalIntegration:
             html_layout = QVBoxLayout(html_tab)
             html_layout.addWidget(QLabel("HTML Content:"))
             html_edit = QTextEdit()
+            html_edit.setAccessibleName("HTML content editor")
             html_edit.setPlaceholderText("Enter HTML content here...")
             html_layout.addWidget(html_edit)
             tab_widget.addTab(html_tab, "HTML Code")
@@ -2086,8 +2018,11 @@ class PDFFunctionalIntegration:
             layout.addWidget(QLabel("Output PDF File:"))
             output_input_layout = QHBoxLayout()
             output_edit = QLineEdit()
+            output_edit.setAccessibleName("Output PDF file path")
             output_edit.setText("output.pdf")
             output_browse_btn = QPushButton("Browse")
+            output_browse_btn.setAccessibleName("Browse for output PDF file")
+            output_browse_btn.setMinimumHeight(44)
 
             def browse_output_file():
                 filename, _ = QFileDialog.getSaveFileName(
@@ -2105,9 +2040,7 @@ class PDFFunctionalIntegration:
             layout.addLayout(output_input_layout)
 
             # Buttons
-            buttons = QDialogButtonBox(
-                QDialogButtonBox.Ok | QDialogButtonBox.Cancel
-            )
+            buttons = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
             buttons.accepted.connect(dialog.accept)
             buttons.rejected.connect(dialog.reject)
             layout.addWidget(buttons)
@@ -2128,9 +2061,7 @@ class PDFFunctionalIntegration:
                 return
 
             # Show progress
-            progress = PDFProgressDialog(
-                "Converting HTML to PDF", self.parent_widget
-            )
+            progress = PDFProgressDialog("Converting HTML to PDF", self.parent_widget)
             progress.update_progress(0, "Preparing conversion...")
             progress.show()
 
@@ -2167,9 +2098,7 @@ class PDFFunctionalIntegration:
                             "Please select a valid HTML file.",
                         )
                         return
-                    progress.update_progress(
-                        50, "Converting HTML file to PDF..."
-                    )
+                    progress.update_progress(50, "Converting HTML file to PDF...")
                     pdfkit.from_file(input_file, output_file)
                     success = True
 
@@ -2183,9 +2112,7 @@ class PDFFunctionalIntegration:
                             "Please enter HTML content.",
                         )
                         return
-                    progress.update_progress(
-                        50, "Converting HTML content to PDF..."
-                    )
+                    progress.update_progress(50, "Converting HTML content to PDF...")
                     pdfkit.from_string(html_content, output_file)
                     success = True
 
@@ -2225,9 +2152,7 @@ class PDFFunctionalIntegration:
                 )
 
         except Exception as e:
-            self.logger.error(
-                f"HTML to PDF conversion failed: {e}", exc_info=True
-            )
+            self.logger.error(f"HTML to PDF conversion failed: {e}", exc_info=True)
             QMessageBox.critical(
                 self.parent_widget,
                 "Conversion Error",
@@ -2294,9 +2219,7 @@ class PDFFunctionalIntegration:
                 import fitz
 
                 self.pdf_viewer_window.doc = fitz.open(input_file)
-                self.pdf_viewer_window.total_pages = len(
-                    self.pdf_viewer_window.doc
-                )
+                self.pdf_viewer_window.total_pages = len(self.pdf_viewer_window.doc)
                 self.pdf_viewer_window.current_page = 0
 
                 if self.pdf_viewer_window.total_pages > 0:
@@ -2318,9 +2241,7 @@ class PDFFunctionalIntegration:
                 # Fallback viewer implementation
                 self._view_pdf_fallback(input_file)
             except Exception as viewer_error:
-                self.logger.error(
-                    f"PDF viewer error: {viewer_error}", exc_info=True
-                )
+                self.logger.error(f"PDF viewer error: {viewer_error}", exc_info=True)
                 QMessageBox.critical(
                     self.parent_widget,
                     "Viewer Error",
@@ -2381,30 +2302,38 @@ class PDFFunctionalIntegration:
             metadata_check = QCheckBox(
                 "Extract metadata (author, title, creation date)"
             )
+            metadata_check.setAccessibleName("Extract document metadata")
+            metadata_check.setMinimumHeight(44)
             metadata_check.setChecked(True)
             layout.addWidget(metadata_check)
 
             text_check = QCheckBox("Extract and analyze text content")
+            text_check.setAccessibleName("Extract and analyze text content")
+            text_check.setMinimumHeight(44)
             text_check.setChecked(True)
             layout.addWidget(text_check)
 
             structure_check = QCheckBox("Analyze document structure")
+            structure_check.setAccessibleName("Analyze document structure")
+            structure_check.setMinimumHeight(44)
             structure_check.setChecked(True)
             layout.addWidget(structure_check)
 
             images_check = QCheckBox("Count and analyze images")
+            images_check.setAccessibleName("Count and analyze images")
+            images_check.setMinimumHeight(44)
             images_check.setChecked(False)
             layout.addWidget(images_check)
 
             # Results display option
             viewer_check = QCheckBox("Open in interactive PDF miner")
+            viewer_check.setAccessibleName("Open in interactive PDF miner")
+            viewer_check.setMinimumHeight(44)
             viewer_check.setChecked(True)
             layout.addWidget(viewer_check)
 
             # Buttons
-            buttons = QDialogButtonBox(
-                QDialogButtonBox.Ok | QDialogButtonBox.Cancel
-            )
+            buttons = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
             buttons.accepted.connect(dialog.accept)
             buttons.rejected.connect(dialog.reject)
             layout.addWidget(buttons)
@@ -2464,14 +2393,10 @@ class PDFFunctionalIntegration:
 
                 # Analyze structure
                 if analyze_structure:
-                    progress.update_progress(
-                        60, "Analyzing document structure..."
-                    )
+                    progress.update_progress(60, "Analyzing document structure...")
                     doc = fitz.open(input_file)
                     analysis_results["page_dimensions"] = []
-                    analysis_results["total_size"] = os.path.getsize(
-                        input_file
-                    )
+                    analysis_results["total_size"] = os.path.getsize(input_file)
 
                     for page_num in range(len(doc)):
                         page = doc[page_num]
@@ -2555,10 +2480,7 @@ class PDFFunctionalIntegration:
             # Clean up PDF engines
             if self.pdf_engine:
                 self.pdf_engine.cleanup()
-            if (
-                hasattr(self, "pdf_security_engine")
-                and self.pdf_security_engine
-            ):
+            if hasattr(self, "pdf_security_engine") and self.pdf_security_engine:
                 # Security engine cleanup if needed
                 pass
 
@@ -2589,9 +2511,7 @@ class PDFFunctionalIntegration:
 
                 # Calculate text position (center of page)
                 rect = page.rect
-                text_width = fitz.get_text_length(
-                    watermark_text, fontname="helv"
-                )
+                text_width = fitz.get_text_length(watermark_text, fontname="helv")
                 x = (rect.width - text_width) / 2
                 y = rect.height / 2
 
@@ -2651,17 +2571,13 @@ class PDFFunctionalIntegration:
                     page = pdf[page_num]
                     text = page.get_text()
                     if text.strip():
-                        text_content.append(
-                            f"=== Page {page_num + 1} ===\n{text}\n"
-                        )
+                        text_content.append(f"=== Page {page_num + 1} ===\n{text}\n")
 
             pdf.close()
 
             # Save text content
             if generate_output:
-                output_file = (
-                    os.path.splitext(input_file)[0] + "_text_extract.txt"
-                )
+                output_file = os.path.splitext(input_file)[0] + "_text_extract.txt"
                 with open(output_file, "w", encoding="utf-8") as f:
                     f.write("\n".join(text_content))
 
@@ -2728,9 +2644,7 @@ class PDFFunctionalIntegration:
                             highlight.set_colors(stroke=fill_color)
                             highlight.update()
                         elif action == "Redact":
-                            page.add_redact_annot(
-                                inst, text=" ", fill=(0, 0, 0)
-                            )
+                            page.add_redact_annot(inst, text=" ", fill=(0, 0, 0))
 
                     # Apply redactions if needed
                     if action == "Redact":
@@ -2846,9 +2760,7 @@ class PDFFunctionalIntegration:
 
             # Create simple viewer dialog
             viewer_dialog = QDialog(self.parent_widget)
-            viewer_dialog.setWindowTitle(
-                f"PDF Viewer - {os.path.basename(input_file)}"
-            )
+            viewer_dialog.setWindowTitle(f"PDF Viewer - {os.path.basename(input_file)}")
             viewer_dialog.resize(800, 600)
 
             layout = QVBoxLayout(viewer_dialog)
@@ -2856,7 +2768,11 @@ class PDFFunctionalIntegration:
             # Navigation controls
             nav_layout = QHBoxLayout()
             prev_btn = QPushButton("Previous")
+            prev_btn.setAccessibleName("Go to previous PDF page")
+            prev_btn.setMinimumHeight(44)
             next_btn = QPushButton("Next")
+            next_btn.setAccessibleName("Go to next PDF page")
+            next_btn.setMinimumHeight(44)
             page_label = QLabel("Page 1 of 1")
 
             nav_layout.addWidget(prev_btn)
@@ -2884,14 +2800,8 @@ class PDFFunctionalIntegration:
                     # Convert to QPixmap
                     from PyQt5.QtGui import QImage
 
-                    fmt = (
-                        QImage.Format_RGBA8888
-                        if pix.alpha
-                        else QImage.Format_RGB888
-                    )
-                    img = QImage(
-                        pix.samples, pix.width, pix.height, pix.stride, fmt
-                    )
+                    fmt = QImage.Format_RGBA8888 if pix.alpha else QImage.Format_RGB888
+                    img = QImage(pix.samples, pix.width, pix.height, pix.stride, fmt)
                     pixmap = QPixmap.fromImage(img)
 
                     scene.clear()
@@ -2900,9 +2810,7 @@ class PDFFunctionalIntegration:
                         scene.itemsBoundingRect(), Qt.KeepAspectRatio
                     )
 
-                    page_label.setText(
-                        f"Page {current_page + 1} of {total_pages}"
-                    )
+                    page_label.setText(f"Page {current_page + 1} of {total_pages}")
                     prev_btn.setEnabled(current_page > 0)
                     next_btn.setEnabled(current_page < total_pages - 1)
 
@@ -3032,12 +2940,11 @@ class PDFFunctionalIntegration:
 
             # Results text area
             results_text = QTextEdit()
+            results_text.setAccessibleName("PDF analysis results")
             results_text.setReadOnly(True)
 
             # Format results
-            result_str = (
-                f"PDF Analysis Results for: {os.path.basename(input_file)}\n"
-            )
+            result_str = f"PDF Analysis Results for: {os.path.basename(input_file)}\n"
             result_str += "=" * 60 + "\n\n"
 
             if "metadata" in results:
@@ -3058,9 +2965,7 @@ class PDFFunctionalIntegration:
 
             if "page_dimensions" in results:
                 result_str += f"  Page Dimensions:\n"
-                for dim in results["page_dimensions"][
-                    :5
-                ]:  # Show first 5 pages
+                for dim in results["page_dimensions"][:5]:  # Show first 5 pages
                     result_str += f"    Page {dim['page']}: {dim['width']:.1f} x {dim['height']:.1f} pts\n"
                 if len(results["page_dimensions"]) > 5:
                     result_str += f"    ... and {len(results['page_dimensions']) - 5} more pages\n"
@@ -3068,16 +2973,12 @@ class PDFFunctionalIntegration:
 
             if "total_text_length" in results:
                 result_str += f"TEXT ANALYSIS:\n"
-                result_str += (
-                    f"  Total Characters: {results['total_text_length']:,}\n"
-                )
+                result_str += f"  Total Characters: {results['total_text_length']:,}\n"
                 result_str += f"  Total Words: {results['word_count']:,}\n"
                 avg_words_per_page = results["word_count"] / results.get(
                     "page_count", 1
                 )
-                result_str += (
-                    f"  Average Words per Page: {avg_words_per_page:.1f}\n\n"
-                )
+                result_str += f"  Average Words per Page: {avg_words_per_page:.1f}\n\n"
 
             if "image_count" in results:
                 result_str += f"IMAGE ANALYSIS:\n"
@@ -3088,6 +2989,8 @@ class PDFFunctionalIntegration:
 
             # Close button
             close_btn = QPushButton("Close")
+            close_btn.setAccessibleName("Close analysis results")
+            close_btn.setMinimumHeight(44)
             close_btn.clicked.connect(results_dialog.close)
             layout.addWidget(close_btn)
 
@@ -3110,9 +3013,7 @@ def integrate_functional_pdf_operations(enhanced_pdf_widget):
     """
     try:
         if not PDF_COMPONENTS_AVAILABLE:
-            logger.warning(
-                "PDF components not available - using basic implementations"
-            )
+            logger.warning("PDF components not available - using basic implementations")
             return False
 
         logger.info("Integrating functional PDF operations")
@@ -3121,36 +3022,22 @@ def integrate_functional_pdf_operations(enhanced_pdf_widget):
         integration = PDFFunctionalIntegration(enhanced_pdf_widget)
 
         # Replace placeholder implementations with functional ones
-        enhanced_pdf_widget._merge_pdfs_impl = (
-            integration.merge_pdfs_functional
-        )
+        enhanced_pdf_widget._merge_pdfs_impl = integration.merge_pdfs_functional
         enhanced_pdf_widget._split_pdf_impl = integration.split_pdf_functional
         enhanced_pdf_widget._sign_pdf_impl = integration.sign_pdf_functional
 
         # Replace extraction placeholder implementations
-        enhanced_pdf_widget._extract_text_impl = (
-            integration.extract_text_functional
-        )
-        enhanced_pdf_widget._extract_images_impl = (
-            integration.extract_images_functional
-        )
+        enhanced_pdf_widget._extract_text_impl = integration.extract_text_functional
+        enhanced_pdf_widget._extract_images_impl = integration.extract_images_functional
         enhanced_pdf_widget._extract_metadata_impl = (
             integration.extract_metadata_functional
         )
-        enhanced_pdf_widget._extract_tables_impl = (
-            integration.extract_tables_functional
-        )
-        enhanced_pdf_widget._extract_links_impl = (
-            integration.extract_links_functional
-        )
+        enhanced_pdf_widget._extract_tables_impl = integration.extract_tables_functional
+        enhanced_pdf_widget._extract_links_impl = integration.extract_links_functional
 
         # Replace security placeholder implementations (Phase 2.3)
-        enhanced_pdf_widget._encrypt_pdf_impl = (
-            integration.encrypt_pdf_functional
-        )
-        enhanced_pdf_widget._decrypt_pdf_impl = (
-            integration.decrypt_pdf_functional
-        )
+        enhanced_pdf_widget._encrypt_pdf_impl = integration.encrypt_pdf_functional
+        enhanced_pdf_widget._decrypt_pdf_impl = integration.decrypt_pdf_functional
         enhanced_pdf_widget._sign_digital_pdf_impl = (
             integration.sign_digital_pdf_functional
         )
@@ -3159,12 +3046,8 @@ def integrate_functional_pdf_operations(enhanced_pdf_widget):
         )
 
         # Replace enhancement placeholder implementations (Phase 2.4)
-        enhanced_pdf_widget._add_watermark_impl = (
-            integration.add_watermark_functional
-        )
-        enhanced_pdf_widget._perform_ocr_impl = (
-            integration.perform_ocr_functional
-        )
+        enhanced_pdf_widget._add_watermark_impl = integration.add_watermark_functional
+        enhanced_pdf_widget._perform_ocr_impl = integration.perform_ocr_functional
         enhanced_pdf_widget._highlight_content_impl = (
             integration.highlight_content_functional
         )
@@ -3182,9 +3065,7 @@ def integrate_functional_pdf_operations(enhanced_pdf_widget):
 
         # Replace view and analysis placeholder implementations (Phase 2.6)
         enhanced_pdf_widget._view_pdf_impl = integration.view_pdf_functional
-        enhanced_pdf_widget._analyze_pdf_impl = (
-            integration.analyze_pdf_functional
-        )
+        enhanced_pdf_widget._analyze_pdf_impl = integration.analyze_pdf_functional
 
         # Store integration instance for cleanup
         enhanced_pdf_widget._pdf_integration = integration
@@ -3231,8 +3112,14 @@ if __name__ == "__main__":
             layout = QVBoxLayout(self)
 
             merge_btn = QPushButton("Test Merge")
+            merge_btn.setAccessibleName("Test PDF merge functionality")
+            merge_btn.setMinimumHeight(44)
             split_btn = QPushButton("Test Split")
+            split_btn.setAccessibleName("Test PDF split functionality")
+            split_btn.setMinimumHeight(44)
             sign_btn = QPushButton("Test Sign")
+            sign_btn.setAccessibleName("Test PDF sign functionality")
+            sign_btn.setMinimumHeight(44)
 
             layout.addWidget(merge_btn)
             layout.addWidget(split_btn)

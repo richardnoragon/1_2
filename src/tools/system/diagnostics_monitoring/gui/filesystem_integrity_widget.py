@@ -2,36 +2,36 @@
 
 import logging
 from datetime import datetime
-from typing import Dict, Any, List, Optional
+from typing import Any, Dict, List, Optional
 
 try:
+    from PyQt5.QtCore import Qt, QThread, QTimer, pyqtSignal
+    from PyQt5.QtGui import QColor, QFont, QPalette
     from PyQt5.QtWidgets import (
-        QWidget,
-        QVBoxLayout,
+        QCheckBox,
+        QComboBox,
+        QFileDialog,
+        QFrame,
+        QGridLayout,
+        QGroupBox,
         QHBoxLayout,
-        QTabWidget,
+        QHeaderView,
         QLabel,
+        QMessageBox,
         QProgressBar,
         QPushButton,
-        QTextEdit,
-        QTableWidget,
-        QTableWidgetItem,
-        QHeaderView,
-        QGroupBox,
-        QGridLayout,
-        QComboBox,
-        QCheckBox,
+        QScrollArea,
         QSpinBox,
         QSplitter,
-        QFrame,
-        QScrollArea,
-        QMessageBox,
-        QFileDialog,
+        QTableWidget,
+        QTableWidgetItem,
+        QTabWidget,
+        QTextEdit,
         QTreeWidget,
         QTreeWidgetItem,
+        QVBoxLayout,
+        QWidget,
     )
-    from PyQt5.QtCore import Qt, QTimer, pyqtSignal, QThread
-    from PyQt5.QtGui import QFont, QColor, QPalette
 
     PYQT_AVAILABLE = True
 except ImportError:
@@ -63,9 +63,10 @@ except ImportError:
         pass
 
 
-from ..monitors.filesystem.integrity_monitor import IntegrityMonitor, ScanType
-from ..core.platform_detector import get_platform_detector
 from core.error_handler import error_handler
+
+from ..core.platform_detector import get_platform_detector
+from ..monitors.filesystem.integrity_monitor import IntegrityMonitor, ScanType
 
 
 class ScanWorker(QThread):
@@ -202,6 +203,7 @@ class FilesystemIntegrityWidget(QWidget):
         # Scan type selection
         scan_layout.addWidget(QLabel("Scan Type:"), 0, 0)
         self.scan_type_combo = QComboBox()
+        self.scan_type_combo.setAccessibleName("Scan type")
         self.scan_type_combo.addItems(
             ["Quick Scan", "Full Scan", "Deep Scan", "Custom Scan"]
         )
@@ -210,25 +212,35 @@ class FilesystemIntegrityWidget(QWidget):
         # Scan paths
         scan_layout.addWidget(QLabel("Scan Paths:"), 1, 0)
         self.paths_button = QPushButton("Select Paths...")
+        self.paths_button.setAccessibleName("Select scan paths")
+        self.paths_button.setMinimumHeight(44)
         self.paths_button.clicked.connect(self.select_scan_paths)
         scan_layout.addWidget(self.paths_button, 1, 1)
 
         # Scan options
         self.checksum_check = QCheckBox("Verify Checksums")
         self.checksum_check.setChecked(True)
+        self.checksum_check.setAccessibleName("Verify checksums")
+        self.checksum_check.setMinimumHeight(44)
         scan_layout.addWidget(self.checksum_check, 2, 0, 1, 2)
 
         self.permissions_check = QCheckBox("Check Permissions")
         self.permissions_check.setChecked(True)
+        self.permissions_check.setAccessibleName("Check permissions")
+        self.permissions_check.setMinimumHeight(44)
         scan_layout.addWidget(self.permissions_check, 3, 0, 1, 2)
 
         self.timestamps_check = QCheckBox("Verify Timestamps")
         self.timestamps_check.setChecked(True)
+        self.timestamps_check.setAccessibleName("Verify timestamps")
+        self.timestamps_check.setMinimumHeight(44)
         scan_layout.addWidget(self.timestamps_check, 4, 0, 1, 2)
 
         # Max depth
         scan_layout.addWidget(QLabel("Max Depth:"), 5, 0)
         self.max_depth_spin = QSpinBox()
+        self.max_depth_spin.setAccessibleName("Maximum scan depth")
+        self.max_depth_spin.setMinimumHeight(44)
         self.max_depth_spin.setRange(1, 50)
         self.max_depth_spin.setValue(10)
         scan_layout.addWidget(self.max_depth_spin, 5, 1)
@@ -240,10 +252,14 @@ class FilesystemIntegrityWidget(QWidget):
         controls_layout = QVBoxLayout(controls_group)
 
         self.start_scan_button = QPushButton("Start Scan")
+        self.start_scan_button.setAccessibleName("Start filesystem scan")
+        self.start_scan_button.setMinimumHeight(44)
         self.start_scan_button.clicked.connect(self.start_scan)
         controls_layout.addWidget(self.start_scan_button)
 
         self.stop_scan_button = QPushButton("Stop Scan")
+        self.stop_scan_button.setAccessibleName("Stop filesystem scan")
+        self.stop_scan_button.setMinimumHeight(44)
         self.stop_scan_button.clicked.connect(self.stop_scan)
         self.stop_scan_button.setEnabled(False)
         controls_layout.addWidget(self.stop_scan_button)
@@ -273,13 +289,14 @@ class FilesystemIntegrityWidget(QWidget):
         schedule_layout = QVBoxLayout(schedule_group)
 
         self.schedule_button = QPushButton("Schedule Scan...")
+        self.schedule_button.setAccessibleName("Schedule a scan")
+        self.schedule_button.setMinimumHeight(44)
         self.schedule_button.clicked.connect(self.schedule_scan)
         schedule_layout.addWidget(self.schedule_button)
 
         self.scheduled_scans_list = QTreeWidget()
-        self.scheduled_scans_list.setHeaderLabels(
-            ["Type", "Next Run", "Recurring"]
-        )
+        self.scheduled_scans_list.setAccessibleName("Scheduled scans list")
+        self.scheduled_scans_list.setHeaderLabels(["Type", "Next Run", "Recurring"])
         schedule_layout.addWidget(self.scheduled_scans_list)
 
         layout.addWidget(schedule_group)
@@ -300,6 +317,7 @@ class FilesystemIntegrityWidget(QWidget):
 
         # Create tab widget for different views
         self.results_tabs = QTabWidget()
+        self.results_tabs.setAccessibleName("Scan results tabs")
         layout.addWidget(self.results_tabs)
 
         # Overview tab
@@ -359,6 +377,7 @@ class FilesystemIntegrityWidget(QWidget):
         health_layout.addWidget(self.health_status_label)
 
         self.health_details_text = QTextEdit()
+        self.health_details_text.setAccessibleName("Filesystem health details")
         self.health_details_text.setMaximumHeight(100)
         self.health_details_text.setReadOnly(True)
         health_layout.addWidget(self.health_details_text)
@@ -399,6 +418,7 @@ class FilesystemIntegrityWidget(QWidget):
 
         # Results table
         self.results_table = QTableWidget()
+        self.results_table.setAccessibleName("Scan results table")
         self.results_table.setColumnCount(6)
         self.results_table.setHorizontalHeaderLabels(
             ["Path", "Type", "Size", "Status", "Issues", "Last Modified"]
@@ -417,6 +437,8 @@ class FilesystemIntegrityWidget(QWidget):
         export_layout.addStretch()
 
         self.export_results_button = QPushButton("Export Results...")
+        self.export_results_button.setAccessibleName("Export scan results")
+        self.export_results_button.setMinimumHeight(44)
         self.export_results_button.clicked.connect(self.export_results)
         export_layout.addWidget(self.export_results_button)
 
@@ -453,6 +475,7 @@ class FilesystemIntegrityWidget(QWidget):
 
         # Corruption details table
         self.corruption_table = QTableWidget()
+        self.corruption_table.setAccessibleName("Corruption details table")
         self.corruption_table.setColumnCount(5)
         self.corruption_table.setHorizontalHeaderLabels(
             ["Path", "Type", "Severity", "Description", "Timestamp"]
@@ -477,6 +500,7 @@ class FilesystemIntegrityWidget(QWidget):
 
         # Recommendations table
         self.recommendations_table = QTableWidget()
+        self.recommendations_table.setAccessibleName("Repair recommendations table")
         self.recommendations_table.setColumnCount(6)
         self.recommendations_table.setHorizontalHeaderLabels(
             [
@@ -499,15 +523,15 @@ class FilesystemIntegrityWidget(QWidget):
         action_layout = QHBoxLayout()
 
         self.apply_selected_button = QPushButton("Apply Selected")
-        self.apply_selected_button.clicked.connect(
-            self.apply_selected_recommendations
-        )
+        self.apply_selected_button.setAccessibleName("Apply selected repairs")
+        self.apply_selected_button.setMinimumHeight(44)
+        self.apply_selected_button.clicked.connect(self.apply_selected_recommendations)
         action_layout.addWidget(self.apply_selected_button)
 
         self.generate_script_button = QPushButton("Generate Script...")
-        self.generate_script_button.clicked.connect(
-            self.generate_repair_script
-        )
+        self.generate_script_button.setAccessibleName("Generate repair script")
+        self.generate_script_button.setMinimumHeight(44)
+        self.generate_script_button.clicked.connect(self.generate_repair_script)
         action_layout.addWidget(self.generate_script_button)
 
         action_layout.addStretch()
@@ -526,6 +550,7 @@ class FilesystemIntegrityWidget(QWidget):
 
         # History table
         self.history_table = QTableWidget()
+        self.history_table.setAccessibleName("Scan history table")
         self.history_table.setColumnCount(7)
         self.history_table.setHorizontalHeaderLabels(
             [
@@ -549,10 +574,14 @@ class FilesystemIntegrityWidget(QWidget):
         history_controls = QHBoxLayout()
 
         self.clear_history_button = QPushButton("Clear History")
+        self.clear_history_button.setAccessibleName("Clear scan history")
+        self.clear_history_button.setMinimumHeight(44)
         self.clear_history_button.clicked.connect(self.clear_scan_history)
         history_controls.addWidget(self.clear_history_button)
 
         self.export_history_button = QPushButton("Export History...")
+        self.export_history_button.setAccessibleName("Export scan history")
+        self.export_history_button.setMinimumHeight(44)
         self.export_history_button.clicked.connect(self.export_scan_history)
         history_controls.addWidget(self.export_history_button)
 
@@ -574,9 +603,7 @@ class FilesystemIntegrityWidget(QWidget):
             selected_paths = dialog.selectedFiles()
             if selected_paths:
                 self.scan_paths = selected_paths
-                self.paths_button.setText(
-                    f"Paths: {len(selected_paths)} selected"
-                )
+                self.paths_button.setText(f"Paths: {len(selected_paths)} selected")
 
     def start_scan(self):
         """Start a filesystem integrity scan."""
@@ -608,15 +635,9 @@ class FilesystemIntegrityWidget(QWidget):
             }
 
             # Start scan worker
-            self.current_scan_worker = ScanWorker(
-                self.integrity_monitor, scan_config
-            )
-            self.current_scan_worker.progress_updated.connect(
-                self.update_scan_progress
-            )
-            self.current_scan_worker.scan_completed.connect(
-                self.scan_completed
-            )
+            self.current_scan_worker = ScanWorker(self.integrity_monitor, scan_config)
+            self.current_scan_worker.progress_updated.connect(self.update_scan_progress)
+            self.current_scan_worker.scan_completed.connect(self.scan_completed)
             self.current_scan_worker.scan_error.connect(self.scan_error)
             self.current_scan_worker.start()
 
@@ -637,10 +658,7 @@ class FilesystemIntegrityWidget(QWidget):
             return
 
         try:
-            if (
-                self.current_scan_worker
-                and self.current_scan_worker.isRunning()
-            ):
+            if self.current_scan_worker and self.current_scan_worker.isRunning():
                 self.integrity_monitor.stop_scan()
                 self.current_scan_worker.quit()
                 self.current_scan_worker.wait(5000)  # Wait up to 5 seconds
@@ -720,9 +738,7 @@ class FilesystemIntegrityWidget(QWidget):
         self.progress_label.setText(f"Scan failed: {error_message}")
         self.status_label.setText("Scan failed")
 
-        QMessageBox.critical(
-            self, "Scan Error", f"Scan failed: {error_message}"
-        )
+        QMessageBox.critical(self, "Scan Error", f"Scan failed: {error_message}")
 
     def scan_stopped(self):
         """Update UI when scan is stopped."""
@@ -748,9 +764,7 @@ class FilesystemIntegrityWidget(QWidget):
             self.populate_corruption_analysis(corruption_analysis)
 
             # Update repair recommendations
-            repair_recommendations = scan_result.get(
-                "repair_recommendations", {}
-            )
+            repair_recommendations = scan_result.get("repair_recommendations", {})
             self.populate_repair_recommendations(repair_recommendations)
 
             # Update history
@@ -779,9 +793,7 @@ class FilesystemIntegrityWidget(QWidget):
             self.critical_count_label.setText(
                 f"Critical: {stats.get('critical_issues', 0)}"
             )
-            self.high_count_label.setText(
-                f"High: {stats.get('high_severity', 0)}"
-            )
+            self.high_count_label.setText(f"High: {stats.get('high_severity', 0)}")
             self.medium_count_label.setText(
                 f"Medium: {stats.get('medium_severity', 0)}"
             )
@@ -840,9 +852,7 @@ class FilesystemIntegrityWidget(QWidget):
                     row,
                     4,
                     QTableWidgetItem(
-                        "Yes"
-                        if rec.get("automation_possible", False)
-                        else "No"
+                        "Yes" if rec.get("automation_possible", False) else "No"
                     ),
                 )
                 self.recommendations_table.setItem(
@@ -864,9 +874,7 @@ class FilesystemIntegrityWidget(QWidget):
                 start_time = scan.get("start_time", "")
                 if start_time:
                     try:
-                        dt = datetime.fromisoformat(
-                            start_time.replace("Z", "+00:00")
-                        )
+                        dt = datetime.fromisoformat(start_time.replace("Z", "+00:00"))
                         date_str = dt.strftime("%Y-%m-%d %H:%M")
                     except:
                         date_str = start_time
@@ -880,9 +888,7 @@ class FilesystemIntegrityWidget(QWidget):
                 self.history_table.setItem(
                     row,
                     2,
-                    QTableWidgetItem(
-                        f"{scan.get('duration_seconds', 0):.1f}s"
-                    ),
+                    QTableWidgetItem(f"{scan.get('duration_seconds', 0):.1f}s"),
                 )
 
                 stats = scan.get("statistics", {})
@@ -998,9 +1004,7 @@ class FilesystemIntegrityWidget(QWidget):
             selected_rows.add(item.row())
 
         if not selected_rows:
-            QMessageBox.warning(
-                self, "Warning", "No recommendations selected."
-            )
+            QMessageBox.warning(self, "Warning", "No recommendations selected.")
             return
 
         reply = QMessageBox.question(
@@ -1127,7 +1131,9 @@ class FilesystemIntegrityWidget(QWidget):
 if __name__ == "__main__":
     if PYQT_AVAILABLE:
         import sys
+
         from PyQt5.QtWidgets import QApplication
+
         from src.gui.themes import Typography
 
         app = QApplication(sys.argv)

@@ -1,14 +1,15 @@
 """Dialog for configuring application appearance settings."""
 
 from PyQt5.QtWidgets import (
+    QComboBox,
     QDialog,
-    QVBoxLayout,
     QHBoxLayout,
     QLabel,
-    QComboBox,
-    QSpinBox,
     QPushButton,
+    QSpinBox,
+    QVBoxLayout,
 )
+
 from .settings import AppearanceSettings
 from .styles import Theme
 
@@ -36,6 +37,8 @@ class AppearanceDialog(QDialog):
         theme_layout = QHBoxLayout()
         theme_label = QLabel("Theme:")
         self.theme_combo = QComboBox()
+        self.theme_combo.setAccessibleName("Theme selection")
+        self.theme_combo.setMinimumHeight(44)
         self.theme_combo.addItems(["Light", "Dark"])
         theme_layout.addWidget(theme_label)
         theme_layout.addWidget(self.theme_combo)
@@ -45,6 +48,8 @@ class AppearanceDialog(QDialog):
         font_layout = QHBoxLayout()
         font_label = QLabel("Font Size:")
         self.font_spin = QSpinBox()
+        self.font_spin.setAccessibleName("Font size")
+        self.font_spin.setMinimumHeight(44)
         self.font_spin.setRange(8, 24)
         font_layout.addWidget(font_label)
         font_layout.addWidget(self.font_spin)
@@ -53,7 +58,11 @@ class AppearanceDialog(QDialog):
         # Buttons
         button_layout = QHBoxLayout()
         save_button = QPushButton("Save")
+        save_button.setAccessibleName("Save appearance settings")
+        save_button.setMinimumHeight(44)
         cancel_button = QPushButton("Cancel")
+        cancel_button.setAccessibleName("Cancel appearance settings")
+        cancel_button.setMinimumHeight(44)
         save_button.clicked.connect(self.save_settings)
         cancel_button.clicked.connect(self.reject)
         button_layout.addWidget(save_button)

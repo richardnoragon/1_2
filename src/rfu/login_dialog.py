@@ -7,7 +7,6 @@ from pathlib import Path
 from typing import Any, Dict, Optional
 
 try:
-    from src.gui.themes import token
     from PyQt5.QtCore import Qt
     from PyQt5.QtWidgets import (
         QDialog,
@@ -22,6 +21,8 @@ try:
         QVBoxLayout,
         QWidget,
     )
+
+    from src.gui.themes import token
 
     PYQT5_AVAILABLE = True
 except ImportError:  # pragma: no cover - GUI fallback
@@ -68,7 +69,9 @@ if PYQT5_AVAILABLE:
             # Warning header
             warning = QLabel("⚠️ Break-Glass Emergency Access")
             warning.setAlignment(Qt.AlignHCenter)
-            warning.setStyleSheet(f"font-size: 16px; font-weight: bold; color: {token('semantic_error')};")
+            warning.setStyleSheet(
+                f"font-size: 16px; font-weight: bold; color: {token('semantic_error')};"
+            )
             layout.addWidget(warning)
 
             # Explanation
@@ -90,6 +93,7 @@ if PYQT5_AVAILABLE:
             layout.addWidget(justification_label)
 
             self.justification_input = QPlainTextEdit()
+            self.justification_input.setAccessibleName("Emergency access justification")
             self.justification_input.setPlaceholderText(
                 "Describe why you need emergency access..."
             )
@@ -116,10 +120,16 @@ if PYQT5_AVAILABLE:
             button_row.addStretch(1)
 
             cancel_button = QPushButton("Cancel")
+            cancel_button.setAccessibleName("Cancel emergency access request")
+            cancel_button.setMinimumHeight(44)
             cancel_button.clicked.connect(self.reject)
             button_row.addWidget(cancel_button)
 
             self.submit_button = QPushButton("Submit & Continue Login")
+            self.submit_button.setAccessibleName(
+                "Submit emergency access justification"
+            )
+            self.submit_button.setMinimumHeight(44)
             self.submit_button.setDefault(True)
             self.submit_button.clicked.connect(self._submit)
             button_row.addWidget(self.submit_button)
@@ -133,9 +143,13 @@ if PYQT5_AVAILABLE:
                 f"{count}/{self.MIN_JUSTIFICATION_LENGTH} characters"
             )
             if count >= self.MIN_JUSTIFICATION_LENGTH:
-                self.char_count_label.setStyleSheet(f"color: {token('semantic_success')};")
+                self.char_count_label.setStyleSheet(
+                    f"color: {token('semantic_success')};"
+                )
             else:
-                self.char_count_label.setStyleSheet(f"color: {token('semantic_error')};")
+                self.char_count_label.setStyleSheet(
+                    f"color: {token('semantic_error')};"
+                )
 
         def _submit(self) -> None:
             text = self.justification_input.toPlainText().strip()
@@ -180,7 +194,9 @@ if PYQT5_AVAILABLE:
 
             title = QLabel("Authenticate to continue")
             title.setAlignment(Qt.AlignHCenter)
-            title.setStyleSheet(f"font-size: 16px; font-weight: bold; color: {token('text_primary')};")
+            title.setStyleSheet(
+                f"font-size: 16px; font-weight: bold; color: {token('text_primary')};"
+            )
             layout.addWidget(title)
 
             subtitle = QLabel("Enter your RFU hub credentials. All logins are audited.")
@@ -193,6 +209,7 @@ if PYQT5_AVAILABLE:
 
             username_label = QLabel("Username")
             self.username_input = QLineEdit()
+            self.username_input.setAccessibleName("Username")
             self.username_input.setText(initial_username)
             self.username_input.setPlaceholderText("e.g. admin-ops")
             self.username_input.setMaxLength(64)
@@ -201,6 +218,7 @@ if PYQT5_AVAILABLE:
 
             password_label = QLabel("Password")
             self.password_input = QLineEdit()
+            self.password_input.setAccessibleName("Password")
             self.password_input.setEchoMode(QLineEdit.Password)
             self.password_input.setPlaceholderText("Your account password")
             self.password_input.returnPressed.connect(self._attempt_login)
@@ -218,10 +236,14 @@ if PYQT5_AVAILABLE:
             button_row.addStretch(1)
 
             cancel_button = QPushButton("Cancel")
+            cancel_button.setAccessibleName("Cancel login")
+            cancel_button.setMinimumHeight(44)
             cancel_button.clicked.connect(self.reject)
             button_row.addWidget(cancel_button)
 
             self.login_button = QPushButton("Sign In")
+            self.login_button.setAccessibleName("Sign in to RFU hub")
+            self.login_button.setMinimumHeight(44)
             self.login_button.setDefault(True)
             self.login_button.clicked.connect(self._attempt_login)
             button_row.addWidget(self.login_button)
@@ -358,30 +380,39 @@ if PYQT5_AVAILABLE:
 
             reg_user_label = QLabel("Desired Username")
             self.registration_username_input = QLineEdit()
+            self.registration_username_input.setAccessibleName(
+                "Desired username for registration"
+            )
             self.registration_username_input.setPlaceholderText("e.g. analyst-qa")
             form.addWidget(reg_user_label, 0, 0)
             form.addWidget(self.registration_username_input, 0, 1)
 
             reg_pass_label = QLabel("Password")
             self.registration_password_input = QLineEdit()
+            self.registration_password_input.setAccessibleName("Registration password")
             self.registration_password_input.setEchoMode(QLineEdit.Password)
             form.addWidget(reg_pass_label, 1, 0)
             form.addWidget(self.registration_password_input, 1, 1)
 
             reg_confirm_label = QLabel("Confirm Password")
             self.registration_confirm_input = QLineEdit()
+            self.registration_confirm_input.setAccessibleName(
+                "Confirm registration password"
+            )
             self.registration_confirm_input.setEchoMode(QLineEdit.Password)
             form.addWidget(reg_confirm_label, 2, 0)
             form.addWidget(self.registration_confirm_input, 2, 1)
 
             preference_label = QLabel("Workspace Preference (optional)")
             self.registration_preference_input = QLineEdit()
+            self.registration_preference_input.setAccessibleName("Workspace preference")
             self.registration_preference_input.setPlaceholderText("e.g. dual-pane")
             form.addWidget(preference_label, 3, 0)
             form.addWidget(self.registration_preference_input, 3, 1)
 
             notes_label = QLabel("Approval Notes (optional)")
             self.registration_notes_input = QLineEdit()
+            self.registration_notes_input.setAccessibleName("Approval notes")
             self.registration_notes_input.setPlaceholderText("Why you need access")
             form.addWidget(notes_label, 4, 0)
             form.addWidget(self.registration_notes_input, 4, 1)
@@ -390,12 +421,18 @@ if PYQT5_AVAILABLE:
 
             self.registration_feedback_label = QLabel("")
             self.registration_feedback_label.setWordWrap(True)
-            self.registration_feedback_label.setStyleSheet(f"color: {token('semantic_warning')};")
+            self.registration_feedback_label.setStyleSheet(
+                f"color: {token('semantic_warning')};"
+            )
             panel_layout.addWidget(self.registration_feedback_label)
 
             button_row = QHBoxLayout()
             button_row.addStretch(1)
             self.register_button = QPushButton("Submit Registration")
+            self.register_button.setAccessibleName(
+                "Submit account registration request"
+            )
+            self.register_button.setMinimumHeight(44)
             self.register_button.clicked.connect(self._attempt_registration)
             button_row.addWidget(self.register_button)
             panel_layout.addLayout(button_row)
@@ -423,9 +460,13 @@ if PYQT5_AVAILABLE:
             self, message: str, *, success: bool = False
         ) -> None:
             if success:
-                self.registration_feedback_label.setStyleSheet(f"color: {token('semantic_success')};")
+                self.registration_feedback_label.setStyleSheet(
+                    f"color: {token('semantic_success')};"
+                )
             else:
-                self.registration_feedback_label.setStyleSheet(f"color: {token('semantic_warning')};")
+                self.registration_feedback_label.setStyleSheet(
+                    f"color: {token('semantic_warning')};"
+                )
             self.registration_feedback_label.setText(message)
 
         def _clear_registration_inputs(self) -> None:

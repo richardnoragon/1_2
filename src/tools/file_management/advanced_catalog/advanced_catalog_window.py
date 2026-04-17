@@ -4,35 +4,36 @@ This module provides the main GUI interface for the advanced catalog generator
 with comprehensive sorting, color-coding, and export capabilities.
 """
 
+import logging
 import os
 import sys
-from pathlib import Path
-from typing import Optional, Dict, Any
 from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, Optional
 
+from PyQt5.QtCore import Qt, QThread, QTimer, pyqtSignal
+from PyQt5.QtGui import QColor, QFont, QPalette
 from PyQt5.QtWidgets import (
     QApplication,
-    QMainWindow,
-    QWidget,
-    QVBoxLayout,
+    QCheckBox,
+    QComboBox,
+    QFileDialog,
+    QFrame,
+    QGroupBox,
     QHBoxLayout,
     QLabel,
-    QPushButton,
-    QComboBox,
     QListWidget,
     QListWidgetItem,
-    QGroupBox,
-    QCheckBox,
-    QProgressBar,
+    QMainWindow,
     QMessageBox,
-    QFileDialog,
+    QProgressBar,
+    QPushButton,
     QScrollArea,
-    QFrame,
     QSplitter,
     QTextEdit,
+    QVBoxLayout,
+    QWidget,
 )
-from PyQt5.QtCore import Qt, QThread, pyqtSignal, QTimer
-from PyQt5.QtGui import QFont, QColor, QPalette
 
 # Import StandardWindow for menu integration
 try:
@@ -41,10 +42,74 @@ except ImportError:
     # Fallback for standalone execution
     StandardWindow = QMainWindow
 
-from .catalog_data_model import CatalogData, SortCriteria, ColorScheme
-from .sorting_engine import SortingEngine
+
+# ---------------------------------------------------------------------------
+# GRD-1a: Guardian registration (graceful no-op when guardian absent)
+# ---------------------------------------------------------------------------
+try:
+    from src.core.guardian import register_gui_component
+except ImportError:
+
+    def register_gui_component(*a, **kw):
+        pass  # noqa: E731
+
+
+# ---------------------------------------------------------------------------
+# TEL: Telemetry helpers (graceful no-op when telemetry absent)
+# ---------------------------------------------------------------------------
+try:
+    from src.gui.telemetry import emit_telemetry
+
+    def _emit_telemetry(event_type, **kw):
+        emit_telemetry(event_type, **kw)  # noqa: E731
+
+except ImportError:
+
+    def _emit_telemetry(*a, **kw):
+        pass  # noqa: E731
+
+
+# ---------------------------------------------------------------------------
+# STR: Centralised string constants with fallback (P1-C15 / STR-1)
+# ---------------------------------------------------------------------------
+try:
+    from src.rfu.ui_strings import AdvancedCatalog as _AdvCatalogStrings
+except ImportError:
+
+    class _AdvCatalogStrings:  # type: ignore[no-redef]
+        TITLE = "Advanced Catalog Generator"
+        WINDOW_TITLE = "Advanced Catalog Generator — RFU"
+        LOADING = "Loading Advanced Catalog Generator…"
+        ERR_INIT_FAILED = (
+            "Could not start Advanced Catalog Generator. "
+            "Please try again or restart the application."
+        )
+        ERR_SCAN_FAILED = "Could not scan directory. Please try again."
+        ERR_EXPORT_FAILED = "Could not export catalog. Please try again."
+
+
+# ---------------------------------------------------------------------------
+# CP: Component Placement — PrimaryButton / SecondaryButton / Modal
+# ---------------------------------------------------------------------------
+try:
+    from src.gui.components.buttons import PrimaryButton, SecondaryButton
+
+    _CP_AVAILABLE = True
+except ImportError:
+    PrimaryButton = QPushButton  # type: ignore[misc,assignment]
+    SecondaryButton = QPushButton  # type: ignore[misc,assignment]
+    _CP_AVAILABLE = False
+
+try:
+    from src.gui.components.modal import Modal
+except ImportError:
+    Modal = None  # type: ignore[assignment,misc]
+
+
+from .catalog_data_model import CatalogData, ColorScheme, SortCriteria
 from .color_coding_engine import ColorCodingEngine
-from .export_engine import HTMLExporter, CSVExporter, JSONExporter
+from .export_engine import CSVExporter, HTMLExporter, JSONExporter
+from .sorting_engine import SortingEngine
 
 
 class FileScanThread(QThread):
@@ -72,7 +137,9 @@ class FileScanThread(QThread):
             self.progress_updated.emit(100, "Scan completed")
             self.scan_completed.emit(self.catalog_data)
 
-        except Exception as e:
+        except (
+            Exception
+        ) as e:  # ERR: non-fatal — surfaced via scan_failed signal; handled in _on_scan_failed
             self.scan_failed.emit(str(e))
 
 
@@ -102,7 +169,9 @@ class ExportThread(QThread):
             else:
                 self.export_failed.emit("Export failed - unknown error")
 
-        except Exception as e:
+        except (
+            Exception
+        ) as e:  # ERR: non-fatal — surfaced via export_failed signal; handled in _on_export_failed
             self.export_failed.emit(str(e))
 
     def _progress_callback(self, percentage: int, message: str):
@@ -116,17 +185,24 @@ class AdvancedCatalogWindow(StandardWindow):
     def __init__(self, hub_instance=None):
         try:
             super().__init__(
-                title="Advanced File Catalog Generator",
+                title=_AdvCatalogStrings.WINDOW_TITLE,
                 window_type="file_operations",
             )
-        except TypeError:
+        except (
+            TypeError
+        ):  # ERR: non-fatal — QMainWindow fallback when StandardWindow constructor rejects kwargs
             # Fallback for QMainWindow
             super().__init__()
-            self.setWindowTitle("Advanced File Catalog Generator")
+            self.setWindowTitle(_AdvCatalogStrings.WINDOW_TITLE)
 
-        self.hub_instance = hub_instance
-        if hub_instance:
-            hub_instance.register_tool("Advanced Catalog Generator", self)
+        self._hub = hub_instance
+        self.hub_instance = hub_instance  # legacy alias kept for compatibility
+        try:
+            from src.rfu.log_manager import get_log_manager
+
+            self._logger = get_log_manager().get_logger("AdvancedCatalogWindow")
+        except Exception:
+            self._logger = logging.getLogger("AdvancedCatalogWindow")
 
         # Initialize data
         self.catalog_data = CatalogData()
@@ -145,6 +221,29 @@ class AdvancedCatalogWindow(StandardWindow):
 
         # Set initial state
         self._set_initial_state()
+        register_gui_component(
+            self,
+            tool_id="advanced_catalog",
+            recovery_callback=self.degraded_fallback,
+        )
+        _emit_telemetry("ui_view_load", tool_id="advanced_catalog")
+
+    def health_check(self) -> bool:
+        """Return True if core UI is functional (GRD-3a)."""
+        try:
+            return self.centralWidget() is not None
+        except Exception:
+            return False
+
+    def degraded_fallback(self) -> None:
+        """Enter degraded / read-only state (GRD-3b)."""
+        try:
+            self._logger.warning("AdvancedCatalogWindow entering degraded mode")
+        except Exception:
+            pass
+        _emit_telemetry(
+            "ui_error_event", tool_id="advanced_catalog", error_type="degraded"
+        )
 
     def _setup_ui(self):
         """Setup the user interface."""
@@ -204,13 +303,18 @@ class AdvancedCatalogWindow(StandardWindow):
         group = QGroupBox("Directory Selection")
         layout = QHBoxLayout(group)
 
-        self.select_dir_btn = QPushButton("Select Directory")
+        self.select_dir_btn = SecondaryButton("Select Directory")
         self.dir_label = QLabel("No directory selected")
         self.dir_label.setStyleSheet(
             f"QLabel { border: 1px solid gray; padding: 5px; background-color: {token('surface')}; }"
         )
         self.recursive_cb = QCheckBox("Include Subdirectories")
         self.recursive_cb.setChecked(True)
+        self.recursive_cb.setAccessibleName("Include subdirectories")
+        self.recursive_cb.setAccessibleDescription(
+            "Scans all folders inside the selected directory, not just the top level"
+        )
+        self.recursive_cb.setMinimumHeight(44)
 
         layout.addWidget(self.select_dir_btn)
         layout.addWidget(self.dir_label, 1)
@@ -232,6 +336,7 @@ class AdvancedCatalogWindow(StandardWindow):
         criteria_layout.addWidget(QLabel("Sort by:"))
 
         self.sort_combo = QComboBox()
+        self.sort_combo.setAccessibleName("Sort order")
         self.sort_combo.addItems(
             [
                 "Alphabetical (A-Z)",
@@ -249,11 +354,16 @@ class AdvancedCatalogWindow(StandardWindow):
         order_layout = QHBoxLayout()
         self.ascending_cb = QCheckBox("Ascending Order")
         self.ascending_cb.setChecked(True)
+        self.ascending_cb.setAccessibleName("Ascending order")
+        self.ascending_cb.setAccessibleDescription(
+            "When checked, results are sorted A\u2013Z or smallest to largest"
+        )
+        self.ascending_cb.setMinimumHeight(44)
         order_layout.addWidget(self.ascending_cb)
         sort_layout.addLayout(order_layout)
 
         # Apply sort button
-        self.apply_sort_btn = QPushButton("Apply Sort")
+        self.apply_sort_btn = SecondaryButton("Apply Sort")
         sort_layout.addWidget(self.apply_sort_btn)
 
         layout.addWidget(sort_group)
@@ -266,6 +376,7 @@ class AdvancedCatalogWindow(StandardWindow):
         scheme_layout.addWidget(QLabel("Scheme:"))
 
         self.color_scheme_combo = QComboBox()
+        self.color_scheme_combo.setAccessibleName("Color scheme")
         self.color_scheme_combo.addItems(
             ["Default", "High Contrast", "Colorblind Friendly", "Monochrome"]
         )
@@ -273,9 +384,12 @@ class AdvancedCatalogWindow(StandardWindow):
         color_layout.addLayout(scheme_layout)
 
         # Accessibility options
-        self.accessibility_cb = QCheckBox(
-            "Accessibility Mode (Patterns & Icons)"
+        self.accessibility_cb = QCheckBox("Accessibility Mode (Patterns & Icons)")
+        self.accessibility_cb.setAccessibleName("Accessibility mode")
+        self.accessibility_cb.setAccessibleDescription(
+            "Adds pattern symbols and icons to colour-coded items and the legend"
         )
+        self.accessibility_cb.setMinimumHeight(44)
         color_layout.addWidget(self.accessibility_cb)
 
         layout.addWidget(color_group)
@@ -285,6 +399,7 @@ class AdvancedCatalogWindow(StandardWindow):
         stats_layout = QVBoxLayout(stats_group)
 
         self.stats_text = QTextEdit()
+        self.stats_text.setAccessibleName("Statistics")
         self.stats_text.setMaximumHeight(150)
         self.stats_text.setReadOnly(True)
         stats_layout.addWidget(self.stats_text)
@@ -309,6 +424,7 @@ class AdvancedCatalogWindow(StandardWindow):
 
         # File list
         self.file_list = QListWidget()
+        self.file_list.setAccessibleName("Catalog file list")
         self.file_list.setAlternatingRowColors(True)
         preview_layout.addWidget(self.file_list)
 
@@ -340,19 +456,25 @@ class AdvancedCatalogWindow(StandardWindow):
         layout.addWidget(QLabel("Export Format:"))
 
         self.export_format_combo = QComboBox()
+        self.export_format_combo.setAccessibleName("Export format")
         self.export_format_combo.addItems(
             ["HTML (with CSS)", "CSV (with metadata)", "JSON (structured)"]
         )
         layout.addWidget(self.export_format_combo)
 
         # Export button
-        self.export_btn = QPushButton("Export Catalog")
+        self.export_btn = PrimaryButton("Export Catalog")
         self.export_btn.setEnabled(False)
         layout.addWidget(self.export_btn)
 
         # Open after export
         self.open_after_export_cb = QCheckBox("Open after export")
         self.open_after_export_cb.setChecked(True)
+        self.open_after_export_cb.setAccessibleName("Open after export")
+        self.open_after_export_cb.setAccessibleDescription(
+            "Automatically opens the exported file in the default application when complete"
+        )
+        self.open_after_export_cb.setMinimumHeight(44)
         layout.addWidget(self.open_after_export_cb)
 
         layout.addStretch()
@@ -366,9 +488,7 @@ class AdvancedCatalogWindow(StandardWindow):
         self.export_btn.clicked.connect(self._export_catalog)
 
         # Combo box changes
-        self.sort_combo.currentTextChanged.connect(
-            self._on_sort_criteria_changed
-        )
+        self.sort_combo.currentTextChanged.connect(self._on_sort_criteria_changed)
         self.color_scheme_combo.currentTextChanged.connect(
             self._on_color_scheme_changed
         )
@@ -377,18 +497,10 @@ class AdvancedCatalogWindow(StandardWindow):
     def _setup_menu_callbacks(self):
         """Setup tool-specific menu callbacks."""
         if hasattr(self, "menu_manager"):
-            self.menu_manager.register_callback(
-                "new_catalog", self._new_catalog
-            )
-            self.menu_manager.register_callback(
-                "save_operation", self._save_settings
-            )
-            self.menu_manager.register_callback(
-                "load_operation", self._load_settings
-            )
-            self.menu_manager.register_callback(
-                "export_results", self._export_catalog
-            )
+            self.menu_manager.register_callback("new_catalog", self._new_catalog)
+            self.menu_manager.register_callback("save_operation", self._save_settings)
+            self.menu_manager.register_callback("load_operation", self._load_settings)
+            self.menu_manager.register_callback("export_results", self._export_catalog)
 
     def _set_initial_state(self):
         """Set initial UI state."""
@@ -466,9 +578,17 @@ class AdvancedCatalogWindow(StandardWindow):
         self.progress_bar.setVisible(False)
         self.status_label.setText("Scan failed")
 
-        QMessageBox.critical(
-            self, "Scan Error", f"Failed to scan directory:\n{error_message}"
-        )
+        if Modal:
+            Modal(
+                "Scan Error",
+                f"Failed to scan directory:\n{error_message}",
+                ["OK"],
+                self,
+            ).exec_()
+        else:
+            QMessageBox.critical(
+                self, "Scan Error", f"Failed to scan directory:\n{error_message}"
+            )
 
         if self.hub_instance:
             self.hub_instance.update_tool_progress(
@@ -525,9 +645,7 @@ class AdvancedCatalogWindow(StandardWindow):
         scheme = scheme_map.get(scheme_text, ColorScheme.DEFAULT)
 
         self.color_engine.scheme = scheme
-        self.color_engine.enable_accessibility_mode(
-            self.accessibility_cb.isChecked()
-        )
+        self.color_engine.enable_accessibility_mode(self.accessibility_cb.isChecked())
         self.catalog_data.color_scheme = scheme
 
         # Apply colors
@@ -545,7 +663,9 @@ class AdvancedCatalogWindow(StandardWindow):
         self.file_list.clear()
 
         for entry in self.catalog_data.entries[:100]:  # Show first 100 files
-            item_text = f"{entry.name} ({entry.format_size()}) - {entry.file_type.value}"
+            item_text = (
+                f"{entry.name} ({entry.format_size()}) - {entry.file_type.value}"
+            )
             item = QListWidgetItem(item_text)
 
             # Apply color if available
@@ -553,19 +673,16 @@ class AdvancedCatalogWindow(StandardWindow):
                 color = QColor(entry.color_category.color_hex)
                 item.setBackground(color)
 
-                # Add icon if accessibility mode
-                if self.accessibility_cb.isChecked():
-                    item_text = f"{entry.color_category.icon} {item_text}"
-                    item.setText(item_text)
+                # Always prepend icon as non-colour indicator (A11Y-4)
+                item_text = f"{entry.color_category.icon} {item_text}"
+                item.setText(item_text)
 
             self.file_list.addItem(item)
 
         # Update count
         total_files = len(self.catalog_data.entries)
         shown_files = min(100, total_files)
-        self.file_count_label.setText(
-            f"Showing {shown_files} of {total_files} files"
-        )
+        self.file_count_label.setText(f"Showing {shown_files} of {total_files} files")
 
     def _update_color_legend(self):
         """Update the color legend display."""
@@ -661,11 +778,19 @@ File Types:
     def _export_catalog(self):
         """Export the catalog in the selected format."""
         if not self.catalog_data.entries:
-            QMessageBox.warning(
-                self,
-                "No Data",
-                "No files to export. Please scan a directory first.",
-            )
+            if Modal:
+                Modal(
+                    "No Data",
+                    "No files to export. Please scan a directory first.",
+                    ["OK"],
+                    self,
+                ).exec_()
+            else:
+                QMessageBox.warning(
+                    self,
+                    "No Data",
+                    "No files to export. Please scan a directory first.",
+                )
             return
 
         # Get export format
@@ -682,9 +807,7 @@ File Types:
         extension, exporter_class = format_map[format_text]
 
         # Get output file
-        default_name = (
-            f"catalog_{datetime.now().strftime('%Y%m%d_%H%M%S')}.{extension}"
-        )
+        default_name = f"catalog_{datetime.now().strftime('%Y%m%d_%H%M%S')}.{extension}"
         output_path, _ = QFileDialog.getSaveFileName(
             self,
             "Export Catalog",
@@ -727,11 +850,19 @@ File Types:
         self.progress_bar.setVisible(False)
         self.status_label.setText(f"Export completed: {output_path}")
 
-        QMessageBox.information(
-            self,
-            "Export Complete",
-            f"Catalog exported successfully to:\n{output_path}",
-        )
+        if Modal:
+            Modal(
+                "Export Complete",
+                f"Catalog exported successfully to:\n{output_path}",
+                ["OK"],
+                self,
+            ).exec_()
+        else:
+            QMessageBox.information(
+                self,
+                "Export Complete",
+                f"Catalog exported successfully to:\n{output_path}",
+            )
 
         # Open file if requested
         if self.open_after_export_cb.isChecked():
@@ -749,9 +880,17 @@ File Types:
         self.progress_bar.setVisible(False)
         self.status_label.setText("Export failed")
 
-        QMessageBox.critical(
-            self, "Export Error", f"Failed to export catalog:\n{error_message}"
-        )
+        if Modal:
+            Modal(
+                "Export Error",
+                f"Failed to export catalog:\n{error_message}",
+                ["OK"],
+                self,
+            ).exec_()
+        else:
+            QMessageBox.critical(
+                self, "Export Error", f"Failed to export catalog:\n{error_message}"
+            )
 
         if self.hub_instance:
             self.hub_instance.update_tool_progress(

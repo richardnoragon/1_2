@@ -5,6 +5,7 @@ This module provides the main GUI widget for Advanced Folders functionality
 that integrates seamlessly with the existing RFU hub architecture.
 """
 
+import logging
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -104,6 +105,69 @@ except ImportError:
     except ImportError:
         get_config_manager = None
         StandardWindow = QWidget if PYQT5_AVAILABLE else object
+
+# GRD-1a: ComponentGuardian registration (spec §10)
+try:
+    from src.core.guardian import register_gui_component
+
+    _COMPONENT_GUARDIAN_AVAILABLE = True
+except ImportError:
+    _COMPONENT_GUARDIAN_AVAILABLE = False
+
+    def register_gui_component(widget, component_type=None, recovery_callback=None):
+        """No-op stub used when ComponentGuardian is unavailable."""
+        return ""
+
+
+# TEL-1/2/3/4: UI telemetry (spec §9.3)
+try:
+    from src.gui.telemetry import emit_telemetry as _emit_telemetry
+
+    _TELEMETRY_AVAILABLE = True
+except ImportError:
+    _TELEMETRY_AVAILABLE = False
+
+    def _emit_telemetry(event_type: str, *, tool_id: str, **kwargs) -> None:
+        """No-op stub used when telemetry module is unavailable."""
+
+
+# STR: ui_strings for this tool
+try:
+    from src.rfu.ui_strings import AdvancedFolders as _AF_Strings
+
+    _AF_UI_STRINGS_AVAILABLE = True
+except ImportError:
+    _AF_UI_STRINGS_AVAILABLE = False
+
+    class _AF_Strings:  # type: ignore[no-redef]
+        TITLE = "Advanced Folders"
+        WINDOW_TITLE = "Advanced Folders - Richard's File Utilities"
+        BTN_NEW_FOLDER = "📁 New Folder"
+        BTN_EDIT_FOLDER = "✏️ Edit"
+        BTN_DELETE_FOLDER = "🗑️ Delete"
+        BTN_REFRESH = "🔄 Refresh"
+        BTN_SEARCH = "🔍 Search"
+        BTN_EXPORT = "📤 Export"
+        BTN_SETTINGS = "⚙️ Settings"
+        LABEL_NO_FOLDER_SELECTED = "No folder selected"
+        LABEL_PANEL_TITLE = "Advanced Folders"
+        LABEL_RESULTS_TITLE = "Search Results"
+        EMPTY_STATE_NO_FOLDER = (
+            "No folder selected — choose a folder from the list on the left."
+        )
+        EMPTY_STATE_NO_RESULTS = "No results found — try adjusting your search filter or select a different folder."
+        MODAL_ERROR_TITLE = "Error"
+        MODAL_VALIDATION_TITLE = "Validation Error"
+        MODAL_SETTINGS_TITLE = "Settings"
+        ERR_CREATE_FAILED = "Could not create the folder configuration. Check that your settings are valid and try again."
+        ERR_UPDATE_FAILED = "Could not update the folder configuration. Check that your settings are valid and try again."
+        ERR_DELETE_FAILED = "Could not delete the folder configuration. Please try again or restart the application."
+        ERR_EXPORT_FAILED = "Could not export results. Check that you have write permission to the chosen location."
+        ERR_SEARCH_FAILED = "Search could not be completed. Check that the configured directories exist and are accessible."
+        STATUS_READY = "Ready"
+        STATUS_SEARCHING = "Searching…"
+        STATUS_FOLDER_DELETED = "Folder deleted"
+
 
 # Import Advanced Folders core
 try:
@@ -677,7 +741,15 @@ class AdvancedFoldersWidget(StandardWindow if StandardWindow != QWidget else QWi
         self.current_folder: Optional[FolderConfiguration] = None
         self.search_results: List[FileResult] = []
 
-        self.setWindowTitle("Advanced Folders")
+        # ERR-5a: centralised logger for technical detail
+        try:
+            from src.core.log_manager import get_log_manager as _get_lm
+
+            self._logger = _get_lm().get_logger("AdvancedFolders")
+        except Exception:
+            self._logger = logging.getLogger("AdvancedFolders")
+
+        self.setWindowTitle(_AF_Strings.TITLE)
         self.setMinimumSize(1000, 700)
 
         self.setup_ui()
@@ -720,7 +792,7 @@ class AdvancedFoldersWidget(StandardWindow if StandardWindow != QWidget else QWi
         self.status_bar = QStatusBar()
         main_layout.addWidget(self.status_bar)
 
-        self.status_bar.showMessage("Ready")
+        self.status_bar.showMessage(_AF_Strings.STATUS_READY)
 
     def create_toolbar(self):
         """Create toolbar with actions."""
@@ -728,18 +800,18 @@ class AdvancedFoldersWidget(StandardWindow if StandardWindow != QWidget else QWi
         toolbar_layout = QHBoxLayout(self.toolbar)
 
         # New folder button
-        self.new_folder_btn = SecondaryButton("📁 New Folder")
+        self.new_folder_btn = SecondaryButton(_AF_Strings.BTN_NEW_FOLDER)
         self.new_folder_btn.clicked.connect(self.create_new_folder)
         toolbar_layout.addWidget(self.new_folder_btn)
 
         # Edit folder button
-        self.edit_folder_btn = SecondaryButton("✏️ Edit")
+        self.edit_folder_btn = SecondaryButton(_AF_Strings.BTN_EDIT_FOLDER)
         self.edit_folder_btn.clicked.connect(self.edit_current_folder)
         self.edit_folder_btn.setEnabled(False)
         toolbar_layout.addWidget(self.edit_folder_btn)
 
         # Delete folder button
-        self.delete_folder_btn = DestructiveButton("🗑️ Delete")
+        self.delete_folder_btn = DestructiveButton(_AF_Strings.BTN_DELETE_FOLDER)
         self.delete_folder_btn.set_confirmation_callback(
             lambda: ConfirmationModal(
                 "Confirm Folder Deletion",
@@ -757,13 +829,13 @@ class AdvancedFoldersWidget(StandardWindow if StandardWindow != QWidget else QWi
         toolbar_layout.addWidget(QFrame())  # Separator
 
         # Refresh button
-        self.refresh_btn = SecondaryButton("🔄 Refresh")
+        self.refresh_btn = SecondaryButton(_AF_Strings.BTN_REFRESH)
         self.refresh_btn.clicked.connect(self.refresh_current_folder)
         self.refresh_btn.setEnabled(False)
         toolbar_layout.addWidget(self.refresh_btn)
 
         # Search button
-        self.search_btn = PrimaryButton("🔍 Search")
+        self.search_btn = PrimaryButton(_AF_Strings.BTN_SEARCH)
         self.search_btn.clicked.connect(self.execute_search)
         self.search_btn.setEnabled(False)
         toolbar_layout.addWidget(self.search_btn)
@@ -779,7 +851,7 @@ class AdvancedFoldersWidget(StandardWindow if StandardWindow != QWidget else QWi
         toolbar_layout.addWidget(self.quick_search_edit)
 
         # Settings button
-        self.settings_btn = SecondaryButton("⚙️ Settings")
+        self.settings_btn = SecondaryButton(_AF_Strings.BTN_SETTINGS)
         self.settings_btn.clicked.connect(self.show_settings)
         toolbar_layout.addWidget(self.settings_btn)
 
@@ -789,7 +861,7 @@ class AdvancedFoldersWidget(StandardWindow if StandardWindow != QWidget else QWi
         layout = QVBoxLayout(self.folder_panel)
 
         # Panel title
-        title_label = QLabel("Advanced Folders")
+        title_label = QLabel(_AF_Strings.LABEL_PANEL_TITLE)
         title_label.setFont(Typography.h3())
         layout.addWidget(title_label)
 
@@ -801,7 +873,7 @@ class AdvancedFoldersWidget(StandardWindow if StandardWindow != QWidget else QWi
         layout.addWidget(self.folder_list)
 
         # Folder statistics
-        self.stats_label = QLabel("No folder selected")
+        self.stats_label = QLabel(_AF_Strings.LABEL_NO_FOLDER_SELECTED)
         self.stats_label.setWordWrap(True)
         self.stats_label.setStyleSheet(
             f"background-color: {token('surface')}; padding: 10px; border-radius: 5px;"
@@ -815,14 +887,14 @@ class AdvancedFoldersWidget(StandardWindow if StandardWindow != QWidget else QWi
 
         # Results header
         header_layout = QHBoxLayout()
-        self.results_label = QLabel("Search Results")
+        self.results_label = QLabel(_AF_Strings.LABEL_RESULTS_TITLE)
         self.results_label.setFont(Typography.h3())
         header_layout.addWidget(self.results_label)
 
         header_layout.addStretch()
 
         # Export button
-        self.export_btn = SecondaryButton("📤 Export")
+        self.export_btn = SecondaryButton(_AF_Strings.BTN_EXPORT)
         self.export_btn.clicked.connect(self.export_results)
         self.export_btn.setEnabled(False)
         header_layout.addWidget(self.export_btn)
@@ -856,8 +928,8 @@ class AdvancedFoldersWidget(StandardWindow if StandardWindow != QWidget else QWi
 
         layout.addWidget(self.results_table)
 
-        # Results summary
-        self.results_summary = QLabel("No results")
+        # Results summary (ERR-6b/c: actionable empty state)
+        self.results_summary = QLabel(_AF_Strings.EMPTY_STATE_NO_RESULTS)
         layout.addWidget(self.results_summary)
 
     def setup_connections(self):
@@ -943,6 +1015,12 @@ class AdvancedFoldersWidget(StandardWindow if StandardWindow != QWidget else QWi
 
     def create_new_folder(self):
         """Create a new folder configuration."""
+        # TEL-2b: KEY_ACTION 1 — New Folder
+        _emit_telemetry(
+            "ui_user_action",
+            tool_id="advanced_folders",
+            action="create_new_folder",
+        )
         dialog = FolderConfigurationDialog(self)
 
         if dialog.exec_() == QDialog.Accepted:
@@ -952,7 +1030,7 @@ class AdvancedFoldersWidget(StandardWindow if StandardWindow != QWidget else QWi
             errors = config.validate()
             if errors:
                 Modal(
-                    "Validation Error",
+                    _AF_Strings.MODAL_VALIDATION_TITLE,
                     "Configuration has errors:\n\n" + "\n".join(errors),
                     ["OK"],
                     self,
@@ -968,9 +1046,18 @@ class AdvancedFoldersWidget(StandardWindow if StandardWindow != QWidget else QWi
                 self.status_bar.showMessage(f"Created folder: {config.name}")
 
             except Exception as e:
+                # ERR-5a: log technical detail; ERR-4b: show user-friendly message
+                self._logger.error(
+                    "Failed to save new folder configuration: %s", e, exc_info=True
+                )
+                _emit_telemetry(
+                    "ui_error_event",
+                    tool_id="advanced_folders",
+                    error_code="create_folder_failed",
+                )
                 Modal(
-                    "Error",
-                    f"Failed to create folder:\n{str(e)}",
+                    _AF_Strings.MODAL_ERROR_TITLE,
+                    _AF_Strings.ERR_CREATE_FAILED,
                     ["OK"],
                     self,
                 ).exec_()
@@ -980,6 +1067,12 @@ class AdvancedFoldersWidget(StandardWindow if StandardWindow != QWidget else QWi
         if not self.current_folder:
             return
 
+        # TEL-2b: KEY_ACTION 2 — Edit Folder
+        _emit_telemetry(
+            "ui_user_action",
+            tool_id="advanced_folders",
+            action="edit_folder",
+        )
         dialog = FolderConfigurationDialog(self, self.current_folder)
 
         if dialog.exec_() == QDialog.Accepted:
@@ -989,7 +1082,7 @@ class AdvancedFoldersWidget(StandardWindow if StandardWindow != QWidget else QWi
             errors = config.validate()
             if errors:
                 Modal(
-                    "Validation Error",
+                    _AF_Strings.MODAL_VALIDATION_TITLE,
                     "Configuration has errors:\n\n" + "\n".join(errors),
                     ["OK"],
                     self,
@@ -1007,9 +1100,18 @@ class AdvancedFoldersWidget(StandardWindow if StandardWindow != QWidget else QWi
                 self.status_bar.showMessage(f"Updated folder: {config.name}")
 
             except Exception as e:
+                # ERR-5a: log technical detail; ERR-4b: show user-friendly message
+                self._logger.error(
+                    "Failed to save updated folder configuration: %s", e, exc_info=True
+                )
+                _emit_telemetry(
+                    "ui_error_event",
+                    tool_id="advanced_folders",
+                    error_code="edit_folder_failed",
+                )
                 Modal(
-                    "Error",
-                    f"Failed to update folder:\n{str(e)}",
+                    _AF_Strings.MODAL_ERROR_TITLE,
+                    _AF_Strings.ERR_UPDATE_FAILED,
                     ["OK"],
                     self,
                 ).exec_()
@@ -1019,6 +1121,12 @@ class AdvancedFoldersWidget(StandardWindow if StandardWindow != QWidget else QWi
         if not self.current_folder:
             return
 
+        # TEL-2b: KEY_ACTION 3 — Delete Folder
+        _emit_telemetry(
+            "ui_user_action",
+            tool_id="advanced_folders",
+            action="delete_folder",
+        )
         try:
             self.folder_manager.delete_folder(self.current_folder.folder_id)
 
@@ -1026,13 +1134,22 @@ class AdvancedFoldersWidget(StandardWindow if StandardWindow != QWidget else QWi
             self.enable_folder_actions(False)
             self.clear_results()
             self.load_folders()
-            self.stats_label.setText("No folder selected")
-            self.status_bar.showMessage("Folder deleted")
+            self.stats_label.setText(_AF_Strings.LABEL_NO_FOLDER_SELECTED)
+            self.status_bar.showMessage(_AF_Strings.STATUS_FOLDER_DELETED)
 
         except Exception as e:
+            # ERR-5a: log technical detail; ERR-4b: show user-friendly message
+            self._logger.error(
+                "Failed to delete folder configuration: %s", e, exc_info=True
+            )
+            _emit_telemetry(
+                "ui_error_event",
+                tool_id="advanced_folders",
+                error_code="delete_folder_failed",
+            )
             Modal(
-                "Error",
-                f"Failed to delete folder:\n{str(e)}",
+                _AF_Strings.MODAL_ERROR_TITLE,
+                _AF_Strings.ERR_DELETE_FAILED,
                 ["OK"],
                 self,
             ).exec_()
@@ -1052,10 +1169,23 @@ class AdvancedFoldersWidget(StandardWindow if StandardWindow != QWidget else QWi
         if not self.current_folder:
             return
 
+        # TEL-2b: KEY_ACTION 5 — Search; TEL-4a: perf metric start
+        _emit_telemetry(
+            "ui_user_action",
+            tool_id="advanced_folders",
+            action="execute_search",
+        )
+        _emit_telemetry(
+            "ui_performance_metric",
+            tool_id="advanced_folders",
+            operation="search",
+            phase="start",
+        )
+
         self.progress_bar.setVisible(True)
         self.progress_bar.setValue(0)
         self.search_btn.setEnabled(False)
-        self.status_bar.showMessage("Searching...")
+        self.status_bar.showMessage(_AF_Strings.STATUS_SEARCHING)
 
         # Execute search asynchronously
         self.search_engine.async_search(
@@ -1085,6 +1215,14 @@ class AdvancedFoldersWidget(StandardWindow if StandardWindow != QWidget else QWi
         Args:
             results: Search results
         """
+        # TEL-4b: performance metric — search stop
+        _emit_telemetry(
+            "ui_performance_metric",
+            tool_id="advanced_folders",
+            operation="search",
+            phase="stop",
+        )
+
         self.search_results = results
         self.search_completed.emit(results)
 
@@ -1095,6 +1233,10 @@ class AdvancedFoldersWidget(StandardWindow if StandardWindow != QWidget else QWi
 
         # Update results table
         self.populate_results_table(results)
+
+        # ERR-6b/c: show actionable empty state when no results
+        if not results:
+            self.results_summary.setText(_AF_Strings.EMPTY_STATE_NO_RESULTS)
 
         # Update statistics
         if self.current_folder:
@@ -1150,7 +1292,7 @@ class AdvancedFoldersWidget(StandardWindow if StandardWindow != QWidget else QWi
         self.results_table.setRowCount(0)
         self.search_results = []
         self.export_btn.setEnabled(False)
-        self.results_summary.setText("No results")
+        self.results_summary.setText(_AF_Strings.EMPTY_STATE_NO_RESULTS)
 
     def quick_search(self):
         """Perform quick search."""
@@ -1158,6 +1300,13 @@ class AdvancedFoldersWidget(StandardWindow if StandardWindow != QWidget else QWi
 
         if not search_term or not self.current_folder:
             return
+
+        # TEL-2b: KEY_ACTION 6 — Quick Search
+        _emit_telemetry(
+            "ui_user_action",
+            tool_id="advanced_folders",
+            action="quick_search",
+        )
 
         # Update search parameters for quick search
         original_pattern = self.current_folder.search_parameters.filename_pattern
@@ -1173,6 +1322,13 @@ class AdvancedFoldersWidget(StandardWindow if StandardWindow != QWidget else QWi
         """Export search results."""
         if not self.search_results:
             return
+
+        # TEL-2b: KEY_ACTION 7 — Export
+        _emit_telemetry(
+            "ui_user_action",
+            tool_id="advanced_folders",
+            action="export_results",
+        )
 
         filename, _ = QFileDialog.getSaveFileName(
             self,
@@ -1191,9 +1347,18 @@ class AdvancedFoldersWidget(StandardWindow if StandardWindow != QWidget else QWi
                 self.status_bar.showMessage(f"Results exported to {filename}")
 
             except Exception as e:
+                # ERR-5a: log technical detail; ERR-4b: show user-friendly message
+                self._logger.error(
+                    "Failed to export results to %s: %s", filename, e, exc_info=True
+                )
+                _emit_telemetry(
+                    "ui_error_event",
+                    tool_id="advanced_folders",
+                    error_code="export_failed",
+                )
                 Modal(
-                    "Export Error",
-                    f"Failed to export results:\n{str(e)}",
+                    _AF_Strings.MODAL_ERROR_TITLE,
+                    _AF_Strings.ERR_EXPORT_FAILED,
                     ["OK"],
                     self,
                 ).exec_()
@@ -1286,6 +1451,38 @@ class AdvancedFoldersWidget(StandardWindow if StandardWindow != QWidget else QWi
 
         return f"{s} {size_names[i]}"
 
+    def health_check(self) -> bool:
+        """GRD-2: Return True when the widget can serve requests normally."""
+        try:
+            ok = (
+                self.folder_manager is not None
+                and self.search_engine is not None
+                and self.folder_list is not None
+            )
+            return ok
+        except Exception as e:
+            self._logger.warning("health_check failed: %s", e)
+            return False
+
+    def degraded_fallback(self) -> None:
+        """GRD-3: Enter degraded mode — disable destructive actions, show status."""
+        try:
+            for btn_name in (
+                "new_folder_btn",
+                "edit_folder_btn",
+                "delete_folder_btn",
+                "search_btn",
+            ):
+                btn = getattr(self, btn_name, None)
+                if btn is not None:
+                    btn.setEnabled(False)
+            self.status_bar.showMessage(
+                "Advanced Folders is running in limited mode. Some features are unavailable."
+            )
+            self._logger.warning("Advanced Folders entered degraded fallback mode.")
+        except Exception as e:
+            self._logger.error("degraded_fallback error: %s", e)
+
     def _on_theme_changed(self, variant: str) -> None:
         """Re-apply token-driven stylesheets when theme variant changes."""
         if hasattr(self, "stats_label"):
@@ -1313,16 +1510,31 @@ class AdvancedFoldersWidget(StandardWindow if StandardWindow != QWidget else QWi
 class AdvancedFoldersGUI(AdvancedFoldersWidget):
     """Integration wrapper for RFU Hub compatibility."""
 
-    def __init__(self, config_manager=None):
+    def __init__(self, config_manager=None, hub_instance=None):
         """Initialize for RFU Hub integration.
 
         Args:
             config_manager: ConfigManager instance from RFU
+            hub_instance: Optional reference to the parent hub window
         """
         super().__init__(config_manager)
+        self._hub_instance = hub_instance
 
-        # Update window title for integration
-        self.setWindowTitle("Advanced Folders - RFU")
+        # STR-3a: window title from ui_strings
+        self.setWindowTitle(_AF_Strings.WINDOW_TITLE)
+
+        # GRD-1b/c: register with ComponentGuardian
+        self._guardian_id = register_gui_component(
+            self,
+            component_type="tool_window",
+            recovery_callback=self.degraded_fallback,
+        )
+
+        # TEL-1b: view_load telemetry
+        _emit_telemetry(
+            "ui_view_load",
+            tool_id="advanced_folders",
+        )
 
         # Track tool usage if database is available
         self.track_tool_usage()
