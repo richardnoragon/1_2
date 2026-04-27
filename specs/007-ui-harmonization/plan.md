@@ -7,6 +7,8 @@
 
 Deliver a Unified Appearance Profile (UAP) system that gives every RFU tool window the same geometry, font, and working directory; enforce a verified menu contract across all tools; lock all package dependencies to declared versions in `requirements.txt`; and publish architecture documents describing frameworks, dependencies, and packaging style.
 
+**Scope boundary** (clarified 2026-04-25): This plan covers **Phase 1 only** — the four original harmonization areas above. Phases 2–4 (UI Interaction Contract §10, Command Surface §8, Operational Guarantees §13.2, CI Enforcement §11–§12) are governed by their own constitutional sections and spec documents. This plan does NOT incorporate Phase 2–4 implementation tasks.
+
 ---
 
 ## Technical Context
@@ -17,7 +19,7 @@ Deliver a Unified Appearance Profile (UAP) system that gives every RFU tool wind
 **Testing**: pytest 8.3.5, pytest-qt 4.4.0, pytest-cov 6.1.0
 **Target Platform**: Windows-primary (pywin32), cross-platform paths via `pathlib.Path`
 **Project Type**: Single project (all source under `src/`)
-**Performance Goals**: UAP apply ≤ 50ms per window open; theme propagation to all open windows ≤ 500ms
+**Performance Goals**: UAP apply ≤ 50ms per window open; UAP signal propagation (font + geometry) to all open windows ≤ 500ms **within a cap of 10 simultaneously open tool windows** (behaviour beyond this cap is undefined and not tested)
 **Constraints**: Menu contract tests run without a display (use `QApplication` with offscreen platform); no new pip packages introduced
 **Scale/Scope**: ~30–40 tool window classes; 1 hub; 1 preferences store
 
@@ -80,6 +82,8 @@ src/
 │   ├── dialogs/
 │   │   ├── font_picker_dialog.py        NEW — shared FontPickerDialog
 │   │   └── directory_picker_dialog.py   NEW — shared DirectoryPickerDialog
+│   ├── widgets/
+│   │   └── uap_appearance_widget.py     NEW — UAPAppearanceWidget (T030)
 │   ├── menu_manager.py                  MODIFY — add Font… + Working Directory… to View menu
 │   ├── settings_dialog.py               MODIFY — ensure Appearance tab covers full UAP
 │   ├── standard_window.py               MODIFY — apply UAP on init; listen for UAP change signal
@@ -94,10 +98,19 @@ src/
 │       │   └── defaults.py              NEW — platform-aware factory defaults
 │       └── manager.py                   MODIFY — add uap convenience methods
 │
-└── tabbed_hub.py                        MODIFY — Appearance settings panel wires to UAPService
+│
+tabbed_hub.py                            MODIFY — Appearance settings panel (T036) wires to UAPService
+
+> **Governance Annotation — Hub File Path (P3-H02 — Resolved 2026-04-26, supersedes I6):**
+> The canonical GUI hub is `src/tabbed_hub.py`. T036 SHALL modify `src/tabbed_hub.py` to add the Appearance tab (FR-025).
+> `src/rfu/hub.py` is NOT a GUI module; it contains idle-watcher utilities only and SHALL NOT be modified for GUI work.
+>
+> The I6 governance annotation (Pass 1) that mandated `src/rfu/hub.py` as the hub is hereby **superseded** by P3-H02 (Pass 3). All GUI-hub task references SHALL target `src/tabbed_hub.py`. Any future migration of the hub into `src/rfu/` MUST be explicitly scheduled in Phase 4 or later and MUST NOT be implied by any Phase-3 task.
+
+> **Governance Annotation — Source Tree Completeness (G1):** T030 creates `src/gui/widgets/uap_appearance_widget.py`. Earlier drafts of plan.md did not list this file in the source-change inventory. All files created or modified by tasks MUST appear in this source tree to maintain traceability, reviewer clarity, and CI consistency. `uap_appearance_widget.py` is now listed under `src/gui/widgets/`.
 
 tests/
-├── contract/
+├── contracts/
 │   └── gui/
 │       └── test_menu_contract.py        NEW — verifies menu topology for every registered tool
 ├── unit/
@@ -147,7 +160,7 @@ Defines the required menu topology:
 - File actions (ordered): `open_file`, `save_file`, `save_as_file`, `—`, `import_data`, `export_data`, `—`, `show_preferences`, `—`, `exit`
 - View actions (must include): `theme` (submenu), `font_picker`, `working_directory_picker`
 - Help actions (must include): `about`
-- Contract tested by `tests/contract/gui/test_menu_contract.py`
+- Contract tested by `tests/contracts/gui/test_menu_contract.py`. Tests enumerate **only tools registered in the `ToolManifest`** — module scanning is not used. Detection of unregistered tool classes is a separate registration-completeness check outside FR-016 scope.
 
 #### `contracts/appearance-profile.md`
 JSON schema for a serialized `AppearanceProfile`:
@@ -158,6 +171,8 @@ JSON schema for a serialized `AppearanceProfile`:
   "is_default": false,
   "window_width": 1000,
   "window_height": 700,
+  "window_x": -1,
+  "window_y": -1,
   "font_family": "Segoe UI",
   "font_size": 10,
   "working_directory": "<absolute path or empty>",
@@ -165,6 +180,9 @@ JSON schema for a serialized `AppearanceProfile`:
   "updated_at": "<ISO8601>"
 }
 ```
+
+> **Governance Annotation — Example JSON Must Match Schema `required` Array (N14)**
+> Earlier drafts omitted `window_x` and `window_y` from the example AppearanceProfile JSON. These fields have been part of the Version-1 schema since the initial definition (see I8). All example JSON MUST include every field listed in the `"required"` array of `contracts/appearance-profile.md`. Omitting required fields from examples silently guides contributors toward producing schema-invalid profiles.
 
 ### 1.2 Data Model
 See [data-model.md](data-model.md) for entity diagrams and preference schema definitions.
@@ -187,10 +205,32 @@ See [quickstart.md](quickstart.md) for developer setup and first-run verificatio
 
 ## Progress Tracking
 
+**Clarification log** (2026-04-25 — 5 clarifications applied to spec.md, plan.md, data-model.md, contracts/):
+- C1: Phase 1 scope boundary explicit — Phases 2–4 governed by constitution §8–11
+- C2: FR-024 — inapplicable File-menu actions appear **disabled** (generic label), not hidden or renamed
+- C3: UAP 500ms SLA applies within cap of **10 simultaneously open tool windows**
+- C4: `last_used_*` fields update **silently regardless of mode** — silent tracking continues in predefined mode
+- C5: FR-016 menu contract tests enumerate from `ToolManifest` only (not module scan)
+
 - [x] Phase 0: Research — 2026-03-11
 - [x] Phase 1 contracts drafted — 2026-03-11
 - [x] Phase 1 data model — 2026-03-11
 - [x] Phase 1 quickstart — 2026-03-11
-- [x] Phase 2: Tasks (`/tasks` command) — 2026-03-11
-- [ ] Phase 3: Implementation
+- [x] Clarifications applied (C1–C5) — 2026-04-25
+- [x] Phase 2: Tasks — T001–T052 defined — 2026-04-25
+- [x] Phase 3: Implementation — T001–T052 complete — 2026-04-27
+  - T001–T017: UAP package, models, defaults, contracts
+  - T018–T026: UAPService full implementation
+  - T027–T030: GUI dialogs and widgets
+  - T031–T035: StandardWindow + SettingsDialog UAP integration
+  - T036: TabbedHub Appearance tab
+  - T037–T040: MenuManager rebuild (objectNames, open_file, themes)
+  - T041: ToolManifest registry (tool.alpha, tool.beta registered)
+  - T042–T043: ThemeManager QObject signals refactor
+  - T044–T047: Dependencies, check_dependencies.py, architecture docs
+  - T048: Contract GUI tests — 9/9 passed
+  - T049: Coverage gate — 86% (≥80% ✅)
+  - T050: Smoke test — UAP imports OK ✅
+  - T051: Tool audit — 2 tools registered ✅
+  - T052: plan.md updated ✅
 - [ ] Phase 4: Integration & Polish

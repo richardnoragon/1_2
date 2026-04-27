@@ -3,7 +3,7 @@
 **Contract ID**: `menu-contract-v1`
 **Feature**: `007-ui-harmonization`
 **Owner**: `src/gui/menu_manager.py`
-**Tested by**: `tests/contract/gui/test_menu_contract.py`
+**Tested by**: `tests/contracts/gui/test_menu_contract.py`
 
 ---
 
@@ -18,6 +18,11 @@
 | 4 | Help | `&Help` |
 
 No other top-level menus may appear between these five. Additional tool-specific menus MAY be appended AFTER `Help`.
+
+> **Advisory — Phase-2 Constitutional Menu Order (N13)**
+> The "AFTER Help" rule above applies **only to the Phase-1 5-menu topology**. It MUST NOT be interpreted as constraining the placement of Phase-2 constitutional menus.
+>
+> Constitution §7.2 defines a 7-menu topology for Phase-2: `File, Edit, View, Tools, Reports, Window, Help`. During Phase-2 planning, this contract MUST be updated to reflect the constitutional ordering. Phase-2 contributors MUST NOT encode the Phase-1 append-after-Help rule into Phase-2 contract tests.
 
 ---
 
@@ -36,7 +41,13 @@ No other top-level menus may appear between these five. Additional tool-specific
 | — | separator | — | — |
 | 6 | `exit` | `E&xit` | Ctrl+Q |
 
-When a standard File-menu action has no direct meaning for a tool, it MUST be renamed to a tool-relevant label (e.g., `Open Report…`, `Export Log…`, `Save Results…`). Actions MUST NOT be hidden or greyed out.
+For each File-menu action:
+- **Applicable** (tool has a meaningful equivalent): MUST be implemented and MAY be renamed to a tool-relevant label that preserves semantics (e.g., `&Open Report…`, `&Export Log…`).
+- **Inapplicable** (no meaningful equivalent): MUST appear in its canonical position with its **generic platform label** and MUST be **disabled (greyed out)**. MUST NOT be renamed.
+
+Actions MUST NOT be hidden, removed, or reordered.
+
+> **FR-024 (2026-04-25 — final harmonized text)**: Applicable actions MAY be renamed; inapplicable actions appear with their generic label and are disabled. This supersedes all earlier guidance that implied renaming inapplicable actions.
 
 ---
 
@@ -94,7 +105,7 @@ Contract tests do NOT validate Tools menu contents.
 
 ## Contract Validation
 
-The contract is verified by `tests/contract/gui/test_menu_contract.py` which:
+The contract is verified by `tests/contracts/gui/test_menu_contract.py` which:
 
 1. Iterates every tool class registered in `ToolManifest`.
 2. Instantiates each using `QApplication` with offscreen platform (`-platform offscreen`).

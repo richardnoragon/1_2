@@ -118,7 +118,9 @@ class SettingsDialog(QDialog):
         tab_widget.addTab(self.create_sync_tab(), "Sync")
         tab_widget.addTab(self.create_catalog_tab(), "Catalog")
         tab_widget.addTab(self.create_organize_tab(), "Organize")
+        tab_widget.addTab(self._create_appearance_tab(), "Appearance")
 
+        self.tab_widget = tab_widget  # expose for subclass addTab() (T035)
         layout.addWidget(tab_widget)
 
         # Buttons
@@ -693,3 +695,30 @@ class SettingsDialog(QDialog):
                     title="Error",
                     parent=self,
                 )
+
+    # T034 — Appearance tab
+    def _create_appearance_tab(self) -> QWidget:
+        """Create the UAP Appearance settings tab (T034)."""
+        try:
+            from src.gui.widgets.uap_appearance_widget import (
+                UAPAppearanceWidget,
+            )
+
+            container = QWidget()
+            layout = QVBoxLayout(container)
+            self._uap_widget = UAPAppearanceWidget()
+            layout.addWidget(self._uap_widget)
+            return container
+        except Exception as exc:
+            self.logger.warning("Could not load UAPAppearanceWidget: %s", exc)
+            fallback = QWidget()
+            layout = QVBoxLayout(fallback)
+            from PyQt5.QtWidgets import QLabel
+
+            layout.addWidget(QLabel("Appearance settings unavailable."))
+            return fallback
+
+    # T035 — Public addTab() for tool subclasses
+    def addTab(self, widget: QWidget, label: str) -> None:
+        """Allow subclasses to add their own tabs to the settings dialog."""
+        self.tab_widget.addTab(widget, label)

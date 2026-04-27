@@ -171,7 +171,7 @@ Sentinel value `(-1, -1)` means "use center/cascade default". `UAPService.apply(
 | UAP profile model | New `AppearanceProfile` dataclass; JSON-serialized as preference value | Avoids new DB table; profiles are user data, not application schema |
 | Font Picker | New `src/gui/dialogs/font_picker_dialog.py` using `QFontDialog` internally + live preview | Native font picker via Qt; wraps it with UAP persistence |
 | Directory Picker | New `src/gui/dialogs/directory_picker_dialog.py` wrapping `QFileDialog.getExistingDirectory` | Adds "apply to all tools" checkbox beyond native picker |
-| Menu contract tests | `tests/contract/gui/test_menu_contract.py` using `pytest-qt` | Ensures topology; complements `test_tool_interface.py` |
+| Menu contract tests | `tests/contracts/gui/test_menu_contract.py` using `pytest-qt` | Ensures topology; complements `test_tool_interface.py` |
 | Dependency audit script | `scripts/check_dependencies.py` parsing `requirements.txt` and `pip list` | Zero-dependency; runnable in CI without extra packages |
 | Docs format | Markdown tables in `docs/architecture/` | Consistent with existing docs style |
 

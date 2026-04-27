@@ -1,0 +1,124 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.10, pytest-8.4.2, pluggy-1.6.0
+PyQt5 5.15.11 -- Qt runtime 5.15.2 -- Qt compiled 5.15.2
+rootdir: C:\Users\HP1\1_2\tests\unit
+configfile: pytest.ini
+plugins: hypothesis-6.151.12, cov-7.0.0, qt-4.5.0
+collected 92 items
+
+tests\unit\preferences\test_explorer_adapters.py ssPASSED: test_hub_preferences_adapter_pref_manager_roundtrip
+.                     [  3%]
+tests\unit\preferences\test_explorer_legacy_etl.py sPASSED: test_legacy_migration_helper_removed
+.                    [  5%]
+tests\unit\preferences\test_pending_preference_alert.py PASSED: test_escalate_severity_steps_through_levels
+.PASSED: test_reopen_clears_resolution_state
+.PASSED: test_dismiss_sets_state_and_retains_metadata
+.              [  8%]
+tests\unit\preferences\test_portability.py PASSED: test_export_plain_json
+.PASSED: test_export_skips_encrypted_when_requested
+.sPASSED: test_import_skips_existing_entries_when_not_overwriting
+.PASSED: test_import_rejects_invalid_payload
+.                         [ 14%]
+tests\unit\preferences\test_preference_profile_helpers.py PASSED: test_coerce_payload_returns_copy_for_mapping
+.PASSED: test_coerce_payload_parses_json_strings
+.PASSED: test_coerce_payload_returns_empty_for_invalid_inputs[{]
+.PASSED: test_coerce_payload_returns_empty_for_invalid_inputs[[]]
+.PASSED: test_coerce_payload_returns_empty_for_invalid_inputs[None]
+.PASSED: test_coerce_payload_returns_empty_for_invalid_inputs[42]
+.PASSED: test_serialize_payload_emits_sorted_json
+.PASSED: test_serialize_payload_returns_braces_for_empty_values[None]
+.PASSED: test_serialize_payload_returns_braces_for_empty_values[value1]
+.      [ 23%]
+tests\unit\preferences\test_preference_recovery.py PASSED: test_recover_preferences_bootstraps_profile_and_alert
+.PASSED: test_recovery_updates_existing_profile
+.PASSED: test_recovery_rejects_unknown_user
+.PASSED: test_alert_metadata_merges_extra_fields
+.                  [ 28%]
+tests\unit\preferences\test_preferences_store.py PASSED: test_preferences_store_crud
+.                       [ 29%]
+tests\unit\preferences\test_uap_defaults.py PASSED: test_windows_returns_segoe_ui
+.PASSED: test_macos_returns_helvetica_neue
+.PASSED: test_linux_returns_dejavu_sans
+.PASSED: test_other_platform_returns_dejavu_sans
+.PASSED: test_width
+.PASSED: test_height
+.PASSED: test_font_size
+.PASSED: test_mode
+.PASSED: test_window_x_sentinel
+.PASSED: test_window_y_sentinel
+.PASSED: test_schema_version_present
+.                  [ 41%]
+tests\unit\preferences\test_uap_models.py PASSED: test_instantiation_succeeds_with_required_fields
+.PASSED: test_window_width_below_400_raises
+.PASSED: test_window_width_exactly_400_ok
+.PASSED: test_window_height_below_300_raises
+.PASSED: test_window_height_exactly_300_ok
+.PASSED: test_font_size_below_6_raises
+.PASSED: test_font_size_above_32_raises
+.PASSED: test_font_size_at_bounds_ok
+.PASSED: test_window_x_below_minus_one_raises
+.PASSED: test_window_y_below_minus_one_raises
+.PASSED: test_window_xy_sentinel_both_minus_one_ok
+.PASSED: test_window_xy_both_non_negative_ok
+.PASSED: test_x_positive_y_sentinel_raises
+.PASSED: test_x_sentinel_y_positive_raises
+.PASSED: test_round_trip
+.PASSED: test_schema_version_present_in_json
+.PASSED: test_from_json_preserves_schema_version
+.PASSED: test_v1_migrates_to_v2
+.PASSED: test_factory_default_sentinel_profile_id
+.PASSED: test_defaults_match_factory_defaults
+.PASSED: test_mode_accepts_last_used
+.PASSED: test_mode_accepts_predefined
+.PASSED: test_mode_rejects_invalid
+.PASSED: test_is_default_true_allowed
+.       [ 67%]
+tests\unit\preferences\test_uap_service.py PASSED: test_load_returns_factory_defaults_when_store_empty
+.PASSED: test_save_last_used_writes_all_seven_keys_regardless_of_mode
+.PASSED: test_save_last_used_writes_unconditionally_in_predefined_mode
+.PASSED: test_returns_uap_settings_in_last_used_mode
+.PASSED: test_returns_appearance_profile_in_predefined_mode
+.PASSED: test_apply_calls_resize_and_setfont
+.PASSED: test_apply_clamps_to_manifest_min_size
+.PASSED: test_apply_iterates_findchildren_for_font_propagation
+.PASSED: test_returns_home_for_non_existent_path
+.PASSED: test_returns_path_when_exists
+.PASSED: test_uses_stored_coords_when_not_sentinel
+.PASSED: test_centres_when_sentinel_and_no_open_windows
+.PASSED: test_cascades_when_sentinel_and_one_open_window
+.PASSED: test_create_profile_returns_appearance_profile
+.PASSED: test_get_profile_returns_profile_by_id
+.PASSED: test_list_profiles_includes_factory_default
+.PASSED: test_rename_profile
+.PASSED: test_duplicate_profile
+.PASSED: test_delete_profile_raises_for_factory_default
+.PASSED: test_delete_profile_raises_for_last_profile
+.PASSED: test_set_active_profile
+.PASSED: test_set_font_clamps_size_below_6
+.PASSED: test_set_font_clamps_size_above_32
+.PASSED: test_set_font_does_not_call_save_last_used
+.PASSED: test_set_font_preferences_writes_only_font_keys
+.PASSED: test_set_directory_persists_key
+.PASSED: test_set_geometry_persists_four_keys
+.PASSED: test_import_profile_returns_appearance_profile
+.PASSED: test_import_profile_factory_default_gets_new_id
+. [ 98%]
+PASSED: test_fallback_to_factory_default_when_profile_not_found
+.                                                                        [100%]
+Test summary saved to: result_system_cleanup_test_summary_2025-08-28.json
+Total tests executed: 88
+Session exit status: 0
+
+
+=============================== tests coverage ================================
+______________ coverage: platform win32, python 3.12.10-final-0 _______________
+
+Name                                   Stmts   Miss  Cover   Missing
+--------------------------------------------------------------------
+src\core\preferences\uap\__init__.py       4      0   100%
+src\core\preferences\uap\defaults.py       9      0   100%
+src\core\preferences\uap\models.py        63      0   100%
+src\core\preferences\uap\service.py      235     45    81%   31-35, 41-42, 70-71, 105-110, 203-207, 226, 234-236, 243, 267, 293-295, 300, 368, 396-398, 425-426, 449-452, 456-462, 466-468
+--------------------------------------------------------------------
+TOTAL                                    311     45    86%
+======================== 88 passed, 4 skipped in 1.36s ========================

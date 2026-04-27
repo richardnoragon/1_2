@@ -1,5 +1,234 @@
 <!--
 Sync Impact Report
+Version change: 1.37.0 → 1.37.0 (amendment — no version bump)
+TODOs resolved in this amendment:
+   - TODO(FONT_TOKENS_SPEC): RESOLVED — docs/font-tokens-spec.md published (v1.37.0).
+     Full typography & font token specification (8 tokens, platform fallbacks,
+     prohibited practices, CI enforcement) is now normative.
+   - TODO(COMMAND_TAXONOMY): RESOLVED — docs/command-surface-spec.md §9 updated
+     (v1.37.0) with complete per-tool command taxonomy tables for all 35 tools
+     across 9 categories (§9.1–§9.11).
+   - TODO(LAYOUT_TOKENS_SPEC): RESOLVED — docs/layout-tokens-spec.md published
+     (v1.37.0). Full layout token taxonomy (spacing xs–xxl, margin, border radius,
+     icon/control sizing) is now normative.
+   - TODO(UI_STRINGS_MENU_TOKENS): RESOLVED — src/rfu/ui_strings.py expanded:
+     Menu class (hub-level tokens §9.6) + 9 new tool classes added (Phase 2).
+Companion file updates (this amendment):
+   - docs/font-tokens-spec.md created (v1.37.0)
+   - docs/layout-tokens-spec.md created (v1.37.0)
+   - docs/command-surface-spec.md updated to v1.37.0 (per-tool taxonomy §9)
+   - docs/tool-capability-matrix-template.md already at v1.37.0
+   - docs/tool-capability-matrix.json: generated_by updated to constitution v1.37.0
+   - docs/menu-architecture-spec.md: bumped to v1.37.0
+   - docs/ui-interaction-contract-spec.md: bumped to v1.37.0
+   - docs/hub-menu-integration-spec.md: bumped to v1.37.0
+   - docs/ci-enforcement-spec.md: bumped to v1.37.0
+   - src/rfu/ui_strings.py: Phase 2 Menu + tool classes appended
+
+Previous Sync Impact Report
+Sync Impact Report
+Version change: 1.36.0 → 1.37.0
+Modified principles (2026-04-24 harmonization2 clarification round 3 applied):
+   - §11.7 Matrix Compliance Rules — JSON schema alignment note added:
+     "Partial" and "Unknown" are governance-level semantic states, not JSON
+     values. `null` maps to Unknown; CI MUST fail on `null` for required
+     capabilities. "Partial" = incomplete compliance treated as `false`. No
+     new JSON values added. The `?` in the template is display-only.
+   - §9.8.2 Relaunch Tool Window — TODO(RELAUNCH_TOOL_WINDOW_API) added:
+     `relaunch_tool_window()` does not exist in the codebase (zero grep
+     matches in src/). API contract to be defined and implemented in Phase 2.
+     CI MUST NOT fail for missing calls until this TODO is resolved.
+   - §9.5 Hub Menu Structure — Clarifying note added: §9.5 governs the
+     population order of menu *sources* across the whole menu bar (global →
+     Hub-specific → tool-registered). §9.7.4 governs item ordering *within*
+     each individual menu. These rules are complementary, not contradictory.
+   - §8.4 Toolbar Layout Rules — Context label "(Toolbar Surfaces)" added;
+     cross-reference to §10.5 (Dialog Surfaces) for dialog placement. This
+     resolves apparent conflict with §10.5 by making surface scope explicit.
+   - §10.5 Primary Action Rules — Context label "(Dialog Surfaces)" added;
+     cross-reference to §8.4 (Toolbar Surfaces) for toolbar placement. Both
+     rules are now surface-scoped, eliminating the apparent placement conflict.
+Added sections: none
+Modified sections: §8.4 (scope label + cross-ref), §9.5 (ordering note),
+  §9.8.2 (TODO added), §10.5 (scope label + cross-ref),
+  §11.7 (JSON schema alignment note).
+New TODOs:
+   - TODO(RELAUNCH_TOOL_WINDOW_API): Define and implement
+     `relaunch_tool_window()` API (Phase 2). Zero matches in src/ confirmed.
+Clarifications applied:
+   - §11.7 "Partial"/"Unknown" vs JSON schema: true/false/null is the full
+     JSON schema; "Partial"/"Unknown" are semantic CI interpretations only.
+   - §9.8.2 relaunch_tool_window() gap: gated behind TODO; not CI-enforced yet.
+   - §9.5 vs §9.7.4 ordering: complementary rules at different abstraction
+     levels; clarifying note prevents future misinterpretation.
+   - §10.5 vs §8.4 Primary Action placement: different UI surfaces; explicit
+     scope labels resolve the apparent contradiction.
+Companion file updates:
+   - docs/tool-capability-matrix-template.md updated to v1.37.0: NOM, WRD,
+     FNT, LYT definitions updated to match §12.1 (v1.36.0 sharpened defs).
+
+Previous Sync Impact Report
+Sync Impact Report
+Version change: 1.35.0 → 1.36.0
+Modified principles (2026-04-24 harmonization2 clarification round 2 applied):
+   - §7.3 File menu scope — Session lifecycle clarification added: Hub
+     navigation items (e.g., "Return to Hub") qualify as session lifecycle
+     actions and MUST be placed under File. Resolves latent conflict between
+     §7.3 (File for document/data ops) and §9.6 (Hub-Specific Menu Items
+     including "Return to Hub" under File). Hub-provided status per §9.7.1
+     confirmed; no conflict with tool File-item restriction.
+   - §8.1 Purpose — TODO(FONT_TOKENS_SPEC) added: harmonization2 source
+     designated §8 as "Typography & Font Token Specification" (§8.1–§8.7);
+     that content is deferred; font tokens belong to TH (Theming); full
+     Typography spec will be constitutionalized in a future phase.
+   - §8.9 Layout Tokens (new sub-section) — Stub section added stating LYT
+     requirement for spacing/safe-area margins/non-hardcoded layout values;
+     TODO(LAYOUT_TOKENS_SPEC) gates CI enforcement until layout token taxonomy
+     and naming conventions are defined.
+   - §12.1 NOM capability — Definition sharpened: NOM = structural UI naming
+     (menu items, action labels, command names, reserved verbs — §7.4.1,
+     §7.4.4). Previously "Nomenclature & wording compliance (§7.4)".
+   - §12.1 WRD capability — Definition sharpened: WRD = contextual runtime
+     text (tooltips, body text, error messages, toasts — §7.4.2, §7.4.3).
+     Previously "Wording & microcopy compliance". Boundary with NOM now crisp.
+   - §12.1 FNT capability — Note added referencing TODO(FONT_TOKENS_SPEC).
+   - §12.1 LYT capability — Note added referencing §8.9 and
+     TODO(LAYOUT_TOKENS_SPEC).
+   - §12.3 CI Integration — Specific tool count "35 tools" replaced with
+     "refer to docs/tool-capability-matrix.json" to prevent future drift.
+   - §13.1 Phase 2 — Marked "constitutionally complete" as of v1.36.0. All
+     three items (§13.1.1 UI Interaction, §13.1.2 CSH, §13.1.3 Hub UX Cohesion)
+     are governed by normative sections. Hub UX Cohesion implementation
+     (badges, last-run state, health indicators) noted as backlog, not
+     constitutional requirement.
+Added sections: §8.9 Layout Tokens (Deferred)
+Modified sections: §7.3 (session lifecycle clarification), §8.1 (TODO added),
+  §12.1 (NOM/WRD/FNT/LYT definitions sharpened), §12.3 (tool count de-hardcoded),
+  §13.1 (Phase 2 marked complete).
+New TODOs:
+   - TODO(FONT_TOKENS_SPEC): [RESOLVED v1.37.0 — see docs/font-tokens-spec.md]
+     Constitutionalize Typography & Font Token Specification.
+   - TODO(FONT_TOKENS_IMPL): Implement font token module in src/rfu/ TBD.
+   - TODO(LAYOUT_TOKENS_SPEC): [RESOLVED v1.37.0 — see docs/layout-tokens-spec.md]
+     Define full layout token taxonomy, naming conventions, safe-area margin
+     values, and CI enforcement semantics.
+   - TODO(HUB_UX_COHESION): Hub-level implementation of capability badges,
+     last-run state, and health indicators (implementation backlog only).
+Clarifications applied:
+   - §7.3 vs §9.6 conflict: resolved — "Return to Hub" is a session lifecycle
+     item ⇒ File is correct. Hub provides it; tools do not register it.
+   - NOM vs WRD boundary: NOM = structural naming; WRD = runtime copy.
+   - §12.3 tool count: de-hardcoded; registry is authoritative.
+   - Phase 2 completeness: constitutionally complete; Hub UX Cohesion is
+     implementation backlog only.
+
+Previous Sync Impact Report
+Sync Impact Report
+Version change: 1.34.0 → 1.35.0
+Modified principles (2026-04-24 harmonization2 clarification round applied):
+   - §8 Command Surface Harmonization — new constitutional section added:
+     §8.1 Purpose; §8.2 Action Classification (four tiers: Primary, Secondary,
+     Advanced, Destructive); §8.3 Command Taxonomy (five verbs: Inspect,
+     Transform, Export, Apply, Revert — full per-tool mappings deferred to
+     TODO(COMMAND_TAXONOMY)); §8.4 Toolbar Layout Rules (Primary left-most,
+     Destructive separated, Advanced in menu/overflow only); §8.5 Keyboard
+     Shortcut Rules (Primary actions MUST have shortcuts, Hub Registry
+     registration required); §8.6 String Tokens (ui_strings required; CI
+     enforcement deferred to TODO(UI_STRINGS_MENU_TOKENS)); §8.7 Context Menus
+     (Destructive last after separator); §8.8 CI Enforcement.
+   - §9.7.1 Hub Menu Integration — clarification note added: "File → Return to
+     Hub" (§9.8.1) is a Hub-provided item, not a tool-registered addition to
+     File; §9.7.1 governs tool-registered items only. Resolves apparent conflict
+     between §7.3 (File allowance) and §9.7.1 (File prohibition for tools).
+   - §9.4 Hub Menu Registry — TODO(HUB_MENU_REGISTRY_API) added: Python
+     interface for hub_menu_registry is not yet defined; CI enforcement for raw
+     Qt API rejection (§9.12) is gated behind this TODO.
+   - §12.1 OPS capability — TODO(OPS_PHASE3_SPEC) added inline: OPS marked
+     Required to track intent; CI MUST NOT fail for OPS non-compliance until
+     Phase 3 constitutional sections (§13.2) are published.
+   - §12.3 CI Integration — canonical machine-readable matrix path added
+     (docs/tool-capability-matrix.json); tool count corrected from "22" to "35"
+     (reflecting actual codebase state as of v1.35.0); current phase noted
+     (Phase 1 complete; Phase 2 newly active).
+   - §13.1.2 Command Surface Harmonization — TODO(COMMAND_TAXONOMY) added:
+     full per-tool action-to-verb mapping deferred to Phase 2 implementation.
+Added sections: §8 (§8.1–§8.8)
+Modified sections: §9.4 (TODO added), §9.7.1 (clarification note added),
+  §12.1 (TODO added to OPS row), §12.3 (matrix path, tool count, phase note
+  added), §13.1.2 (TODO added).
+New TODOs:
+   - TODO(COMMAND_TAXONOMY): [RESOLVED v1.37.0 — see docs/command-surface-spec.md §9]
+     Full Command Taxonomy per-tool mappings (Phase 2).
+   - TODO(HUB_MENU_REGISTRY_API): Python interface for Hub Menu Registry (Phase 2).
+   - TODO(UI_STRINGS_MENU_TOKENS): [RESOLVED v1.37.0 — Menu class + 9 tool classes
+     appended to src/rfu/ui_strings.py (Phase 2)]
+     Populate menu/command tokens in ui_strings.py
+   - TODO(OPS_PHASE3_SPEC): Constitutionalize Phase 3 Operational Guarantees
+     (§13.2) before OPS capability is CI-enforced.
+New spec document: docs/command-surface-spec.md
+New checklist: .specify/memory/checklist-command-surface-compliance.md
+New machine-readable matrix: docs/tool-capability-matrix.json (35 tools,
+  all capabilities initialised to false/non-compliant baseline).
+Fact corrections:
+   - "22 tools" → 35 tools (§12.3 and §11); prior count from harmonization2
+     source docs reflected an older codebase state.
+   - §8 gap resolved: §8 = Command Surface Harmonization (§13.1.2 scope).
+
+Previous Sync Impact Report
+Sync Impact Report
+Version change: 1.33.0 → 1.34.0
+Modified principles (2026-04-24 harmonization2 Phase 2–4 applied):
+   - New constitutional section §7 Menu Architecture & Nomenclature added:
+     §7.1 Purpose; §7.2 Global Menu Bar (seven top-level menus, exact order);
+     §7.3 Menu Taxonomy & Allowed Scope (File, Edit, View, Tools, Reports,
+     Window, Help — scope rules for each); §7.4 Nomenclature Rules (verb
+     forms, ellipsis, capitalization, reserved names); §7.5 Interaction
+     Behavior (keyboard navigation, accelerators, accessibility);
+     §7.6 Tool-Specific Menus (allowed categories: Tools, Reports, View only);
+     §7.7 CI Enforcement (top-level menu prohibition, nomenclature violations,
+     missing accelerators, raw strings, wrong category).
+   - New constitutional section §9 Hub Menu Integration Specification added:
+     §9.1 Purpose; §9.2 Scope; §9.3 Hub as the Menu Authority; §9.4 Hub Menu
+     Registry (registration rules, deregistration, conflict handling);
+     §9.5 Hub Menu Structure; §9.6 Hub-Specific Menu Items; §9.7 Tool Menu
+     Integration Rules (allowed categories, naming, visibility, ordering);
+     §9.8 Hub–Tool Navigation Integration (Return to Hub, Relaunch, cross-tool);
+     §9.9 Accessibility Requirements; §9.10 Telemetry Requirements;
+     §9.11 Guardian Integration; §9.12 CI Enforcement; §9.13 Future Extensibility.
+   - New constitutional section §10 UI Interaction Contract added:
+     §10.1 Purpose; §10.2 Scope; §10.3 Interaction Principles (predictability,
+     reversibility, visibility, non-blocking UI, accessibility, determinism);
+     §10.4 Action Classification (Primary, Secondary, Destructive, Advanced);
+     §10.5 Primary Action Rules; §10.6 Destructive Action Rules; §10.7
+     Long-Running Operations; §10.8 Error Handling; §10.9 Navigation Rules;
+     §10.10 Accessibility Rules; §10.11 CI Enforcement.
+   - New constitutional section §11 CI Enforcement Specification added:
+     §11.1 Purpose; §11.2 Scope; §11.3 CI Architecture Overview (five layers:
+     Static Analysis, Schema Validation, Runtime Test, Matrix Compliance,
+     Reporting); §11.4 Static Analysis Rules (TH, DR, CP, A11Y, ERR, STR, MEN,
+     FNT, LYT, WRD); §11.5 Schema Validation Rules (menu registry, telemetry,
+     preference, tool metadata); §11.6 Runtime Test Rules (INT, GRD, CE, PERF);
+     §11.7 Matrix Compliance Rules; §11.8 Reporting Requirements (machine-
+     readable JSON, human-readable Markdown, Hub dashboard); §11.9 Failure
+     Conditions; §11.10 Future Extensibility.
+   - New constitutional section §12 Tool Capability Matrix added: normative
+     capability codes (TH, DR, CP, A11Y, PERF, ERR, GRD, TEL, STR, CE, HUB,
+     MEN, NOM, FNT, LYT, WRD, INT, OPS, CI, L10N); reviewer-facing template;
+     governance dashboard linkage.
+   - New reference section §13 Harmonization Roadmap added: Phases 2–5
+     documented for governance traceability.
+Added sections: §7 (§7.1–§7.7), §9 (§9.1–§9.13), §10 (§10.1–§10.11),
+  §11 (§11.1–§11.10), §12, §13
+Modified sections: None
+New spec documents: docs/menu-architecture-spec.md,
+  docs/hub-menu-integration-spec.md, docs/ui-interaction-contract-spec.md,
+  docs/ci-enforcement-spec.md, docs/tool-capability-matrix-template.md
+New checklists: .specify/memory/checklist-menu-architecture-compliance.md,
+  .specify/memory/checklist-hub-menu-integration-compliance.md,
+  .specify/memory/checklist-ui-interaction-contract-compliance.md,
+  .specify/memory/checklist-ci-enforcement-compliance.md
+
+Previous Sync Impact Report
 Version change: 1.32.0 → 1.33.0
 Modified principles (2026-04-05 round-8 Q20 clarification applied):
    - Additional Technical & Quality Constraints §1 (Language & Framework)
@@ -2672,6 +2901,865 @@ See: docs/file-validation-exemption-spec.md (canonical spec, reference
 implementation, CI tests T1–T5),
 .specify/memory/checklist-file-validation-exemption-compliance.md
 (reviewer checklist Sections A–F).
+
+## §7 — Menu Architecture & Nomenclature
+
+### §7.1 Purpose
+
+This section defines the mandatory structure, naming, behavior, and interaction
+rules for all menus across the application suite. Its purpose is to ensure
+cross-tool predictability, accessibility, and cognitive consistency, regardless
+of platform or tool-specific GUI.
+
+### §7.2 Global Menu Bar
+
+All tools that expose a windowed GUI MUST inherit the **Global Menu Bar** unless
+explicitly exempted by governance decision.
+
+The Global Menu Bar consists of the following top-level menus, in this exact order:
+
+1. **File**
+2. **Edit**
+3. **View**
+4. **Tools**
+5. **Reports** *(optional; only shown if the tool registers reporting actions)*
+6. **Window**
+7. **Help**
+
+No tool may introduce additional top-level menus.
+
+### §7.3 Menu Taxonomy & Allowed Scope
+
+#### File
+Contains actions related to opening, saving, exporting, importing, session
+lifecycle, and application exit. Tools MAY add items under File only if they
+relate to document- or data-level operations.
+
+**Session lifecycle clarification**: Hub navigation items (e.g., "Return to Hub")
+qualify as session lifecycle actions and MUST be placed under File. These items
+are provided by the Hub (not tool-registered — see §9.7.1) and therefore do not
+conflict with the tool File-item restriction in §9.7.1.
+
+#### Edit
+Contains: Undo / Redo, Cut / Copy / Paste, Select All, Find / Replace (if
+applicable). Tools MAY NOT add domain-specific actions here.
+
+#### View
+Contains: Zoom controls, Layout toggles, Theme switching, Panel visibility.
+Tools MAY add view-related toggles but MUST NOT place actions that modify data.
+
+#### Tools
+Contains tool-specific actions, transformations, validations, and operations
+that affect data or state. This is the primary extension point for
+tool-specific functionality.
+
+#### Reports
+Contains generated reports, summaries, and exports of analytical or aggregated
+data. Tools MAY register reporting actions here. If no tool registers a
+reporting action, the menu is hidden.
+
+#### Window
+Contains window management and navigation between open tool windows.
+Hub navigation (e.g., "Return to Hub") is provided by the Hub under File
+(see §7.3 File and §9.6) — it is not a Window-menu item.
+
+#### Help
+Contains About, Diagnostics, Documentation, Keyboard shortcuts, and Telemetry
+& privacy information. Tools MAY NOT add items here except contextual help.
+
+### §7.4 Nomenclature Rules
+
+#### §7.4.1 Verb Forms
+Actions MUST use imperative verbs: *"Export Report…"*, *"Validate Input"*,
+*"Apply Changes"*. Passive or ambiguous forms are prohibited: *"Processing…"*,
+*"Handler…"*, *"Do Action"*.
+
+#### §7.4.2 Ellipsis Usage
+Use "…" ONLY when the action opens a dialog requiring further user input. No
+ellipsis for immediate actions.
+
+#### §7.4.3 Capitalization
+Title Case for menu items. Sentence case for tooltips.
+
+#### §7.4.4 Reserved Names
+The following names are globally reserved and MUST NOT be altered:
+- **Preferences** (not "Settings")
+- **Exit** (not "Quit")
+- **About**
+- **Check for Updates…**
+- **Export…**
+- **Undo / Redo**
+- **Zoom In / Zoom Out / Reset Zoom**
+
+### §7.5 Interaction Behavior
+
+All menus MUST:
+- Be fully keyboard navigable
+- Expose accelerators (Alt+F, Alt+E, etc.)
+- Expose shortcuts where applicable (Ctrl+S, Ctrl+Z, etc.)
+- Respect accessibility zoom and high-contrast modes
+- Maintain consistent ordering of items within each menu
+
+### §7.6 Tool-Specific Menus
+
+Tools with their own GUI MAY add items only under:
+- **Tools**
+- **Reports**
+- **View**
+
+Tools MUST NOT create new top-level menus.
+
+### §7.7 CI Enforcement
+
+CI MUST reject merges if:
+- A tool introduces a new top-level menu
+- A menu item violates nomenclature rules
+- A menu item lacks an accelerator
+- A menu item uses a raw string instead of a `ui_strings` token
+- A menu item appears in the wrong menu category
+
+See: docs/menu-architecture-spec.md,
+.specify/memory/checklist-menu-architecture-compliance.md
+
+---
+
+## §8 — Command Surface Harmonization
+
+### §8.1 Purpose
+
+This section establishes the normative rules for how tools classify, name, and
+surface their commands across all interaction surfaces: toolbars, context menus,
+keyboard shortcuts, and action menus. It ensures command intent is communicated
+predictably and that users can form consistent mental models across the full
+suite.
+
+<!-- RESOLVED(FONT_TOKENS_SPEC) v1.37.0: Typography & Font Token Specification
+     published as docs/font-tokens-spec.md (v1.37.0). Defines 8 font tokens
+     (font.body, font.bodyBold, font.mono, font.caption, font.captionBold,
+     font.title, font.toolHeader, font.small), platform fallback stacks,
+     minimum legibility thresholds, prohibited practices (no raw QFont
+     constructors), and CI enforcement rules. TODO(FONT_TOKENS_IMPL) remains
+     open for the implementation-side module in src/rfu/.
+-->
+
+<!-- RESOLVED(COMMAND_TAXONOMY) v1.37.0: Full per-tool Command Taxonomy
+     published in docs/command-surface-spec.md §9 (v1.37.0). Complete
+     per-tool tables covering all 35 tools across 9 categories (§9.1–§9.11)
+     map each tool's Primary Action, Secondary, Destructive, Advanced, and
+     Taxonomy Verbs (Inspect/Transform/Export/Apply/Revert).
+-->
+
+### §8.2 Action Classification
+
+All tool actions MUST be classified into exactly one of four tiers:
+
+| Tier | Label | Definition |
+|------|-------|------------|
+| **Primary** | Primary Action | The main, expected operation (e.g., Apply, Run, Validate) |
+| **Secondary** | Secondary Action | Supportive, non-destructive operations (e.g., Preview, Export) |
+| **Advanced** | Advanced Action | Expert-level or rarely used operations |
+| **Destructive** | Destructive Action | Irreversible or high-impact operations (per §G.4) |
+
+Each tool MUST document its tier assignments in its implementation documentation.
+
+### §8.3 Command Taxonomy (Phase 2)
+
+Commands MUST be named using the following five constitutional verbs when
+applicable. Where none of the five verbs fits, an imperative verb consistent
+with §7.4.1 MUST be used and the deviation noted in the tool's implementation
+documentation.
+
+| Verb | Applies to |
+|------|-----------|
+| **Inspect** | Read-only analysis and examination of files, metadata, or state |
+| **Transform** | Reversible or lossless content modification |
+| **Export** | Output to a file, clipboard, or external format |
+| **Apply** | Commit a change, write a result, or perform a side-effect operation |
+| **Revert** | Undo, restore, or roll back to a previous state |
+
+Full per-tool command taxonomy mappings are published in docs/command-surface-spec.md §9
+(RESOLVED v1.37.0 — see RESOLVED(COMMAND_TAXONOMY) comment above and §13.1.2).
+
+### §8.4 Toolbar Layout Rules *(Toolbar Surfaces)*
+
+> **Scope**: §8.4 governs **toolbar surfaces** only. For primary action
+> placement on dialog surfaces, see §10.5 (Dialog Surfaces).
+
+Where a tool exposes a toolbar:
+- Primary Action buttons MUST be placed left-most in the primary action group.
+- Destructive Action buttons MUST be visually separated (separator or spacing)
+  from the Primary and Secondary action groups.
+- Advanced Actions MUST NOT be placed in the main toolbar; they MUST appear
+  in a menu or an overflow panel.
+- Toolbar buttons MUST follow the component rules in §10.5 (PrimaryButton) and
+  §10.6 (SecondaryButton with danger styling for Destructive Actions).
+
+### §8.5 Keyboard Shortcut Rules
+
+- Each Primary Action MUST have a keyboard shortcut where technically feasible.
+- Keyboard shortcuts MUST NOT conflict with the global reserved accelerators
+  defined in §7.5.
+- If a shortcut conflict is detected at registration time the Hub MUST reject
+  it per §9.4.3.
+- Shortcut assignments MUST be registered through the Hub Menu Registry (§9.4)
+  and MUST use the `ui_strings` token system (see §8.6).
+
+### §8.6 String Tokens
+
+All command labels, toolbar button labels, and context menu item labels MUST be
+sourced from `ui_strings` tokens (`src/rfu/ui_strings.py`).
+
+**Note on current status**: `src/rfu/ui_strings.py` exists and contains skeleton
+constants per tool. Menu-item and command-label tokens are not yet fully
+populated; completing them is a Phase 2 deliverable. CI enforcement of the
+`ui_strings` token requirement (§7.7, §9.12) is deferred until
+TODO(UI_STRINGS_MENU_TOKENS) is resolved.
+
+<!-- TODO(UI_STRINGS_MENU_TOKENS): Populate menu-item and command-label tokens
+     in src/rfu/ui_strings.py for all 35 tools. Skeleton title/loading/error
+     constants exist as of v1.35.0. Full menu token coverage MUST be added
+     before the CI enforcement rules in §7.7 and §9.12 are activated.
+     Responsible: Phase 2 implementation team.
+-->
+
+### §8.7 Context Menus
+
+- Context menus MUST contain only actions relevant to the currently selected
+  item or context.
+- Context menu items MUST follow the same nomenclature rules as regular menu
+  items (§7.4).
+- Destructive Actions in context menus MUST be placed at the bottom, after a
+  separator.
+- Context menus MUST NOT duplicate the primary toolbar action without a clear
+  contextual reason.
+
+### §8.8 CI Enforcement
+
+CI MUST reject merges if:
+- A tool action is not classified into one of the four tiers in §8.2
+- A context menu places a destructive action without a preceding separator
+- A command label uses a raw string instead of a `ui_strings` token (deferred
+  until TODO(UI_STRINGS_MENU_TOKENS) is resolved)
+
+See: docs/command-surface-spec.md,
+.specify/memory/checklist-command-surface-compliance.md
+
+### §8.9 Layout Tokens (Deferred)
+
+Layout Tokens (LYT) are required by §11.4.9 for spacing, safe-area margins,
+and non-hardcoded layout values. All tools MUST use layout tokens rather than
+hardcoded spacing constants.
+
+<!-- RESOLVED(LAYOUT_TOKENS_SPEC) v1.37.0: Layout token taxonomy published
+     as docs/layout-tokens-spec.md (v1.37.0). Defines spacing tokens (xs=2px
+     through xxl=32px), margin tokens (window=16px, panel=12px, item=8px,
+     inline=4px), border radius tokens (sharp/soft/round/pill), and
+     icon/control sizing tokens. CI MAY begin enforcing LYT compliance
+     once TODO(LAYOUT_TOKENS_IMPL) is resolved (implementation module).
+-->
+
+---
+
+## §9 — Hub Menu Integration Specification
+
+### §9.1 Purpose
+
+This section establishes the mandatory rules for how the **Hub** and all
+**Hub-launched tools** integrate with the Global Menu Bar defined in §7.
+It ensures predictable navigation, consistent menu behavior, deterministic
+fallback paths, cross-tool discoverability, and a unified product identity.
+
+The Hub is the **root of truth** for menu structure, menu registration, and
+menu behavior.
+
+### §9.2 Scope
+
+This specification applies to:
+- The Hub window
+- All tool windows launched from the Hub
+- All tool GUIs that expose their own menu bar
+- All menu items registered by tools
+
+This specification supersedes any tool-specific menu definitions.
+
+### §9.3 Hub as the Menu Authority
+
+The Hub is the **canonical owner** of:
+- Top-level menu structure
+- Menu taxonomy
+- Reserved menu items
+- Global accelerators
+- Global wording and nomenclature
+
+Tools MAY register menu items, but MAY NOT modify top-level menu names, top-level
+menu ordering, reserved menu items, or global accelerators.
+
+Tools MUST register all menu items through the **Hub Menu Registry**.
+
+### §9.4 Hub Menu Registry
+
+The Hub exposes a **Menu Registry API** that all tools MUST use.
+
+<!-- TODO(HUB_MENU_REGISTRY_API): A formal Python interface specification for
+     the Hub Menu Registry is not yet defined. Tools cannot comply with the
+     registry requirement until this API is designed and published.
+     Deliverables:
+       1. Python interface definition in src/rfu/hub_menu_registry.py
+       2. Registration/deregistration contract with error handling
+       3. Conflict detection API returning structured errors
+       4. Spec document: docs/hub-menu-registry-spec.md
+     Responsible: Phase 2 implementation team.
+     CI enforcement for §9.12 (raw Qt menu API rejection) MUST be gated behind
+     this TODO resolving. Do not fail CI for raw Qt usage until the registry
+     API is available for tools to use.
+-->
+
+#### §9.4.1 Registration Rules
+Tools MUST register: their menu items, their accelerators, their tooltips,
+their enable/disable conditions, and their visibility conditions.
+Tools MUST NOT directly manipulate Qt menu objects.
+
+#### §9.4.2 Deregistration
+When a tool window closes, all tool-specific menu items MUST be automatically
+removed. Global menu items MUST remain unaffected.
+
+#### §9.4.3 Conflicts
+If two tools attempt to register the same accelerator, the Hub MUST reject the
+second registration, the Hub MUST surface a Guardian warning, and CI MUST fail
+if this occurs in automated tests.
+
+### §9.5 Hub Menu Structure
+
+The Hub MUST expose the Global Menu Bar exactly as defined in §7:
+File, Edit, View, Tools, Reports, Window, Help.
+
+The Hub MUST populate global items, Hub-specific items, and tool-registered
+items — in that order.
+
+**Note**: §9.5 governs the *population order* of menu sources across the
+entire menu bar (global → Hub-specific → tool-registered). §9.7.4 governs
+the *item ordering within* each individual menu (tool actions first,
+Hub-provided items last). These rules are complementary and operate at
+different levels of abstraction.
+
+### §9.6 Hub-Specific Menu Items
+
+The Hub MUST expose the following items in addition to the global reserved items:
+
+**File**: Return to Hub *(visible only in tool windows)*, Exit.
+
+**View**: Show Hub Tabs, Show Tool List, Reset Layout.
+
+**Tools**: Open Preferences…, Reload Tool Registry, Run Diagnostics….
+
+**Window**: Hub Home, Open Tool Window…, Switch to Previous Tool.
+
+**Help**: Hub Documentation, Keyboard Shortcuts, About Hub.
+
+These items MUST always be present and MUST NOT be overridden by tools.
+
+### §9.7 Tool Menu Integration Rules
+
+#### §9.7.1 Allowed Menu Categories
+Tools MAY add items only under: **Tools**, **Reports**, **View**.
+Tools MUST NOT add items under File, Edit, Window, or Help unless explicitly
+granted an exemption.
+
+**Clarification on §9.8.1 (File → Return to Hub)**: The "File → Return to Hub"
+item required by §9.8.1 is a **Hub-provided item** injected by the Hub into
+every tool window's menu bar. It is not a tool-registered addition to File.
+This distinction resolves the apparent conflict with §7.3 (which permits tools
+to add document/data items to File): §9.7.1 governs items registered by tools
+through the Hub Menu Registry (§9.4); Hub-provided items are exempt from this
+restriction. Tools MUST NOT register their own items under File directly.
+
+#### §9.7.2 Tool Menu Naming
+Tools MUST prefix their menu items with their tool name when ambiguity is
+possible (e.g., "Budgetinator: Validate Budget" if not unique).
+
+#### §9.7.3 Tool Menu Visibility
+Tool menu items MUST appear only when the tool window is active, disappear
+when the tool window closes, and respect enable/disable conditions defined by
+the tool.
+
+#### §9.7.4 Tool Menu Ordering
+Within each allowed menu:
+1. Tool-specific actions
+2. Tool-specific advanced actions
+3. Tool-specific diagnostics
+4. Separator
+5. Hub-provided items (always last)
+
+### §9.8 Hub–Tool Navigation Integration
+
+#### §9.8.1 Return to Hub
+Every tool window MUST expose **File → Return to Hub**, a keyboard shortcut
+(default: Ctrl+H), and a Guardian fallback if the Hub is unavailable.
+
+#### §9.8.2 Relaunch Tool Window
+Tools MUST register a relaunch action: **Window → Reopen \<ToolName\>** calling
+`relaunch_tool_window()`.
+
+<!-- TODO(RELAUNCH_TOOL_WINDOW_API): `relaunch_tool_window()` does not yet
+     exist in the codebase (confirmed grep: zero matches in src/). The API
+     contract, signature, and integration with the Hub Window Manager (§9.8.3)
+     MUST be defined and implemented during Phase 2 before this requirement
+     becomes CI-enforced. Until this TODO is resolved, CI MUST NOT fail for
+     missing `relaunch_tool_window()` calls. Responsible: Phase 2
+     implementation team. -->
+
+#### §9.8.3 Cross-Tool Navigation
+The Hub MUST maintain a list of open tool windows and expose them under
+**Window → Open Windows**. Tools MUST NOT manage this list themselves.
+
+### §9.9 Accessibility Requirements
+
+All Hub and tool menu items MUST: support keyboard navigation, expose
+accelerators, respect zoom scaling, respect high-contrast mode, and provide
+accessible names and descriptions. Tools MUST NOT override accessibility
+metadata provided by the Hub.
+
+### §9.10 Telemetry Requirements
+
+The Hub MUST emit telemetry for: menu item activation, menu item visibility
+changes, accelerator usage, tool menu registration events, and tool menu
+deregistration events. Tools MUST NOT emit telemetry for menu events directly.
+
+### §9.11 Guardian Integration
+
+If a tool fails to register its menu items, the Hub MUST surface a Guardian
+warning, the tool MUST enter degraded mode, and the Hub MUST expose a fallback
+"Tool Unavailable" item under Tools.
+
+### §9.12 CI Enforcement
+
+CI MUST reject merges if:
+- A tool attempts to add a top-level menu
+- A tool registers items under prohibited menus
+- A tool uses raw Qt menu APIs
+- A tool registers a menu item without a `ui_strings` token
+- A tool registers a menu item without an accelerator
+- A tool registers a menu item with a conflicting accelerator
+- A tool fails to deregister its menu items on close
+
+### §9.13 Future Extensibility
+
+The Hub MUST support: dynamic menu injection, dynamic menu removal, menu
+versioning, menu schema validation, and localization of all menu items.
+Tools MUST NOT implement their own localization logic.
+
+See: docs/hub-menu-integration-spec.md,
+.specify/memory/checklist-hub-menu-integration-compliance.md
+
+---
+
+## §10 — UI Interaction Contract
+
+### §10.1 Purpose
+
+This contract establishes the mandatory interaction patterns, behavioral
+guarantees, and user-experience invariants that all tools MUST follow. Its
+purpose is to ensure predictability, accessibility, and cognitive consistency
+across the entire suite.
+
+### §10.2 Scope
+
+This contract applies to: all tool windows, all dialogs/modals/toasts, all
+interactive controls, all destructive or irreversible actions, all long-running
+operations, and all Hub-launched workflows.
+
+### §10.3 Interaction Principles
+
+All tools MUST adhere to the following principles:
+
+1. **Predictability** — identical actions behave identically across tools
+2. **Reversibility** — destructive actions require explicit confirmation
+3. **Visibility** — system state and progress MUST be visible
+4. **Non-blocking UI** — no UI thread blocking beyond 100 ms
+5. **Accessibility** — all interactions MUST be keyboard-navigable and zoom-safe
+6. **Determinism** — no hidden side effects
+
+### §10.4 Action Classification
+
+All actions MUST be classified as:
+- **Primary Action** — the main operation (e.g., Apply, Run, Validate)
+- **Secondary Action** — supportive operations (e.g., Preview, Export)
+- **Destructive Action** — irreversible or high-impact operations
+- **Advanced Action** — expert-level or rarely used operations
+
+Tools MUST expose these classes consistently.
+
+### §10.5 Primary Action Rules *(Dialog Surfaces)*
+
+> **Scope**: §10.5 governs **dialog surfaces** only. For primary action
+> placement on toolbar surfaces, see §8.4 (Toolbar Surfaces).
+
+Primary actions MUST:
+- Use a **PrimaryButton**
+- Be placed in the **bottom-right** of dialogs
+- Use imperative verbs
+- Emit telemetry (`ui_user_action`)
+- Respect dry-run mode
+
+### §10.6 Destructive Action Rules
+
+Destructive actions MUST:
+- Use a **SecondaryButton** with danger styling
+- Trigger a **confirmation modal**
+- Support dry-run mode
+- Emit telemetry (`ui_error_event` if failed)
+- Provide a clear description of consequences
+
+### §10.7 Long-Running Operations
+
+All long-running operations MUST:
+- Move work off the UI thread
+- Display a **LoadingIndicator**
+- Disable conflicting controls
+- Emit telemetry (`perf_start` / `perf_end`)
+- Support cancellation if feasible
+
+### §10.8 Error Handling
+
+All tools MUST:
+- Surface errors using the shared **ModalError** component
+- Provide actionable messages
+- Avoid raw exception strings
+- Emit telemetry (`ui_error_event`)
+- Provide Guardian fallback if the tool becomes degraded
+
+### §10.9 Navigation Rules
+
+Tools MUST:
+- Provide **Return to Hub** (per §9.8.1)
+- Register with the Hub Window Manager
+- Respect the global menu structure (per §7)
+- Expose consistent keyboard shortcuts
+
+### §10.10 Accessibility Rules
+
+All tools MUST:
+- Provide accessible names and descriptions
+- Support full keyboard navigation
+- Respect zoom scaling
+- Avoid color-only indicators
+- Maintain minimum touch targets (per §7 Accessibility constraint)
+
+### §10.11 CI Enforcement
+
+CI MUST reject merges if:
+- A tool violates any interaction rule
+- A destructive action lacks confirmation
+- A long-running action blocks the UI thread
+- A tool uses raw Qt widgets instead of shared components
+- A tool omits telemetry for primary actions
+
+See: docs/ui-interaction-contract-spec.md,
+.specify/memory/checklist-ui-interaction-contract-compliance.md
+
+---
+
+## §11 — CI Enforcement Specification
+
+### §11.1 Purpose
+
+This specification defines the mandatory CI rules, automated checks, failure
+conditions, and reporting requirements that enforce the **Tool Capability Matrix**
+and all associated constitutional sections. Its purpose is to ensure:
+- Deterministic enforcement of governance
+- Prevention of regressions
+- Uniform behavior across all tools
+- Zero reliance on human memory or reviewer intuition
+- Auditability and traceability of compliance
+
+CI is the **final authority** on whether a tool is allowed to merge.
+
+### §11.2 Scope
+
+CI MUST enforce:
+- All harmonization domains (TH, DR, CP, A11Y, PERF, ERR, GRD, TEL, STR, CE, HUB)
+- All interaction rules (INT)
+- All operational guarantees (OPS)
+- All menu, nomenclature, typography, and layout rules (MEN, NOM, FNT, LYT, WRD)
+- All localization readiness rules (L10N, when enabled)
+
+CI MUST reject merges that violate any rule in this section.
+
+### §11.3 CI Architecture Overview
+
+CI MUST consist of the following enforcement layers:
+
+1. **Static Analysis Layer** — Detects violations in code, strings, menus, fonts, and layout.
+2. **Schema Validation Layer** — Validates tool metadata, menu registrations, telemetry schemas, and preference schemas.
+3. **Runtime Test Layer** — Executes automated UI tests, Guardian tests, CE tests, and performance tests.
+4. **Matrix Compliance Layer** — Ensures each tool satisfies all required capabilities.
+5. **Reporting Layer** — Produces machine-readable compliance reports and human-readable summaries.
+
+Each layer MUST run on every PR.
+
+### §11.4 Static Analysis Rules
+
+CI MUST fail if any of the following are detected:
+
+#### §11.4.1 Theming (TH)
+Raw color values (hex, rgb, rgba); raw font declarations; missing theme token
+usage; missing `_on_theme_changed` handlers.
+
+#### §11.4.2 Dry-Run (DR)
+Destructive actions without dry-run branching; missing dry-run toggle wiring.
+
+#### §11.4.3 Shared Components (CP)
+Raw Qt widgets where shared components exist; custom button classes duplicating
+Primary/SecondaryButton; custom modal implementations.
+
+#### §11.4.4 Accessibility (A11Y)
+Missing accessible names; missing accessible descriptions; color-only
+indicators; touch targets below minimum size.
+
+#### §11.4.5 Error Handling (ERR)
+`str(e)` surfaced directly to UI; missing `logger.error`; missing error codes;
+missing ModalError usage.
+
+#### §11.4.6 Strings (STR)
+Raw user-visible strings not in `ui_strings.py`; hardcoded English text;
+missing string tokens.
+
+#### §11.4.7 Menu Architecture (MEN)
+Tools adding top-level menus; tools registering items under prohibited menus;
+missing accelerators; violations of nomenclature rules.
+
+#### §11.4.8 Typography (FNT)
+Raw font families; raw pixel sizes; missing font tokens.
+
+#### §11.4.9 Layout (LYT)
+Missing safe-area margins; hardcoded spacing not using layout tokens;
+inconsistent padding.
+
+#### §11.4.10 Wording (WRD)
+Non-imperative verbs in action labels; incorrect ellipsis usage; inconsistent
+capitalization.
+
+### §11.5 Schema Validation Rules
+
+CI MUST validate:
+
+#### §11.5.1 Menu Registry Schema
+All menu items registered via Hub Menu Registry; no direct Qt menu manipulation;
+no accelerator conflicts; correct menu category usage.
+
+#### §11.5.2 Telemetry Schema
+All events follow naming conventions; required fields present; no unregistered
+event types.
+
+#### §11.5.3 Preference Schema
+All preferences follow naming conventions; versioning rules respected; migration
+scripts present when needed.
+
+#### §11.5.4 Tool Metadata Schema
+Tool name, tool classification (Standard / CE), tool capabilities, tool owner.
+
+### §11.6 Runtime Test Rules
+
+CI MUST execute:
+
+#### §11.6.1 UI Interaction Tests (INT)
+Primary actions use PrimaryButton; destructive actions trigger confirmation
+modals; LoadingIndicator appears for long-running operations; no UI thread
+blocking > 100 ms.
+
+#### §11.6.2 Guardian Tests (GRD)
+`register_gui_component()` called; `health_check()` returns valid state;
+`degraded_fallback()` functional.
+
+#### §11.6.3 Critical Engine Tests (CE)
+For CE-classified tools: property-based tests, scenario tests, irreversibility
+tests, security-sensitive behavior tests.
+
+#### §11.6.4 Performance Tests (PERF)
+Worker offloading verified; no synchronous I/O on UI thread; perf markers
+emitted.
+
+### §11.7 Matrix Compliance Rules
+
+CI MUST:
+- Load the Tool Capability Matrix (§12)
+- Evaluate each capability for the tool under test
+- Fail if any required capability is missing
+- Fail if any capability is marked "Partial"
+- Fail if any capability is marked "Unknown"
+
+Tools MUST be **fully compliant** to merge.
+
+**JSON schema alignment**: The machine-readable matrix
+(`docs/tool-capability-matrix.json`) uses three values: `true` (compliant),
+`false` (non-compliant), `null` (unknown/undeclared). "Partial" and "Unknown"
+in this section are **governance-level semantic states**, not JSON values.
+`null` maps to the "Unknown" state; CI MUST fail on `null` for required
+capabilities. "Partial" means incomplete compliance and is treated as `false`
+by CI. No additional JSON values are defined. The `?` symbol used in
+`docs/tool-capability-matrix-template.md` is a **display-only** representation
+of `null` and carries no additional machine-readable semantics.
+
+### §11.8 Reporting Requirements
+
+#### §11.8.1 Machine-Readable Report
+JSON file; one entry per capability; Pass/Fail/Not Applicable; error messages;
+line numbers for violations.
+
+#### §11.8.2 Human-Readable Summary
+Markdown summary; capability table; violations grouped by category; suggested
+fixes.
+
+#### §11.8.3 Hub Dashboard Integration
+CI MUST update the Hub's governance dashboard with: tool compliance status,
+last reviewed date, reviewer, and phase gate status.
+
+### §11.9 Failure Conditions
+
+CI MUST fail the PR if any rule in §11.4–§11.7 is violated, any test fails,
+any schema validation fails, any capability is missing, any reserved name is
+violated, any accelerator conflict exists, or any raw string is detected.
+
+CI MUST NOT allow overrides except by constitutional amendment.
+
+### §11.10 Future Extensibility
+
+CI MUST support: localization checks (L10N), plugin tool validation,
+multi-tool scenario validation, and cross-tool consistency checks.
+Tools MUST NOT implement their own CI logic.
+
+See: docs/ci-enforcement-spec.md,
+.specify/memory/checklist-ci-enforcement-compliance.md
+
+---
+
+## §12 — Tool Capability Matrix
+
+The Tool Capability Matrix is the normative governance artifact that tracks
+compliance for every tool in the suite. It MUST be maintained and updated
+whenever a tool's compliance status changes.
+
+### §12.1 Capability Codes
+
+| Code | Domain | Required |
+|------|--------|----------|
+| **TH** | Theming compliance (tokens, live updates) | Yes |
+| **DR** | Dry-run support before destructive actions | Yes |
+| **CP** | Shared components (buttons, modals, toasts) | Yes |
+| **A11Y** | Accessibility compliance | Yes |
+| **PERF** | UI-thread audit, worker offloading | Yes |
+| **ERR** | Error handling contract | Yes |
+| **GRD** | Guardian registration & fallback | Yes |
+| **TEL** | Telemetry events (load, action, error, perf) | Yes |
+| **STR** | Centralized strings | Yes |
+| **CE** | Critical Engine tests (if applicable) | Conditional |
+| **HUB** | Hub integration & relaunch | Yes |
+| **MEN** | Menu architecture compliance (§7) | Yes |
+| **NOM** | Nomenclature — structural UI naming: menu items, action labels, command names, reserved verbs (§7.4.1, §7.4.4) | Yes |
+| **FNT** | Font token compliance (see docs/font-tokens-spec.md v1.37.0 — RESOLVED) | Yes |
+| **LYT** | Layout structure compliance (see docs/layout-tokens-spec.md v1.37.0 — RESOLVED) | Yes |
+| **WRD** | Wording/Microcopy — contextual runtime text: tooltips, body text, error messages, toasts (§7.4.2, §7.4.3) | Yes |
+| **INT** | UI Interaction Contract compliance (§10) | Yes |
+| **OPS** | Operational Guarantees compliance <!-- TODO(OPS_PHASE3_SPEC): OPS compliance requires constitutionalizing Phase 3 (§13.2 — Undo/Redo Semantics, Cross-Tool Error Taxonomy, Cross-Tool Logging, State Persistence). Phase 3 is not yet constitutionalized as of v1.35.0. OPS is marked Required to track intent; however, CI MUST NOT fail for OPS non-compliance until the Phase 3 constitutional sections and their spec documents are published. This TODO is open until §13.2 items are formally constitutionalized. --> | Yes |
+| **CI** | CI rule compliance (§11) | Yes |
+| **L10N** | Localization readiness | Future |
+
+### §12.2 Per-Tool Tracking
+
+For each tool, the matrix MUST track:
+- Compliance status per capability (☑ compliant / ☐ non-compliant / N/A)
+- Tool Owner
+- Last Reviewed date
+- Reviewer name
+- Phase Gate Status
+
+The canonical template is maintained in docs/tool-capability-matrix-template.md.
+
+### §12.3 CI Integration
+
+The Tool Capability Matrix MUST be:
+- Machine-readable (JSON or YAML)
+- Validated by CI on every PR (per §11.7)
+- Updated as part of any PR that changes tool capabilities
+
+The canonical machine-readable matrix is maintained in
+`docs/tool-capability-matrix.json`. This file is the authoritative tool
+registry for CI validation. The authoritative tool count is determined by
+`docs/tool-capability-matrix.json` — refer to the registry rather than any
+numeric count in this document (the prior "22 tools" count in earlier
+harmonization2 source documents reflected an earlier state of the codebase).
+
+**Current harmonization phase**: Phase 1 is complete. Phase 2 (Interaction
+Model & UX Determinism) is newly active as of v1.35.0. §10 (UI Interaction
+Contract) and §8 (Command Surface Harmonization) are the Phase 2 governing
+sections.
+
+---
+
+## §13 — Harmonization Roadmap
+
+This section documents the harmonization roadmap for governance traceability.
+The roadmap is organized by dependency order and governance leverage.
+
+### §13.1 Phase 2 — Interaction Model & UX Determinism
+
+Phase 2 is **constitutionally complete** as of v1.36.0. All three items below
+are governed by normative sections. Implementation backlog items are tracked
+outside the constitution.
+
+- **§13.1.1 Unified Interaction Patterns** — Standardized modal patterns, toast
+  semantics, LoadingIndicator semantics, navigation rules. Governed by §10.
+- **§13.1.2 Command Surface Harmonization** — Normalized toolbar layout, keyboard
+  shortcuts, context menus, action grouping (Primary, Secondary, Advanced).
+  Command Taxonomy: Inspect, Transform, Export, Apply, Revert.
+  Governed by §8 (structural framework). <!-- RESOLVED(COMMAND_TAXONOMY) v1.37.0:
+  Full per-tool action-to-verb mapping published in docs/command-surface-spec.md §9;
+  all 35 tools covered across 9 categories (§9.1–§9.11). -->
+- **§13.1.3 Hub UX Cohesion** — Tool capability badges (DR, CE, A11Y,
+  PERF-critical), recent activity / last-run state, tool health indicators
+  from ComponentGuardian. Constitutional governance via §9 (Hub Menu
+  Integration). <!-- TODO(HUB_UX_COHESION): Badges, last-run state, and
+  health indicators are Hub-level implementation items. They are NOT
+  constitutional requirements; they are implementation backlog only.
+  This TODO is open until Hub UX Cohesion implementation is delivered. -->
+
+### §13.2 Phase 3 — Operational Guarantees & Cross-Tool Contracts
+
+Phase 3 makes the suite predictable, auditable, and enforceable.
+
+- **§13.2.1 Unified Undo/Redo Semantics** — Tools MUST declare whether undo is
+  supported; consistent Undo Stack view; undoable actions logged to telemetry.
+- **§13.2.2 Cross-Tool Logging & Audit Trail** — Standard event schema, standard
+  correlation IDs, standard error codes, standard perf markers.
+- **§13.2.3 Cross-Tool Error Taxonomy** — Global error code registry; tool domain
+  errors mapped into shared taxonomy; HubErrorScreen interprets all codes.
+- **§13.2.4 State Persistence & Preference Contracts** — Preference schema
+  contract: naming conventions, versioning rules, migration rules,
+  export/import invariants; all tools use the same preference storage backend.
+
+### §13.3 Phase 4 — Tool-Level Harmonization & Quality Gates
+
+Phase 4 enforces consistency across all tools.
+
+- **§13.3.1 Tool Capability Matrix** — Per-tool compliance sheet (§12).
+  Implemented in §12. This is the governance dashboard.
+- **§13.3.2 Cross-Platform Behavioral Parity** — Same keyboard shortcuts, layout
+  rules, fallback behavior, and Guardian degradation semantics.
+- **§13.3.3 CI Enforcement** — CI checks for missing ui_strings, missing
+  telemetry, missing Guardian registration, missing dry-run support, missing
+  accessibility metadata, UI-thread blocking > 100ms, preference schema
+  violations. Implemented in §11.
+
+### §13.4 Phase 5 — Future-Proofing & Extensibility
+
+- **§13.4.1 Multilingual Support** — Locale packs, runtime locale switching,
+  missing-string detection in CI.
+- **§13.4.2 Plugin Architecture for Tools** — Declarative tool registration,
+  command surfaces, preferences, and telemetry schemas.
+- **§13.4.3 Cross-Tool Scenario Flows** — Tool pipelines (A → B → C), shared
+  data models, shared validation rules.
+
+---
 
 ## Additional Technical & Quality Constraints
 

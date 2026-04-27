@@ -1,0 +1,282 @@
+# **A. MENU ARCHITECTURE AND NOMENCLATURE CONTRACT**  
+### *(Constitution §7 — Menu Architecture & Nomenclature)*
+
+## **§7.1 Purpose**
+This section defines the mandatory structure, naming, behavior, and interaction rules for all menus across the application suite.  
+Its purpose is to ensure cross‑tool predictability, accessibility, and cognitive consistency, regardless of platform or tool‑specific GUI.
+
+---
+
+## **§7.2 Global Menu Bar**
+All tools that expose a windowed GUI MUST inherit the **Global Menu Bar** unless explicitly exempted by governance decision.
+
+The Global Menu Bar consists of the following top‑level menus, in this exact order:
+
+1. **File**  
+2. **Edit**  
+3. **View**  
+4. **Tools**  
+5. **Reports** *(optional; only shown if the tool registers reporting actions)*  
+6. **Window**  
+7. **Help**
+
+No tool may introduce additional top‑level menus.
+
+---
+
+## **§7.3 Menu Taxonomy & Allowed Scope**
+
+### **File**
+Contains actions related to:
+- Opening, saving, exporting, importing  
+- Session lifecycle  
+- Application exit  
+
+Tools MAY add items under File only if they relate to document‑ or data‑level operations.
+
+### **Edit**
+Contains:
+- Undo / Redo  
+- Cut / Copy / Paste  
+- Select All  
+- Find / Replace (if applicable)
+
+Tools MAY NOT add domain‑specific actions here.
+
+### **View**
+Contains:
+- Zoom controls  
+- Layout toggles  
+- Theme switching  
+- Panel visibility  
+
+Tools MAY add view‑related toggles but MUST NOT place actions that modify data.
+
+### **Tools**
+Contains:
+- Tool‑specific actions  
+- Transformations  
+- Validations  
+- Operations that affect data or state  
+
+This is the primary extension point for tool‑specific functionality.
+
+### **Reports**
+Contains:
+- Generated reports  
+- Summaries  
+- Exports of analytical or aggregated data  
+
+Tools MAY register reporting actions here.  
+If no tool registers a reporting action, the menu is hidden.
+
+### **Window**
+Contains:
+- Window management  
+- Navigation between open tool windows  
+- “Return to Hub” action  
+
+### **Help**
+Contains:
+- About  
+- Diagnostics  
+- Documentation  
+- Keyboard shortcuts  
+- Telemetry & privacy information  
+
+Tools MAY NOT add items here except contextual help.
+
+---
+
+## **§7.4 Nomenclature Rules**
+All menu items MUST follow the naming rules below:
+
+### **§7.4.1 Verb Forms**
+- Actions MUST use **imperative verbs**:  
+  *“Export Report…”*, *“Validate Input”*, *“Apply Changes”*
+- Passive or ambiguous forms are prohibited:  
+  *“Processing…”*, *“Handler…”*, *“Do Action”*
+
+### **§7.4.2 Ellipsis Usage**
+- Use “…” ONLY when the action opens a dialog requiring further user input.  
+- No ellipsis for immediate actions.
+
+### **§7.4.3 Capitalization**
+- Title Case for menu items  
+- Sentence case for tooltips
+
+### **§7.4.4 Reserved Names**
+The following names are globally reserved and MUST NOT be altered:
+
+- **Preferences** (not “Settings”)  
+- **Exit** (not “Quit”)  
+- **About**  
+- **Check for Updates…**  
+- **Export…**  
+- **Undo / Redo**  
+- **Zoom In / Zoom Out / Reset Zoom**
+
+---
+
+## **§7.5 Interaction Behavior**
+All menus MUST:
+
+- Be fully keyboard navigable  
+- Expose accelerators (Alt+F, Alt+E, etc.)  
+- Expose shortcuts where applicable (Ctrl+S, Ctrl+Z, etc.)  
+- Respect accessibility zoom and high‑contrast modes  
+- Maintain consistent ordering of items within each menu
+
+---
+
+## **§7.6 Tool-Specific Menus**
+Tools with their own GUI MAY add items only under:
+
+- **Tools**  
+- **Reports**  
+- **View**  
+
+Tools MUST NOT create new top‑level menus.
+
+---
+
+## **§7.7 CI Enforcement**
+CI MUST reject merges if:
+
+- A tool introduces a new top‑level menu  
+- A menu item violates nomenclature rules  
+- A menu item lacks an accelerator  
+- A menu item uses a raw string instead of a ui_strings token  
+- A menu item appears in the wrong menu category  
+
+---
+
+# **B. TYPOGRAPHY & FONT TOKEN SPECIFICATION**  
+### *(Constitution §8 — Typography & Font System)*
+
+## **§8.1 Purpose**
+This section defines the canonical font tokens, fallback stacks, scaling rules, and usage constraints for all textual UI elements across the application suite.
+
+Its purpose is to ensure cross‑platform visual consistency, accessibility compliance, and deterministic rendering.
+
+---
+
+## **§8.2 Font Token Set**
+All text MUST be rendered using the following font tokens.  
+Raw font declarations are prohibited.
+
+### **§8.2.1 Core Tokens**
+- `font.body` — Primary text  
+- `font.bodyBold` — Emphasized primary text  
+- `font.caption` — Secondary text, labels, metadata  
+- `font.title` — Section headers, tool headers  
+- `font.mono` — Code, logs, diagnostics  
+- `font.button` — Button labels  
+- `font.tooltip` — Tooltip text  
+- `font.numeric` — Numeric data, tables, measurements  
+
+### **§8.2.2 Token Definitions**
+Each token defines:
+
+- Font family  
+- Weight  
+- Size  
+- Line height  
+- Platform fallback stack  
+
+Tokens MUST NOT be redefined by tools.
+
+---
+
+## **§8.3 Platform Fallback Stacks**
+Each token MUST use the following fallback stacks:
+
+### **Windows**
+```
+Segoe UI, Arial, Helvetica, sans-serif
+```
+
+### **macOS**
+```
+SF Pro Text, Helvetica Neue, Helvetica, Arial, sans-serif
+```
+
+### **Linux**
+```
+Ubuntu, Cantarell, DejaVu Sans, sans-serif
+```
+
+### **Monospace**
+```
+Consolas, Menlo, DejaVu Sans Mono, monospace
+```
+
+Tools MUST NOT specify platform‑specific fonts directly.
+
+---
+
+## **§8.4 Scaling & Accessibility**
+All font tokens MUST:
+
+- Scale with the global accessibility zoom factor  
+- Respect minimum legibility thresholds:
+  - Body text ≥ 12 px  
+  - Captions ≥ 10 px  
+  - Buttons ≥ 12 px  
+  - Titles ≥ 14 px  
+- Support dynamic resizing without layout breakage  
+- Maintain contrast ratios defined in Constitution §7 (A11Y)
+
+---
+
+## **§8.5 Usage Rules**
+### **§8.5.1 Body Text**
+Use `font.body` for all paragraphs, labels, and general UI text.
+
+### **§8.5.2 Titles**
+Use `font.title` for:
+- Tool headers  
+- Section headers  
+- Dialog titles  
+
+### **§8.5.3 Buttons**
+Use `font.button` for:
+- PrimaryButton  
+- SecondaryButton  
+- TertiaryButton  
+
+### **§8.5.4 Monospace**
+Use `font.mono` for:
+- Logs  
+- Diagnostics  
+- Code snippets  
+- Telemetry event previews  
+
+### **§8.5.5 Captions**
+Use `font.caption` for:
+- Metadata  
+- Footnotes  
+- Status bars  
+
+---
+
+## **§8.6 Prohibited Practices**
+The following are prohibited:
+
+- Raw font declarations  
+- Inline font overrides  
+- Hardcoded pixel sizes  
+- Tool‑specific font families  
+- Using monospace fonts for non‑technical text  
+- Using bold for emphasis instead of `font.bodyBold`
+
+---
+
+## **§8.7 CI Enforcement**
+CI MUST reject merges if:
+
+- A raw font declaration is detected  
+- A tool uses a font not defined in the token set  
+- A font token is used in a prohibited context  
+- A UI element violates minimum legibility thresholds  
+- A tool defines its own font family or size  

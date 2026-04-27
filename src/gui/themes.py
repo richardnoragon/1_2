@@ -6,7 +6,7 @@ This module provides consistent styling and appearance across all utilities.
 
 from typing import Callable, List
 
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import QObject, Qt, pyqtSignal
 from PyQt5.QtGui import QColor, QFont
 
 
@@ -735,10 +735,26 @@ class Styles:
 
 
 # Utility functions
-class ThemeManager:
-    """Manager for applying themes consistently and dynamically."""
+class _ThemeManagerSignals(QObject):
+    """QObject carrier for ThemeManager signals (T042)."""
 
+    uap_font_changed = pyqtSignal(str, int)
+    uap_geometry_changed = pyqtSignal(int, int, int, int)
+    theme_changed = pyqtSignal(str)
+
+
+class ThemeManager:
+    """Manager for applying themes consistently and dynamically (T042-T043)."""
+
+    _instance: "_ThemeManagerSignals | None" = None
     _theme_changed_callbacks: List[Callable] = []
+
+    @classmethod
+    def instance(cls) -> "_ThemeManagerSignals":
+        """Return the singleton QObject signals carrier (T043)."""
+        if cls._instance is None:
+            cls._instance = _ThemeManagerSignals()
+        return cls._instance
 
     @classmethod
     def add_theme_changed_callback(cls, callback):
@@ -764,6 +780,8 @@ class ThemeManager:
                 callback(theme_name)
             except Exception as e:
                 print(f"Error in theme change callback: {e}")
+        # Emit QObject signal (T042)
+        cls.instance().theme_changed.emit(theme_name)
 
     @classmethod
     def get_current_theme(cls) -> str:
@@ -907,6 +925,11 @@ class ThemeManager:
             ThemeManager.style_input_field(widget)
         elif "Button" in widget_class:
             ThemeManager.style_primary_button(widget)
+
+    @staticmethod
+    def apply_dialog_theme(dialog):
+        """Apply consistent theme styling to a QDialog."""
+        dialog.setStyleSheet(Styles.get_main_window_style())
 
     @staticmethod
     def create_standard_layout(parent=None):

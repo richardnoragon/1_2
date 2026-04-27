@@ -1,0 +1,65 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.10, pytest-8.4.2, pluggy-1.6.0 -- C:\Users\HP1\1_2\.venv312\Scripts\python.exe
+cachedir: .pytest_cache
+hypothesis profile 'default'
+PyQt5 5.15.11 -- Qt runtime 5.15.2 -- Qt compiled 5.15.2
+rootdir: C:\Users\HP1\1_2\tests\unit
+configfile: pytest.ini
+plugins: hypothesis-6.151.12, cov-7.0.0, qt-4.5.0
+collecting ... collected 30 items
+
+tests\unit\preferences\test_uap_service.py::TestLoad::test_load_returns_factory_defaults_when_store_empty PASSED: test_load_returns_factory_defaults_when_store_empty
+PASSED [  3%]
+tests\unit\preferences\test_uap_service.py::TestSaveLastUsed::test_save_last_used_writes_all_seven_keys_regardless_of_mode PASSED: test_save_last_used_writes_all_seven_keys_regardless_of_mode
+PASSED [  6%]
+tests\unit\preferences\test_uap_service.py::TestSaveLastUsed::test_save_last_used_writes_unconditionally_in_predefined_mode PASSED: test_save_last_used_writes_unconditionally_in_predefined_mode
+PASSED [ 10%]
+tests\unit\preferences\test_uap_service.py::TestGetActiveSettings::test_returns_uap_settings_in_last_used_mode PASSED: test_returns_uap_settings_in_last_used_mode
+PASSED [ 13%]
+tests\unit\preferences\test_uap_service.py::TestGetActiveSettings::test_returns_appearance_profile_in_predefined_mode PASSED: test_returns_appearance_profile_in_predefined_mode
+PASSED [ 16%]
+tests\unit\preferences\test_uap_service.py::TestApply::test_apply_calls_resize_and_setfont PASSED: test_apply_calls_resize_and_setfont
+PASSED [ 20%]
+tests\unit\preferences\test_uap_service.py::TestApply::test_apply_clamps_to_manifest_min_size PASSED: test_apply_clamps_to_manifest_min_size
+PASSED [ 23%]
+tests\unit\preferences\test_uap_service.py::TestApply::test_apply_iterates_findchildren_for_font_propagation PASSED: test_apply_iterates_findchildren_for_font_propagation
+PASSED [ 26%]
+tests\unit\preferences\test_uap_service.py::TestResolveDirectory::test_returns_home_for_non_existent_path PASSED: test_returns_home_for_non_existent_path
+PASSED [ 30%]
+tests\unit\preferences\test_uap_service.py::TestResolveDirectory::test_returns_path_when_exists PASSED: test_returns_path_when_exists
+PASSED [ 33%]
+tests\unit\preferences\test_uap_service.py::TestPlaceWindow::test_uses_stored_coords_when_not_sentinel PASSED: test_uses_stored_coords_when_not_sentinel
+PASSED [ 36%]
+tests\unit\preferences\test_uap_service.py::TestPlaceWindow::test_centres_when_sentinel_and_no_open_windows PASSED: test_centres_when_sentinel_and_no_open_windows
+PASSED [ 40%]
+tests\unit\preferences\test_uap_service.py::TestPlaceWindow::test_cascades_when_sentinel_and_one_open_window PASSED: test_cascades_when_sentinel_and_one_open_window
+PASSED [ 43%]
+tests\unit\preferences\test_uap_service.py::TestProfileCRUD::test_create_profile_returns_appearance_profile PASSED: test_create_profile_returns_appearance_profile
+PASSED [ 46%]
+tests\unit\preferences\test_uap_service.py::TestProfileCRUD::test_get_profile_returns_profile_by_id PASSED: test_get_profile_returns_profile_by_id
+PASSED [ 50%]
+tests\unit\preferences\test_uap_service.py::TestProfileCRUD::test_list_profiles_includes_factory_default PASSED: test_list_profiles_includes_factory_default
+PASSED [ 53%]
+tests\unit\preferences\test_uap_service.py::TestProfileCRUD::test_rename_profile PASSED: test_rename_profile
+PASSED [ 56%]
+tests\unit\preferences\test_uap_service.py::TestProfileCRUD::test_duplicate_profile PASSED: test_duplicate_profile
+PASSED [ 60%]
+tests\unit\preferences\test_uap_service.py::TestProfileCRUD::test_delete_profile_raises_for_factory_default PASSED: test_delete_profile_raises_for_factory_default
+PASSED [ 63%]
+tests\unit\preferences\test_uap_service.py::TestProfileCRUD::test_delete_profile_raises_for_last_profile PASSED: test_delete_profile_raises_for_last_profile
+PASSED [ 66%]
+tests\unit\preferences\test_uap_service.py::TestProfileCRUD::test_set_active_profile PASSED: test_set_active_profile
+PASSED [ 70%]
+tests\unit\preferences\test_uap_service.py::TestSetFont::test_set_font_clamps_size_below_6 PASSED: test_set_font_clamps_size_below_6
+PASSED [ 73%]
+tests\unit\preferences\test_uap_service.py::TestSetFont::test_set_font_clamps_size_above_32 PASSED: test_set_font_clamps_size_above_32
+PASSED [ 76%]
+tests\unit\preferences\test_uap_service.py::TestSetFont::test_set_font_does_not_call_save_last_used PASSED: test_set_font_does_not_call_save_last_used
+PASSED [ 80%]
+tests\unit\preferences\test_uap_service.py::TestSetFont::test_set_font_preferences_writes_only_font_keys PASSED: test_set_font_preferences_writes_only_font_keys
+PASSED [ 83%]
+tests\unit\preferences\test_uap_service.py::TestSetDirectory::test_set_directory_persists_key PASSED: test_set_directory_persists_key
+PASSED [ 86%]
+tests\unit\preferences\test_uap_service.py::TestSetGeometry::test_set_geometry_persists_four_keys PASSED: test_set_geometry_persists_four_keys
+PASSED [ 90%]
+tests\unit\preferences\test_uap_service.py::TestImportProfile::test_import_profile_returns_appearance_profile 

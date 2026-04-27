@@ -3,6 +3,7 @@
 **Feature Branch**: `007-ui-harmonization`
 **Created**: 2026-03-11
 **Status**: Draft
+**Scope**: Phase 1 — Unified Appearance Profile, Menu Contract, Dependency Lock, Packaging Documentation. Phases 2–4 (UI Interaction Contract §10, Command Surface §8, Operational Guarantees §13.2, Tool Capability Matrix / CI Enforcement §11–§12) are governed exclusively by their respective constitutional sections and published spec documents. This spec does NOT incorporate or duplicate Phase 2–4 requirements.
 **Input**: User description: "Harmonize the look and feel of all RFU applications so they look and feel the same: consistent window size, font, working directory; same menu structure; same package versions; document frameworks, dependencies and packaging styles."
 
 ## Execution Flow (main)
@@ -97,6 +98,8 @@ System MUST support two UAP persistence modes that the user can switch between a
 - **last-used** (default): stores the values from the most recently closed tool window.
 - **predefined**: stores one or more named profiles; the active profile is applied on every window launch.
 
+`last_used` values MUST continue to update silently even while the system is in `predefined` mode. When the user switches from predefined back to last-used mode, the values reflect their true latest activity. No prompt is shown on mode switch.
+
 #### FR-003 — UAP Editable from Hub
 The hub's Appearance settings panel MUST expose full UAP editing: profile mode selector, window width/height inputs, font family picker, font size spinner (6–32pt), and working directory field with a Browse button.
 
@@ -116,7 +119,15 @@ Within a single application session, when the user navigates to a new directory 
 Every tool window MUST render a menu bar whose top-level items appear in this exact order and use these exact labels: `File`, `Edit`, `View`, `Tools`, `Help`. The `File`, `View`, and `Help` menus MUST follow the structures defined in the Menu Contract. The `Edit` and `Tools` menus are **entirely tool-specific** — no items are mandated; both MAY be empty. Contract tests do NOT validate Edit or Tools contents.
 
 #### FR-009 — Tool-Subclassed Preferences Dialog
-Every tool window exposes a Preferences dialog reachable from File → Preferences. This dialog is implemented by each tool **subclassing `PreferencesDialog`**. The base class provides the `Appearance` tab as an embedded `UAPAppearanceWidget`. Tool-specific tabs are added by each subclass via `addTab()`. Tools with no extra preferences instantiate and show the base class directly without subclassing.
+Every tool window exposes a Preferences dialog reachable from File → Preferences. The base class provides the `Appearance` tab as an embedded `UAPAppearanceWidget`.
+
+Tools with extra preferences MUST subclass `PreferencesDialog` and inject their additional UI using `addTab()`.
+
+Tools with no extra preferences MUST instantiate and show the base `PreferencesDialog` class directly without subclassing.
+
+> **Governance Annotation — PreferencesDialog Subclassing Semantics (A1):**
+> Earlier drafts of FR-009 contained a contradiction: one sentence required all tools to subclass `PreferencesDialog`, while another allowed tools with no extra preferences to instantiate the base class directly without subclassing.
+> The corrected model is: tools with extra preferences subclass and add tabs via `addTab()`; tools with no extra preferences instantiate the base class directly. No tool MUST subclass `PreferencesDialog` without adding tabs. This preserves a clean, predictable integration model and prevents unnecessary subclassing.
 
 #### FR-010 — Per-Tool UAP Overrides (Resolved)
 Per-tool overrides are allowed **only** for `min_window_width` and `min_window_height` (declared in `ToolManifest`). Font family, font size, and working directory are governed by the global UAP and MUST NOT be overridden per tool. `UAPService.apply()` enforces `max(uap_value, tool.min_window_width/height)` for sizing, but applies font and directory without clamping.
@@ -127,8 +138,25 @@ The UAP working directory IS persisted across sessions. In last-used mode the la
 #### FR-012 — Dependency Version Lock
 All Python packages used by any RFU tool MUST be declared in `requirements.txt` with pinned exact versions (`==`) and a trailing comment indicating their purpose category (e.g., `# GUI framework`, `# PDF processing`).
 
-#### FR-013 — Automated Dependency Audit
-A CI-runnable script (`scripts/check_dependencies.py`) MUST compare installed package versions against `requirements.txt` and MUST exit non-zero if any mismatch is detected. For platform-conditional lines (e.g., `; sys_platform=="win32"`), the script MUST exit non-zero if the condition evaluates to `False` on the current machine **unless** a `--platform <target>` flag is passed. Passing `--platform win32` on Linux causes all conditions to be evaluated as if running on Windows.
+#### FR-013 — Platform Condition Evaluation
+A CI-runnable script (`scripts/check_dependencies.py`) MUST compare installed package versions against `requirements.txt` and MUST exit non-zero if any mismatch is detected.
+
+The script MUST evaluate platform-conditional requirement lines (e.g., `; sys_platform=="win32"`) according to the following rules:
+
+1. **Default Behavior (No Override Provided):** If the platform condition evaluates to `False` on the current machine, the audit script MUST **skip** the line. A skipped line MUST NOT cause a non-zero exit.
+
+2. **Override Behavior (`--platform=<value>` Provided):** If the user specifies an explicit platform override via `--platform=<value>`, the audit script MUST evaluate all platform-conditional lines against the overridden platform value. Under an override, any platform-conditional line that evaluates to `False` MUST cause a non-zero exit.
+
+3. **Non-Conditional Lines:** Lines without platform conditions MUST always be evaluated and MUST cause a non-zero exit on failure.
+
+**Clarification:** A non-zero exit due to platform mismatch MUST occur **only** when the user explicitly overrides the evaluation context using `--platform=<value>`. When no override is provided, platform-conditional lines that do not match the current machine MUST be skipped and MUST NOT trigger a failure. This rule supersedes earlier wording that implied platform-conditional lines evaluating to `False` on the current machine should cause a non-zero exit.
+
+> **Governance Annotation — Platform Condition Semantics**
+> Earlier drafts of FR-013 implied that platform-conditional lines evaluating to `False` on the current machine should cause a non-zero exit. This interpretation would make the audit script unusable on non-Windows platforms (e.g., any line with `sys_platform=="win32"` would always fail on Linux/macOS).
+>
+> The correct behavior is that platform-conditional lines are **skipped by default** unless the user explicitly overrides the platform via `--platform`. This preserves cross-platform audit usability, ensures deterministic behavior, and prevents accidental enforcement of platform-specific rules on incompatible systems.
+>
+> This annotation prevents reintroduction of the incorrect behavior and maintains the integrity of the audit system across all supported environments.
 
 #### FR-014 — Framework & Dependency Document
 A `docs/architecture/frameworks-and-dependencies.md` document MUST be created (or updated) that lists every framework and key dependency, its pinned version, its role in the suite, the rationale for choosing it, and the minimum supported version.
@@ -137,7 +165,7 @@ A `docs/architecture/frameworks-and-dependencies.md` document MUST be created (o
 A `docs/architecture/packaging-style.md` document MUST be created that describes: virtual environment conventions (`venv` / `.venv312`), `requirements.txt` format rules, how to add a new dependency (checklist), and the activation scripts provided (`activate_env.bat`, `.ps1`, `.sh`, `.py`).
 
 #### FR-016 — Menu Contract Tests
-Automated tests (using `pytest-qt`) MUST verify for every registered tool class that: (a) a menu bar is present, (b) the top-level menus match the required order and labels, (c) File menu contains Preferences and Exit actions, (d) View menu contains Font and Working Directory actions, (e) Help menu contains About action.
+Automated tests (using `pytest-qt`) MUST verify for every tool class registered in the **`ToolManifest`** that: (a) a menu bar is present, (b) the top-level menus match the required order and labels, (c) File menu contains Preferences and Exit actions, (d) View menu contains Font and Working Directory actions, (e) Help menu contains About action. The `ToolManifest` is the sole enumeration source — tools present in source but not registered MUST NOT be implicitly included via module scanning. Detection of unregistered or orphaned tool classes is a separate governance concern (registration-completeness check) and is out of scope for FR-016.
 
 #### FR-017 — About Dialog Content
 The About dialog launched from Help → About in every tool MUST display: tool name, RFU suite version (from `src/__version__.py`), **tool-specific version** (from the tool module's `__version__` attribute; falls back to suite version if not defined), Python version (`sys.version`), PyQt5 version (`PyQt5.QtCore.PYQT_VERSION_STR`), and Qt version (`PyQt5.QtCore.QT_VERSION_STR`). Each tool module SHOULD define a module-level `__version__ = "x.y.z"` string; if absent the About dialog labels it "same as suite".
@@ -152,10 +180,10 @@ A shared `DirectoryPickerDialog` (in `src/gui/dialogs/`) MUST be used by every t
 When the user changes the theme (Light / Dark / System) from any tool's View → Theme menu, the change MUST apply to all currently open tool windows within 500ms via the shared `ThemeManager` signal bus.
 
 #### FR-021 — UAP Font Propagation to Open Windows
-When the user changes the font family or font size from any tool (View → Font…) or from the hub Appearance tab, the change MUST propagate via the shared UAP signal bus (`uap_font_changed`) to all currently open `StandardWindow` instances and take effect within 500ms. The font MUST apply to **every widget** in each window — menus, toolbars, status bar, list views, tables, labels, buttons, and file-path displays. No fixed-width or content-specific exemptions are permitted.
+When the user changes the font family or font size from any tool (View → Font…) or from the hub Appearance tab, the change MUST propagate via the shared UAP signal bus (`uap_font_changed`) to all currently open `StandardWindow` instances and take effect within 500ms. The font MUST apply to **every widget** in each window — menus, toolbars, status bar, list views, tables, labels, buttons, and file-path displays. No fixed-width or content-specific exemptions are permitted. The 500ms SLA applies to a maximum of **10 simultaneously open tool windows**; behaviour beyond this cap is undefined and need not be tested.
 
 #### FR-022 — UAP Geometry Propagation to Open Windows
-When the user changes window size or position from any tool or from the hub Appearance tab, a `uap_geometry_changed` signal MUST be emitted. All currently open `StandardWindow` instances MUST resize and reposition within 500ms. Cascade offset logic applies to repositioning (see FR-023).
+When the user changes window size or position from any tool or from the hub Appearance tab, a `uap_geometry_changed` signal MUST be emitted. All currently open `StandardWindow` instances MUST resize and reposition within 500ms. Cascade offset logic applies to repositioning (see FR-023). The 500ms SLA applies to a maximum of **10 simultaneously open tool windows** (consistent with FR-021).
 
 #### FR-023 — Window Position: Center and Cascade
 The UAP stores screen coordinates `(window_x, window_y)` in addition to dimensions. Sentinel value `(-1, -1)` means "use platform default placement". At window open:
@@ -164,8 +192,20 @@ The UAP stores screen coordinates `(window_x, window_y)` in addition to dimensio
 - Otherwise: open at the stored `(x, y)` coordinates.
 In last-used mode, `StandardWindow.closeEvent()` MUST persist the window's current position to `last_used_x` / `last_used_y`.
 
-#### FR-024 — File Menu Renamed Actions
-File menu actions (Open, Save, Import, Export, etc.) that have no direct meaning for a specific tool MUST be **renamed** to a tool-relevant label (e.g., `Open Report…`, `Export Log…`, `Save Results…`). Actions MUST NOT be hidden or greyed out on tools where they lack direct meaning. This preserves a uniform visual layout while keeping every item purposeful.
+#### FR-024 — File Menu Action Labeling & Applicability
+
+All tools MUST present the complete set of File menu actions defined by the platform's canonical menu topology. For each action, the tool MUST apply the following rules:
+
+**Applicable Actions**  
+If the action has a direct, meaningful equivalent within the tool, the tool MUST implement that action and MAY rename it to a tool-relevant label that preserves the action's semantics (e.g., `Open Report…`, `Export Log…`, `Save Results…`).
+
+**Inapplicable Actions**  
+If the action has no meaningful equivalent within the tool, the action MUST still appear in its canonical position using its generic platform label and MUST be presented in a disabled (greyed-out) state. Tools MUST NOT rename disabled inapplicable actions.
+
+**Cross-Tool Layout Invariance**  
+Tools MUST preserve the canonical ordering, presence, and labeling of File menu actions to maintain cross-tool visual and behavioral consistency. Omission, reordering, or semantic repurposing of File menu actions is prohibited.
+
+> **Clarification (C2 — supersedes earlier wording)**: This requirement supersedes earlier FR-024 language that implied renaming inapplicable actions. Renaming applies only to actions that are both applicable and enabled.
 
 #### FR-025 — Hub Appearance Tab
 The hub's tabbed interface MUST include a dedicated **"Appearance"** tab displayed alongside the tool category tabs. This tab provides the full UAP controls: mode toggle (Last Used / Predefined), profile selector, window width/height spinboxes, window position inputs (with a "Use default placement" checkbox that sets sentinel `(-1, -1)`), font family picker, font size spinner, working directory field with Browse button, and profile management actions (New, Rename, Duplicate, Delete, Set Active).
@@ -173,13 +213,18 @@ The hub's tabbed interface MUST include a dedicated **"Appearance"** tab display
 #### FR-026 — Cross-Platform Profile Import Warning
 When importing a UAP profile on a platform where one or more stored values are incompatible (directory path not valid on this OS, font family not available in `QFontDatabase`), the import MUST complete but MUST first show a **warning dialog** listing every field that was reset and the reason (e.g., "Font 'Segoe UI' is not available — reset to 'DejaVu Sans'"). The user confirms with OK. Import is not blocked; the reset values are written to the profile after confirmation.
 
+> **Normative Note — Geometry Normalization (G3)**
+> When importing an `AppearanceProfile`, undersized `window_width` and `window_height` values MUST be preserved exactly as provided.
+> Geometry normalization (clamping to `min_window_width` / `min_window_height`) occurs exclusively at apply-time as defined in T021.
+> Import MUST NOT mutate geometry values.
+
 ### Key Entities _(data involved)_
 
 #### AppearanceProfile
-Represents one named UAP profile. Attributes: `profile_id` (uuid), `profile_name` (string), `is_default` (boolean), `window_width` (int, default 1000), `window_height` (int, default 700), `window_x` (int, default -1 = center/cascade), `window_y` (int, default -1 = center/cascade), `font_family` (string), `font_size` (int, 6–32), `working_directory` (string path), `created_at` (timestamp), `updated_at` (timestamp). Stored under preference category `uap`.
+Represents one named UAP profile. Attributes: `profile_id` (uuid), `profile_name` (string), `is_default` (boolean), `window_width` (int, default 1000), `window_height` (int, default 700), `window_x` (int, default -1 = center/cascade), `window_y` (int, default -1 = center/cascade), `font_family` (string), `font_size` (int, 6–32), `working_directory` (string path), `created_at` (timestamp), `updated_at` (timestamp), `profile_schema_version` (int, ≥1 — per-profile schema version), `is_user_created` (boolean, optional, default `false` — indicates whether the profile was created by the user or seeded by the system). Stored under preference category `uap`.
 
 #### UAPSettings
-Runtime settings that determine active profile mode. Attributes: `mode` (enum: `last_used` | `predefined`), `active_profile_id` (uuid, null in last-used mode), `last_used_width` (int), `last_used_height` (int), `last_used_x` (int, -1 = center/cascade), `last_used_y` (int, -1 = center/cascade), `last_used_font_family` (string), `last_used_font_size` (int), `last_used_directory` (string). Updated continuously in last-used mode.
+Runtime settings that determine active profile mode. Attributes: `mode` (enum: `last_used` | `predefined`), `active_profile_id` (uuid, null in last-used mode), `last_used_width` (int), `last_used_height` (int), `last_used_x` (int, -1 = center/cascade), `last_used_y` (int, -1 = center/cascade), `last_used_font_family` (string), `last_used_font_size` (int), `last_used_directory` (string). Updated **continuously regardless of mode** — `last_used_*` fields track the user's true latest activity even while `mode == predefined`; switching back to last-used mode always shows current activity without any data loss or prompt.
 
 #### MenuContract
 Defines the required menu topology for validation. Attributes: `top_level` (ordered list of labels), `file_required_action_ids` (ordered list), `view_required_action_ids` (list), `help_required_action_ids` (list). `edit_action_ids` and `tools_action_ids` are intentionally absent — these menus are tool-specific and not validated by contract tests.
@@ -209,3 +254,15 @@ Documents one package. Attributes: `package_name`, `pinned_version`, `purpose_ca
 - [x] FR-011 resolved — working directory IS persisted across sessions in last-used mode
 - [x] All requirements are testable and unambiguous
 - [x] Success criteria are measurable
+
+---
+
+## Clarifications
+
+### Session 2026-04-25
+
+- Q: Does this spec incorporate Phase 2–4 requirements from harmonization2 (UI Interaction Contract, Command Surface, Operational Guarantees, CI Enforcement)? → A: No. THIS spec covers Phase 1 only (4 original areas). Phases 2–4 are governed by Constitution §8–11 and their existing spec documents. This avoids duplication and preserves governance authority boundaries.
+- Q: When a File menu action has no tool-relevant equivalent, should it be renamed, greyed out, or omitted? → A: It MUST appear with its canonical generic label and be disabled (greyed out). Renaming a disabled item is prohibited. Applicable actions MAY be renamed to a tool-relevant label. FR-024 updated to final harmonized text ("File Menu Action Labeling & Applicability").
+- Q: What is the maximum number of simultaneously open tool windows the 500ms UAP propagation SLA must cover? → A: 10. The 500ms SLA applies within a cap of 10 simultaneously open tool windows. FR-021 and FR-022 updated accordingly.
+- Q: Does `last_used` continue updating while the system is in predefined mode? → A: Yes. `last_used_*` values update silently at all times regardless of mode. Switching back to last-used mode reflects true latest activity; no prompt is shown. FR-002 and UAPSettings entity updated accordingly.
+- Q: What is the source of truth for which tool classes FR-016 Menu Contract Tests must cover? → A: The `ToolManifest` registry only. Tools in source but not registered are out of scope for FR-016. Detection of unregistered classes is a separate registration-completeness check. FR-016 updated accordingly.

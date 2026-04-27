@@ -14,7 +14,7 @@ User (from identity layer)
 
 StandardWindow (runtime)
  └─ reads-on-open ──▶ UAPSettings / AppearanceProfile  (via UAPService)
- └─ writes-on-close ──▶ UAPSettings.last_used_*        (via UAPService.record_last_used)
+ └─ writes-on-close ──▶ UAPSettings.last_used_*        (via UAPService.save_last_used)
 
 MenuManager (runtime)
  └─ provides ──▶ FontPickerDialog     (one shared instance per window)
@@ -45,6 +45,8 @@ class AppearanceProfile:
     working_directory: str   # absolute path, "" = use home
     created_at: str          # ISO 8601
     updated_at: str          # ISO 8601
+    profile_schema_version: int = 2  # per-profile schema version (N1)
+    is_user_created: bool = False    # False for system-seeded profiles (N2)
 ```
 
 ---
@@ -53,6 +55,8 @@ class AppearanceProfile:
 
 Runtime-readable aggregate of the user's current UAP state.  
 Populated by `UAPService.load()` from individual `uap.*` preference keys.
+
+> **Clarification (2026-04-25)**: `last_used_*` values are updated unconditionally on every window close, regardless of `mode`. In `predefined` mode the hub applies the active profile on open but continues to silently record the user's actual usage in `last_used_*`. No prompt is shown on mode switch.
 
 ```python
 @dataclass
@@ -85,9 +89,13 @@ class MenuContract:
 
 ---
 
-## 5. ToolManifest Entry (existing, extended)
+## 5. ToolManifest Entry (P3-H01 — Resolved 2026-04-26: created from scratch)
 
-Existing tool manifest entries in `tabbed_hub.py` are extended with optional UAP override fields:
+> **`ToolManifestEntry` and `ToolManifestRegistry` do not pre-exist in the codebase. T003 SHALL create both from scratch in `src/core/tool_manifest.py`.** Earlier wording that referred to "extending" entries in `src/rfu/hub.py` is superseded. Additionally, `src/rfu/hub.py` is NOT a GUI hub (see P3-H02 — Resolved 2026-04-26); the canonical GUI hub is `src/tabbed_hub.py`.
+
+**Canonical file:** `src/core/tool_manifest.py`
+
+> **Data-model boundary (I2):** Window position persistence is user-specific and MUST be stored only in `AppearanceProfile` / `UAPSettings`. `ToolManifest` MUST NOT contain per-user window state such as `window_x` or `window_y`.
 
 ```python
 @dataclass
@@ -120,10 +128,18 @@ Keys:
   last_used_font_family     → "Segoe UI"
   last_used_font_size       → "10"
   last_used_directory       → "C:\\Projects"
-  profile_schema_version    → "1"
-  profile:<uuid4-A>         → '{"profile_id": "...", "profile_name": "Default", ...}'
-  profile:<uuid4-B>         → '{"profile_id": "...", "profile_name": "Work", ...}'
+  profile:<uuid4-A>         → '{"profile_id": "...", "profile_name": "Default", ..., "profile_schema_version": 2}'
+  profile:<uuid4-B>         → '{"profile_id": "...", "profile_name": "Work", ..., "profile_schema_version": 2}'
 ```
+
+> **Governance Annotation — `profile_schema_version` removed from top-level keys (N1 — Resolved 2026-04-26)**
+> Earlier drafts listed `profile_schema_version` as a top-level `uap.*` key alongside `mode`, `active_profile_id`, etc.
+>
+> Per the N1 governance decision (Option A), `profile_schema_version` is stored **inside each AppearanceProfile JSON blob**, not as a top-level key.
+>
+> No top-level `uap.*` key exists for profile schema version. The version is serialized as a required field within the `profile:<uuid>` JSON value (see `contracts/appearance-profile.md`).
+>
+> Schema versioning is a *per-profile* concern. Each AppearanceProfile blob carries its own `profile_schema_version` integer, enabling independent migration of individual profiles without global version coupling.
 
 ---
 

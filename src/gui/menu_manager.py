@@ -30,7 +30,15 @@ from PyQt5.QtWidgets import (
     QVBoxLayout,
 )
 
-from gui.themes import Colors, Fonts, ThemeManager, Typography
+try:
+    from src.gui.themes import Colors, Fonts, ThemeManager, Typography
+except ImportError:  # pragma: no cover - fallback for direct execution
+    from gui.themes import (  # type: ignore
+        Colors,
+        Fonts,
+        ThemeManager,
+        Typography,
+    )
 
 
 class MenuManager:
@@ -85,12 +93,12 @@ class MenuManager:
         self.menubar.setStyleSheet(
             f"""
             QMenuBar {{
-                background-color: {Colors.BACKGROUND_LIGHT.name()};
-                color: {Colors.TEXT_PRIMARY.name()};
-                border-bottom: 1px solid {Colors.BORDER_LIGHT.name()};
+                background-color: {Colors.BACKGROUND};
+                color: {Colors.TEXT_PRIMARY};
+                border-bottom: 1px solid {Colors.TEXT_DISABLED};
                 padding: 2px;
-                font-family: {Fonts.PRIMARY_FAMILY};
-                font-size: {Fonts.NORMAL_SIZE}pt;
+                font-family: {Fonts.DEFAULT_FAMILY};
+                font-size: {Fonts.BODY_SIZE}pt;
             }}
             
             QMenuBar::item {{
@@ -101,18 +109,18 @@ class MenuManager:
             }}
             
             QMenuBar::item:selected {{
-                background-color: {Colors.PRIMARY.name()};
-                color: {Colors.TEXT_LIGHT.name()};
+                background-color: {Colors.PRIMARY};
+                color: #FFFFFF;
             }}
             
             QMenuBar::item:pressed {{
-                background-color: {Colors.PRIMARY_PRESSED.name()};
+                background-color: {Colors.BUTTON_PRIMARY_PRESSED};
             }}
             
             QMenu {{
-                background-color: {Colors.BACKGROUND_LIGHT.name()};
-                color: {Colors.TEXT_PRIMARY.name()};
-                border: 1px solid {Colors.BORDER_LIGHT.name()};
+                background-color: {Colors.BACKGROUND};
+                color: {Colors.TEXT_PRIMARY};
+                border: 1px solid {Colors.TEXT_DISABLED};
                 border-radius: 4px;
                 padding: 2px;
                 margin: 0px;
@@ -126,17 +134,17 @@ class MenuManager:
             }}
             
             QMenu::item:selected {{
-                background-color: {Colors.PRIMARY.name()};
-                color: {Colors.TEXT_LIGHT.name()};
+                background-color: {Colors.PRIMARY};
+                color: #FFFFFF;
             }}
             
             QMenu::item:disabled {{
-                color: {Colors.TEXT_DISABLED.name()};
+                color: {Colors.TEXT_DISABLED};
             }}
             
             QMenu::separator {{
                 height: 1px;
-                background-color: {Colors.BORDER_LIGHT.name()};
+                background-color: {Colors.TEXT_DISABLED};
                 margin: 4px 8px;
             }}
             
@@ -166,20 +174,21 @@ class MenuManager:
             )
             self.file_menu.addAction(new_action)
 
-            # Open actions
-            open_action = self._create_action(
-                "&Open...",
-                "Ctrl+O",
-                "Open a file or project",
-                callback=self._get_callback("open_file"),
-            )
-            self.file_menu.addAction(open_action)
-
             # Recent files submenu
             recent_menu = self.file_menu.addMenu("Recent &Files")
             self._populate_recent_files_menu(recent_menu)
 
             self.file_menu.addSeparator()
+
+        # Open action (all windows)
+        open_action = self._create_action(
+            "&Open...",
+            "Ctrl+O",
+            "Open a file or project",
+            callback=self._get_callback("open_file"),
+            action_id="open_file",
+        )
+        self.file_menu.addAction(open_action)
 
         # Save actions (for applicable windows)
         if window_type in ["main", "utility"]:
@@ -187,7 +196,8 @@ class MenuManager:
                 "&Save",
                 "Ctrl+S",
                 "Save current work",
-                callback=self._get_callback("save_file"),
+                callback=self._get_callback("save"),
+                action_id="save",
             )
             self.file_menu.addAction(save_action)
 
@@ -195,7 +205,8 @@ class MenuManager:
                 "Save &As...",
                 "Ctrl+Shift+S",
                 "Save with a new name",
-                callback=self._get_callback("save_as_file"),
+                callback=self._get_callback("save_as"),
+                action_id="save_as",
             )
             self.file_menu.addAction(save_as_action)
 
@@ -206,7 +217,8 @@ class MenuManager:
                 "&Export...",
                 "Ctrl+E",
                 "Export data",
-                callback=self._get_callback("export_data"),
+                callback=self._get_callback("export"),
+                action_id="export",
             )
             self.file_menu.addAction(export_action)
 
@@ -214,21 +226,10 @@ class MenuManager:
                 "&Import...",
                 "Ctrl+I",
                 "Import data",
-                callback=self._get_callback("import_data"),
+                callback=self._get_callback("import"),
+                action_id="import",
             )
             self.file_menu.addAction(import_action)
-
-            self.file_menu.addSeparator()
-
-        # Print actions (for applicable windows)
-        if window_type in ["main", "utility"]:
-            print_action = self._create_action(
-                "&Print...",
-                "Ctrl+P",
-                "Print current document",
-                callback=self._get_callback("print_document"),
-            )
-            self.file_menu.addAction(print_action)
 
             self.file_menu.addSeparator()
 
@@ -238,6 +239,7 @@ class MenuManager:
             "Ctrl+,",
             "Open application preferences",
             callback=self._get_callback("show_preferences"),
+            action_id="preferences",
         )
         self.file_menu.addAction(preferences_action)
 
@@ -249,6 +251,7 @@ class MenuManager:
             "Ctrl+Q",
             "Exit the application",
             callback=self._exit_application,
+            action_id="exit",
         )
         self.file_menu.addAction(exit_action)
 
@@ -418,6 +421,28 @@ class MenuManager:
 
         self.view_menu.addSeparator()
 
+        # UAP: Font picker (T038)
+        font_picker_action = self._create_action(
+            "&Font...",
+            "",
+            "Change application font",
+            callback=self._show_font_picker,
+            action_id="font_picker",
+        )
+        self.view_menu.addAction(font_picker_action)
+
+        # UAP: Working directory picker (T038)
+        dir_picker_action = self._create_action(
+            "&Working Directory...",
+            "",
+            "Change working directory",
+            callback=self._show_directory_picker,
+            action_id="working_directory_picker",
+        )
+        self.view_menu.addAction(dir_picker_action)
+
+        self.view_menu.addSeparator()
+
         # Refresh action
         refresh_action = self._create_action(
             "&Refresh",
@@ -539,6 +564,7 @@ class MenuManager:
             "",
             "About this application",
             callback=self._show_about_dialog,
+            action_id="about",
         )
         self.help_menu.addAction(about_action)
 
@@ -549,9 +575,13 @@ class MenuManager:
         tooltip: str,
         callback: Optional[Callable] = None,
         checkable: bool = False,
+        action_id: Optional[str] = None,
     ) -> QAction:
         """Create a standardized menu action."""
         action = QAction(text, self.parent_window)
+
+        if action_id:
+            action.setObjectName(action_id)
 
         if shortcut:
             action.setShortcut(QKeySequence(shortcut))
@@ -683,6 +713,33 @@ class MenuManager:
             self.parent_window.setWindowFlags(flags | Qt.WindowStaysOnTopHint)
         self.parent_window.show()
 
+    def _show_font_picker(self):
+        """Show the UAP font picker dialog (T038)."""
+        try:
+            from src.gui.dialogs.font_picker_dialog import FontPickerDialog
+
+            dialog = FontPickerDialog(self.parent_window)
+            dialog.exec_()
+        except Exception as exc:
+            QMessageBox.warning(self.parent_window, "Font Picker", str(exc))
+
+    def _show_directory_picker(self):
+        """Show the UAP directory picker dialog (T038)."""
+        try:
+            from src.gui.dialogs.directory_picker_dialog import (
+                DirectoryPickerDialog,
+            )
+
+            current = ""
+            if hasattr(self.parent_window, "_uap_browse_root"):
+                current = str(self.parent_window._uap_browse_root)
+            dialog = DirectoryPickerDialog(
+                self.parent_window, current_directory=current
+            )
+            dialog.exec_()
+        except Exception as exc:
+            QMessageBox.warning(self.parent_window, "Directory Picker", str(exc))
+
     def _show_log_viewer(self):
         """Show the log viewer dialog."""
         dialog = LogViewerDialog(self.parent_window)
@@ -732,7 +789,8 @@ class MenuManager:
     def _show_about_dialog(self):
         """Show the about dialog."""
         about_dialog = AboutDialog(self.parent_window)
-        about_dialog.exec_()
+        about_dialog.setAttribute(Qt.WA_DeleteOnClose)
+        about_dialog.show()
 
     def _save_window_state(self):
         """Save the current window state."""
@@ -822,7 +880,8 @@ class HelpDialog(QDialog):
         help_text = QTextEdit()
         help_text.setAccessibleName("Help documentation")
         help_text.setReadOnly(True)
-        
+        help_text.setHtml(
+            """
         <h3>Getting Started</h3>
         <p>Welcome to Richard's File Utilities! This comprehensive toolkit provides
         various file management, analysis, and security tools.</p>
@@ -987,56 +1046,51 @@ class SystemInfoDialog(QDialog):
 
 
 class AboutDialog(QDialog):
-    """Dialog for displaying about information."""
+    """Dialog for displaying about information (T040)."""
 
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle("About")
         self.setModal(True)
-        self.resize(400, 300)
+        self.resize(420, 320)
 
         layout = QVBoxLayout(self)
 
+        import sys as _sys
+
+        import PyQt5.QtCore as _qtcore
+
+        try:
+            from src.core.constants import APP_VERSION
+        except ImportError:
+            APP_VERSION = "unknown"
+
+        tool_name = "Richard's File Utilities"
+        if parent is not None and hasattr(parent, "windowTitle"):
+            t = parent.windowTitle()
+            if t:
+                tool_name = t
+
+        about_html = f"""
+        <h2>{tool_name}</h2>
+        <table cellpadding="4">
+        <tr><td><b>Version:</b></td><td>{APP_VERSION}</td></tr>
+        <tr><td><b>Python:</b></td><td>{_sys.version}</td></tr>
+        <tr><td><b>Qt:</b></td><td>{_qtcore.QT_VERSION_STR}</td></tr>
+        <tr><td><b>PyQt5:</b></td><td>{_qtcore.PYQT_VERSION_STR}</td></tr>
+        </table>
+        """
+
         about_text = QLabel()
         about_text.setWordWrap(True)
-        about_text.setAlignment(Qt.AlignCenter)
-        about_text.setText(
-            """
-        Richard's File Utilities
-        Version 2.0.0
-        
-        A comprehensive suite of file management,
-        analysis, and security tools.
-        
-        © 2025 Richard Noragon
-        
-        This software is provided as-is under the
-        terms of the included license agreement.
-        
-        Visit our website for updates and support.
-        """
-        )
-
-        # Style the about text
-        about_text.setStyleSheet(
-            f"""
-            QLabel {{
-                font-size: {Fonts.MEDIUM_SIZE}pt;
-                color: {Colors.TEXT_PRIMARY.name()};
-                padding: 20px;
-                line-height: 1.5;
-            }}
-        """
-        )
-
+        about_text.setAlignment(Qt.AlignLeft | Qt.AlignTop)
+        about_text.setText(about_html)
         layout.addWidget(about_text)
 
-        # Close button
         close_btn = QPushButton("Close")
         close_btn.setAccessibleName("Close about dialog")
         close_btn.setMinimumHeight(44)
         close_btn.clicked.connect(self.accept)
         layout.addWidget(close_btn)
 
-        # Apply theme
         ThemeManager.apply_dialog_theme(self)

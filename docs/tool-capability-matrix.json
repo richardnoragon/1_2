@@ -1,0 +1,662 @@
+{
+  "_meta": {
+    "schema_version": "1.0",
+    "generated_by": "constitution v1.37.0",
+    "tool_count": 35,
+    "note": "Canonical machine-readable tool registry per §12.3. Update on every PR that adds, removes, or renames a tool. All capability compliance fields are boolean: true=compliant, false=non-compliant, null=not-applicable."
+  },
+  "capability_codes": {
+    "TH":   "Theming compliance (tokens, live updates)",
+    "DR":   "Dry-run support before destructive actions",
+    "CP":   "Shared components (buttons, modals, toasts)",
+    "A11Y": "Accessibility compliance",
+    "PERF": "UI-thread audit, worker offloading",
+    "ERR":  "Error handling contract",
+    "GRD":  "Guardian registration & fallback",
+    "TEL":  "Telemetry events (load, action, error, perf)",
+    "STR":  "Centralized strings (ui_strings tokens)",
+    "CE":   "Critical Engine tests (if applicable)",
+    "HUB":  "Hub integration & relaunch",
+    "MEN":  "Menu architecture compliance (§7)",
+    "NOM":  "Nomenclature & wording compliance (§7.4)",
+    "FNT":  "Font token compliance",
+    "LYT":  "Layout structure compliance",
+    "WRD":  "Wording & microcopy compliance",
+    "INT":  "UI Interaction Contract compliance (§10)",
+    "OPS":  "Operational Guarantees compliance (Phase 3 — pending §13.2 constitutionalization)",
+    "CI":   "CI rule compliance (§11)",
+    "L10N": "Localization readiness (Future)"
+  },
+  "tools": [
+    {
+      "id": "file-finder",
+      "display_name": "File Finder",
+      "category": "File Management",
+      "module_path": "src.tools.file_management.finder.file_finder",
+      "class_name": "FileFinderWindow",
+      "owner": null,
+      "last_reviewed": null,
+      "reviewer": null,
+      "phase_gate_status": "Phase 2 - not started",
+      "critical_engine": false,
+      "compliance": {
+        "TH": false, "DR": false, "CP": false, "A11Y": false, "PERF": false,
+        "ERR": false, "GRD": false, "TEL": false, "STR": false, "CE": null,
+        "HUB": false, "MEN": false, "NOM": false, "FNT": false, "LYT": false,
+        "WRD": false, "INT": false, "OPS": false, "CI": false, "L10N": false
+      }
+    },
+    {
+      "id": "catalog-files",
+      "display_name": "Catalog Files",
+      "category": "File Management",
+      "module_path": "src.tools.file_management.advanced_catalog.catalog_tool",
+      "class_name": "CatalogWindow",
+      "owner": null,
+      "last_reviewed": null,
+      "reviewer": null,
+      "phase_gate_status": "Phase 2 - not started",
+      "critical_engine": false,
+      "compliance": {
+        "TH": false, "DR": false, "CP": false, "A11Y": false, "PERF": false,
+        "ERR": false, "GRD": false, "TEL": false, "STR": false, "CE": null,
+        "HUB": false, "MEN": false, "NOM": false, "FNT": false, "LYT": false,
+        "WRD": false, "INT": false, "OPS": false, "CI": false, "L10N": false
+      }
+    },
+    {
+      "id": "rename-files",
+      "display_name": "Rename Files",
+      "category": "File Operations",
+      "module_path": "src.tools.file_operations.rename",
+      "class_name": "RenameWindow",
+      "owner": null,
+      "last_reviewed": null,
+      "reviewer": null,
+      "phase_gate_status": "Phase 2 - not started",
+      "critical_engine": false,
+      "compliance": {
+        "TH": false, "DR": false, "CP": false, "A11Y": false, "PERF": false,
+        "ERR": false, "GRD": false, "TEL": false, "STR": false, "CE": null,
+        "HUB": false, "MEN": false, "NOM": false, "FNT": false, "LYT": false,
+        "WRD": false, "INT": false, "OPS": false, "CI": false, "L10N": false
+      }
+    },
+    {
+      "id": "organize-files",
+      "display_name": "Organize Files",
+      "category": "File Management",
+      "module_path": "src.tools.file_management.organizer.organize",
+      "class_name": "OrganizeWindow",
+      "owner": null,
+      "last_reviewed": null,
+      "reviewer": null,
+      "phase_gate_status": "Phase 2 - not started",
+      "critical_engine": false,
+      "compliance": {
+        "TH": false, "DR": false, "CP": false, "A11Y": false, "PERF": false,
+        "ERR": false, "GRD": false, "TEL": false, "STR": false, "CE": null,
+        "HUB": false, "MEN": false, "NOM": false, "FNT": false, "LYT": false,
+        "WRD": false, "INT": false, "OPS": false, "CI": false, "L10N": false
+      }
+    },
+    {
+      "id": "advanced-folders",
+      "display_name": "Advanced Folders",
+      "category": "File Management",
+      "module_path": "src.tools.file_management.advanced_folders.ui.advanced_folders_widget",
+      "class_name": "AdvancedFoldersGUI",
+      "owner": null,
+      "last_reviewed": null,
+      "reviewer": null,
+      "phase_gate_status": "Phase 2 - not started",
+      "critical_engine": false,
+      "compliance": {
+        "TH": false, "DR": false, "CP": false, "A11Y": false, "PERF": false,
+        "ERR": false, "GRD": false, "TEL": false, "STR": false, "CE": null,
+        "HUB": false, "MEN": false, "NOM": false, "FNT": false, "LYT": false,
+        "WRD": false, "INT": false, "OPS": false, "CI": false, "L10N": false
+      }
+    },
+    {
+      "id": "synchronize",
+      "display_name": "Synchronize",
+      "category": "File Management",
+      "module_path": "src.tools.file_management.synchronization_backup.sync",
+      "class_name": "SyncWindow",
+      "owner": null,
+      "last_reviewed": null,
+      "reviewer": null,
+      "phase_gate_status": "Phase 2 - not started",
+      "critical_engine": false,
+      "compliance": {
+        "TH": false, "DR": false, "CP": false, "A11Y": false, "PERF": false,
+        "ERR": false, "GRD": false, "TEL": false, "STR": false, "CE": null,
+        "HUB": false, "MEN": false, "NOM": false, "FNT": false, "LYT": false,
+        "WRD": false, "INT": false, "OPS": false, "CI": false, "L10N": false
+      }
+    },
+    {
+      "id": "compress-decompress",
+      "display_name": "Compress/Decompress",
+      "category": "File Operations",
+      "module_path": "src.tools.file_operations.compression.compress_decompress",
+      "class_name": "CompressDecompressApp",
+      "owner": null,
+      "last_reviewed": null,
+      "reviewer": null,
+      "phase_gate_status": "Phase 2 - not started",
+      "critical_engine": true,
+      "compliance": {
+        "TH": false, "DR": false, "CP": false, "A11Y": false, "PERF": false,
+        "ERR": false, "GRD": false, "TEL": false, "STR": false, "CE": false,
+        "HUB": false, "MEN": false, "NOM": false, "FNT": false, "LYT": false,
+        "WRD": false, "INT": false, "OPS": false, "CI": false, "L10N": false
+      }
+    },
+    {
+      "id": "split-join-files",
+      "display_name": "Split/Join Files",
+      "category": "File Operations",
+      "module_path": "src.tools.file_operations.file_splitter.gui",
+      "class_name": "FileSplitJoinGUI",
+      "owner": null,
+      "last_reviewed": null,
+      "reviewer": null,
+      "phase_gate_status": "Phase 2 - not started",
+      "critical_engine": false,
+      "compliance": {
+        "TH": false, "DR": false, "CP": false, "A11Y": false, "PERF": false,
+        "ERR": false, "GRD": false, "TEL": false, "STR": false, "CE": null,
+        "HUB": false, "MEN": false, "NOM": false, "FNT": false, "LYT": false,
+        "WRD": false, "INT": false, "OPS": false, "CI": false, "L10N": false
+      }
+    },
+    {
+      "id": "enhanced-editor",
+      "display_name": "Enhanced Editor",
+      "category": "File Operations",
+      "module_path": "src.tools.file_operations.enhanced_editor.enhanced_editor",
+      "class_name": "EnhancedEditor",
+      "owner": null,
+      "last_reviewed": null,
+      "reviewer": null,
+      "phase_gate_status": "Phase 2 - not started",
+      "critical_engine": false,
+      "compliance": {
+        "TH": false, "DR": false, "CP": false, "A11Y": false, "PERF": false,
+        "ERR": false, "GRD": false, "TEL": false, "STR": false, "CE": null,
+        "HUB": false, "MEN": false, "NOM": false, "FNT": false, "LYT": false,
+        "WRD": false, "INT": false, "OPS": false, "CI": false, "L10N": false
+      }
+    },
+    {
+      "id": "secure-delete",
+      "display_name": "Secure Delete",
+      "category": "File Operations",
+      "module_path": "src.tools.file_operations.secure_delete.secure_delete",
+      "class_name": "SecureDeleteGUI",
+      "owner": null,
+      "last_reviewed": null,
+      "reviewer": null,
+      "phase_gate_status": "Phase 2 - not started",
+      "critical_engine": true,
+      "compliance": {
+        "TH": false, "DR": false, "CP": false, "A11Y": false, "PERF": false,
+        "ERR": false, "GRD": false, "TEL": false, "STR": false, "CE": false,
+        "HUB": false, "MEN": false, "NOM": false, "FNT": false, "LYT": false,
+        "WRD": false, "INT": false, "OPS": false, "CI": false, "L10N": false
+      }
+    },
+    {
+      "id": "size-analyzer",
+      "display_name": "Size Analyzer",
+      "category": "Analysis",
+      "module_path": "src.tools.analysis.size_analyzer",
+      "class_name": "SizeAnalyzerGUI",
+      "owner": null,
+      "last_reviewed": null,
+      "reviewer": null,
+      "phase_gate_status": "Phase 2 - not started",
+      "critical_engine": false,
+      "compliance": {
+        "TH": false, "DR": false, "CP": false, "A11Y": false, "PERF": false,
+        "ERR": false, "GRD": false, "TEL": false, "STR": false, "CE": null,
+        "HUB": false, "MEN": false, "NOM": false, "FNT": false, "LYT": false,
+        "WRD": false, "INT": false, "OPS": false, "CI": false, "L10N": false
+      }
+    },
+    {
+      "id": "duplicate-finder",
+      "display_name": "Duplicate Finder",
+      "category": "Analysis",
+      "module_path": "src.tools.analysis.duplicate_finder.find_duplicate_files",
+      "class_name": "DuplicateFinderApp",
+      "owner": null,
+      "last_reviewed": null,
+      "reviewer": null,
+      "phase_gate_status": "Phase 2 - not started",
+      "critical_engine": true,
+      "compliance": {
+        "TH": false, "DR": false, "CP": false, "A11Y": false, "PERF": false,
+        "ERR": false, "GRD": false, "TEL": false, "STR": false, "CE": false,
+        "HUB": false, "MEN": false, "NOM": false, "FNT": false, "LYT": false,
+        "WRD": false, "INT": false, "OPS": false, "CI": false, "L10N": false
+      }
+    },
+    {
+      "id": "file-checksum",
+      "display_name": "File Checksum",
+      "category": "Analysis",
+      "module_path": "src.tools.analysis.checksum.check_sum",
+      "class_name": "ChecksumGUI",
+      "owner": null,
+      "last_reviewed": null,
+      "reviewer": null,
+      "phase_gate_status": "Phase 2 - not started",
+      "critical_engine": false,
+      "compliance": {
+        "TH": false, "DR": false, "CP": false, "A11Y": false, "PERF": false,
+        "ERR": false, "GRD": false, "TEL": false, "STR": false, "CE": null,
+        "HUB": false, "MEN": false, "NOM": false, "FNT": false, "LYT": false,
+        "WRD": false, "INT": false, "OPS": false, "CI": false, "L10N": false
+      }
+    },
+    {
+      "id": "empty-folders",
+      "display_name": "Empty Folders",
+      "category": "Analysis",
+      "module_path": "src.tools.analysis.empty_folders",
+      "class_name": "EmptyFoldersGUI",
+      "owner": null,
+      "last_reviewed": null,
+      "reviewer": null,
+      "phase_gate_status": "Phase 2 - not started",
+      "critical_engine": false,
+      "compliance": {
+        "TH": false, "DR": false, "CP": false, "A11Y": false, "PERF": false,
+        "ERR": false, "GRD": false, "TEL": false, "STR": false, "CE": null,
+        "HUB": false, "MEN": false, "NOM": false, "FNT": false, "LYT": false,
+        "WRD": false, "INT": false, "OPS": false, "CI": false, "L10N": false
+      }
+    },
+    {
+      "id": "security-preferences",
+      "display_name": "Security Preferences",
+      "category": "Security",
+      "module_path": "src.tools.security.security_preferences",
+      "class_name": "SecurityPreferencesGUI",
+      "owner": null,
+      "last_reviewed": null,
+      "reviewer": null,
+      "phase_gate_status": "Phase 2 - not started",
+      "critical_engine": false,
+      "compliance": {
+        "TH": false, "DR": false, "CP": false, "A11Y": false, "PERF": false,
+        "ERR": false, "GRD": false, "TEL": false, "STR": false, "CE": null,
+        "HUB": false, "MEN": false, "NOM": false, "FNT": false, "LYT": false,
+        "WRD": false, "INT": false, "OPS": false, "CI": false, "L10N": false
+      }
+    },
+    {
+      "id": "encrypt-decrypt",
+      "display_name": "Encrypt/Decrypt",
+      "category": "Security",
+      "module_path": "src.tools.security.encryption.en_and_decrypt",
+      "class_name": "EnAndDecryptGUI",
+      "owner": null,
+      "last_reviewed": null,
+      "reviewer": null,
+      "phase_gate_status": "Phase 2 - not started",
+      "critical_engine": true,
+      "compliance": {
+        "TH": false, "DR": false, "CP": false, "A11Y": false, "PERF": false,
+        "ERR": false, "GRD": false, "TEL": false, "STR": false, "CE": false,
+        "HUB": false, "MEN": false, "NOM": false, "FNT": false, "LYT": false,
+        "WRD": false, "INT": false, "OPS": false, "CI": false, "L10N": false
+      }
+    },
+    {
+      "id": "permissions-editor",
+      "display_name": "Permissions Editor",
+      "category": "Security",
+      "module_path": "src.tools.system.permissions.permissions_editor",
+      "class_name": "PermissionsEditorGUI",
+      "owner": null,
+      "last_reviewed": null,
+      "reviewer": null,
+      "phase_gate_status": "Phase 2 - not started",
+      "critical_engine": false,
+      "compliance": {
+        "TH": false, "DR": false, "CP": false, "A11Y": false, "PERF": false,
+        "ERR": false, "GRD": false, "TEL": false, "STR": false, "CE": null,
+        "HUB": false, "MEN": false, "NOM": false, "FNT": false, "LYT": false,
+        "WRD": false, "INT": false, "OPS": false, "CI": false, "L10N": false
+      }
+    },
+    {
+      "id": "edit-image-metadata",
+      "display_name": "Edit Image Metadata",
+      "category": "Metadata",
+      "module_path": "src.tools.metadata.image_metadata.gui",
+      "class_name": "ImageMetadataEditorGUI",
+      "owner": null,
+      "last_reviewed": null,
+      "reviewer": null,
+      "phase_gate_status": "Phase 2 - not started",
+      "critical_engine": false,
+      "compliance": {
+        "TH": false, "DR": false, "CP": false, "A11Y": false, "PERF": false,
+        "ERR": false, "GRD": false, "TEL": false, "STR": false, "CE": null,
+        "HUB": false, "MEN": false, "NOM": false, "FNT": false, "LYT": false,
+        "WRD": false, "INT": false, "OPS": false, "CI": false, "L10N": false
+      }
+    },
+    {
+      "id": "office-metadata-editor",
+      "display_name": "Office Metadata Editor",
+      "category": "Metadata",
+      "module_path": "src.tools.metadata.office_metadata.office_meta_data_editor",
+      "class_name": "OfficeMetaDataEditorGUI",
+      "owner": null,
+      "last_reviewed": null,
+      "reviewer": null,
+      "phase_gate_status": "Phase 2 - not started",
+      "critical_engine": false,
+      "compliance": {
+        "TH": false, "DR": false, "CP": false, "A11Y": false, "PERF": false,
+        "ERR": false, "GRD": false, "TEL": false, "STR": false, "CE": null,
+        "HUB": false, "MEN": false, "NOM": false, "FNT": false, "LYT": false,
+        "WRD": false, "INT": false, "OPS": false, "CI": false, "L10N": false
+      }
+    },
+    {
+      "id": "file-touch",
+      "display_name": "File Touch",
+      "category": "Metadata",
+      "module_path": "src.tools.metadata.file_touch.file_touch",
+      "class_name": "FileTouchGUI",
+      "owner": null,
+      "last_reviewed": null,
+      "reviewer": null,
+      "phase_gate_status": "Phase 2 - not started",
+      "critical_engine": false,
+      "compliance": {
+        "TH": false, "DR": false, "CP": false, "A11Y": false, "PERF": false,
+        "ERR": false, "GRD": false, "TEL": false, "STR": false, "CE": null,
+        "HUB": false, "MEN": false, "NOM": false, "FNT": false, "LYT": false,
+        "WRD": false, "INT": false, "OPS": false, "CI": false, "L10N": false
+      }
+    },
+    {
+      "id": "pdf-utilities",
+      "display_name": "PDF Utilities",
+      "category": "PDF Tools",
+      "module_path": "src.tools.pdf_tools.pdf_utilities",
+      "class_name": "PDFUtilitiesGUI",
+      "owner": null,
+      "last_reviewed": null,
+      "reviewer": null,
+      "phase_gate_status": "Phase 2 - not started",
+      "critical_engine": true,
+      "compliance": {
+        "TH": false, "DR": false, "CP": false, "A11Y": false, "PERF": false,
+        "ERR": false, "GRD": false, "TEL": false, "STR": false, "CE": false,
+        "HUB": false, "MEN": false, "NOM": false, "FNT": false, "LYT": false,
+        "WRD": false, "INT": false, "OPS": false, "CI": false, "L10N": false
+      }
+    },
+    {
+      "id": "pdf-extract-links",
+      "display_name": "Extract Links",
+      "category": "PDF Tools",
+      "module_path": "src.tools.pdf_tools.extract_links",
+      "class_name": "ExtractLinksGUI",
+      "owner": null,
+      "last_reviewed": null,
+      "reviewer": null,
+      "phase_gate_status": "Phase 2 - not started",
+      "critical_engine": false,
+      "compliance": {
+        "TH": false, "DR": false, "CP": false, "A11Y": false, "PERF": false,
+        "ERR": false, "GRD": false, "TEL": false, "STR": false, "CE": null,
+        "HUB": false, "MEN": false, "NOM": false, "FNT": false, "LYT": false,
+        "WRD": false, "INT": false, "OPS": false, "CI": false, "L10N": false
+      }
+    },
+    {
+      "id": "pdf-page-administration",
+      "display_name": "Page Administration",
+      "category": "PDF Tools",
+      "module_path": "src.tools.pdf_tools.page_administration",
+      "class_name": "PageAdministrationGUI",
+      "owner": null,
+      "last_reviewed": null,
+      "reviewer": null,
+      "phase_gate_status": "Phase 2 - not started",
+      "critical_engine": true,
+      "compliance": {
+        "TH": false, "DR": false, "CP": false, "A11Y": false, "PERF": false,
+        "ERR": false, "GRD": false, "TEL": false, "STR": false, "CE": false,
+        "HUB": false, "MEN": false, "NOM": false, "FNT": false, "LYT": false,
+        "WRD": false, "INT": false, "OPS": false, "CI": false, "L10N": false
+      }
+    },
+    {
+      "id": "network-connectivity",
+      "display_name": "Network Connectivity",
+      "category": "Network",
+      "module_path": "src.tools.network.connectivity",
+      "class_name": "NetworkConnectivityGUI",
+      "owner": null,
+      "last_reviewed": null,
+      "reviewer": null,
+      "phase_gate_status": "Phase 2 - not started",
+      "critical_engine": false,
+      "compliance": {
+        "TH": false, "DR": false, "CP": false, "A11Y": false, "PERF": false,
+        "ERR": false, "GRD": false, "TEL": false, "STR": false, "CE": null,
+        "HUB": false, "MEN": false, "NOM": false, "FNT": false, "LYT": false,
+        "WRD": false, "INT": false, "OPS": false, "CI": false, "L10N": false
+      }
+    },
+    {
+      "id": "network-scanner",
+      "display_name": "Network Scanner",
+      "category": "Network",
+      "module_path": "src.tools.network.scanner.network_scanner",
+      "class_name": "NetworkScannerGUI",
+      "owner": null,
+      "last_reviewed": null,
+      "reviewer": null,
+      "phase_gate_status": "Phase 2 - not started",
+      "critical_engine": false,
+      "compliance": {
+        "TH": false, "DR": false, "CP": false, "A11Y": false, "PERF": false,
+        "ERR": false, "GRD": false, "TEL": false, "STR": false, "CE": null,
+        "HUB": false, "MEN": false, "NOM": false, "FNT": false, "LYT": false,
+        "WRD": false, "INT": false, "OPS": false, "CI": false, "L10N": false
+      }
+    },
+    {
+      "id": "network-transfer",
+      "display_name": "Network Transfer",
+      "category": "Network",
+      "module_path": "src.tools.network.transfer.network_transfer",
+      "class_name": "NetworkTransferGUI",
+      "owner": null,
+      "last_reviewed": null,
+      "reviewer": null,
+      "phase_gate_status": "Phase 2 - not started",
+      "critical_engine": false,
+      "compliance": {
+        "TH": false, "DR": false, "CP": false, "A11Y": false, "PERF": false,
+        "ERR": false, "GRD": false, "TEL": false, "STR": false, "CE": null,
+        "HUB": false, "MEN": false, "NOM": false, "FNT": false, "LYT": false,
+        "WRD": false, "INT": false, "OPS": false, "CI": false, "L10N": false
+      }
+    },
+    {
+      "id": "bookmark-manager",
+      "display_name": "Bookmark Manager",
+      "category": "Network",
+      "module_path": "src.tools.network.bookmarks.bookmark_manager",
+      "class_name": "BookmarkManagerGUI",
+      "owner": null,
+      "last_reviewed": null,
+      "reviewer": null,
+      "phase_gate_status": "Phase 2 - not started",
+      "critical_engine": false,
+      "compliance": {
+        "TH": false, "DR": false, "CP": false, "A11Y": false, "PERF": false,
+        "ERR": false, "GRD": false, "TEL": false, "STR": false, "CE": null,
+        "HUB": false, "MEN": false, "NOM": false, "FNT": false, "LYT": false,
+        "WRD": false, "INT": false, "OPS": false, "CI": false, "L10N": false
+      }
+    },
+    {
+      "id": "privacy-cleaner",
+      "display_name": "Privacy Cleaner",
+      "category": "Privacy",
+      "module_path": "src.tools.privacy.privacy_cleaner",
+      "class_name": "PrivacyCleanerGUI",
+      "owner": null,
+      "last_reviewed": null,
+      "reviewer": null,
+      "phase_gate_status": "Phase 2 - not started",
+      "critical_engine": true,
+      "compliance": {
+        "TH": false, "DR": false, "CP": false, "A11Y": false, "PERF": false,
+        "ERR": false, "GRD": false, "TEL": false, "STR": false, "CE": false,
+        "HUB": false, "MEN": false, "NOM": false, "FNT": false, "LYT": false,
+        "WRD": false, "INT": false, "OPS": false, "CI": false, "L10N": false
+      }
+    },
+    {
+      "id": "data-anonymizer",
+      "display_name": "Data Anonymizer",
+      "category": "Privacy",
+      "module_path": "src.tools.privacy.anonymizer.data_anonymizer",
+      "class_name": "DataAnonymizerGUI",
+      "owner": null,
+      "last_reviewed": null,
+      "reviewer": null,
+      "phase_gate_status": "Phase 2 - not started",
+      "critical_engine": true,
+      "compliance": {
+        "TH": false, "DR": false, "CP": false, "A11Y": false, "PERF": false,
+        "ERR": false, "GRD": false, "TEL": false, "STR": false, "CE": false,
+        "HUB": false, "MEN": false, "NOM": false, "FNT": false, "LYT": false,
+        "WRD": false, "INT": false, "OPS": false, "CI": false, "L10N": false
+      }
+    },
+    {
+      "id": "process-monitor",
+      "display_name": "Process Monitor",
+      "category": "System",
+      "module_path": "src.tools.system.process_monitor.process_monitor",
+      "class_name": "ProcessMonitorGUI",
+      "owner": null,
+      "last_reviewed": null,
+      "reviewer": null,
+      "phase_gate_status": "Phase 2 - not started",
+      "critical_engine": false,
+      "compliance": {
+        "TH": false, "DR": false, "CP": false, "A11Y": false, "PERF": false,
+        "ERR": false, "GRD": false, "TEL": false, "STR": false, "CE": null,
+        "HUB": false, "MEN": false, "NOM": false, "FNT": false, "LYT": false,
+        "WRD": false, "INT": false, "OPS": false, "CI": false, "L10N": false
+      }
+    },
+    {
+      "id": "enhanced-clipboard",
+      "display_name": "Enhanced Clipboard",
+      "category": "System",
+      "module_path": "src.tools.system.enhanced_clipboard",
+      "class_name": "EnhancedClipboardGUI",
+      "owner": null,
+      "last_reviewed": null,
+      "reviewer": null,
+      "phase_gate_status": "Phase 2 - not started",
+      "critical_engine": false,
+      "compliance": {
+        "TH": false, "DR": false, "CP": false, "A11Y": false, "PERF": false,
+        "ERR": false, "GRD": false, "TEL": false, "STR": false, "CE": null,
+        "HUB": false, "MEN": false, "NOM": false, "FNT": false, "LYT": false,
+        "WRD": false, "INT": false, "OPS": false, "CI": false, "L10N": false
+      }
+    },
+    {
+      "id": "system-diagnostics",
+      "display_name": "System Diagnostics",
+      "category": "System",
+      "module_path": "src.tools.system.system_diagnostics",
+      "class_name": "SystemDiagnosticsGUI",
+      "owner": null,
+      "last_reviewed": null,
+      "reviewer": null,
+      "phase_gate_status": "Phase 2 - not started",
+      "critical_engine": false,
+      "compliance": {
+        "TH": false, "DR": false, "CP": false, "A11Y": false, "PERF": false,
+        "ERR": false, "GRD": false, "TEL": false, "STR": false, "CE": null,
+        "HUB": false, "MEN": false, "NOM": false, "FNT": false, "LYT": false,
+        "WRD": false, "INT": false, "OPS": false, "CI": false, "L10N": false
+      }
+    },
+    {
+      "id": "system-cleanup",
+      "display_name": "System Cleanup",
+      "category": "System",
+      "module_path": "src.tools.system.system_cleanup.system_cleanup",
+      "class_name": "SystemCleanupGUI",
+      "owner": null,
+      "last_reviewed": null,
+      "reviewer": null,
+      "phase_gate_status": "Phase 2 - not started",
+      "critical_engine": false,
+      "compliance": {
+        "TH": false, "DR": false, "CP": false, "A11Y": false, "PERF": false,
+        "ERR": false, "GRD": false, "TEL": false, "STR": false, "CE": null,
+        "HUB": false, "MEN": false, "NOM": false, "FNT": false, "LYT": false,
+        "WRD": false, "INT": false, "OPS": false, "CI": false, "L10N": false
+      }
+    },
+    {
+      "id": "software-maintenance",
+      "display_name": "Software Maintenance",
+      "category": "System",
+      "module_path": "src.tools.system.software_maintenance",
+      "class_name": "SoftwareMaintenanceGUI",
+      "owner": null,
+      "last_reviewed": null,
+      "reviewer": null,
+      "phase_gate_status": "Phase 2 - not started",
+      "critical_engine": false,
+      "compliance": {
+        "TH": false, "DR": false, "CP": false, "A11Y": false, "PERF": false,
+        "ERR": false, "GRD": false, "TEL": false, "STR": false, "CE": null,
+        "HUB": false, "MEN": false, "NOM": false, "FNT": false, "LYT": false,
+        "WRD": false, "INT": false, "OPS": false, "CI": false, "L10N": false
+      }
+    },
+    {
+      "id": "preference-portability",
+      "display_name": "Preference Portability",
+      "category": "Preferences",
+      "module_path": "src.tools.preferences.portability_launcher",
+      "class_name": "PreferencePortabilityGUI",
+      "owner": null,
+      "last_reviewed": null,
+      "reviewer": null,
+      "phase_gate_status": "Phase 2 - not started",
+      "critical_engine": false,
+      "compliance": {
+        "TH": false, "DR": false, "CP": false, "A11Y": false, "PERF": false,
+        "ERR": false, "GRD": false, "TEL": false, "STR": false, "CE": null,
+        "HUB": false, "MEN": false, "NOM": false, "FNT": false, "LYT": false,
+        "WRD": false, "INT": false, "OPS": false, "CI": false, "L10N": false
+      }
+    }
+  ]
+}

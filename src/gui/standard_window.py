@@ -2,10 +2,11 @@
 
 import logging
 import os
+from pathlib import Path
 from typing import Optional
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QFont, QIcon
 from PyQt5.QtWidgets import (
     QAction,
     QDialog,
@@ -20,8 +21,14 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
-from gui.menu_manager import MenuManager
-from gui.themes import Colors, Dimensions, ThemeManager
+try:
+    from src.gui.menu_manager import MenuManager
+except ImportError:  # pragma: no cover - fallback for direct execution
+    from gui.menu_manager import MenuManager  # type: ignore
+try:
+    from src.gui.themes import Colors, Dimensions, ThemeManager
+except ImportError:  # pragma: no cover - fallback for direct execution
+    from gui.themes import Colors, Dimensions, ThemeManager  # type: ignore
 
 try:  # pragma: no cover - fallback for standalone execution
     from src.core.tool_interface_validator import (  # type: ignore
@@ -72,6 +79,80 @@ class StandardWindow(QMainWindow):
         self._apply_theme()
         if self.enable_menu:
             self.ensure_exit_action_reference()
+
+        # T031 — Apply UAP settings (P3-M02: FINAL geometry step, nothing resizes after)
+        self._uap_browse_root: Path = Path.home()
+        self._apply_uap()
+
+    def _apply_uap(self) -> None:
+        """Apply UAP geometry, font, and browse root from UAPService (T031).
+
+        P3-M02: This is the final geometry operation in __init__.
+        """
+        try:
+            from src.core.preferences.uap.service import UAPService
+
+            svc = UAPService()
+            svc.apply(self)
+            # T033 — connect to live font-change signal
+            self._connect_uap_signals(svc)
+        except Exception as exc:
+            logging.getLogger(__name__).warning(
+                "UAP apply failed (%s) — window will use default size", exc
+            )
+
+    def set_browse_root(self, path: str) -> None:
+        """Set the browse root used by file-browser operations."""
+        self._uap_browse_root = Path(path)
+
+    def _connect_uap_signals(self, svc=None) -> None:
+        """T033 — Connect to ThemeManager UAP signals for live propagation."""
+        try:
+            tm = ThemeManager.instance()
+            tm.uap_font_changed.connect(self._on_uap_font_changed)
+            tm.uap_geometry_changed.connect(self._on_uap_geometry_changed)
+        except AttributeError:
+            # ThemeManager is not yet a QObject singleton (T042 pending)
+            pass
+
+    def _on_uap_font_changed(self, family: str, size: int) -> None:
+        """T033 — Propagate font change to this window and all child widgets (U1)."""
+        font = QFont(family, size)
+        self.setFont(font)
+        for widget in self.findChildren(QWidget):
+            widget.setFont(font)
+
+    def _on_uap_geometry_changed(self, width: int, height: int, x: int, y: int) -> None:
+        """T033 — Respond to geometry change signal."""
+        self.resize(width, height)
+        if x != -1 and y != -1:
+            self.move(x, y)
+
+    # T032 — closeEvent writes last-used state (A2: only place save_last_used is called)
+    def closeEvent(self, event) -> None:
+        """Persist UAP last-used state on window close (T032, A2)."""
+        try:
+            from src.core.preferences.uap.service import UAPService
+
+            font_family = getattr(self, "_uap_font_family", self.font().family())
+            font_size = getattr(self, "_uap_font_size", self.font().pointSize())
+            browse_root = getattr(self, "_uap_browse_root", Path.home())
+            pos = self.pos()
+            svc = UAPService()
+            svc.save_last_used(
+                width=self.width(),
+                height=self.height(),
+                x=pos.x(),
+                y=pos.y(),
+                font_family=font_family,
+                font_size=font_size,
+                directory=str(browse_root),
+            )
+        except Exception as exc:
+            logging.getLogger(__name__).warning(
+                "UAP save_last_used failed on close: %s", exc
+            )
+        super().closeEvent(event)
 
     def _validate_tool_interface_contract(self) -> None:
         """Validate required interface attributes before setup."""

@@ -1,0 +1,11 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.10, pytest-8.4.2, pluggy-1.6.0 -- C:\Users\HP1\1_2\.venv312\Scripts\python.exe
+cachedir: .pytest_cache
+hypothesis profile 'default'
+PyQt5 5.15.11 -- Qt runtime 5.15.2 -- Qt compiled 5.15.2
+rootdir: C:\Users\HP1\1_2\tests\unit
+configfile: pytest.ini
+plugins: hypothesis-6.151.12, cov-7.0.0, qt-4.5.0
+collecting ... collected 3 items
+
+tests\unit\preferences\test_uap_service.py::TestImportProfile::test_import_profile_returns_appearance_profile 

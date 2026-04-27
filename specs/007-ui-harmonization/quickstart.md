@@ -24,10 +24,10 @@
 
 ```powershell
 # Menu contract + UAP contract tests only
-python -m pytest tests/contract/gui/tests/unit/preferences/test_uap_service.py -v
+python -m pytest tests/contracts/gui/test_menu_contract.py tests/unit/preferences/test_uap_service.py -v
 
 # All contract tests
-python -m pytest tests/contract/ -v
+python -m pytest tests/contracts/ -v
 ```
 
 Expected output: all tests FAIL until Phase 3.3 implementation is complete (TDD gate).

@@ -51,21 +51,6 @@ def qapp():
 
 
 @pytest.fixture
-def qtbot(qapp, qtbot):
-    """
-    Enhanced qtbot fixture that ensures QApplication is available.
-
-    Args:
-        qapp: The QApplication fixture
-        qtbot: The pytest-qt qtbot fixture
-
-    Returns:
-        QtBot: The qtbot instance for GUI testing
-    """
-    return qtbot
-
-
-@pytest.fixture
 def test_config_dir(tmp_path):
     """
     Fixture providing a temporary configuration directory for tests.

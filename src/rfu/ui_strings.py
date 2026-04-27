@@ -924,3 +924,388 @@ class Privacy:
         "Could not preview the operation. "
         "Check that you have the required permissions."
     )
+
+# ---------------------------------------------------------------------------
+# Phase 2 — Menu token additions (resolves TODO(UI_STRINGS_MENU_TOKENS))
+# Compliant with §7.4 nomenclature: imperative verbs, Title Case, ellipsis
+# only when a dialog follows.
+# ---------------------------------------------------------------------------
+
+
+class Menu:
+    """Shared hub-level menu item tokens (§9.6 Hub-Specific Menu Items)."""
+
+    # File menu — hub-provided items (§9.6, §9.7.1)
+    FILE_RETURN_TO_HUB = "Return to Hub"
+    FILE_EXIT = "Exit"
+
+    # Edit menu — globally reserved (§7.4.4)
+    EDIT_UNDO = "Undo"
+    EDIT_REDO = "Redo"
+    EDIT_CUT = "Cut"
+    EDIT_COPY = "Copy"
+    EDIT_PASTE = "Paste"
+    EDIT_SELECT_ALL = "Select All"
+    EDIT_FIND = "Find\u2026"
+    EDIT_REPLACE = "Find and Replace\u2026"
+
+    # View menu — hub items (§9.6)
+    VIEW_SHOW_HUB_TABS = "Show Hub Tabs"
+    VIEW_SHOW_TOOL_LIST = "Show Tool List"
+    VIEW_RESET_LAYOUT = "Reset Layout"
+    VIEW_ZOOM_IN = "Zoom In"
+    VIEW_ZOOM_OUT = "Zoom Out"
+    VIEW_RESET_ZOOM = "Reset Zoom"
+
+    # Tools menu — hub items (§9.6)
+    TOOLS_PREFERENCES = "Preferences"
+    TOOLS_RELOAD_REGISTRY = "Reload Tool Registry"
+    TOOLS_RUN_DIAGNOSTICS = "Run Diagnostics\u2026"
+
+    # Window menu — hub items (§9.6)
+    WINDOW_HUB_HOME = "Hub Home"
+    WINDOW_OPEN_TOOL = "Open Tool Window\u2026"
+    WINDOW_SWITCH_PREVIOUS = "Switch to Previous Tool"
+    WINDOW_REOPEN_TOOL = "Reopen {tool_name}"  # Formatted at runtime
+
+    # Help menu — hub items (§9.6)
+    HELP_DOCUMENTATION = "Hub Documentation"
+    HELP_KEYBOARD_SHORTCUTS = "Keyboard Shortcuts"
+    HELP_ABOUT = "About"
+    HELP_DIAGNOSTICS = "Diagnostics\u2026"
+    HELP_CHECK_UPDATES = "Check for Updates\u2026"
+
+    # Shared action labels (§7.4.4 / §8.3 command taxonomy)
+    ACTION_DRY_RUN = "Dry Run (Preview Only)"
+    ACTION_CANCEL = "Cancel"
+    ACTION_CLOSE = "Close"
+    ACTION_APPLY = "Apply Changes"
+    ACTION_PREVIEW = "Preview"
+    ACTION_EXPORT = "Export\u2026"
+    ACTION_IMPORT = "Import\u2026"
+    ACTION_REFRESH = "Refresh"
+    ACTION_SETTINGS = "Settings\u2026"
+    ACTION_RESET_DEFAULTS = "Reset to Defaults\u2026"
+
+    # Shared confirmation strings
+    CONFIRM_YES = "Yes"
+    CONFIRM_NO = "No"
+    CONFIRM_CANCEL = "Cancel"
+    CONFIRM_DESTRUCTIVE_TITLE = "Confirm Operation"
+    CONFIRM_DESTRUCTIVE_MSG = (
+        "This action cannot be undone. "
+        "Do you want to proceed?"
+    )
+
+
+# ---------------------------------------------------------------------------
+# Missing tool classes — Phase 2 additions (canonical names per matrix §12.3)
+# ---------------------------------------------------------------------------
+
+
+class EnhancedEditor:
+    """Enhanced text/file editor (matrix id: enhanced-editor)."""
+
+    TITLE = "Enhanced Editor"
+    WINDOW_TITLE = "Enhanced Editor \u2014 RFU"
+    LOADING = "Loading Enhanced Editor\u2026"
+    DRY_RUN_LABEL = "Dry Run (Preview Only)"
+    MODAL_ERROR_TITLE = "Enhanced Editor"
+    ERR_INIT_FAILED = (
+        "Could not start Enhanced Editor. "
+        "Please try again or restart the application."
+    )
+    ERR_OPEN_FAILED = (
+        "Could not open the file. "
+        "Check that the file exists and you have permission to read it."
+    )
+    ERR_SAVE_FAILED = (
+        "Could not save the file. "
+        "Check that you have write permission to the destination."
+    )
+    ERR_EXPORT_FAILED = (
+        "Could not export. "
+        "Check that you have write permission to the destination."
+    )
+    BTN_APPLY = "Apply Changes"
+    BTN_EXPORT = "Export\u2026"
+    BTN_FIND_REPLACE = "Find and Replace\u2026"
+    MENU_TOOLS_APPLY = "Apply Changes"
+    MENU_TOOLS_FORMAT = "Advanced Formatting\u2026"
+    MENU_REPORTS_EXPORT = "Export Document\u2026"
+
+
+class SecurityPreferences:
+    """Security preferences panel (matrix id: security-preferences)."""
+
+    TITLE = "Security Preferences"
+    WINDOW_TITLE = "Security Preferences \u2014 RFU"
+    LOADING = "Loading Security Preferences\u2026"
+    MODAL_ERROR_TITLE = "Security Preferences"
+    ERR_INIT_FAILED = (
+        "Could not start Security Preferences. "
+        "Please try again or restart the application."
+    )
+    ERR_SAVE_FAILED = (
+        "Could not save security settings. "
+        "Please try again or restart the application."
+    )
+    ERR_RESET_FAILED = (
+        "Could not reset security settings. "
+        "Please try again or restart the application."
+    )
+    BTN_APPLY = "Apply Changes"
+    BTN_RESET = "Reset to Defaults\u2026"
+    BTN_EXPORT = "Export Settings\u2026"
+    CONFIRM_RESET_TITLE = "Confirm Reset"
+    CONFIRM_RESET_MSG = (
+        "Reset all security settings to defaults? This cannot be undone."
+    )
+    CONFIRM_RESET_YES = "Reset"
+    MENU_TOOLS_APPLY = "Apply Changes"
+    MENU_TOOLS_RESET = "Reset to Defaults\u2026"
+
+
+class PDFExtractLinks:
+    """PDF link extraction tool (matrix id: pdf-extract-links)."""
+
+    TITLE = "Extract Links"
+    WINDOW_TITLE = "Extract Links \u2014 RFU"
+    LOADING = "Loading Extract Links\u2026"
+    MODAL_ERROR_TITLE = "Extract Links"
+    ERR_INIT_FAILED = (
+        "Could not start Extract Links. "
+        "Please try again or restart the application."
+    )
+    ERR_NO_FILE = "No PDF file selected. Select a file before extracting links."
+    ERR_LOAD_FAILED = (
+        "Could not load the PDF file. "
+        "Check that the file is a valid PDF and you have permission to read it."
+    )
+    ERR_EXTRACT_FAILED = (
+        "Link extraction failed. "
+        "The file may be encrypted or contain no extractable links."
+    )
+    ERR_EXPORT_FAILED = (
+        "Could not export results. "
+        "Check that you have write permission to the destination."
+    )
+    BTN_EXTRACT = "Extract\u2026"
+    BTN_EXPORT = "Export Report\u2026"
+    BTN_FILTER = "Filter Options\u2026"
+    MENU_TOOLS_EXTRACT = "Extract Links\u2026"
+    MENU_REPORTS_EXPORT = "Export Link Report\u2026"
+
+
+class PDFPageAdministration:
+    """PDF page management tool (matrix id: pdf-page-administration)."""
+
+    TITLE = "Page Administration"
+    WINDOW_TITLE = "Page Administration \u2014 RFU"
+    LOADING = "Loading Page Administration\u2026"
+    DRY_RUN_LABEL = "Dry Run (Preview Only)"
+    MODAL_ERROR_TITLE = "Page Administration"
+    ERR_INIT_FAILED = (
+        "Could not start Page Administration. "
+        "Please try again or restart the application."
+    )
+    ERR_NO_FILE = "No PDF file selected. Select a file before managing pages."
+    ERR_LOAD_FAILED = (
+        "Could not load the PDF file. "
+        "Check that the file is a valid PDF and you have permission to read it."
+    )
+    ERR_APPLY_FAILED = (
+        "Page operation failed. "
+        "Check that you have write permission to the destination."
+    )
+    ERR_REMOVE_FAILED = (
+        "Could not remove the selected pages. "
+        "The file may be protected or read-only."
+    )
+    BTN_APPLY = "Apply Changes"
+    BTN_DRY_RUN = "Dry Run (Preview Only)"
+    BTN_REMOVE_PAGES = "Remove Pages\u2026"
+    CONFIRM_REMOVE_TITLE = "Confirm Page Removal"
+    CONFIRM_REMOVE_MSG = "Remove the selected pages? This cannot be undone."
+    CONFIRM_REMOVE_YES = "Remove Pages"
+    MENU_TOOLS_APPLY = "Apply Page Changes"
+    MENU_TOOLS_REMOVE = "Remove Pages\u2026"
+
+
+class NetworkTransfer:
+    """Network file transfer tool (matrix id: network-transfer)."""
+
+    TITLE = "Network Transfer"
+    WINDOW_TITLE = "Network Transfer \u2014 RFU"
+    LOADING = "Loading Network Transfer\u2026"
+    DRY_RUN_LABEL = "Dry Run (Preview Only)"
+    MODAL_ERROR_TITLE = "Network Transfer"
+    ERR_INIT_FAILED = (
+        "Could not start Network Transfer. "
+        "Please try again or restart the application."
+    )
+    ERR_CONNECT_FAILED = (
+        "Could not connect to the remote host. "
+        "Check the hostname, port, and your network connection."
+    )
+    ERR_TRANSFER_FAILED = (
+        "Transfer failed. "
+        "Check your connection and that you have permission to access the destination."
+    )
+    ERR_NO_TARGET = (
+        "No transfer destination specified. "
+        "Enter a hostname or IP address."
+    )
+    ERR_EXPORT_FAILED = (
+        "Could not export transfer log. "
+        "Check that you have write permission to the destination."
+    )
+    BTN_TRANSFER = "Transfer\u2026"
+    BTN_DRY_RUN = "Dry Run (Preview Only)"
+    BTN_ADVANCED = "Advanced Transfer\u2026"
+    MENU_TOOLS_TRANSFER = "Transfer\u2026"
+
+
+class BookmarkManager:
+    """Network/path bookmark manager (matrix id: bookmark-manager)."""
+
+    TITLE = "Bookmark Manager"
+    WINDOW_TITLE = "Bookmark Manager \u2014 RFU"
+    LOADING = "Loading Bookmark Manager\u2026"
+    MODAL_ERROR_TITLE = "Bookmark Manager"
+    ERR_INIT_FAILED = (
+        "Could not start Bookmark Manager. "
+        "Please try again or restart the application."
+    )
+    ERR_SAVE_FAILED = (
+        "Could not save the bookmark. "
+        "Check that the application data folder is writable."
+    )
+    ERR_DELETE_FAILED = (
+        "Could not delete the bookmark. "
+        "Please try again or restart the application."
+    )
+    ERR_EXPORT_FAILED = (
+        "Could not export bookmarks. "
+        "Check that you have write permission to the destination."
+    )
+    ERR_IMPORT_FAILED = (
+        "Could not import bookmarks. "
+        "Check that the file is a valid bookmark export."
+    )
+    BTN_SAVE = "Save"
+    BTN_EXPORT = "Export Bookmarks\u2026"
+    BTN_IMPORT = "Import Bookmarks\u2026"
+    BTN_DELETE = "Delete Bookmark\u2026"
+    CONFIRM_DELETE_TITLE = "Confirm Delete"
+    CONFIRM_DELETE_MSG = "Delete the selected bookmark? This cannot be undone."
+    CONFIRM_DELETE_YES = "Delete"
+    MENU_TOOLS_SAVE = "Save Bookmark"
+    MENU_TOOLS_IMPORT = "Import Bookmarks\u2026"
+    MENU_REPORTS_EXPORT = "Export Bookmarks\u2026"
+
+
+class PrivacyCleaner:
+    """Privacy data cleaner (matrix id: privacy-cleaner)."""
+
+    TITLE = "Privacy Cleaner"
+    WINDOW_TITLE = "Privacy Cleaner \u2014 RFU"
+    LOADING = "Loading Privacy Cleaner\u2026"
+    DRY_RUN_LABEL = "Dry Run (Preview Only)"
+    MODAL_ERROR_TITLE = "Privacy Cleaner"
+    ERR_INIT_FAILED = (
+        "Could not start Privacy Cleaner. "
+        "Please try again or restart the application."
+    )
+    ERR_SCAN_FAILED = (
+        "Privacy scan failed. "
+        "Check that you have the required permissions."
+    )
+    ERR_CLEAN_FAILED = (
+        "Privacy clean operation failed. "
+        "Check that you have the required permissions and try again."
+    )
+    ERR_EXPORT_FAILED = (
+        "Could not export results. "
+        "Check that you have write permission to the destination."
+    )
+    BTN_CLEAN = "Clean\u2026"
+    BTN_DRY_RUN = "Dry Run (Preview Only)"
+    BTN_ADVANCED = "Advanced Targets\u2026"
+    CONFIRM_CLEAN_TITLE = "Confirm Privacy Clean"
+    CONFIRM_CLEAN_MSG = (
+        "Clean the selected privacy data? "
+        "Deleted items cannot be recovered."
+    )
+    CONFIRM_CLEAN_YES = "Clean"
+    MENU_TOOLS_CLEAN = "Clean\u2026"
+    MENU_TOOLS_DRY_RUN = "Dry Run (Preview Only)"
+    MENU_REPORTS_EXPORT = "Export Clean Report\u2026"
+
+
+class DataAnonymizer:
+    """Data anonymization tool (matrix id: data-anonymizer)."""
+
+    TITLE = "Data Anonymizer"
+    WINDOW_TITLE = "Data Anonymizer \u2014 RFU"
+    LOADING = "Loading Data Anonymizer\u2026"
+    DRY_RUN_LABEL = "Dry Run (Preview Only)"
+    MODAL_ERROR_TITLE = "Data Anonymizer"
+    ERR_INIT_FAILED = (
+        "Could not start Data Anonymizer. "
+        "Please try again or restart the application."
+    )
+    ERR_LOAD_FAILED = (
+        "Could not load the source file. "
+        "Check that the file is accessible and in a supported format."
+    )
+    ERR_APPLY_FAILED = (
+        "Anonymization failed. "
+        "Check that you have write permission to the destination."
+    )
+    ERR_EXPORT_FAILED = (
+        "Could not export the anonymized file. "
+        "Check that you have write permission to the destination."
+    )
+    BTN_APPLY = "Apply Changes"
+    BTN_DRY_RUN = "Dry Run (Preview Only)"
+    BTN_RULES = "Anonymization Rules\u2026"
+    MENU_TOOLS_APPLY = "Apply Anonymization"
+    MENU_TOOLS_RULES = "Anonymization Rules\u2026"
+    MENU_REPORTS_EXPORT = "Export Anonymized File\u2026"
+
+
+class EnhancedClipboard:
+    """Enhanced clipboard manager (matrix id: enhanced-clipboard)."""
+
+    TITLE = "Enhanced Clipboard"
+    WINDOW_TITLE = "Enhanced Clipboard \u2014 RFU"
+    LOADING = "Loading Enhanced Clipboard\u2026"
+    MODAL_ERROR_TITLE = "Enhanced Clipboard"
+    ERR_INIT_FAILED = (
+        "Could not start Enhanced Clipboard. "
+        "Please try again or restart the application."
+    )
+    ERR_PASTE_FAILED = (
+        "Could not paste the selected item. "
+        "The clipboard content may no longer be available."
+    )
+    ERR_CLEAR_FAILED = (
+        "Could not clear the clipboard history. "
+        "Please try again or restart the application."
+    )
+    ERR_EXPORT_FAILED = (
+        "Could not export clipboard history. "
+        "Check that you have write permission to the destination."
+    )
+    BTN_PASTE = "Paste"
+    BTN_EXPORT = "Export\u2026"
+    BTN_CLEAR_ALL = "Clear All\u2026"
+    BTN_HISTORY = "Clipboard History\u2026"
+    CONFIRM_CLEAR_TITLE = "Confirm Clear"
+    CONFIRM_CLEAR_MSG = "Clear all clipboard history? This cannot be undone."
+    CONFIRM_CLEAR_YES = "Clear All"
+    MENU_TOOLS_PASTE = "Paste"
+    MENU_TOOLS_HISTORY = "Clipboard History\u2026"
+    MENU_TOOLS_CLEAR = "Clear All\u2026"
+    MENU_REPORTS_EXPORT = "Export Clipboard History\u2026"

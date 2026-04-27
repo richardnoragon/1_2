@@ -535,6 +535,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
         self.create_security_tab()
         self.create_system_tab()
         self.create_logs_tab()
+        self._create_appearance_tab()  # T036 — FR-025
 
         # Add tabbed interface to stacked widget
         self.interface_stack.addWidget(self.tab_widget)
@@ -4120,6 +4121,27 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
         """Update the status bar with a message."""
         if hasattr(self, "status_bar"):
             self.status_bar.showMessage(message, 5000)  # Show for 5 seconds
+
+    # T036 — Appearance tab (FR-025)
+    def _create_appearance_tab(self) -> None:
+        """Create the UAP Appearance tab in the hub (FR-025)."""
+        from PyQt5.QtWidgets import QLabel, QVBoxLayout, QWidget
+
+        try:
+            from src.gui.widgets.uap_appearance_widget import (
+                UAPAppearanceWidget,
+            )
+
+            tab = QWidget()
+            layout = QVBoxLayout(tab)
+            layout.addWidget(UAPAppearanceWidget())
+            self.tab_widget.addTab(tab, "Appearance")
+        except Exception as exc:
+            self.logger.error("Failed to create Appearance tab: %s", exc)
+            tab = QWidget()
+            layout = QVBoxLayout(tab)
+            layout.addWidget(QLabel("Appearance settings unavailable."))
+            self.tab_widget.addTab(tab, "Appearance")
 
 
 def main():

@@ -1,0 +1,86 @@
+[A11Y] 22 file(s), 200 widget(s) missing setAccessibleName():
+  src\gui\common\appearance_dialog.py: 4 widget(s)
+    line 38: QComboBox -> theme_combo
+    line 47: QSpinBox -> font_spin
+    line 55: QPushButton -> save_button
+    ... and 1 more
+  src\gui\common\standard_window.py: 3 widget(s)
+    line 94: QPushButton -> close_button
+    line 159: QPushButton -> button
+    line 178: QPushButton -> button
+  src\gui\common\widgets.py: 4 widget(s)
+    line 65: QPushButton -> cancel_button
+    line 128: QLineEdit -> path_edit
+    line 132: QPushButton -> browse_button
+    ... and 1 more
+  src\gui\dialogs\security_preferences_dialog.py: 68 widget(s)
+    line 108: QTabWidget -> tab_widget
+    line 131: QPushButton -> test_security_btn
+    line 135: QPushButton -> export_config_btn
+    ... and 65 more
+  src\gui\menu_manager.py: 10 widget(s)
+    line 765: QTextEdit -> log_text
+    line 776: QPushButton -> refresh_btn
+    line 782: QPushButton -> close_btn
+    ... and 7 more
+  src\gui\safe_standard_window.py: 1 widget(s)
+    line 171: QPushButton -> button
+  src\gui\settings_dialog.py: 30 widget(s)
+    line 112: QTabWidget -> tab_widget
+    line 127: QPushButton -> reset_button
+    line 129: QPushButton -> save_button
+    ... and 27 more
+  src\gui\standard_window.py: 3 widget(s)
+    line 192: QPushButton -> button
+    line 361: QPushButton -> button
+    line 424: QPushButton -> button
+  src\gui\widgets\empty_state_widget.py: 1 widget(s)
+    line 115: QPushButton -> action_button
+  src\rfu\admin_panel.py: 4 widget(s)
+    line 525: QTableWidget -> user_table
+    line 543: QPushButton -> delete_button
+    line 548: QPushButton -> disable_button
+    ... and 1 more
+  src\rfu\login_dialog.py: 13 widget(s)
+    line 92: QPlainTextEdit -> justification_input
+    line 118: QPushButton -> cancel_button
+    line 122: QPushButton -> submit_button
+    ... and 10 more
+  src\simple_menu_manager.py: 6 widget(s)
+    line 213: QTextEdit -> help_text
+    line 218: QPushButton -> close_btn
+    line 231: QTextEdit -> shortcuts_text
+    ... and 3 more
+  src\tabbed_hub.py: 6 widget(s)
+    line 488: QTabWidget -> tab_widget
+    line 1377: QPushButton -> button
+    line 2089: QTextEdit -> log_viewer
+    ... and 3 more
+  src\tools\file_operations\secure_delete\secure_delete.py: 1 widget(s)
+    line 895: QPushButton -> delete_button
+  src\tools\metadata\file_touch\file_touch.py: 1 widget(s)
+    line 300: QComboBox -> QComboBox
+  src\tools\network\bookmarks\bookmark_manager.py: 5 widget(s)
+    line 942: QPushButton -> add_btn
+    line 947: QPushButton -> edit_btn
+    line 952: QPushButton -> delete_btn
+    ... and 2 more
+  src\tools\network\bookmarks\bookmark_manager_gui.py: 5 widget(s)
+    line 196: QPushButton -> add_button
+    line 207: QPushButton -> import_button
+    line 211: QPushButton -> export_button
+    ... and 2 more
+  src\tools\network\connectivity\network_connectivity.py: 3 widget(s)
+    line 136: QPushButton -> bandwidth_button
+    line 173: QPushButton -> scan_button
+    line 182: QPushButton -> wifi_button
+  src\tools\network\network_connectivity_complex\gui\dialogs\config_manager_dialog.py: 9 widget(s)
+    line 91: QPushButton -> create_btn
+    line 95: QPushButton -> switch_btn
+    line 100: QPushButton -> delete_btn
+    ... and 6 more
+  src\tools\network\network_connectivity_complex\gui\widgets\bandwidth_monitor_widget.py: 3 widget(s)
+    line 177: QPushButton -> start_button
+    line 181: QPushButton -> stop_button
+    line 243: QPushButton -> export_button
+  ... and 2 more files

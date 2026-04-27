@@ -217,5 +217,26 @@ class PreferenceManager:
         if updates:
             self.store.set_category(self.user_id, "directories", updates)
 
+    # ---------------------- UAP (Unified Appearance Profile) ----------------------
+    def get_uap_settings(self) -> "UAPSettings":
+        from src.core.preferences.uap.service import UAPService
+
+        svc = UAPService(store=self.store, user_id=self.user_id)
+        return svc.load()
+
+    def save_uap_settings(self, settings: "UAPSettings") -> None:
+        from src.core.preferences.uap.service import UAPService
+
+        svc = UAPService(store=self.store, user_id=self.user_id)
+        svc.save_last_used(
+            width=settings.last_used_width,
+            height=settings.last_used_height,
+            x=settings.last_used_x,
+            y=settings.last_used_y,
+            font_family=settings.last_used_font_family,
+            font_size=settings.last_used_font_size,
+            directory=settings.last_used_directory,
+        )
+
 
 __all__ = ["PreferenceManager"]
