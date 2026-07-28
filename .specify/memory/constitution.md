@@ -1279,7 +1279,7 @@ normative status.
 The TODO items below are the active constitutional TODO set.
 
 | TODO | Status | Owner Role | Target Milestone | Enforcement Impact |
-|------|--------|------------|------------------|--------------------|
+| ------ | -------- | ------------ | ------------------ | -------------------- |
 | TODO(HUB_MENU_REGISTRY_API) | Open | Maintainer | v1.38.0 | deferred gate |
 | TODO(RELAUNCH_TOOL_WINDOW_API) | Open | Maintainer | v1.38.0 | deferred gate |
 | TODO(OPS_PHASE3_SPEC) | Open | Release Steward | v1.39.0 | deferred gate |
@@ -1330,12 +1330,14 @@ foreground UI without requiring navigation, expansion, or interaction. A
 reasonable user cannot proceed without noticing it.
 
 Permitted surfaces that **satisfy** this requirement:
+
 - Modal dialogs
 - Inline error or warning banners rendered in the main content area
 - Automatic toast/snackbar notifications that appear in the main viewport
   without requiring any action to trigger them
 
 Surfaces that **do not satisfy** this requirement:
+
 - Status bars or status bar icons
 - Notification tray badges or taskbar badges
 - Collapsible or expandable panels (unless already expanded)
@@ -1355,12 +1357,14 @@ the active UI state, without consulting external documentation or advanced
 features and without requiring knowledge of hidden or non-obvious UI elements.
 
 Permitted surfaces that **satisfy** this requirement:
+
 - Clicking a top-level tab
 - Opening a sidebar via a clearly labelled control in the current view
 - Selecting a single item from a top-level or first-level menu
 - Expanding a single accordion section that is already visible
 
 Surfaces that **do not satisfy** this requirement:
+
 - Multi-level or cascading menu navigation
 - Log panels, developer consoles, or debug output areas
 - Configuration or settings files
@@ -1380,6 +1384,7 @@ or external resources. Internal RFU bookkeeping (indexes, caches, audit logs)
 is not considered a side effect.
 
 Resolved ambiguous scenarios:
+
 - Reading a file that updates its filesystem access timestamp: **not** a side
   effect — not user-visible and not persistent in a user-facing sense.
 - Writing to RFU's internal index or audit log: **not** a side effect —
@@ -1402,6 +1407,7 @@ or hard to reverse, including deletion, overwrite, secure wipe, anonymization,
 or lossy transformation.
 
 Examples of destructive operations:
+
 - File deletion
 - File overwrite
 - Secure wipe
@@ -1455,6 +1461,7 @@ in headless mode (CLI invocation without an interactive GUI session). A
 compliant headless HMAC token MUST satisfy all five attributes defined in §II.5.
 
 Normative attribute summary (full requirements in §II.5):
+
 - **Algorithm**: HMAC with SHA-256 or stronger; weaker algorithms (MD5, SHA-1,
   or unspecified defaults) MUST NOT be used.
 - **Key storage**: secure system keystore or hardware-backed secret store; MUST
@@ -1485,6 +1492,7 @@ compliant export encryption envelope MUST satisfy all requirements defined in
 §VI.4 (algorithm, KDF, metadata, passphrase derivation, and interoperability).
 
 Normative property summary (full requirements in §VI.4):
+
 - **Algorithm**: AES-256-GCM (authenticated encryption; weaker algorithms or
   non-AEAD modes MUST NOT be used — see §VI.4.1).
 - **Key derivation**: Argon2id with minimum parameter floors (memory ≥ 64 MB,
@@ -1499,6 +1507,7 @@ Normative property summary (full requirements in §VI.4):
   algorithm migrations without breaking imports (see §VI.4.3).
 
 **Reference envelope shape**:
+
 ```json
 {
   "version": 1,
@@ -1522,6 +1531,7 @@ Normative property summary (full requirements in §VI.4):
   "ciphertext_b64": "<BASE64_CIPHERTEXT>"
 }
 ```
+
 All fields except `ciphertext_b64` are plaintext. Sensitive data lives
 exclusively inside `ciphertext_b64`.
 
@@ -1537,12 +1547,14 @@ original. Fidelity is evaluated over **semantic preference fields only**; it
 does not require and MUST NOT require full-record byte-for-byte identity.
 
 Fields **included** in the fidelity comparison (constitutional, per §DW13.1):
+
 - `preference_category`
 - `preference_key`
 - `preference_value`
 - `value_type`
 
 Fields **excluded** from the fidelity comparison (constitutional, per §DW13.2):
+
 - `created_at`, `modified_at`, `imported_at` (timestamps)
 - `record_id` (internal storage identifier)
 - `version`, `migration_flags` (storage record metadata)
@@ -1564,7 +1576,7 @@ for interoperability with standard authenticator applications (Google
 Authenticator, Microsoft Authenticator, Authy, 1Password, etc.).
 
 | Parameter | Constitutional value |
-|-----------|---------------------|
+| ----------- | --------------------- |
 | Standard | RFC 6238 (TOTP) |
 | Algorithm | HMAC-SHA1 |
 | Code length | 6 digits |
@@ -1572,6 +1584,7 @@ Authenticator, Microsoft Authenticator, Authy, 1Password, etc.).
 | Drift tolerance | ±1 time step (±30 s) |
 
 **Normative provisioning URI form**:
+
 ```
 otpauth://totp/Label?secret=SECRET&issuer=APP&algorithm=SHA1&digits=6&period=30
 ```
@@ -1614,7 +1627,7 @@ administrator or user has explicitly configured an idle timeout. These values
 reflect the privilege and risk profile of each account role.
 
 | Role | Constitutional default timeout |
-|------|-------------------------------|
+| ------ | ------------------------------- |
 | `admin` | 10 minutes |
 | `dev` | 15 minutes |
 | `user` | 30 minutes |
@@ -1645,7 +1658,7 @@ immune to administrative modification. The flag covers **six protected
 operations** (resolved from TODO(IS_PROTECTED_SCOPE)):
 
 | Operation | `is_protected = true` effect |
-|-----------|------------------------------|
+| ----------- | ------------------------------ |
 | Deletion | MUST be blocked |
 | Deactivation | MUST be blocked |
 | Suspension | MUST be blocked |
@@ -1680,7 +1693,7 @@ termination (crash, OOM kill, power loss, SIGKILL, container eviction, etc.).
 **Semantics**:
 
 | Sentinel state | Meaning |
-|----------------|---------|
+| ---------------- | --------- |
 | `dirty` | Process started but did not complete graceful shutdown |
 | `clean` | Previous process completed graceful shutdown |
 | `missing` / unknown | Treated as `dirty` (conservative default) |
@@ -1694,6 +1707,7 @@ termination (crash, OOM kill, power loss, SIGKILL, container eviction, etc.).
   treated as a crash: all session secrets MUST be purged before proceeding.
 
 **Properties**:
+
 - MUST be process-external (i.e., survives process termination and cannot be
   cleared by an in-process crash handler that never runs).
 - MUST be readable at the earliest point in the next startup before any
@@ -1796,11 +1810,13 @@ normative summary) as the headless-mode alternative to interactive confirmation
 MUST satisfy the following constraints.
 
 ##### §II.5.1 — Algorithm
+
 Headless confirmation tokens MUST be implemented as HMACs using SHA-256 or
 stronger (e.g., SHA-512). Weaker algorithms (MD5, SHA-1, or unspecified
 defaults) MUST NOT be used.
 
 ##### §II.5.2 — Key Storage
+
 The HMAC signing key MUST be stored in a secure system keystore or
 hardware-backed secret store (e.g., OS keyring, TPM-backed secret, cloud KMS,
 or HSM module). The signing key MUST NOT reside in plaintext configuration
@@ -1809,19 +1825,23 @@ in production deployments. Development and production signing keys MUST be
 distinct and MUST NOT be shared across environments.
 
 ##### §II.5.3 — Token Structure and Validity
+
 Each token MUST embed an issuance timestamp as part of the signed payload.
 A token MUST NOT be accepted as valid more than five (5) minutes after its
 issuance timestamp. Implementations MAY tolerate minor clock skew provided
 the hard upper bound of 5 minutes is never exceeded.
 
 ##### §II.5.4 — Single-Use Requirement
+
 Each token MUST be single-use. A token MAY authorize exactly one destructive
 operation. After successful redemption the token MUST be invalidated and MUST
 NOT be accepted again.
 
 ##### §II.5.5 — Audit Logging
+
 Both token issuance and token redemption MUST generate audit log entries.
 Each audit entry MUST include:
+
 - timestamp
 - operation name
 - a non-sensitive token identifier (e.g., a hash of the token — MUST NOT
@@ -1834,6 +1854,7 @@ These events are auditable events under §16 and subject to the ≥ 365-day
 retention requirement.
 
 ##### §II.5.6 — Equivalence to Interactive Confirmation
+
 A headless HMAC token satisfying §II.5.1–§II.5.5 MUST be treated as equivalent
 to the interactive user-visible confirmation required by §II.2 for the single
 destructive operation it authorizes.
@@ -1938,6 +1959,7 @@ No direct "force healthy" path is permitted without a passing `health_check()`.
 #### §V.3 — Recovery Behavior
 
 Upon successful recovery (§V.2 trigger met), the component MUST:
+
 - Resume normal operation immediately
 - Clear all degraded-state indicators (visual or functional)
 - Re-enter the regular health-check polling cycle
@@ -1949,6 +1971,7 @@ transition.
 
 Every state transition — both degradation and recovery — MUST generate a
 structured log entry. The log entry for recovery MUST contain:
+
 - `timestamp`
 - `component_id` (the registered component identifier)
 - `from_state` (`"degraded"`)
@@ -1956,6 +1979,7 @@ structured log entry. The log entry for recovery MUST contain:
 - `reason` (e.g., `"health_check() returned True"`)
 
 The log entry for degradation MUST contain:
+
 - `timestamp`
 - `component_id`
 - `from_state` (`"healthy"` or `"initializing"`)
@@ -1969,6 +1993,7 @@ structured logging system (§III).
 #### §V.5 — Deterministic Reviewability
 
 Implementations MUST ensure that both degradation and recovery transitions are:
+
 - **Unit-testable**: each transition (init failure → degraded; runtime
   `health_check() == False` → degraded; runtime `health_check() == True` →
   healthy) MUST be covered by at least one automated test.
@@ -1982,28 +2007,33 @@ CI test spec, and migration patch.
 #### §V.6 — Health-Check Polling Interval
 
 ##### §V.6.1 — Minimum Polling Frequency
+
 During active use, each component's `health_check()` MUST be invoked at least
 once every 5 seconds. Implementations MAY poll more frequently, subject to the
 maximum bound in §V.6.2.
 
 ##### §V.6.2 — Maximum Polling Frequency
+
 Implementations MUST NOT invoke `health_check()` more frequently than once
 every 500 milliseconds. This prevents CPU churn, tight loops, and resource
 consumption disproportionate to the value of rapid health detection.
 
 ##### §V.6.3 — Implementation Flexibility
+
 Implementations MAY use fixed intervals, jitter, exponential backoff, or
 adaptive polling strategies, provided that all polling remains within the
 bounds defined in §V.6.1 and §V.6.2. The effective interval MUST never
 fall outside the constitutional range [500 ms, 5 s] during active use.
 
 ##### §V.6.4 — Deterministic Reviewability
+
 Polling intervals MUST be testable via unit tests (e.g., using mock timers or
 virtual clocks) and observable via structured logs or metrics. CI MUST verify
 that the effective polling interval remains within the constitutional bounds
 (§V.6.1–§V.6.2). Tests MUST assert both the minimum and maximum bounds.
 
 ##### §V.6.5 — Resolution of TODO(GUARDIAN_POLL_INTERVAL)
+
 This section resolves TODO(GUARDIAN_POLL_INTERVAL) (open since v1.8.0). No
 implementation-defined polling interval outside the range [500 ms–5 s] is
 permitted. The implementation strategy within that range remains
@@ -2456,6 +2486,7 @@ after import.
 ##### §VII.X.7 — Deterministic Reviewability
 
 CI and reviewers MUST verify that:
+
 - TOTP is implemented according to RFC 6238
 - The default profile (SHA-1 / 6 digits / 30 seconds / ±1 step) is supported
 - HOTP is not treated as an enrolled MFA method
@@ -2531,6 +2562,7 @@ or otherwise imply portability.
 ##### §VII.Y.6 — Deterministic Reviewability
 
 CI and reviewers MUST verify that:
+
 - Roaming and platform authenticators are correctly classified in code and UI
 - Only roaming authenticators and TOTP count toward the offline-capable MFA
   enrollment requirement
@@ -2559,7 +2591,7 @@ administrator nor the user has configured anything) MUST be the value
 prescribed in §G.11 for each role:
 
 | Role | Default idle timeout |
-|------|---------------------|
+| ------ | --------------------- |
 | `admin` | 10 minutes |
 | `dev` | 15 minutes |
 | `user` | 30 minutes |
@@ -2592,6 +2624,7 @@ previous value, new value, timestamp).
 ##### §VII.Z.5 — Deterministic Reviewability
 
 CI and reviewers MUST verify that:
+
 - Role-differentiated defaults (§G.11) are implemented in code and configuration
 - Privileged roles (`admin`, `dev`) have shorter or equal defaults than
   non-privileged roles (`user`, `readonly`)
@@ -2642,6 +2675,7 @@ authenticated operation is performed.
 ##### §VII.W.4 — Crash Sentinel
 
 Implementations MUST maintain a crash sentinel (§G.13) that satisfies:
+
 - It is set to `dirty` at the very start of every startup (step 2 above).
 - It is set to `clean` only on graceful shutdown completion.
 - Any state other than explicit `clean` is treated as `dirty` (crash).
@@ -2670,6 +2704,7 @@ MUST document why instead of silently omitting the protection.
 ##### §VII.W.6 — Deterministic Reviewability
 
 CI and reviewers MUST verify that:
+
 - Crash sentinel logic is implemented (mark-dirty-on-startup,
   mark-clean-on-shutdown, check-on-startup functions all present)
 - Startup-time clearing is unconditional when the sentinel is not `clean`
@@ -2975,6 +3010,7 @@ No tool may introduce additional top-level menus.
 ### §7.3 Menu Taxonomy & Allowed Scope
 
 #### File
+
 Contains actions related to opening, saving, exporting, importing, session
 lifecycle, and application exit. Tools MAY add items under File only if they
 relate to document- or data-level operations.
@@ -2985,48 +3021,59 @@ are provided by the Hub (not tool-registered — see §9.7.1) and therefore do n
 conflict with the tool File-item restriction in §9.7.1.
 
 #### Edit
+
 Contains: Undo / Redo, Cut / Copy / Paste, Select All, Find / Replace (if
 applicable). Tools MAY NOT add domain-specific actions here.
 
 #### View
+
 Contains: Zoom controls, Layout toggles, Theme switching, Panel visibility.
 Tools MAY add view-related toggles but MUST NOT place actions that modify data.
 
 #### Tools
+
 Contains tool-specific actions, transformations, validations, and operations
 that affect data or state. This is the primary extension point for
 tool-specific functionality.
 
 #### Reports
+
 Contains generated reports, summaries, and exports of analytical or aggregated
 data. Tools MAY register reporting actions here. If no tool registers a
 reporting action, the menu is hidden.
 
 #### Window
+
 Contains window management and navigation between open tool windows.
 Hub navigation (e.g., "Return to Hub") is provided by the Hub under File
 (see §7.3 File and §9.6) — it is not a Window-menu item.
 
 #### Help
+
 Contains About, Diagnostics, Documentation, Keyboard shortcuts, and Telemetry
 & privacy information. Tools MAY NOT add items here except contextual help.
 
 ### §7.4 Nomenclature Rules
 
 #### §7.4.1 Verb Forms
+
 Actions MUST use imperative verbs: *"Export Report…"*, *"Validate Input"*,
 *"Apply Changes"*. Passive or ambiguous forms are prohibited: *"Processing…"*,
 *"Handler…"*, *"Do Action"*.
 
 #### §7.4.2 Ellipsis Usage
+
 Use "…" ONLY when the action opens a dialog requiring further user input. No
 ellipsis for immediate actions.
 
 #### §7.4.3 Capitalization
+
 Title Case for menu items. Sentence case for tooltips.
 
 #### §7.4.4 Reserved Names
+
 The following names are globally reserved and MUST NOT be altered:
+
 - **Preferences** (not "Settings")
 - **Exit** (not "Quit")
 - **About**
@@ -3038,6 +3085,7 @@ The following names are globally reserved and MUST NOT be altered:
 ### §7.5 Interaction Behavior
 
 All menus MUST:
+
 - Be fully keyboard navigable
 - Expose accelerators (Alt+F, Alt+E, etc.)
 - Expose shortcuts where applicable (Ctrl+S, Ctrl+Z, etc.)
@@ -3047,6 +3095,7 @@ All menus MUST:
 ### §7.6 Tool-Specific Menus
 
 Tools with their own GUI MAY add items only under:
+
 - **Tools**
 - **Reports**
 - **View**
@@ -3056,6 +3105,7 @@ Tools MUST NOT create new top-level menus.
 ### §7.7 CI Enforcement
 
 CI MUST reject merges if:
+
 - A tool introduces a new top-level menu
 - A menu item violates nomenclature rules
 - A menu item lacks an accelerator
@@ -3098,7 +3148,7 @@ suite.
 All tool actions MUST be classified into exactly one of four tiers:
 
 | Tier | Label | Definition |
-|------|-------|------------|
+| ------ | ------- | ------------ |
 | **Primary** | Primary Action | The main, expected operation (e.g., Apply, Run, Validate) |
 | **Secondary** | Secondary Action | Supportive, non-destructive operations (e.g., Preview, Export) |
 | **Advanced** | Advanced Action | Expert-level or rarely used operations |
@@ -3114,7 +3164,7 @@ with §7.4.1 MUST be used and the deviation noted in the tool's implementation
 documentation.
 
 | Verb | Applies to |
-|------|-----------|
+| ------ | ----------- |
 | **Inspect** | Read-only analysis and examination of files, metadata, or state |
 | **Transform** | Reversible or lossless content modification |
 | **Export** | Output to a file, clipboard, or external format |
@@ -3130,6 +3180,7 @@ Full per-tool command taxonomy mappings are published in docs/command-surface-sp
 > placement on dialog surfaces, see §10.5 (Dialog Surfaces).
 
 Where a tool exposes a toolbar:
+
 - Primary Action buttons MUST be placed left-most in the primary action group.
 - Destructive Action buttons MUST be visually separated (separator or spacing)
   from the Primary and Secondary action groups.
@@ -3176,6 +3227,7 @@ according to the canonical TODO registers in this constitution.
 ### §8.8 CI Enforcement
 
 CI MUST reject merges if:
+
 - A tool action is not classified into one of the four tiers in §8.2
 - A context menu places a destructive action without a preceding separator
 - A command label uses a raw string instead of a `ui_strings` token
@@ -3214,6 +3266,7 @@ menu behavior.
 ### §9.2 Scope
 
 This specification applies to:
+
 - The Hub window
 - All tool windows launched from the Hub
 - All tool GUIs that expose their own menu bar
@@ -3224,6 +3277,7 @@ This specification supersedes any tool-specific menu definitions.
 ### §9.3 Hub as the Menu Authority
 
 The Hub is the **canonical owner** of:
+
 - Top-level menu structure
 - Menu taxonomy
 - Reserved menu items
@@ -3254,15 +3308,18 @@ The Hub exposes a **Menu Registry API** that all tools MUST use.
 -->
 
 #### §9.4.1 Registration Rules
+
 Tools MUST register: their menu items, their accelerators, their tooltips,
 their enable/disable conditions, and their visibility conditions.
 Tools MUST NOT directly manipulate Qt menu objects.
 
 #### §9.4.2 Deregistration
+
 When a tool window closes, all tool-specific menu items MUST be automatically
 removed. Global menu items MUST remain unaffected.
 
 #### §9.4.3 Conflicts
+
 If two tools attempt to register the same accelerator, the Hub MUST reject the
 second registration, the Hub MUST surface a Guardian warning, and CI MUST fail
 if this occurs in automated tests.
@@ -3300,6 +3357,7 @@ These items MUST always be present and MUST NOT be overridden by tools.
 ### §9.7 Tool Menu Integration Rules
 
 #### §9.7.1 Allowed Menu Categories
+
 Tools MAY add items only under: **Tools**, **Reports**, **View**.
 Tools MUST NOT add items under File, Edit, Window, or Help unless explicitly
 granted an exemption.
@@ -3313,16 +3371,20 @@ through the Hub Menu Registry (§9.4); Hub-provided items are exempt from this
 restriction. Tools MUST NOT register their own items under File directly.
 
 #### §9.7.2 Tool Menu Naming
+
 Tools MUST prefix their menu items with their tool name when ambiguity is
 possible (e.g., "Budgetinator: Validate Budget" if not unique).
 
 #### §9.7.3 Tool Menu Visibility
+
 Tool menu items MUST appear only when the tool window is active, disappear
 when the tool window closes, and respect enable/disable conditions defined by
 the tool.
 
 #### §9.7.4 Tool Menu Ordering
+
 Within each allowed menu:
+
 1. Tool-specific actions
 2. Tool-specific advanced actions
 3. Tool-specific diagnostics
@@ -3332,10 +3394,12 @@ Within each allowed menu:
 ### §9.8 Hub–Tool Navigation Integration
 
 #### §9.8.1 Return to Hub
+
 Every tool window MUST expose **File → Return to Hub**, a keyboard shortcut
 (default: Ctrl+H), and a Guardian fallback if the Hub is unavailable.
 
 #### §9.8.2 Relaunch Tool Window
+
 Tools MUST register a relaunch action: **Window → Reopen \<ToolName\>** calling
 `relaunch_tool_window()`.
 
@@ -3348,6 +3412,7 @@ Tools MUST register a relaunch action: **Window → Reopen \<ToolName\>** callin
      implementation team. -->
 
 #### §9.8.3 Cross-Tool Navigation
+
 The Hub MUST maintain a list of open tool windows and expose them under
 **Window → Open Windows**. Tools MUST NOT manage this list themselves.
 
@@ -3373,6 +3438,7 @@ warning, the tool MUST enter degraded mode, and the Hub MUST expose a fallback
 ### §9.12 CI Enforcement
 
 CI MUST reject merges if:
+
 - A tool attempts to add a top-level menu
 - A tool registers items under prohibited menus
 - A tool uses raw Qt menu APIs
@@ -3421,6 +3487,7 @@ All tools MUST adhere to the following principles:
 ### §10.4 Action Classification
 
 All actions MUST be classified as:
+
 - **Primary Action** — the main operation (e.g., Apply, Run, Validate)
 - **Secondary Action** — supportive operations (e.g., Preview, Export)
 - **Destructive Action** — irreversible or high-impact operations
@@ -3434,6 +3501,7 @@ Tools MUST expose these classes consistently.
 > placement on toolbar surfaces, see §8.4 (Toolbar Surfaces).
 
 Primary actions MUST:
+
 - Use a **PrimaryButton**
 - Be placed in the **bottom-right** of dialogs
 - Use imperative verbs
@@ -3443,6 +3511,7 @@ Primary actions MUST:
 ### §10.6 Destructive Action Rules
 
 Destructive actions MUST:
+
 - Use a **SecondaryButton** with danger styling
 - Trigger a **confirmation modal**
 - Support dry-run mode
@@ -3452,6 +3521,7 @@ Destructive actions MUST:
 ### §10.7 Long-Running Operations
 
 All long-running operations MUST:
+
 - Move work off the UI thread
 - Display a **LoadingIndicator**
 - Disable conflicting controls
@@ -3461,6 +3531,7 @@ All long-running operations MUST:
 ### §10.8 Error Handling
 
 All tools MUST:
+
 - Surface errors using the shared **ModalError** component
 - Provide actionable messages
 - Avoid raw exception strings
@@ -3470,6 +3541,7 @@ All tools MUST:
 ### §10.9 Navigation Rules
 
 Tools MUST:
+
 - Provide **Return to Hub** (per §9.8.1)
 - Register with the Hub Window Manager
 - Respect the global menu structure (per §7)
@@ -3478,6 +3550,7 @@ Tools MUST:
 ### §10.10 Accessibility Rules
 
 All tools MUST:
+
 - Provide accessible names and descriptions
 - Support full keyboard navigation
 - Respect zoom scaling
@@ -3487,6 +3560,7 @@ All tools MUST:
 ### §10.11 CI Enforcement
 
 CI MUST reject merges if:
+
 - A tool violates any interaction rule
 - A destructive action lacks confirmation
 - A long-running action blocks the UI thread
@@ -3505,6 +3579,7 @@ See: docs/ui-interaction-contract-spec.md,
 This specification defines the mandatory CI rules, automated checks, failure
 conditions, and reporting requirements that enforce the **Tool Capability Matrix**
 and all associated constitutional sections. Its purpose is to ensure:
+
 - Deterministic enforcement of governance
 - Prevention of regressions
 - Uniform behavior across all tools
@@ -3516,6 +3591,7 @@ CI is the **final authority** on whether a tool is allowed to merge.
 ### §11.2 Scope
 
 CI MUST enforce:
+
 - All harmonization domains (TH, DR, CP, A11Y, PERF, ERR, GRD, TEL, STR, CE, HUB)
 - All interaction rules (INT)
 - All operational guarantees (OPS)
@@ -3541,40 +3617,50 @@ Each layer MUST run on every PR.
 CI MUST fail if any of the following are detected:
 
 #### §11.4.1 Theming (TH)
+
 Raw color values (hex, rgb, rgba); raw font declarations; missing theme token
 usage; missing `_on_theme_changed` handlers.
 
 #### §11.4.2 Dry-Run (DR)
+
 Destructive actions without dry-run branching; missing dry-run toggle wiring.
 
 #### §11.4.3 Shared Components (CP)
+
 Raw Qt widgets where shared components exist; custom button classes duplicating
 Primary/SecondaryButton; custom modal implementations.
 
 #### §11.4.4 Accessibility (A11Y)
+
 Missing accessible names; missing accessible descriptions; color-only
 indicators; touch targets below minimum size.
 
 #### §11.4.5 Error Handling (ERR)
+
 `str(e)` surfaced directly to UI; missing `logger.error`; missing error codes;
 missing ModalError usage.
 
 #### §11.4.6 Strings (STR)
+
 Raw user-visible strings not in `ui_strings.py`; hardcoded English text;
 missing string tokens.
 
 #### §11.4.7 Menu Architecture (MEN)
+
 Tools adding top-level menus; tools registering items under prohibited menus;
 missing accelerators; violations of nomenclature rules.
 
 #### §11.4.8 Typography (FNT)
+
 Raw font families; raw pixel sizes; missing font tokens.
 
 #### §11.4.9 Layout (LYT)
+
 Missing safe-area margins; hardcoded spacing not using layout tokens;
 inconsistent padding.
 
 #### §11.4.10 Wording (WRD)
+
 Non-imperative verbs in action labels; incorrect ellipsis usage; inconsistent
 capitalization.
 
@@ -3583,18 +3669,22 @@ capitalization.
 CI MUST validate:
 
 #### §11.5.1 Menu Registry Schema
+
 All menu items registered via Hub Menu Registry; no direct Qt menu manipulation;
 no accelerator conflicts; correct menu category usage.
 
 #### §11.5.2 Telemetry Schema
+
 All events follow naming conventions; required fields present; no unregistered
 event types.
 
 #### §11.5.3 Preference Schema
+
 All preferences follow naming conventions; versioning rules respected; migration
 scripts present when needed.
 
 #### §11.5.4 Tool Metadata Schema
+
 Tool name, tool classification (Standard / CE), tool capabilities, tool owner.
 
 ### §11.6 Runtime Test Rules
@@ -3602,25 +3692,30 @@ Tool name, tool classification (Standard / CE), tool capabilities, tool owner.
 CI MUST execute:
 
 #### §11.6.1 UI Interaction Tests (INT)
+
 Primary actions use PrimaryButton; destructive actions trigger confirmation
 modals; LoadingIndicator appears for long-running operations; no UI thread
 blocking > 100 ms.
 
 #### §11.6.2 Guardian Tests (GRD)
+
 `register_gui_component()` called; `health_check()` returns valid state;
 `degraded_fallback()` functional.
 
 #### §11.6.3 Critical Engine Tests (CE)
+
 For CE-classified tools: property-based tests, scenario tests, irreversibility
 tests, security-sensitive behavior tests.
 
 #### §11.6.4 Performance Tests (PERF)
+
 Worker offloading verified; no synchronous I/O on UI thread; perf markers
 emitted.
 
 ### §11.7 Matrix Compliance Rules
 
 CI MUST:
+
 - Load the Tool Capability Matrix (§12)
 - Evaluate each capability for the tool under test
 - Fail if any required capability is missing
@@ -3642,14 +3737,17 @@ of `null` and carries no additional machine-readable semantics.
 ### §11.8 Reporting Requirements
 
 #### §11.8.1 Machine-Readable Report
+
 JSON file; one entry per capability; Pass/Fail/Not Applicable; error messages;
 line numbers for violations.
 
 #### §11.8.2 Human-Readable Summary
+
 Markdown summary; capability table; violations grouped by category; suggested
 fixes.
 
 #### §11.8.3 Hub Dashboard Integration
+
 CI MUST update the Hub's governance dashboard with: tool compliance status,
 last reviewed date, reviewer, and phase gate status.
 
@@ -3681,7 +3779,7 @@ whenever a tool's compliance status changes.
 ### §12.1 Capability Codes
 
 | Code | Domain | Required |
-|------|--------|----------|
+| ------ | -------- | ---------- |
 | **TH** | Theming compliance (tokens, live updates) | Yes |
 | **DR** | Dry-run support before destructive actions | Yes |
 | **CP** | Shared components (buttons, modals, toasts) | Yes |
@@ -3706,6 +3804,7 @@ whenever a tool's compliance status changes.
 ### §12.2 Per-Tool Tracking
 
 For each tool, the matrix MUST track:
+
 - Compliance status per capability (☑ compliant / ☐ non-compliant / N/A)
 - Tool Owner
 - Last Reviewed date
@@ -3717,6 +3816,7 @@ The canonical template is maintained in docs/tool-capability-matrix-template.md.
 ### §12.3 CI Integration
 
 The Tool Capability Matrix MUST be:
+
 - Machine-readable (JSON or YAML)
 - Validated by CI on every PR (per §11.7)
 - Updated as part of any PR that changes tool capabilities
@@ -3814,16 +3914,16 @@ Phase 4 enforces consistency across all tools.
          in authoritative tracker. CI gate required. Maintainer / Release
          Steward is responsible. Closed in constitution v1.33.0. -->
 
-    #### §1.X — EOL Migration Planning Deliverable
+   #### §1.X — EOL Migration Planning Deliverable
 
-    ##### §1.X.1 — Purpose
+   ##### §1.X.1 — Purpose
 
     Migration past upstream EOL versions MUST be planned in advance to
     ensure continuity, security, and maintainability. This section defines
     what "planned" means for the purposes of §1 and makes the 90-day
     deadline CI-enforceable.
 
-    ##### §1.X.2 — Definition of "Planned"
+   ##### §1.X.2 — Definition of "Planned"
 
     A migration is considered **"planned"** only when a migration issue
     exists in the project's authoritative issue tracker that includes ALL
@@ -3840,19 +3940,19 @@ Phase 4 enforces consistency across all tools.
     The following MUST NOT satisfy the "planned" requirement:
 
     | Candidate | Reason it fails |
-    |---|---|
+    | --- | --- |
     | Mental note by a developer | Not trackable or auditable |
     | Informal team discussion | Not auditable |
     | Filed issue with no milestone | No deadline |
     | Filed issue with no assignee | No ownership |
 
-    ##### §1.X.3 — Deadline
+   ##### §1.X.3 — Deadline
 
     The migration issue defined in §1.X.2 MUST be created no later than
     **90 days before the upstream EOL date**. Late creation does not
     retroactively satisfy the requirement.
 
-    ##### §1.X.4 — Responsibility
+   ##### §1.X.4 — Responsibility
 
     The **Maintainer or Release Steward** is the responsible party for:
 
@@ -3861,7 +3961,7 @@ Phase 4 enforces consistency across all tools.
     - ensuring the issue is assigned and milestone-bound;
     - ensuring CI passes the EOL-planning gate.
 
-    ##### §1.X.5 — CI Enforcement
+   ##### §1.X.5 — CI Enforcement
 
     CI MUST enforce the EOL-planning requirement via an EOL-tracking
     configuration file (e.g., `eol.yaml`) that lists:
@@ -3883,7 +3983,7 @@ Phase 4 enforces consistency across all tools.
     CI MAY additionally warn when EOL is < 180 days (advisory), but the
     90-day gate is the mandatory enforcement boundary.
 
-    ##### §1.X.6 — Deterministic Reviewability
+   ##### §1.X.6 — Deterministic Reviewability
 
     Reviewers MUST verify that:
 
@@ -4522,7 +4622,7 @@ Phase 4 enforces consistency across all tools.
     all system-wide theme changes and MUST each trigger a backup:
 
     | Operation | Backup required |
-    |---|---|
+    | --- | --- |
     | Modify token values in an existing system-wide preset | MUST |
     | Create a new system-wide preset | MUST |
     | Delete an existing system-wide preset | MUST |
@@ -4609,7 +4709,7 @@ Phase 4 enforces consistency across all tools.
 
 ## Development Workflow & Quality Gates
 
-1. Branching: feature/_, fix/_, chore/_, docs/_ naming. One logical change per
+1. Branching: feature/*, fix/*, chore/*, docs/* naming. One logical change per
    PR. PR description MUST map changes to affected principles (checklist).
 2. TDD Flow: Write failing tests → implement → refactor with green tests.
 3. Reviews: Minimum 2 maintainer approvals for: destructive engine changes,
@@ -5281,6 +5381,7 @@ Phase 4 enforces consistency across all tools.
 - Q: In §22, is the 1% heuristic false-positive threshold measured per-tool or globally? → A: Both gates apply independently: each tool's ruleset MUST be ≤ 1% on its representative test corpus (per-tool gate), AND the combined production ruleset across all tools MUST also be ≤ 1% globally. Breaching either gate triggers a patch release.
 - Q: In §VII and §18 break-glass alerts, does "notify all active admins" mean in-app only (reaches currently logged-in admins), out-of-band to all active admin accounts, or strongest with a specified channel? → A: Strongest with specified channel (option C). Break-glass login MUST attempt two channels: (1) in-app notification to all active admin accounts, and (2) out-of-band email to all active admin accounts if an email delivery channel is configured. Both channels MUST be attempted; failure on one channel MUST be logged but does not suppress the other. §VII and §18 both updated to state this explicitly.
 - Q: In §12 Data Migration, "time-bounded" is never defined — should a hard CI timeout or a per-migration inline declaration apply? → A: Per-migration inline declaration (option B). No universal ceiling is prescribed; each migration file MUST declare its own expected maximum run duration inline (e.g., as a comment or metadata field at the top of the file). §12 updated accordingly.
+
 ## Governance
 
 1. Authority: This Constitution supersedes conflicting informal practices.
