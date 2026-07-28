@@ -1006,9 +1006,8 @@ Follow-up TODOs (new in 1.11.0):
    12. TODO(AUTO_UNLOCK_WORKFLOW): Define automated unlock workflow for the
        lockout mechanism (§VII Lockout). Specify trigger conditions,
        time-based vs event-driven, and whether admin approval is required.
-   13. TODO(BREAKGLASS_DRILL_DOCS): Define what "documented results" requires
-       for the annual break-glass credentials drill (§VII / §18): minimum
-       fields, storage location, and responsible party.
+   13. ~~TODO(BREAKGLASS_DRILL_DOCS)~~: ✓ RESOLVED — see §18 and
+     "Follow-up TODOs resolved" entries in later amendments.
    14. ~~TODO(CRASH_RECOVERY_SESSION)~~: ✓ RESOLVED in v1.26.0 — see §G.13
        and §VII.W. Startup-time clearing mandatory; crash sentinel (dirty/
        clean) prescribes detection; OS-level persistence protections (swap,
@@ -1026,9 +1025,8 @@ Follow-up TODOs (new in 1.11.0):
        user_agent, protocol. Privacy constraints: raw IP, hostnames,
        OS-level usernames, and hardware serial numbers MUST NOT be stored.
        Pseudonymization via stable one-way hash required.
-   17. TODO(EOL_PLANNING_DELIVERABLE): Define what "planned" means for EOL
-       migration (§1): filed issue, milestone, open PR, or governance document;
-       specify the responsible party and required deliverable format.
+     17. ~~TODO(EOL_PLANNING_DELIVERABLE)~~: ✓ RESOLVED in v1.33.0 —
+       see §1.X and docs/eol-planning-deliverable-spec.md.
 
 Previous Sync Impact Report (1.9.0 → 1.10.0)
 Version change: 1.9.0 → 1.10.0
@@ -1063,9 +1061,8 @@ Modified sections: None
 Removed sections: None
 Templates requiring updates: None (existing templates remain compatible)
 Follow-up TODOs (new in 1.10.0):
-   11. TODO(DIRECT_DB_AUDIT): Define the audit-trail mechanism for direct
-       database modification of always-available account records (e.g.,
-       required CLI tool, DB trigger, or documented manual procedure).
+   11. ~~TODO(DIRECT_DB_AUDIT)~~: ✓ RESOLVED in v1.32.0 — see §17.Z and
+     docs/direct-db-audit-spec.md.
 
 Previous Sync Impact Report (1.8.1 → 1.9.0):
 Version change: 1.8.1 → 1.9.0
@@ -1132,10 +1129,7 @@ Modified sections: None
 Removed sections: None
 Templates requiring updates: None (existing templates remain compatible)
 Follow-up TODOs (new in 1.8.0):
-   10. TODO(GUARDIAN_POLL_INTERVAL): Define runtime health-check polling
-       interval for ComponentGuardian. Specify whether polling is periodic
-       (and if so the interval range), event-driven, or both. Deferred to
-       implementation documentation.
+  10. ~~TODO(GUARDIAN_POLL_INTERVAL)~~: ✓ RESOLVED — see §V.6.5.
 
 Previous Sync Impact Report (1.6.0 → 1.7.0):
 Version change: 1.6.0 → 1.7.0
@@ -1270,6 +1264,56 @@ Follow-up TODOs:
 -->
 
 # RFU (Richard's File Utilities) Constitution
+
+## Normative TODO Authority and Register
+
+### Authority Rule
+
+For TODO status interpretation in this constitution, the latest normative
+section text is authoritative. Historical Sync Impact reports and
+Clarifications logs are archival records and MUST NOT override current
+normative status.
+
+### Canonical Open TODO Register
+
+The TODO items below are the active constitutional TODO set.
+
+| TODO | Status | Owner Role | Target Milestone | Enforcement Impact |
+|------|--------|------------|------------------|--------------------|
+| TODO(HUB_MENU_REGISTRY_API) | Open | Maintainer | v1.38.0 | deferred gate |
+| TODO(RELAUNCH_TOOL_WINDOW_API) | Open | Maintainer | v1.38.0 | deferred gate |
+| TODO(OPS_PHASE3_SPEC) | Open | Release Steward | v1.39.0 | deferred gate |
+| TODO(HEADLESS_AUTH) | Open | Security | v1.39.0 | none |
+| TODO(AUTO_UNLOCK_WORKFLOW) | Open | Security | v1.39.0 | none |
+| TODO(BREAK_GLASS_PROCEDURE) | Open | Security | v1.39.0 | none |
+| TODO(ROLE_MIGRATION) | Open | Maintainer | v1.39.0 | none |
+| TODO(MFA_POLICY) | Open | Security | v1.39.0 | none |
+| TODO(PORTABILITY_FORMAT) | Open (partially addressed) | Release Steward | v1.40.0 | none |
+| TODO(PII_SCAN_BASELINE) | Open | Security | v1.40.0 | none |
+| TODO(FILE_VALIDATOR_SIGS) | Open | Maintainer | v1.40.0 | none |
+| TODO(AUTH_DOCS) | Open | Release Steward | v1.40.0 | none |
+| TODO(GOVERNANCE_DOC) | Open | Release Steward | v1.40.0 | none |
+| TODO(HUB_UX_COHESION) | Open | UX | v1.40.0 | none |
+| TODO(FONT_TOKENS_IMPL) | Open | UX | v1.40.0 | none |
+| TODO(LAYOUT_TOKENS_IMPL) | Open | UX | v1.40.0 | none |
+| TODO(GUARDIAN_DEGRADED_UX) | Open | UX | v1.40.0 | none |
+
+### Canonical Resolved TODO Register
+
+The TODO items below are resolved and MUST be treated as closed in governance
+tracking:
+
+- TODO(BREAKGLASS_DRILL_DOCS)
+- TODO(GUARDIAN_POLL_INTERVAL)
+- TODO(EOL_PLANNING_DELIVERABLE)
+- TODO(DIRECT_DB_AUDIT)
+- TODO(AUDIT_ORIGIN_METADATA)
+- TODO(CRASH_RECOVERY_SESSION)
+- TODO(IS_PROTECTED_SCOPE)
+- TODO(FONT_TOKENS_SPEC)
+- TODO(LAYOUT_TOKENS_SPEC)
+- TODO(COMMAND_TAXONOMY)
+- TODO(UI_STRINGS_MENU_TOKENS)
 
 ## Normative Glossary
 
@@ -3109,18 +3153,14 @@ Where a tool exposes a toolbar:
 All command labels, toolbar button labels, and context menu item labels MUST be
 sourced from `ui_strings` tokens (`src/rfu/ui_strings.py`).
 
-**Note on current status**: `src/rfu/ui_strings.py` exists and contains skeleton
-constants per tool. Menu-item and command-label tokens are not yet fully
-populated; completing them is a Phase 2 deliverable. CI enforcement of the
-`ui_strings` token requirement (§7.7, §9.12) is deferred until
-TODO(UI_STRINGS_MENU_TOKENS) is resolved.
+**Note on current status**: `src/rfu/ui_strings.py` includes the required
+menu-item and command-label token coverage for the governed tool set.
+CI enforcement of the `ui_strings` token requirement (§7.7, §9.12) is active
+according to the canonical TODO registers in this constitution.
 
-<!-- TODO(UI_STRINGS_MENU_TOKENS): Populate menu-item and command-label tokens
-     in src/rfu/ui_strings.py for all 35 tools. Skeleton title/loading/error
-     constants exist as of v1.35.0. Full menu token coverage MUST be added
-     before the CI enforcement rules in §7.7 and §9.12 are activated.
-     Responsible: Phase 2 implementation team.
--->
+<!-- RESOLVED(UI_STRINGS_MENU_TOKENS) v1.37.0: Menu-item and command-label
+  tokens were added for governed tool classes in src/rfu/ui_strings.py.
+  This TODO is closed and no longer gates CI enforcement. -->
 
 ### §8.7 Context Menus
 
@@ -3138,8 +3178,7 @@ TODO(UI_STRINGS_MENU_TOKENS) is resolved.
 CI MUST reject merges if:
 - A tool action is not classified into one of the four tiers in §8.2
 - A context menu places a destructive action without a preceding separator
-- A command label uses a raw string instead of a `ui_strings` token (deferred
-  until TODO(UI_STRINGS_MENU_TOKENS) is resolved)
+- A command label uses a raw string instead of a `ui_strings` token
 
 See: docs/command-surface-spec.md,
 .specify/memory/checklist-command-surface-compliance.md

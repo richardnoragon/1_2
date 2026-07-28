@@ -69,6 +69,58 @@
 - [ ] F2. No override mechanisms applied outside constitutional amendment
 - [ ] F3. All failures have line-number references in the JSON report
 
+## Section G — Open Constitutional TODO Triage (Implementation + Governance)
+
+Use this section to triage unresolved constitutional TODOs into immediate,
+near-term, and deferred governance work.
+
+### Priority P0 (Blockers for enforceable CI policy)
+
+- [ ] G1. `TODO(HUB_MENU_REGISTRY_API)` is resolved with API + spec deliverables and CI gates are flipped from deferred to enforced.
+- [ ] G2. `TODO(RELAUNCH_TOOL_WINDOW_API)` is resolved with a concrete API contract and integration tests in Hub window orchestration.
+- [ ] G3. `TODO(OPS_PHASE3_SPEC)` has a constitutional amendment for §13.2 operational guarantees; OPS CI behavior is updated from advisory/deferred to deterministic.
+
+### Priority P1 (Security + account governance execution)
+
+- [ ] G4. `TODO(HEADLESS_AUTH)` design is published (token scope, expiry, revocation, audit fields) and linked from implementation docs.
+- [ ] G5. `TODO(AUTO_UNLOCK_WORKFLOW)` behavior is specified end-to-end (trigger model, approval path, audit requirements) and backed by tests.
+- [ ] G6. `TODO(BREAK_GLASS_PROCEDURE)` is completed with a canonical operating procedure and evidence retention fields.
+- [ ] G7. `TODO(ROLE_MIGRATION)` scripts are created and verified against upgrade paths for existing databases.
+
+### Priority P2 (UX + documentation/governance completion)
+
+- [ ] G8. `TODO(HUB_UX_COHESION)` is implemented with measurable acceptance criteria for badges, last-run state, and health indicators.
+- [ ] G9. `TODO(FONT_TOKENS_IMPL)` is completed with module path, migration plan, and CI checks mapped to FNT capability.
+- [ ] G10. `TODO(PORTABILITY_FORMAT)` is fully closed by publishing canonical schema + import/export compatibility tests.
+- [ ] G11. `TODO(AUTH_DOCS)`, `TODO(MFA_POLICY)`, `TODO(PII_SCAN_BASELINE)`, and `TODO(FILE_VALIDATOR_SIGS)` are linked to versioned docs with reviewer sign-off.
+- [ ] G12. `TODO(GOVERNANCE_DOC)` forward-pointer is resolved by publishing a canonical governance document or removing the pointer by amendment.
+
+### Assigned Owner Roles and Milestones (Authoritative)
+
+| TODO | Owner Role | Target Milestone | Enforcement Impact |
+|------|------------|------------------|--------------------|
+| TODO(HUB_MENU_REGISTRY_API) | Maintainer | v1.38.0 | deferred gate |
+| TODO(RELAUNCH_TOOL_WINDOW_API) | Maintainer | v1.38.0 | deferred gate |
+| TODO(OPS_PHASE3_SPEC) | Release Steward | v1.39.0 | deferred gate |
+| TODO(HEADLESS_AUTH) | Security | v1.39.0 | none |
+| TODO(AUTO_UNLOCK_WORKFLOW) | Security | v1.39.0 | none |
+| TODO(BREAK_GLASS_PROCEDURE) | Security | v1.39.0 | none |
+| TODO(ROLE_MIGRATION) | Maintainer | v1.39.0 | none |
+| TODO(HUB_UX_COHESION) | UX | v1.40.0 | none |
+| TODO(FONT_TOKENS_IMPL) | UX | v1.40.0 | none |
+| TODO(PORTABILITY_FORMAT) | Release Steward | v1.40.0 | none |
+| TODO(AUTH_DOCS) | Release Steward | v1.40.0 | none |
+| TODO(MFA_POLICY) | Security | v1.39.0 | none |
+| TODO(PII_SCAN_BASELINE) | Security | v1.40.0 | none |
+| TODO(FILE_VALIDATOR_SIGS) | Maintainer | v1.40.0 | none |
+| TODO(GOVERNANCE_DOC) | Release Steward | v1.40.0 | none |
+
+### Triage Decision Gates
+
+- [ ] G13. Every open TODO has exactly one owner role (`Maintainer`, `Security`, `UX`, or `Release Steward`).
+- [ ] G14. Every open TODO has a target release/milestone and review date.
+- [ ] G15. Every TODO closure references: constitutional line, implementation PR, and checklist evidence file.
+
 ## Reviewer Notes
 
 _Date:_ _______________  

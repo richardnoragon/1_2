@@ -47,8 +47,7 @@ toolbars, context menus, or keyboard shortcuts.
 
 ## Section E — String Tokens (§8.6)
 
-> **Note**: CI enforcement is deferred until TODO(UI_STRINGS_MENU_TOKENS) resolves.
-> Manual review required in the interim.
+> **Note**: TODO(UI_STRINGS_MENU_TOKENS) is resolved. CI enforcement is active.
 
 - [ ] **E1** All command labels are sourced from `ui_strings` tokens in `src/rfu/ui_strings.py`.
 - [ ] **E2** New command tokens follow the naming convention in Section 6.1 of the spec.
@@ -84,3 +83,34 @@ toolbars, context menus, or keyboard shortcuts.
 | Section G (Matrix) | ☐ | |
 
 **Reviewer**: _______________  **Date**: _______________
+
+---
+
+## Section H — Command Surface Governance Triage (Next Steps)
+
+Use this section when a PR touches command surfaces and constitutional TODOs are
+still open.
+
+### Priority P0
+
+- [ ] **H1** `TODO(HUB_MENU_REGISTRY_API)` is explicitly addressed in this release plan (deliver now) or tracked with a dated milestone (defer with owner).
+- [ ] **H2** `TODO(RELAUNCH_TOOL_WINDOW_API)` has a defined API signature and call sites listed for all affected tools.
+- [ ] **H3** `TODO(OPS_PHASE3_SPEC)` impact on command execution semantics is acknowledged in PR notes (undo/redo, error taxonomy, logging, persistence).
+
+### Priority P1
+
+- [ ] **H4** `TODO(HUB_UX_COHESION)` acceptance criteria are documented for this tool: badge behavior, last-run state, and guardian health indicator exposure.
+- [ ] **H5** Any deferred CI rule in Sections D/E is mapped to a concrete activation condition (what must land before enforcement is enabled).
+
+### Source-of-Truth Consistency Check
+
+- [ ] **H6** If constitution comments and checklists disagree on TODO status, latest normative section text is authoritative over historical Sync Impact notes, and this checklist links the follow-up amendment PR.
+
+### Assigned Owner Roles and Milestones (Authoritative)
+
+| TODO | Owner Role | Target Milestone | Enforcement Impact |
+|------|------------|------------------|--------------------|
+| TODO(HUB_MENU_REGISTRY_API) | Maintainer | v1.38.0 | deferred gate |
+| TODO(RELAUNCH_TOOL_WINDOW_API) | Maintainer | v1.38.0 | deferred gate |
+| TODO(OPS_PHASE3_SPEC) | Release Steward | v1.39.0 | deferred gate |
+| TODO(HUB_UX_COHESION) | UX | v1.40.0 | none |

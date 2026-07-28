@@ -32,8 +32,8 @@ column per capability code. The machine-readable version is maintained in
 | **HUB** | Hub integration & relaunch | Yes | §9.8 |
 | **MEN** | Menu architecture compliance | Yes | §7 |
 | **NOM** | Nomenclature — structural UI naming: menu items, action labels, command names, reserved verbs (§7.4.1, §7.4.4) | Yes | §12.1 |
-| **FNT** | Font token compliance (deferred — see TODO(FONT_TOKENS_SPEC)) | Yes | §11.4.8 |
-| **LYT** | Layout structure compliance (deferred — see §8.9 and TODO(LAYOUT_TOKENS_SPEC)) | Yes | §11.4.9 |
+| **FNT** | Font token compliance (spec resolved in v1.37.0; implementation tracked via TODO(FONT_TOKENS_IMPL)) | Yes | §11.4.8 |
+| **LYT** | Layout structure compliance (spec resolved in v1.37.0; implementation tracked via TODO(LAYOUT_TOKENS_IMPL)) | Yes | §11.4.9 |
 | **WRD** | Wording/Microcopy — contextual runtime text: tooltips, body text, error messages, toasts (§7.4.2, §7.4.3) | Yes | §12.1 |
 | **INT** | UI Interaction Contract compliance | Yes | §10 |
 | **OPS** | Operational Guarantees compliance | Yes | §13.2 |
@@ -81,6 +81,86 @@ column per capability code. The machine-readable version is maintained in
 
 Partial compliance (capability in progress) MUST be tracked in the Notes column
 and MUST NOT be recorded as ☑. CI MUST treat Partial as non-compliant (§11.7).
+
+### Open Constitutional TODO Prioritization (Execution Policy)
+
+The following unresolved constitutional TODOs are governance-tracked and MUST be
+triaged each release planning cycle. Priority determines enforcement urgency.
+
+#### P0 — CI/Governance blockers
+
+1. `TODO(HUB_MENU_REGISTRY_API)`
+2. `TODO(RELAUNCH_TOOL_WINDOW_API)`
+3. `TODO(OPS_PHASE3_SPEC)`
+
+Definition of done for P0:
+- Spec and API contract published
+- Implementation merged
+- CI gates switched from deferred/advisory to enforced where applicable
+
+#### P1 — Security and identity operating controls
+
+1. `TODO(HEADLESS_AUTH)`
+2. `TODO(AUTO_UNLOCK_WORKFLOW)`
+3. `TODO(BREAK_GLASS_PROCEDURE)`
+4. `TODO(ROLE_MIGRATION)`
+5. `TODO(MFA_POLICY)`
+6. `TODO(PII_SCAN_BASELINE)`
+
+Definition of done for P1:
+- Security review sign-off
+- Test evidence in CI
+- Operations runbook updated with owner and cadence
+
+#### P2 — UX and documentation completion
+
+1. `TODO(HUB_UX_COHESION)`
+2. `TODO(FONT_TOKENS_IMPL)`
+3. `TODO(LAYOUT_TOKENS_IMPL)`
+4. `TODO(GUARDIAN_DEGRADED_UX)`
+5. `TODO(PORTABILITY_FORMAT)`
+6. `TODO(AUTH_DOCS)`
+7. `TODO(FILE_VALIDATOR_SIGS)`
+8. `TODO(GOVERNANCE_DOC)`
+
+Definition of done for P2:
+- Document published and versioned
+- Cross-references added to constitution/checklists
+- Owner assigned for long-term maintenance
+
+### Required Triage Metadata
+
+For each open TODO, governance tracking MUST capture:
+
+1. Owner role
+2. Target milestone/release
+3. Enforcement impact (`none`, `deferred gate`, `active gate`)
+4. Evidence links (PR, test run, docs)
+
+Without this metadata, a TODO is considered untriaged and release planning is
+incomplete.
+
+### Authoritative Owner and Milestone Mapping
+
+| TODO | Owner Role | Target Milestone | Enforcement Impact |
+|------|------------|------------------|--------------------|
+| TODO(HUB_MENU_REGISTRY_API) | Maintainer | v1.38.0 | deferred gate |
+| TODO(RELAUNCH_TOOL_WINDOW_API) | Maintainer | v1.38.0 | deferred gate |
+| TODO(OPS_PHASE3_SPEC) | Release Steward | v1.39.0 | deferred gate |
+| TODO(HEADLESS_AUTH) | Security | v1.39.0 | none |
+| TODO(AUTO_UNLOCK_WORKFLOW) | Security | v1.39.0 | none |
+| TODO(BREAK_GLASS_PROCEDURE) | Security | v1.39.0 | none |
+| TODO(ROLE_MIGRATION) | Maintainer | v1.39.0 | none |
+| TODO(MFA_POLICY) | Security | v1.39.0 | none |
+| TODO(PII_SCAN_BASELINE) | Security | v1.40.0 | none |
+| TODO(HUB_UX_COHESION) | UX | v1.40.0 | none |
+| TODO(FONT_TOKENS_IMPL) | UX | v1.40.0 | none |
+| TODO(LAYOUT_TOKENS_IMPL) | UX | v1.40.0 | none |
+| TODO(GUARDIAN_DEGRADED_UX) | UX | v1.40.0 | none |
+| TODO(PORTABILITY_FORMAT) | Release Steward | v1.40.0 | none |
+| TODO(AUTH_DOCS) | Release Steward | v1.40.0 | none |
+| TODO(FILE_VALIDATOR_SIGS) | Maintainer | v1.40.0 | none |
+| TODO(GOVERNANCE_DOC) | Release Steward | v1.40.0 | none |
 
 ---
 
