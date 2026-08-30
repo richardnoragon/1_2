@@ -10,9 +10,7 @@ providing detailed analysis, metrics, and actionable insights.
 import argparse
 import glob
 import json
-import os
 import re
-import sys
 import xml.etree.ElementTree as ET
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -708,7 +706,7 @@ Generated: {{ metrics.generated_at }}
 
 ### Recommendations
 
-1. **Environment Health**: {{ "✅ All environments healthy" if all(env.environment_healthy for env in metrics.environments) else "⚠️ Some environments need attention" }}
+1. **Environment Health**: {{ "✅ All environments healthy" if ((metrics.environments | selectattr('environment_healthy') | list | length) == (metrics.environments | length)) else "⚠️ Some environments need attention" }}
 2. **Test Coverage**: {{ "✅ Coverage target met" if metrics.coverage_percentage >= 85 else "⚠️ Increase test coverage" }}
 3. **Performance**: {{ "✅ Execution time acceptable" if metrics.total_time < 1800 else "⚠️ Optimize test execution time" }}
 
@@ -744,12 +742,21 @@ def main():
 
     args = parser.parse_args()
 
-    if not os.path.exists(args.artifacts_dir):
-        print(f"Error: Artifacts directory not found: {args.artifacts_dir}")
-        sys.exit(1)
+    artifacts_dir = Path(args.artifacts_dir)
+    if not artifacts_dir.exists():
+        print(
+            f"Warning: Artifacts directory not found: {args.artifacts_dir}. "
+            "Continuing with no artifacts."
+        )
+        artifacts_dir.mkdir(parents=True, exist_ok=True)
+    elif not artifacts_dir.is_dir():
+        print(
+            f"Error: Artifacts path is not a directory: {args.artifacts_dir}"
+        )
+        raise SystemExit(1)
 
     # Generate report
-    generator = TestReportGenerator(args.artifacts_dir, args.output_dir)
+    generator = TestReportGenerator(str(artifacts_dir), args.output_dir)
     generator.generate_report()
 
     print("\nReport generation completed successfully!")
