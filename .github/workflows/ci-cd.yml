@@ -133,7 +133,10 @@ jobs:
                   })
           
           if missing_components:
-              print(f'Missing required components: {missing_components}')
+              print('Missing required components:')
+              for item in missing_components:
+                  candidates = ', '.join(item['candidates'])
+                  print(f"- {item['component']} (candidates: {candidates})")
               sys.exit(1)
           
           print('Project structure validation passed')
