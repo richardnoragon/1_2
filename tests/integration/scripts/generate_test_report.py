@@ -10,7 +10,6 @@ providing detailed analysis, metrics, and actionable insights.
 import argparse
 import glob
 import json
-import os
 import re
 import sys
 import xml.etree.ElementTree as ET
@@ -24,7 +23,7 @@ from jinja2 import Template
 class TestReportGenerator:
     """Comprehensive test report generator for RFU integration testing."""
 
-    def __init__(self, artifacts_dir: str, output_dir: str):
+    def __init__(self, artifacts_dir: str | Path, output_dir: str | Path):
         self.artifacts_dir = Path(artifacts_dir)
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)
@@ -53,6 +52,14 @@ class TestReportGenerator:
     def _collect_test_results(self):
         """Collect test results from all artifacts."""
         print("Collecting test results from artifacts...")
+
+        if not self.artifacts_dir.exists():
+            print(
+                f"Warning: Artifacts directory not found: {self.artifacts_dir}. "
+                "Continuing with no artifacts.",
+                file=sys.stderr,
+            )
+            return
 
         # Find all JUnit XML files
         junit_files = list(self.artifacts_dir.glob("**/test-results-*.xml"))
@@ -708,7 +715,7 @@ Generated: {{ metrics.generated_at }}
 
 ### Recommendations
 
-1. **Environment Health**: {{ "✅ All environments healthy" if all(env.environment_healthy for env in metrics.environments) else "⚠️ Some environments need attention" }}
+1. **Environment Health**: {{ "✅ All environments healthy" if ((metrics.environments | selectattr('environment_healthy') | list | length) == (metrics.environments | length)) else "⚠️ Some environments need attention" }}
 2. **Test Coverage**: {{ "✅ Coverage target met" if metrics.coverage_percentage >= 85 else "⚠️ Increase test coverage" }}
 3. **Performance**: {{ "✅ Execution time acceptable" if metrics.total_time < 1800 else "⚠️ Optimize test execution time" }}
 
@@ -744,12 +751,16 @@ def main():
 
     args = parser.parse_args()
 
-    if not os.path.exists(args.artifacts_dir):
-        print(f"Error: Artifacts directory not found: {args.artifacts_dir}")
-        sys.exit(1)
+    artifacts_dir = Path(args.artifacts_dir)
+    if artifacts_dir.exists() and not artifacts_dir.is_dir():
+        print(
+            f"Error: Artifacts path is not a directory: {args.artifacts_dir}",
+            file=sys.stderr,
+        )
+        raise SystemExit(1)
 
     # Generate report
-    generator = TestReportGenerator(args.artifacts_dir, args.output_dir)
+    generator = TestReportGenerator(artifacts_dir, args.output_dir)
     generator.generate_report()
 
     print("\nReport generation completed successfully!")

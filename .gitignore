@@ -174,6 +174,7 @@ logs/
 
 # Test files (temporary development files)
 test_*.py
+!tests/integration/test_generate_test_report_script.py
 
 # Backup and old files
 *.old
