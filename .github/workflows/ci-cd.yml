@@ -331,6 +331,7 @@ jobs:
 
           core_dir = pathlib.Path("src/tools/privacy/privacy_tools/core").resolve()
           module_path = core_dir / "browser_detector.py"
+          # Create a synthetic package namespace so relative imports in browser_detector.py resolve correctly.
           package_name = "privacy_tools_core_runtime_check"
 
           package = types.ModuleType(package_name)
@@ -350,9 +351,23 @@ jobs:
           except Exception as exc:
               print(f"Browser detector runtime import failed: {exc}")
               sys.exit(1)
-          detector = module.BrowserDetector()
-          detected_browsers = detector.detect_installed_browsers()
-          print(f"Browser detector runtime validation passed ({len(detected_browsers)} browsers detected)")
+          detected_count = 0
+          try:
+              detector = module.BrowserDetector()
+              detected_browsers_result = detector.detect_installed_browsers()
+              if detected_browsers_result is None:
+                  detected_browsers = []
+              elif isinstance(detected_browsers_result, list):
+                  detected_browsers = detected_browsers_result
+              else:
+                  detected_browsers = list(detected_browsers_result)
+              detected_count = len(detected_browsers)
+          except Exception as exc:
+              print(f"Browser detector runtime validation failed: {exc}")
+              sys.exit(1)
+          print(
+              f"Browser detector runtime validation passed ({detected_count} browsers detected)"
+          )
           PY
         continue-on-error: true
       
