@@ -118,10 +118,10 @@ jobs:
           import sys
           
           required_files = [
-              'src/cross_platform/package_installer.py',
-              'src/cross_platform/browser_detector.py',
-              'src/cross_platform/network_validator.py',
-              'config_manager.py'
+              'src/tools/network/network_connectivity_complex/deployment/install.py',
+              'src/tools/privacy/privacy_tools/core/browser_detector.py',
+              'src/tools/network/network_connectivity_complex/core/security_validator.py',
+              'src/config_manager.py'
           ]
           
           missing_files = []
