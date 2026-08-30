@@ -323,7 +323,37 @@ jobs:
         run: |
           python src/tools/network/network_connectivity_complex/deployment/validate_deployment.py --verbose --json-output validation_results.json
           python src/tools/network/network_connectivity_complex/deployment/install.py --check-only --verbose
-          python -c "import os, sys; path = 'src/tools/privacy/privacy_tools/core/browser_detector.py'; print(f'Browser detector module present: {path}'); sys.exit(0 if os.path.exists(path) else 1)"
+          python - <<'PY'
+          import importlib.util
+          import pathlib
+          import sys
+          import types
+
+          core_dir = pathlib.Path("src/tools/privacy/privacy_tools/core").resolve()
+          module_path = core_dir / "browser_detector.py"
+          package_name = "privacy_tools_core_runtime_check"
+
+          package = types.ModuleType(package_name)
+          package.__path__ = [str(core_dir)]
+          sys.modules[package_name] = package
+
+          spec = importlib.util.spec_from_file_location(
+              f"{package_name}.browser_detector", module_path
+          )
+          if spec is None or spec.loader is None:
+              print(f"Failed to create import spec for: {module_path}")
+              sys.exit(1)
+          module = importlib.util.module_from_spec(spec)
+          sys.modules[spec.name] = module
+          try:
+              spec.loader.exec_module(module)
+          except Exception as exc:
+              print(f"Browser detector runtime import failed: {exc}")
+              sys.exit(1)
+          detector = module.BrowserDetector()
+          detected_browsers = detector.detect_installed_browsers()
+          print(f"Browser detector runtime validation passed ({len(detected_browsers)} browsers detected)")
+          PY
         continue-on-error: true
       
       - name: Run performance tests
