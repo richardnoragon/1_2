@@ -11,6 +11,7 @@ import argparse
 import glob
 import json
 import re
+import sys
 import xml.etree.ElementTree as ET
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -22,7 +23,7 @@ from jinja2 import Template
 class TestReportGenerator:
     """Comprehensive test report generator for RFU integration testing."""
 
-    def __init__(self, artifacts_dir: str, output_dir: str):
+    def __init__(self, artifacts_dir: str | Path, output_dir: str | Path):
         self.artifacts_dir = Path(artifacts_dir)
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)
@@ -51,6 +52,14 @@ class TestReportGenerator:
     def _collect_test_results(self):
         """Collect test results from all artifacts."""
         print("Collecting test results from artifacts...")
+
+        if not self.artifacts_dir.exists():
+            print(
+                f"Warning: Artifacts directory not found: {self.artifacts_dir}. "
+                "Continuing with no artifacts.",
+                file=sys.stderr,
+            )
+            return
 
         # Find all JUnit XML files
         junit_files = list(self.artifacts_dir.glob("**/test-results-*.xml"))
@@ -743,20 +752,15 @@ def main():
     args = parser.parse_args()
 
     artifacts_dir = Path(args.artifacts_dir)
-    if not artifacts_dir.exists():
+    if artifacts_dir.exists() and not artifacts_dir.is_dir():
         print(
-            f"Warning: Artifacts directory not found: {args.artifacts_dir}. "
-            "Continuing with no artifacts."
-        )
-        artifacts_dir.mkdir(parents=True, exist_ok=True)
-    elif not artifacts_dir.is_dir():
-        print(
-            f"Error: Artifacts path is not a directory: {args.artifacts_dir}"
+            f"Error: Artifacts path is not a directory: {args.artifacts_dir}",
+            file=sys.stderr,
         )
         raise SystemExit(1)
 
     # Generate report
-    generator = TestReportGenerator(str(artifacts_dir), args.output_dir)
+    generator = TestReportGenerator(artifacts_dir, args.output_dir)
     generator.generate_report()
 
     print("\nReport generation completed successfully!")
