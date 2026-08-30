@@ -78,5 +78,5 @@ fuzzywuzzy==0.18.0                        # Fuzzystringmatching
 python-Levenshtein==0.26.0                # Stringdistancealgorithms
 pywin32==308; sys_platform=="win32"     # WindowsAPIaccess
 wmi==1.5.1; sys_platform=="win32"       # Windowssystemmanagement
-python-magic-bin==0.4.14; sys_platform=="linux"  # Linuxfiletypedetection
+python-magic-bin==0.4.14; sys_platform=="win32"  # Windowsfiletypedetection
 pyobjc-framework-Cocoa==10.3.1; sys_platform=="darwin"  # macOSintegration
