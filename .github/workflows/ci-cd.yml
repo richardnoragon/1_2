@@ -117,20 +117,23 @@ jobs:
           import os
           import sys
           
-          required_files = [
-              'src/tools/network/network_connectivity_complex/deployment/install.py',
-              'src/tools/privacy/privacy_tools/core/browser_detector.py',
-              'src/tools/network/network_connectivity_complex/deployment/validate_deployment.py',
-              'src/config_manager.py'
-          ]
+          required_components = {
+              'deployment installer': ['src/tools/network/network_connectivity_complex/deployment/install.py'],
+              'browser detector': ['src/tools/privacy/privacy_tools/core/browser_detector.py'],
+              'deployment validator': ['src/tools/network/network_connectivity_complex/deployment/validate_deployment.py'],
+              'config manager': ['src/config_manager.py', 'src/rfu/config_manager.py']
+          }
           
-          missing_files = []
-          for file_path in required_files:
-              if not os.path.exists(file_path):
-                  missing_files.append(file_path)
+          missing_components = []
+          for component_name, candidate_paths in required_components.items():
+              if not any(os.path.exists(path) for path in candidate_paths):
+                  missing_components.append({
+                      'component': component_name,
+                      'candidates': candidate_paths
+                  })
           
-          if missing_files:
-              print(f'Missing required files: {missing_files}')
+          if missing_components:
+              print(f'Missing required components: {missing_components}')
               sys.exit(1)
           
           print('Project structure validation passed')
