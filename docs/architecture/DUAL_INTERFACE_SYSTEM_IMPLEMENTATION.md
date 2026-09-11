@@ -40,6 +40,14 @@ class InterfaceMode(Enum):
 - **Signal Integration**: PyQt5 signals for inter-component communication
 - **Configuration Management**: Comprehensive settings with JSON persistence
 
+#### 4. **Shared Application State** (`src.core.application_state.ApplicationState`)
+- **Single façade**: Bundles logger, config manager, preference manager, and database availability for hub-style entry points.
+- **Consistent startup wiring**: `RFUMainWindow` and `RFUHub` now resolve their shared services through the same helper instead of recreating the same wiring in each initializer.
+
+#### 5. **Shared Tool Lifecycle** (`src.core.tool_lifecycle`)
+- **Manifest-aware launch resolution**: Tool launch requests can be resolved from explicit module/class arguments or the manifest registry.
+- **Runtime tracker**: Registration, progress updates, and unregistration share one state shape so hub status and lifecycle events stay aligned.
+
 ### Advanced Features Implementation
 
 #### **Smooth Transition Animations**

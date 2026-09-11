@@ -16,6 +16,8 @@ naming conventions, safe-area margins, and CI enforcement semantics that all
 tools MUST follow. No tool MAY use hardcoded spacing, padding, or margin
 values outside the token system.
 
+Issue #81's UI/UX modernization pass now uses the shared token and accessibility baseline described here and in the common style helpers, so the refreshed window/dialog surfaces remain consistent with the layout contract.
+
 ---
 
 ## 1. Token Taxonomy

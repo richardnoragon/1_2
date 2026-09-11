@@ -31,13 +31,14 @@ from PyQt5.QtWidgets import (
 )
 
 try:
-    from src.gui.themes import Colors, Fonts, ThemeManager, Typography
+    from src.gui.themes import Colors, Fonts, ThemeManager, Typography, token
 except ImportError:  # pragma: no cover - fallback for direct execution
     from gui.themes import (  # type: ignore
         Colors,
         Fonts,
         ThemeManager,
         Typography,
+        token,
     )
 
 
@@ -110,7 +111,7 @@ class MenuManager:
             
             QMenuBar::item:selected {{
                 background-color: {Colors.PRIMARY};
-                color: #FFFFFF;
+                color: {token('text_on_primary')};
             }}
             
             QMenuBar::item:pressed {{
@@ -135,7 +136,7 @@ class MenuManager:
             
             QMenu::item:selected {{
                 background-color: {Colors.PRIMARY};
-                color: #FFFFFF;
+                color: {token('text_on_primary')};
             }}
             
             QMenu::item:disabled {{

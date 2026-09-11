@@ -100,7 +100,7 @@ class WatermarkUI(QtWidgets.QMainWindow):
             self.config = config or {}
 
             # Add progress bar
-            self.progressBar = QtWidgets.QProgressBar()
+            self.progressBar = LoadingIndicator(parent=self, message="Working...")
             self.statusBar().addPermanentWidget(self.progressBar)
             self.progressBar.hide()
 

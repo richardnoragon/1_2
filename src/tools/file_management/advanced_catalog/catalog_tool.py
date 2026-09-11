@@ -21,11 +21,9 @@ try:
         QGroupBox,
         QHBoxLayout,
         QLabel,
-        QLineEdit,
         QListWidget,
         QListWidgetItem,
         QMessageBox,
-        QPushButton,
         QTextEdit,
         QVBoxLayout,
         QWidget,
@@ -67,6 +65,7 @@ except ImportError:
 # ---------------------------------------------------------------------------
 try:
     from src.gui.components.buttons import PrimaryButton, SecondaryButton
+    from src.gui.components.inputs import TextInput
     from src.gui.components.modal import ConfirmationModal, Modal
     from src.gui.components.toast import ToastNotification
 
@@ -303,13 +302,11 @@ class CatalogWindow(StandardWindow):
         dir_layout = QGridLayout(dir_group)
 
         dir_layout.addWidget(QLabel("Directory to Catalog:"), 0, 0)
-        self.directory_edit = QLineEdit()
+        self.directory_edit = TextInput("Directory", "Select a directory to catalog...")
         self.directory_edit.setAccessibleName("Directory to catalog")
-        self.directory_edit.setPlaceholderText("Select a directory to catalog...")
         dir_layout.addWidget(self.directory_edit, 0, 1)
 
-        _SB = SecondaryButton if SecondaryButton else QPushButton
-        self.browse_button = _SB("Browse")
+        self.browse_button = SecondaryButton("Browse")
         self.browse_button.clicked.connect(self.browse_directory)
         dir_layout.addWidget(self.browse_button, 0, 2)
 
@@ -348,13 +345,11 @@ class CatalogWindow(StandardWindow):
         # Create action buttons
         button_layout = QHBoxLayout()
 
-        _PB = PrimaryButton if PrimaryButton else QPushButton
-        self.generate_button = _PB("Generate Catalog")
+        self.generate_button = PrimaryButton("Generate Catalog")
         self.generate_button.clicked.connect(self.generate_catalog)
         button_layout.addWidget(self.generate_button)
 
-        _SB2 = SecondaryButton if SecondaryButton else QPushButton
-        self.open_catalog_button = _SB2("Open Last Catalog")
+        self.open_catalog_button = SecondaryButton("Open Last Catalog")
         self.open_catalog_button.clicked.connect(self.open_catalog)
         self.open_catalog_button.setEnabled(False)
         button_layout.addWidget(self.open_catalog_button)

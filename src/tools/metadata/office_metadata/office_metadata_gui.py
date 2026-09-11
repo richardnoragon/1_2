@@ -25,8 +25,6 @@ try:
         QHBoxLayout,
         QLabel,
         QMessageBox,
-        QProgressBar,
-        QPushButton,
         QTableWidget,
         QTableWidgetItem,
         QTabWidget,
@@ -35,6 +33,8 @@ try:
         QWidget,
     )
 
+    from src.gui.components.buttons import PrimaryButton, SecondaryButton
+    from src.gui.components.loading_indicator import LoadingIndicator
     from src.gui.themes import ThemeManager, token
 except ImportError:
     print("PyQt5 not available. Please install PyQt5 to use the GUI features.")
@@ -520,7 +520,7 @@ class OfficeMetadataGUI(StandardWindow):
         self.create_control_panel(layout)
 
         # Progress bar
-        self.progress_bar = QProgressBar()
+        self.progress_bar = LoadingIndicator(parent=self, message="Processing...")
         self.progress_bar.setVisible(False)
         layout.addWidget(self.progress_bar)
 

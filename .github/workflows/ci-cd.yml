@@ -169,7 +169,7 @@ jobs:
       - name: Install quality tools
         run: |
           pip install --upgrade pip
-          pip install flake8 pylint black isort mypy bandit safety
+          pip install flake8 pylint black isort mypy bandit safety pip-audit cyclonedx-bom
           pip install -r requirements.txt || echo "No requirements.txt found"
       
       - name: Run Black (code formatting)
@@ -201,6 +201,16 @@ jobs:
         run: |
           safety check --json --output safety-report.json || true
           cat safety-report.json || echo "No safety report generated"
+
+      - name: Run pip-audit (dependency vulnerability gate)
+        run: |
+          pip-audit -r requirements.txt --format json --output pip-audit-report.json
+          cat pip-audit-report.json
+
+      - name: Generate dependency SBOM
+        run: |
+          cyclonedx-py requirements requirements.txt --output-file sbom.json --output-format JSON
+          test -s sbom.json
       
       - name: Upload quality reports
         uses: actions/upload-artifact@v3
@@ -210,6 +220,8 @@ jobs:
           path: |
             bandit-report.json
             safety-report.json
+            pip-audit-report.json
+            sbom.json
           retention-days: 7
 
   # Multi-platform testing

@@ -63,12 +63,16 @@ except ImportError:
 try:
     from .config_manager import get_config_manager
     from .core.error_handler import error_handler
+    from .core.application_state import build_application_state
+    from .core.tool_lifecycle import ToolRuntimeTracker
     from .log_manager import get_log_manager
 except ImportError:
     # Fallback for direct execution
     try:
         from config_manager import get_config_manager
         from core.error_handler import error_handler
+        from core.application_state import build_application_state
+        from core.tool_lifecycle import ToolRuntimeTracker
         from log_manager import get_log_manager
     except ImportError:
         # Create minimal fallbacks
@@ -188,8 +192,18 @@ class UtilityWindow(QMainWindow if PYQT5_AVAILABLE else object):
         self.setWindowTitle(f"Richard's File Utilities - {title}")
         self.resize(900, 700)
         self.move(150, 150)
+        self.setAccessibleName(f"{title} tool window")
+        self.setAccessibleDescription(
+            "Utility window with keyboard-accessible controls and status updates"
+        )
         # Ensure maximize button is enabled
         self.setWindowFlags(self.windowFlags() | Qt.WindowMaximizeButtonHint)
+
+        # Use shared utility-window theme defaults when available.
+        try:
+            ThemeManager.apply_utility_window_theme(self)
+        except Exception:
+            pass
 
         # Use the same menu bar as the parent hub
         if hasattr(parent_hub, "menuBar") and parent_hub.menuBar():
@@ -327,8 +341,18 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
             super().__init__()
 
         # Initialize core components
-        self.logger = get_log_manager().get_logger("RFUHub")
-        self.config = get_config_manager()
+        self.application_state = build_application_state(
+            "RFUHub",
+            include_config=True,
+            include_preferences=True,
+        )
+        self.logger = self.application_state.logger
+        self.config = self.application_state.config_manager
+        self.preference_manager = self.application_state.preference_manager
+        self.tool_lifecycle = ToolRuntimeTracker(
+            self.logger,
+            audit_trail=self.application_state.audit_trail,
+        )
 
         self.logger.info("RFU Hub initializing...")
 
@@ -965,7 +989,80 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
             role or "unknown",
             workspace_ready,
         )
+        session_id = self._resolve_audit_session_id()
+        self.application_state.audit_trail.set_context(
+            actor=username,
+            session_id=session_id,
+        )
         return True
+
+    def _resolve_audit_actor(self) -> Optional[str]:
+        """Resolve actor from authenticated session context."""
+
+        context = self._session_context or {}
+        actor = context.get("username")
+        if actor:
+            return str(actor)
+
+        session = context.get("session")
+        if isinstance(session, dict):
+            nested_actor = session.get("username")
+            if nested_actor:
+                return str(nested_actor)
+
+        if hasattr(session, "username") and getattr(session, "username"):
+            return str(getattr(session, "username"))
+
+        if self._last_username:
+            return self._last_username
+
+        return None
+
+    def _resolve_audit_session_id(self) -> Optional[str]:
+        """Resolve session id from authenticated session context."""
+
+        context = self._session_context or {}
+        session_id = context.get("session_id")
+        if session_id:
+            return str(session_id)
+
+        session = context.get("session")
+        if isinstance(session, dict):
+            nested_session_id = session.get("session_id")
+            if nested_session_id:
+                return str(nested_session_id)
+
+        if hasattr(session, "session_id") and getattr(session, "session_id"):
+            return str(getattr(session, "session_id"))
+
+        return None
+
+    def _build_audit_runtime_metadata(self) -> Dict[str, Any]:
+        """Build lightweight metadata derived from the active session."""
+
+        context = self._session_context or {}
+        role = context.get("role")
+        session_type = context.get("session_type")
+        session = context.get("session")
+
+        if not role and isinstance(session, dict):
+            role = session.get("role")
+        if not session_type and isinstance(session, dict):
+            session_type = session.get("session_type")
+
+        if not role and hasattr(session, "role"):
+            role = getattr(session, "role")
+        if not session_type and hasattr(session, "session_type"):
+            session_type = getattr(session, "session_type")
+
+        metadata: Dict[str, Any] = {
+            "role": str(role) if role else "unknown",
+            "session_type": str(session_type) if session_type else "standard",
+            "readonly_mode": self._is_readonly_mode,
+            "break_glass_session": self._is_break_glass_session,
+        }
+
+        return metadata
 
     def _create_interface_toggle_button(self, header_layout):
         """Create and configure the interface toggle button.
@@ -2320,6 +2417,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
             window = UtilityWindow(self, tool, _title)
             self._size_analyzer_window = window  # keep alive (prevent GC)
             window.show()
+            self.register_tool(_title, tool)
             self._update_status_bar(f"{_title} opened")
             self.logger.info(f"{_title} tool opened")
         except Exception as e:
@@ -2342,6 +2440,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
             window = UtilityWindow(self, tool, _title)
             self._empty_folders_window = window  # keep alive (prevent GC)
             window.show()
+            self.register_tool(_title, tool)
             self._update_status_bar(f"{_title} opened")
             self.logger.info(f"{_title} tool opened")
         except Exception as e:
@@ -2362,6 +2461,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
             window = UtilityWindow(self, tool, _title)
             self._checksum_window = window  # keep alive (prevent GC)
             window.show()
+            self.register_tool(_title, tool)
             self._update_status_bar(f"{_title} opened")
             self.logger.info(f"{_title} tool opened")
         except Exception as e:
@@ -2389,6 +2489,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
             window = UtilityWindow(self, tool, _title)
             self._sync_backup_window = window  # keep alive (prevent GC)
             window.show()
+            self.register_tool(_title, tool)
             self._update_status_bar(f"{_title} opened")
             self.logger.info(f"{_title} tool opened")
         except Exception as e:
@@ -2411,6 +2512,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
             window = UtilityWindow(self, tool, _title)
             self._advanced_folders_window = window  # keep alive (prevent GC)
             window.show()
+            self.register_tool(_title, tool)
             self._update_status_bar(f"{_title} opened")
             self.logger.info(f"{_title} tool opened")
         except Exception as e:
@@ -2431,6 +2533,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
             window = UtilityWindow(self, tool, _title)
             self._organize_files_window = window  # keep alive (prevent GC)
             window.show()
+            self.register_tool(_title, tool)
             self._update_status_bar(f"{_title} opened")
             self.logger.info(f"{_title} tool opened")
         except Exception as e:
@@ -2449,6 +2552,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
             window = UtilityWindow(self, tool, _title)
             self._batch_rename_window = window  # keep alive (prevent GC)
             window.show()
+            self.register_tool(_title, tool)
             self._update_status_bar(f"{_title} opened")
             self.logger.info(f"{_title} tool opened")
         except Exception as e:
@@ -2497,6 +2601,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
             window = UtilityWindow(self, tool, _title)
             self._network_tools_window = window  # keep alive (prevent GC)
             window.show()
+            self.register_tool(_title, tool)
             self._update_status_bar(f"{_title} opened")
             self.logger.info(f"{_title} tool opened")
         except Exception as e:
@@ -2545,6 +2650,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
             window = UtilityWindow(self, tool, _title)
             self._privacy_tools_window = window
             window.show()
+            self.register_tool(_title, tool)
             self._update_status_bar(f"{_title} opened")
             self.logger.info(f"{_title} tool opened")
         except Exception as e:
@@ -2592,6 +2698,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
             window = UtilityWindow(self, tool, _title)
             self._security_scanner_window = window
             window.show()
+            self.register_tool(_title, tool)
             self._update_status_bar(f"{_title} opened")
             self.logger.info(f"{_title} tool opened")
         except Exception as e:
@@ -2622,6 +2729,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
             window = UtilityWindow(self, tool, _title)
             self._system_info_window = window  # keep alive (prevent GC)
             window.show()
+            self.register_tool(_title, tool)
             self._update_status_bar(f"{_title} opened")
             self.logger.info(f"{_title} tool opened")
         except Exception as e:
@@ -2649,6 +2757,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
             window = UtilityWindow(self, tool, _title)
             self._process_monitor_window = window  # keep alive (prevent GC)
             window.show()
+            self.register_tool(_title, tool)
             self._update_status_bar(f"{_title} opened")
             self.logger.info(f"{_title} tool opened")
         except Exception as e:
@@ -2671,6 +2780,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
             window = UtilityWindow(self, tool, _title)
             self._system_cleanup_window = window  # keep alive (prevent GC)
             window.show()
+            self.register_tool(_title, tool)
             self._update_status_bar(f"{_title} opened")
             self.logger.info(f"{_title} tool opened")
         except Exception as e:
@@ -2701,6 +2811,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
             window = UtilityWindow(self, tool, _title)
             self._file_finder_window = window  # keep alive (prevent GC)
             window.show()
+            self.register_tool(_title, tool)
             self._update_status_bar(f"{_title} opened")
             self.logger.info(f"{_title} tool opened")
         except Exception as e:
@@ -2723,6 +2834,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
             window = UtilityWindow(self, tool, _title)
             self._advanced_catalog_window = window  # keep alive (prevent GC)
             window.show()
+            self.register_tool(_title, tool)
             self._update_status_bar(f"{_title} opened")
             self.logger.info(f"{_title} tool opened")
         except Exception as e:
@@ -2745,6 +2857,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
             window = UtilityWindow(self, tool, _title)
             self._system_diagnostics_window = window  # keep alive (prevent GC)
             window.show()
+            self.register_tool(_title, tool)
             self._update_status_bar(f"{_title} opened")
             self.logger.info(f"{_title} tool opened")
         except Exception as e:
@@ -2767,6 +2880,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
             window = UtilityWindow(self, tool, _title)
             self._software_maintenance_window = window  # keep alive (prevent GC)
             window.show()
+            self.register_tool(_title, tool)
             self._update_status_bar(f"{_title} opened")
             self.logger.info(f"{_title} tool opened")
         except Exception as e:
@@ -2789,6 +2903,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
             window = UtilityWindow(self, tool, _title)
             self._preference_portability_window = window  # keep alive (prevent GC)
             window.show()
+            self.register_tool(_title, tool)
             self._update_status_bar(f"{_title} opened")
             self.logger.info(f"{_title} tool opened")
         except Exception as e:
@@ -2935,16 +3050,15 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
     def register_tool(self, tool_name: str, tool_instance) -> bool:
         """Register a tool with the hub."""
         try:
-            if tool_name in self.registered_tools:
-                self.registered_tools[tool_name] = tool_instance
-            else:
-                self.registered_tools[tool_name] = tool_instance
-                self.tool_status[tool_name] = {
-                    "status": "registered",
-                    "last_activity": datetime.now(),
-                    "progress": 0,
-                    "current_operation": None,
-                }
+            self.registered_tools[tool_name] = tool_instance
+            record = self.tool_lifecycle.register(
+                tool_name,
+                tool_instance,
+                actor=self._resolve_audit_actor(),
+                session_id=self._resolve_audit_session_id(),
+                metadata=self._build_audit_runtime_metadata(),
+            )
+            self.tool_status[tool_name] = record.as_dict()
 
             if PYQT5_AVAILABLE and hasattr(self, "tool_registered"):
                 self.tool_registered.emit(tool_name, tool_instance)
@@ -2963,6 +3077,12 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
         try:
             if tool_name in self.registered_tools:
                 del self.registered_tools[tool_name]
+                self.tool_lifecycle.unregister(
+                    tool_name,
+                    actor=self._resolve_audit_actor(),
+                    session_id=self._resolve_audit_session_id(),
+                    metadata=self._build_audit_runtime_metadata(),
+                )
                 if tool_name in self.tool_status:
                     del self.tool_status[tool_name]
 
@@ -2984,13 +3104,16 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
     def update_tool_progress(self, tool_name: str, percentage: int, message: str = ""):
         """Update tool progress in hub."""
         if tool_name in self.tool_status:
-            self.tool_status[tool_name].update(
-                {
-                    "progress": percentage,
-                    "current_operation": message,
-                    "last_activity": datetime.now(),
-                }
+            record = self.tool_lifecycle.update_progress(
+                tool_name,
+                percentage,
+                message,
+                actor=self._resolve_audit_actor(),
+                session_id=self._resolve_audit_session_id(),
+                metadata=self._build_audit_runtime_metadata(),
             )
+            if record is not None:
+                self.tool_status[tool_name] = record.as_dict()
 
             if PYQT5_AVAILABLE and hasattr(self, "tool_progress_updated"):
                 self.tool_progress_updated.emit(tool_name, percentage, message)
@@ -3604,6 +3727,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
 
             tool = FileCatalogGUI()
             tool.show()
+            self.register_tool("File Catalog", tool)
             self._update_status_bar("File Catalog opened")
             self.logger.info("File Catalog tool opened")
         except Exception as e:
@@ -3622,6 +3746,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
             window = UtilityWindow(self, tool, _title)
             self._file_touch_window = window  # keep alive (prevent GC)
             window.show()
+            self.register_tool(_title, tool)
             self._update_status_bar(f"{_title} opened")
             self.logger.info(f"{_title} tool opened")
         except Exception as e:
@@ -3642,6 +3767,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
             window = UtilityWindow(self, tool, _title)
             self._file_splitter_window = window  # keep alive (prevent GC)
             window.show()
+            self.register_tool(_title, tool)
             self._update_status_bar(f"{_title} opened")
             self.logger.info(f"{_title} tool opened")
         except Exception as e:
@@ -3662,6 +3788,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
             window = UtilityWindow(self, tool, _title)
             self._secure_delete_window = window
             window.show()
+            self.register_tool(_title, tool)
             self._update_status_bar(f"{_title} opened")
             self.logger.info(f"{_title} tool opened")
         except Exception as e:
@@ -3684,6 +3811,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
             window = UtilityWindow(self, tool, _title)
             self._compression_tools_window = window  # keep alive (prevent GC)
             window.show()
+            self.register_tool(_title, tool)
             self._update_status_bar(f"{_title} opened")
             self.logger.info(f"{_title} tool opened")
         except Exception as e:
@@ -3706,6 +3834,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
             window = UtilityWindow(self, tool, _title)
             self._duplicate_finder_window = window  # keep alive (prevent GC)
             window.show()
+            self.register_tool(_title, tool)
             self._update_status_bar(f"{_title} opened")
             self.logger.info(f"{_title} tool opened")
         except Exception as e:
@@ -3728,6 +3857,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
             window = UtilityWindow(self, tool, _title)
             self._image_metadata_window = window  # keep alive (prevent GC)
             window.show()
+            self.register_tool(_title, tool)
             self._update_status_bar(f"{_title} opened")
             self.logger.info(f"{_title} tool opened")
         except Exception as e:
@@ -3750,6 +3880,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
             window = UtilityWindow(self, tool, _title)
             self._office_metadata_window = window  # keep alive (prevent GC)
             window.show()
+            self.register_tool(_title, tool)
             self._update_status_bar(f"{_title} opened")
             self.logger.info(f"{_title} tool opened")
         except Exception as e:
@@ -3768,6 +3899,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
             window = UtilityWindow(self, tool, _title)
             self._pdf_tools_window = window
             window.show()
+            self.register_tool(_title, tool)
             self._update_status_bar(f"{_title} opened")
             self.logger.info(f"{_title} tool opened")
         except Exception as e:
@@ -3783,6 +3915,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
 
             tool = NetworkTransferGUI()
             tool.show()
+            self.register_tool("Network Transfer", tool)
             self._update_status_bar("Network Transfer opened")
             self.logger.info("Network Transfer tool opened")
         except Exception as e:
@@ -3798,6 +3931,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
 
             tool = NetworkScannerGUI()
             tool.show()
+            self.register_tool("Network Scanner", tool)
             self._update_status_bar("Network Scanner opened")
             self.logger.info("Network Scanner tool opened")
         except Exception as e:
@@ -3829,6 +3963,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
 
             tool = PortScannerGUI()
             tool.show()
+            self.register_tool("Port Scanner", tool)
             self._update_status_bar("Port Scanner opened")
             self.logger.info("Port Scanner tool opened")
         except Exception as e:
@@ -3842,6 +3977,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
 
             tool = NetworkMonitorGUI()
             tool.show()
+            self.register_tool("Network Monitor", tool)
             self._update_status_bar("Network Monitor opened")
             self.logger.info("Network Monitor tool opened")
         except Exception as e:
@@ -3855,6 +3991,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
 
             tool = BandwidthTestGUI()
             tool.show()
+            self.register_tool("Bandwidth Test", tool)
             self._update_status_bar("Bandwidth Test opened")
             self.logger.info("Bandwidth Test tool opened")
         except Exception as e:
@@ -3868,6 +4005,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
 
             tool = WakeOnLANGUI()
             tool.show()
+            self.register_tool("Wake on LAN", tool)
             self._update_status_bar("Wake on LAN opened")
             self.logger.info("Wake on LAN tool opened")
         except Exception as e:
@@ -3890,6 +4028,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
             window = UtilityWindow(self, tool, _title)
             self._encrypt_decrypt_window = window
             window.show()
+            self.register_tool(_title, tool)
             self._update_status_bar(f"{_title} opened")
             self.logger.info(f"{_title} tool opened")
         except Exception as e:
@@ -3903,6 +4042,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
 
             tool = HashCalculatorGUI()
             tool.show()
+            self.register_tool("Hash Calculator", tool)
             self._update_status_bar("Hash Calculator opened")
             self.logger.info("Hash Calculator tool opened")
         except Exception as e:
@@ -3925,6 +4065,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
             window = UtilityWindow(self, tool, _title)
             self._password_generator_window = window
             window.show()
+            self.register_tool(_title, tool)
             self._update_status_bar(f"{_title} opened")
             self.logger.info(f"{_title} tool opened")
         except Exception as e:
@@ -3940,6 +4081,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
 
             tool = SecurityPreferencesGUI()
             tool.show()
+            self.register_tool("Security Preferences", tool)
             self._update_status_bar("Security Preferences opened")
             self.logger.info("Security Preferences tool opened")
         except Exception as e:
@@ -3953,6 +4095,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
 
             tool = KeyManagerGUI()
             tool.show()
+            self.register_tool("Key Manager", tool)
             self._update_status_bar("Key Manager opened")
             self.logger.info("Key Manager tool opened")
         except Exception as e:
@@ -3966,6 +4109,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
 
             tool = SecureNotesGUI()
             tool.show()
+            self.register_tool("Secure Notes", tool)
             self._update_status_bar("Secure Notes opened")
             self.logger.info("Secure Notes tool opened")
         except Exception as e:
@@ -3981,6 +4125,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
 
             tool = ClipboardManagerGUI()
             tool.show()
+            self.register_tool("Clipboard Manager", tool)
             self._update_status_bar("Clipboard Manager opened")
             self.logger.info("Clipboard Manager tool opened")
         except Exception as e:
@@ -3994,6 +4139,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
 
             tool = SystemMonitorGUI()
             tool.show()
+            self.register_tool("System Monitor", tool)
             self._update_status_bar("System Monitor opened")
             self.logger.info("System Monitor tool opened")
         except Exception as e:
@@ -4007,6 +4153,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
 
             tool = RegistryToolsGUI()
             tool.show()
+            self.register_tool("Registry Tools", tool)
             self._update_status_bar("Registry Tools opened")
             self.logger.info("Registry Tools opened")
         except Exception as e:
@@ -4020,6 +4167,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
 
             tool = DiskToolsGUI()
             tool.show()
+            self.register_tool("Disk Tools", tool)
             self._update_status_bar("Disk Tools opened")
             self.logger.info("Disk Tools opened")
         except Exception as e:
@@ -4033,6 +4181,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
 
             tool = ProcessManagerGUI()
             tool.show()
+            self.register_tool("Process Manager", tool)
             self._update_status_bar("Process Manager opened")
             self.logger.info("Process Manager tool opened")
         except Exception as e:
@@ -4046,6 +4195,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
 
             tool = ServiceManagerGUI()
             tool.show()
+            self.register_tool("Service Manager", tool)
             self._update_status_bar("Service Manager opened")
             self.logger.info("Service Manager tool opened")
         except Exception as e:

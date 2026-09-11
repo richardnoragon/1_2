@@ -25,13 +25,14 @@ from PyQt5.QtWidgets import (
     QHBoxLayout,
     QHeaderView,
     QLabel,
-    QLineEdit,
-    QPushButton,
     QTableWidget,
     QTableWidgetItem,
     QVBoxLayout,
     QWidget,
 )
+
+from src.gui.components.buttons import PrimaryButton, SecondaryButton
+from src.gui.components.inputs import TextInput
 
 
 class ShortcutAction:
@@ -899,8 +900,7 @@ class KeyboardShortcutsHelpDialog(QDialog):
         # Search box
         search_layout = QHBoxLayout()
         search_label = QLabel("Search:")
-        self.search_box = QLineEdit()
-        self.search_box.setPlaceholderText("Type to filter shortcuts...")
+        self.search_box = TextInput("Search", "Type to filter shortcuts...")
         self.search_box.setAccessibleName("Filter shortcuts")
         self.search_box.textChanged.connect(self._filter_shortcuts)
 
@@ -932,11 +932,11 @@ class KeyboardShortcutsHelpDialog(QDialog):
         # Buttons
         button_layout = QHBoxLayout()
 
-        reset_button = QPushButton("Reset All")
+        reset_button = SecondaryButton("Reset All")
         reset_button.setAccessibleName("Reset all keyboard shortcuts")
         reset_button.clicked.connect(self._reset_all_shortcuts)
 
-        close_button = QPushButton("Close")
+        close_button = PrimaryButton("Close")
         close_button.setAccessibleName("Close keyboard shortcuts dialog")
         close_button.clicked.connect(self.accept)
         close_button.setDefault(True)

@@ -438,27 +438,23 @@ class CompressDecompressApp(StandardWindow):
 
         # Folder selection
         folder_layout = QHBoxLayout()
-        self.lineEditFolder = QLineEdit()
+        self.lineEditFolder = TextInput("Folder", "Select folder to compress...")
         self.lineEditFolder.setAccessibleName("Folder to compress")
-        self.lineEditFolder.setPlaceholderText("Select folder to compress...")
-        self.buttonBrowseFolder = QPushButton("Browse Folder")
-        self.buttonBrowseFolder.setAccessibleName("Browse for folder to compress")
-        self.buttonBrowseFolder.setMinimumHeight(44)
-        self.buttonBrowseFolder.clicked.connect(self.browse_folder)
         folder_layout.addWidget(self.lineEditFolder)
+        self.buttonBrowseFolder = SecondaryButton("Browse Folder")
+        self.buttonBrowseFolder.setAccessibleName("Browse for folder to compress")
+        self.buttonBrowseFolder.clicked.connect(self.browse_folder)
         folder_layout.addWidget(self.buttonBrowseFolder)
         layout.addLayout(folder_layout)
 
         # Output file selection
         output_layout = QHBoxLayout()
-        self.lineEditOutput = QLineEdit()
+        self.lineEditOutput = TextInput("Output archive", "Select output archive file...")
         self.lineEditOutput.setAccessibleName("Output archive file")
-        self.lineEditOutput.setPlaceholderText("Select output archive file...")
-        self.buttonBrowseOutput = QPushButton("Browse Output")
-        self.buttonBrowseOutput.setAccessibleName("Browse for output archive file")
-        self.buttonBrowseOutput.setMinimumHeight(44)
-        self.buttonBrowseOutput.clicked.connect(self.browse_output)
         output_layout.addWidget(self.lineEditOutput)
+        self.buttonBrowseOutput = SecondaryButton("Browse Output")
+        self.buttonBrowseOutput.setAccessibleName("Browse for output archive file")
+        self.buttonBrowseOutput.clicked.connect(self.browse_output)
         output_layout.addWidget(self.buttonBrowseOutput)
         layout.addLayout(output_layout)
 
@@ -475,7 +471,7 @@ class CompressDecompressApp(StandardWindow):
         # Password field
         password_layout = QHBoxLayout()
         password_layout.addWidget(QLabel("Password (optional):"))
-        self.lineEditPassword = QLineEdit()
+        self.lineEditPassword = TextInput("Password", "Optional archive password")
         self.lineEditPassword.setAccessibleName("Archive password")
         self.lineEditPassword.setEchoMode(QLineEdit.Password)
         password_layout.addWidget(self.lineEditPassword)
@@ -493,9 +489,8 @@ class CompressDecompressApp(StandardWindow):
         layout.addLayout(level_layout)
 
         # Compress button
-        self.buttonCompress = QPushButton("Compress")
+        self.buttonCompress = PrimaryButton("Compress")
         self.buttonCompress.setAccessibleName("Compress files")
-        self.buttonCompress.setMinimumHeight(44)
         self.buttonCompress.clicked.connect(self.compress_files)
         layout.addWidget(self.buttonCompress)
 
@@ -504,23 +499,20 @@ class CompressDecompressApp(StandardWindow):
 
         # Archive file selection
         decomp_layout = QHBoxLayout()
-        self.lineEditDecompress = QLineEdit()
+        self.lineEditDecompress = TextInput("Archive", "Select archive to decompress...")
         self.lineEditDecompress.setAccessibleName("Archive to decompress")
-        self.lineEditDecompress.setPlaceholderText("Select archive to decompress...")
-        self.buttonBrowseDecompress = QPushButton("Browse Archive")
+        self.buttonBrowseDecompress = SecondaryButton("Browse Archive")
         self.buttonBrowseDecompress.setAccessibleName(
             "Browse for archive to decompress"
         )
-        self.buttonBrowseDecompress.setMinimumHeight(44)
         self.buttonBrowseDecompress.clicked.connect(self.browse_decompress)
         decomp_layout.addWidget(self.lineEditDecompress)
         decomp_layout.addWidget(self.buttonBrowseDecompress)
         layout.addLayout(decomp_layout)
 
         # Decompress button
-        self.buttonDecompress = QPushButton("Decompress")
+        self.buttonDecompress = PrimaryButton("Decompress")
         self.buttonDecompress.setAccessibleName("Decompress archive")
-        self.buttonDecompress.setMinimumHeight(44)
         self.buttonDecompress.clicked.connect(self.decompress_files)
         layout.addWidget(self.buttonDecompress)
 

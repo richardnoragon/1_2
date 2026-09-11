@@ -291,7 +291,7 @@ class DatabaseLogService:
         except _LOGGING_RUNTIME_ERRORS:
             return {}
 
-    def cleanup_old_logs(self, retention_days: int = 90) -> int:
+    def cleanup_old_logs(self, retention_days: int = 365) -> int:
         if not self.enabled or not self.db_manager:
             return 0
         if not isinstance(retention_days, int) or retention_days <= 0:

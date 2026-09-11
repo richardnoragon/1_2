@@ -183,9 +183,8 @@ class PerformanceWidget(QWidget):
         layout.addWidget(self.interval_spin)
 
         # Manual refresh button
-        self.refresh_btn = QPushButton("Refresh Now")
+        self.refresh_btn = SecondaryButton("Refresh Now")
         self.refresh_btn.setAccessibleName("Refresh performance data now")
-        self.refresh_btn.setMinimumHeight(44)
         self.refresh_btn.clicked.connect(self.manual_refresh)
         layout.addWidget(self.refresh_btn)
 
@@ -255,7 +254,7 @@ class PerformanceWidget(QWidget):
         self.cpu_usage_label.setFont(Typography.h2())
         cpu_layout.addWidget(self.cpu_usage_label, 0, 1)
 
-        self.cpu_usage_bar = QProgressBar()
+        self.cpu_usage_bar = LoadingIndicator(parent=self, message="CPU usage")
         self.cpu_usage_bar.setRange(0, 100)
         cpu_layout.addWidget(self.cpu_usage_bar, 0, 2)
 
@@ -312,7 +311,7 @@ class PerformanceWidget(QWidget):
         self.memory_usage_label.setFont(Typography.h2())
         memory_layout.addWidget(self.memory_usage_label, 0, 1)
 
-        self.memory_usage_bar = QProgressBar()
+        self.memory_usage_bar = LoadingIndicator(parent=self, message="Memory usage")
         self.memory_usage_bar.setRange(0, 100)
         memory_layout.addWidget(self.memory_usage_bar, 0, 2)
 
@@ -339,7 +338,7 @@ class PerformanceWidget(QWidget):
         self.swap_usage_label = QLabel("0%")
         swap_layout.addWidget(self.swap_usage_label, 0, 1)
 
-        self.swap_usage_bar = QProgressBar()
+        self.swap_usage_bar = LoadingIndicator(parent=self, message="Swap usage")
         self.swap_usage_bar.setRange(0, 100)
         swap_layout.addWidget(self.swap_usage_bar, 0, 2)
 
@@ -678,7 +677,7 @@ class PerformanceWidget(QWidget):
                 label = QLabel(f"Core {i}:")
                 self.per_core_layout.addWidget(label, i // 4, (i % 4) * 2)
 
-                progress = QProgressBar()
+                progress = LoadingIndicator(parent=self, message=f"Core {i} usage")
                 progress.setRange(0, 100)
                 progress.setValue(int(usage))
                 progress.setFormat(f"{usage:.1f}%")

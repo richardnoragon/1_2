@@ -41,6 +41,7 @@ class FontPickerDialog(QDialog):
         self.font_list = QListWidget()
         db = QFontDatabase()
         self.font_list.addItems(db.families())
+        self.font_list.setAccessibleName("Font family list")
         layout.addWidget(QLabel("Font Family:"))
         layout.addWidget(self.font_list)
 
@@ -51,6 +52,7 @@ class FontPickerDialog(QDialog):
         self.size_spinner.setMinimum(6)
         self.size_spinner.setMaximum(32)
         self.size_spinner.setValue(10)
+        self.size_spinner.setAccessibleName("Font size spinner")
         size_row.addWidget(self.size_spinner)
         size_row.addStretch()
         layout.addLayout(size_row)

@@ -49,11 +49,13 @@ class DirectoryPickerDialog(QDialog):
         layout.addWidget(QLabel("Current Directory:"))
         self.current_path_label = QLineEdit(self._current_directory)
         self.current_path_label.setReadOnly(True)
+        self.current_path_label.setAccessibleName("Current directory path")
         layout.addWidget(self.current_path_label)
 
         # Browse button row
         browse_row = QHBoxLayout()
         self.browse_button = QPushButton("Browse…")
+        self.browse_button.setAccessibleName("Browse for working directory")
         browse_row.addWidget(self.browse_button)
         browse_row.addStretch()
         layout.addLayout(browse_row)
@@ -61,6 +63,7 @@ class DirectoryPickerDialog(QDialog):
         # Apply to all tools checkbox (checked by default)
         self.apply_all_checkbox = QCheckBox("Apply to all tools (update profile)")
         self.apply_all_checkbox.setChecked(True)
+        self.apply_all_checkbox.setAccessibleName("Apply directory to all tools")
         layout.addWidget(self.apply_all_checkbox)
 
         # Inline error label (hidden until needed)

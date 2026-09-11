@@ -13,6 +13,7 @@ Exit codes:
 """
 
 import argparse
+import ast
 import json
 import re
 import sys
@@ -90,39 +91,74 @@ def scan_file(path: Path, root: Path) -> list[dict]:
 
     has_shared_import = file_uses_shared_components(text)
 
-    for widget, replacement in BARE_WIDGET_PATTERNS.items():
-        if replacement is None:
-            continue  # skip widgets we don't enforce
-        pattern = re.compile(rf"\b{re.escape(widget)}\b")
-        for lineno, line in enumerate(text.splitlines(), start=1):
-            stripped = line.strip()
-            if stripped.startswith("#"):
-                continue
-            if pattern.search(line):
-                violations.append(
-                    {
-                        "file": str(path),
-                        "line": lineno,
-                        "bare_widget": widget,
-                        "expected_component": replacement,
-                        "has_shared_import": has_shared_import,
-                        "source": line.rstrip(),
-                        "status": (
-                            "migrated_partial" if has_shared_import else "not_migrated"
-                        ),
-                    }
-                )
+    try:
+        tree = ast.parse(text)
+    except SyntaxError:
+        return violations
+
+    lines = text.splitlines()
+
+    class _WidgetCallVisitor(ast.NodeVisitor):
+        def __init__(self):
+            self.matches: list[tuple[int, str]] = []
+
+        def visit_Call(self, node: ast.Call):
+            widget_name = None
+            if isinstance(node.func, ast.Name):
+                widget_name = node.func.id
+            elif isinstance(node.func, ast.Attribute):
+                widget_name = node.func.attr
+            if widget_name in BARE_WIDGET_PATTERNS and BARE_WIDGET_PATTERNS[widget_name] is not None:
+                self.matches.append((node.lineno, widget_name))
+            self.generic_visit(node)
+
+    visitor = _WidgetCallVisitor()
+    visitor.visit(tree)
+
+    for lineno, widget in visitor.matches:
+        source = lines[lineno - 1].rstrip() if 0 <= lineno - 1 < len(lines) else ""
+        violations.append(
+            {
+                "file": str(path),
+                "line": lineno,
+                "bare_widget": widget,
+                "expected_component": BARE_WIDGET_PATTERNS[widget],
+                "has_shared_import": has_shared_import,
+                "source": source,
+                "status": (
+                    "migrated_partial" if has_shared_import else "not_migrated"
+                ),
+            }
+        )
     return violations
 
 
 def load_deviations(root: Path) -> set[str]:
-    """Return set of tool slugs that have entries in DEVIATIONS.md."""
+    """Return set of documented deviation scope strings from DEVIATIONS.md."""
     deviations_path = root / "docs" / "ui-ux-harmonization" / "DEVIATIONS.md"
     if not deviations_path.exists():
         return set()
     text = deviations_path.read_text(encoding="utf-8", errors="replace")
-    # Look for per-tool section headers: ### ToolSlug or ### Tool Name
-    return set(re.findall(r"###\s+([^\n]+)", text))
+    scopes: set[str] = set()
+    for line in text.splitlines():
+        if "| **Scope** |" not in line:
+            continue
+        parts = [part.strip() for part in line.split("|")]
+        if len(parts) >= 3:
+            scope = parts[2].strip()
+            if scope:
+                scopes.add(scope)
+    return scopes
+
+
+def is_covered_by_deviation(path: Path, root: Path, deviation_scopes: set[str]) -> bool:
+    """Return True when *path* is already documented as a deviation scope."""
+    relative = path.relative_to(root).as_posix()
+    filename = path.name
+    for scope in deviation_scopes:
+        if relative in scope or filename in scope:
+            return True
+    return False
 
 
 def scan_directory(root: Path) -> list[dict]:
@@ -136,8 +172,12 @@ def scan_directory(root: Path) -> list[dict]:
         )
         return all_violations
 
+    deviation_scopes = load_deviations(root)
+
     for py_file in sorted(tools_dir.rglob("*.py")):
         if is_excluded(py_file, root):
+            continue
+        if is_covered_by_deviation(py_file, root, deviation_scopes):
             continue
         violations = scan_file(py_file, root)
         all_violations.extend(violations)

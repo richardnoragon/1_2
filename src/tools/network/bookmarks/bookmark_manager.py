@@ -83,9 +83,12 @@ except ImportError as e:
 
 # Import StandardWindow for menu integration
 try:
+    from src.gui.components.buttons import PrimaryButton, SecondaryButton
+    from src.gui.components.inputs import TextInput
     from src.gui.standard_window import StandardWindow
 except ImportError:
     # Fallback for standalone execution
+    PrimaryButton = SecondaryButton = TextInput = None
     StandardWindow = QMainWindow
 
 
@@ -777,13 +780,13 @@ class BookmarkDialog(QDialog):
 
         # Title
         form_layout.addWidget(QLabel("Title:"), 0, 0)
-        self.title_edit = QLineEdit()
+        self.title_edit = TextInput("Title") if TextInput else QLineEdit()
         self.title_edit.setAccessibleName("Bookmark title")
         form_layout.addWidget(self.title_edit, 0, 1)
 
         # URL
         form_layout.addWidget(QLabel("URL:"), 1, 0)
-        self.url_edit = QLineEdit()
+        self.url_edit = TextInput("URL") if TextInput else QLineEdit()
         self.url_edit.setAccessibleName("Bookmark URL")
         form_layout.addWidget(self.url_edit, 1, 1)
 
@@ -796,14 +799,13 @@ class BookmarkDialog(QDialog):
 
         # Tags
         form_layout.addWidget(QLabel("Tags:"), 3, 0)
-        self.tags_edit = QLineEdit()
+        self.tags_edit = TextInput("Tags", "Enter tags separated by commas") if TextInput else QLineEdit()
         self.tags_edit.setAccessibleName("Bookmark tags")
-        self.tags_edit.setPlaceholderText("Enter tags separated by commas")
         form_layout.addWidget(self.tags_edit, 3, 1)
 
         # Folder
         form_layout.addWidget(QLabel("Folder:"), 4, 0)
-        self.folder_edit = QLineEdit()
+        self.folder_edit = TextInput("Folder") if TextInput else QLineEdit()
         self.folder_edit.setAccessibleName("Bookmark folder")
         self.folder_edit.setText("Default")
         form_layout.addWidget(self.folder_edit, 4, 1)
@@ -939,39 +941,34 @@ class BookmarkManagerGUI(QMainWindow):
         toolbar_layout = QHBoxLayout(toolbar_widget)
 
         # Add bookmark button
-        add_btn = QPushButton("Add Bookmark")
+        add_btn = PrimaryButton("Add Bookmark") if PrimaryButton else QPushButton("Add Bookmark")
         add_btn.setAccessibleName("Add bookmark")
-        add_btn.setMinimumHeight(44)
         add_btn.clicked.connect(self.add_bookmark)
         toolbar_layout.addWidget(add_btn)
 
         # Edit bookmark button
-        edit_btn = QPushButton("Edit")
+        edit_btn = SecondaryButton("Edit") if SecondaryButton else QPushButton("Edit")
         edit_btn.setAccessibleName("Edit bookmark")
-        edit_btn.setMinimumHeight(44)
         edit_btn.clicked.connect(self.edit_bookmark)
         toolbar_layout.addWidget(edit_btn)
 
         # Delete bookmark button
-        delete_btn = QPushButton("Delete")
+        delete_btn = SecondaryButton("Delete") if SecondaryButton else QPushButton("Delete")
         delete_btn.setAccessibleName("Delete bookmark")
-        delete_btn.setMinimumHeight(44)
         delete_btn.clicked.connect(self.delete_bookmark)
         toolbar_layout.addWidget(delete_btn)
 
         toolbar_layout.addWidget(QFrame())  # Separator
 
         # Import button
-        import_btn = QPushButton("Import")
+        import_btn = SecondaryButton("Import") if SecondaryButton else QPushButton("Import")
         import_btn.setAccessibleName("Import bookmarks")
-        import_btn.setMinimumHeight(44)
         import_btn.clicked.connect(self.import_bookmarks)
         toolbar_layout.addWidget(import_btn)
 
         # Export button
-        export_btn = QPushButton("Export")
+        export_btn = SecondaryButton("Export") if SecondaryButton else QPushButton("Export")
         export_btn.setAccessibleName("Export bookmarks")
-        export_btn.setMinimumHeight(44)
         export_btn.clicked.connect(self.export_bookmarks)
         toolbar_layout.addWidget(export_btn)
 
@@ -981,9 +978,8 @@ class BookmarkManagerGUI(QMainWindow):
         search_label = QLabel("Search:")
         toolbar_layout.addWidget(search_label)
 
-        self.search_box = QLineEdit()
+        self.search_box = TextInput("Search", "Search bookmarks...") if TextInput else QLineEdit()
         self.search_box.setAccessibleName("Search bookmarks")
-        self.search_box.setPlaceholderText("Search bookmarks...")
         self.search_box.textChanged.connect(self.search_bookmarks)
         toolbar_layout.addWidget(self.search_box)
 

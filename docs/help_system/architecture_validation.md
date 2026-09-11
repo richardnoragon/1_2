@@ -173,6 +173,12 @@ def launch_tool(self, tool_name, module_name, class_name):
     # Error handling already comprehensive
 ```
 
+Current standardization adds a shared façade and lifecycle layer around that flow:
+
+- `src.core.application_state.build_application_state()` centralizes logger, config, and preference wiring for the hub entry points.
+- `src.core.tool_lifecycle.resolve_tool_launch_request()` resolves explicit launch parameters or manifest-backed metadata before import.
+- `src.core.tool_lifecycle.ToolRuntimeTracker` standardizes registration and progress snapshots for hub-managed tools.
+
 **Help Integration Validation:**
 
 - ✅ Tool launcher system already tracks tool usage

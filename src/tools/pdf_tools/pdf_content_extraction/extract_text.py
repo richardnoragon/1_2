@@ -5,6 +5,8 @@ from PyQt5.QtWidgets import QFileDialog, QMessageBox
 import pdfplumber
 from log_config import setup_logger
 
+from src.gui.components.loading_indicator import LoadingIndicator
+
 # Set up logger
 logger = setup_logger(__name__)
 
@@ -120,7 +122,7 @@ class ExtractTextUI(QtWidgets.QMainWindow):
             logger.debug("UI file loaded successfully")
 
             # Add progress bar
-            self.progressBar = QtWidgets.QProgressBar()
+            self.progressBar = LoadingIndicator(parent=self, message="Working...")
             self.statusBar().addPermanentWidget(self.progressBar)
             self.progressBar.hide()
 

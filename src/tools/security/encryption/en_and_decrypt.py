@@ -364,14 +364,12 @@ class EnAndDecryptGUI(StandardWindow):
         security_group = QGroupBox("Security Options")
         security_layout = QVBoxLayout(security_group)
 
-        self.password_edit = QLineEdit()
+        self.password_edit = TextInput("Password", "Enter password...")
         self.password_edit.setAccessibleName("Encryption password")
         self.password_edit.setAccessibleDescription(
             "Password used to encrypt or decrypt files; minimum 8 characters recommended"
         )
-        self.password_edit.setEchoMode(QLineEdit.Password)
-        self.password_edit.setPlaceholderText("Enter password...")
-        security_layout.addWidget(QLabel("Password:"))
+        self.password_edit.setEchoMode(2)
         security_layout.addWidget(self.password_edit)
 
         # Dry run option — must appear before action buttons (spec §5.2)
@@ -395,8 +393,7 @@ class EnAndDecryptGUI(StandardWindow):
         progress_group = QGroupBox("Progress")
         progress_layout = QVBoxLayout(progress_group)
 
-        self.progress_bar = QProgressBar()
-        self.progress_bar.setVisible(False)
+        self.progress_bar = LoadingIndicator(parent=self, message="Processing...")
         progress_layout.addWidget(self.progress_bar)
 
         self.status_label = QLabel("Ready - Select files to encrypt or decrypt")

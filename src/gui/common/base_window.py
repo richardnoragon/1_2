@@ -32,6 +32,8 @@ except ImportError:
     uic = None
 
 from ...core.error_handler import error_handler
+from .settings import AppearanceSettings
+from .styles import get_base_styles
 
 
 class BaseWindow(QMainWindow):
@@ -54,8 +56,30 @@ class BaseWindow(QMainWindow):
         self._ui_file = Path(ui_file) if ui_file else None
         self._load_ui()
         self.setup_window_properties()
+        self._apply_shared_appearance()
+        self._apply_accessibility_defaults()
         self.setup_menus()
         self._connect_signals()
+
+    def _apply_shared_appearance(self) -> None:
+        """Apply token-based shared window styling."""
+
+        settings = AppearanceSettings()
+        self.setStyleSheet(
+            get_base_styles(
+                theme=settings.theme,
+                font_size=settings.font_size,
+            )
+        )
+
+    def _apply_accessibility_defaults(self) -> None:
+        """Seed baseline accessibility metadata for window surfaces."""
+
+        title = self.windowTitle() or "RFU Window"
+        self.setAccessibleName(title)
+        self.setAccessibleDescription(
+            "Application window with keyboard-accessible controls"
+        )
 
     def _load_ui(self):
         """Load the UI file if provided."""
@@ -174,6 +198,15 @@ class BaseWindow(QMainWindow):
         """
         for widget in self.findChildren(QWidget):
             widget.setEnabled(enabled)
+
+    def showEvent(self, event):
+        """Ensure children have predictable tab-focus behavior."""
+
+        for widget in self.findChildren(QWidget):
+            if widget.focusPolicy() == Qt.NoFocus:  # type: ignore[union-attr]
+                continue
+            widget.setFocusPolicy(Qt.StrongFocus)  # type: ignore[union-attr]
+        super().showEvent(event)
 
     def show_appearance_settings(self) -> None:
         """Show the appearance settings dialog."""

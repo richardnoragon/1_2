@@ -9,6 +9,10 @@ executing and validating the preferences portability tooling in Richard's File
 Utilities (RFU). The CLI resides at `scripts/tools/preferences_portability.py`
 and supports both export and import workflows with optional AES encryption.
 
+## Cluster Scope
+
+This runbook is the repo-authoritative operations guide for the existing UI/preferences/documentation cluster in the project specs and trackers. It intentionally applies only to the preference portability and appearance-preferences workflow already represented in `specs/004-preferences-framework/*` and `specs/007-ui-harmonization/*`, and it does not expand into unrelated issue numbers or broader backlog work.
+
 ## 1. Prerequisites
 
 - Active RFU virtual environment (`venv\Scripts\activate` on Windows).
@@ -127,3 +131,44 @@ generated 2025-11-14 17:23:28 UTC):
 
 Archive the CLI output (or Grafana screenshot when available) alongside the
 release evidence bundle for RC-3 and later reviews.
+
+## 9. Appendix C - Portability CLI Prompt and UX Evidence Summary
+
+### 9.1 CLI Prompt Summary
+
+The portability CLI is invoked through the module entrypoint:
+
+```powershell
+python -m scripts.tools.preferences_portability <export|import> [options]
+```
+
+For encrypted payloads, operators should expect an interactive passphrase prompt.
+The prompt must be satisfied through secure terminal input and should not be
+captured in logs or screenshots.
+
+### 9.2 Sample Outputs
+
+Example export completion output:
+
+```text
+Exported preferences to C:/temp/prefs-exports/default-2025-11-12.json
+```
+
+Example import completion output:
+
+```text
+Imported 1 entries (skipped 0) for user staging_default
+```
+
+### 9.3 Launcher UX Screenshot Register
+
+This section is the canonical attachment index for the manual launcher-flow UX
+evidence required by portability closeout.
+
+| Artifact | Description | Source | Status |
+| -------- | ----------- | ------ | ------ |
+| Launcher flow screenshot | Hub entry "Preference Portability" visible and launch path selected from the System Tools surface. | Manual UX walkthrough session | Pending stakeholder attachment |
+| Runbook appendix screenshot | Updated runbook context showing portability operational guidance and approval history. | UX documentation session | Pending stakeholder attachment |
+
+Until the screenshot artifacts are attached, this appendix remains the source of
+truth for what evidence is missing for RC-2 closure.

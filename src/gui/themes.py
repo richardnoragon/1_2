@@ -6,8 +6,51 @@ This module provides consistent styling and appearance across all utilities.
 
 from typing import Callable, List
 
-from PyQt5.QtCore import QObject, Qt, pyqtSignal
-from PyQt5.QtGui import QColor, QFont
+try:
+    from PyQt5.QtCore import QObject, Qt, pyqtSignal
+    from PyQt5.QtGui import QColor, QFont
+except ImportError:  # pragma: no cover - headless / startup-safe fallback
+    class QObject:  # type: ignore[override]
+        pass
+
+    class _FallbackSignal:
+        def __call__(self, *args, **kwargs):
+            return None
+
+        def emit(self, *args, **kwargs):
+            return None
+
+    def pyqtSignal(*args, **kwargs):
+        return _FallbackSignal()
+
+    class Qt:
+        AlignCenter = 0
+        Dialog = 0
+        Window = 0
+        WindowTitleHint = 0
+        WindowSystemMenuHint = 0
+        WindowCloseButtonHint = 0
+        WindowMinimizeButtonHint = 0
+        WindowMaximizeButtonHint = 0
+
+    class QColor:
+        def __init__(self, *args, **kwargs):
+            self.value = args[0] if args else "#000000"
+
+    class QFont:
+        Normal = 0
+        Bold = 1
+        DemiBold = 2
+
+        def __init__(self, *args, **kwargs):
+            self.family = args[0] if args else "Sans"
+            self.point_size = kwargs.get("pointSize", 10)
+
+        def setPointSize(self, value):
+            self.point_size = value
+
+        def setWeight(self, value):
+            self.weight = value
 
 
 # Color Palette

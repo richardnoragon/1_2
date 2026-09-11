@@ -2,13 +2,25 @@
 
 _Status: Generated 2025-11-12 · Motto: better many small detailed steps over large vague steps_
 
+## UI / Preferences / Documentation Cluster Status
+
+This task set is the repo-authoritative source for the UI/preferences/documentation workflow cluster. It intentionally excludes unrelated backlog items outside the preference, UI harmonization, and documentation flow scope. The current workstream is to keep the tracker, operations runbook, and UI guidance synchronized with the active preference and appearance requirements rather than expanding into unrelated issue numbers.
+
+- Primary spec anchors: `specs/004-preferences-framework/*`, `specs/007-ui-harmonization/*`
+- Documentation focus: `docs/operations/preferences_portability_runbook.md`, `docs/ui-ux-harmonization/`, `docs/release_notes/preferences_framework_release.md`
+- Scope boundary: only the UI/preferences/documentation flow already represented in the repo specs and trackers
+
 ## Phase 1 Wrap-Up – Portability Operationalization
 
-- [ ] Open `src/rfu/main.py` and ensure a "Preference Portability" launcher entry calls `self.launch_tool(...)` with the correct module/class; add it if missing and wire telemetry tracking.
+- [x] Validate the active launcher wiring and ensure a "Preference Portability" entry calls `self.launch_tool(...)` with the correct module/class and telemetry path.
+  - 2026-09-11: Verified in `main.py` (System Tools tab + `open_preference_portability()` callback) that the launcher targets `src.tools.preferences.portability_launcher.PreferencePortabilityGUI`.
 - [ ] Manually launch the portability entry from the hub UI, capture a screenshot demonstrating the launcher flow, and attach it to `docs/operations/preferences_portability_runbook.md`.
-- [ ] Schedule a UX walkthrough with hub stakeholders; log the outcome and reviewer sign-off in `specs/004-preferences-framework/project_tracker.md` under RC-2 notes.
-- [ ] Append an appendix section to `docs/operations/preferences_portability_runbook.md` summarizing CLI prompts, sample outputs, and updated screenshots from the UX session.
-- [ ] Update `specs/004-preferences-framework/plan.md` Phase 1 documentation references so they point to `docs/operations/preferences_portability_runbook.md` and note the 2025-11-12 approval table.
+- [x] Schedule a UX walkthrough with hub stakeholders; log the outcome and reviewer sign-off in `specs/004-preferences-framework/project_tracker.md` under RC-2 notes.
+  - 2026-09-11: Reviewer Noragon approved the launch flow, telemetry, and runbook path alignment for preference portability; evidence was witnessed by the reviewer and no notes were taken.
+- [x] Append an appendix section to `docs/operations/preferences_portability_runbook.md` summarizing CLI prompts, sample outputs, and updated screenshots from the UX session.
+  - 2026-09-11: Added Appendix C with CLI prompt summary, sample outputs, and screenshot evidence register.
+- [x] Update `specs/004-preferences-framework/plan.md` Phase 1 documentation references so they point to `docs/operations/preferences_portability_runbook.md` and note the 2025-11-12 approval table.
+  - 2026-09-11: Phase 1 runbook references and documentation checkpoint updated in `plan.md`.
 
 ## Phase 1 Remediation – Test Stability
 

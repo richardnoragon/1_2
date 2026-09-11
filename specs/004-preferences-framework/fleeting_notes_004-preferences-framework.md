@@ -1,5 +1,9 @@
 <!-- markdownlint-disable MD025 -->
 
+## Cluster Scope
+
+This note log is part of the repo-authoritative UI/preferences/documentation cluster already represented in the active project specs and trackers. It intentionally tracks only the preference portability and UI harmonization flow defined in `specs/004-preferences-framework/*` and `specs/007-ui-harmonization/*`, and it does not expand into unrelated backlog items.
+
 # I. Introduction
 
 The puropose of this file is to maintain a temporary checkpoint log which

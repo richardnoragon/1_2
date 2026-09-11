@@ -13,6 +13,8 @@ This document is the canonical reference for Constitution §10 — UI Interactio
 Contract. It defines mandatory interaction patterns, behavioral guarantees, and
 user-experience invariants that all tools MUST follow.
 
+The current issue #81 UI/UX modernization pass aligns this contract with the shared token-based styles, explicit keyboard focus visibility, and accessibility defaults now used by the common window and dialog layers.
+
 ---
 
 ## 1. Interaction Principles

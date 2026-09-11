@@ -22,13 +22,27 @@
 
 - Application dependencies tracked in `requirements.txt` (version 3.1.0-enterprise) covering PyQt5 GUI stack, encryption, PDF/media processing, monitoring, testing, and documentation toolchains.
 - Development tooling defined in `setup.cfg` (linting, formatting, mypy), Python 3.10+ expected via `venv/`.
-- Pending upgrades: monitor PyQt5 LTS, cryptography stack for FIPS regressions, duplicate `requests` entry (listed twice), ensure packages with OS markers tested per platform.
+- Pending upgrades: monitor PyQt5 LTS, cryptography stack for FIPS regressions, ensure packages with OS markers tested per platform.
+- Hardening baseline (Issue #80): duplicate `requests` entry removed; `pip-audit` and `cyclonedx-bom` added for vulnerability scanning and SBOM generation in CI quality gates; strict vulnerability fail policy enabled; default audit retention aligned to 12 months. The implementation is recorded in [`docs/security/ISSUE_80_SECURITY_AUDIT_AND_DEPENDENCY_HARDENING.md`](../security/ISSUE_80_SECURITY_AUDIT_AND_DEPENDENCY_HARDENING.md) and synchronized with the code in the core audit and config layers.
+- Follow-up policy backlog for Issue #80:
+	- Add a documented allowlist / ignore file for known transitive vulnerabilities, including ownership and expiration dates.
+	- Expand file-operation audit metadata so more entry points emit richer actor, resource, and session context.
+	- Publish SBOM artifacts alongside release assets and define the retention / distribution workflow for those reports.
+- Startup-path optimization baseline (Issue #82): database initialization moved behind an on-demand getter, optional PDF widget loading is deferred until the PDF tools tab is created, and a lightweight cold-import benchmark documents the current startup path. The implementation is recorded in [`docs/performance/ISSUE_82_PERFORMANCE_AND_STARTUP_PATH_OPTIMIZATION.md`](../performance/ISSUE_82_PERFORMANCE_AND_STARTUP_PATH_OPTIMIZATION.md).
+- Observability consolidation baseline (Issue #83): `ObservabilityService` now provides the shared structured event model for errors, warnings, info, and tool/file lifecycle events, while `ErrorHandler` routes diagnostics through the shared layer without changing user-facing dialogs. The implementation is recorded in [`docs/observability/ISSUE_83_ERROR_HANDLING_AND_OBSERVABILITY_CONSOLIDATION.md`](../observability/ISSUE_83_ERROR_HANDLING_AND_OBSERVABILITY_CONSOLIDATION.md).
+- Test infrastructure and quality-gate baseline (Issue #84): `scripts/quality/run_quality_gates.py` now provides the canonical project-scoped gate runner with explicit coverage thresholds, optional smoke mode, and a headless-safe default execution pattern. The implementation is recorded in [`docs/testing/ISSUE_84_TEST_INFRASTRUCTURE_AND_QUALITY_GATES.md`](../testing/ISSUE_84_TEST_INFRASTRUCTURE_AND_QUALITY_GATES.md).
+- Implementation roadmap umbrella (Issue #85): the recommended package rollout order is Architecture (#79) → Security (#80) → UI/UX (#81) → Performance (#82) → Observability (#83) → Testing (#84). The canonical roadmap note is [`docs/roadmap/ISSUE_85_IMPLEMENTATION_ROADMAP.md`](ISSUE_85_IMPLEMENTATION_ROADMAP.md).
+- Project completion sync (2026-09-11): the items previously marked In Progress on project #2 for #79, #80, #81, #82, and #85 were completed and closed with their issue-linked documentation updated.
+- Project completion sync (2026-09-11): the items moved to In Progress for #83 and #84 were completed and closed with their issue-linked documentation updated.
 
 ### 1.3 Technical Debt Summary
 
 - Redundant code paths and archival directories remain (`src_backup/`, legacy automation scripts), yet active launch surface is now limited to vetted entry points.
 - Documentation naming is improved by consolidating roadmap and fix guides under `docs/`, though broader snake_case adoption is still pending for older assets.
-- Missing central dependency lock (no `poetry.lock`/`requirements-lock.txt`), limited CI/CD enforcement for quality gates.
+- Missing central dependency lock (no `poetry.lock`/`requirements-lock.txt`), limited CI/CD enforcement for quality gates, and remaining startup-path latency should continue to be monitored with the documented benchmark.
+- Error/telemetry consolidation is now centralized, but shared observability regression coverage should remain part of the core validation set for future handler changes.
+- Quality-gate enforcement is now centralized, but the repository should continue to track minimum coverage expectations and runner behavior through the documented issue #84 regression tests.
+- The package rollout order is now explicitly documented, so any reprioritization should update the issue #85 roadmap note and the linked package docs together.
 - Testing posture strengthened by relocating UI smoke tests into `tests/ui/`; comprehensive GUI and PDF engine coverage tracking still required.
 - Log streams consolidated under `logs/`; rotation policy and SIEM forwarding backlog items remain open.
 

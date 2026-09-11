@@ -16,6 +16,9 @@ from PyQt5 import QtWidgets, uic, QtGui, QtCore
 from PyQt5.QtWidgets import QFileDialog, QMessageBox
 from log_config import setup_logger
 
+from src.gui.components.buttons import SecondaryButton
+from src.gui.components.loading_indicator import LoadingIndicator
+
 # Path Of The Tesseract OCR engine
 TESSERACT_PATH = r"C:\\Program Files\\Tesseract-OCR\\tesseract.exe"
 # Include tesseract executable
@@ -706,8 +709,8 @@ class OcrUI(QtWidgets.QMainWindow):
             )
 
             # Add navigation buttons for batch mode
-            self.prev_button = QtWidgets.QPushButton("Previous")
-            self.next_button = QtWidgets.QPushButton("Next")
+            self.prev_button = SecondaryButton("Previous")
+            self.next_button = SecondaryButton("Next")
             self.prev_button.clicked.connect(self.show_previous_preview)
             self.next_button.clicked.connect(self.show_next_preview)
             self.prev_button.hide()
@@ -718,7 +721,7 @@ class OcrUI(QtWidgets.QMainWindow):
             self.statusBar().addPermanentWidget(self.next_button)
 
             # Add progress bar
-            self.progressBar = QtWidgets.QProgressBar()
+            self.progressBar = LoadingIndicator(parent=self, message="Working...")
             self.statusBar().addPermanentWidget(self.progressBar)
             self.progressBar.hide()
 

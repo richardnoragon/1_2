@@ -22,13 +22,15 @@ try:
         QMainWindow,
         QMessageBox,
         QProgressBar,
-        QPushButton,
         QSpinBox,
         QTextEdit,
         QVBoxLayout,
         QWidget,
     )
 
+    from src.gui.components.buttons import PrimaryButton, SecondaryButton
+    from src.gui.components.inputs import TextInput
+    from src.gui.components.loading_indicator import LoadingIndicator
     from src.gui.themes import token
 except ImportError:
     print("PyQt5 not available. Please install PyQt5.")
@@ -118,9 +120,8 @@ class NetworkScannerGUI(_BaseWindow):
         # Target input
         target_layout = QHBoxLayout()
         target_layout.addWidget(QLabel("Target Host:"))
-        self.target_input = QLineEdit()
+        self.target_input = TextInput("Target host", "Enter IP address or hostname")
         self.target_input.setAccessibleName("Target host for network scan")
-        self.target_input.setPlaceholderText("Enter IP address or hostname")
         self.target_input.setText("127.0.0.1")
         target_layout.addWidget(self.target_input)
         config_layout.addLayout(target_layout)
@@ -164,9 +165,8 @@ class NetworkScannerGUI(_BaseWindow):
         config_layout.addLayout(options_layout)
 
         # Scan button
-        self.scan_button = QPushButton("Start Network Scan")
+        self.scan_button = PrimaryButton("Start Network Scan")
         self.scan_button.setAccessibleName("Start network scan")
-        self.scan_button.setMinimumHeight(44)
         self.scan_button.clicked.connect(self.start_scan)
         config_layout.addWidget(self.scan_button)
 
@@ -176,21 +176,18 @@ class NetworkScannerGUI(_BaseWindow):
         presets_group = QGroupBox("Quick Scan Presets")
         presets_layout = QHBoxLayout(presets_group)
 
-        common_ports_btn = QPushButton("Common Ports (1-1000)")
+        common_ports_btn = SecondaryButton("Common Ports (1-1000)")
         common_ports_btn.setAccessibleName("Scan common ports 1 to 1000")
-        common_ports_btn.setMinimumHeight(44)
         common_ports_btn.clicked.connect(self.set_common_ports)
         presets_layout.addWidget(common_ports_btn)
 
-        web_ports_btn = QPushButton("Web Ports (80, 443, 8080)")
+        web_ports_btn = SecondaryButton("Web Ports (80, 443, 8080)")
         web_ports_btn.setAccessibleName("Scan web ports 80, 443, 8080")
-        web_ports_btn.setMinimumHeight(44)
         web_ports_btn.clicked.connect(self.set_web_ports)
         presets_layout.addWidget(web_ports_btn)
 
-        all_ports_btn = QPushButton("All Ports (1-65535)")
+        all_ports_btn = SecondaryButton("All Ports (1-65535)")
         all_ports_btn.setAccessibleName("Scan all ports 1 to 65535")
-        all_ports_btn.setMinimumHeight(44)
         all_ports_btn.clicked.connect(self.set_all_ports)
         presets_layout.addWidget(all_ports_btn)
 
@@ -212,8 +209,7 @@ class NetworkScannerGUI(_BaseWindow):
         layout.addWidget(results_group)
 
         # Progress bar
-        self.progress_bar = QProgressBar()
-        self.progress_bar.setVisible(False)
+        self.progress_bar = LoadingIndicator(parent=self, message="Scanning...")
         layout.addWidget(self.progress_bar)
 
         # Style the buttons

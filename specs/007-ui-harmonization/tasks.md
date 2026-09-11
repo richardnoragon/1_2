@@ -2,6 +2,14 @@
 
 **Feature**: `007-ui-harmonization`
 **Date**: 2026-04-25 (regenerated — incorporates 5 clarifications from 2026-04-25)
+
+## UI / Preferences / Documentation Cluster Status
+
+This task file is the repo-authoritative tracker for the UI/preferences/documentation cluster already represented in the active project specs. It is intentionally scoped to the harmonization and preferences workstreams rather than the broader, unrelated backlog. The implementation focus remains on appearance preferences, menu contracts, and documentation traceability across the tracker, operations runbook, and release notes.
+
+- Primary spec anchors: `specs/004-preferences-framework/*`, `specs/007-ui-harmonization/*`
+- Documentation focus: `docs/operations/preferences_portability_runbook.md`, `docs/ui-ux-harmonization/`, `docs/release_notes/preferences_framework_release.md`
+- Scope boundary: UI/preferences/docs cluster only; no unrelated issue expansion beyond the existing spec-set
 **Input**: [plan.md](plan.md), [spec.md](spec.md), [data-model.md](data-model.md),
 [quickstart.md](quickstart.md), [research.md](research.md),
 [contracts/uap-preferences.md](contracts/uap-preferences.md),

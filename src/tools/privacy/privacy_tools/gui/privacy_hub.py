@@ -37,6 +37,8 @@ from PyQt5.QtWidgets import (
 
 # Import the main project's GUI components
 try:
+    from src.gui.components.buttons import PrimaryButton, SecondaryButton
+    from src.gui.components.inputs import TextInput
     from src.gui.standard_window import StandardWindow
 
     STANDARD_WINDOW_AVAILABLE = True
@@ -367,12 +369,11 @@ class PrivacyToolsHub(StandardWindow):
         # Domain filter
         domain_layout = QHBoxLayout()
         domain_layout.addWidget(QLabel("Domain filter:"))
-        self.domain_filter_edit = QLineEdit()
+        self.domain_filter_edit = TextInput("Domain filter", "e.g., google.com (optional)")
         self.domain_filter_edit.setAccessibleName("Domain filter")
         self.domain_filter_edit.setAccessibleDescription(
             "Enter a domain to delete only cookies from that site; leave blank for all"
         )
-        self.domain_filter_edit.setPlaceholderText("e.g., google.com (optional)")
         domain_layout.addWidget(self.domain_filter_edit)
         filter_layout.addLayout(domain_layout)
 

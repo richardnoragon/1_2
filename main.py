@@ -35,6 +35,8 @@ from src.core.constants import (
     SECURITY_TEST,
     SUGGESTED_SOLUTIONS_HEADER,
 )
+from src.core.application_state import build_application_state
+from src.core.tool_lifecycle import resolve_tool_launch_request
 
 # PDF tool constants
 PDF_UTILITIES = "PDF Utilities"
@@ -76,86 +78,91 @@ class AuthenticationCancelledError(RuntimeError):
     pass
 
 
-# Initialize database system
+# Startup-performance optimization: defer expensive optional services until they are actually needed.
+DATABASE_AVAILABLE = False
+_ENHANCED_PDF_TOOLS_AVAILABLE = None
+_DATABASE_INITIALIZATION_ATTEMPTED = False
+
+
 def initialize_database_system():
-    """Initialize the database and enhanced configuration system with proper error handling."""
+    """Compatibility wrapper for legacy callers.
+
+    Startup work is lazy and should be requested by the main window or a tool that
+    explicitly needs database-backed features. The default import path is intentionally
+    fast and does not initialize this subsystem.
+    """
+    return ensure_database_initialized(force=True)
+
+
+def ensure_database_initialized(*, force: bool = False):
+    """Initialize the database only when the app actually needs it."""
+    global DATABASE_AVAILABLE, _DATABASE_INITIALIZATION_ATTEMPTED
+
+    if not force and _DATABASE_INITIALIZATION_ATTEMPTED:
+        return DATABASE_AVAILABLE
+
+    _DATABASE_INITIALIZATION_ATTEMPTED = True
+    logger = logging.getLogger("RFU.Main")
     db_manager = None
-    logger = None
 
     try:
-        # Setup basic logging first
-        logging.basicConfig(
-            level=logging.INFO,
-            format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-            handlers=[
-                logging.StreamHandler(),
-                logging.FileHandler("rfu_errors.log", encoding="utf-8"),
-            ],
-        )
-        logger = logging.getLogger("RFU.Main")
+        logger.info("Attempting database initialization on demand")
+        from scripts.maintenance.standalone_database_manager import get_database_manager
 
-        # Import and initialize database manager with validation
-        try:
-            from scripts.maintenance.standalone_database_manager import (
-                get_database_manager,
-            )
-
-            db_manager = get_database_manager()
-
-            # Validate database connection
-            if db_manager is None:
-                logger.warning("Database manager initialization returned None")
-                return False
-
-            # Test database connectivity
-            db_info = db_manager.get_database_info()
-            if not db_info or "database_file" not in db_info:
-                logger.error("Database connectivity test failed")
-                return False
-
-        except ImportError as e:
-            logger.error("Database module import failed: %s", e)
-            return False
-        except (RuntimeError, OSError, AttributeError) as e:
-            logger.error("Database manager initialization failed: %s", e)
+        db_manager = get_database_manager()
+        if db_manager is None:
+            logger.warning("Database manager initialization returned None")
+            DATABASE_AVAILABLE = False
             return False
 
+        db_info = db_manager.get_database_info()
+        if not db_info or "database_file" not in db_info:
+            logger.error("Database connectivity test failed")
+            DATABASE_AVAILABLE = False
+            return False
+
+        DATABASE_AVAILABLE = True
         logger.info("Database system initialized successfully")
         logger.info("Database: %s", db_info.get("database_file"))
-
         return True
+    except ImportError as exc:
+        logger.warning("Database module import failed: %s", exc)
+    except (RuntimeError, OSError, AttributeError) as exc:
+        logger.warning("Database manager initialization failed: %s", exc)
+    except Exception as exc:  # pragma: no cover - defensive fallback
+        logger.warning("Database system initialization failed unexpectedly: %s", exc)
 
-    except (RuntimeError, OSError, ImportError, AttributeError) as e:
-        # Ensure we always have logging even if database fails
-        if logger is None:
-            logging.basicConfig(level=logging.INFO)
-            logger = logging.getLogger("RFU.Main")
+    DATABASE_AVAILABLE = False
+    return False
 
-        logger.error("Critical: Database system initialization failed: %s", e)
-        logger.warning("Application will continue without database features")
+
+def is_enhanced_pdf_tools_available(*, force: bool = False):
+    """Create the enhanced PDF widget lazily so launch cost is paid only on demand."""
+    global _ENHANCED_PDF_TOOLS_AVAILABLE
+
+    if _ENHANCED_PDF_TOOLS_AVAILABLE is not None and not force:
+        return _ENHANCED_PDF_TOOLS_AVAILABLE
+
+    try:
+        from scripts.development.demos.enhanced_pdf_tools_widget import (
+            EnhancedPDFToolsWidget,
+        )
+        _ENHANCED_PDF_TOOLS_AVAILABLE = bool(EnhancedPDFToolsWidget)
+        return True
+    except Exception as exc:  # pragma: no cover - optional feature
+        print(f"Enhanced PDF Tools not available: {exc}")
+        _ENHANCED_PDF_TOOLS_AVAILABLE = False
         return False
 
 
-# Initialize database system
-DATABASE_AVAILABLE = initialize_database_system()
+def load_enhanced_pdf_tools_widget():
+    """Return the optional PDF widget class when the subsystem is actually requested."""
+    from scripts.development.demos.enhanced_pdf_tools_widget import EnhancedPDFToolsWidget
 
-# Import the enhanced PDF tools widget
-try:
-    from scripts.development.demos.enhanced_pdf_tools_widget import (
-        EnhancedPDFToolsWidget,
-    )
+    return EnhancedPDFToolsWidget
 
-    ENHANCED_PDF_TOOLS_AVAILABLE = True
-except ImportError as e:
-    print(f"Enhanced PDF Tools not available: {e}")
-    ENHANCED_PDF_TOOLS_AVAILABLE = False
 
-# Import the full-featured multi-pane file explorer
-try:
-    MULTI_PANE_EXPLORER_AVAILABLE = True
-except ImportError as e:
-    print(f"Full multi-pane explorer not available: {e}")
-    MULTI_PANE_EXPLORER_AVAILABLE = False
+MULTI_PANE_EXPLORER_AVAILABLE = False
 
 
 # Enhanced Interface selection dialog with comprehensive startup functionality
@@ -299,89 +306,83 @@ class InterfaceSelectionDialog:
             return True  # Default to continuing with fallback
 
     def _apply_dialog_styling(self):
-        """Apply simplified styling to the dialog to ensure text visibility."""
+        """Apply token-based shared styling for accessibility consistency."""
         try:
+            from src.gui.common.settings import AppearanceSettings
+            from src.gui.common.styles import get_base_styles, get_theme_tokens
+
+            appearance = AppearanceSettings()
+            colors = get_theme_tokens(appearance.theme)
+            base = get_base_styles(
+                theme=appearance.theme,
+                font_size=appearance.font_size,
+            )
             self.dialog.setStyleSheet(
-                """
-                QDialog {
-                    background-color: #f8f9fa;
-                    border: 2px solid #dee2e6;
+                base
+                + f"""
+                QDialog {{
+                    border: 1px solid {colors['border']};
                     border-radius: 12px;
-                }
-                QGroupBox {
-                    font-weight: bold;
-                    font-size: 14px;
-                    color: #2c3e50;
-                    border: 2px solid #bdc3c7;
+                }}
+                QFrame#hero_section {{
+                    background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+                        stop:0 {colors['primary']}, stop:1 {colors['primary_hover']});
+                    border-radius: 10px;
+                }}
+                QLabel#hero_title {{
+                    color: {colors['text_on_primary']};
+                    font-size: {appearance.font_size + 4}pt;
+                    font-weight: 700;
+                    margin: 8px;
+                }}
+                QLabel#hero_subtitle {{
+                    color: {colors['text_on_primary']};
+                    font-size: {max(10, appearance.font_size - 1)}pt;
+                    margin: 4px;
+                }}
+                QFrame#interface_option {{
+                    border: 1px solid {colors['border']};
                     border-radius: 8px;
-                    margin-top: 1ex;
-                    padding-top: 10px;
-                    background-color: #ffffff;
-                }
-                QGroupBox::title {
-                    subcontrol-origin: margin;
-                    left: 10px;
-                    padding: 0 5px 0 5px;
-                    background-color: #ffffff;
-                }
-                QRadioButton {
-                    font-weight: bold;
-                    font-size: 14px;
-                    color: #2c3e50;
-                    spacing: 10px;
                     padding: 8px;
-                    background-color: transparent;
-                }
-                QRadioButton::indicator {
-                    width: 18px;
-                    height: 18px;
-                    border-radius: 9px;
-                    border: 2px solid #bdc3c7;
-                    background-color: #ffffff;
-                }
-                QRadioButton::indicator:checked {
-                    border: 2px solid #3498db;
-                    background-color: #3498db;
-                }
-                QRadioButton::indicator:hover {
-                    border: 2px solid #3498db;
-                }
-                QPushButton {
-                    font-weight: bold;
-                    font-size: 14px;
-                    color: white;
-                    padding: 12px 24px;
-                    border-radius: 6px;
-                    border: none;
-                    min-width: 120px;
-                    min-height: 40px;
-                }
-                QPushButton#primary {
-                    background-color: #3498db;
-                }
-                QPushButton#primary:hover {
-                    background-color: #2980b9;
-                }
-                QPushButton#secondary {
-                    background-color: #95a5a6;
-                }
-                QPushButton#secondary:hover {
-                    background-color: #7f8c8d;
-                }
-                QCheckBox {
-                    font-size: 12px;
-                    color: #2c3e50;
-                    background-color: transparent;
-                }
-                QTextEdit {
-                    border: 1px solid #bdc3c7;
-                    border-radius: 4px;
-                    background-color: #f8f9fa;
-                    padding: 8px;
-                    font-size: 11px;
-                    color: #495057;
-                }
-            """
+                    margin: 3px;
+                    background-color: {colors['widget_bg']};
+                }}
+                QFrame#interface_option:hover {{
+                    border-color: {colors['primary']};
+                    background-color: {colors['surface_subtle']};
+                }}
+                QLabel#option_description {{
+                    margin-left: 20px;
+                    color: {colors['text_secondary']};
+                    font-size: {max(9, appearance.font_size - 2)}pt;
+                    line-height: 1.3;
+                    padding-top: 2px;
+                }}
+                QLabel#recommendation_title {{
+                    color: {colors['success']};
+                    font-size: {appearance.font_size}pt;
+                    font-weight: 700;
+                    margin: 4px;
+                }}
+                QLabel#recommendation_fallback {{
+                    color: {colors['warning']};
+                    font-size: {appearance.font_size}pt;
+                    font-weight: 600;
+                    margin: 4px;
+                }}
+                QPushButton#secondary {{
+                    background-color: {colors['surface_subtle']};
+                    border-color: {colors['border']};
+                    color: {colors['text']};
+                }}
+                QPushButton#secondary:hover {{
+                    background-color: {colors['highlight']};
+                }}
+                """
+            )
+            self.dialog.setAccessibleName("Interface selection dialog")
+            self.dialog.setAccessibleDescription(
+                "Choose the startup interface mode and confirm preferences"
             )
         except Exception as e:
             self.logger.warning(f"Failed to apply dialog styling: {e}")
@@ -393,33 +394,26 @@ class InterfaceSelectionDialog:
         from PyQt5.QtWidgets import QFrame, QLabel, QVBoxLayout
 
         frame = QFrame()
-        frame.setStyleSheet(
-            """
-            QFrame {
-                background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
-                    stop:0 #3498db, stop:1 #2980b9);
-                border-radius: 10px;
-                padding: 20px;
-            }
-        """
-        )
+        frame.setObjectName("hero_section")
 
         layout = QVBoxLayout(frame)
 
         # Main title
         title = QLabel("Welcome to Richard's File Utilities")
+        title.setObjectName("hero_title")
         title.setAlignment(Qt.AlignCenter)
         title_font = QFont()
         title_font.setPointSize(18)
         title_font.setBold(True)
         title.setFont(title_font)
-        title.setStyleSheet("color: white; margin: 10px;")
+        title.setAccessibleName("Welcome title")
         layout.addWidget(title)
 
         # Subtitle
         subtitle = QLabel("Choose your preferred interface mode to get started")
+        subtitle.setObjectName("hero_subtitle")
         subtitle.setAlignment(Qt.AlignCenter)
-        subtitle.setStyleSheet("color: #ecf0f1; font-size: 13px; margin: 5px;")
+        subtitle.setAccessibleName("Welcome subtitle")
         layout.addWidget(subtitle)
 
         return frame
@@ -436,15 +430,15 @@ class InterfaceSelectionDialog:
             recommendation = self._get_interface_recommendation(detected_workflow)
 
             recommendation_label = QLabel(f"🎯 Recommended: {recommendation['name']}")
-            recommendation_label.setStyleSheet(
-                "color: #27ae60; font-weight: bold; font-size: 14px; margin: 5px;"
-            )
+            recommendation_label.setObjectName("recommendation_title")
+            recommendation_label.setAccessibleName("Interface recommendation")
             workflow_layout.addWidget(recommendation_label)
 
             reason_text = QTextEdit()
             reason_text.setPlainText(recommendation["reason"])
             reason_text.setMaximumHeight(60)
             reason_text.setReadOnly(True)
+            reason_text.setAccessibleName("Recommendation reasoning")
             workflow_layout.addWidget(reason_text)
 
         except Exception as e:
@@ -452,9 +446,8 @@ class InterfaceSelectionDialog:
             fallback_label = QLabel(
                 "💡 Both interfaces are powerful - choose based on your workflow preference"
             )
-            fallback_label.setStyleSheet(
-                "color: #f39c12; font-weight: bold; margin: 5px;"
-            )
+            fallback_label.setObjectName("recommendation_fallback")
+            fallback_label.setAccessibleName("Recommendation fallback")
             workflow_layout.addWidget(fallback_label)
 
         return workflow_group
@@ -501,61 +494,22 @@ class InterfaceSelectionDialog:
 
     def _create_interface_option(self, option_id, title, description, color):
         """Create a styled interface option frame."""
-        from PyQt5.QtCore import Qt
         from PyQt5.QtWidgets import QFrame, QLabel, QRadioButton, QVBoxLayout
 
         frame = QFrame()
-        frame.setStyleSheet(
-            f"""
-            QFrame {{
-                border: 2px solid #bdc3c7;
-                border-radius: 8px;
-                padding: 10px;
-                margin: 3px;
-                background-color: #ffffff;
-            }}
-            QFrame:hover {{
-                border-color: {color};
-                background-color: #f8f9fa;
-            }}
-        """
-        )
+        frame.setObjectName("interface_option")
 
         layout = QVBoxLayout(frame)
 
         # Radio button with enhanced styling
         radio = QRadioButton(title)
-        # Ensure text is visible with simplified styling
-        radio.setStyleSheet(
-            f"""
-            QRadioButton {{
-                color: {color}; 
-                font-size: 13px;
-                font-weight: bold;
-                spacing: 8px;
-                padding: 5px;
-                margin: 2px;
-            }}
-            QRadioButton::indicator {{
-                width: 16px;
-                height: 16px;
-                border-radius: 8px;
-                border: 2px solid #bdc3c7;
-                background-color: white;
-                margin-right: 6px;
-            }}
-            QRadioButton::indicator:checked {{
-                border: 2px solid {color};
-                background-color: {color};
-            }}
-            QRadioButton::indicator:hover {{
-                border: 2px solid {color};
-            }}
-        """
-        )
 
         # Ensure text is set and visible
-        radio.setText(title)  # Explicitly set text again to ensure it's displayed
+        radio.setText(title)
+        radio.setAccessibleName(f"Interface option {title}")
+        radio.setAccessibleDescription(
+            f"Preferred accent {color} for this interface option"
+        )
 
         if option_id == "dialog_hub":
             self.dialog_radio = radio
@@ -568,17 +522,9 @@ class InterfaceSelectionDialog:
 
         # Description with better spacing
         desc_label = QLabel(description)
-        desc_label.setStyleSheet(
-            """
-            margin-left: 20px; 
-            color: #555; 
-            font-size: 10px; 
-            line-height: 1.3;
-            padding-top: 3px;
-            padding-bottom: 5px;
-        """
-        )
+        desc_label.setObjectName("option_description")
         desc_label.setWordWrap(True)
+        desc_label.setAccessibleName("Interface option description")
         layout.addWidget(desc_label)
 
         return frame
@@ -593,21 +539,21 @@ class InterfaceSelectionDialog:
         # Remember choice checkbox
         self.remember_checkbox = QCheckBox("🔒 Remember my choice for future sessions")
         self.remember_checkbox.setChecked(True)
-        self.remember_checkbox.setStyleSheet("font-weight: bold; color: #2c3e50;")
+        self.remember_checkbox.setAccessibleName("Remember interface choice")
         layout.addWidget(self.remember_checkbox)
 
         # Additional info
         info_label = QLabel(
             "💡 You can always change your interface mode from the Interface menu"
         )
-        info_label.setStyleSheet("color: #7f8c8d; font-size: 10px; margin-top: 5px;")
+        info_label.setObjectName("option_description")
+        info_label.setAccessibleName("Interface menu hint")
         layout.addWidget(info_label)
 
         return frame
 
     def _create_button_section(self):
         """Create enhanced button section with proper styling."""
-        from PyQt5.QtCore import Qt
         from PyQt5.QtWidgets import (
             QFrame,
             QHBoxLayout,
@@ -625,16 +571,18 @@ class InterfaceSelectionDialog:
         # Cancel button
         cancel_button = QPushButton("Cancel")
         cancel_button.setObjectName("secondary")
-        cancel_button.setText("Cancel")  # Ensure text is explicitly set
+        cancel_button.setText("Cancel")
         cancel_button.setMinimumSize(80, 30)
+        cancel_button.setAccessibleName("Cancel interface selection")
         cancel_button.clicked.connect(self._handle_cancel)
         layout.addWidget(cancel_button)
 
         # Continue button
         continue_button = QPushButton("Continue")
         continue_button.setObjectName("primary")
-        continue_button.setText("Continue")  # Ensure text is explicitly set
+        continue_button.setText("Continue")
         continue_button.setMinimumSize(80, 30)
+        continue_button.setAccessibleName("Confirm interface selection")
         continue_button.setDefault(True)
         continue_button.clicked.connect(self._handle_continue)
         layout.addWidget(continue_button)
@@ -1031,6 +979,14 @@ try:
         def _initialize_core_systems(self):
             """Initialize core application systems and state management."""
             try:
+                resolved_database_status = ensure_database_initialized()
+                self.application_state = build_application_state(
+                    "RFU.MainWindow",
+                    include_config=True,
+                    include_preferences=True,
+                    database_available=resolved_database_status,
+                )
+
                 # Store references to opened windows
                 self.opened_windows = {}
 
@@ -1061,7 +1017,7 @@ try:
                 }
 
                 # Initialize database tracking
-                self.database_available = DATABASE_AVAILABLE
+                self.database_available = self.application_state.database_available
                 if self.database_available:
                     try:
                         from scripts.maintenance.standalone_database_manager import (
@@ -1077,19 +1033,17 @@ try:
                 else:
                     self.db_manager = None
                     self.logger.info("Database system not available")
+                    if not _DATABASE_INITIALIZATION_ATTEMPTED:
+                        self.logger.info("Database initialization deferred until a concrete tool needs it")
 
-                # Initialize configuration manager
-                try:
-                    from src.config.config_manager import get_config_manager
-
-                    self.config_manager = get_config_manager()
+                # Initialize configuration and preference services from the shared facade.
+                self.config_manager = self.application_state.config_manager
+                self.preference_manager = self.application_state.preference_manager
+                if self.config_manager:
                     self._setup_interface_configuration()
                     self.logger.info("Configuration manager initialized successfully")
-                except Exception as e:
-                    self.logger.warning(
-                        f"Configuration manager initialization failed: {e}"
-                    )
-                    self.config_manager = None
+                else:
+                    self.logger.warning("Configuration manager initialization failed")
 
                 self.logger.info("Core systems initialized successfully")
 
@@ -1997,6 +1951,15 @@ try:
             try:
                 self._track_tool_launch(tool_name)
 
+                launch_request = resolve_tool_launch_request(
+                    tool_name,
+                    module_name,
+                    class_name,
+                )
+                if launch_request is not None:
+                    module_name = launch_request.module_name
+                    class_name = launch_request.class_name
+
                 if self._handle_existing_window(tool_name):
                     return
 
@@ -2339,7 +2302,7 @@ try:
             self._register_tab(metadata_tab, "Metadata")
 
             # PDF Tools
-            if ENHANCED_PDF_TOOLS_AVAILABLE:
+            if is_enhanced_pdf_tools_available():
                 pdf_tab = self.create_enhanced_pdf_tools_tab()
             else:
                 pdf_tab = self.create_tool_category_tab(
@@ -2547,9 +2510,9 @@ try:
 
         def create_enhanced_pdf_tools_tab(self):
             """Create enhanced PDF tools tab."""
-            if ENHANCED_PDF_TOOLS_AVAILABLE:
+            if is_enhanced_pdf_tools_available():
                 try:
-                    pdf_widget = EnhancedPDFToolsWidget(self)
+                    pdf_widget = load_enhanced_pdf_tools_widget()(self)
                     return pdf_widget
                 except Exception as e:
                     print(f"Error creating enhanced PDF tools: {e}")
@@ -2974,10 +2937,14 @@ try:
         sys.exit(main())
 
 except ImportError as e:
-    print(f"Error importing modules: {e}")
-    print("Please ensure PyQt5 is properly installed.")
-    print("To install PyQt5, run: pip install PyQt5")
-    sys.exit(1)
+    if __name__ == "__main__":
+        print(f"Error importing modules: {e}")
+        print("Please ensure PyQt5 is properly installed.")
+        print("To install PyQt5, run: pip install PyQt5")
+        sys.exit(1)
+    else:
+        print(f"RFU import deferred because PyQt5 is unavailable: {e}")
 except (RuntimeError, OSError, AttributeError) as e:
-    print(f"Error starting application: {e}")
-    sys.exit(1)
+    if __name__ == "__main__":
+        print(f"Error starting application: {e}")
+        sys.exit(1)

@@ -4,20 +4,20 @@ src/gui/components/inputs.py — Shared text input component (P1-C09).
 Spec §5.3: persistent label, inline validation, error state via token.
 """
 
-from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QLabel, QLineEdit, QVBoxLayout, QWidget
 
 from src.gui.themes import Typography, token
 
 
 class TextInput(QWidget):
-    """Labeled text input with persistent label and inline validation (spec §5.3).
+    """Labeled text input with persistent label and inline validation.
 
     Args:
-        label:       Visible, persistent label text (never placeholder-only).
+        label: Visible, persistent label text.
         placeholder: Optional hint shown inside the field when empty.
-        parent:      Parent widget.
-        accessible_name:        Passed to setAccessibleName(); defaults to label.
+        parent: Parent widget.
+        accessible_name: Passed to setAccessibleName(); defaults to label.
         accessible_description: Passed to setAccessibleDescription().
     """
 
@@ -80,11 +80,11 @@ class TextInput(QWidget):
     def setReadOnly(self, read_only: bool):
         self._field.setReadOnly(read_only)
 
-    def set_validator(self, fn):
-        """Set a callable ``fn(text: str) -> (bool, str)`` for inline validation.
+    def setEchoMode(self, mode):
+        self._field.setEchoMode(mode)
 
-        Returns (is_valid, error_message).
-        """
+    def set_validator(self, fn):
+        """Set a callable returning (is_valid, error_message)."""
         self._validator = fn
 
     def is_valid(self) -> bool:
@@ -105,7 +105,6 @@ class TextInput(QWidget):
 
     def _set_error_state(self, has_error: bool, message: str = ""):
         error_color = token("semantic_error")
-        normal_color = token("text_secondary")
         border_color = error_color if has_error else token("button_secondary")
         self._field.setStyleSheet(
             f"""

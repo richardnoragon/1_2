@@ -18,11 +18,12 @@ try:
         QGroupBox,
         QLabel,
         QMainWindow,
-        QPushButton,
         QTextEdit,
         QVBoxLayout,
         QWidget,
     )
+
+    from src.gui.components.buttons import PrimaryButton, SecondaryButton
 
     from src.gui.themes import token
 
@@ -167,24 +168,9 @@ class SystemCleanupGUI(SystemDiagnosticsGUI):
 
             # Temporary files cleanup
             if "temp_files" in self.cleanup_tools:
-                temp_button = QPushButton("Clean Temporary Files")
+                temp_button = PrimaryButton("Clean Temporary Files")
                 temp_button.setAccessibleName("Clean Temporary Files")
                 temp_button.clicked.connect(self.run_temp_cleanup)
-                temp_button.setStyleSheet(
-                    f"""
-                    QPushButton {{
-                        background-color: {token('semantic_success')};
-                        color: white;
-                        font-weight: bold;
-                        padding: 10px 20px;
-                        border-radius: 5px;
-                        margin: 5px;
-                    }}
-                    QPushButton:hover {{
-                        background-color: {token('semantic_success_hover')};
-                    }}
-                """
-                )
                 quick_layout.addWidget(temp_button)
 
             # Placeholder for other tools

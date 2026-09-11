@@ -11,10 +11,11 @@ from typing import Optional
 from PyQt5.QtWidgets import (
     QFileDialog,
     QMessageBox,
-    QProgressBar,
     QApplication,
 )
 import pdfplumber
+
+from src.gui.components.loading_indicator import LoadingIndicator
 
 # Add parent directory to path for main project imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -62,7 +63,7 @@ class ExtractTextWindow(BaseWindow):
         """Setup additional UI components and connections."""
         try:
             # Add progress bar to status bar (BaseWindow provides statusBar)
-            self.progress_bar = QProgressBar()
+            self.progress_bar = LoadingIndicator(parent=self, message="Working...")
             self.statusBar().addPermanentWidget(self.progress_bar)
             self.progress_bar.hide()
 

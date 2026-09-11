@@ -956,7 +956,7 @@ class SystemCleanupGUI(SystemDiagnosticsGUI):
             status_layout = QVBoxLayout(status_group)
 
             # Progress bar
-            self.cleanup_progress_bar = QProgressBar()
+            self.cleanup_progress_bar = LoadingIndicator(parent=self, message="Cleanup in progress...")
             self.cleanup_progress_bar.setVisible(False)
             status_layout.addWidget(self.cleanup_progress_bar)
 

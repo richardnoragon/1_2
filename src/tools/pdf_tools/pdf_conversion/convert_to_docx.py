@@ -15,6 +15,8 @@ from PyQt5.QtWidgets import (
     QMessageBox,
 )
 
+from src.gui.components.buttons import SecondaryButton
+
 # Set up logger
 logger = setup_logger(__name__)
 
@@ -149,7 +151,7 @@ class ConvertWindow(QMainWindow):
             self.status_label = QtWidgets.QLabel("Select a PDF file to convert")
             layout.addWidget(self.status_label)
 
-            select_button = QtWidgets.QPushButton("Select PDF")
+            select_button = SecondaryButton("Select PDF")
             select_button.clicked.connect(self.select_pdf)
             layout.addWidget(select_button)
 

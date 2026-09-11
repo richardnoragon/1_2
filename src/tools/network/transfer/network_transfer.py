@@ -68,13 +68,10 @@ try:
         QHBoxLayout,
         QHeaderView,
         QLabel,
-        QLineEdit,
         QListWidget,
         QListWidgetItem,
         QMainWindow,
         QMessageBox,
-        QProgressBar,
-        QPushButton,
         QSlider,
         QSpinBox,
         QSplitter,
@@ -89,6 +86,9 @@ try:
         QWidget,
     )
 
+    from src.gui.components.buttons import PrimaryButton, SecondaryButton
+    from src.gui.components.inputs import TextInput
+    from src.gui.components.loading_indicator import LoadingIndicator
     from src.gui.themes import token
 except ImportError:
     print("PyQt5 not available. Please install PyQt5.")
@@ -1121,8 +1121,7 @@ class NetworkTransferGUI(StandardWindow):
         self.status_label = QLabel("Ready for transfers")
         status_layout.addWidget(self.status_label)
 
-        self.progress_bar = QProgressBar()
-        self.progress_bar.setVisible(False)
+        self.progress_bar = LoadingIndicator(parent=self, message="Working...")
         status_layout.addWidget(self.progress_bar)
 
         # Add to main layout
@@ -1137,10 +1136,12 @@ class NetworkTransferGUI(StandardWindow):
         target_group = QGroupBox("Transfer Target")
         target_layout = QFormLayout(target_group)
 
-        self.target_host = QLineEdit()
-        self.target_host.setAccessibleName("Transfer target host")
-        self.target_host.setPlaceholderText("Enter target IP address or hostname")
-        target_layout.addRow("Target Host:", self.target_host)
+        self.target_host = TextInput(
+            "Target Host",
+            "Enter target IP address or hostname",
+            accessible_name="Transfer target host",
+        )
+        target_layout.addRow(self.target_host)
 
         self.target_port = QSpinBox()
         self.target_port.setAccessibleName("Transfer target port")
@@ -1157,11 +1158,12 @@ class NetworkTransferGUI(StandardWindow):
 
         # Settings/Preferences transfer
         settings_layout = QHBoxLayout()
-        self.transfer_settings_btn = QPushButton("Transfer Settings & Preferences")
+        self.transfer_settings_btn = SecondaryButton(
+            "Transfer Settings & Preferences"
+        )
         self.transfer_settings_btn.setAccessibleName(
             "Transfer settings and preferences to target"
         )
-        self.transfer_settings_btn.setMinimumHeight(44)
         self.transfer_settings_btn.clicked.connect(self.transfer_settings)
         settings_layout.addWidget(self.transfer_settings_btn)
 
@@ -1175,15 +1177,13 @@ class NetworkTransferGUI(StandardWindow):
 
         # File selection
         files_layout = QHBoxLayout()
-        self.select_files_btn = QPushButton("Select Files to Transfer")
+        self.select_files_btn = SecondaryButton("Select Files to Transfer")
         self.select_files_btn.setAccessibleName("Select files to transfer")
-        self.select_files_btn.setMinimumHeight(44)
         self.select_files_btn.clicked.connect(self.select_files)
         files_layout.addWidget(self.select_files_btn)
 
-        self.select_folder_btn = QPushButton("Select Folder")
+        self.select_folder_btn = SecondaryButton("Select Folder")
         self.select_folder_btn.setAccessibleName("Select folder to transfer")
-        self.select_folder_btn.setMinimumHeight(44)
         self.select_folder_btn.clicked.connect(self.select_folder)
         files_layout.addWidget(self.select_folder_btn)
         type_layout.addLayout(files_layout)
@@ -1196,11 +1196,10 @@ class NetworkTransferGUI(StandardWindow):
         self.collection_combo.setAccessibleName("File collection to transfer")
         collection_layout.addWidget(self.collection_combo)
 
-        self.transfer_collection_btn = QPushButton("Transfer Collection")
+        self.transfer_collection_btn = SecondaryButton("Transfer Collection")
         self.transfer_collection_btn.setAccessibleName(
             "Transfer selected file collection"
         )
-        self.transfer_collection_btn.setMinimumHeight(44)
         self.transfer_collection_btn.clicked.connect(self.transfer_collection)
         collection_layout.addWidget(self.transfer_collection_btn)
         type_layout.addLayout(collection_layout)
@@ -1216,15 +1215,13 @@ class NetworkTransferGUI(StandardWindow):
         files_layout.addWidget(self.selected_files_list)
 
         files_buttons = QHBoxLayout()
-        self.clear_files_btn = QPushButton("Clear Selection")
+        self.clear_files_btn = SecondaryButton("Clear Selection")
         self.clear_files_btn.setAccessibleName("Clear file selection")
-        self.clear_files_btn.setMinimumHeight(44)
         self.clear_files_btn.clicked.connect(self.clear_selected_files)
         files_buttons.addWidget(self.clear_files_btn)
 
-        self.send_files_btn = QPushButton("Send Selected Files")
+        self.send_files_btn = PrimaryButton("Send Selected Files")
         self.send_files_btn.setAccessibleName("Send selected files to target")
-        self.send_files_btn.setMinimumHeight(44)
         self.send_files_btn.clicked.connect(self.send_selected_files)
         self.send_files_btn.setStyleSheet(
             """
@@ -1264,25 +1261,25 @@ class NetworkTransferGUI(StandardWindow):
         self.listen_port.setValue(12000)
         server_layout.addRow("Listen Port:", self.listen_port)
 
-        self.receive_path = QLineEdit()
-        self.receive_path.setAccessibleName("Transfer receive path")
-        self.receive_path.setText(str(Path.home() / "Downloads" / "RFU_Transfers"))
-        server_layout.addRow("Receive Path:", self.receive_path)
+        self.receive_path = TextInput(
+            "Receive Path",
+            str(Path.home() / "Downloads" / "RFU_Transfers"),
+            accessible_name="Transfer receive path",
+        )
+        server_layout.addRow(self.receive_path)
 
-        path_btn = QPushButton("Browse")
+        path_btn = SecondaryButton("Browse")
         path_btn.setAccessibleName("Browse for receive path")
-        path_btn.setMinimumHeight(44)
         path_btn.clicked.connect(self.browse_receive_path)
-        server_layout.addRow("", path_btn)
+        server_layout.addRow(path_btn)
 
         layout.addWidget(server_group)
 
         # Server controls
         controls_layout = QHBoxLayout()
 
-        self.start_server_btn = QPushButton("Start Transfer Server")
+        self.start_server_btn = SecondaryButton("Start Transfer Server")
         self.start_server_btn.setAccessibleName("Start transfer server")
-        self.start_server_btn.setMinimumHeight(44)
         self.start_server_btn.clicked.connect(self.start_transfer_server)
         self.start_server_btn.setStyleSheet(
             """
@@ -1301,9 +1298,8 @@ class NetworkTransferGUI(StandardWindow):
         )
         controls_layout.addWidget(self.start_server_btn)
 
-        self.stop_server_btn = QPushButton("Stop Server")
+        self.stop_server_btn = SecondaryButton("Stop Server")
         self.stop_server_btn.setAccessibleName("Stop transfer server")
-        self.stop_server_btn.setMinimumHeight(44)
         self.stop_server_btn.clicked.connect(self.stop_transfer_server)
         self.stop_server_btn.setEnabled(False)
         controls_layout.addWidget(self.stop_server_btn)
@@ -1351,13 +1347,15 @@ class NetworkTransferGUI(StandardWindow):
         create_layout = QHBoxLayout()
         create_layout.addWidget(QLabel("Collection Name:"))
 
-        self.new_collection_name = QLineEdit()
-        self.new_collection_name.setAccessibleName("New collection name")
+        self.new_collection_name = TextInput(
+            "Collection Name",
+            "",
+            accessible_name="New collection name",
+        )
         create_layout.addWidget(self.new_collection_name)
 
-        self.create_collection_btn = QPushButton("Create Collection")
+        self.create_collection_btn = SecondaryButton("Create Collection")
         self.create_collection_btn.setAccessibleName("Create new file collection")
-        self.create_collection_btn.setMinimumHeight(44)
         self.create_collection_btn.clicked.connect(self.create_collection)
         create_layout.addWidget(self.create_collection_btn)
 
@@ -1372,15 +1370,13 @@ class NetworkTransferGUI(StandardWindow):
         # Collection actions
         actions_layout = QHBoxLayout()
 
-        self.edit_collection_btn = QPushButton("Edit Collection")
+        self.edit_collection_btn = SecondaryButton("Edit Collection")
         self.edit_collection_btn.setAccessibleName("Edit selected collection")
-        self.edit_collection_btn.setMinimumHeight(44)
         self.edit_collection_btn.clicked.connect(self.edit_collection)
         actions_layout.addWidget(self.edit_collection_btn)
 
-        self.delete_collection_btn = QPushButton("Delete Collection")
+        self.delete_collection_btn = SecondaryButton("Delete Collection")
         self.delete_collection_btn.setAccessibleName("Delete selected collection")
-        self.delete_collection_btn.setMinimumHeight(44)
         self.delete_collection_btn.clicked.connect(self.delete_collection)
         actions_layout.addWidget(self.delete_collection_btn)
 
@@ -1397,17 +1393,15 @@ class NetworkTransferGUI(StandardWindow):
 
         files_actions = QHBoxLayout()
 
-        self.add_files_to_collection_btn = QPushButton("Add Files")
+        self.add_files_to_collection_btn = SecondaryButton("Add Files")
         self.add_files_to_collection_btn.setAccessibleName("Add files to collection")
-        self.add_files_to_collection_btn.setMinimumHeight(44)
         self.add_files_to_collection_btn.clicked.connect(self.add_files_to_collection)
         files_actions.addWidget(self.add_files_to_collection_btn)
 
-        self.remove_file_from_collection_btn = QPushButton("Remove Selected")
+        self.remove_file_from_collection_btn = SecondaryButton("Remove Selected")
         self.remove_file_from_collection_btn.setAccessibleName(
             "Remove selected file from collection"
         )
-        self.remove_file_from_collection_btn.setMinimumHeight(44)
         self.remove_file_from_collection_btn.clicked.connect(
             self.remove_file_from_collection
         )
@@ -1426,15 +1420,13 @@ class NetworkTransferGUI(StandardWindow):
         # History controls
         controls_layout = QHBoxLayout()
 
-        self.refresh_history_btn = QPushButton("Refresh History")
+        self.refresh_history_btn = SecondaryButton("Refresh History")
         self.refresh_history_btn.setAccessibleName("Refresh transfer history")
-        self.refresh_history_btn.setMinimumHeight(44)
         self.refresh_history_btn.clicked.connect(self.load_transfer_history)
         controls_layout.addWidget(self.refresh_history_btn)
 
-        self.clear_history_btn = QPushButton("Clear History")
+        self.clear_history_btn = SecondaryButton("Clear History")
         self.clear_history_btn.setAccessibleName("Clear transfer history")
-        self.clear_history_btn.setMinimumHeight(44)
         self.clear_history_btn.clicked.connect(self.clear_transfer_history)
         controls_layout.addWidget(self.clear_history_btn)
 

@@ -19,10 +19,8 @@ try:
         QGroupBox,
         QHBoxLayout,
         QLabel,
-        QLineEdit,
         QMainWindow,
         QMessageBox,
-        QPushButton,
         QSlider,
         QSpinBox,
         QTextEdit,
@@ -30,6 +28,7 @@ try:
         QWidget,
     )
 
+    from src.gui.components.inputs import TextInput
     from src.gui.themes import ThemeManager, Typography, token
 except ImportError:
     print("PyQt5 not available. Please install PyQt5.")
@@ -246,7 +245,7 @@ class SimplePasswordGeneratorGUI(QMainWindow):
         # Generated password display
         password_group = QGroupBox("Generated Password")
         password_layout = QVBoxLayout(password_group)
-        self.password_display = QLineEdit()
+        self.password_display = TextInput("Generated password")
         self.password_display.setAccessibleName("Generated password")
         self.password_display.setReadOnly(True)
         self.password_display.setFont(Typography.h3())

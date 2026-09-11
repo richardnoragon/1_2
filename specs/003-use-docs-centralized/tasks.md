@@ -60,8 +60,10 @@
 
 ## Validation Checklist
 
-- [ ] All tests authored before implementation
-- [ ] Every entity/contract covered by tasks
-- [ ] No [P]-marked tasks share file paths
-- [ ] Performance validation included
-- [ ] Documentation and agent context updated
+- [x] All tests authored before implementation
+- [x] Every entity/contract covered by tasks
+- [x] No [P]-marked tasks share file paths
+- [x] Performance validation included
+- [x] Documentation and agent context updated
+
+> 2026-09-11: the P2 release-evidence checklist is complete and the relevant repo docs were aligned to the validated implementation state.

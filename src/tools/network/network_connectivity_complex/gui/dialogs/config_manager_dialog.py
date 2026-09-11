@@ -18,12 +18,9 @@ from PyQt5.QtWidgets import (
     QGroupBox,
     QHBoxLayout,
     QLabel,
-    QLineEdit,
     QListWidget,
     QListWidgetItem,
     QMessageBox,
-    QProgressBar,
-    QPushButton,
     QSpinBox,
     QSplitter,
     QTabWidget,
@@ -33,6 +30,10 @@ from PyQt5.QtWidgets import (
     QVBoxLayout,
     QWidget,
 )
+
+from src.gui.components.buttons import PrimaryButton, SecondaryButton
+from src.gui.components.inputs import TextInput
+from src.gui.components.loading_indicator import LoadingIndicator
 
 from ...config.config_profiles import get_profile_manager
 from ...config.config_validator import ValidationSeverity, get_config_validator
@@ -88,22 +89,19 @@ class ProfileSelectionWidget(QWidget):
         # Profile actions
         actions_layout = QHBoxLayout()
 
-        self.create_btn = QPushButton("Create from Template")
+        self.create_btn = PrimaryButton("Create from Template")
         self.create_btn.setAccessibleName("Create profile from template")
-        self.create_btn.setMinimumHeight(44)
         self.create_btn.clicked.connect(self._create_from_template)
         actions_layout.addWidget(self.create_btn)
 
-        self.switch_btn = QPushButton("Switch Profile")
+        self.switch_btn = SecondaryButton("Switch Profile")
         self.switch_btn.setAccessibleName("Switch to selected profile")
-        self.switch_btn.setMinimumHeight(44)
         self.switch_btn.clicked.connect(self._switch_profile)
         self.switch_btn.setEnabled(False)
         actions_layout.addWidget(self.switch_btn)
 
-        self.delete_btn = QPushButton("Delete")
+        self.delete_btn = SecondaryButton("Delete")
         self.delete_btn.setAccessibleName("Delete selected profile")
-        self.delete_btn.setMinimumHeight(44)
         self.delete_btn.clicked.connect(self._delete_profile)
         self.delete_btn.setEnabled(False)
         actions_layout.addWidget(self.delete_btn)
@@ -375,15 +373,13 @@ class ValidationResultsWidget(QWidget):
         layout.addWidget(self.results_list)
 
         # Validation button
-        self.validate_btn = QPushButton("Validate Configuration")
+        self.validate_btn = PrimaryButton("Validate Configuration")
         self.validate_btn.setAccessibleName("Validate configuration")
-        self.validate_btn.setMinimumHeight(44)
         self.validate_btn.clicked.connect(self.validate_requested)
         layout.addWidget(self.validate_btn)
 
         # Progress bar
-        self.progress_bar = QProgressBar()
-        self.progress_bar.setVisible(False)
+        self.progress_bar = LoadingIndicator(parent=self, message="Validating...")
         layout.addWidget(self.progress_bar)
 
     validate_requested = pyqtSignal()
@@ -538,36 +534,31 @@ class ConfigurationManagerDialog(QDialog):
         # Button bar
         button_layout = QHBoxLayout()
 
-        self.save_btn = QPushButton("Save Changes")
+        self.save_btn = PrimaryButton("Save Changes")
         self.save_btn.setAccessibleName("Save configuration changes")
-        self.save_btn.setMinimumHeight(44)
         self.save_btn.clicked.connect(self._save_configuration)
         self.save_btn.setEnabled(False)
         button_layout.addWidget(self.save_btn)
 
-        self.reset_btn = QPushButton("Reset")
+        self.reset_btn = SecondaryButton("Reset")
         self.reset_btn.setAccessibleName("Reset configuration")
-        self.reset_btn.setMinimumHeight(44)
         self.reset_btn.clicked.connect(self._reset_configuration)
         button_layout.addWidget(self.reset_btn)
 
-        self.export_btn = QPushButton("Export")
+        self.export_btn = SecondaryButton("Export")
         self.export_btn.setAccessibleName("Export configuration")
-        self.export_btn.setMinimumHeight(44)
         self.export_btn.clicked.connect(self._export_configuration)
         button_layout.addWidget(self.export_btn)
 
-        self.import_btn = QPushButton("Import")
+        self.import_btn = SecondaryButton("Import")
         self.import_btn.setAccessibleName("Import configuration")
-        self.import_btn.setMinimumHeight(44)
         self.import_btn.clicked.connect(self._import_configuration)
         button_layout.addWidget(self.import_btn)
 
         button_layout.addStretch()
 
-        self.close_btn = QPushButton("Close")
+        self.close_btn = SecondaryButton("Close")
         self.close_btn.setAccessibleName("Close configuration manager")
-        self.close_btn.setMinimumHeight(44)
         self.close_btn.clicked.connect(self.accept)
         button_layout.addWidget(self.close_btn)
 

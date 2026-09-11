@@ -4,6 +4,17 @@
 
 The RFU Hub Preferences Security Implementation is a comprehensive multi-phase project designed to establish enterprise-grade security controls for the RFU (Rapid File Utilities) Hub system. This project implements defense-in-depth security principles to protect user preferences, directory configurations, and sensitive data throughout the application lifecycle.
 
+## Current Hardening Baseline
+
+Issue #80 established the current security hardening baseline for the repo:
+
+- dependency vulnerability scanning with `pip-audit`
+- SBOM generation with `cyclonedx-bom`
+- default audit retention aligned to 12 months
+- structured audit events for security, config, and tool lifecycle operations
+
+For the implementation record, see [ISSUE_80_SECURITY_AUDIT_AND_DEPENDENCY_HARDENING.md](ISSUE_80_SECURITY_AUDIT_AND_DEPENDENCY_HARDENING.md).
+
 ## Phase 3: Directory Security Implementation ✅ COMPLETED
 
 ### Overview

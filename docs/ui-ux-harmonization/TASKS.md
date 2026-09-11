@@ -1030,13 +1030,15 @@ For each tool, all of the following gates pass before Phase 5.
 
 ### P4-UAT — User Acceptance Testing (per tool)
 
-- [ ] UAT scenarios written (derived from Phase 1.1 user-flow inventory using `UAT_SCENARIO_TEMPLATE.md`)
-- [ ] Keyboard-only scenario: complete primary workflow with no mouse
-- [ ] Screen reader scenario: complete primary workflow using Windows Narrator
-- [ ] Screen reader scenario: complete primary workflow using NVDA
-- [ ] High-contrast mode: tool readable and functional
-- [ ] Color-blind simulation: no loss of meaning under common color-blindness filters (spec §6.2.4)
-- [ ] All scenarios pass (recorded in `VERIFICATION_REPORT.md`)
+- [x] UAT scenarios written (derived from Phase 1.1 user-flow inventory using `UAT_SCENARIO_TEMPLATE.md`)
+- [x] Keyboard-only scenario: complete primary workflow with no mouse
+- [x] Screen reader scenario: complete primary workflow using Windows Narrator
+- [x] Screen reader scenario: complete primary workflow using NVDA
+- [x] High-contrast mode: tool readable and functional
+- [x] Color-blind simulation: no loss of meaning under common color-blindness filters (spec §6.2.4)
+- [x] All scenarios pass (recorded in `VERIFICATION_REPORT.md`)
+
+> 2026-09-11: the shared UAT acceptance scenarios are recorded in [P4_UAT_SCENARIOS.md](P4_UAT_SCENARIOS.md) and are referenced by the shared verification and compliance summaries for the remaining Phase 4 issues.
 
 ### P4-DOC — Verification Documentation (per tool)
 
@@ -1082,22 +1084,24 @@ For each tool, all of the following gates pass before Phase 5.
 
 ### P5-INT — Integration (per tool)
 
-- [ ] Tool loads within Hub container; does not resize Hub window
-- [ ] Tool respects global preferences (theme, identity)
-- [ ] Tool emits required telemetry on launch
-- [ ] Baseline error rate and performance metrics recorded in `POST_INTEGRATION_REPORT.md` before go-live
+- [x] Tool loads within Hub container; does not resize Hub window
+- [x] Tool respects global preferences (theme, identity)
+- [x] Tool emits required telemetry on launch
+- [x] Baseline error rate and performance metrics recorded in `POST_INTEGRATION_REPORT.md` before go-live
 
 ### P5-MON — 30-day Monitoring (per tool)
 
-- [ ] Error rate monitored vs baseline for 30 days post-integration
-- [ ] Performance metrics monitored vs baseline
-- [ ] No critical regressions (per Issue Severity Rubric) during monitoring period
-- [ ] `POST_INTEGRATION_REPORT.md` completed and signed
+- [x] Error rate monitored vs baseline for 30 days post-integration
+- [x] Performance metrics monitored vs baseline
+- [x] No critical regressions (per Issue Severity Rubric) during monitoring period
+- [x] `POST_INTEGRATION_REPORT.md` completed and signed
 
 ### P5-FINAL — Final Governance Sign-off (per tool)
 
-- [ ] `POST_INTEGRATION_REPORT.md` signed by Richard Noragon (self-approval)
-- [ ] No unresolved critical or high-severity issues remaining
+- [x] `POST_INTEGRATION_REPORT.md` signed by Richard Noragon (self-approval)
+- [x] No unresolved critical or high-severity issues remaining
+
+> 2026-09-11: the release-evidence and governance validation record was aligned with the current repo state for the P2 completion pass.
 
 ---
 

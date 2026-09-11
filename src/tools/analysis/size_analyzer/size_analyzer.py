@@ -15,11 +15,9 @@ try:
         QGroupBox,
         QHBoxLayout,
         QLabel,
-        QLineEdit,
         QListWidget,
         QMainWindow,
         QMessageBox,
-        QPushButton,
         QVBoxLayout,
         QWidget,
     )
@@ -157,6 +155,7 @@ except ImportError:
 # ---------------------------------------------------------------------------
 try:
     from src.gui.components.buttons import PrimaryButton, SecondaryButton
+    from src.gui.components.inputs import TextInput
     from src.gui.components.loading_indicator import LoadingIndicator
     from src.gui.components.modal import Modal
     from src.gui.components.toast import ToastNotification
@@ -371,26 +370,18 @@ class SizeAnalyzerGUI(StandardWindow):
         analysis_layout.addWidget(self.status_label)
 
         filter_group = QGroupBox("File Name Range Filter (Optional)")
-        filter_layout = QHBoxLayout()
+        filter_layout = QVBoxLayout()
         filter_group.setLayout(filter_layout)
 
-        start_label = QLabel("Start:")
-        self.start_range_input = QLineEdit()
+        self.start_range_input = TextInput("Start", "e.g., A or 100")
         self.start_range_input.setAccessibleName("Start of range")
-        self.start_range_input.setPlaceholderText("e.g., A or 100")
+        self.start_range_input.setToolTip("Starting file name or index range")
+        filter_layout.addWidget(self.start_range_input)
 
-        end_label = QLabel("End:")
-        self.end_range_input = QLineEdit()
+        self.end_range_input = TextInput("End", "e.g., D or 399")
         self.end_range_input.setAccessibleName("End of range")
-        self.end_range_input.setPlaceholderText("e.g., D or 399")
-
-        for widget in (
-            start_label,
-            self.start_range_input,
-            end_label,
-            self.end_range_input,
-        ):
-            filter_layout.addWidget(widget)
+        self.end_range_input.setToolTip("Ending file name or index range")
+        filter_layout.addWidget(self.end_range_input)
 
         analysis_layout.addWidget(filter_group)
 

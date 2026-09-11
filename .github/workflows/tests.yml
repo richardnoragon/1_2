@@ -9,6 +9,42 @@ on:
     - cron: '0 0 * * *'  # Daily at midnight UTC
 
 jobs:
+  security-audit:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.11'
+
+    - name: Install security tooling
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pip-audit bandit
+
+    - name: Dependency vulnerability scan
+      run: |
+        pip-audit -r requirements.txt --format json --output pip-audit-report.json
+        cat pip-audit-report.json
+
+    - name: Static security scan
+      run: |
+        bandit -r src/ -f json -o bandit-report.json
+        cat bandit-report.json
+
+    - name: Archive security reports
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: security-audit-reports
+        path: |
+          pip-audit-report.json
+          bandit-report.json
+
   test:
     runs-on: ${{ matrix.os }}
     strategy:

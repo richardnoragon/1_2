@@ -9,21 +9,8 @@ src_dir = Path(__file__).parent
 if str(src_dir) not in sys.path:
     sys.path.insert(0, str(src_dir))
 
-from src.core.constants import (  # noqa: E402
-    APP_NAME,
-    APP_ORGANIZATION,
-    APP_VERSION,
-)
-from src.core.error_handler import (  # noqa: E402
-    ErrorHandler,
-    error_handler,
-    get_error_handler,
-    handle_gui_error,
-    safe_execute,
-)
-
-__version__ = APP_VERSION
-__author__ = APP_ORGANIZATION
+__version__ = "3.0.0"
+__author__ = "Richard's File Utilities"
 __description__ = "Comprehensive file management and analysis utilities"
 
 
@@ -39,6 +26,18 @@ def safe_import_package(package_name: str):
 # Import main packages (only import existing packages)
 rfu = safe_import_package("rfu")
 
+_LAZY_EXPORTS = {
+    "APP_NAME": ("src.core.constants", "APP_NAME"),
+    "APP_ORGANIZATION": ("src.core.constants", "APP_ORGANIZATION"),
+    "APP_VERSION": ("src.core.constants", "APP_VERSION"),
+    "ErrorHandler": ("src.core.error_handler", "ErrorHandler"),
+    "error_handler": ("src.core.error_handler", "error_handler"),
+    "get_error_handler": ("src.core.error_handler", "get_error_handler"),
+    "handle_gui_error": ("src.core.error_handler", "handle_gui_error"),
+    "safe_execute": ("src.core.error_handler", "safe_execute"),
+    "ObservabilityService": ("src.core.observability", "ObservabilityService"),
+}
+
 __all__ = [
     "rfu",
     "APP_NAME",
@@ -49,6 +48,7 @@ __all__ = [
     "get_error_handler",
     "handle_gui_error",
     "safe_execute",
+    "ObservabilityService",
 ]
 
 
@@ -59,3 +59,17 @@ def get_package_info() -> Dict[str, Any]:
         "version": __version__,
         "description": __description__,
     }
+
+
+def __getattr__(name: str):
+    """Resolve compatibility exports lazily to avoid heavy import side effects."""
+
+    target = _LAZY_EXPORTS.get(name)
+    if target is None:
+        raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
+    module_name, attribute_name = target
+    module = __import__(module_name, fromlist=[attribute_name])
+    value = getattr(module, attribute_name)
+    globals()[name] = value
+    return value
