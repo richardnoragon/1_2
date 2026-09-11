@@ -32,12 +32,12 @@ python3 .specify/extensions/companion/scripts/check-coverage.py
 ```
 
 The script reads the capability registry (`living-specs.yml`), reuses the
-resolver for the capability and tier paths, extracts each requirement id
-(`FR-NNN` / `NFR-NNN`) from the capability's `.spec.md`, and looks each id up in
-its `.coverage.md` map. A requirement is **covered** when its id appears in the
-coverage file on a line that also names at least one test (a `.test.` / `.spec.`
-path, a `tests/...` reference, or a `file::TestCase` nodeid); otherwise it's
-**uncovered**.
+resolver for the capability and tier paths, extracts each `###` requirement
+heading from the capability's `.spec.md`, and uses that heading identity as the
+lookup key in the `.coverage.md` map. A requirement is **covered** when the
+same heading identity appears in the coverage file on a line that also names at
+least one test (a `.test.` / `.spec.` path, a `tests/...` reference, or a
+`file::TestCase` nodeid); otherwise it's **uncovered**.
 
 Restrict to one capability by name, or get a machine-readable object:
 
