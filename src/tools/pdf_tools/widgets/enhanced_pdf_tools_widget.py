@@ -92,9 +92,9 @@ except ImportError:
     ToastNotification = None
     _CP_AVAILABLE = False
 
-    """
-    Manages state and data sharing between PDF tool components
-    """
+
+class PDFToolsStateManager:
+    """Manages state and data sharing between PDF tool components."""
 
     def __init__(self):
         self.current_file = None
@@ -105,22 +105,21 @@ except ImportError:
         self.active_operations = {}
 
     def set_current_file(self, file_path: str):
-        """Set the current working PDF file"""
+        """Set the current working PDF file."""
         if file_path:
             self.current_file = file_path
             if file_path not in self.recent_files:
                 self.recent_files.insert(0, file_path)
-                # Keep only last 10 files
                 self.recent_files = self.recent_files[:10]
             return True
         return False
 
     def get_current_file(self) -> Optional[str]:
-        """Get the current working PDF file"""
+        """Get the current working PDF file."""
         return self.current_file
 
     def save_operation_state(self, tool_name: str, operation: str, parameters: Dict):
-        """Save operation state for history tracking"""
+        """Save operation state for history tracking."""
         operation_record = {
             "tool": tool_name,
             "operation": operation,
@@ -129,8 +128,23 @@ except ImportError:
             "file": self.current_file,
         }
         self.operation_history.append(operation_record)
-        # Keep only last 50 operations
         self.operation_history = self.operation_history[-50:]
+
+    def share_data_between_tools(self, source_tool: str, target_tool: str, data: Dict):
+        """Share data between PDF tool components."""
+        key = (source_tool, target_tool)
+        self.shared_data[key] = dict(data)
+        return self.shared_data[key]
+
+    def get_shared_data(self, source_tool: str, target_tool: str):
+        """Return shared data for a tool pair."""
+        return self.shared_data.get((source_tool, target_tool), {})
+
+    def get_operation_history(self, tool_name: Optional[str] = None):
+        """Return recent operations, optionally filtered by tool."""
+        if tool_name is None:
+            return list(self.operation_history)
+        return [entry for entry in self.operation_history if entry.get("tool") == tool_name]
 
 
 class EnhancedPDFToolsWidget(QWidget):

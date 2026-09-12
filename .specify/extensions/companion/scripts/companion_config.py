@@ -74,10 +74,10 @@ def _scalar(s: str):
 
 def _parse_flow(s: str):
     s = s.strip()
-    if s.startswith("[") and s.endswith("]"):
+    if s[:1] == "[" and s[-1:] == "]":
         body = s[1:-1].strip()
         return [_parse_flow(x) for x in _split_flow(body)] if body else []
-    if s.startswith("{") and s.endswith("}"):
+    if s[:1] == "{" and s[-1:] == "}":
         body = s[1:-1].strip()
         out = {}
         for piece in _split_flow(body):
@@ -116,65 +116,70 @@ def _starts_block_map(rest: str) -> bool:
     return ci != -1 and (ci + 1 == len(rest) or rest[ci + 1] == " ")
 
 
+def _is_seq_line(line: str) -> bool:
+    return line.lstrip().startswith("- ")
+
+
+def _parse_seq(lines: list[str], pos: list[int], ind: int):
+    items = []
+    while pos[0] < len(lines):
+        line = lines[pos[0]]
+        if _indent(line) != ind or not _is_seq_line(line):
+            break
+        rest = line.lstrip()[2:].strip()
+        pos[0] += 1
+        if rest[:1] in "[{":
+            items.append(_parse_flow(rest))
+        elif _starts_block_map(rest):
+            # block-mapping item ("- key: val" + deeper-indented keys): re-anchor
+            # the line at the key column and let _parse_map gather the whole entry.
+            item_indent = ind + 2
+            pos[0] -= 1
+            lines[pos[0]] = " " * item_indent + rest
+            items.append(_parse_map(lines, pos, item_indent))
+        elif rest:
+            items.append(_scalar(rest))
+        else:
+            items.append(_parse_block(lines, pos, ind + 1))
+    return items
+
+
+def _parse_map(lines: list[str], pos: list[int], ind: int):
+    out = {}
+    while pos[0] < len(lines):
+        line = lines[pos[0]]
+        if _indent(line) != ind or _is_seq_line(line):
+            break
+        stripped = line.strip()
+        if ":" not in stripped:
+            raise ValueError(f"map line without ':' -> {stripped!r}")
+        key, val = stripped.split(":", 1)
+        key, val = key.strip(), val.strip()
+        pos[0] += 1
+        if not val:
+            out[key] = _parse_block(lines, pos, ind + 1)
+        elif val[:1] in "[{":
+            out[key] = _parse_flow(val)
+        else:
+            out[key] = _scalar(val)
+    return out
+
+
+def _parse_block(lines: list[str], pos: list[int], min_indent: int):
+    if pos[0] >= len(lines):
+        return None
+    first = lines[pos[0]]
+    ind = _indent(first)
+    if ind < min_indent:
+        return None
+    return _parse_seq(lines, pos, ind) if _is_seq_line(first) else _parse_map(lines, pos, ind)
+
+
 def load_yaml(text: str):
     """Parse the constrained YAML subset into nested dict/list. Raises on the rest."""
     lines = [stripped for ln in text.split("\n") if (stripped := _strip_comment(ln)).strip()]
     pos = [0]
-
-    def parse_block(min_indent: int):
-        if pos[0] >= len(lines):
-            return None
-        first = lines[pos[0]]
-        ind = _indent(first)
-        if ind < min_indent:
-            return None
-        is_seq = first.lstrip().startswith("- ")
-        return _parse_seq(ind) if is_seq else _parse_map(ind)
-
-    def _parse_seq(ind: int):
-        items = []
-        while pos[0] < len(lines):
-            line = lines[pos[0]]
-            if _indent(line) != ind or not line.lstrip().startswith("- "):
-                break
-            rest = line.lstrip()[2:].strip()
-            pos[0] += 1
-            if rest.startswith("{") or rest.startswith("["):
-                items.append(_parse_flow(rest))
-            elif _starts_block_map(rest):
-                # block-mapping item ("- key: val" + deeper-indented keys): re-anchor
-                # the line at the key column and let _parse_map gather the whole entry.
-                item_indent = ind + 2
-                pos[0] -= 1
-                lines[pos[0]] = " " * item_indent + rest
-                items.append(_parse_map(item_indent))
-            elif rest:
-                items.append(_scalar(rest))
-            else:
-                items.append(parse_block(ind + 1))
-        return items
-
-    def _parse_map(ind: int):
-        out = {}
-        while pos[0] < len(lines):
-            line = lines[pos[0]]
-            if _indent(line) != ind or line.lstrip().startswith("- "):
-                break
-            stripped = line.strip()
-            if ":" not in stripped:
-                raise ValueError(f"map line without ':' -> {stripped!r}")
-            key, val = stripped.split(":", 1)
-            key, val = key.strip(), val.strip()
-            pos[0] += 1
-            if not val:
-                out[key] = parse_block(ind + 1)
-            elif val.startswith("{") or val.startswith("["):
-                out[key] = _parse_flow(val)
-            else:
-                out[key] = _scalar(val)
-        return out
-
-    result = parse_block(0)
+    result = _parse_block(lines, pos, 0)
     return result if result is not None else {}
 
 
@@ -500,19 +505,49 @@ def block_end(lines: list, last_key: int) -> int:
 def splice_registry(original: str, rendered: str) -> str:
     """Replace the owned region of an existing registry file, preserving the rest.
 
-    The owned region runs from the first top-level key in REGISTRY_KEYS through the last
-    such key's indented body, so a header comment above it and anything below it survive.
+    Owned top-level keys are replaced one block at a time so unowned top-level keys can
+    stay interleaved between them.
     """
     lines = original.splitlines(keepends=True)
-    owned = [
-        i for i, ln in enumerate(lines)
-        if is_top_level_key(ln) and ln.split(":", 1)[0].strip() in REGISTRY_KEYS
-    ]
-    if not owned:
+    rendered_lines = rendered.splitlines(keepends=True)
+    rendered_blocks = {}
+    rendered_order = []
+    i = 0
+    while i < len(rendered_lines):
+        if not is_top_level_key(rendered_lines[i]):
+            i += 1
+            continue
+        key = rendered_lines[i].split(":", 1)[0].strip()
+        j = block_end(rendered_lines, i)
+        rendered_blocks[key] = "".join(rendered_lines[i:j])
+        rendered_order.append(key)
+        i = j
+    if not any(
+        is_top_level_key(ln) and ln.split(":", 1)[0].strip() in REGISTRY_KEYS
+        for ln in lines
+    ):
         if not original.strip():
             return rendered
         prefix = original if original.endswith("\n") else original + "\n"
         return prefix + rendered
-    start = owned[0]
-    end = block_end(lines, owned[-1])
-    return "".join(lines[:start]) + rendered + "".join(lines[end:])
+    out = []
+    i = 0
+    seen = set()
+    while i < len(lines):
+        line = lines[i]
+        if is_top_level_key(line):
+            key = line.split(":", 1)[0].strip()
+            if key in rendered_blocks:
+                out.append(rendered_blocks[key])
+                seen.add(key)
+                i = block_end(lines, i)
+                continue
+        out.append(line)
+        i += 1
+    missing = [key for key in rendered_order if key not in seen]
+    if missing:
+        if out and out[-1] and not out[-1].endswith("\n"):
+            out[-1] += "\n"
+        for key in missing:
+            out.append(rendered_blocks[key])
+    return "".join(out)

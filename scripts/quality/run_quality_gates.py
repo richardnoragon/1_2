@@ -18,6 +18,8 @@ def build_pytest_command(test_targets: list[str], coverage_threshold: int) -> li
         sys.executable,
         "-m",
         "pytest",
+        "-p",
+        "pytest_cov",
         *test_targets,
         "-q",
         "--maxfail=1",

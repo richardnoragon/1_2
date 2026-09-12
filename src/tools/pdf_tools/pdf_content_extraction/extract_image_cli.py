@@ -183,20 +183,20 @@ class MainWindow(QMainWindow):
                 )
                 return
 
-            self.progressBar.show()
-            self.progressBar.setValue(0)
+            self.progressBar.start()
+            self.progressBar.set_progress(0)
             self.statusBar().showMessage("Loading PDF...")
             QtWidgets.QApplication.processEvents()
 
             try:
                 # Open PDF
-                self.progressBar.setValue(10)
+                self.progressBar.set_progress(10)
                 QtWidgets.QApplication.processEvents()
 
                 doc = fitz.open(pdf_file)
                 total_pages = doc.page_count
 
-                self.progressBar.setValue(20)
+                self.progressBar.set_progress(20)
                 self.statusBar().showMessage("Scanning for images...")
                 QtWidgets.QApplication.processEvents()
 
@@ -206,7 +206,7 @@ class MainWindow(QMainWindow):
                     progress = 20 + int(
                         (page_num / total_pages) * 70
                     )  # 20-90% for page processing
-                    self.progressBar.setValue(progress)
+                    self.progressBar.set_progress(progress)
                     self.statusBar().showMessage(
                         f"Processing page {page_num + 1} of {total_pages}..."
                     )
@@ -241,7 +241,7 @@ class MainWindow(QMainWindow):
                             )
                             continue
 
-                self.progressBar.setValue(100)
+                self.progressBar.set_progress(100)
                 if images_found > 0:
                     logger.info(
                         "Successfully extracted %d images", images_found
@@ -276,7 +276,7 @@ class MainWindow(QMainWindow):
             self.statusBar().showMessage("Error occurred", 3000)
 
         finally:
-            self.progressBar.hide()
+            self.progressBar.stop()
 
 
 def main():

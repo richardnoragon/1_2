@@ -55,6 +55,10 @@ from src.gui.components.buttons import PrimaryButton, SecondaryButton
 from src.gui.components.inputs import TextInput
 from src.gui.themes import token
 
+PDF_FILE_FILTER = "PDF Files (*.pdf)"
+ALL_FILES_FILTER = "All Files (*)"
+PDF_FILES_FILTER = f"{PDF_FILE_FILTER};;{ALL_FILES_FILTER}"
+
 # Set up logger
 logger = logging.getLogger(__name__)
 
@@ -177,153 +181,12 @@ class PDFMergeDialog(QDialog):
 
     def init_ui(self):
         layout = QVBoxLayout(self)
-
-        # Create splitter for main content
         splitter = QSplitter(Qt.Horizontal)
         layout.addWidget(splitter)
-
-        # Left panel - File list
-        left_panel = QWidget()
-        left_layout = QVBoxLayout(left_panel)
-
-        # Input files section
-        files_group = QGroupBox("Input Files")
-        files_layout = QVBoxLayout(files_group)
-
-        # File list with drag-drop support
-        self.file_list = DragDropListWidget()
-        self.file_list.files_reordered.connect(self.on_files_reordered)
-        self.file_list.itemSelectionChanged.connect(self.on_file_selected)
-        files_layout.addWidget(self.file_list)
-
-        # File control buttons
-        file_buttons_layout = QHBoxLayout()
-
-        self.add_files_btn = SecondaryButton("Add Files")
-        self.add_files_btn.setAccessibleName("Add PDF files to merge list")
-        self.add_files_btn.clicked.connect(self.add_files)
-        file_buttons_layout.addWidget(self.add_files_btn)
-
-        self.remove_file_btn = SecondaryButton("Remove")
-        self.remove_file_btn.setAccessibleName(
-            "Remove selected file from merge list"
-        )
-        self.remove_file_btn.clicked.connect(self.remove_selected_file)
-        self.remove_file_btn.setEnabled(False)
-        file_buttons_layout.addWidget(self.remove_file_btn)
-
-        self.move_up_btn = SecondaryButton("↑")
-        self.move_up_btn.setAccessibleName("Move file up in merge order")
-        self.move_up_btn.clicked.connect(self.move_file_up)
-        self.move_up_btn.setEnabled(False)
-        file_buttons_layout.addWidget(self.move_up_btn)
-
-        self.move_down_btn = SecondaryButton("↓")
-        self.move_down_btn.setAccessibleName("Move file down in merge order")
-        self.move_down_btn.clicked.connect(self.move_file_down)
-        self.move_down_btn.setEnabled(False)
-        file_buttons_layout.addWidget(self.move_down_btn)
-
-        files_layout.addLayout(file_buttons_layout)
-        left_layout.addWidget(files_group)
-
-        # Options section
-        options_group = QGroupBox("Merge Options")
-        options_layout = QFormLayout(options_group)
-
-        self.preserve_bookmarks_cb = QCheckBox("Preserve bookmarks")
-        self.preserve_bookmarks_cb.setAccessibleName("Preserve bookmarks")
-        self.preserve_bookmarks_cb.setMinimumHeight(44)
-        self.preserve_bookmarks_cb.setChecked(True)
-        options_layout.addRow(self.preserve_bookmarks_cb)
-
-        self.preserve_metadata_cb = QCheckBox("Preserve metadata")
-        self.preserve_metadata_cb.setAccessibleName("Preserve metadata")
-        self.preserve_metadata_cb.setMinimumHeight(44)
-        self.preserve_metadata_cb.setChecked(True)
-        options_layout.addRow(self.preserve_metadata_cb)
-
-        self.optimize_output_cb = QCheckBox("Optimize output file")
-        self.optimize_output_cb.setAccessibleName("Optimize output file")
-        self.optimize_output_cb.setMinimumHeight(44)
-        options_layout.addRow(self.optimize_output_cb)
-
-        self.custom_ranges_cb = QCheckBox("Use custom page ranges")
-        self.custom_ranges_cb.setAccessibleName("Use custom page ranges")
-        self.custom_ranges_cb.setMinimumHeight(44)
-        self.custom_ranges_cb.toggled.connect(self.toggle_custom_ranges)
-        options_layout.addRow(self.custom_ranges_cb)
-
-        left_layout.addWidget(options_group)
-
-        # Output section
-        output_group = QGroupBox("Output")
-        output_layout = QFormLayout(output_group)
-
-        output_file_layout = QHBoxLayout()
-        self.output_file_edit = TextInput(
-            "Merged Output File",
-            "Select output file...",
-            accessible_name="Merged output file",
-        )
-        output_file_layout.addWidget(self.output_file_edit)
-
-        self.browse_output_btn = SecondaryButton("Browse")
-        self.browse_output_btn.setAccessibleName(
-            "Browse for merged output file"
-        )
-        self.browse_output_btn.clicked.connect(self.browse_output_file)
-        output_file_layout.addWidget(self.browse_output_btn)
-
-        output_layout.addRow("Output file:", output_file_layout)
-        left_layout.addWidget(output_group)
-
-        splitter.addWidget(left_panel)
-
-        # Right panel - Preview
-        right_panel = QWidget()
-        right_layout = QVBoxLayout(right_panel)
-
-        preview_group = QGroupBox("Preview")
-        preview_layout = QVBoxLayout(preview_group)
-
-        self.preview_widget = FilePreviewWidget()
-        preview_layout.addWidget(self.preview_widget)
-
-        # File details
-        self.details_text = QTextEdit()
-        self.details_text.setAccessibleName("File details")
-        self.details_text.setMaximumHeight(100)
-        self.details_text.setReadOnly(True)
-        preview_layout.addWidget(self.details_text)
-
-        right_layout.addWidget(preview_group)
-
-        # Custom ranges section (initially hidden)
-        self.ranges_group = QGroupBox("Custom Page Ranges")
-        self.ranges_group.setVisible(False)
-        ranges_layout = QVBoxLayout(self.ranges_group)
-
-        ranges_help = QLabel(
-            "Specify page ranges for each file (e.g., 1-5,10-15).\n"
-            "Leave empty to include all pages."
-        )
-        ranges_help.setWordWrap(True)
-        ranges_help.setStyleSheet(
-            f"color: {token('text_muted')}; font-size: 9pt;"
-        )
-        ranges_layout.addWidget(ranges_help)
-
-        self.ranges_list = QListWidget()
-        self.ranges_list.setAccessibleName("Custom page ranges list")
-        ranges_layout.addWidget(self.ranges_list)
-
-        right_layout.addWidget(self.ranges_group)
-
-        splitter.addWidget(right_panel)
+        splitter.addWidget(self._build_left_panel())
+        splitter.addWidget(self._build_right_panel())
         splitter.setSizes([400, 400])
 
-        # Dialog buttons
         buttons_layout = QHBoxLayout()
         buttons_layout.addStretch()
 
@@ -357,8 +220,123 @@ class PDFMergeDialog(QDialog):
         buttons_layout.addWidget(self.merge_btn)
 
         layout.addLayout(buttons_layout)
-
         self.apply_styling()
+
+    def _build_left_panel(self) -> QWidget:
+        left_panel = QWidget()
+        left_layout = QVBoxLayout(left_panel)
+
+        files_group = QGroupBox("Input Files")
+        files_layout = QVBoxLayout(files_group)
+        self.file_list = DragDropListWidget()
+        self.file_list.files_reordered.connect(self.on_files_reordered)
+        self.file_list.itemSelectionChanged.connect(self.on_file_selected)
+        files_layout.addWidget(self.file_list)
+
+        file_buttons_layout = QHBoxLayout()
+        self.add_files_btn = SecondaryButton("Add Files")
+        self.add_files_btn.setAccessibleName("Add PDF files to merge list")
+        self.add_files_btn.clicked.connect(self.add_files)
+        file_buttons_layout.addWidget(self.add_files_btn)
+
+        self.remove_file_btn = SecondaryButton("Remove")
+        self.remove_file_btn.setAccessibleName("Remove selected file from merge list")
+        self.remove_file_btn.clicked.connect(self.remove_selected_file)
+        self.remove_file_btn.setEnabled(False)
+        file_buttons_layout.addWidget(self.remove_file_btn)
+
+        self.move_up_btn = SecondaryButton("↑")
+        self.move_up_btn.setAccessibleName("Move file up in merge order")
+        self.move_up_btn.clicked.connect(self.move_file_up)
+        self.move_up_btn.setEnabled(False)
+        file_buttons_layout.addWidget(self.move_up_btn)
+
+        self.move_down_btn = SecondaryButton("↓")
+        self.move_down_btn.setAccessibleName("Move file down in merge order")
+        self.move_down_btn.clicked.connect(self.move_file_down)
+        self.move_down_btn.setEnabled(False)
+        file_buttons_layout.addWidget(self.move_down_btn)
+
+        files_layout.addLayout(file_buttons_layout)
+        left_layout.addWidget(files_group)
+
+        options_group = QGroupBox("Merge Options")
+        options_layout = QFormLayout(options_group)
+        self.preserve_bookmarks_cb = QCheckBox("Preserve bookmarks")
+        self.preserve_bookmarks_cb.setAccessibleName("Preserve bookmarks")
+        self.preserve_bookmarks_cb.setMinimumHeight(44)
+        self.preserve_bookmarks_cb.setChecked(True)
+        options_layout.addRow(self.preserve_bookmarks_cb)
+
+        self.preserve_metadata_cb = QCheckBox("Preserve metadata")
+        self.preserve_metadata_cb.setAccessibleName("Preserve metadata")
+        self.preserve_metadata_cb.setMinimumHeight(44)
+        self.preserve_metadata_cb.setChecked(True)
+        options_layout.addRow(self.preserve_metadata_cb)
+
+        self.optimize_output_cb = QCheckBox("Optimize output file")
+        self.optimize_output_cb.setAccessibleName("Optimize output file")
+        self.optimize_output_cb.setMinimumHeight(44)
+        options_layout.addRow(self.optimize_output_cb)
+
+        self.custom_ranges_cb = QCheckBox("Use custom page ranges")
+        self.custom_ranges_cb.setAccessibleName("Use custom page ranges")
+        self.custom_ranges_cb.setMinimumHeight(44)
+        self.custom_ranges_cb.toggled.connect(self.toggle_custom_ranges)
+        options_layout.addRow(self.custom_ranges_cb)
+        left_layout.addWidget(options_group)
+
+        output_group = QGroupBox("Output")
+        output_layout = QFormLayout(output_group)
+        output_file_layout = QHBoxLayout()
+        self.output_file_edit = TextInput(
+            "Merged Output File",
+            "Select output file...",
+            accessible_name="Merged output file",
+        )
+        output_file_layout.addWidget(self.output_file_edit)
+
+        self.browse_output_btn = SecondaryButton("Browse")
+        self.browse_output_btn.setAccessibleName("Browse for merged output file")
+        self.browse_output_btn.clicked.connect(self.browse_output_file)
+        output_file_layout.addWidget(self.browse_output_btn)
+
+        output_layout.addRow("Output file:", output_file_layout)
+        left_layout.addWidget(output_group)
+        return left_panel
+
+    def _build_right_panel(self) -> QWidget:
+        right_panel = QWidget()
+        right_layout = QVBoxLayout(right_panel)
+
+        preview_group = QGroupBox("Preview")
+        preview_layout = QVBoxLayout(preview_group)
+        self.preview_widget = FilePreviewWidget()
+        preview_layout.addWidget(self.preview_widget)
+
+        self.details_text = QTextEdit()
+        self.details_text.setAccessibleName("File details")
+        self.details_text.setMaximumHeight(100)
+        self.details_text.setReadOnly(True)
+        preview_layout.addWidget(self.details_text)
+        right_layout.addWidget(preview_group)
+
+        self.ranges_group = QGroupBox("Custom Page Ranges")
+        self.ranges_group.setVisible(False)
+        ranges_layout = QVBoxLayout(self.ranges_group)
+        ranges_help = QLabel(
+            "Specify page ranges for each file (e.g., 1-5,10-15).\n"
+            "Leave empty to include all pages."
+        )
+        ranges_help.setWordWrap(True)
+        ranges_help.setStyleSheet(f"color: {token('text_muted')}; font-size: 9pt;")
+        ranges_layout.addWidget(ranges_help)
+
+        self.ranges_list = QListWidget()
+        self.ranges_list.setAccessibleName("Custom page ranges list")
+        ranges_layout.addWidget(self.ranges_list)
+        right_layout.addWidget(self.ranges_group)
+        return right_panel
 
     def apply_styling(self):
         """Apply modern styling to the dialog"""
@@ -408,7 +386,7 @@ class PDFMergeDialog(QDialog):
             self,
             "Select PDF Files to Merge",
             "",
-            "PDF Files (*.pdf);;All Files (*)",
+            PDF_FILES_FILTER,
         )
 
         if files:
@@ -528,7 +506,7 @@ class PDFMergeDialog(QDialog):
             self,
             "Save Merged PDF As",
             "merged_document.pdf",
-            "PDF Files (*.pdf);;All Files (*)",
+            PDF_FILES_FILTER,
         )
 
         if file_path:

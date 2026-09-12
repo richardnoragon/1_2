@@ -248,7 +248,6 @@ class SimplePasswordGeneratorGUI(QMainWindow):
         self.password_display = TextInput("Generated password")
         self.password_display.setAccessibleName("Generated password")
         self.password_display.setReadOnly(True)
-        self.password_display.setFont(Typography.h3())
         password_layout.addWidget(self.password_display)
         # Copy button
         self.copy_btn = SecondaryButton("📋 Copy to Clipboard")

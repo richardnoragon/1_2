@@ -36,7 +36,9 @@ Print exactly one line so the size is visible in the run log:
 ```
 
 Expose the same value as structured output `size` (so a `switch` node can read
-`steps.classify.output.size`). Routing contract:
+`steps.classify.output.size`). The command-step integration must surface the
+result as machine-readable `size` output with one of the switch values above.
+Routing contract:
 
 <!-- speckit-companion:part routing -->
 - `small` → the workflow folds toward implement (less ceremony).

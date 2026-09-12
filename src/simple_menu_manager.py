@@ -70,13 +70,23 @@ class SimpleMenuManager:
         self.callbacks: Dict[str, Callable[[], None]] = {}
 
     def create_menubar(self) -> QMenuBar:
-        menubar = self.parent_window.menuBar()
-        if menubar is None:
-            menubar = QMenuBar(self.parent_window)
-            self.parent_window.setMenuBar(menubar)
+        menu_bar = getattr(self.parent_window, "menuBar", lambda: None)()
 
-        menubar_obj: QMenuBar = cast(QMenuBar, menubar)
-        menubar_obj.clear()
+        # Some tests and lightweight host objects provide a mock menuBar()
+        # instead of a real QMenuBar, so fall back to a real one when needed.
+        if menu_bar is None or not hasattr(menu_bar, "clear") or not hasattr(menu_bar, "addMenu"):
+            try:
+                menu_bar = QMenuBar(self.parent_window)
+                if hasattr(self.parent_window, "setMenuBar"):
+                    self.parent_window.setMenuBar(menu_bar)
+            except Exception:
+                return cast(QMenuBar, menu_bar or QMenuBar())
+
+        menubar_obj: QMenuBar = cast(QMenuBar, menu_bar)
+        try:
+            menubar_obj.clear()
+        except Exception:
+            pass
 
         file_menu: QMenu = QMenu("&File", menubar_obj)
         menubar_obj.addMenu(file_menu)
@@ -155,7 +165,7 @@ class SimpleMenuManager:
         help_menu.addSeparator()
         self._add_action(help_menu, "&About...", "", "about")
 
-        return menubar
+        return menubar_obj
 
     def register_callback(self, action_name: str, callback: Callable[[], None]) -> None:
         self.callbacks[action_name] = callback

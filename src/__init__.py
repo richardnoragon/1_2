@@ -26,16 +26,20 @@ def safe_import_package(package_name: str):
 # Import main packages (only import existing packages)
 rfu = safe_import_package("rfu")
 
+_CORE_CONSTANTS_MODULE = "src.core.constants"
+_CORE_ERROR_HANDLER_MODULE = "src.core.error_handler"
+_CORE_OBSERVABILITY_MODULE = "src.core.observability"
+
 _LAZY_EXPORTS = {
-    "APP_NAME": ("src.core.constants", "APP_NAME"),
-    "APP_ORGANIZATION": ("src.core.constants", "APP_ORGANIZATION"),
-    "APP_VERSION": ("src.core.constants", "APP_VERSION"),
-    "ErrorHandler": ("src.core.error_handler", "ErrorHandler"),
-    "error_handler": ("src.core.error_handler", "error_handler"),
-    "get_error_handler": ("src.core.error_handler", "get_error_handler"),
-    "handle_gui_error": ("src.core.error_handler", "handle_gui_error"),
-    "safe_execute": ("src.core.error_handler", "safe_execute"),
-    "ObservabilityService": ("src.core.observability", "ObservabilityService"),
+    "APP_NAME": (_CORE_CONSTANTS_MODULE, "APP_NAME"),
+    "APP_ORGANIZATION": (_CORE_CONSTANTS_MODULE, "APP_ORGANIZATION"),
+    "APP_VERSION": (_CORE_CONSTANTS_MODULE, "APP_VERSION"),
+    "ErrorHandler": (_CORE_ERROR_HANDLER_MODULE, "ErrorHandler"),
+    "error_handler": (_CORE_ERROR_HANDLER_MODULE, "error_handler"),
+    "get_error_handler": (_CORE_ERROR_HANDLER_MODULE, "get_error_handler"),
+    "handle_gui_error": (_CORE_ERROR_HANDLER_MODULE, "handle_gui_error"),
+    "safe_execute": (_CORE_ERROR_HANDLER_MODULE, "safe_execute"),
+    "ObservabilityService": (_CORE_OBSERVABILITY_MODULE, "ObservabilityService"),
 }
 
 __all__ = [

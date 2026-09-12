@@ -44,13 +44,13 @@ provides:
       description: "Resume the pipeline from the recorded step with decisions in scope, dispatching the next command"
     - name: speckit.companion.specify
       file: commands/speckit.companion.specify.md
-      description: "Companion specify — spec.md with no user-story section"
+      description: "Companion specify — spec.md with prioritized user stories and the workflow budget"
     - name: speckit.companion.plan
       file: commands/speckit.companion.plan.md
       description: "Companion plan — files/dependencies, conditional side files"
     - name: speckit.companion.tasks
       file: commands/speckit.companion.tasks.md
-      description: "Companion tasks — files/dependencies axis"
+      description: "Companion tasks — mandatory user-story phases, waves, and execution order"
     - name: speckit.companion.implement
       file: commands/speckit.companion.implement.md
       description: "Companion implement — dependency-ordered execution"

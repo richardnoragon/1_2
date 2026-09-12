@@ -58,6 +58,12 @@ from PyQt5.QtWidgets import (
 
 from src.tools.advanced_folders.models.folder_models import FileMetadata
 
+try:
+    from src.gui.themes import token
+except ImportError:
+    def token(_key: str) -> str:
+        return "#2c3e50"
+
 
 class PreviewContentLoader(QThread):
     """Background thread for loading preview content."""
@@ -87,14 +93,20 @@ class PreviewContentLoader(QThread):
         Args:
             file_path: Path to file to preview
         """
-        with QMutex():
+        self.mutex.lock()
+        try:
             if file_path not in self.file_queue:
                 self.file_queue.append(file_path)
+        finally:
+            self.mutex.unlock()
 
     def clear_queue(self):
         """Clear the preview queue."""
-        with QMutex():
+        self.mutex.lock()
+        try:
             self.file_queue.clear()
+        finally:
+            self.mutex.unlock()
 
     def run(self):
         """Main thread execution loop."""
@@ -102,9 +114,12 @@ class PreviewContentLoader(QThread):
             file_path = None
 
             # Get next file from queue
-            with QMutex():
+            self.mutex.lock()
+            try:
                 if self.file_queue:
                     file_path = self.file_queue.pop(0)
+            finally:
+                self.mutex.unlock()
 
             if file_path:
                 self._load_file_preview(file_path)
@@ -407,6 +422,7 @@ class PreviewPaneWidget(QWidget):
             parent: Parent widget
         """
         super().__init__(parent)
+        self.setObjectName("PreviewPaneWidget")
 
         # Initialize logging
         self.logger = logging.getLogger("AdvancedFolders.PreviewPane")
@@ -429,6 +445,10 @@ class PreviewPaneWidget(QWidget):
         self._setup_accessibility()
 
         self.logger.info("Preview Pane Widget initialized successfully")
+
+    def load_file_preview(self, file_path: str):
+        """Compatibility wrapper for legacy callers."""
+        self.preview_file(file_path)
 
     def _setup_ui(self):
         """Setup the user interface."""

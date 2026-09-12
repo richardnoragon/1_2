@@ -9,6 +9,8 @@ from __future__ import annotations
 from enum import Enum
 from typing import Dict, Iterable, List, Tuple
 
+from src.gui.themes import Colors
+
 
 class Theme(Enum):
     """Available themes for shared GUI surfaces."""
@@ -256,8 +258,7 @@ def get_base_styles(
 
         /* Keyboard focus visibility across shared controls */
         QWidget:focus {{
-            outline: 2px solid {colors['focus_ring']};
-            outline-offset: 1px;
+            border: 2px solid {colors['focus_ring']};
         }}
 
         QPushButton:focus,

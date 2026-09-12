@@ -41,7 +41,7 @@ structure below.
 ## Phase 1 – Portability Operationalization
 
 1. **Runbook Authoring**
-   - Draft `docs/operations/preferences_portability.md` covering:
+  - Use `docs/operations/preferences_portability_runbook.md` as the canonical operations reference covering:
      - Export usage examples with and without AES.
      - Import collision handling (skip vs overwrite).
      - Common failure remediation (missing `pyAesCrypt`, malformed payloads) and guidance when AES is unavailable.

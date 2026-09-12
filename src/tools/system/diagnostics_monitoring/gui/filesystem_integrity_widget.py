@@ -636,7 +636,8 @@ class FilesystemIntegrityWidget(QWidget):
             # Update UI state
             self.start_scan_button.setEnabled(False)
             self.stop_scan_button.setEnabled(True)
-            self.progress_bar.setValue(0)
+            self.progress_bar.start()
+            self.progress_bar.set_progress(0)
             self.progress_label.setText("Starting scan...")
             self.status_label.setText("Scan in progress...")
 
@@ -676,7 +677,7 @@ class FilesystemIntegrityWidget(QWidget):
             errors_found = progress_data.get("errors_found", 0)
             current_path = progress_data.get("current_path", "")
 
-            self.progress_bar.setValue(int(progress))
+            self.progress_bar.set_progress(int(progress))
             self.progress_label.setText(f"Scanning: {current_path}")
             self.files_scanned_label.setText(f"Files scanned: {files_scanned}")
             self.errors_found_label.setText(f"Errors found: {errors_found}")
@@ -699,7 +700,7 @@ class FilesystemIntegrityWidget(QWidget):
 
             # Update UI
             self.scan_stopped()
-            self.progress_bar.setValue(100)
+            self.progress_bar.set_progress(100)
             self.progress_label.setText("Scan completed")
             self.status_label.setText("Scan completed successfully")
 
@@ -726,6 +727,7 @@ class FilesystemIntegrityWidget(QWidget):
         if not PYQT_AVAILABLE:
             return
 
+        self.progress_bar.stop()
         self.scan_stopped()
         self.progress_label.setText(f"Scan failed: {error_message}")
         self.status_label.setText("Scan failed")
@@ -739,6 +741,7 @@ class FilesystemIntegrityWidget(QWidget):
 
         self.start_scan_button.setEnabled(True)
         self.stop_scan_button.setEnabled(False)
+        self.progress_bar.stop()
         self.current_scan_worker = None
 
     def populate_scan_results(self, scan_result: Dict[str, Any]):

@@ -280,7 +280,7 @@ The canonical implementation is visible in:
 
 This is the package-level architecture standard referenced by issue #79.
 
-- `src.core.application_state.ApplicationState` bundles the logger, config manager, preference manager, and database availability flag for hub-style entry points.
+- `src.core.application_state.ApplicationState` bundles `logger`, `config_manager`, `preference_manager`, `audit_trail`, and `database_available` for hub-style entry points.
 - `src.core.tool_lifecycle.ToolRuntimeTracker` owns the registration and progress snapshot used by the hub so tool status updates follow one lifecycle shape.
 - `src.core.tool_manifest.ToolManifestRegistry` remains the canonical metadata source for tool identity, module/class resolution, and minimum geometry constraints.
 

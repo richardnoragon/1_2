@@ -43,6 +43,36 @@ try:
 
     STANDARD_WINDOW_AVAILABLE = True
 except ImportError:
+    class TextInput(QWidget):
+        def __init__(self, label: str = "", placeholder: str = ""):
+            super().__init__()
+            layout = QVBoxLayout(self)
+            self._label = QLabel(label)
+            self._edit = QLineEdit()
+            self._edit.setPlaceholderText(placeholder or label)
+            layout.addWidget(self._label)
+            layout.addWidget(self._edit)
+
+        def text(self):
+            return self._edit.text()
+
+        def setText(self, value):
+            self._edit.setText(value)
+
+        def setEchoMode(self, mode):
+            self._edit.setEchoMode(mode)
+
+        def setReadOnly(self, value):
+            self._edit.setReadOnly(value)
+
+        def setAccessibleName(self, value):
+            super().setAccessibleName(value)
+            self._edit.setAccessibleName(value)
+
+        def setAccessibleDescription(self, value):
+            super().setAccessibleDescription(value)
+            self._edit.setAccessibleDescription(value)
+
     StandardWindow = QMainWindow
     STANDARD_WINDOW_AVAILABLE = False
 

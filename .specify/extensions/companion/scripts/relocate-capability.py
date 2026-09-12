@@ -272,10 +272,14 @@ def _move(root: str, src: str, dst: str, use_git: bool) -> None:
 
 def _apply_moves(root: str, plans: list[dict], use_git: bool) -> list[tuple[str, str]]:
     done: list[tuple[str, str]] = []
-    for plan in plans:
-        for mv in plan["moves"]:
-            _move(root, mv["from"], mv["to"], use_git)
-            done.append((mv["from"], mv["to"]))
+    try:
+        for plan in plans:
+            for mv in plan["moves"]:
+                _move(root, mv["from"], mv["to"], use_git)
+                done.append((mv["from"], mv["to"]))
+    except OSError:
+        _rollback(root, done, use_git)
+        raise
     return done
 
 
@@ -321,7 +325,7 @@ def _write_config(config_path: str, original: str | None, enabled: bool,
 
 
 def relocate(root: str, to: str, name: str | None = None, spec: str | None = None,
-             every: bool = False) -> dict:
+             every: bool = False) -> dict | int:
     """Plan, move, and rewrite the config as one atomic operation.
 
     Raises ValueError for run-level failures (no config, malformed config, unknown
@@ -380,7 +384,12 @@ def relocate(root: str, to: str, name: str | None = None, spec: str | None = Non
         with open(config_path, encoding="utf-8") as fh:
             original = fh.read()
 
-    done = _apply_moves(root, moving, use_git)
+    try:
+        done = _apply_moves(root, moving, use_git)
+    except OSError as exc:
+        sys.stderr.write(f"relocate-capability: rolled back — {exc}\n")
+        return 2
+
     try:
         capabilities = regcap._normalize_existing(living)
         by_name = {p["name"]: p for p in moving}

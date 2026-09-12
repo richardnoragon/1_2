@@ -83,10 +83,46 @@ except ImportError:
 
         def get_config_manager():
             class MockConfig:
-                def get(self, key, default=None):
+                def get(self, _key, default=None):
                     return default
 
             return MockConfig()
+
+        def build_application_state(
+            _logger_name: str,
+            *,
+            include_config: bool = True,
+            _include_preferences: bool = True,
+            database_available: bool = False,
+        ):
+            class _FallbackApplicationState:
+                def __init__(self):
+                    self.logger = get_log_manager()
+                    self.config_manager = get_config_manager() if include_config else None
+                    self.preference_manager = None
+                    self.audit_trail = None
+                    self.database_available = database_available
+
+            return _FallbackApplicationState()
+
+        class ToolRuntimeTracker:
+            def __init__(self, *_args, **_kwargs):
+                self._records = {}
+
+            def register(self, *_args, **_kwargs):
+                return None
+
+            def unregister(self, *_args, **_kwargs):
+                return None
+
+            def update_progress(self, *_args, **_kwargs):
+                return None
+
+            def snapshot(self, *_args, **_kwargs):
+                return None
+
+            def clear(self):
+                self._records.clear()
 
         def error_handler(func):
             return func
@@ -113,9 +149,16 @@ except ImportError:
     SUBTITLE_STYLE_COLOR = "#34495e"
     SECTION_MARGIN_STYLE = "margin: 10px;"
     PRIVACY_TOOLS = "Privacy Tools"
+    NETWORK_TOOLS_TITLE = "Network Tools"
+    SYSTEM_CLEANUP_TITLE = "System Cleanup"
     ANALYSIS_TOOLS = "Analysis Tools"
     UTILITIES_TOOLS = "Utilities Tools"
     SETTINGS_TOOLS = "Settings Tools"
+
+# Compatibility fallback for legacy constant names used by older hub code.
+NETWORK_TOOLS_TITLE = globals().get("NETWORK_TOOLS_TITLE", "Network Tools")
+SYSTEM_CLEANUP_TITLE = globals().get("SYSTEM_CLEANUP_TITLE", "System Cleanup")
+FILE_OPERATIONS_TITLE = "File Operations"
 
 # CSS Color Constants for Professional Styling
 PRIMARY_BLUE = "#3498db"
@@ -143,7 +186,7 @@ except ImportError:
         from gui.themes import ThemeManager, Typography, token
     except ImportError:
 
-        def token(key: str) -> str:  # type: ignore[misc]
+        def token(_key: str) -> str:  # type: ignore[misc]
             return ""
 
         class Typography:  # type: ignore[no-redef]
@@ -1332,7 +1375,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
         self.current_hub_mode = "tabbed"
         self.interface_stack.setCurrentIndex(0)
         self.logger.info(
-            "Interface mode defaulted to tabbed - " "file_explorer module removed"
+            "Interface mode defaulted to tabbed - file_explorer module removed"
         )
 
     def _apply_startup_focus_mode(self):
@@ -1371,9 +1414,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
         Interface mode switching is currently disabled.
         """
         # file_explorer module removed - mode switching disabled
-        self.logger.info(
-            "Interface mode switching disabled - " "file_explorer module removed"
-        )
+        self.logger.info("Interface mode switching disabled - file_explorer module removed")
         # Always stay on tabbed interface
         self.interface_stack.setCurrentIndex(0)
         self.current_hub_mode = "tabbed"
@@ -1640,7 +1681,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
         _header = (
             _ui_strings.FileOperations.HEADER
             if _UI_STRINGS_AVAILABLE
-            else "File Operations"
+            else FILE_OPERATIONS_TITLE
         )
         _desc_text = (
             _ui_strings.FileOperations.DESC
@@ -1722,7 +1763,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
         _tab_title = (
             _ui_strings.FileOperations.TITLE
             if _UI_STRINGS_AVAILABLE
-            else "File Operations"
+            else FILE_OPERATIONS_TITLE
         )
         self.tab_widget.addTab(tab, _tab_title)
 
@@ -1818,7 +1859,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
         layout.setSpacing(15)
 
         # Title
-        title = QLabel("Network Tools")
+        title = QLabel(NETWORK_TOOLS_TITLE)
         title.setAlignment(Qt.AlignCenter)
         font = QFont()
         font.setPointSize(14)
@@ -2123,7 +2164,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
                 + (
                     _ui_strings.SystemCleanup.TITLE
                     if _UI_STRINGS_AVAILABLE
-                    else "System Cleanup"
+                    else SYSTEM_CLEANUP_TITLE
                 ),
                 "Clean system cache",
                 self.open_system_cleanup,
@@ -2397,7 +2438,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
             _title = (
                 _ui_strings.FileOperations.TITLE
                 if _UI_STRINGS_AVAILABLE
-                else "File Operations"
+                else FILE_OPERATIONS_TITLE
             )
             self.tab_widget.addTab(tab, _title)
         except Exception:
@@ -2592,7 +2633,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
     def open_network_security(self):
         """Open network tools (HUB-2: UtilityWindow-backed)."""
         _title = (
-            _ui_strings.NetworkTools.TITLE if _UI_STRINGS_AVAILABLE else "Network Tools"
+            _ui_strings.NetworkTools.TITLE if _UI_STRINGS_AVAILABLE else NETWORK_TOOLS_TITLE
         )
         try:
             from src.tools.network.gui import NetworkToolsWindow
@@ -2640,7 +2681,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
 
     def open_privacy_cleaner(self):
         """Open privacy tools hub (HUB-2: UtilityWindow-backed)."""
-        _title = _ui_strings.Privacy.TITLE if _UI_STRINGS_AVAILABLE else "Privacy Tools"
+        _title = _ui_strings.Privacy.TITLE if _UI_STRINGS_AVAILABLE else PRIVACY_TOOLS
         try:
             from src.tools.privacy.privacy_tools.gui.privacy_hub import (
                 PrivacyToolsHub,
@@ -2769,7 +2810,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
         _title = (
             _ui_strings.SystemCleanup.TITLE
             if _UI_STRINGS_AVAILABLE
-            else "System Cleanup"
+            else SYSTEM_CLEANUP_TITLE
         )
         try:
             from src.tools.system.system_cleanup.system_cleanup_gui import (
@@ -2921,7 +2962,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
             (
                 _ui_strings.SystemCleanup.TITLE
                 if _UI_STRINGS_AVAILABLE
-                else "System Cleanup"
+                    else SYSTEM_CLEANUP_TITLE
             ): self.open_system_cleanup,
             (
                 _ui_strings.SynchronizationBackup.TITLE
@@ -2990,7 +3031,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
             (
                 _ui_strings.NetworkTools.TITLE
                 if _UI_STRINGS_AVAILABLE
-                else "Network Tools"
+                else NETWORK_TOOLS_TITLE
             ): self.open_network_security,
             (
                 _ui_strings.PreferencePortability.TITLE
@@ -3033,10 +3074,10 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
                 else "Password Generator"
             ): self.open_password_generator,
             (
-                _ui_strings.PDFTools.TITLE if _UI_STRINGS_AVAILABLE else "PDF Tools"
+                _ui_strings.PDFTools.TITLE if _UI_STRINGS_AVAILABLE else PDF_TOOLS
             ): self.open_pdf_tools,
             (
-                _ui_strings.Privacy.TITLE if _UI_STRINGS_AVAILABLE else "Privacy Tools"
+                _ui_strings.Privacy.TITLE if _UI_STRINGS_AVAILABLE else PRIVACY_TOOLS
             ): self.open_privacy_cleaner,
         }
         fn = _launchers.get(title)
@@ -3473,7 +3514,7 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
         layout = QtWidgets.QVBoxLayout(file_tab)
 
         # File operations group
-        file_ops_group = QtWidgets.QGroupBox("File Operations")
+        file_ops_group = QtWidgets.QGroupBox(FILE_OPERATIONS_TITLE)
         file_ops_layout = QtWidgets.QGridLayout(file_ops_group)
 
         # File touch tool
@@ -3722,17 +3763,28 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
     # Tool Opening Methods
     def open_file_catalog(self):
         """Open file catalog tool."""
+        _title = (
+            _ui_strings.AdvancedCatalog.TITLE
+            if _UI_STRINGS_AVAILABLE
+            else "File Catalog"
+        )
         try:
-            from ..utilities.file_operations.file_catalog import FileCatalogGUI
+            from src.tools.file_management.advanced_catalog.catalog_tool import (
+                CatalogWindow as FileCatalogGUI,
+            )
 
             tool = FileCatalogGUI()
-            tool.show()
+            window = UtilityWindow(self, tool, _title)
+            self._file_catalog_window = window
+            window.show()
             self.register_tool("File Catalog", tool)
-            self._update_status_bar("File Catalog opened")
+            self._update_status_bar(f"{_title} opened")
             self.logger.info("File Catalog tool opened")
+            return tool
         except Exception as e:
             self._update_status_bar(f"Error opening File Catalog: {str(e)}")
             self.logger.error(f"Error opening File Catalog: {str(e)}")
+            return None
 
     def open_file_touch(self):
         """Open file touch tool (HUB-2: UtilityWindow-backed)."""
@@ -3770,9 +3822,11 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
             self.register_tool(_title, tool)
             self._update_status_bar(f"{_title} opened")
             self.logger.info(f"{_title} tool opened")
+            return tool
         except Exception as e:
             self._update_status_bar(f"Error opening {_title}: {str(e)}")
             self.logger.error(f"Error opening {_title}: {str(e)}")
+            return None
 
     def open_secure_delete(self):
         """Open secure delete tool (HUB-2: UtilityWindow-backed)."""
@@ -3814,9 +3868,11 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
             self.register_tool(_title, tool)
             self._update_status_bar(f"{_title} opened")
             self.logger.info(f"{_title} tool opened")
+            return tool
         except Exception as e:
             self._update_status_bar(f"Error opening {_title}: {str(e)}")
             self.logger.error(f"Error opening {_title}: {str(e)}")
+            return None
 
     def open_duplicate_finder(self):
         """Open duplicate finder tool (HUB-2: UtilityWindow-backed)."""
@@ -3918,9 +3974,11 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
             self.register_tool("Network Transfer", tool)
             self._update_status_bar("Network Transfer opened")
             self.logger.info("Network Transfer tool opened")
+            return tool
         except Exception as e:
             self._update_status_bar(f"Error opening Network Transfer: {str(e)}")
             self.logger.error(f"Error opening Network Transfer: {str(e)}")
+            return None
 
     def open_network_scan(self):
         """Open network scan tool."""
@@ -4045,9 +4103,11 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
             self.register_tool("Hash Calculator", tool)
             self._update_status_bar("Hash Calculator opened")
             self.logger.info("Hash Calculator tool opened")
+            return tool
         except Exception as e:
             self._update_status_bar(f"Error opening Hash Calculator: {str(e)}")
             self.logger.error(f"Error opening Hash Calculator: {str(e)}")
+            return None
 
     def open_password_generator(self):
         """Open password generator tool (HUB-2: UtilityWindow-backed)."""
@@ -4135,16 +4195,18 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
     def open_system_monitor(self):
         """Open system monitor tool."""
         try:
-            from ..utilities.system.system_monitor import SystemMonitorGUI
+            from src.tools.system.system_monitor import SystemMonitorGUI
 
             tool = SystemMonitorGUI()
             tool.show()
             self.register_tool("System Monitor", tool)
             self._update_status_bar("System Monitor opened")
             self.logger.info("System Monitor tool opened")
+            return tool
         except Exception as e:
             self._update_status_bar(f"Error opening System Monitor: {str(e)}")
             self.logger.error(f"Error opening System Monitor: {str(e)}")
+            return None
 
     def open_registry_tools(self):
         """Open registry tools."""

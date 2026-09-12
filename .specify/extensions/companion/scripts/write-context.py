@@ -122,12 +122,14 @@ from living_spec_fold import (  # noqa: E402,F401
     fold_living_spec,
 )
 
+SPEC_CONTEXT_REL = ".spec-context.json"
+
 
 def update_context(
     feature_dir: Path, step: str, status: str, by: str, kind: str = "start",
     substep: str | None = None,
 ) -> Path | None:
-    target = feature_dir / ".spec-context.json"
+    target = feature_dir / SPEC_CONTEXT_REL
     now = _now_iso()
     branch = _git_branch(_repo_root_for(feature_dir)) or "main"
 
@@ -199,7 +201,7 @@ def journal_finish(feature_dir: Path, step: str, by: str, substep: str | None = 
             file=sys.stderr,
         )
         return None
-    target = feature_dir / ".spec-context.json"
+    target = feature_dir / SPEC_CONTEXT_REL
     opened = _open_ctx_or_none(feature_dir, f"a {step}{('/' + substep) if substep else ''} finish")
     if opened is None:
         return None
@@ -228,7 +230,7 @@ def journal_advance(feature_dir: Path, step: str, by: str) -> Path | None:
             file=sys.stderr,
         )
         return None
-    target = feature_dir / ".spec-context.json"
+    target = feature_dir / SPEC_CONTEXT_REL
     opened = _open_ctx_or_none(feature_dir, f"an {step} advance")
     if opened is None:
         return None
@@ -271,7 +273,7 @@ def mark_spec_complete(feature_dir: Path, by: str) -> Path | None:
     not done, so a stray or out-of-order invocation can never "ship" incomplete
     work. Idempotent: a spec already `completed`/`archived` is left untouched.
     """
-    target = feature_dir / ".spec-context.json"
+    target = feature_dir / SPEC_CONTEXT_REL
     ctx = read_ctx(target)
     branch = _git_branch(_repo_root_for(feature_dir)) or "main"
 
@@ -315,7 +317,7 @@ def mark_spec_complete(feature_dir: Path, by: str) -> Path | None:
 
 
 def _main() -> int:
-    parser = argparse.ArgumentParser(description="Write/update a feature's .spec-context.json")
+    parser = argparse.ArgumentParser(description=f"Write/update a feature's {SPEC_CONTEXT_REL}")
     parser.add_argument("--step", default="specify")
     parser.add_argument("--status", default="specified")
     parser.add_argument("--by", default="extension")
@@ -336,12 +338,12 @@ def _main() -> int:
     )
     parser.add_argument(
         "--append", action="store_true",
-        help="With --task: append the finish to .spec-context.events.jsonl (no read of "
-             ".spec-context.json) so parallel workers never contend. Fold later with --materialize.",
+           help=f"With --task: append the finish to .spec-context.events.jsonl (no read of "
+               f"{SPEC_CONTEXT_REL}) so parallel workers never contend. Fold later with --materialize.",
     )
     parser.add_argument(
         "--materialize", action="store_true",
-        help="Fold every appended .spec-context.events.jsonl task line into .spec-context.json "
+           help=f"Fold every appended .spec-context.events.jsonl task line into {SPEC_CONTEXT_REL} "
              "in one write (idempotent). Run after each batch and at step close.",
     )
     parser.add_argument(
@@ -375,7 +377,7 @@ def _main() -> int:
     )
     parser.add_argument(
         "--set", dest="set_pairs", action="append", default=None, metavar="KEY=VALUE",
-        help="Merge a top-level key=value onto .spec-context.json (e.g. --set unattended=true). "
+        help=f"Merge a top-level key=value onto {SPEC_CONTEXT_REL} (e.g. --set unattended=true). "
              "Repeatable. Lifecycle keys (history/status/currentStep) are refused.",
     )
     parser.add_argument(
@@ -584,15 +586,16 @@ def _main() -> int:
             entries = []
             for raw in args.living_spec_skips:
                 name, sep, reason = str(raw).partition(":")
-                if name.strip() and not (sep and reason.strip()):
+                cleaned_name = name.strip()
+                cleaned_reason = reason.strip() if sep else ""
+                if not cleaned_name or not cleaned_reason:
                     print(
-                        f"[companion] Warning: --living-spec-skip \"{raw}\" has no reason and "
-                        "was NOT recorded — an unexplained skip isn't accountability. Use "
-                        "\"<name>: <reason>\"; the capability stays unaccounted until you fold a "
-                        "delta or record a reasoned skip.",
+                        f"[companion] Warning: --living-spec-skip \"{raw}\" was NOT recorded — use "
+                        "\"<name>: <reason>\" so the skip is accountable.",
                         file=sys.stderr,
                     )
-                entries.append({"name": name.strip(), "reason": reason.strip()})
+                    continue
+                entries.append({"name": cleaned_name, "reason": cleaned_reason})
             target = set_living_specs_skipped(feature_dir, entries)
             if target is not None:
                 names = ", ".join(e["name"] for e in entries if e["name"])
@@ -605,8 +608,8 @@ def _main() -> int:
                 captured.append(
                     f"[companion] Folded feature deltas into living spec(s): {', '.join(synced)} ({target})")
     except Exception as exc:  # noqa: BLE001 - best-effort, swallow + report
-        print(f"[companion] Warning: skipped .spec-context.json write: {exc}", file=sys.stderr)
-        _record_outcome(False, f"skipped .spec-context.json write: {exc}")
+        print(f"[companion] Warning: skipped {SPEC_CONTEXT_REL} write: {exc}", file=sys.stderr)
+        _record_outcome(False, f"skipped {SPEC_CONTEXT_REL} write: {exc}")
         return 0
 
     # A no-op fold already named its own exact reason on stderr (from
@@ -682,9 +685,9 @@ def _main() -> int:
                 target = journal_task_finish(feature_dir, args.task, args.by, did, files)
         else:
             target = update_context(feature_dir, args.step, args.status, args.by, args.kind, args.substep)
-    except Exception as exc:  # noqa: BLE001 - best-effort, swallow + report
-        print(f"[companion] Warning: skipped .spec-context.json write: {exc}", file=sys.stderr)
-        _record_outcome(False, f"skipped .spec-context.json write: {exc}")
+    except Exception as exc:  # noqa: BLE001
+        print(f"[companion] Warning: skipped {SPEC_CONTEXT_REL} write: {exc}", file=sys.stderr)
+        _record_outcome(False, f"skipped {SPEC_CONTEXT_REL} write: {exc}")
         return 0
 
     # `target is not None` is the writers' shared success signal, including for
@@ -743,7 +746,7 @@ _CAPTURE_FLAGS = (
 
 _OP_FILE = {
     "task-append": ".spec-context.events.jsonl",
-    "tasks-sync": ".spec-context.json",
+    "tasks-sync": SPEC_CONTEXT_REL,
 }
 
 
@@ -846,7 +849,7 @@ def main() -> int:
     return code
 
 
-def _trace_call(argv: list, out: str, err: str, ms: int) -> None:
+def _trace_call(argv: list, _out: str, err: str, ms: int) -> None:
     try:
         import run_trace
 
@@ -860,11 +863,15 @@ def _trace_call(argv: list, out: str, err: str, ms: int) -> None:
         root = _repo_root()
         feature_dir = None
         try:
-            resolved = resolve_feature_dir(root, _flag_value(argv, "--feature-dir"))
-            # resolve_feature_dir can name a directory that does not exist; a trace
-            # line has nowhere to land there, so it falls through to unattributed.
-            if resolved is not None and resolved.is_dir():
-                feature_dir = resolved
+            tasks_file = _flag_value(argv, "--tasks-file")
+            if tasks_file:
+                feature_dir = feature_dir_from_tasks_file(root, tasks_file)
+            else:
+                resolved = resolve_feature_dir(root, _flag_value(argv, "--feature-dir"))
+                # resolve_feature_dir can name a directory that does not exist; a trace
+                # line has nowhere to land there, so it falls through to unattributed.
+                if resolved is not None and resolved.is_dir():
+                    feature_dir = resolved
         except Exception:  # noqa: BLE001
             feature_dir = None
 

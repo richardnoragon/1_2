@@ -1748,7 +1748,7 @@ class NetworkTransferGUI(StandardWindow):
                 resolved_path = current_path.resolve()
                 if self._is_symlink_loop(resolved_path, base_path):
                     self.logger.warning(
-                        f"Symbolic link loop detected, skipping: " f"{current_path}"
+                        f"Symbolic link loop detected, skipping: {current_path}"
                     )
                     return False
             except (OSError, RuntimeError) as e:
@@ -2040,14 +2040,14 @@ class NetworkTransferGUI(StandardWindow):
         host = self.target_host.text().strip()
         port = self.target_port.value()
 
-        self.progress_bar.setVisible(True)
-        self.progress_bar.setValue(0)
+        self.progress_bar.start()
+        self.progress_bar.set_progress(0)
 
         self.transfer_client = TransferClient(host, port, transfer_data)
         self.transfer_client.connection_established.connect(
             self.on_connection_established
         )
-        self.transfer_client.progress_updated.connect(self.progress_bar.setValue)
+        self.transfer_client.progress_updated.connect(self.progress_bar.set_progress)
         self.transfer_client.transfer_completed.connect(self.on_transfer_completed)
         self.transfer_client.error_occurred.connect(self.on_transfer_error)
         self.transfer_client.start()
@@ -2376,14 +2376,14 @@ class NetworkTransferGUI(StandardWindow):
     def on_transfer_completed(self, message: str):
         """Handle transfer completion."""
         self.status_label.setText(message)
-        self.progress_bar.setVisible(False)
+        self.progress_bar.stop()
         QMessageBox.information(self, "Transfer Complete", message)
         self.load_transfer_history()
 
     def on_transfer_error(self, error: str):
         """Handle transfer error."""
         self.status_label.setText(f"Transfer failed: {error}")
-        self.progress_bar.setVisible(False)
+        self.progress_bar.stop()
         QMessageBox.critical(self, "Transfer Error", error)
 
     def on_client_connected(self, host: str, port: int):

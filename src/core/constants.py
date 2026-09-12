@@ -23,10 +23,11 @@ def token(key: str, default: str = "#000000") -> str:
 
 
 # Application Identity
-APP_NAME = "Richard's File Utilities"
-APP_TITLE = "Richard's File Utilities"
+_APP_DISPLAY_NAME = "Richard's File Utilities"
+APP_NAME = _APP_DISPLAY_NAME
+APP_TITLE = _APP_DISPLAY_NAME
 APP_VERSION = "3.0.0"
-APP_ORGANIZATION = "Richard's File Utilities"
+APP_ORGANIZATION = _APP_DISPLAY_NAME
 
 # File Types and Filters
 JSON_FILES_FILTER = "JSON Files (*.json);;All Files (*)"

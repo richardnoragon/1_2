@@ -299,9 +299,7 @@ class DatabaseLogService:
 
         try:
             cutoff_date = datetime.now().isoformat()
-            query = (
-                "DELETE FROM app_logs WHERE timestamp < " "datetime(?, ? || ' days')"
-            )
+            query = "DELETE FROM app_logs WHERE timestamp < datetime(?, ? || ' days')"
             db_manager = cast(Any, self.db_manager)
             affected = db_manager.execute_update(
                 query, (cutoff_date, f"-{retention_days}")

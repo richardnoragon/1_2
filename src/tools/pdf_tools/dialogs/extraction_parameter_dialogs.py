@@ -44,6 +44,8 @@ from PyQt5.QtWidgets import (
 from src.gui.components.buttons import PrimaryButton, SecondaryButton
 from src.gui.components.inputs import TextInput
 
+PDF_OPEN_FILE_FILTER = "PDF Files (*.pdf);;All Files (*)"
+
 # Set up logger
 logger = logging.getLogger(__name__)
 

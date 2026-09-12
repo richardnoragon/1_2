@@ -52,6 +52,7 @@ BURST_MIN_TASKS = 3
 #: process is alive, so time since the start is the only honest signal — and the
 #: symptom this check exists for is a step that has been open for days.
 IN_FLIGHT_GRACE_SECONDS = 30 * 60
+NO_REASON_RECORDED = "no reason recorded"
 
 
 def _no_record(check: str, feature_dir: Path, ctx: dict) -> CheckStatus | None:
@@ -115,20 +116,33 @@ def _task_finish_times(ctx: dict) -> list:
     return sorted(out, key=lambda p: p[1])
 
 
+def _step_anomaly(step: str, by: str | None, at: str | None) -> tuple[str, str | None, str | None, str] | None:
+    if step in EXTENSION_STEPS and by == "ai":
+        return (
+            step,
+            by,
+            at,
+            "the extension stamps this step's boundaries; an ai complete lands first and permanently blocks the hook's close",
+        )
+    if step in AI_STEPS and by == "extension":
+        return (
+            step,
+            by,
+            at,
+            "this step is self-closed by the ai; an extension complete here means a hook fired for a step it does not own",
+        )
+    return None
+
+
 def _attribution_anomalies(ctx: dict) -> list:
     out = []
     for e in log_entries(ctx):
         step, by = e.get("step"), e.get("by")
         if not isinstance(step, str) or _entry_kind(e) != "complete" or not _is_step_level(e):
             continue
-        if step in EXTENSION_STEPS and by == "ai":
-            out.append((step, by, e.get("at"),
-                        "the extension stamps this step's boundaries; an ai complete lands "
-                        "first and permanently blocks the hook's close"))
-        elif step in AI_STEPS and by == "extension":
-            out.append((step, by, e.get("at"),
-                        "this step is self-closed by the ai; an extension complete here means "
-                        "a hook fired for a step it does not own"))
+        anomaly = _step_anomaly(step, by, e.get("at"))
+        if anomaly is not None:
+            out.append(anomaly)
     return out
 
 
@@ -156,7 +170,7 @@ def check_record(feature_dir: Path, ctx: dict, now: datetime | None = None) -> t
     if tasks_md.is_file():
         _all_ids, done = parse_task_markers(tasks_md)
         journaled = _journaled_task_ids(ctx)
-        missing = [t for t in done if t not in journaled]
+        missing = list(dict.fromkeys(t for t in done if t not in journaled))
         if missing:
             shown = ", ".join(missing[:8]) + (f", +{len(missing) - 8} more" if len(missing) > 8 else "")
             findings.append(Finding(
@@ -294,51 +308,45 @@ def check_completion(feature_dir: Path, ctx: dict, report=None) -> tuple:
     status = ctx.get("status")
     attempts = _completion_attempts(feature_dir, ctx)
     verdict = {"attempted": bool(attempts), "outcome": None, "reason": None}
+    findings, outcome, reason = _completion_outcome(feature_dir, status, attempts, verdict)
+    verdict.update(outcome=outcome, reason=reason)
+    if report is not None:
+        report.completion = verdict
+    return CheckStatus("completion", "ran"), findings
 
-    def settled(findings: list) -> tuple:
-        """Publish the verdict onto the report, then hand back this check's result."""
-        if report is not None:
-            report.completion = verdict
-        return CheckStatus("completion", "ran"), findings
 
+def _completion_outcome(feature_dir: Path, status: str, attempts: list, verdict: dict) -> tuple[list, str, str | None]:
     if status in ("completed", "archived"):
-        verdict.update(outcome="completed")
-        return settled([])
+        return [], "completed", None
 
     if not attempts:
-        verdict.update(outcome="not-attempted")
         if not _tasks_all_checked(feature_dir):
-            return settled([])
-        return settled([Finding(
+            return [], "not-attempted", None
+        return [Finding(
             "completion", "note",
             "Every task is checked but completion was never attempted",
             f"the spec sits at `{status}`; nothing tried to mark it complete, so this is "
             f"a step that did not run rather than a write that failed",
             verdict,
-        )])
+        )], "not-attempted", None
 
     failed = [a for a in attempts if not a.get("ok")]
     if failed:
-        reason = failed[-1].get("reason") or "no reason recorded"
-        verdict.update(outcome="refused", reason=reason)
-        return settled([Finding(
+        reason = failed[-1].get("reason") or NO_REASON_RECORDED
+        return [Finding(
             "completion", "problem",
             "Marking this spec complete was refused",
             reason,
             verdict,
-        )])
+        )], "refused", reason
 
-    verdict.update(
-        outcome="never-arrived",
-        reason=f"a completion call was recorded as succeeding, but the status is still `{status}`",
-    )
-    return settled([Finding(
+    reason = f"a completion call was recorded as succeeding, but the status is still `{status}`"
+    return [Finding(
         "completion", "problem",
         "A completion write was recorded but the spec never landed as completed",
-        verdict["reason"] + " — the write went somewhere other than this spec, or was "
-        "overwritten afterwards",
+        reason + " — the write went somewhere other than this spec, or was overwritten afterwards",
         verdict,
-    )])
+    )], "never-arrived", reason
 
 
 def _tasks_all_checked(feature_dir: Path) -> bool:
@@ -346,7 +354,7 @@ def _tasks_all_checked(feature_dir: Path) -> bool:
     if not tasks_md.is_file():
         return False
     all_ids, done = parse_task_markers(tasks_md)
-    return bool(all_ids) and len(all_ids) == len(done)
+    return bool(all_ids) and set(all_ids).issubset(set(done))
 
 
 #: The generated task-list shape: one phase per user story, waves inside each
@@ -446,7 +454,7 @@ def check_trace(feature_dir: Path, ctx: dict | None = None) -> tuple:
     if failures:
         by_reason: dict = {}
         for e in failures:
-            by_reason.setdefault(e.get("reason") or "no reason recorded", []).append(e)
+            by_reason.setdefault(e.get("reason") or NO_REASON_RECORDED, []).append(e)
         for reason, group in sorted(by_reason.items(), key=lambda kv: -len(kv[1])):
             findings.append(Finding(
                 "trace", "problem",
@@ -505,7 +513,7 @@ def _unattributed_failures(feature_dir: Path, ctx: dict) -> list:
 
 
 def _unattributed_finding(events: list) -> Finding:
-    reasons = sorted({e.get("reason") or "no reason recorded" for e in events})
+    reasons = sorted({e.get("reason") or NO_REASON_RECORDED for e in events})
     return Finding(
         "trace", "problem",
         f"{plural(len(events), 'capture call')} could not resolve a spec and wrote nothing",

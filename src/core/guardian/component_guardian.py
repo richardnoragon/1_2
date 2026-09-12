@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+from __future__ import annotations
+
 """
 Enterprise GUI Component Guardian Framework
 
@@ -806,7 +808,7 @@ def safe_gui_operation(operation: Callable[[], Any], fallback_value: Any = None)
 
 
 # Global instance
-_global_component_guardian: Optional[ComponentGuardian] = None
+_global_component_guardian: Optional["ComponentGuardian"] = None
 
 
 def get_component_guardian() -> ComponentGuardian:
@@ -821,8 +823,18 @@ def register_gui_component(
     widget: QWidget,
     component_type: Optional[str] = None,
     recovery_callback: Optional[Callable[[], bool]] = None,
+    **kwargs: Any,
 ) -> str:
-    """Convenience function for component registration."""
+    """Convenience function for component registration.
+
+    Compatibility shim: older call sites pass ``tool_id`` while newer code uses
+    ``component_type``. Both are accepted here and normalized to the guardian
+    contract.
+    """
+    if component_type is None:
+        component_type = kwargs.get("tool_id")
+    if recovery_callback is None:
+        recovery_callback = kwargs.get("recovery_callback")
     return get_component_guardian().register_component(
         widget, component_type, recovery_callback
     )

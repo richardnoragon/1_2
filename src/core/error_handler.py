@@ -21,8 +21,10 @@ except ImportError:  # pragma: no cover - graceful fallback for headless startup
         def emit(self, *args, **kwargs):
             return None
 
-    def pyqtSignal(*args, **kwargs):
+    def pyqt_signal(*args, **kwargs):
         return _FallbackSignal()
+
+    pyqtSignal = pyqt_signal
 
     class QApplication:  # type: ignore[override]
         @staticmethod
@@ -256,7 +258,7 @@ class ErrorHandler(QObject):
 # ----------------------------------------------------------------------
 # Convenience helpers mirroring legacy interface
 # ----------------------------------------------------------------------
-_error_handler: Optional[ErrorHandler] = None
+_error_handler: Optional["ErrorHandler"] = None
 
 
 def get_error_handler() -> ErrorHandler:

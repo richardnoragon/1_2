@@ -10,9 +10,13 @@ import os
 import shutil
 import subprocess
 import sys
-import winreg
 from pathlib import Path
 from typing import Dict, List, Tuple
+
+try:
+    import winreg
+except ImportError:  # pragma: no cover - Windows-only dependency
+    winreg = None
 
 
 class WindowsUtils:

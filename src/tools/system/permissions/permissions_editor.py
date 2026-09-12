@@ -249,7 +249,7 @@ class PermissionsEditorGUI(StandardWindow):
         # Control buttons
         control_layout = QHBoxLayout()
 
-        load_button = PrimaryButton("Load Current Permissions")
+        load_button = SecondaryButton("Load Current Permissions")
         load_button.setAccessibleName("Load current permissions")
         load_button.clicked.connect(self.load_permissions)
         control_layout.addWidget(load_button)

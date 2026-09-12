@@ -1,353 +1,225 @@
-"""
-Configuration management for Richard's File Utilities.
+"""Backward-compatible configuration manager for legacy imports.
 
-This module provides centralized configuration management with support for
-multiple configuration sections, default values, and automatic persistence.
+This module implements the historical flat-config behavior expected by the test
+suite and older scripts while staying compatible with newer code paths.
 """
+
+from __future__ import annotations
 
 import json
-from pathlib import Path
-from typing import Any, Dict, Optional, Union
-from threading import Lock
 import logging
+from copy import deepcopy
+from datetime import datetime
+from pathlib import Path
+from threading import Lock
+from typing import Any, Dict, Optional, Union
 
 
 class ConfigManager:
-    """Centralized configuration manager with singleton pattern."""
-    
-    _instance = None
+    """Compatibility implementation for the legacy flat-config API."""
+
+    _instance: Optional["ConfigManager"] = None
     _lock = Lock()
-    
-    def __new__(cls):
-        """Ensure singleton pattern."""
-        if cls._instance is None:
-            with cls._lock:
-                if cls._instance is None:
-                    cls._instance = super(ConfigManager, cls).__new__(cls)
-                    cls._instance._initialized = False
+
+    def __new__(cls, config_file: Optional[Union[str, Path]] = None):
+        with cls._lock:
+            if cls._instance is None:
+                cls._instance = super().__new__(cls)
+                cls._instance._initialized = False
+            if config_file is not None:
+                cls._instance._pending_config_file = Path(config_file)
         return cls._instance
-    
-    def __init__(self):
-        """Initialize the configuration manager."""
-        if not self._initialized:
-            self._setup_config()
-            self._initialized = True
-    
-    def _setup_config(self):
-        """Setup configuration management."""
-        # Configuration directory and file
-        self.config_dir = Path('config')
-        self.config_dir.mkdir(exist_ok=True)
-        self.config_file = self.config_dir / 'rfu_config.json'
-        
-        # Initialize configuration dictionary
+
+    def __init__(self, config_file: Optional[Union[str, Path]] = None):
+        if getattr(self, "_initialized", False):
+            if config_file is not None:
+                self.config_path = config_file
+            return
+
+        self.logger = logging.getLogger("RFU.LegacyConfigManager")
         self.config: Dict[str, Any] = {}
-        
-        # Setup logging
-        self.logger = logging.getLogger('RFU.ConfigManager')
-        
-        # Load existing configuration or create defaults
-        self._load_config()
-        
-        # Ensure default sections exist
-        self._ensure_default_sections()
-        
-        # Save to ensure file exists with defaults
-        self.save_config()
-        
-        self.logger.info("ConfigManager initialized successfully")
-    
-    def _load_config(self):
-        """Load configuration from file."""
-        try:
-            if self.config_file.exists():
-                with open(self.config_file, 'r', encoding='utf-8') as f:
-                    self.config = json.load(f)
-                self.logger.info(
-                    f"Configuration loaded from {self.config_file}"
-                )
-            else:
-                self.config = {}
-                self.logger.info(
-                    "No existing configuration found, using defaults"
-                )
-        except Exception as e:
-            self.logger.error(f"Failed to load configuration: {e}")
-            self.config = {}
-    
-    def _ensure_default_sections(self):
-        """Ensure default configuration sections exist."""
-        defaults = {
-            'general': {
-                'logging_level': 'INFO',
-                'enable_debug_logging': False,
-                'auto_save_config': True,
-                'theme': 'light',
-                'language': 'en',
-                'check_for_updates': True
-            },
-            'gui': {
-                'window_width': 900,
-                'window_height': 700,
-                'remember_window_position': True,
-                'show_status_bar': True,
-                'show_toolbar': True,
-                'font_size': 12,
-                'font_family': 'Segoe UI'
-            },
-            'logging': {
-                'enable_file_logging': True,
-                'enable_console_logging': True,
-                'log_file_max_size_mb': 10,
-                'log_file_backup_count': 5,
-                'enable_tool_logging': True,
-                'log_format': (
-                    '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-                )
-            },
-            'tools': {
-                'default_directory': str(Path.home()),
-                'remember_last_directory': True,
-                'show_hidden_files': False,
-                'confirm_destructive_operations': True,
-                'auto_refresh_file_lists': True
-            },
-            'network_connectivity': {},
-            'pdf_tools': {},
-            'privacy_tools': {},
-            'software_maintenance': {}
+        self.config_dir = Path("config")
+        self.config_file = self.config_dir / "rfu_config.json"
+        self._pending_config_file = None
+        self._initialized = True
+
+        if config_file is not None:
+            self.config_path = config_file
+        else:
+            self._ensure_default_config()
+            self.load_config()
+
+    def _default_config(self) -> Dict[str, Any]:
+        return {
+            "last_directory": str(Path.home()),
+            "file_types": [".txt", ".doc", ".pdf"],
+            "theme": "light",
+            "language": "en",
+            "auto_backup": True,
+            "max_recent_files": 10,
+            "show_hidden": False,
         }
-        
-        # Add missing sections and settings
-        for section, section_defaults in defaults.items():
-            if section not in self.config:
-                self.config[section] = {}
-            
-            for key, default_value in section_defaults.items():
-                if key not in self.config[section]:
-                    self.config[section][key] = default_value
-    
-    def get_setting(self, section: str, key: Optional[str] = None,
-                    default: Any = None) -> Any:
-        """
-        Get a configuration setting.
-        
-        Args:
-            section: Configuration section name
-            key: Setting key (if None, returns entire section)
-            default: Default value if setting not found
-            
-        Returns:
-            Configuration value or default
-        """
+
+    def _validate_config(self, config_data: Dict[str, Any]) -> None:
+        if not isinstance(config_data, dict):
+            raise ValueError("Configuration must be a dictionary")
+
+        if "theme" in config_data and not isinstance(config_data["theme"], str):
+            raise ValueError("Theme must be a string")
+        if "language" in config_data and not isinstance(config_data["language"], str):
+            raise ValueError("Language must be a string")
+        if "show_hidden" in config_data and not isinstance(config_data["show_hidden"], bool):
+            raise ValueError("show_hidden must be a boolean")
+        if "auto_backup" in config_data and not isinstance(config_data["auto_backup"], bool):
+            raise ValueError("auto_backup must be a boolean")
+        if "max_recent_files" in config_data and not isinstance(config_data["max_recent_files"], int):
+            raise ValueError("max_recent_files must be an integer")
+
+    def _ensure_default_config(self) -> None:
+        defaults = self._default_config()
+        for key, value in defaults.items():
+            self.config.setdefault(key, deepcopy(value))
+
+    def _load_from_disk(self) -> Dict[str, Any]:
+        if not self.config_file.exists():
+            self.config = self._default_config()
+            return deepcopy(self.config)
+
         try:
-            if section not in self.config:
-                self.logger.warning(
-                    f"Configuration section '{section}' not found"
-                )
-                return default
-            
-            if key is None:
-                return self.config[section]
-            
-            if key not in self.config[section]:
-                self.logger.debug(
-                    f"Configuration key '{section}.{key}' not found, "
-                    f"using default: {default}"
-                )
-                return default
-            
-            return self.config[section][key]
-            
-        except Exception as e:
-            self.logger.error(f"Error getting setting {section}.{key}: {e}")
-            return default
-    
-    def set_setting(self, section: str, key: str, value: Any) -> bool:
-        """
-        Set a configuration setting.
-        
-        Args:
-            section: Configuration section name
-            key: Setting key
-            value: Setting value
-            
-        Returns:
-            bool: True if setting was saved successfully
-        """
-        try:
-            # Ensure section exists
-            if section not in self.config:
-                self.config[section] = {}
-            
-            # Set the value
-            self.config[section][key] = value
-            
-            # Auto-save if enabled
-            if self.get_setting('general', 'auto_save_config', True):
-                self.save_config()
-            
-            self.logger.debug(f"Set configuration {section}.{key} = {value}")
-            return True
-            
-        except Exception as e:
-            self.logger.error(f"Error setting {section}.{key}: {e}")
-            return False
-    
-    def get_section(self, section: str) -> Dict[str, Any]:
-        """
-        Get an entire configuration section.
-        
-        Args:
-            section: Section name
-            
-        Returns:
-            Dictionary with section settings
-        """
-        return self.config.get(section, {})
-    
-    def set_section(self, section: str, settings: Dict[str, Any]) -> bool:
-        """
-        Set an entire configuration section.
-        
-        Args:
-            section: Section name
-            settings: Dictionary with section settings
-            
-        Returns:
-            bool: True if section was saved successfully
-        """
-        try:
-            self.config[section] = settings.copy()
-            
-            # Auto-save if enabled
-            if self.get_setting('general', 'auto_save_config', True):
-                self.save_config()
-            
-            self.logger.info(f"Set configuration section '{section}'")
-            return True
-            
-        except Exception as e:
-            self.logger.error(f"Error setting section {section}: {e}")
-            return False
-    
-    def remove_setting(self, section: str, key: str) -> bool:
-        """
-        Remove a configuration setting.
-        
-        Args:
-            section: Configuration section name
-            key: Setting key
-            
-        Returns:
-            bool: True if setting was removed successfully
-        """
-        try:
-            if section in self.config and key in self.config[section]:
-                del self.config[section][key]
-                
-                # Auto-save if enabled
-                if self.get_setting('general', 'auto_save_config', True):
-                    self.save_config()
-                
-                self.logger.info(f"Removed configuration {section}.{key}")
-                return True
-            else:
-                self.logger.warning(
-                    f"Configuration {section}.{key} not found for removal"
-                )
-                return False
-                
-        except Exception as e:
-            self.logger.error(f"Error removing {section}.{key}: {e}")
-            return False
-    
-    def save_config(self) -> bool:
-        """
-        Save configuration to file.
-        
-        Returns:
-            bool: True if configuration was saved successfully
-        """
-        try:
-            # Ensure directory exists
-            self.config_dir.mkdir(exist_ok=True)
-            
-            # Write configuration file
-            with open(self.config_file, 'w', encoding='utf-8') as f:
-                json.dump(self.config, f, indent=2, ensure_ascii=False)
-            
-            self.logger.debug(f"Configuration saved to {self.config_file}")
-            return True
-            
-        except Exception as e:
-            self.logger.error(f"Failed to save configuration: {e}")
-            return False
-    
-    def load_config(self) -> bool:
-        """
-        Reload configuration from file.
-        
-        Returns:
-            bool: True if configuration was loaded successfully
-        """
-        try:
-            self._load_config()
-            self._ensure_default_sections()
-            self.logger.info("Configuration reloaded successfully")
-            return True
-        except Exception as e:
-            self.logger.error(f"Failed to reload configuration: {e}")
-            return False
-    
-    def reset_to_defaults(self) -> bool:
-        """
-        Reset configuration to default values.
-        
-        Returns:
-            bool: True if reset was successful
-        """
-        try:
-            self.config = {}
-            self._ensure_default_sections()
-            self.save_config()
-            self.logger.info("Configuration reset to defaults")
-            return True
-        except Exception as e:
-            self.logger.error(f"Failed to reset configuration: {e}")
-            return False
-    
-    def get_all_settings(self) -> Dict[str, Any]:
-        """
-        Get all configuration settings.
-        
-        Returns:
-            Complete configuration dictionary
-        """
+            with open(self.config_file, "r", encoding="utf-8") as handle:
+                data = json.load(handle)
+        except (json.JSONDecodeError, OSError):
+            self.logger.warning("Invalid config file %s; using defaults", self.config_file)
+            self.config = self._default_config()
+            return deepcopy(self.config)
+
+        if not isinstance(data, dict):
+            self.config = self._default_config()
+            return deepcopy(self.config)
+
+        merged = self._default_config()
+        merged.update(data)
+        self.config = merged
+        return deepcopy(self.config)
+
+    @property
+    def config_path(self):
+        return self.config_file
+
+    @config_path.setter
+    def config_path(self, value):
+        self.config_file = Path(value).expanduser()
+        self.config_dir = self.config_file.parent
+        self.config_dir.mkdir(parents=True, exist_ok=True)
+        self._load_from_disk()
+        self._ensure_default_config()
+
+    def get_value(self, key: str, default: Any = None):
+        return self.config.get(key, default)
+
+    def set_value(self, key: str, value: Any):
+        self.config[key] = value
+        self.save_config()
+        return value
+
+    def merge_config(self, updates: Dict[str, Any]):
+        if not isinstance(updates, dict):
+            raise ValueError("merge_config expects a dictionary")
+        self.config.update(updates)
+        self.save_config()
         return self.config.copy()
-    
-    def export_config(self, export_path: Union[str, Path]) -> bool:
-        """
-        Export configuration to a file.
-        
-        Args:
-            export_path: Path to export file
-            
-        Returns:
-            bool: True if export was successful
-        """
-        try:
-            export_file = Path(export_path)
-            export_file.parent.mkdir(parents=True, exist_ok=True)
-            
-            with open(export_file, 'w', encoding='utf-8') as f:
-                json.dump(self.config, f, indent=2, ensure_ascii=False)
-            
-            self.logger.info(f"Configuration exported to {export_file}")
-            return True
-            
-        except Exception as e:
-            self.logger.error(f"Failed to export configuration: {e}")
+
+    def save_config(self, config_data: Optional[Dict[str, Any]] = None, validate_required: bool = False):
+        if config_data is not None:
+            self._validate_config(config_data)
+            if validate_required:
+                required = ["theme", "language"]
+                missing = [key for key in required if key not in config_data]
+                if missing:
+                    raise ValueError(f"Missing required configuration field(s): {missing}")
+            self.config.update(config_data)
+            self._ensure_default_config()
+
+        self._validate_config(self.config)
+        self.config_dir.mkdir(parents=True, exist_ok=True)
+        with open(self.config_file, "w", encoding="utf-8") as handle:
+            json.dump(self.config, handle, indent=2, ensure_ascii=False)
+        return True
+
+    def load_config(self):
+        self._load_from_disk()
+        self._ensure_default_config()
+        return self.config.copy()
+
+    def get_config(self):
+        self._load_from_disk()
+        self._ensure_default_config()
+        return self.config.copy()
+
+    def update_config(self, key: str, value: Any):
+        self.set_value(key, value)
+
+    def update_multiple(self, updates: Dict[str, Any]):
+        self.merge_config(updates)
+
+    def reset_to_defaults(self):
+        self.config = self._default_config()
+        self.save_config()
+        return True
+
+    def create_backup(self) -> str:
+        if not self.config_file.exists():
+            self.save_config()
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        backup_path = self.config_dir / f"{self.config_file.stem}_backup_{timestamp}.json"
+        with open(self.config_file, "r", encoding="utf-8") as src, open(backup_path, "w", encoding="utf-8") as dst:
+            dst.write(src.read())
+        return str(backup_path)
+
+    def restore_from_backup(self, backup_file: Union[str, Path]):
+        backup_path = Path(backup_file)
+        if not backup_path.exists():
+            raise FileNotFoundError(f"Backup file not found: {backup_path}")
+        with open(backup_path, "r", encoding="utf-8") as src, open(self.config_file, "w", encoding="utf-8") as dst:
+            dst.write(src.read())
+        self.load_config()
+
+    def get_setting(self, section: str, key: Optional[str] = None, default: Any = None):
+        if key is None:
+            return self.config.get(section, default)
+        return self.config.get(key, default)
+
+    def set_setting(self, section: str, key: str, value: Any):
+        self.config[key] = value
+        return self.save_config()
+
+    def get_section(self, section: str):
+        return self.config.copy()
+
+    def set_section(self, section: str, settings: Dict[str, Any]):
+        self.config.update(settings)
+        return self.save_config()
+
+    def remove_setting(self, section: str, key: str):
+        self.config.pop(key, None)
+        return self.save_config()
+
+    def get_all_settings(self):
+        return self.config.copy()
+
+    def export_config(self, export_path):
+        export_file = Path(export_path)
+        export_file.parent.mkdir(parents=True, exist_ok=True)
+        with open(export_file, "w", encoding="utf-8") as handle:
+            json.dump(self.config, handle, indent=2, ensure_ascii=False)
+        return True
+
+
+def get_config_manager():
+    return ConfigManager()
+
+
+__all__ = ["ConfigManager", "get_config_manager"]
             return False
     
     def import_config(self, import_path: Union[str, Path]) -> bool:

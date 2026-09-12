@@ -172,10 +172,14 @@ class FolderConfiguration:
 
     def __init__(
         self,
-        name: str,
+        name: Optional[str] = None,
         description: str = "",
         folder_type: FolderType = FolderType.SMART_FOLDER,
         folder_id: Optional[str] = None,
+        path: Optional[str] = None,
+        enabled: bool = True,
+        created_date: Optional[datetime] = None,
+        **kwargs,
     ):
         """
         Initialize folder configuration.
@@ -188,12 +192,14 @@ class FolderConfiguration:
         """
         # Core identification
         self.folder_id = folder_id or str(uuid.uuid4())
-        self.name = name
+        self.name = name or ""
         self.description = description
         self.folder_type = folder_type
+        self.path = path or ""
+        self.enabled = enabled
+        self.created_at = created_date or datetime.now(timezone.utc)
 
         # Timestamps
-        self.created_at = datetime.now(timezone.utc)
         self.modified_at = self.created_at
         self.last_accessed_at = self.created_at
 
@@ -462,9 +468,12 @@ class FolderConfiguration:
         return {
             # Core identification
             "folder_id": self.folder_id,
+            "id": self.folder_id,
             "name": self.name,
             "description": self.description,
+            "path": self.path,
             "folder_type": self.folder_type.value,
+            "enabled": self.enabled,
             # Timestamps
             "created_at": self.created_at.isoformat(),
             "modified_at": self.modified_at.isoformat(),
@@ -509,19 +518,22 @@ class FolderConfiguration:
         """
         try:
             # Create base instance
+            folder_type_value = data.get("folder_type", FolderType.SMART_FOLDER.value)
+            parse_folder_type = FolderType(folder_type_value)
             config = cls(
-                name=data["name"],
+                name=data.get("name", ""),
                 description=data.get("description", ""),
-                folder_type=FolderType(data["folder_type"]),
-                folder_id=data["folder_id"],
+                folder_type=parse_folder_type,
+                folder_id=data.get("folder_id") or data.get("id"),
+                path=data.get("path", ""),
+                enabled=data.get("enabled", True),
+                created_date=datetime.fromisoformat(data["created_at"]) if "created_at" in data and data["created_at"] else None,
             )
 
             # Restore timestamps
-            config.created_at = datetime.fromisoformat(data["created_at"])
-            config.modified_at = datetime.fromisoformat(data["modified_at"])
-            config.last_accessed_at = datetime.fromisoformat(
-                data["last_accessed_at"]
-            )
+            config.created_at = datetime.fromisoformat(data["created_at"]) if data.get("created_at") else config.created_at
+            config.modified_at = datetime.fromisoformat(data["modified_at"]) if data.get("modified_at") else config.modified_at
+            config.last_accessed_at = datetime.fromisoformat(data["last_accessed_at"]) if data.get("last_accessed_at") else config.last_accessed_at
 
             # Restore target directories
             config.target_directories = [

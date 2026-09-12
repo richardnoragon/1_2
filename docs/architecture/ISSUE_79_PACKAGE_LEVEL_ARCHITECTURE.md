@@ -107,7 +107,7 @@ The entry points should remain thin and orchestration-focused:
 
 ### ApplicationState
 
-`ApplicationState` is the shared façade for hub-style entry points. It bundles the logger, config manager, preference manager, audit trail, and database availability flag into a single object.
+`ApplicationState` is the shared façade for hub-style entry points. It bundles `logger`, `config_manager`, `preference_manager`, `audit_trail`, and `database_available` into a single object.
 
 This reduces duplication and ensures that multiple UI entry points do not each re-invent the same startup wiring logic.
 

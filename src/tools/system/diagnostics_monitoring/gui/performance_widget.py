@@ -254,8 +254,9 @@ class PerformanceWidget(QWidget):
         self.cpu_usage_label.setFont(Typography.h2())
         cpu_layout.addWidget(self.cpu_usage_label, 0, 1)
 
-        self.cpu_usage_bar = LoadingIndicator(parent=self, message="CPU usage")
+        self.cpu_usage_bar = QProgressBar()
         self.cpu_usage_bar.setRange(0, 100)
+        self.cpu_usage_bar.setFormat("%p%")
         cpu_layout.addWidget(self.cpu_usage_bar, 0, 2)
 
         # CPU details
@@ -311,8 +312,9 @@ class PerformanceWidget(QWidget):
         self.memory_usage_label.setFont(Typography.h2())
         memory_layout.addWidget(self.memory_usage_label, 0, 1)
 
-        self.memory_usage_bar = LoadingIndicator(parent=self, message="Memory usage")
+        self.memory_usage_bar = QProgressBar()
         self.memory_usage_bar.setRange(0, 100)
+        self.memory_usage_bar.setFormat("%p%")
         memory_layout.addWidget(self.memory_usage_bar, 0, 2)
 
         # Memory details
@@ -338,8 +340,9 @@ class PerformanceWidget(QWidget):
         self.swap_usage_label = QLabel("0%")
         swap_layout.addWidget(self.swap_usage_label, 0, 1)
 
-        self.swap_usage_bar = LoadingIndicator(parent=self, message="Swap usage")
+        self.swap_usage_bar = QProgressBar()
         self.swap_usage_bar.setRange(0, 100)
+        self.swap_usage_bar.setFormat("%p%")
         swap_layout.addWidget(self.swap_usage_bar, 0, 2)
 
         swap_layout.addWidget(QLabel("Total:"), 1, 0)
@@ -677,10 +680,10 @@ class PerformanceWidget(QWidget):
                 label = QLabel(f"Core {i}:")
                 self.per_core_layout.addWidget(label, i // 4, (i % 4) * 2)
 
-                progress = LoadingIndicator(parent=self, message=f"Core {i} usage")
+                progress = QProgressBar()
                 progress.setRange(0, 100)
                 progress.setValue(int(usage))
-                progress.setFormat(f"{usage:.1f}%")
+                progress.setFormat("%p%")
                 self.per_core_layout.addWidget(progress, i // 4, (i % 4) * 2 + 1)
 
         except Exception as e:

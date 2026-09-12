@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import importlib
 import logging
-from dataclasses import asdict, dataclass, field
+from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any, Optional, Type
 
@@ -34,7 +34,14 @@ class ToolRuntimeRecord:
     current_operation: Optional[str] = None
 
     def as_dict(self) -> dict[str, Any]:
-        return asdict(self)
+        return {
+            "tool_name": self.tool_name,
+            "tool_class_name": type(self.tool_instance).__name__,
+            "status": self.status,
+            "last_activity": self.last_activity.isoformat(),
+            "progress": self.progress,
+            "current_operation": self.current_operation,
+        }
 
 
 def resolve_tool_launch_request(

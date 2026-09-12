@@ -437,7 +437,7 @@ ToolManifestRegistry.register(
     ToolManifestEntry(
         tool_id="security-preferences",
         display_name="Security Preferences",
-        module_path="src.utilities.security.security_preferences",
+        module_path="src.tools.security.security_preferences",
         class_name="SecurityPreferencesGUI",
         category="security",
     )

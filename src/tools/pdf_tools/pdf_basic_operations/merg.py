@@ -58,9 +58,7 @@ def merge_pdfs(input_files: list, output_file: str) -> bool:
                 QMessageBox.critical(
                     None,
                     "Error",
-                    f"Error processing file %s: %s",
-                    input_file,
-                    str(e),
+                    f"Error processing file {input_file}: {str(e)}",
                 )
                 return False
 
@@ -76,13 +74,12 @@ def merge_pdfs(input_files: list, output_file: str) -> bool:
             QMessageBox.critical(
                 None,
                 "Error",
-                f"Permission denied when saving output file: %s",
-                output_file,
+                f"Permission denied when saving output file: {output_file}",
             )
         except Exception as e:
             logger.error("Error saving merged file: %s", str(e))
             QMessageBox.critical(
-                None, "Error", f"Error saving merged file: %s", str(e)
+                None, "Error", f"Error saving merged file: {str(e)}"
             )
         return False
 
@@ -95,8 +92,7 @@ def merge_pdfs(input_files: list, output_file: str) -> bool:
         QMessageBox.critical(
             None,
             "Error",
-            f"Unexpected error during merge operation: %s",
-            str(e),
+            f"Unexpected error during merge operation: {str(e)}",
         )
         return False
 
@@ -181,7 +177,7 @@ class MergeUI(QMainWindow):
         except Exception as e:
             logger.error("Error adding files: %s", str(e))
             QMessageBox.critical(
-                self, "Error", f"Error adding files: %s", str(e)
+                self, "Error", f"Error adding files: {str(e)}"
             )
 
     def remove_file(self):
@@ -196,7 +192,7 @@ class MergeUI(QMainWindow):
         except Exception as e:
             logger.error("Error removing file: %s", str(e))
             QMessageBox.critical(
-                self, "Error", f"Error removing file: %s", str(e)
+                self, "Error", f"Error removing file: {str(e)}"
             )
 
     def clear_files(self):
@@ -209,7 +205,7 @@ class MergeUI(QMainWindow):
         except Exception as e:
             logger.error("Error clearing files: %s", str(e))
             QMessageBox.critical(
-                self, "Error", f"Error clearing files: %s", str(e)
+                self, "Error", f"Error clearing files: {str(e)}"
             )
 
     def move_up(self):
@@ -229,7 +225,7 @@ class MergeUI(QMainWindow):
         except Exception as e:
             logger.error("Error moving file up: %s", str(e))
             QMessageBox.critical(
-                self, "Error", f"Error moving file up: %s", str(e)
+                self, "Error", f"Error moving file up: {str(e)}"
             )
 
     def move_down(self):
@@ -249,7 +245,7 @@ class MergeUI(QMainWindow):
         except Exception as e:
             logger.error("Error moving file down: %s", str(e))
             QMessageBox.critical(
-                self, "Error", f"Error moving file down: %s", str(e)
+                self, "Error", f"Error moving file down: {str(e)}"
             )
 
     def merge_files(self):
@@ -266,8 +262,8 @@ class MergeUI(QMainWindow):
             )
 
             if output_file:
-                self.progressBar.show()
-                self.progressBar.setValue(0)
+                self.progressBar.start()
+                self.progressBar.set_progress(0)
                 self.statusBar().showMessage("Preparing to merge PDFs...")
                 QtWidgets.QApplication.processEvents()
 
@@ -278,18 +274,18 @@ class MergeUI(QMainWindow):
                     progress = int(
                         (i / total_files) * 90
                     )  # Leave 10% for final operations
-                    self.progressBar.setValue(progress)
+                    self.progressBar.set_progress(progress)
                     self.statusBar().showMessage(
                         f"Processing file {i} of {total_files}..."
                     )
                     QtWidgets.QApplication.processEvents()
 
-                self.progressBar.setValue(95)
+                self.progressBar.set_progress(95)
                 self.statusBar().showMessage("Finalizing merge...")
                 QtWidgets.QApplication.processEvents()
 
                 if merge_pdfs(self.files, output_file):
-                    self.progressBar.setValue(100)
+                    self.progressBar.set_progress(100)
                     logger.info("Merge completed successfully")
                     QMessageBox.information(
                         self, "Success", "PDFs merged successfully!"
@@ -302,31 +298,31 @@ class MergeUI(QMainWindow):
                     )
                     self.statusBar().showMessage("Merge failed", 3000)
 
-                self.progressBar.hide()
+                self.progressBar.stop()
 
         except Exception as e:
             logger.error(
                 "Error during merge operation: %s", str(e), exc_info=True
             )
             QMessageBox.critical(
-                self, "Error", f"Error during merge operation: %s", str(e)
+                self, "Error", f"Error during merge operation: {str(e)}"
             )
             self.statusBar().showMessage("Error during merge", 3000)
-            self.progressBar.hide()
+            self.progressBar.stop()
 
 
 def main():
     try:
         logger.info("Starting Merge PDF application")
         app = QApplication(sys.argv)
-        window = MergeUI()
+        MergeUI()
         sys.exit(app.exec_())
     except Exception as e:
         logger.critical(
             "Application failed to start: %s", str(e), exc_info=True
         )
         QMessageBox.critical(
-            None, "Fatal Error", f"Application failed to start: %s", str(e)
+            None, "Fatal Error", f"Application failed to start: {str(e)}"
         )
         sys.exit(1)
 

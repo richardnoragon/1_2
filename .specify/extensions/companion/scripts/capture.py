@@ -23,6 +23,8 @@ from spec_context import (
     read_ctx,
 )
 
+SPEC_CONTEXT_REL = ".spec-context.json"
+
 def _coerce_value(raw: str):
     """Coerce a `--set key=value` string into bool/int/None where it reads as one, else the string."""
     low = raw.lower()
@@ -44,7 +46,7 @@ def set_fields(feature_dir: Path, pairs: list[str]) -> Path | None:
     lifecycle log (history, status, currentStep) untouched. Used by auto to record
     `unattended=true` without disturbing it. Lifecycle keys are refused so `--set`
     can never bypass the `--mark-complete` / hook-driven status writers."""
-    target = feature_dir / ".spec-context.json"
+    target = feature_dir / SPEC_CONTEXT_REL
     branch = _git_branch(_repo_root_for(feature_dir)) or "main"
     ctx = read_ctx(target)
     fill_required(ctx, feature_dir, branch)
@@ -74,7 +76,7 @@ def set_living_specs_loaded(feature_dir: Path, names: list[str]) -> Path | None:
     cleaned = [n.strip() for n in names if n and n.strip()]
     if not cleaned:
         return None
-    target = feature_dir / ".spec-context.json"
+    target = feature_dir / SPEC_CONTEXT_REL
     branch = _git_branch(_repo_root_for(feature_dir)) or "main"
     ctx = read_ctx(target)
     fill_required(ctx, feature_dir, branch)
@@ -105,7 +107,7 @@ def set_living_specs_synced(feature_dir: Path, names: list[str]) -> Path | None:
     cleaned = [n.strip() for n in names if n and n.strip()]
     if not cleaned:
         return None
-    target = feature_dir / ".spec-context.json"
+    target = feature_dir / SPEC_CONTEXT_REL
     branch = _git_branch(_repo_root_for(feature_dir)) or "main"
     ctx = read_ctx(target)
     fill_required(ctx, feature_dir, branch)
@@ -146,7 +148,7 @@ def set_living_specs_skipped(feature_dir: Path, entries: list[dict]) -> Path | N
         cleaned.append({"name": name, "reason": reason})
     if not cleaned:
         return None
-    target = feature_dir / ".spec-context.json"
+    target = feature_dir / SPEC_CONTEXT_REL
     branch = _git_branch(_repo_root_for(feature_dir)) or "main"
     ctx = read_ctx(target)
     fill_required(ctx, feature_dir, branch)
@@ -214,7 +216,7 @@ def append_capture_entries(
     entries = [e for e in (_coerce_entry(r, identity_key) for r in raws) if e]
     if not entries:
         return None
-    target = feature_dir / ".spec-context.json"
+    target = feature_dir / SPEC_CONTEXT_REL
     branch = _git_branch(_repo_root_for(feature_dir)) or "main"
     ctx = read_ctx(target)
     fill_required(ctx, feature_dir, branch)
@@ -238,7 +240,7 @@ def append_string_list(feature_dir: Path, field: str, values: list[str]) -> Path
     cleaned = [v.strip() for v in values if v and v.strip()]
     if not cleaned:
         return None
-    target = feature_dir / ".spec-context.json"
+    target = feature_dir / SPEC_CONTEXT_REL
     branch = _git_branch(_repo_root_for(feature_dir)) or "main"
     ctx = read_ctx(target)
     fill_required(ctx, feature_dir, branch)
@@ -266,7 +268,7 @@ def upsert_coverage(
     if not tasks and not tests and not title:
         # Nothing to record — writing {} would fake a coverage entry.
         return None
-    target = feature_dir / ".spec-context.json"
+    target = feature_dir / SPEC_CONTEXT_REL
     branch = _git_branch(_repo_root_for(feature_dir)) or "main"
     ctx = read_ctx(target)
     fill_required(ctx, feature_dir, branch)
@@ -299,7 +301,7 @@ def upsert_step_summary(feature_dir: Path, step: str, raw: str) -> Path | None:
     entry = _coerce_entry(raw, "summary")
     if entry is None:
         return None
-    target = feature_dir / ".spec-context.json"
+    target = feature_dir / SPEC_CONTEXT_REL
     branch = _git_branch(_repo_root_for(feature_dir)) or "main"
     ctx = read_ctx(target)
     fill_required(ctx, feature_dir, branch)
@@ -335,7 +337,7 @@ def _parsed_classification(raw: str) -> dict:
 def set_classification(feature_dir: Path, raw: str) -> Path:
     """Store the size classification's inputs + verdict as one object."""
     obj = _parsed_classification(raw)
-    target = feature_dir / ".spec-context.json"
+    target = feature_dir / SPEC_CONTEXT_REL
     branch = _git_branch(_repo_root_for(feature_dir)) or "main"
     ctx = read_ctx(target)
     fill_required(ctx, feature_dir, branch)
@@ -375,8 +377,21 @@ def _parsed_batch(raw: str) -> dict:
         if key in doc and not isinstance(doc[key], list):
             raise ValueError(f"--batch '{key}' must be a list")
     for item in doc.get("coverage") or []:
-        if not isinstance(item, dict) or not item.get("req"):
-            raise ValueError("--batch 'coverage' entries need a 'req' key")
+        if not isinstance(item, dict):
+            raise ValueError("--batch 'coverage' entries need a mapping")
+        req = item.get("req")
+        title = item.get("title")
+        tasks = item.get("tasks")
+        tests = item.get("tests")
+        if not isinstance(req, str) or not req.strip():
+            raise ValueError("--batch 'coverage' entries need a non-empty string 'req'")
+        if not isinstance(title, str) or not title.strip():
+            raise ValueError("--batch 'coverage' entries need a non-empty string 'title'")
+        for key, value in (("tasks", tasks), ("tests", tests)):
+            if value is not None and (
+                not isinstance(value, list) or any(not isinstance(x, str) for x in value)
+            ):
+                raise ValueError(f"--batch 'coverage' entries need string lists for '{key}'")
     if "step_summary" in doc and not isinstance(doc["step_summary"], dict):
         raise ValueError("--batch 'step_summary' must be an object")
     return doc
@@ -387,17 +402,7 @@ def _as_raw(items: list) -> list:
     return [x if isinstance(x, str) else json.dumps(x, ensure_ascii=False) for x in items]
 
 
-def apply_batch(feature_dir: Path, raw: str, step: str) -> tuple:
-    """Apply the whole end-of-step volley, returning (target, [what landed])."""
-    doc = _parsed_batch(raw)
-    target, landed = None, []
-
-    def note(result, label):
-        nonlocal target
-        if result is not None:
-            target = result
-            landed.append(label)
-
+def _append_batch_entries(feature_dir: Path, doc: dict, target, landed: list[str]) -> Path | None:
     for field, key, identity in (
         ("decisions", "decisions", "decision"),
         ("verified", "verified", "what"),
@@ -405,26 +410,60 @@ def apply_batch(feature_dir: Path, raw: str, step: str) -> tuple:
     ):
         items = doc.get(key)
         if items:
-            note(append_capture_entries(feature_dir, field, identity, _as_raw(items)),
-                 f"{len(items)} {key}")
+            result = append_capture_entries(feature_dir, field, identity, _as_raw(items))
+            if result is not None:
+                target = result
+                landed.append(f"{len(items)} {key}")
+    return target
+
+
+def _append_batch_lists(feature_dir: Path, doc: dict, target, landed: list[str]) -> Path | None:
     for field in ("expectations", "context"):
         items = doc.get(field)
         if items:
-            note(append_string_list(feature_dir, field, [str(x) for x in items]),
-                 f"{len(items)} {field}")
+            result = append_string_list(feature_dir, field, [str(x) for x in items])
+            if result is not None:
+                target = result
+                landed.append(f"{len(items)} {field}")
+    return target
+
+
+def _append_batch_coverage(feature_dir: Path, doc: dict, target, landed: list[str]) -> Path | None:
     for item in doc.get("coverage") or []:
-        note(upsert_coverage(feature_dir, item["req"], item.get("tasks"),
-                             item.get("tests"), item.get("title")),
-             f"coverage {item['req']}")
+        result = upsert_coverage(feature_dir, item["req"], item.get("tasks"), item.get("tests"), item.get("title"))
+        if result is not None:
+            target = result
+            landed.append(f"coverage {item['req']}")
+    return target
+
+
+def _append_batch_summary(feature_dir: Path, doc: dict, step: str, target, landed: list[str]) -> Path | None:
     summary = doc.get("step_summary")
     if summary:
         # The step is which slot to write, not part of the record. Passing it
         # through would store `{"step": …, "summary": …}` where the single-flag
         # form stores `{"summary": …}` — the two would not be byte-equivalent.
         body = {k: v for k, v in summary.items() if k != "step"}
-        note(upsert_step_summary(feature_dir, summary.get("step") or step,
-                                 json.dumps(body, ensure_ascii=False)),
-             "step summary")
+        result = upsert_step_summary(feature_dir, summary.get("step") or step,
+                                     json.dumps(body, ensure_ascii=False))
+        if result is not None:
+            target = result
+            landed.append("step summary")
+    return target
+
+
+def apply_batch(feature_dir: Path, raw: str, step: str) -> tuple:
+    """Apply the whole end-of-step volley, returning (target, [what landed])."""
+    doc = _parsed_batch(raw)
+    target, landed = None, []
+
+    target = _append_batch_entries(feature_dir, doc, target, landed)
+    target = _append_batch_lists(feature_dir, doc, target, landed)
+    target = _append_batch_coverage(feature_dir, doc, target, landed)
+    target = _append_batch_summary(feature_dir, doc, step, target, landed)
     if doc.get("last_action"):
-        note(set_fields(feature_dir, [f"last_action={doc['last_action']}"]), "last_action")
+        result = set_fields(feature_dir, [f"last_action={doc['last_action']}"])
+        if result is not None:
+            target = result
+            landed.append("last_action")
     return target, landed

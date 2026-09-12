@@ -48,17 +48,23 @@ class ObservabilityService:
 
     def _emit(self, record: ObservabilityRecord) -> Dict[str, Any]:
         payload = record.to_dict()
-        self.logger.log(self._level_for_status(record.status), "%s", payload)
+        try:
+            self.logger.log(self._level_for_status(record.status), "%s", payload)
+        except Exception:
+            pass
         if self.audit_trail is not None and hasattr(self.audit_trail, "log_event"):
-            self.audit_trail.log_event(
-                event_type=record.type,
-                operation=record.operation,
-                status=record.status,
-                component=record.component,
-                resource=record.file_path,
-                tool_name=record.tool_name,
-                metadata=record.metadata,
-            )
+            try:
+                self.audit_trail.log_event(
+                    event_type=record.type,
+                    operation=record.operation,
+                    status=record.status,
+                    component=record.component,
+                    resource=record.file_path,
+                    tool_name=record.tool_name,
+                    metadata=record.metadata,
+                )
+            except Exception:
+                pass
         return payload
 
     @staticmethod

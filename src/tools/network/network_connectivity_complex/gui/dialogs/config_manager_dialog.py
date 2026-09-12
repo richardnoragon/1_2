@@ -453,9 +453,10 @@ class ValidationResultsWidget(QWidget):
 
     def show_validation_progress(self, show: bool):
         """Show or hide validation progress."""
-        self.progress_bar.setVisible(show)
         if show:
-            self.progress_bar.setRange(0, 0)  # Indeterminate progress
+            self.progress_bar.start()
+        else:
+            self.progress_bar.stop()
 
 
 class ConfigurationManagerDialog(QDialog):

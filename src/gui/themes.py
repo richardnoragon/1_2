@@ -14,42 +14,54 @@ except ImportError:  # pragma: no cover - headless / startup-safe fallback
         pass
 
     class _FallbackSignal:
+        def __init__(self):
+            self._callbacks: List[Callable] = []
+
         def __call__(self, *args, **kwargs):
             return None
 
+        def connect(self, callback):
+            if callable(callback) and callback not in self._callbacks:
+                self._callbacks.append(callback)
+
+        def disconnect(self, callback):
+            if callback in self._callbacks:
+                self._callbacks.remove(callback)
+
         def emit(self, *args, **kwargs):
-            return None
+            for callback in list(self._callbacks):
+                callback(*args, **kwargs)
 
     def pyqtSignal(*args, **kwargs):
         return _FallbackSignal()
 
     class Qt:
-        AlignCenter = 0
-        Dialog = 0
-        Window = 0
-        WindowTitleHint = 0
-        WindowSystemMenuHint = 0
-        WindowCloseButtonHint = 0
-        WindowMinimizeButtonHint = 0
-        WindowMaximizeButtonHint = 0
+        align_center = 0
+        dialog = 0
+        window = 0
+        window_title_hint = 0
+        window_system_menu_hint = 0
+        window_close_button_hint = 0
+        window_minimize_button_hint = 0
+        window_maximize_button_hint = 0
 
     class QColor:
         def __init__(self, *args, **kwargs):
             self.value = args[0] if args else "#000000"
 
     class QFont:
-        Normal = 0
-        Bold = 1
-        DemiBold = 2
+        normal = 0
+        bold = 1
+        demi_bold = 2
 
         def __init__(self, *args, **kwargs):
             self.family = args[0] if args else "Sans"
             self.point_size = kwargs.get("pointSize", 10)
 
-        def setPointSize(self, value):
+        def set_point_size(self, value):
             self.point_size = value
 
-        def setWeight(self, value):
+        def set_weight(self, value):
             self.weight = value
 
 

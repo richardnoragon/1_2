@@ -105,6 +105,8 @@ except ImportError:
 try:
     from src.gui.components.buttons import PrimaryButton, SecondaryButton
     from src.gui.components.modal import Modal
+    from src.gui.components.inputs import TextInput
+    from src.gui.components.loading_indicator import LoadingIndicator
     from src.gui.components.toast import ToastNotification
 
     _CP_AVAILABLE = True
@@ -112,6 +114,58 @@ except ImportError:
     PrimaryButton = SecondaryButton = None  # type: ignore[assignment,misc]
     Modal = None  # type: ignore[assignment,misc]
     ToastNotification = None
+
+    class TextInput(QWidget):
+        def __init__(self, label: str = "", placeholder: str = ""):
+            super().__init__()
+            layout = QVBoxLayout(self)
+            self._label = QLabel(label)
+            self._edit = QLineEdit()
+            self._edit.setPlaceholderText(placeholder or label)
+            layout.addWidget(self._label)
+            layout.addWidget(self._edit)
+
+        def text(self):
+            return self._edit.text()
+
+        def clear(self):
+            self._edit.clear()
+
+        def setText(self, value):
+            self._edit.setText(value)
+
+        def setEchoMode(self, mode):
+            self._edit.setEchoMode(mode)
+
+        def setReadOnly(self, value):
+            self._edit.setReadOnly(value)
+
+        def setAccessibleName(self, value):
+            super().setAccessibleName(value)
+            self._edit.setAccessibleName(value)
+
+        def setAccessibleDescription(self, value):
+            super().setAccessibleDescription(value)
+            self._edit.setAccessibleDescription(value)
+
+    class LoadingIndicator(QProgressBar):
+        def __init__(self, parent=None, message: str = ""):
+            super().__init__(parent)
+            self.setRange(0, 100)
+            self.setFormat("%p%")
+            if message:
+                self.setToolTip(message)
+
+        def start(self):
+            self.setVisible(True)
+
+        def stop(self):
+            self.setVisible(False)
+
+        def set_progress(self, value: int, maximum: int = 100):
+            self.setRange(0, maximum)
+            self.setValue(value)
+
     _CP_AVAILABLE = False
 
 

@@ -1,34 +1,104 @@
 {
   "session_info": {
     "exit_status": 0,
-    "completion_time": "2026-09-11T16:37:11.539663",
-    "total_tests": 5
+    "completion_time": "2026-09-12T12:51:23.744511",
+    "total_tests": 19
   },
   "test_details": [
     {
-      "name": "test_audit_trail_redacts_sensitive_metadata_keys",
+      "name": "test_enhanced_config_defaults_use_12_month_audit_retention",
       "file": "test_audit_trail.py",
-      "timestamp": "2026-09-11T16:37:11.533133"
-    },
-    {
-      "name": "test_audit_trail_emits_file_and_config_events",
-      "file": "test_audit_trail.py",
-      "timestamp": "2026-09-11T16:37:11.535174"
+      "timestamp": "2026-09-12T12:51:23.715262"
     },
     {
       "name": "test_audit_trail_uses_explicit_actor_when_provided",
       "file": "test_audit_trail.py",
-      "timestamp": "2026-09-11T16:37:11.536624"
-    },
-    {
-      "name": "test_enhanced_config_defaults_use_12_month_audit_retention",
-      "file": "test_audit_trail.py",
-      "timestamp": "2026-09-11T16:37:11.538113"
+      "timestamp": "2026-09-12T12:51:23.716817"
     },
     {
       "name": "test_audit_trail_uses_default_context_for_actor_and_session",
       "file": "test_audit_trail.py",
-      "timestamp": "2026-09-11T16:37:11.539190"
+      "timestamp": "2026-09-12T12:51:23.718288"
+    },
+    {
+      "name": "test_audit_trail_redacts_sensitive_metadata_keys",
+      "file": "test_audit_trail.py",
+      "timestamp": "2026-09-12T12:51:23.719467"
+    },
+    {
+      "name": "test_audit_trail_emits_file_and_config_events",
+      "file": "test_audit_trail.py",
+      "timestamp": "2026-09-12T12:51:23.720799"
+    },
+    {
+      "name": "test_primary_token_has_readable_foreground",
+      "file": "test_gui_style_accessibility.py",
+      "timestamp": "2026-09-12T12:51:23.722356"
+    },
+    {
+      "name": "test_light_theme_required_pairs_meet_wcag_aa",
+      "file": "test_gui_style_accessibility.py",
+      "timestamp": "2026-09-12T12:51:23.723791"
+    },
+    {
+      "name": "test_contrast_ratio_black_white_reference_value",
+      "file": "test_gui_style_accessibility.py",
+      "timestamp": "2026-09-12T12:51:23.724946"
+    },
+    {
+      "name": "test_dark_theme_required_pairs_meet_wcag_aa",
+      "file": "test_gui_style_accessibility.py",
+      "timestamp": "2026-09-12T12:51:23.726098"
+    },
+    {
+      "name": "test_observability_records_tool_context",
+      "file": "test_observability.py",
+      "timestamp": "2026-09-12T12:51:23.727777"
+    },
+    {
+      "name": "test_error_handler_delegates_to_observability",
+      "file": "test_observability.py",
+      "timestamp": "2026-09-12T12:51:23.729514"
+    },
+    {
+      "name": "test_database_manager_not_loaded_during_module_import",
+      "file": "test_startup_optimization.py",
+      "timestamp": "2026-09-12T12:51:23.732616"
+    },
+    {
+      "name": "test_resolve_tool_class_uses_standard_import_strategy",
+      "file": "test_tool_lifecycle.py",
+      "timestamp": "2026-09-12T12:51:23.734523"
+    },
+    {
+      "name": "test_manifest_lookup_matches_display_name",
+      "file": "test_tool_lifecycle.py",
+      "timestamp": "2026-09-12T12:51:23.735761"
+    },
+    {
+      "name": "test_resolve_tool_launch_request_uses_manifest_lookup",
+      "file": "test_tool_lifecycle.py",
+      "timestamp": "2026-09-12T12:51:23.737183"
+    },
+    {
+      "name": "test_tool_runtime_tracker_register_update_and_unregister",
+      "file": "test_tool_lifecycle.py",
+      "timestamp": "2026-09-12T12:51:23.739290"
+    },
+    {
+      "name": "test_tool_runtime_tracker_propagates_actor_and_session_context",
+      "file": "test_tool_lifecycle.py",
+      "timestamp": "2026-09-12T12:51:23.740558"
+    },
+    {
+      "name": "test_build_application_state_uses_shared_factories",
+      "file": "test_application_state.py",
+      "timestamp": "2026-09-12T12:51:23.742539"
+    },
+    {
+      "name": "test_build_application_state_can_disable_optional_services",
+      "file": "test_application_state.py",
+      "timestamp": "2026-09-12T12:51:23.743791"
     }
   ]
 }

@@ -4,13 +4,9 @@ Individual widget components for each network connectivity tool.
 """
 
 from .bandwidth_monitor_widget import BandwidthMonitorWidget
-from .port_scanner_widget import PortScannerWidget
-from .wifi_analyzer_widget import WiFiAnalyzerWidget
-from .lan_file_transfer_widget import LANFileTransferWidget
 
+# Import only modules that exist; other widgets can be added when implemented
 __all__ = [
     "BandwidthMonitorWidget",
-    "PortScannerWidget",
-    "WiFiAnalyzerWidget",
-    "LANFileTransferWidget",
 ]
+

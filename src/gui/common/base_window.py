@@ -31,7 +31,11 @@ except ImportError:
     QSize = None
     uic = None
 
-from ...core.error_handler import error_handler
+try:
+    from core.error_handler import error_handler
+except ImportError:  # pragma: no cover - legacy fallback
+    from src.core.error_handler import error_handler
+
 from .settings import AppearanceSettings
 from .styles import get_base_styles
 
@@ -75,11 +79,18 @@ class BaseWindow(QMainWindow):
     def _apply_accessibility_defaults(self) -> None:
         """Seed baseline accessibility metadata for window surfaces."""
 
-        title = self.windowTitle() or "RFU Window"
-        self.setAccessibleName(title)
+        self._sync_accessibility_name()
         self.setAccessibleDescription(
             "Application window with keyboard-accessible controls"
         )
+
+    def _sync_accessibility_name(self) -> None:
+        title = (self.windowTitle() or "").strip()
+        self.setAccessibleName(title or "RFU Window")
+
+    def setWindowTitle(self, title):
+        super().setWindowTitle(title)
+        self._sync_accessibility_name()
 
     def _load_ui(self):
         """Load the UI file if provided."""

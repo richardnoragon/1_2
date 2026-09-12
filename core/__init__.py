@@ -24,28 +24,29 @@ if hasattr(_core_pkg, "__all__"):
         globals()[_name] = getattr(_core_pkg, _name)
 
 
-def __getattr__(name: str) -> Any:
-    """Delegate attribute access to ``src.core``."""
-    return getattr(_core_pkg, name)
-
-
-def __dir__() -> list[str]:
-    return sorted(set(globals()) | set(dir(_core_pkg)))
-
-
 def _ensure_submodule(name: str) -> ModuleType:
     """Load and cache a core submodule from the consolidated package."""
     full_name = f"{__name__}.{name}"
     if full_name in sys.modules:
         return sys.modules[full_name]  # pragma: no cover
 
-    target = importlib.import_module(f"src.core.{name}")
+    try:
+        target = importlib.import_module(f"src.core.{name}")
+    except ModuleNotFoundError:
+        # Try under src.config or other alternate paths
+        target = importlib.import_module(f"src.{name}")
+    
     sys.modules[full_name] = target
     return target
 
 
-def __getattr_submodule(name: str) -> ModuleType:
-    return _ensure_submodule(name)
+def __getattr__(name: str) -> Any:
+    """Delegate attribute access to ``src.core``."""
+    try:
+        return getattr(_core_pkg, name)
+    except AttributeError:
+        # Try loading as a submodule
+        return _ensure_submodule(name)
 
 
 # Register a finder so ``import core.foo`` transparently resolves to

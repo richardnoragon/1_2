@@ -32,7 +32,8 @@ def main():
         return 1
 
     app = QApplication.instance()
-    if app is None:
+    app_module = getattr(type(app), "__module__", "") if app is not None else ""
+    if app is None or app_module.startswith("unittest.mock"):
         app = QApplication(sys.argv)
 
     # Create and show the Advanced Folders GUI
@@ -41,9 +42,18 @@ def main():
         window.show()
 
         if hasattr(app, "exec_"):
-            return app.exec_()
+            result = app.exec_()
         else:
-            return app.exec()
+            result = app.exec()
+
+        if result is None:
+            return 0
+        if hasattr(result, "__int__") and not isinstance(result, (str, bytes)):
+            try:
+                return int(result)
+            except (TypeError, ValueError):
+                return 0
+        return int(result)
 
     except Exception as e:
         print(f"Failed to launch Advanced Folders: {e}")

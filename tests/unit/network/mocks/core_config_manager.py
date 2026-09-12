@@ -19,7 +19,7 @@ class MockConfigManager:
         self.config = {
             "network_connectivity": {
                 "general": {
-                    "default_timeout": 5000,
+                    "default_timeout": 1000,
                     "max_concurrent_operations": 10,
                     "enable_logging": True,
                     "log_level": "INFO",

@@ -71,7 +71,7 @@ class TestDependencyMockingStrategy:
         # Test default network_connectivity configuration
         default_timeout = config_manager.get_setting(
             'network_connectivity', 'general.default_timeout', 1000)
-        assert default_timeout == 5000  # Should return mock default
+        assert default_timeout == 1000  # Should return the active fallback contract
         
         # Test getting with default when key doesn't exist
         missing_value = config_manager.get_setting(

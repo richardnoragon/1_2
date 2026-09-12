@@ -41,7 +41,7 @@ class InterfaceMode(Enum):
 - **Configuration Management**: Comprehensive settings with JSON persistence
 
 #### 4. **Shared Application State** (`src.core.application_state.ApplicationState`)
-- **Single façade**: Bundles logger, config manager, preference manager, and database availability for hub-style entry points.
+- **Single façade**: Bundles logger, config_manager, preference_manager, audit_trail, and database_available for hub-style entry points.
 - **Consistent startup wiring**: `RFUMainWindow` and `RFUHub` now resolve their shared services through the same helper instead of recreating the same wiring in each initializer.
 
 #### 5. **Shared Tool Lifecycle** (`src.core.tool_lifecycle`)

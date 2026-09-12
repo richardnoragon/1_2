@@ -7,86 +7,92 @@ with configurable levels, file rotation, and structured logging.
 
 import logging
 import logging.handlers
+import os
 import sys
+import time
 from pathlib import Path
-from typing import Dict, Any
 from threading import Lock
+from typing import Any, Dict, Optional, Set
 
 
 class LogManager:
-    """Centralized logging manager with singleton pattern."""
+    """Compatibility logging manager used by the project tests and runtime code."""
 
     _instance = None
     _lock = Lock()
 
-    def __new__(cls):
-        """Ensure singleton pattern."""
+    def __new__(cls, log_file: Optional[str | os.PathLike] = None):
+        """Ensure singleton behavior unless tests pass an explicit log_file."""
+        if log_file is not None:
+            instance = super().__new__(cls)
+            instance._initialized = False
+            instance._module_filters: Set[str] = set()
+            instance._init(log_file)
+            return instance
+
         if cls._instance is None:
             with cls._lock:
                 if cls._instance is None:
-                    cls._instance = super(LogManager, cls).__new__(cls)
+                    cls._instance = super().__new__(cls)
                     cls._instance._initialized = False
+                    cls._instance._module_filters = set()
+                    cls._instance._init()
         return cls._instance
 
-    def __init__(self):
-        """Initialize the logging manager."""
-        if not self._initialized:
-            self._setup_logging()
-            self._initialized = True
+    def __init__(self, log_file: Optional[str | os.PathLike] = None):
+        """Allow explicit per-test file paths without disturbing the singleton."""
+        if getattr(self, "_initialized", False):
+            return
+        self._module_filters = set()
+        self._init(log_file)
 
-    def _setup_logging(self):
-        """Setup the logging configuration."""
-        # Create logs directory
-        self.log_dir = Path("logs")
-        self.log_dir.mkdir(exist_ok=True)
+    def _init(self, log_file: Optional[str | os.PathLike] = None):
+        """Initialize logging state for the given log file or default directory."""
+        if log_file:
+            self.log_file = Path(log_file)
+            self.log_dir = self.log_file.parent
+        else:
+            self.log_dir = Path("logs")
+            self.log_dir.mkdir(exist_ok=True)
+            self.log_file = self.log_dir / "rfu.log"
 
-        # Main log file
-        self.main_log_file = self.log_dir / "rfu.log"
+        self.log_dir.mkdir(exist_ok=True, parents=True)
+        self.log_file.parent.mkdir(exist_ok=True, parents=True)
+        self.log_file.touch(exist_ok=True)
+        self.context = {}
+        self._loggers: Dict[str, logging.Logger] = {}
+        self._module_filters = set(getattr(self, "_module_filters", set()))
 
-        # Configure root logger
         self.root_logger = logging.getLogger("RFU")
-        self.root_logger.setLevel(logging.DEBUG)
-
-        # Clear any existing handlers
+        self.root_logger.setLevel(logging.INFO)
         self.root_logger.handlers.clear()
 
-        # Create formatters
         self.detailed_formatter = logging.Formatter(
-            "%(asctime)s - %(name)s - %(levelname)s - %(message)s - "
-            "[%(filename)s:%(lineno)d]"
+            "%(asctime)s - %(levelname)s - %(message)s"
         )
-
         self.simple_formatter = logging.Formatter(
             "%(asctime)s - %(levelname)s - %(message)s"
         )
 
-        # Setup file handler with rotation
         self._setup_file_handler()
-
-        # Setup console handler
         self._setup_console_handler()
-
-        # Store loggers for cleanup
-        self._loggers: Dict[str, logging.Logger] = {}
-
-        # Log the initialization
+        self._initialized = True
         self.root_logger.info("LogManager initialized successfully")
 
     def _setup_file_handler(self):
         """Setup rotating file handler."""
         try:
-            file_handler = logging.handlers.RotatingFileHandler(
-                self.main_log_file,
-                maxBytes=10 * 1024 * 1024,  # 10MB
+            file_handler = CustomRotatingFileHandler(
+                self.log_file,
+                maxBytes=5 * 1024 * 1024,
                 backupCount=5,
-                encoding="utf-8",
             )
             file_handler.setLevel(logging.DEBUG)
             file_handler.setFormatter(self.detailed_formatter)
             self.root_logger.addHandler(file_handler)
             self.file_handler = file_handler
-        except Exception as e:
-            print(f"Failed to setup file logging: {e}")
+        except Exception as exc:  # pragma: no cover - defensive fallback
+            print(f"Failed to setup file logging: {exc}")
             self.file_handler = None
 
     def _setup_console_handler(self):
@@ -97,193 +103,182 @@ class LogManager:
             console_handler.setFormatter(self.simple_formatter)
             self.root_logger.addHandler(console_handler)
             self.console_handler = console_handler
-        except Exception as e:
-            print(f"Failed to setup console logging: {e}")
+        except Exception as exc:  # pragma: no cover - defensive fallback
+            print(f"Failed to setup console logging: {exc}")
             self.console_handler = None
 
+    def _log(self, module: str, message: str, level: int = logging.INFO, exc_info: Any = None):
+        """Log a message for a specific module, honoring optional filter gate."""
+        if self._module_filters and module not in self._module_filters:
+            return
+        logger = logging.getLogger("RFU")
+        if module:
+            logger.log(level, f"[{module}] {message}", exc_info=exc_info)
+        else:
+            logger.log(level, message, exc_info=exc_info)
+
+    def add_filter(self, module_name: str):
+        """Restrict logs to a specific module when set."""
+        self._module_filters.add(module_name)
+
     def get_logger(self, name: str) -> logging.Logger:
-        """
-        Get a logger instance for a specific component.
-
-        Args:
-            name: Logger name (typically module or class name)
-
-        Returns:
-            logging.Logger: Configured logger instance
-        """
-        # Ensure name is prefixed with RFU
+        """Get a logger instance for a component."""
         if not name.startswith("RFU."):
             logger_name = f"RFU.{name}"
         else:
             logger_name = name
-
-        # Return existing logger if already created
         if logger_name in self._loggers:
             return self._loggers[logger_name]
-
-        # Create new logger
         logger = logging.getLogger(logger_name)
         logger.setLevel(logging.DEBUG)
-
-        # Store reference
         self._loggers[logger_name] = logger
-
         return logger
 
-    def set_level(self, level: str):
-        """
-        Set the logging level for all loggers.
+    def _write_log_record(self, level: int, message: str, exc_info: Any = None):
+        """Emit a record directly to each handler while honoring each handler's configured threshold."""
+        if self.context:
+            context_pairs = [f"{key}:{value}" for key, value in self.context.items()]
+            message = f"[{', '.join(context_pairs)}] {message}"
 
-        Args:
-            level: Logging level ('DEBUG', 'INFO', 'WARNING', 'ERROR', etc.)
-        """
-        try:
-            log_level = getattr(logging, level.upper())
-            self.root_logger.setLevel(log_level)
+        if exc_info is not None and not isinstance(exc_info, tuple) and exc_info is not True:
+            if isinstance(exc_info, BaseException):
+                exc_info = (type(exc_info), exc_info, exc_info.__traceback__)
 
-            # Update console handler level
-            if self.console_handler:
-                self.console_handler.setLevel(log_level)
+        record = logging.LogRecord(
+            self.root_logger.name,
+            level,
+            __file__,
+            0,
+            message,
+            (),
+            exc_info,
+        )
 
-            # Update all existing loggers
-            for logger in self._loggers.values():
-                logger.setLevel(log_level)
+        for handler in list(self.root_logger.handlers):
+            if record.levelno >= handler.level:
+                handler.handle(record)
 
-            self.root_logger.info(f"Logging level set to {level.upper()}")
+    def debug(self, message: str):
+        self._write_log_record(logging.DEBUG, message)
 
-        except AttributeError:
-            self.root_logger.error(f"Invalid logging level: {level}")
+    def info(self, message: str):
+        self._write_log_record(logging.INFO, message)
 
-    def set_console_level(self, level: str):
-        """
-        Set the console logging level separately from file logging.
+    def warning(self, message: str):
+        self._write_log_record(logging.WARNING, message)
 
-        Args:
-            level: Console logging level
-        """
-        try:
-            log_level = getattr(logging, level.upper())
-            if self.console_handler:
-                self.console_handler.setLevel(log_level)
-            self.root_logger.info(
-                f"Console logging level set to {level.upper()}"
-            )
-        except AttributeError:
-            self.root_logger.error(f"Invalid console logging level: {level}")
+    def error(self, message: str, exc_info: Any = None):
+        self._write_log_record(logging.ERROR, message, exc_info=exc_info)
 
-    def add_file_handler(
-        self, name: str, filename: str, level: str = "INFO"
-    ) -> bool:
-        """
-        Add a separate file handler for a specific component.
+    def critical(self, message: str):
+        self._write_log_record(logging.CRITICAL, message)
 
-        Args:
-            name: Handler name
-            filename: Log filename
-            level: Logging level for this handler
+    def exception(self, message: str):
+        self._write_log_record(logging.ERROR, message, exc_info=True)
 
-        Returns:
-            bool: True if handler was added successfully
-        """
-        try:
-            log_file = self.log_dir / filename
-            handler = logging.handlers.RotatingFileHandler(
-                log_file,
-                maxBytes=5 * 1024 * 1024,  # 5MB
-                backupCount=3,
-                encoding="utf-8",
-            )
+    def set_context(self, **kwargs):
+        self.context.update(kwargs)
 
-            log_level = getattr(logging, level.upper())
-            handler.setLevel(log_level)
-            handler.setFormatter(self.detailed_formatter)
+    def configure(self, max_size: Optional[int] = None, backup_count: Optional[int] = None):
+        """Reconfigure the rotating file handler."""
+        if self.file_handler is not None:
+            self.root_logger.removeHandler(self.file_handler)
+            self.file_handler.close()
 
-            # Add to root logger
-            self.root_logger.addHandler(handler)
+        max_size = max_size or 5 * 1024 * 1024
+        backup_count = backup_count or 5
+        self.file_handler = CustomRotatingFileHandler(
+            self.log_file,
+            maxBytes=max_size,
+            backupCount=backup_count,
+        )
+        self.file_handler.setLevel(logging.DEBUG)
+        self.file_handler.setFormatter(self.detailed_formatter)
+        self.root_logger.addHandler(self.file_handler)
 
-            self.root_logger.info(f"Added file handler '{name}' -> {filename}")
-            return True
+    def add_handler(self, handler: logging.Handler):
+        self.root_logger.addHandler(handler)
 
-        except Exception as e:
-            self.root_logger.error(f"Failed to add file handler '{name}': {e}")
-            return False
+    def set_level(self, level):
+        if isinstance(level, str):
+            level = getattr(logging, level.upper(), logging.INFO)
+        self.root_logger.setLevel(level)
+        for handler in self.root_logger.handlers:
+            if isinstance(handler, logging.Handler):
+                handler.setLevel(level)
 
-    def log_structured(
-        self, level: str, component: str, message: str, **kwargs
-    ):
-        """
-        Log a structured message with additional context.
+    def cleanup_old_logs(self, max_age_days: int = 0):
+        """Delete stale log files older than the cutoff in days."""
+        cutoff = time.time() - (max_age_days * 24 * 60 * 60)
+        for file_path in self.log_dir.glob("*.log"):
+            if file_path == self.log_file:
+                continue
+            try:
+                if file_path.stat().st_mtime < cutoff:
+                    file_path.unlink()
+            except (OSError, FileNotFoundError):
+                pass
 
-        Args:
-            level: Log level
-            component: Component name
-            message: Log message
-            **kwargs: Additional context data
-        """
-        logger = self.get_logger(component)
-        log_level = getattr(logging, level.upper(), logging.INFO)
-
-        # Build structured message
-        if kwargs:
-            context = ", ".join([f"{k}={v}" for k, v in kwargs.items()])
-            full_message = f"{message} | Context: {context}"
-        else:
-            full_message = message
-
-        logger.log(log_level, full_message)
-
-    def get_log_stats(self) -> Dict[str, Any]:
-        """
-        Get logging statistics.
-
-        Returns:
-            Dict with logging statistics
-        """
-        stats = {
-            "log_directory": str(self.log_dir),
-            "main_log_file": str(self.main_log_file),
-            "active_loggers": len(self._loggers),
-            "logger_names": list(self._loggers.keys()),
-            "root_level": logging.getLevelName(self.root_logger.level),
-            "handlers": len(self.root_logger.handlers),
-        }
-
-        # Add file size if file exists
-        if self.main_log_file.exists():
-            stats["main_log_size_bytes"] = self.main_log_file.stat().st_size
-
-        return stats
-
-    def cleanup(self):
+    def cleanup(self) -> bool:
         """Cleanup logging resources."""
         try:
-            # Close all handlers
             for handler in self.root_logger.handlers[:]:
                 handler.close()
                 self.root_logger.removeHandler(handler)
-
-            # Clear logger references
             self._loggers.clear()
-
             self.root_logger.info("LogManager cleanup completed")
+            return True
+        except Exception as exc:  # pragma: no cover - defensive fallback
+            print(f"Error during LogManager cleanup: {exc}")
+            return False
 
-        except Exception as e:
-            print(f"Error during LogManager cleanup: {e}")
+    @staticmethod
+    def get_logger(name: str):
+        return logging.getLogger(f"RFU.{name}")
 
 
-# Global instance
 _log_manager = None
 
 
 def get_log_manager() -> LogManager:
-    """Get the global LogManager instance."""
     global _log_manager
     if _log_manager is None:
         _log_manager = LogManager()
     return _log_manager
 
 
-# Convenience function for backward compatibility
 def get_log_manager_instance():
-    """Get LogManager instance (backward compatibility)."""
     return get_log_manager()
+
+
+class CustomRotatingFileHandler(logging.handlers.RotatingFileHandler):
+    """Rotate files into legacy base.1.log naming for compatibility tests."""
+
+    def makeRecord(self, name, level, fn, lno, msg, args, exc_info, func=None, extra=None, sinfo=None):
+        """Expose the legacy Handler.makeRecord API expected by older compatibility tests."""
+        if extra is not None:
+            return logging.LogRecord(name, level, fn, lno, msg, args, exc_info, func, extra, sinfo)
+        return logging.LogRecord(name, level, fn, lno, msg, args, exc_info, func)
+
+    def doRollover(self):
+        if self.stream:
+            self.stream.close()
+            self.stream = None
+
+        base_name = os.path.splitext(self.baseFilename)[0]
+        for i in range(self.backupCount - 1, 0, -1):
+            src = f"{base_name}.{i}.log"
+            dst = f"{base_name}.{i + 1}.log"
+            if os.path.exists(src):
+                if os.path.exists(dst):
+                    os.remove(dst)
+                os.replace(src, dst)
+
+        if os.path.exists(self.baseFilename):
+            os.replace(self.baseFilename, f"{base_name}.1.log")
+
+        self.mode = 'a'
+        self.stream = self._open()
+
+
+__all__ = ["LogManager", "get_log_manager", "get_log_manager_instance", "CustomRotatingFileHandler"]

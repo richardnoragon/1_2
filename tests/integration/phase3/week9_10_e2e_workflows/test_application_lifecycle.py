@@ -22,24 +22,25 @@ import pytest
 # Import RFU system components
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", "..", ".."))
 
+
+class MockTool:
+    def __init__(self, name):
+        self.name = name
+        self.status = "initialized"
+
+    def show(self):
+        self.status = "running"
+
+    def close(self):
+        self.status = "closed"
+
+
 try:
     from src.config.config_manager import ConfigManager
     from src.log_manager import LogManager
     from tabbed_hub import RFUHub
 except ImportError as e:
     print(f"Warning: Could not import RFU components: {e}")
-
-    # Mock classes for testing
-    class MockTool:
-        def __init__(self, name):
-            self.name = name
-            self.status = "initialized"
-
-        def show(self):
-            self.status = "running"
-
-        def close(self):
-            self.status = "closed"
 
     class RFUHub:
         def __init__(self):

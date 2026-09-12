@@ -325,8 +325,10 @@ class DiskHealthWidget(QWidget):
             usage_group = QGroupBox("Space Usage")
             usage_layout = QVBoxLayout(usage_group)
 
-            self.usage_progress = LoadingIndicator(parent=self, message="Disk usage")
+            self.usage_progress = QProgressBar()
+            self.usage_progress.setRange(0, 100)
             self.usage_progress.setTextVisible(True)
+            self.usage_progress.setFormat("%p%")
             self.usage_label = QLabel("Used: 0 GB / 0 GB (0%)")
 
             usage_layout.addWidget(self.usage_progress)

@@ -8,7 +8,11 @@ stable without requiring an immediate plugin upgrade.
 
 from __future__ import annotations
 
+import os
 from typing import Any, Dict
+
+if os.name == "posix" and not os.environ.get("DISPLAY") and not os.environ.get("WAYLAND_DISPLAY"):
+    os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
 try:  # pragma: no cover - optional dependency for pytest runs only
     from _pytest.python import CallSpec2

@@ -78,12 +78,10 @@ class BaseSecurityDialog(QDialog):
 
         self.ok_button = PrimaryButton("OK")
         self.ok_button.setAccessibleName("Confirm settings")
-        self.ok_button.setMinimumSize(100, 35)
         self.ok_button.clicked.connect(self.accept)
 
         self.cancel_button = SecondaryButton("Cancel")
         self.cancel_button.setAccessibleName("Cancel and close dialog")
-        self.cancel_button.setMinimumSize(100, 35)
         self.cancel_button.clicked.connect(self.reject)
 
         button_layout.addWidget(self.ok_button)

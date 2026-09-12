@@ -39,10 +39,10 @@ implement step it continues at the next unchecked task.
    - **`empty: true`** (no recorded state and no spec files) → print
      `Nothing to resume (no spec files or recorded state found).` and stop.
    - **`nextTask` is set** (inside the implement step) → continue implementation at
-     `nextTask`: invoke `/speckit.implement`, instructing it to resume at the next
-     unchecked task.
-   - **otherwise** → invoke `nextCommand` (e.g. `/speckit.plan`, `/speckit.tasks`,
-     `/speckit.implement`).
+     `nextTask`: invoke `/speckit.companion.implement`, instructing it to resume at
+     the next unchecked task.
+   - **otherwise** → invoke `nextCommand` exactly as returned; do not substitute
+     stock `/speckit.*` commands.
 
 4. When you dispatch, state the recorded `decisions[]` as in-scope context for the
    step you are running, so prior decisions carry forward and the user does not
@@ -50,10 +50,10 @@ implement step it continues at the next unchecked task.
 
 ## Dispatch note
 
-Resume dispatches the **already-installed** `/speckit.*` commands. It does not
-require a `specify workflow resume` CLI subcommand, so it works on the stock
-installed spec-kit version. The dispatched command runs its own `after_*` capture
-hook, which writes the resulting `history[]` entry — resume itself writes no state.
+Resume dispatches the Companion-provided command verbatim. It does not require a
+`specify workflow resume` CLI subcommand, so it works on the stock installed
+spec-kit version. The dispatched command runs its own `after_*` capture hook,
+which writes the resulting `history[]` entry — resume itself writes no state.
 
 ## Output
 

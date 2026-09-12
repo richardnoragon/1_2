@@ -490,8 +490,6 @@ class InterfaceSelectionDialog:
 
         return selection_group
 
-        return selection_group
-
     def _create_interface_option(self, option_id, title, description, color):
         """Create a styled interface option frame."""
         from PyQt5.QtWidgets import QFrame, QLabel, QRadioButton, QVBoxLayout
@@ -614,7 +612,7 @@ class InterfaceSelectionDialog:
                     self.remember_choice = False
 
                 self.logger.info(
-                    f"User selected interface mode: " f"{self.selected_mode.value}"
+                    f"User selected interface mode: {self.selected_mode.value}"
                 )
                 return True
             else:
@@ -700,7 +698,7 @@ class InterfaceSelectionDialog:
             else:
                 # User chose not to use default, prevent close
                 self.logger.info(
-                    "User declined default interface, " "preventing dialog close"
+                    "User declined default interface, preventing dialog close"
                 )
                 event.ignore()
 
@@ -979,12 +977,11 @@ try:
         def _initialize_core_systems(self):
             """Initialize core application systems and state management."""
             try:
-                resolved_database_status = ensure_database_initialized()
                 self.application_state = build_application_state(
                     "RFU.MainWindow",
                     include_config=True,
                     include_preferences=True,
-                    database_available=resolved_database_status,
+                    database_available=False,
                 )
 
                 # Store references to opened windows
@@ -1446,11 +1443,6 @@ try:
                 # Ultimate fallback
                 self.current_interface_mode = InterfaceMode.DIALOG_HUB
 
-            except Exception as e:
-                self.logger.error(f"Error in dialog fallback handling: {e}")
-                # Ultimate fallback
-                self.current_interface_mode = InterfaceMode.DIALOG_HUB
-
         def _detect_developer_environment(self):
             """Detect if the current environment suggests developer usage."""
             try:
@@ -1892,7 +1884,7 @@ try:
                 return
 
             # Remove any previously added Interface menu to avoid duplicates
-            for action in list(menubar.actions()):
+            for action in menubar.actions():
                 menu = action.menu() if hasattr(action, "menu") else None
                 text = action.text() if hasattr(action, "text") else ""
                 if menu is None:
@@ -2302,20 +2294,9 @@ try:
             self._register_tab(metadata_tab, "Metadata")
 
             # PDF Tools
-            if is_enhanced_pdf_tools_available():
-                pdf_tab = self.create_enhanced_pdf_tools_tab()
-            else:
-                pdf_tab = self.create_tool_category_tab(
-                    [
-                        (PDF_UTILITIES, "Comprehensive PDF tools", self.open_pdf_tools),
-                        (
-                            EXTRACT_LINKS,
-                            "Extract links from PDF files",
-                            self.open_pdf_links,
-                        ),
-                        (PAGE_ADMINISTRATION, "Manage PDF pages", self.open_pdf_pages),
-                    ]
-                )
+            self._pdf_tools_tab_placeholder = self.create_pdf_tools_placeholder_tab()
+            self._pdf_tools_tab_loaded = False
+            pdf_tab = self._pdf_tools_tab_placeholder
             self._register_tab(pdf_tab, "PDF Tools")
 
             # Network Tools
@@ -2398,6 +2379,8 @@ try:
                 ]
             )
             self._register_tab(system_tab, "System Tools")
+
+            self.tab_widget.currentChanged.connect(self._on_tab_changed)
 
         def _register_tab(self, widget, title, pinned=None):
             """Add a tab to the hub and flag it as pinned when needed."""
@@ -2530,6 +2513,50 @@ try:
                 ]
             )
 
+        def create_pdf_tools_placeholder_tab(self):
+            """Create a lightweight placeholder for the optional PDF tools tab."""
+            placeholder = QWidget()
+            layout = QVBoxLayout(placeholder)
+            layout.setContentsMargins(24, 24, 24, 24)
+            layout.addStretch()
+
+            message = QLabel(
+                "PDF tools load when you select this tab."
+            )
+            message.setAlignment(Qt.AlignCenter)
+            message.setWordWrap(True)
+            layout.addWidget(message)
+
+            layout.addStretch()
+            return placeholder
+
+        def _install_pdf_tools_tab(self):
+            if getattr(self, "_pdf_tools_tab_loaded", False):
+                return
+
+            placeholder = getattr(self, "_pdf_tools_tab_placeholder", None)
+            if placeholder is None:
+                return
+
+            index = self.tab_widget.indexOf(placeholder)
+            if index < 0:
+                return
+
+            pdf_widget = self.create_enhanced_pdf_tools_tab()
+            self.tab_widget.removeTab(index)
+            self.tab_widget.insertTab(index, pdf_widget, "PDF Tools")
+            self._pdf_tools_tab_placeholder = pdf_widget
+            self._pdf_tools_tab_loaded = True
+            self.tab_widget.setCurrentIndex(index)
+
+        def _on_tab_changed(self, index):
+            if index < 0 or getattr(self, "_pdf_tools_tab_loaded", False):
+                return
+
+            current_widget = self.tab_widget.widget(index)
+            if current_widget is getattr(self, "_pdf_tools_tab_placeholder", None):
+                self._install_pdf_tools_tab()
+
         def create_menu_bar(self):
             """Create the application menu bar."""
             menubar = self.menuBar()
@@ -2591,7 +2618,7 @@ try:
         def open_compress(self):
             self.launch_tool(
                 "Compress/Decompress",
-                "src.tools.file_operations.compression." "compress_decompress",
+                "src.tools.file_operations.compression.compress_decompress",
                 "CompressDecompressApp",
             )
 
@@ -2605,14 +2632,14 @@ try:
         def open_sync(self):
             self.launch_tool(
                 "Synchronize",
-                "src.tools.file_management." "synchronization_backup.sync",
+                "src.tools.file_management.synchronization_backup.sync",
                 "SyncWindow",
             )
 
         def open_enhanced_editor(self):
             self.launch_tool(
                 "Enhanced Editor",
-                "src.tools.file_operations.enhanced_editor." "enhanced_editor",
+                "src.tools.file_operations.enhanced_editor.enhanced_editor",
                 "EnhancedEditor",
             )
 
@@ -2889,7 +2916,7 @@ try:
                 )
             else:
                 message = (
-                    "Tool list refresh functionality would be implemented " "here."
+                    "Tool list refresh functionality would be implemented here."
                 )
 
             QMessageBox.information(self, "Refresh", message)
@@ -2924,7 +2951,7 @@ try:
         try:
             window = RFUMainWindow()
         except AuthenticationCancelledError:
-            print("Authentication was cancelled. " "Exiting without launching the UI.")
+            print("Authentication was cancelled. Exiting without launching the UI.")
             app.quit()
             return 0
 
