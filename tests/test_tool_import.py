@@ -6,81 +6,65 @@ Test script to verify tool imports work correctly.
 import os
 import sys
 
+import pytest
+
 # Add the src directory to the Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "src"))
 
 
-def test_tool_import(module_name, class_name):
-    """Test importing a specific tool."""
-    try:
-        print(f"Testing {module_name}.{class_name}...")
-
-        # Try different import paths
-        import_paths = [
-            module_name,  # Root directory
-            f"src.tools.file_management.catalog.{module_name}",  # Catalog tools
-            f"src.tools.file_operations.file_touch.{module_name}",  # File touch tools
-            f"src.tools.file_management.organizer.{module_name}",  # Organizer
-            f"src.tools.file_management.finder.{module_name}",  # File finder tools
-            f"src.tools.file_operations.compression.{module_name}",  # Compression tools
-            f"src.legacy.file_utilities_1.{module_name}",  # Legacy tools (fallback)
-            f"src.tools.{module_name}",  # Other utilities
-        ]
-
-        for import_path in import_paths:
-            try:
-                if "." in import_path:
-                    # Handle nested imports
-                    parts = import_path.split(".")
-                    module = __import__(import_path, fromlist=[parts[-1]])
-                else:
-                    module = __import__(import_path)
-
-                tool_class = getattr(module, class_name)
-                print(f"✅ Successfully imported {class_name} from {import_path}")
-                return True
-            except (ImportError, AttributeError) as e:
-                print(f"❌ Failed to import from {import_path}: {e}")
-                continue
-
-        print(f"❌ Could not import {class_name} from any path")
-        return False
-
-    except Exception as e:
-        print(f"❌ Error testing {module_name}.{class_name}: {e}")
-        return False
-
-
-def main():
-    """Test importing various tools."""
-    print("Testing tool imports...")
-    print("=" * 50)
-
-    # Test some known tools
-    tools_to_test = [
+@pytest.mark.parametrize(
+    ("module_name", "class_name"),
+    [
         ("file_finder", "FileFinderWindow"),
         ("compress_decompress", "CompressDecompressApp"),
         ("empty_folders", "EmptyFoldersGUI"),
         ("catalog", "CatalogWindow"),
         ("organize", "OrganizeWindow"),
-    ]
+    ],
+)
+def test_tool_import(module_name, class_name):
+    """Test importing a specific tool."""
+    try:
+        print(f"Testing {module_name}.{class_name}...")
 
-    successful_imports = 0
-    total_tests = len(tools_to_test)
+        import_paths = {
+            "file_finder": [
+                "src.tools.file_operations.file_finder",
+                "src.tools.file_management.finder.file_finder",
+                "file_finder",
+            ],
+            "compress_decompress": [
+                "src.tools.file_operations.compression.compress_decompress",
+                "compress_decompress",
+            ],
+            "empty_folders": [
+                "src.tools.analysis.empty_folders.empty_folders",
+                "src.tools.analysis.empty_folders",
+                "empty_folders",
+            ],
+            "catalog": [
+                "src.tools.file_operations.catalog",
+                "src.tools.file_management.advanced_catalog.catalog_tool",
+                "src.tools.file_management.advanced_catalog.catalog.catalog",
+                "catalog",
+            ],
+            "organize": [
+                "src.tools.file_operations.organize",
+                "src.tools.file_management.organizer.organize",
+                "organize",
+            ],
+        }
 
-    for module_name, class_name in tools_to_test:
-        if test_tool_import(module_name, class_name):
-            successful_imports += 1
-        print()
+        for import_path in import_paths.get(module_name, [module_name]):
+            try:
+                module = __import__(import_path, fromlist=[class_name])
+                getattr(module, class_name)
+                print(f"✅ Successfully imported {class_name} from {import_path}")
+                return
+            except (ImportError, AttributeError, ModuleNotFoundError) as e:
+                print(f"❌ Failed to import from {import_path}: {e}")
+                continue
 
-    print("=" * 50)
-    print(f"Results: {successful_imports}/{total_tests} tools imported successfully")
-
-    if successful_imports > 0:
-        print("✅ Some tools are available and should work in the main application!")
-    else:
-        print("❌ No tools could be imported. Check the file structure and imports.")
-
-
-if __name__ == "__main__":
-    main()
+        pytest.fail(f"Could not import {class_name} from any path for {module_name}")
+    except Exception as e:
+        pytest.fail(f"Error testing {module_name}.{class_name}: {e}")

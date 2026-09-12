@@ -15,11 +15,11 @@ try:
         QLabel,
         QMainWindow,
         QMessageBox,
-        QPushButton,
         QVBoxLayout,
         QWidget,
     )
 
+    from src.gui.components.buttons import PrimaryButton, SecondaryButton
     from src.gui.themes import token
 except ImportError:  # pragma: no cover - runtime guard
     print("PyQt5 not available. Please install PyQt5.")
@@ -69,15 +69,13 @@ class SecurityPreferencesGUI(QMainWindow):
         desc.setWordWrap(True)
         layout.addWidget(desc)
 
-        test_btn = QPushButton("Run Security Self-Check")
+        test_btn = PrimaryButton("Run Security Self-Check")
         test_btn.setAccessibleName("Run security self-check")
-        test_btn.setMinimumHeight(44)
         test_btn.clicked.connect(self._run_self_check)
         layout.addWidget(test_btn)
 
-        help_btn = QPushButton("Show Help")
+        help_btn = SecondaryButton("Show Help")
         help_btn.setAccessibleName("Show security help")
-        help_btn.setMinimumHeight(44)
         help_btn.clicked.connect(self._show_help)
         layout.addWidget(help_btn)
 

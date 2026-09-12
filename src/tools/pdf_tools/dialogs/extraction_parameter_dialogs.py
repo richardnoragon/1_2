@@ -23,13 +23,11 @@ from PyQt5.QtWidgets import (
     QGroupBox,
     QHBoxLayout,
     QLabel,
-    QLineEdit,
     QListWidget,
     QListWidgetItem,
     QMessageBox,
     QPlainTextEdit,
     QProgressBar,
-    QPushButton,
     QRadioButton,
     QScrollArea,
     QSlider,
@@ -42,6 +40,11 @@ from PyQt5.QtWidgets import (
     QVBoxLayout,
     QWidget,
 )
+
+from src.gui.components.buttons import PrimaryButton, SecondaryButton
+from src.gui.components.inputs import TextInput
+
+PDF_OPEN_FILE_FILTER = "PDF Files (*.pdf);;All Files (*)"
 
 # Set up logger
 logger = logging.getLogger(__name__)
@@ -151,15 +154,16 @@ class PDFTextExtractionDialog(PDFExtractionDialogBase):
         input_group = QGroupBox("Input PDF File")
         input_layout = QHBoxLayout(input_group)
 
-        self.input_edit = QLineEdit()
-        self.input_edit.setAccessibleName("Input PDF file")
-        self.input_edit.setPlaceholderText("Select PDF file...")
+        self.input_edit = TextInput(
+            "Input PDF file",
+            "Select PDF file...",
+            accessible_name="Input PDF file",
+        )
         self.input_edit.setReadOnly(True)
         input_layout.addWidget(self.input_edit)
 
-        self.browse_input_btn = QPushButton("Browse...")
+        self.browse_input_btn = SecondaryButton("Browse...")
         self.browse_input_btn.setAccessibleName("Browse for input PDF file")
-        self.browse_input_btn.setMinimumHeight(44)
         input_layout.addWidget(self.browse_input_btn)
 
         layout.addWidget(input_group)
@@ -168,14 +172,15 @@ class PDFTextExtractionDialog(PDFExtractionDialogBase):
         output_group = QGroupBox("Output Text File")
         output_layout = QHBoxLayout(output_group)
 
-        self.output_edit = QLineEdit()
-        self.output_edit.setAccessibleName("Output text file")
-        self.output_edit.setPlaceholderText("Output text file...")
+        self.output_edit = TextInput(
+            "Output text file",
+            "Output text file...",
+            accessible_name="Output text file",
+        )
         output_layout.addWidget(self.output_edit)
 
-        self.browse_output_btn = QPushButton("Browse...")
+        self.browse_output_btn = SecondaryButton("Browse...")
         self.browse_output_btn.setAccessibleName("Browse for output file")
-        self.browse_output_btn.setMinimumHeight(44)
         output_layout.addWidget(self.browse_output_btn)
 
         layout.addWidget(output_group)
@@ -239,9 +244,8 @@ class PDFTextExtractionDialog(PDFExtractionDialogBase):
         self.preview_text.setReadOnly(True)
         preview_layout.addWidget(self.preview_text)
 
-        self.preview_btn = QPushButton("Preview Text")
+        self.preview_btn = SecondaryButton("Preview Text")
         self.preview_btn.setAccessibleName("Preview text extraction")
-        self.preview_btn.setMinimumHeight(44)
         self.preview_btn.setEnabled(False)
         preview_layout.addWidget(self.preview_btn)
 
@@ -251,14 +255,12 @@ class PDFTextExtractionDialog(PDFExtractionDialogBase):
         button_layout = QHBoxLayout()
         button_layout.addStretch()
 
-        self.cancel_btn = QPushButton("Cancel")
+        self.cancel_btn = SecondaryButton("Cancel")
         self.cancel_btn.setAccessibleName("Cancel text extraction")
-        self.cancel_btn.setMinimumHeight(44)
         button_layout.addWidget(self.cancel_btn)
 
-        self.extract_btn = QPushButton("Extract Text")
+        self.extract_btn = PrimaryButton("Extract Text")
         self.extract_btn.setAccessibleName("Extract text from PDF")
-        self.extract_btn.setMinimumHeight(44)
         self.extract_btn.setEnabled(False)
         button_layout.addWidget(self.extract_btn)
 
@@ -360,15 +362,16 @@ class PDFImageExtractionDialog(PDFExtractionDialogBase):
         input_group = QGroupBox("Input PDF File")
         input_layout = QHBoxLayout(input_group)
 
-        self.input_edit = QLineEdit()
-        self.input_edit.setAccessibleName("Input PDF file")
-        self.input_edit.setPlaceholderText("Select PDF file...")
+        self.input_edit = TextInput(
+            "Input PDF file",
+            "Select PDF file...",
+            accessible_name="Input PDF file",
+        )
         self.input_edit.setReadOnly(True)
         input_layout.addWidget(self.input_edit)
 
-        self.browse_input_btn = QPushButton("Browse...")
+        self.browse_input_btn = SecondaryButton("Browse...")
         self.browse_input_btn.setAccessibleName("Browse for input PDF file")
-        self.browse_input_btn.setMinimumHeight(44)
         input_layout.addWidget(self.browse_input_btn)
 
         layout.addWidget(input_group)
@@ -377,14 +380,15 @@ class PDFImageExtractionDialog(PDFExtractionDialogBase):
         output_group = QGroupBox("Output Directory")
         output_layout = QHBoxLayout(output_group)
 
-        self.output_edit = QLineEdit()
-        self.output_edit.setAccessibleName("Output directory for images")
-        self.output_edit.setPlaceholderText("Output directory...")
+        self.output_edit = TextInput(
+            "Output directory for images",
+            "Output directory...",
+            accessible_name="Output directory for images",
+        )
         output_layout.addWidget(self.output_edit)
 
-        self.browse_output_btn = QPushButton("Browse...")
+        self.browse_output_btn = SecondaryButton("Browse...")
         self.browse_output_btn.setAccessibleName("Browse for output directory")
-        self.browse_output_btn.setMinimumHeight(44)
         output_layout.addWidget(self.browse_output_btn)
 
         layout.addWidget(output_group)
@@ -463,9 +467,8 @@ class PDFImageExtractionDialog(PDFExtractionDialogBase):
         self.image_count_label.setAlignment(Qt.AlignCenter)
         preview_layout.addWidget(self.image_count_label)
 
-        self.scan_btn = QPushButton("Scan for Images")
+        self.scan_btn = SecondaryButton("Scan for Images")
         self.scan_btn.setAccessibleName("Scan PDF for images")
-        self.scan_btn.setMinimumHeight(44)
         self.scan_btn.setEnabled(False)
         preview_layout.addWidget(self.scan_btn)
 
@@ -475,14 +478,12 @@ class PDFImageExtractionDialog(PDFExtractionDialogBase):
         button_layout = QHBoxLayout()
         button_layout.addStretch()
 
-        self.cancel_btn = QPushButton("Cancel")
+        self.cancel_btn = SecondaryButton("Cancel")
         self.cancel_btn.setAccessibleName("Cancel image extraction")
-        self.cancel_btn.setMinimumHeight(44)
         button_layout.addWidget(self.cancel_btn)
 
-        self.extract_btn = QPushButton("Extract Images")
+        self.extract_btn = PrimaryButton("Extract Images")
         self.extract_btn.setAccessibleName("Extract images from PDF")
-        self.extract_btn.setMinimumHeight(44)
         self.extract_btn.setEnabled(False)
         button_layout.addWidget(self.extract_btn)
 
@@ -590,15 +591,16 @@ class PDFMetadataExtractionDialog(PDFExtractionDialogBase):
         input_group = QGroupBox("Input PDF File")
         input_layout = QHBoxLayout(input_group)
 
-        self.input_edit = QLineEdit()
-        self.input_edit.setAccessibleName("Input PDF file")
-        self.input_edit.setPlaceholderText("Select PDF file...")
+        self.input_edit = TextInput(
+            "Input PDF file",
+            "Select PDF file...",
+            accessible_name="Input PDF file",
+        )
         self.input_edit.setReadOnly(True)
         input_layout.addWidget(self.input_edit)
 
-        self.browse_input_btn = QPushButton("Browse...")
+        self.browse_input_btn = SecondaryButton("Browse...")
         self.browse_input_btn.setAccessibleName("Browse for input PDF file")
-        self.browse_input_btn.setMinimumHeight(44)
         input_layout.addWidget(self.browse_input_btn)
 
         layout.addWidget(input_group)
@@ -607,14 +609,15 @@ class PDFMetadataExtractionDialog(PDFExtractionDialogBase):
         output_group = QGroupBox("Output Metadata File")
         output_layout = QHBoxLayout(output_group)
 
-        self.output_edit = QLineEdit()
-        self.output_edit.setAccessibleName("Output metadata JSON file")
-        self.output_edit.setPlaceholderText("Output JSON file...")
+        self.output_edit = TextInput(
+            "Output metadata JSON file",
+            "Output JSON file...",
+            accessible_name="Output metadata JSON file",
+        )
         output_layout.addWidget(self.output_edit)
 
-        self.browse_output_btn = QPushButton("Browse...")
+        self.browse_output_btn = SecondaryButton("Browse...")
         self.browse_output_btn.setAccessibleName("Browse for output file")
-        self.browse_output_btn.setMinimumHeight(44)
         output_layout.addWidget(self.browse_output_btn)
 
         layout.addWidget(output_group)
@@ -643,9 +646,8 @@ class PDFMetadataExtractionDialog(PDFExtractionDialogBase):
         self.preview_text.setReadOnly(True)
         preview_layout.addWidget(self.preview_text)
 
-        self.preview_btn = QPushButton("Preview Metadata")
+        self.preview_btn = SecondaryButton("Preview Metadata")
         self.preview_btn.setAccessibleName("Preview metadata extraction")
-        self.preview_btn.setMinimumHeight(44)
         self.preview_btn.setEnabled(False)
         preview_layout.addWidget(self.preview_btn)
 
@@ -655,14 +657,12 @@ class PDFMetadataExtractionDialog(PDFExtractionDialogBase):
         button_layout = QHBoxLayout()
         button_layout.addStretch()
 
-        self.cancel_btn = QPushButton("Cancel")
+        self.cancel_btn = SecondaryButton("Cancel")
         self.cancel_btn.setAccessibleName("Cancel metadata extraction")
-        self.cancel_btn.setMinimumHeight(44)
         button_layout.addWidget(self.cancel_btn)
 
-        self.extract_btn = QPushButton("Extract Metadata")
+        self.extract_btn = PrimaryButton("Extract Metadata")
         self.extract_btn.setAccessibleName("Extract metadata from PDF")
-        self.extract_btn.setMinimumHeight(44)
         self.extract_btn.setEnabled(False)
         button_layout.addWidget(self.extract_btn)
 
@@ -752,15 +752,16 @@ class PDFTableExtractionDialog(PDFExtractionDialogBase):
         input_group = QGroupBox("Input PDF File")
         input_layout = QHBoxLayout(input_group)
 
-        self.input_edit = QLineEdit()
-        self.input_edit.setAccessibleName("Input PDF file")
-        self.input_edit.setPlaceholderText("Select PDF file...")
+        self.input_edit = TextInput(
+            "Input PDF file",
+            "Select PDF file...",
+            accessible_name="Input PDF file",
+        )
         self.input_edit.setReadOnly(True)
         input_layout.addWidget(self.input_edit)
 
-        self.browse_input_btn = QPushButton("Browse...")
+        self.browse_input_btn = SecondaryButton("Browse...")
         self.browse_input_btn.setAccessibleName("Browse for input PDF file")
-        self.browse_input_btn.setMinimumHeight(44)
         input_layout.addWidget(self.browse_input_btn)
 
         layout.addWidget(input_group)
@@ -769,14 +770,15 @@ class PDFTableExtractionDialog(PDFExtractionDialogBase):
         output_group = QGroupBox("Output Directory")
         output_layout = QHBoxLayout(output_group)
 
-        self.output_edit = QLineEdit()
-        self.output_edit.setAccessibleName("Output directory for tables")
-        self.output_edit.setPlaceholderText("Output directory...")
+        self.output_edit = TextInput(
+            "Output directory for tables",
+            "Output directory...",
+            accessible_name="Output directory for tables",
+        )
         output_layout.addWidget(self.output_edit)
 
-        self.browse_output_btn = QPushButton("Browse...")
+        self.browse_output_btn = SecondaryButton("Browse...")
         self.browse_output_btn.setAccessibleName("Browse for output directory")
-        self.browse_output_btn.setMinimumHeight(44)
         output_layout.addWidget(self.browse_output_btn)
 
         layout.addWidget(output_group)
@@ -844,9 +846,8 @@ class PDFTableExtractionDialog(PDFExtractionDialogBase):
         self.table_count_label.setAlignment(Qt.AlignCenter)
         preview_layout.addWidget(self.table_count_label)
 
-        self.scan_btn = QPushButton("Scan for Tables")
+        self.scan_btn = SecondaryButton("Scan for Tables")
         self.scan_btn.setAccessibleName("Scan PDF for tables")
-        self.scan_btn.setMinimumHeight(44)
         self.scan_btn.setEnabled(False)
         preview_layout.addWidget(self.scan_btn)
 
@@ -856,14 +857,12 @@ class PDFTableExtractionDialog(PDFExtractionDialogBase):
         button_layout = QHBoxLayout()
         button_layout.addStretch()
 
-        self.cancel_btn = QPushButton("Cancel")
+        self.cancel_btn = SecondaryButton("Cancel")
         self.cancel_btn.setAccessibleName("Cancel table extraction")
-        self.cancel_btn.setMinimumHeight(44)
         button_layout.addWidget(self.cancel_btn)
 
-        self.extract_btn = QPushButton("Extract Tables")
+        self.extract_btn = PrimaryButton("Extract Tables")
         self.extract_btn.setAccessibleName("Extract tables from PDF")
-        self.extract_btn.setMinimumHeight(44)
         self.extract_btn.setEnabled(False)
         button_layout.addWidget(self.extract_btn)
 
@@ -973,15 +972,16 @@ class PDFLinkExtractionDialog(PDFExtractionDialogBase):
         input_group = QGroupBox("Input PDF File")
         input_layout = QHBoxLayout(input_group)
 
-        self.input_edit = QLineEdit()
-        self.input_edit.setAccessibleName("Input PDF file")
-        self.input_edit.setPlaceholderText("Select PDF file...")
+        self.input_edit = TextInput(
+            "Input PDF file",
+            "Select PDF file...",
+            accessible_name="Input PDF file",
+        )
         self.input_edit.setReadOnly(True)
         input_layout.addWidget(self.input_edit)
 
-        self.browse_input_btn = QPushButton("Browse...")
+        self.browse_input_btn = SecondaryButton("Browse...")
         self.browse_input_btn.setAccessibleName("Browse for input PDF file")
-        self.browse_input_btn.setMinimumHeight(44)
         input_layout.addWidget(self.browse_input_btn)
 
         layout.addWidget(input_group)
@@ -990,14 +990,15 @@ class PDFLinkExtractionDialog(PDFExtractionDialogBase):
         output_group = QGroupBox("Output Links File")
         output_layout = QHBoxLayout(output_group)
 
-        self.output_edit = QLineEdit()
-        self.output_edit.setAccessibleName("Output links JSON file")
-        self.output_edit.setPlaceholderText("Output JSON file...")
+        self.output_edit = TextInput(
+            "Output links JSON file",
+            "Output JSON file...",
+            accessible_name="Output links JSON file",
+        )
         output_layout.addWidget(self.output_edit)
 
-        self.browse_output_btn = QPushButton("Browse...")
+        self.browse_output_btn = SecondaryButton("Browse...")
         self.browse_output_btn.setAccessibleName("Browse for output file")
-        self.browse_output_btn.setMinimumHeight(44)
         output_layout.addWidget(self.browse_output_btn)
 
         layout.addWidget(output_group)
@@ -1054,9 +1055,8 @@ class PDFLinkExtractionDialog(PDFExtractionDialogBase):
         self.preview_text.setReadOnly(True)
         preview_layout.addWidget(self.preview_text)
 
-        self.preview_btn = QPushButton("Preview Links")
+        self.preview_btn = SecondaryButton("Preview Links")
         self.preview_btn.setAccessibleName("Preview links extraction")
-        self.preview_btn.setMinimumHeight(44)
         self.preview_btn.setEnabled(False)
         preview_layout.addWidget(self.preview_btn)
 
@@ -1066,14 +1066,12 @@ class PDFLinkExtractionDialog(PDFExtractionDialogBase):
         button_layout = QHBoxLayout()
         button_layout.addStretch()
 
-        self.cancel_btn = QPushButton("Cancel")
+        self.cancel_btn = SecondaryButton("Cancel")
         self.cancel_btn.setAccessibleName("Cancel links extraction")
-        self.cancel_btn.setMinimumHeight(44)
         button_layout.addWidget(self.cancel_btn)
 
-        self.extract_btn = QPushButton("Extract Links")
+        self.extract_btn = PrimaryButton("Extract Links")
         self.extract_btn.setAccessibleName("Extract links from PDF")
-        self.extract_btn.setMinimumHeight(44)
         self.extract_btn.setEnabled(False)
         button_layout.addWidget(self.extract_btn)
 

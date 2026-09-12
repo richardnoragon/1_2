@@ -16,13 +16,15 @@ try:
         QMainWindow,
         QMessageBox,
         QProgressBar,
-        QPushButton,
         QSpinBox,
         QTextEdit,
         QVBoxLayout,
         QWidget,
     )
 
+    from src.gui.components.buttons import PrimaryButton, SecondaryButton
+    from src.gui.components.inputs import TextInput
+    from src.gui.components.loading_indicator import LoadingIndicator
     from src.gui.themes import token
 except ImportError:
     print("PyQt5 not available. Please install PyQt5.")
@@ -134,9 +136,8 @@ class NetworkConnectivityGUI(StandardWindow):
         bandwidth_group = QGroupBox("Bandwidth Monitor")
         bandwidth_layout = QVBoxLayout(bandwidth_group)
 
-        bandwidth_button = QPushButton("Start Bandwidth Monitoring")
+        bandwidth_button = PrimaryButton("Start Bandwidth Monitoring")
         bandwidth_button.setAccessibleName("Start bandwidth monitoring")
-        bandwidth_button.setMinimumHeight(44)
         bandwidth_button.clicked.connect(self.start_bandwidth_monitor)
         bandwidth_layout.addWidget(bandwidth_button)
 
@@ -150,9 +151,8 @@ class NetworkConnectivityGUI(StandardWindow):
 
         target_layout = QHBoxLayout()
         target_layout.addWidget(QLabel("Target:"))
-        self.target_input = QLineEdit()
+        self.target_input = TextInput("Target host", "Enter IP address or hostname")
         self.target_input.setAccessibleName("Target host for port scan")
-        self.target_input.setPlaceholderText("Enter IP address or hostname")
         target_layout.addWidget(self.target_input)
         scanner_layout.addLayout(target_layout)
 
@@ -173,9 +173,8 @@ class NetworkConnectivityGUI(StandardWindow):
         port_layout.addWidget(self.end_port)
         scanner_layout.addLayout(port_layout)
 
-        scan_button = QPushButton("Start Port Scan")
+        scan_button = PrimaryButton("Start Port Scan")
         scan_button.setAccessibleName("Start port scan")
-        scan_button.setMinimumHeight(44)
         scan_button.clicked.connect(self.start_port_scan)
         scanner_layout.addWidget(scan_button)
 
@@ -184,9 +183,8 @@ class NetworkConnectivityGUI(StandardWindow):
         wifi_group = QGroupBox("WiFi Analyzer")
         wifi_layout = QVBoxLayout(wifi_group)
 
-        wifi_button = QPushButton("Analyze WiFi Networks")
+        wifi_button = SecondaryButton("Analyze WiFi Networks")
         wifi_button.setAccessibleName("Analyze WiFi networks")
-        wifi_button.setMinimumHeight(44)
         wifi_button.clicked.connect(self.analyze_wifi)
         wifi_layout.addWidget(wifi_button)
 
@@ -205,8 +203,7 @@ class NetworkConnectivityGUI(StandardWindow):
 
         layout.addWidget(results_group)
 
-        self.progress_bar = QProgressBar()
-        self.progress_bar.setVisible(False)
+        self.progress_bar = LoadingIndicator(parent=self, message="Scanning...")
         layout.addWidget(self.progress_bar)
 
         button_style = """

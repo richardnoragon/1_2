@@ -6,6 +6,10 @@
 **Scope**: Phase 1 — Unified Appearance Profile, Menu Contract, Dependency Lock, Packaging Documentation. Phases 2–4 (UI Interaction Contract §10, Command Surface §8, Operational Guarantees §13.2, Tool Capability Matrix / CI Enforcement §11–§12) are governed exclusively by their respective constitutional sections and published spec documents. This spec does NOT incorporate or duplicate Phase 2–4 requirements.
 **Input**: User description: "Harmonize the look and feel of all RFU applications so they look and feel the same: consistent window size, font, working directory; same menu structure; same package versions; document frameworks, dependencies and packaging styles."
 
+## Cluster Scope
+
+This specification belongs to the repo-authoritative UI/preferences/documentation cluster already represented by the active specs and trackers. It is intentionally limited to the existing UI harmonization and preference portability path in `specs/004-preferences-framework/*` and `specs/007-ui-harmonization/*`, without expanding into unrelated backlog work outside the validated spec set.
+
 ## Execution Flow (main)
 
 ```text

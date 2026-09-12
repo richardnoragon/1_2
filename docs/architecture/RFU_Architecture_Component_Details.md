@@ -45,6 +45,8 @@
 - **Role**: Centralized logging with database persistence
 - **Key Features**:
   - Multiple log levels and handlers
+   - Centralized audit event schema via [`AuditTrailService`](../../src/core/audit_trail.py)
+   - Shared observability records via [`ObservabilityService`](../../src/core/observability.py)
   - Database logging for audit trails
   - Structured logging with metadata
   - Log rotation and retention policies
@@ -60,7 +62,8 @@
   - AES-256-GCM encryption for sensitive data
   - Database migration with rollback support
   - Directory access monitoring
-  - Security audit logging
+   - Security audit logging with metadata redaction in [`src/core/audit_trail.py`](../../src/core/audit_trail.py)
+   - Structured error normalization and observability routing in [`src/core/error_handler.py`](../../src/core/error_handler.py) and [`src/core/observability.py`](../../src/core/observability.py)
   - Emergency lockdown capabilities
 
 ### GUI Framework Components
@@ -226,8 +229,10 @@
 #### 1. Tool Launch Flow
 
 ```
-User Click → RFUMainWindow.launch_tool() → Import Strategy → Class Validation → Window Creation → Database Tracking
+User Click → RFUMainWindow.launch_tool() → Manifest Resolution → Import Strategy → Class Validation → Window Creation → Database Tracking
 ```
+
+The launcher now shares its resolution path with `src.core.tool_lifecycle.resolve_tool_launch_request()` so explicit module/class pairs and manifest-backed tool definitions follow the same entry-point rules.
 
 #### 2. Configuration Access Flow
 
@@ -252,6 +257,32 @@ Log Event → LogManager → DatabaseLogHandler → DatabaseManager → app_logs
 ```
 Security Action → SecurityPreferences → SecurityConfig → Security Framework → Database/Encryption → Audit Log
 ```
+
+### Shared Runtime State
+
+#### Package-Level Architecture Contract
+
+The RFU runtime is intentionally decomposed into a small number of package responsibilities so that tool launch and lifecycle logic are centralized instead of duplicated across individual GUI classes.
+
+- `src/core` owns shared runtime contracts: configuration/state assembly, tool metadata, tool lifecycle tracking, observability, and audit flows.
+- `src/gui` owns presentation logic, styling, shared dialogs, and window shell behavior.
+- `src/tools` owns domain logic for concrete user-facing tools.
+- `src/utilities` remains a compatibility and migration surface for legacy utilities not yet fully aligned with the canonical package model.
+
+This division allows the app to resolve launch requests with a single tool identity contract (`ToolManifestRegistry`) and a single lifecycle tracker (`ToolRuntimeTracker`) while keeping user interface concerns separate from tool logic.
+
+The canonical implementation is visible in:
+
+- `src/core/application_state.py`
+- `src/core/tool_manifest.py`
+- `src/core/tool_lifecycle.py`
+- `src/core/__init__.py`
+
+This is the package-level architecture standard referenced by issue #79.
+
+- `src.core.application_state.ApplicationState` bundles `logger`, `config_manager`, `preference_manager`, `audit_trail`, and `database_available` for hub-style entry points.
+- `src.core.tool_lifecycle.ToolRuntimeTracker` owns the registration and progress snapshot used by the hub so tool status updates follow one lifecycle shape.
+- `src.core.tool_manifest.ToolManifestRegistry` remains the canonical metadata source for tool identity, module/class resolution, and minimum geometry constraints.
 
 ### Integration Points
 

@@ -13,7 +13,14 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import Qt, pyqtSignal
 
 from gui.themes import ThemeManager, Spacing
-from ..core.platform_network import PlatformNetworkDetector, NetworkInterface
+
+try:
+    from ..core.platform_network import PlatformNetworkDetector, NetworkInterface
+except ModuleNotFoundError:  # pragma: no cover - relative import fallback
+    from src.tools.network.network_connectivity_complex.core.platform_network import (
+        PlatformNetworkDetector,
+        NetworkInterface,
+    )
 
 
 class NetworkInterfaceSelector(QWidget):

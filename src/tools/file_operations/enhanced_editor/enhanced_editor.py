@@ -118,6 +118,8 @@ from PyQt5.QtWidgets import (
 
 # Import StandardWindow for RFU integration
 try:
+    from src.gui.components.buttons import PrimaryButton, SecondaryButton
+    from src.gui.components.inputs import TextInput
     from src.gui.standard_window import StandardWindow
 except ImportError:
     # Fallback for standalone execution
@@ -401,12 +403,12 @@ class SearchDialog(QDialog):
         search_group = QGroupBox("Find")
         search_layout = QFormLayout(search_group)
 
-        self.search_edit = QLineEdit()
+        self.search_edit = TextInput("Find")
         self.search_edit.setAccessibleName("Search text")
         search_layout.addRow("Find:", self.search_edit)
 
         # Replace section
-        self.replace_edit = QLineEdit()
+        self.replace_edit = TextInput("Replace")
         self.replace_edit.setAccessibleName("Replacement text")
         search_layout.addRow("Replace:", self.replace_edit)
 
@@ -435,21 +437,16 @@ class SearchDialog(QDialog):
 
         # Buttons
         button_layout = QHBoxLayout()
-        self.find_next_btn = QPushButton("Find Next")
+        self.find_next_btn = PrimaryButton("Find Next")
         self.find_next_btn.setAccessibleName("Find next match")
-        self.find_next_btn.setMinimumHeight(44)
-        self.find_prev_btn = QPushButton("Find Previous")
+        self.find_prev_btn = SecondaryButton("Find Previous")
         self.find_prev_btn.setAccessibleName("Find previous match")
-        self.find_prev_btn.setMinimumHeight(44)
-        self.replace_btn = QPushButton("Replace")
+        self.replace_btn = SecondaryButton("Replace")
         self.replace_btn.setAccessibleName("Replace current match")
-        self.replace_btn.setMinimumHeight(44)
-        self.replace_all_btn = QPushButton("Replace All")
+        self.replace_all_btn = SecondaryButton("Replace All")
         self.replace_all_btn.setAccessibleName("Replace all matches")
-        self.replace_all_btn.setMinimumHeight(44)
-        self.close_btn = QPushButton("Close")
+        self.close_btn = SecondaryButton("Close")
         self.close_btn.setAccessibleName("Close search dialog")
-        self.close_btn.setMinimumHeight(44)
 
         button_layout.addWidget(self.find_next_btn)
         button_layout.addWidget(self.find_prev_btn)
@@ -753,21 +750,19 @@ class EnhancedEditor(StandardWindow):
 
         pattern_layout = QHBoxLayout()
         pattern_layout.addWidget(QLabel("Pattern:"))
-        self.file_search_pattern = QLineEdit()
+        self.file_search_pattern = TextInput("Pattern", "*.py")
         self.file_search_pattern.setAccessibleName("File search pattern")
-        self.file_search_pattern.setPlaceholderText("*.py")
         pattern_layout.addWidget(self.file_search_pattern)
         finder_layout.addLayout(pattern_layout)
 
         directory_layout = QHBoxLayout()
         directory_layout.addWidget(QLabel("Directory:"))
-        self.file_search_directory = QLineEdit()
+        self.file_search_directory = TextInput("Directory")
         self.file_search_directory.setAccessibleName("File search directory")
         self.file_search_directory.setText(str(Path.cwd()))
         directory_layout.addWidget(self.file_search_directory)
-        browse_button = QPushButton("Browse")
+        browse_button = SecondaryButton("Browse")
         browse_button.setAccessibleName("Browse for file search directory")
-        browse_button.setMinimumHeight(44)
         browse_button.clicked.connect(self.choose_file_search_directory)
         directory_layout.addWidget(browse_button)
         finder_layout.addLayout(directory_layout)
@@ -780,9 +775,8 @@ class EnhancedEditor(StandardWindow):
         options_layout.addWidget(self.file_search_recursive)
         finder_layout.addLayout(options_layout)
 
-        self.file_search_button = QPushButton("Search Files")
+        self.file_search_button = PrimaryButton("Search Files")
         self.file_search_button.setAccessibleName("Search for files")
-        self.file_search_button.setMinimumHeight(44)
         self.file_search_button.clicked.connect(self.perform_file_search)
         finder_layout.addWidget(self.file_search_button)
 

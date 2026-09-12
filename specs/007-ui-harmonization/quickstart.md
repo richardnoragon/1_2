@@ -3,6 +3,10 @@
 **Feature**: `007-ui-harmonization`
 **Date**: 2026-03-11
 
+## Cluster Scope
+
+This quickstart is part of the repo-authoritative UI/preferences/documentation cluster already represented in the active specs and trackers. It is intentionally scoped to the existing UI harmonization and preferences flow in `specs/004-preferences-framework/*` and `specs/007-ui-harmonization/*`; it does not expand into unrelated backlog items or other feature areas.
+
 ---
 
 ## Prerequisites

@@ -4,6 +4,10 @@
 
 This comprehensive documentation package provides a complete architectural analysis of Richard's File Utilities, covering every aspect from end-user experience to technical implementation details.
 
+## Issue Record Sync
+
+Issue #79 is documented in the architecture set and kept in sync with the project docs through the issue-linked note and component references in this index. The canonical issue note is [ISSUE_79_PACKAGE_LEVEL_ARCHITECTURE.md](ISSUE_79_PACKAGE_LEVEL_ARCHITECTURE.md), and the implementation references remain anchored in the core package files for `ApplicationState`, `ToolManifestRegistry`, and `ToolRuntimeTracker`.
+
 ## 📁 Documentation Files
 
 ### 1. [RFU_Complete_Architecture_Diagram.md](RFU_Complete_Architecture_Diagram.md)
@@ -59,6 +63,20 @@ This comprehensive documentation package provides a complete architectural analy
   - Detailed validation status for each category
   - Comprehensive coverage metrics
   - Final accuracy assessment
+
+### 4. [ISSUE_79_PACKAGE_LEVEL_ARCHITECTURE.md](ISSUE_79_PACKAGE_LEVEL_ARCHITECTURE.md)
+**Package-level architecture summary for issue #79**
+
+- **Purpose**: Documents the package decomposition and lifecycle standardization contract for the RFU runtime
+- **Content**:
+  - package responsibilities across `src/core`, `src/gui`, `src/tools`, and `src/utilities`
+  - shared runtime contracts for `ApplicationState`, manifest registry, and lifecycle tracker
+  - launch-resolution and auditing patterns used by the hub and tool entry points
+  - documentation references for the canonical architecture implementation
+- **Key Features**:
+  - issue-linked implementation note
+  - direct mapping to the manifest and lifecycle primitives already in the codebase
+  - package ownership model for future architecture growth
 
 ## 🎯 Target Audiences
 
@@ -124,7 +142,11 @@ Reference [`RFU_Architecture_Validation_Report.md`](RFU_Architecture_Validation_
 - **Database-Centric**: SQLite-based persistence with migration support
 - **Security-First**: Comprehensive encryption and access control
 - **Configuration Management**: Hierarchical settings with database backing
-- **Centralized Logging**: Database-integrated audit trails
+- **Centralized Logging**: Database-integrated audit trails and structured observability events
+
+### Observability Baseline
+- Issue #83 consolidates error handling, structured telemetry, and tool/file lifecycle diagnostics around [`src/core/observability.py`](../../src/core/observability.py) and [`src/core/error_handler.py`](../../src/core/error_handler.py).
+- The shared observability layer forwards into the existing audit trail when available, preserving a single source of truth for diagnostics and logging.
 
 ### Advanced Features
 - **Migration System**: Database schema evolution with rollback support
@@ -153,6 +175,7 @@ Reference [`RFU_Architecture_Validation_Report.md`](RFU_Architecture_Validation_
 | System Overview | [Architecture Diagram](RFU_Complete_Architecture_Diagram.md) | Complete Mermaid Diagram |
 | Implementation Details | [Component Details](RFU_Architecture_Component_Details.md) | Component Analysis |
 | Validation Confirmation | [Validation Report](RFU_Architecture_Validation_Report.md) | Coverage Analysis |
+| Package-level runtime contract | [Issue #79 note](ISSUE_79_PACKAGE_LEVEL_ARCHITECTURE.md) | Core package decomposition and lifecycle standardization |
 | User Journey | [Architecture Diagram](RFU_Complete_Architecture_Diagram.md) | Data Flow Patterns |
 | Security Framework | [Component Details](RFU_Architecture_Component_Details.md) | Security Framework |
 | Database Schema | [Component Details](RFU_Architecture_Component_Details.md) | Database Management |

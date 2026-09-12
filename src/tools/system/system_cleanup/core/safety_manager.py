@@ -7,11 +7,16 @@ safe system cleanup operations with rollback capabilities.
 
 import shutil
 import subprocess
+import sys
 import tempfile
-import winreg
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, Optional
+
+try:
+    import winreg
+except ImportError:  # pragma: no cover - Windows-only dependency
+    winreg = None
 
 from .windows_utils import WindowsUtils
 
@@ -50,9 +55,14 @@ class SafetyManager:
             return False
 
     def backup_registry_key(
-        self, key_path: str, hive: int = winreg.HKEY_LOCAL_MACHINE
+        self, key_path: str, hive: Optional[int] = None
     ) -> Optional[Path]:
         """Backup a registry key to a .reg file."""
+        if winreg is None or sys.platform != "win32":
+            return None
+
+        hive = hive if hive is not None else winreg.HKEY_LOCAL_MACHINE
+
         try:
             # Create backup filename
             safe_key_name = key_path.replace("\\", "_").replace("/", "_")
@@ -353,7 +363,7 @@ class SafetyManager:
         return file_path.suffix.lower() in critical_extensions
 
     def validate_registry_key_safety(
-        self, key_path: str, hive: int = winreg.HKEY_LOCAL_MACHINE
+        self, key_path: str, hive: Optional[int] = None
     ) -> Dict[str, Any]:
         """Validate if a registry key is safe to modify."""
         safety_info = {
@@ -362,6 +372,15 @@ class SafetyManager:
             "critical": False,
             "exists": False,
         }
+
+        if winreg is None or sys.platform != "win32":
+            safety_info["safe_to_modify"] = False
+            safety_info["warnings"].append(
+                "Registry validation is only available on Windows"
+            )
+            return safety_info
+
+        hive = hive if hive is not None else winreg.HKEY_LOCAL_MACHINE
 
         try:
             # Check if key exists

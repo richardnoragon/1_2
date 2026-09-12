@@ -17,10 +17,11 @@ from PyQt5.QtWidgets import (
     QListWidget,
     QMainWindow,
     QMessageBox,
-    QPushButton,
     QVBoxLayout,
     QWidget,
 )
+
+from src.gui.components.buttons import PrimaryButton, SecondaryButton
 
 # Import StandardWindow for menu integration
 try:
@@ -196,46 +197,14 @@ class PermissionsEditorGUI(StandardWindow):
         # Selection buttons
         button_layout = QHBoxLayout()
 
-        select_file_button = QPushButton("Select File")
+        select_file_button = PrimaryButton("Select File")
         select_file_button.setAccessibleName("Select file to edit permissions")
-        select_file_button.setMinimumHeight(44)
         select_file_button.clicked.connect(self.select_file)
-        select_file_button.setStyleSheet(
-            """
-            QPushButton {
-                background-color: {token('accent')};
-                color: white;
-                border: none;
-                padding: 8px 16px;
-                border-radius: 4px;
-                font-weight: bold;
-            }
-            QPushButton:hover {
-                background-color: {token('button_primary_hover')};
-            }
-        """
-        )
         button_layout.addWidget(select_file_button)
 
-        select_dir_button = QPushButton("Select Directory")
+        select_dir_button = SecondaryButton("Select Directory")
         select_dir_button.setAccessibleName("Select directory to edit permissions")
-        select_dir_button.setMinimumHeight(44)
         select_dir_button.clicked.connect(self.select_directory)
-        select_dir_button.setStyleSheet(
-            """
-            QPushButton {
-                background-color: {token('semantic_warning')};
-                color: white;
-                border: none;
-                padding: 8px 16px;
-                border-radius: 4px;
-                font-weight: bold;
-            }
-            QPushButton:hover {
-                background-color: {token('semantic_warning')};
-            }
-        """
-        )
         button_layout.addWidget(select_dir_button)
 
         file_layout.addLayout(button_layout)
@@ -280,51 +249,18 @@ class PermissionsEditorGUI(StandardWindow):
         # Control buttons
         control_layout = QHBoxLayout()
 
-        load_button = QPushButton("Load Current Permissions")
+        load_button = SecondaryButton("Load Current Permissions")
         load_button.setAccessibleName("Load current permissions")
-        load_button.setMinimumHeight(44)
         load_button.clicked.connect(self.load_permissions)
-        load_button.setStyleSheet(
-            """
-            QPushButton {
-                background-color: {token('semantic_success')};
-                color: white;
-                border: none;
-                padding: 8px 16px;
-                border-radius: 4px;
-                font-weight: bold;
-            }
-            QPushButton:hover {
-                background-color: {token('semantic_success')};
-            }
-        """
-        )
         control_layout.addWidget(load_button)
 
-        apply_button = QPushButton("Apply Permissions")
+        apply_button = PrimaryButton("Apply Permissions")
         apply_button.setAccessibleName("Apply selected permissions")
-        apply_button.setMinimumHeight(44)
         apply_button.clicked.connect(self.apply_permissions)
-        apply_button.setStyleSheet(
-            """
-            QPushButton {
-                background-color: {token('semantic_error')};
-                color: white;
-                border: none;
-                padding: 8px 16px;
-                border-radius: 4px;
-                font-weight: bold;
-            }
-            QPushButton:hover {
-                background-color: {token('semantic_error')};
-            }
-        """
-        )
         control_layout.addWidget(apply_button)
 
-        clear_button = QPushButton("Clear Selection")
+        clear_button = SecondaryButton("Clear Selection")
         clear_button.setAccessibleName("Clear file selection")
-        clear_button.setMinimumHeight(44)
         clear_button.clicked.connect(self.clear_selection)
         control_layout.addWidget(clear_button)
 

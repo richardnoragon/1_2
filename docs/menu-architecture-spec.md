@@ -30,6 +30,8 @@ required top-level menus, in exact order:
 | 6 | Window | Always |
 | 7 | Help | Always |
 
+Issue #81 does not change the canonical menu topology, but the shared UI modernization pass now applies the refreshed style tokens and accessibility defaults used by the menu containers and dialogs.
+
 ---
 
 ## 2. Menu Taxonomy

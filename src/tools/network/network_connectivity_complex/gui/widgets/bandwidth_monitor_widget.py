@@ -11,13 +11,14 @@ from PyQt5.QtWidgets import (
     QGroupBox,
     QHBoxLayout,
     QLabel,
-    QPushButton,
     QSpinBox,
     QSplitter,
     QTabWidget,
     QVBoxLayout,
     QWidget,
 )
+
+from src.gui.components.buttons import PrimaryButton, SecondaryButton
 
 from gui.common.standard_window import StandardWindow
 from gui.themes import Colors, Dimensions, Spacing, ThemeManager
@@ -176,16 +177,12 @@ class BandwidthControlPanel(QWidget):
         # Start/Stop buttons
         button_layout = QHBoxLayout()
 
-        self.start_button = QPushButton("Start Monitoring")
+        self.start_button = PrimaryButton("Start Monitoring")
         self.start_button.setAccessibleName("Start bandwidth monitoring")
-        self.start_button.setMinimumHeight(44)
-        ThemeManager.style_primary_button(self.start_button)
         button_layout.addWidget(self.start_button)
 
-        self.stop_button = QPushButton("Stop Monitoring")
+        self.stop_button = SecondaryButton("Stop Monitoring")
         self.stop_button.setAccessibleName("Stop bandwidth monitoring")
-        self.stop_button.setMinimumHeight(44)
-        ThemeManager.style_secondary_button(self.stop_button)
         self.stop_button.setEnabled(False)
         button_layout.addWidget(self.stop_button)
 
@@ -246,10 +243,8 @@ class BandwidthControlPanel(QWidget):
         export_layout.addLayout(format_layout)
 
         # Export button
-        self.export_button = QPushButton("Export Data")
+        self.export_button = SecondaryButton("Export Data")
         self.export_button.setAccessibleName("Export bandwidth data")
-        self.export_button.setMinimumHeight(44)
-        ThemeManager.style_secondary_button(self.export_button)
         export_layout.addWidget(self.export_button)
 
         layout.addStretch()

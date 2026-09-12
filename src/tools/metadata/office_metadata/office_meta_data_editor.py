@@ -19,10 +19,7 @@ try:
         QGridLayout,
         QGroupBox,
         QLabel,
-        QLineEdit,
         QMessageBox,
-        QProgressBar,
-        QPushButton,
         QSplitter,
         QTableWidget,
         QTableWidgetItem,
@@ -34,6 +31,9 @@ try:
         QWidget,
     )
 
+    from src.gui.components.buttons import PrimaryButton, SecondaryButton
+    from src.gui.components.inputs import TextInput
+    from src.gui.components.loading_indicator import LoadingIndicator
     from src.gui.themes import token
 except ImportError:
     print("PyQt5 not available. Please install PyQt5.")
@@ -481,22 +481,19 @@ class OfficeMetaDataEditorGUI(StandardWindow):
 
         # File input
         selection_layout.addWidget(QLabel("Files:"), 0, 0)
-        self.files_edit = QLineEdit()
+        self.files_edit = TextInput("Files", "Select office documents...")
         self.files_edit.setAccessibleName("Document files path")
-        self.files_edit.setPlaceholderText("Select office documents...")
         self.files_edit.setReadOnly(True)
         selection_layout.addWidget(self.files_edit, 0, 1)
 
         # Browse buttons
-        self.browse_files_button = QPushButton("Browse Documents")
+        self.browse_files_button = SecondaryButton("Browse Documents")
         self.browse_files_button.setAccessibleName("Browse for documents")
-        self.browse_files_button.setMinimumHeight(44)
         self.browse_files_button.clicked.connect(self.browse_files)
         selection_layout.addWidget(self.browse_files_button, 0, 2)
 
-        self.browse_folder_button = QPushButton("Browse Folder")
+        self.browse_folder_button = SecondaryButton("Browse Folder")
         self.browse_folder_button.setAccessibleName("Browse for folder")
-        self.browse_folder_button.setMinimumHeight(44)
         self.browse_folder_button.clicked.connect(self.browse_folder)
         selection_layout.addWidget(self.browse_folder_button, 0, 3)
 
@@ -515,9 +512,8 @@ class OfficeMetaDataEditorGUI(StandardWindow):
         selection_layout.addWidget(formats_label, 1, 2, 1, 2)
 
         # Action buttons
-        self.read_button = QPushButton("Read Metadata")
+        self.read_button = PrimaryButton("Read Metadata")
         self.read_button.setAccessibleName("Read metadata")
-        self.read_button.setMinimumHeight(44)
         self.read_button.clicked.connect(self.read_metadata)
         self.read_button.setStyleSheet(
             """
@@ -536,9 +532,8 @@ class OfficeMetaDataEditorGUI(StandardWindow):
         )
         selection_layout.addWidget(self.read_button, 2, 0, 1, 2)
 
-        self.edit_button = QPushButton("Edit Metadata")
+        self.edit_button = SecondaryButton("Edit Metadata")
         self.edit_button.setAccessibleName("Edit metadata")
-        self.edit_button.setMinimumHeight(44)
         self.edit_button.clicked.connect(self.edit_metadata)
         self.edit_button.setStyleSheet(
             """
@@ -564,8 +559,7 @@ class OfficeMetaDataEditorGUI(StandardWindow):
         progress_group = QGroupBox("Progress")
         progress_layout = QVBoxLayout(progress_group)
 
-        self.progress_bar = QProgressBar()
-        self.progress_bar.setVisible(False)
+        self.progress_bar = LoadingIndicator(parent=self, cancellable=False, message="Working...")
         progress_layout.addWidget(self.progress_bar)
 
         self.status_label = QLabel("Ready to process office documents")
@@ -577,16 +571,14 @@ class OfficeMetaDataEditorGUI(StandardWindow):
         actions_group = QGroupBox("Quick Actions")
         actions_layout = QVBoxLayout(actions_group)
 
-        self.export_button = QPushButton("Export Metadata")
+        self.export_button = SecondaryButton("Export Metadata")
         self.export_button.setAccessibleName("Export metadata")
-        self.export_button.setMinimumHeight(44)
         self.export_button.clicked.connect(self.export_metadata)
         self.export_button.setEnabled(False)
         actions_layout.addWidget(self.export_button)
 
-        self.clear_button = QPushButton("Clear Results")
+        self.clear_button = SecondaryButton("Clear Results")
         self.clear_button.setAccessibleName("Clear results")
-        self.clear_button.setMinimumHeight(44)
         self.clear_button.clicked.connect(self.clear_results)
         actions_layout.addWidget(self.clear_button)
 
@@ -739,8 +731,8 @@ class OfficeMetaDataEditorGUI(StandardWindow):
         # Setup UI for operation
         self.read_button.setEnabled(False)
         self.edit_button.setEnabled(False)
-        self.progress_bar.setVisible(True)
-        self.progress_bar.setValue(0)
+        self.progress_bar.show()
+        self.progress_bar.set_progress(0)
 
         if operation == "read":
             self.status_label.setText("Reading document metadata...")
@@ -757,7 +749,7 @@ class OfficeMetaDataEditorGUI(StandardWindow):
 
     def update_progress(self, value):
         """Update progress bar."""
-        self.progress_bar.setValue(value)
+        self.progress_bar.set_progress(value)
 
     def add_result(self, file_path, metadata):
         """Add metadata result to the display."""

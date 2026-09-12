@@ -339,22 +339,24 @@ pytest tests/performance/test_layout_switching_speed.py -v
 
 ### Must Pass
 
-- [ ] All automated tests pass (pytest exit code 0)
-- [ ] All manual steps complete without crashes
-- [ ] Performance requirements met:
-  - [ ] Hub toggle <200ms
-  - [ ] Large directory load <2s
-  - [ ] Layout switch <200ms
-- [ ] Preferences persist across restarts
-- [ ] Empty states show helpful messages
-- [ ] Fallback behaviors work (unavailable drives)
+- [x] All automated tests pass (pytest exit code 0)
+- [x] All manual steps complete without crashes
+- [x] Performance requirements met:
+  - [x] Hub toggle <200ms
+  - [x] Large directory load <2s
+  - [x] Layout switch <200ms
+- [x] Preferences persist across restarts
+- [x] Empty states show helpful messages
+- [x] Fallback behaviors work (unavailable drives)
 
 ### Quality Metrics
 
-- [ ] Test coverage ≥85% for new modules
-- [ ] No mypy type errors
-- [ ] No flake8 lint errors
-- [ ] All edge cases handled gracefully
+- [x] Test coverage ≥85% for new modules
+- [x] No mypy type errors
+- [x] No flake8 lint errors
+- [x] All edge cases handled gracefully
+
+> 2026-09-11: P2 quality-gate evidence is now recorded in the repo task/checklist files and runbook references; this quickstart reflects the validated completion state for the portability/workflow validation pass.
 
 ---
 
@@ -470,14 +472,14 @@ test:
 
 Before marking feature complete:
 
-- [ ] All quickstart tests pass
-- [ ] Code review completed
-- [ ] Documentation updated (user guide + API reference)
-- [ ] Performance benchmarks meet requirements
-- [ ] Cross-platform testing completed (Windows/macOS/Linux)
-- [ ] Accessibility testing completed (keyboard navigation)
-- [ ] Constitution compliance verified
-- [ ] Stakeholder approval obtained
+- [x] All quickstart tests pass
+- [x] Code review completed
+- [x] Documentation updated (user guide + API reference)
+- [x] Performance benchmarks meet requirements
+- [x] Cross-platform testing completed (Windows/macOS/Linux)
+- [x] Accessibility testing completed (keyboard navigation)
+- [x] Constitution compliance verified
+- [x] Stakeholder approval obtained
 
-**Approved By**: ******\_\_\_\_******  
-**Date**: ******\_\_\_\_******
+**Approved By**: Noragon  
+**Date**: 2026-09-11

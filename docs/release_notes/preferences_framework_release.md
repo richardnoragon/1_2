@@ -2,6 +2,10 @@
 
 _Status: Draft · Generated 2025-11-14_
 
+## Scope
+
+This release note is part of the repo-authoritative UI/preferences/documentation cluster already represented in the active project specs and trackers. It describes the preference portability and appearance-preferences flow defined in `specs/004-preferences-framework/*` and `specs/007-ui-harmonization/*`, and it intentionally excludes unrelated backlog items outside that validated scope.
+
 ## 1. Overview
 
 Richard's File Utilities now routes preference writes/reads through the unified `PreferencesStore`/`PreferenceManager` stack with export/import tooling for user portability. This document captures the release-ready state, migration progress, validation evidence, known gaps, and telemetry checkpoints required for rollout.

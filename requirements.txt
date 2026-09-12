@@ -70,12 +70,13 @@ pytest-sugar==1.0.0                       # Enhancedtestoutput
 factory-boy==3.3.1                        # Testdatageneration
 Faker==33.1.0                             # Fakedatageneration
 PyVirtualDisplay==3.0                     # Virtualdisplayforheadlesstesting
-requests==2.32.3                          # HTTPclient
 paramiko==3.5.0                           # SSHclient
 netifaces==0.11.0; sys_platform!="win32"  # Networkinterfaceinfo (skip Windows build issues)
 chardet==5.2.0                            # Characterencodingdetection
 fuzzywuzzy==0.18.0                        # Fuzzystringmatching
 python-Levenshtein==0.26.0                # Stringdistancealgorithms
+pip-audit==2.9.0                          # Dependency vulnerability scanner
+cyclonedx-bom==5.1.0                      # SBOM generator for supply-chain visibility
 pywin32==308; sys_platform=="win32"     # WindowsAPIaccess
 wmi==1.5.1; sys_platform=="win32"       # Windowssystemmanagement
 python-magic-bin==0.4.14; sys_platform=="win32"  # Windowsfiletypedetection

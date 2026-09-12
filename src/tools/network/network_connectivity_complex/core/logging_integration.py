@@ -25,7 +25,11 @@ class SimpleLogManager:
 
 
 # Use the simplified log manager
-LogManager = SimpleLogManager()
+_default_log_manager = SimpleLogManager()
+
+# Expose as both instance and class for compatibility with different import patterns
+LogManager = _default_log_manager
+
 
 
 class NetworkLoggingManager:
@@ -33,7 +37,7 @@ class NetworkLoggingManager:
 
     def __init__(self):
         """Initialize network logging manager."""
-        self.log_manager = LogManager()
+        self.log_manager = _default_log_manager
         self.network_loggers: Dict[str, logging.Logger] = {}
         self._setup_network_logging()
 

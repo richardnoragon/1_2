@@ -55,43 +55,44 @@ class SimpleUtilitiesDataGenerator:
         if count is None:
             count = random.randint(50, 200)
         
+        base_path.mkdir(parents=True, exist_ok=True)
+
         # File types with realistic distribution
         file_types = ['.txt', '.pdf', '.jpg', '.docx', '.zip', '.log']
         created_files = []
         total_size = 0
-        
+
         # Create directory structure
         for i in range(count):
             # Variable directory depth
             depth = random.randint(0, 3)
             dir_path = base_path
-            
+
             for level in range(depth):
                 dir_name = f"level_{level}_{i % 10}"
                 dir_path = dir_path / dir_name
-                dir_path.mkdir(exist_ok=True)
-            
-            # Generate file with variable characteristics
+                dir_path.mkdir(exist_ok=True, parents=True)
+
             file_type = random.choice(file_types)
             file_name = f"file_{i:04d}{file_type}"
-            
+
             # Add Unicode to some files (realistic edge case)
             if random.random() < 0.1:  # 10% chance
                 unicode_chars = ['áéíóú', '中文', 'русский']
                 unicode_part = random.choice(unicode_chars)
                 file_name = f"{unicode_part}_{file_name}"
-            
+
             file_path = dir_path / file_name
-            
+
             # Variable file size based on type
             if file_type == '.txt':
-                size = random.randint(1024, 100*1024)  # 1KB-100KB
+                size = random.randint(1024, 100 * 1024)  # 1KB-100KB
                 content = f"Test content {i}\n" * (size // 20)
                 file_path.write_text(content[:size], encoding='utf-8')
             else:
-                size = random.randint(1024, 1024*1024)  # 1KB-1MB
+                size = random.randint(1024, 1024 * 1024)  # 1KB-1MB
                 # Limit actual size for test performance
-                actual_size = min(size, 50*1024)  # Cap at 50KB
+                actual_size = min(size, 50 * 1024)  # Cap at 50KB
                 content = secrets.token_bytes(actual_size)
                 file_path.write_bytes(content)
                 size = actual_size

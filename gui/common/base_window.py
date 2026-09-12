@@ -24,7 +24,10 @@ except ImportError:
     QSize = None
     uic = None
 
-from ...core.error_handler import error_handler
+try:
+    from core.error_handler import error_handler
+except ImportError:  # pragma: no cover - fallback for legacy layout
+    from src.core.error_handler import error_handler
 
 
 class BaseWindow(QMainWindow):

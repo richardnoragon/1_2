@@ -51,6 +51,14 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
+from src.gui.components.buttons import PrimaryButton, SecondaryButton
+from src.gui.components.inputs import TextInput
+from src.gui.themes import token
+
+PDF_FILE_FILTER = "PDF Files (*.pdf)"
+ALL_FILES_FILTER = "All Files (*)"
+PDF_FILES_FILTER = f"{PDF_FILE_FILTER};;{ALL_FILES_FILTER}"
+
 # Set up logger
 logger = logging.getLogger(__name__)
 
@@ -111,15 +119,15 @@ class FilePreviewWidget(QWidget):
         self.preview_label = QLabel("No file selected")
         self.preview_label.setAlignment(Qt.AlignCenter)
         self.preview_label.setStyleSheet(
-            """
-            QLabel {
-                border: 2px dashed #ccc;
+            f"""
+            QLabel {{
+                border: 2px dashed {token('border_light')};
                 border-radius: 8px;
                 padding: 20px;
-                background-color: #f9f9f9;
-                color: #666;
+                background-color: {token('surface')};
+                color: {token('text_muted')};
                 font-size: 12pt;
-            }
+            }}
         """
         )
         self.preview_label.setMinimumHeight(120)
@@ -128,7 +136,9 @@ class FilePreviewWidget(QWidget):
         # File info
         self.info_label = QLabel("")
         self.info_label.setWordWrap(True)
-        self.info_label.setStyleSheet("font-size: 10pt; color: #555;")
+        self.info_label.setStyleSheet(
+            f"font-size: 10pt; color: {token('text_muted')};"
+        )
         layout.addWidget(self.info_label)
 
     def update_preview(self, file_path: str, page_count: int = 0, file_size: int = 0):
@@ -171,51 +181,78 @@ class PDFMergeDialog(QDialog):
 
     def init_ui(self):
         layout = QVBoxLayout(self)
-
-        # Create splitter for main content
         splitter = QSplitter(Qt.Horizontal)
         layout.addWidget(splitter)
+        splitter.addWidget(self._build_left_panel())
+        splitter.addWidget(self._build_right_panel())
+        splitter.setSizes([400, 400])
 
-        # Left panel - File list
+        buttons_layout = QHBoxLayout()
+        buttons_layout.addStretch()
+
+        self.cancel_btn = SecondaryButton("Cancel")
+        self.cancel_btn.setAccessibleName("Cancel merge operation")
+        self.cancel_btn.clicked.connect(self.reject)
+        buttons_layout.addWidget(self.cancel_btn)
+
+        self.merge_btn = PrimaryButton("Merge PDFs")
+        self.merge_btn.setAccessibleName("Merge PDF files")
+        self.merge_btn.clicked.connect(self.accept)
+        self.merge_btn.setEnabled(False)
+        self.merge_btn.setStyleSheet(
+            f"""
+            QPushButton {{
+                background-color: {token('button_primary')};
+                color: {token('text_on_primary')};
+                font-weight: bold;
+                padding: 8px 16px;
+                border: none;
+                border-radius: 4px;
+            }}
+            QPushButton:hover {{
+                background-color: {token('button_primary_hover')};
+            }}
+            QPushButton:disabled {{
+                background-color: {token('text_disabled')};
+            }}
+        """
+        )
+        buttons_layout.addWidget(self.merge_btn)
+
+        layout.addLayout(buttons_layout)
+        self.apply_styling()
+
+    def _build_left_panel(self) -> QWidget:
         left_panel = QWidget()
         left_layout = QVBoxLayout(left_panel)
 
-        # Input files section
         files_group = QGroupBox("Input Files")
         files_layout = QVBoxLayout(files_group)
-
-        # File list with drag-drop support
         self.file_list = DragDropListWidget()
         self.file_list.files_reordered.connect(self.on_files_reordered)
         self.file_list.itemSelectionChanged.connect(self.on_file_selected)
         files_layout.addWidget(self.file_list)
 
-        # File control buttons
         file_buttons_layout = QHBoxLayout()
-
-        self.add_files_btn = QPushButton("Add Files")
+        self.add_files_btn = SecondaryButton("Add Files")
         self.add_files_btn.setAccessibleName("Add PDF files to merge list")
-        self.add_files_btn.setMinimumHeight(44)
         self.add_files_btn.clicked.connect(self.add_files)
         file_buttons_layout.addWidget(self.add_files_btn)
 
-        self.remove_file_btn = QPushButton("Remove")
+        self.remove_file_btn = SecondaryButton("Remove")
         self.remove_file_btn.setAccessibleName("Remove selected file from merge list")
-        self.remove_file_btn.setMinimumHeight(44)
         self.remove_file_btn.clicked.connect(self.remove_selected_file)
         self.remove_file_btn.setEnabled(False)
         file_buttons_layout.addWidget(self.remove_file_btn)
 
-        self.move_up_btn = QPushButton("↑")
+        self.move_up_btn = SecondaryButton("↑")
         self.move_up_btn.setAccessibleName("Move file up in merge order")
-        self.move_up_btn.setMinimumHeight(44)
         self.move_up_btn.clicked.connect(self.move_file_up)
         self.move_up_btn.setEnabled(False)
         file_buttons_layout.addWidget(self.move_up_btn)
 
-        self.move_down_btn = QPushButton("↓")
+        self.move_down_btn = SecondaryButton("↓")
         self.move_down_btn.setAccessibleName("Move file down in merge order")
-        self.move_down_btn.setMinimumHeight(44)
         self.move_down_btn.clicked.connect(self.move_file_down)
         self.move_down_btn.setEnabled(False)
         file_buttons_layout.addWidget(self.move_down_btn)
@@ -223,10 +260,8 @@ class PDFMergeDialog(QDialog):
         files_layout.addLayout(file_buttons_layout)
         left_layout.addWidget(files_group)
 
-        # Options section
         options_group = QGroupBox("Merge Options")
         options_layout = QFormLayout(options_group)
-
         self.preserve_bookmarks_cb = QCheckBox("Preserve bookmarks")
         self.preserve_bookmarks_cb.setAccessibleName("Preserve bookmarks")
         self.preserve_bookmarks_cb.setMinimumHeight(44)
@@ -249,149 +284,99 @@ class PDFMergeDialog(QDialog):
         self.custom_ranges_cb.setMinimumHeight(44)
         self.custom_ranges_cb.toggled.connect(self.toggle_custom_ranges)
         options_layout.addRow(self.custom_ranges_cb)
-
         left_layout.addWidget(options_group)
 
-        # Output section
         output_group = QGroupBox("Output")
         output_layout = QFormLayout(output_group)
-
         output_file_layout = QHBoxLayout()
-        self.output_file_edit = QLineEdit()
-        self.output_file_edit.setAccessibleName("Merged output file")
-        self.output_file_edit.setPlaceholderText("Select output file...")
+        self.output_file_edit = TextInput(
+            "Merged Output File",
+            "Select output file...",
+            accessible_name="Merged output file",
+        )
         output_file_layout.addWidget(self.output_file_edit)
 
-        self.browse_output_btn = QPushButton("Browse")
+        self.browse_output_btn = SecondaryButton("Browse")
         self.browse_output_btn.setAccessibleName("Browse for merged output file")
-        self.browse_output_btn.setMinimumHeight(44)
         self.browse_output_btn.clicked.connect(self.browse_output_file)
         output_file_layout.addWidget(self.browse_output_btn)
 
         output_layout.addRow("Output file:", output_file_layout)
         left_layout.addWidget(output_group)
+        return left_panel
 
-        splitter.addWidget(left_panel)
-
-        # Right panel - Preview
+    def _build_right_panel(self) -> QWidget:
         right_panel = QWidget()
         right_layout = QVBoxLayout(right_panel)
 
         preview_group = QGroupBox("Preview")
         preview_layout = QVBoxLayout(preview_group)
-
         self.preview_widget = FilePreviewWidget()
         preview_layout.addWidget(self.preview_widget)
 
-        # File details
         self.details_text = QTextEdit()
         self.details_text.setAccessibleName("File details")
         self.details_text.setMaximumHeight(100)
         self.details_text.setReadOnly(True)
         preview_layout.addWidget(self.details_text)
-
         right_layout.addWidget(preview_group)
 
-        # Custom ranges section (initially hidden)
         self.ranges_group = QGroupBox("Custom Page Ranges")
         self.ranges_group.setVisible(False)
         ranges_layout = QVBoxLayout(self.ranges_group)
-
         ranges_help = QLabel(
             "Specify page ranges for each file (e.g., 1-5,10-15).\n"
             "Leave empty to include all pages."
         )
         ranges_help.setWordWrap(True)
-        ranges_help.setStyleSheet("color: #666; font-size: 9pt;")
+        ranges_help.setStyleSheet(f"color: {token('text_muted')}; font-size: 9pt;")
         ranges_layout.addWidget(ranges_help)
 
         self.ranges_list = QListWidget()
         self.ranges_list.setAccessibleName("Custom page ranges list")
         ranges_layout.addWidget(self.ranges_list)
-
         right_layout.addWidget(self.ranges_group)
-
-        splitter.addWidget(right_panel)
-        splitter.setSizes([400, 400])
-
-        # Dialog buttons
-        buttons_layout = QHBoxLayout()
-        buttons_layout.addStretch()
-
-        self.cancel_btn = QPushButton("Cancel")
-        self.cancel_btn.setAccessibleName("Cancel merge operation")
-        self.cancel_btn.setMinimumHeight(44)
-        self.cancel_btn.clicked.connect(self.reject)
-        buttons_layout.addWidget(self.cancel_btn)
-
-        self.merge_btn = QPushButton("Merge PDFs")
-        self.merge_btn.setAccessibleName("Merge PDF files")
-        self.merge_btn.setMinimumHeight(44)
-        self.merge_btn.clicked.connect(self.accept)
-        self.merge_btn.setEnabled(False)
-        self.merge_btn.setStyleSheet(
-            """
-            QPushButton {
-                background-color: #007bff;
-                color: white;
-                font-weight: bold;
-                padding: 8px 16px;
-                border: none;
-                border-radius: 4px;
-            }
-            QPushButton:hover {
-                background-color: #0056b3;
-            }
-            QPushButton:disabled {
-                background-color: #ccc;
-            }
-        """
-        )
-        buttons_layout.addWidget(self.merge_btn)
-
-        layout.addLayout(buttons_layout)
-
-        self.apply_styling()
+        return right_panel
 
     def apply_styling(self):
         """Apply modern styling to the dialog"""
         self.setStyleSheet(
-            """
-            QDialog {
-                background-color: #ffffff;
+            f"""
+            QDialog {{
+                background-color: {token('window_background')};
                 font-family: "Segoe UI", Arial, sans-serif;
-            }
-            QGroupBox {
+            }}
+            QGroupBox {{
                 font-weight: bold;
-                border: 2px solid #dee2e6;
+                border: 2px solid {token('border_light')};
                 border-radius: 8px;
                 margin-top: 10px;
                 padding-top: 10px;
-            }
-            QGroupBox::title {
+            }}
+            QGroupBox::title {{
                 subcontrol-origin: margin;
                 left: 10px;
                 padding: 0 5px 0 5px;
-            }
-            QPushButton {
+            }}
+            QPushButton {{
                 padding: 6px 12px;
-                border: 1px solid #ccc;
+                border: 1px solid {token('border_light')};
                 border-radius: 4px;
-                background-color: #f8f9fa;
-            }
-            QPushButton:hover {
-                background-color: #e9ecef;
-            }
-            QListWidget {
-                border: 1px solid #dee2e6;
+                background-color: {token('surface')};
+            }}
+            QPushButton:hover {{
+                background-color: {token('color_bg_tint')};
+            }}
+            QListWidget {{
+                border: 1px solid {token('border_light')};
                 border-radius: 4px;
-                background-color: #ffffff;
-            }
-            QLineEdit {
+                background-color: {token('window_background')};
+            }}
+            QLineEdit {{
                 padding: 6px;
-                border: 1px solid #dee2e6;
+                border: 1px solid {token('border_light')};
                 border-radius: 4px;
-            }
+            }}
         """
         )
 
@@ -401,7 +386,7 @@ class PDFMergeDialog(QDialog):
             self,
             "Select PDF Files to Merge",
             "",
-            "PDF Files (*.pdf);;All Files (*)",
+            PDF_FILES_FILTER,
         )
 
         if files:
@@ -521,7 +506,7 @@ class PDFMergeDialog(QDialog):
             self,
             "Save Merged PDF As",
             "merged_document.pdf",
-            "PDF Files (*.pdf);;All Files (*)",
+            PDF_FILES_FILTER,
         )
 
         if file_path:
@@ -579,22 +564,27 @@ class PDFSplitDialog(QDialog):
         input_layout = QFormLayout(input_group)
 
         input_file_layout = QHBoxLayout()
-        self.input_file_edit = QLineEdit()
-        self.input_file_edit.setAccessibleName("Input PDF file to split")
-        self.input_file_edit.setPlaceholderText("Select PDF file to split...")
+        self.input_file_edit = TextInput(
+            "Input PDF File",
+            "Select PDF file to split...",
+            accessible_name="Input PDF file to split",
+        )
         self.input_file_edit.textChanged.connect(self.on_input_file_changed)
         input_file_layout.addWidget(self.input_file_edit)
 
-        self.browse_input_btn = QPushButton("Browse")
-        self.browse_input_btn.setAccessibleName("Browse for PDF file to split")
-        self.browse_input_btn.setMinimumHeight(44)
+        self.browse_input_btn = SecondaryButton("Browse")
+        self.browse_input_btn.setAccessibleName(
+            "Browse for PDF file to split"
+        )
         self.browse_input_btn.clicked.connect(self.browse_input_file)
         input_file_layout.addWidget(self.browse_input_btn)
 
         input_layout.addRow("PDF File:", input_file_layout)
 
         self.file_info_label = QLabel("")
-        self.file_info_label.setStyleSheet("color: #666; font-size: 10pt;")
+        self.file_info_label.setStyleSheet(
+            f"color: {token('text_muted')}; font-size: 10pt;"
+        )
         input_layout.addRow(self.file_info_label)
 
         layout.addWidget(input_group)
@@ -638,9 +628,11 @@ class PDFSplitDialog(QDialog):
         ranges_layout = QHBoxLayout()
         ranges_layout.addSpacing(20)
         ranges_layout.addWidget(QLabel("Page ranges:"))
-        self.ranges_edit = QLineEdit()
-        self.ranges_edit.setAccessibleName("Page ranges to split at")
-        self.ranges_edit.setPlaceholderText("e.g., 1-10,11-20,21-30")
+        self.ranges_edit = TextInput(
+            "Page Ranges",
+            "e.g., 1-10,11-20,21-30",
+            accessible_name="Page ranges to split at",
+        )
         self.ranges_edit.setEnabled(False)
         ranges_layout.addWidget(self.ranges_edit)
         method_layout.addLayout(ranges_layout)
@@ -696,23 +688,29 @@ class PDFSplitDialog(QDialog):
         output_layout = QFormLayout(output_group)
 
         output_dir_layout = QHBoxLayout()
-        self.output_dir_edit = QLineEdit()
-        self.output_dir_edit.setAccessibleName("Split output directory")
-        self.output_dir_edit.setPlaceholderText("Select output directory...")
+        self.output_dir_edit = TextInput(
+            "Split Output Directory",
+            "Select output directory...",
+            accessible_name="Split output directory",
+        )
         self.output_dir_edit.textChanged.connect(self.update_split_button)
         output_dir_layout.addWidget(self.output_dir_edit)
 
-        self.browse_output_btn = QPushButton("Browse")
-        self.browse_output_btn.setAccessibleName("Browse for split output directory")
-        self.browse_output_btn.setMinimumHeight(44)
+        self.browse_output_btn = SecondaryButton("Browse")
+        self.browse_output_btn.setAccessibleName(
+            "Browse for split output directory"
+        )
         self.browse_output_btn.clicked.connect(self.browse_output_directory)
         output_dir_layout.addWidget(self.browse_output_btn)
 
         output_layout.addRow("Output Directory:", output_dir_layout)
 
-        self.naming_edit = QLineEdit("split_{index}.pdf")
-        self.naming_edit.setAccessibleName("Split output file naming pattern")
-        output_layout.addRow("Naming Pattern:", self.naming_edit)
+        self.naming_edit = TextInput(
+            "Naming Pattern",
+            "split_{index}.pdf",
+            accessible_name="Split output file naming pattern",
+        )
+        output_layout.addRow(self.naming_edit)
 
         layout.addWidget(output_group)
 
@@ -720,33 +718,31 @@ class PDFSplitDialog(QDialog):
         buttons_layout = QHBoxLayout()
         buttons_layout.addStretch()
 
-        self.cancel_btn = QPushButton("Cancel")
+        self.cancel_btn = SecondaryButton("Cancel")
         self.cancel_btn.setAccessibleName("Cancel split operation")
-        self.cancel_btn.setMinimumHeight(44)
         self.cancel_btn.clicked.connect(self.reject)
         buttons_layout.addWidget(self.cancel_btn)
 
-        self.split_btn = QPushButton("Split PDF")
+        self.split_btn = PrimaryButton("Split PDF")
         self.split_btn.setAccessibleName("Split PDF into parts")
-        self.split_btn.setMinimumHeight(44)
         self.split_btn.clicked.connect(self.accept)
         self.split_btn.setEnabled(False)
         self.split_btn.setStyleSheet(
-            """
-            QPushButton {
-                background-color: #28a745;
-                color: white;
+            f"""
+            QPushButton {{
+                background-color: {token('semantic_success')};
+                color: {token('text_on_primary')};
                 font-weight: bold;
                 padding: 8px 16px;
                 border: none;
                 border-radius: 4px;
-            }
-            QPushButton:hover {
-                background-color: #218838;
-            }
-            QPushButton:disabled {
-                background-color: #ccc;
-            }
+            }}
+            QPushButton:hover {{
+                background-color: {token('semantic_success_hover')};
+            }}
+            QPushButton:disabled {{
+                background-color: {token('text_disabled')};
+            }}
         """
         )
         buttons_layout.addWidget(self.split_btn)
@@ -758,41 +754,41 @@ class PDFSplitDialog(QDialog):
     def apply_styling(self):
         """Apply modern styling to the dialog"""
         self.setStyleSheet(
-            """
-            QDialog {
-                background-color: #ffffff;
+            f"""
+            QDialog {{
+                background-color: {token('window_background')};
                 font-family: "Segoe UI", Arial, sans-serif;
-            }
-            QGroupBox {
+            }}
+            QGroupBox {{
                 font-weight: bold;
-                border: 2px solid #dee2e6;
+                border: 2px solid {token('border_light')};
                 border-radius: 8px;
                 margin-top: 10px;
                 padding-top: 10px;
-            }
-            QGroupBox::title {
+            }}
+            QGroupBox::title {{
                 subcontrol-origin: margin;
                 left: 10px;
                 padding: 0 5px 0 5px;
-            }
-            QPushButton {
+            }}
+            QPushButton {{
                 padding: 6px 12px;
-                border: 1px solid #ccc;
+                border: 1px solid {token('border_light')};
                 border-radius: 4px;
-                background-color: #f8f9fa;
-            }
-            QPushButton:hover {
-                background-color: #e9ecef;
-            }
-            QLineEdit {
+                background-color: {token('surface')};
+            }}
+            QPushButton:hover {{
+                background-color: {token('color_bg_tint')};
+            }}
+            QLineEdit {{
                 padding: 6px;
-                border: 1px solid #dee2e6;
+                border: 1px solid {token('border_light')};
                 border-radius: 4px;
-            }
-            QTextEdit {
-                border: 1px solid #dee2e6;
+            }}
+            QTextEdit {{
+                border: 1px solid {token('border_light')};
                 border-radius: 4px;
-            }
+            }}
         """
         )
 
@@ -952,15 +948,18 @@ class PDFSignDialog(QDialog):
 
         # PDF file
         pdf_file_layout = QHBoxLayout()
-        self.pdf_file_edit = QLineEdit()
-        self.pdf_file_edit.setAccessibleName("PDF file to sign")
-        self.pdf_file_edit.setPlaceholderText("Select PDF file to sign...")
+        self.pdf_file_edit = TextInput(
+            "PDF File",
+            "Select PDF file to sign...",
+            accessible_name="PDF file to sign",
+        )
         self.pdf_file_edit.textChanged.connect(self.update_sign_button)
         pdf_file_layout.addWidget(self.pdf_file_edit)
 
-        self.browse_pdf_btn = QPushButton("Browse")
-        self.browse_pdf_btn.setAccessibleName("Browse for PDF file to sign")
-        self.browse_pdf_btn.setMinimumHeight(44)
+        self.browse_pdf_btn = SecondaryButton("Browse")
+        self.browse_pdf_btn.setAccessibleName(
+            "Browse for PDF file to sign"
+        )
         self.browse_pdf_btn.clicked.connect(self.browse_pdf_file)
         pdf_file_layout.addWidget(self.browse_pdf_btn)
 
@@ -968,15 +967,18 @@ class PDFSignDialog(QDialog):
 
         # Signature file
         sig_file_layout = QHBoxLayout()
-        self.sig_file_edit = QLineEdit()
-        self.sig_file_edit.setAccessibleName("Signature image file")
-        self.sig_file_edit.setPlaceholderText("Select signature image...")
+        self.sig_file_edit = TextInput(
+            "Signature File",
+            "Select signature image...",
+            accessible_name="Signature image file",
+        )
         self.sig_file_edit.textChanged.connect(self.update_sign_button)
         sig_file_layout.addWidget(self.sig_file_edit)
 
-        self.browse_sig_btn = QPushButton("Browse")
-        self.browse_sig_btn.setAccessibleName("Browse for signature image file")
-        self.browse_sig_btn.setMinimumHeight(44)
+        self.browse_sig_btn = SecondaryButton("Browse")
+        self.browse_sig_btn.setAccessibleName(
+            "Browse for signature image file"
+        )
         self.browse_sig_btn.clicked.connect(self.browse_signature_file)
         sig_file_layout.addWidget(self.browse_sig_btn)
 
@@ -1077,9 +1079,11 @@ class PDFSignDialog(QDialog):
 
         custom_pages_layout = QHBoxLayout()
         custom_pages_layout.addSpacing(20)
-        self.custom_pages_edit = QLineEdit()
-        self.custom_pages_edit.setAccessibleName("Custom page numbers to sign")
-        self.custom_pages_edit.setPlaceholderText("e.g., 1,3,5")
+        self.custom_pages_edit = TextInput(
+            "Custom Pages",
+            "e.g., 1,3,5",
+            accessible_name="Custom page numbers to sign",
+        )
         self.custom_pages_edit.setEnabled(False)
         custom_pages_layout.addWidget(self.custom_pages_edit)
         pages_layout.addLayout(custom_pages_layout)
@@ -1138,15 +1142,16 @@ class PDFSignDialog(QDialog):
 
         # Certificate file
         cert_layout = QHBoxLayout()
-        self.cert_file_edit = QLineEdit()
-        self.cert_file_edit.setAccessibleName("Certificate file for digital signature")
-        self.cert_file_edit.setPlaceholderText("Select certificate file...")
+        self.cert_file_edit = TextInput(
+            "Certificate File",
+            "Select certificate file...",
+            accessible_name="Certificate file for digital signature",
+        )
         self.cert_file_edit.setEnabled(False)
         cert_layout.addWidget(self.cert_file_edit)
 
-        self.browse_cert_btn = QPushButton("Browse")
+        self.browse_cert_btn = SecondaryButton("Browse")
         self.browse_cert_btn.setAccessibleName("Browse for certificate file")
-        self.browse_cert_btn.setMinimumHeight(44)
         self.browse_cert_btn.clicked.connect(self.browse_certificate_file)
         self.browse_cert_btn.setEnabled(False)
         cert_layout.addWidget(self.browse_cert_btn)
@@ -1168,15 +1173,15 @@ class PDFSignDialog(QDialog):
         self.preview_label = QLabel("Preview will appear here")
         self.preview_label.setAlignment(Qt.AlignCenter)
         self.preview_label.setStyleSheet(
-            """
-            QLabel {
-                border: 2px dashed #ccc;
+            f"""
+            QLabel {{
+                border: 2px dashed {token('border_light')};
                 border-radius: 8px;
                 padding: 40px;
-                background-color: #f9f9f9;
-                color: #666;
+                background-color: {token('surface')};
+                color: {token('text_muted')};
                 font-size: 12pt;
-            }
+            }}
         """
         )
         self.preview_label.setMinimumHeight(200)
@@ -1192,17 +1197,18 @@ class PDFSignDialog(QDialog):
         output_layout = QFormLayout(output_group)
 
         output_file_layout = QHBoxLayout()
-        self.output_file_edit = QLineEdit()
-        self.output_file_edit.setAccessibleName("Signed output file")
-        self.output_file_edit.setPlaceholderText(
-            "Output file will be auto-generated..."
+        self.output_file_edit = TextInput(
+            "Signed Output File",
+            "Output file will be auto-generated...",
+            accessible_name="Signed output file",
         )
         self.output_file_edit.textChanged.connect(self.update_sign_button)
         output_file_layout.addWidget(self.output_file_edit)
 
-        self.browse_output_btn = QPushButton("Browse")
-        self.browse_output_btn.setAccessibleName("Browse for signed output file")
-        self.browse_output_btn.setMinimumHeight(44)
+        self.browse_output_btn = SecondaryButton("Browse")
+        self.browse_output_btn.setAccessibleName(
+            "Browse for signed output file"
+        )
         self.browse_output_btn.clicked.connect(self.browse_output_file)
         output_file_layout.addWidget(self.browse_output_btn)
 
@@ -1214,33 +1220,31 @@ class PDFSignDialog(QDialog):
         buttons_layout = QHBoxLayout()
         buttons_layout.addStretch()
 
-        self.cancel_btn = QPushButton("Cancel")
+        self.cancel_btn = SecondaryButton("Cancel")
         self.cancel_btn.setAccessibleName("Cancel sign operation")
-        self.cancel_btn.setMinimumHeight(44)
         self.cancel_btn.clicked.connect(self.reject)
         buttons_layout.addWidget(self.cancel_btn)
 
-        self.sign_btn = QPushButton("Sign Document")
+        self.sign_btn = PrimaryButton("Sign Document")
         self.sign_btn.setAccessibleName("Sign PDF document")
-        self.sign_btn.setMinimumHeight(44)
         self.sign_btn.clicked.connect(self.accept)
         self.sign_btn.setEnabled(False)
         self.sign_btn.setStyleSheet(
-            """
-            QPushButton {
-                background-color: #dc3545;
-                color: white;
+            f"""
+            QPushButton {{
+                background-color: {token('semantic_error')};
+                color: {token('text_on_primary')};
                 font-weight: bold;
                 padding: 8px 16px;
                 border: none;
                 border-radius: 4px;
-            }
-            QPushButton:hover {
-                background-color: #c82333;
-            }
-            QPushButton:disabled {
-                background-color: #ccc;
-            }
+            }}
+            QPushButton:hover {{
+                background-color: {token('semantic_error_hover')};
+            }}
+            QPushButton:disabled {{
+                background-color: {token('text_disabled')};
+            }}
         """
         )
         buttons_layout.addWidget(self.sign_btn)
@@ -1252,37 +1256,37 @@ class PDFSignDialog(QDialog):
     def apply_styling(self):
         """Apply modern styling to the dialog"""
         self.setStyleSheet(
-            """
-            QDialog {
-                background-color: #ffffff;
+            f"""
+            QDialog {{
+                background-color: {token('window_background')};
                 font-family: "Segoe UI", Arial, sans-serif;
-            }
-            QGroupBox {
+            }}
+            QGroupBox {{
                 font-weight: bold;
-                border: 2px solid #dee2e6;
+                border: 2px solid {token('border_light')};
                 border-radius: 8px;
                 margin-top: 10px;
                 padding-top: 10px;
-            }
-            QGroupBox::title {
+            }}
+            QGroupBox::title {{
                 subcontrol-origin: margin;
                 left: 10px;
                 padding: 0 5px 0 5px;
-            }
-            QPushButton {
+            }}
+            QPushButton {{
                 padding: 6px 12px;
-                border: 1px solid #ccc;
+                border: 1px solid {token('border_light')};
                 border-radius: 4px;
-                background-color: #f8f9fa;
-            }
-            QPushButton:hover {
-                background-color: #e9ecef;
-            }
-            QLineEdit {
+                background-color: {token('surface')};
+            }}
+            QPushButton:hover {{
+                background-color: {token('color_bg_tint')};
+            }}
+            QLineEdit {{
                 padding: 6px;
-                border: 1px solid #dee2e6;
+                border: 1px solid {token('border_light')};
                 border-radius: 4px;
-            }
+            }}
         """
         )
 

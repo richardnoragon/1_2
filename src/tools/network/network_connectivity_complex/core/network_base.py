@@ -8,7 +8,17 @@ from datetime import datetime
 from enum import Enum
 from typing import Any, Callable, Dict, List, Optional
 
-from PyQt5.QtCore import QObject, pyqtSignal
+try:
+    from PyQt5.QtCore import QObject, pyqtSignal
+except Exception:  # pragma: no cover - compatibility fallback for mocked test envs
+    class QObject:  # type: ignore[no-redef]
+        pass
+
+    def pyqtSignal(*args, **kwargs):
+        def _signal_decorator(func=None):
+            return func
+
+        return _signal_decorator
 
 from .config_manager import ConfigManager
 
@@ -16,14 +26,15 @@ from .config_manager import ConfigManager
 # to avoid dependency on the main RFU core modules
 
 
-class QObjectMeta(type(QObject)):
-    """Custom metaclass to resolve QObject and ABC metaclass conflict."""
-
-    pass
+QObjectBase = QObject if isinstance(QObject, type) else object
 
 
-class ABCQObjectMeta(QObjectMeta, type(ABC)):
-    """Metaclass that combines QObject and ABC metaclasses."""
+class ABCQObjectMeta(ABC.__class__, type(QObjectBase)):
+    """Metaclass that combines abc.ABCMeta with the Qt QObject metaclass.
+
+    This avoids the Python 3.12 metaclass conflict while preserving Qt behavior
+    when QObject is available.
+    """
 
     pass
 

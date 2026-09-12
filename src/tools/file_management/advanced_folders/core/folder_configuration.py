@@ -14,6 +14,11 @@ from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Set, Union
 
+try:
+    from src.config.config_manager import get_config_manager
+except Exception:  # pragma: no cover
+    get_config_manager = None
+
 
 class SortCriteria(Enum):
     """Enumeration of available sort criteria."""
@@ -54,7 +59,7 @@ class SearchParameters:
     date_criteria: str = "modified"  # modified, created, accessed
 
     # Size filtering
-    size_min: Optional[int] = None  # bytes
+    size_min: int = 0  # bytes
     size_max: Optional[int] = None  # bytes
 
     # File type filtering
@@ -76,6 +81,33 @@ class SearchParameters:
     search_archives: bool = False
     include_network_locations: bool = True
 
+    # Legacy compatibility fields
+    path: str = ""
+    file_extensions: List[str] = field(default_factory=list)
+    modified_after: Optional[datetime] = None
+    modified_before: Optional[datetime] = None
+    recursive: bool = True
+    include_hidden: bool = False
+    max_depth: int = -1
+
+    def __post_init__(self):
+        """Normalize legacy and modern field names to a single representation."""
+        if self.file_extensions and not self.include_extensions:
+            self.include_extensions = set(self.file_extensions)
+        elif self.include_extensions and not self.file_extensions:
+            self.file_extensions = sorted(self.include_extensions)
+
+        if self.path and not self.include_hidden and self.include_hidden_files:
+            self.include_hidden = self.include_hidden_files
+        if self.modified_after and not self.date_from:
+            self.date_from = self.modified_after
+        if self.modified_before and not self.date_to:
+            self.date_to = self.modified_before
+        if self.max_depth != -1 and self.search_depth == -1:
+            self.search_depth = self.max_depth
+        if self.recursive and self.search_depth == -1:
+            self.search_depth = -1
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for serialization."""
         data = asdict(self)
@@ -85,39 +117,68 @@ class SearchParameters:
             data["date_from"] = self.date_from.isoformat()
         if self.date_to:
             data["date_to"] = self.date_to.isoformat()
+        if self.modified_after:
+            data["modified_after"] = self.modified_after.isoformat()
+        if self.modified_before:
+            data["modified_before"] = self.modified_before.isoformat()
 
-        # Handle sets
-        data["include_extensions"] = list(self.include_extensions)
-        data["exclude_extensions"] = list(self.exclude_extensions)
-        data["include_mime_types"] = list(self.include_mime_types)
+        # Preserve legacy ordering when available; sets are otherwise normalized
+        # to a stable list for compatibility with older serialized payloads.
+        data["include_extensions"] = sorted(self.include_extensions)
+        data["exclude_extensions"] = sorted(self.exclude_extensions)
+        data["include_mime_types"] = sorted(self.include_mime_types)
+        ordered_extensions = list(self.file_extensions) if self.file_extensions else sorted(self.include_extensions)
+        data["file_extensions"] = ordered_extensions
 
         # Handle enum
         data["search_scope"] = self.search_scope.value
+        data["path"] = self.path
+        data["include_hidden"] = self.include_hidden or self.include_hidden_files
+        data["recursive"] = self.recursive
+        data["max_depth"] = self.max_depth if self.max_depth != -1 else self.search_depth
 
         return data
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "SearchParameters":
         """Create instance from dictionary."""
+        normalized = dict(data)
+
         # Handle datetime deserialization
-        if "date_from" in data and data["date_from"]:
-            data["date_from"] = datetime.fromisoformat(data["date_from"])
-        if "date_to" in data and data["date_to"]:
-            data["date_to"] = datetime.fromisoformat(data["date_to"])
+        for key in ("date_from", "date_to", "modified_after", "modified_before"):
+            value = normalized.get(key)
+            if value:
+                normalized[key] = datetime.fromisoformat(value)
 
         # Handle sets
-        if "include_extensions" in data:
-            data["include_extensions"] = set(data["include_extensions"])
-        if "exclude_extensions" in data:
-            data["exclude_extensions"] = set(data["exclude_extensions"])
-        if "include_mime_types" in data:
-            data["include_mime_types"] = set(data["include_mime_types"])
+        for key in ("include_extensions", "exclude_extensions", "include_mime_types"):
+            if key in normalized:
+                normalized[key] = set(normalized[key])
+
+        # Legacy compatibility fields
+        if "include_extensions" in normalized:
+            normalized["include_extensions"] = set(normalized["include_extensions"])
+        if "file_extensions" in normalized:
+            file_extensions = list(normalized["file_extensions"])
+            normalized["file_extensions"] = file_extensions
+            if "include_extensions" not in normalized or not normalized["include_extensions"]:
+                normalized["include_extensions"] = set(file_extensions)
+        elif "include_extensions" in normalized:
+            normalized["file_extensions"] = list(normalized["include_extensions"])
+        if "path" in normalized:
+            normalized["path"] = str(normalized["path"])
+        if "recursive" in normalized and "include_subdirectories" not in normalized:
+            normalized["include_subdirectories"] = normalized["recursive"]
+        if "include_hidden" in normalized and "include_hidden_files" not in normalized:
+            normalized["include_hidden_files"] = normalized["include_hidden"]
+        if "max_depth" in normalized and "search_depth" not in normalized:
+            normalized["search_depth"] = normalized["max_depth"]
 
         # Handle enum
-        if "search_scope" in data:
-            data["search_scope"] = SearchScope(data["search_scope"])
+        if "search_scope" in normalized:
+            normalized["search_scope"] = SearchScope(normalized["search_scope"])
 
-        return cls(**data)
+        return cls(**normalized)
 
 
 @dataclass
@@ -131,20 +192,48 @@ class FolderStatistics:
     file_type_breakdown: Dict[str, int] = field(default_factory=dict)
     size_breakdown: Dict[str, int] = field(default_factory=dict)
     growth_trends: Dict[str, Any] = field(default_factory=dict)
+    last_scan: Optional[datetime] = None
+    average_file_size: int = 0
+    largest_file_size: int = 0
+    smallest_file_size: int = 0
+    file_types: Dict[str, int] = field(default_factory=dict)
+
+    def __post_init__(self):
+        """Backward-compatible alias normalization."""
+        if self.last_scan is not None and self.last_scan_time is None:
+            self.last_scan_time = self.last_scan
+        if self.last_scan_time is not None and self.last_scan is None:
+            self.last_scan = self.last_scan_time
+        if not self.file_type_breakdown and self.file_types:
+            self.file_type_breakdown = dict(self.file_types)
+        if not self.file_types and self.file_type_breakdown:
+            self.file_types = dict(self.file_type_breakdown)
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for serialization."""
         data = asdict(self)
         if self.last_scan_time:
             data["last_scan_time"] = self.last_scan_time.isoformat()
+        if self.last_scan:
+            data["last_scan"] = self.last_scan.isoformat()
+        if self.file_type_breakdown:
+            data["file_type_breakdown"] = dict(self.file_type_breakdown)
+        if self.file_types:
+            data["file_types"] = dict(self.file_types)
         return data
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "FolderStatistics":
         """Create instance from dictionary."""
-        if "last_scan_time" in data and data["last_scan_time"]:
-            data["last_scan_time"] = datetime.fromisoformat(data["last_scan_time"])
-        return cls(**data)
+        normalized = dict(data)
+        for key in ("last_scan_time", "last_scan"):
+            if normalized.get(key):
+                normalized[key] = datetime.fromisoformat(normalized[key])
+        if "file_types" in normalized and not normalized.get("file_type_breakdown"):
+            normalized["file_type_breakdown"] = dict(normalized["file_types"])
+        if "file_type_breakdown" in normalized and not normalized.get("file_types"):
+            normalized["file_types"] = dict(normalized["file_type_breakdown"])
+        return cls(**normalized)
 
 
 @dataclass
@@ -153,8 +242,11 @@ class FolderConfiguration:
 
     # Core identification
     folder_id: str = field(default_factory=lambda: str(uuid.uuid4()))
+    id: str = field(default_factory=lambda: str(uuid.uuid4()))
     name: str = ""
     description: str = ""
+    path: str = ""
+    enabled: bool = True
 
     # Directory configuration
     directory_paths: List[str] = field(default_factory=list)
@@ -180,12 +272,29 @@ class FolderConfiguration:
     enable_preview: bool = True
     color_scheme: str = "default"
 
+    def __post_init__(self):
+        """Keep legacy and modern field names synchronized."""
+        if not self.folder_id:
+            self.folder_id = self.id or str(uuid.uuid4())
+        if not self.id:
+            self.id = self.folder_id
+        if self.id != self.folder_id:
+            self.id = self.folder_id
+        self.folder_id = self.id
+
+        if self.path and not self.directory_paths:
+            self.directory_paths = [self.path]
+        if not self.path and self.directory_paths:
+            self.path = self.directory_paths[0]
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for serialization."""
         data = {
             "folder_id": self.folder_id,
+            "id": self.folder_id,
             "name": self.name,
             "description": self.description,
+            "path": self.path or (self.directory_paths[0] if self.directory_paths else ""),
             "directory_paths": self.directory_paths,
             "search_parameters": self.search_parameters.to_dict(),
             "sort_criteria": self.sort_criteria.value,
@@ -200,33 +309,43 @@ class FolderConfiguration:
             "refresh_interval": self.refresh_interval,
             "enable_preview": self.enable_preview,
             "color_scheme": self.color_scheme,
+            "enabled": self.enabled,
         }
         return data
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "FolderConfiguration":
         """Create instance from dictionary."""
-        # Handle datetime fields
-        data["created_date"] = datetime.fromisoformat(data["created_date"])
-        data["modified_date"] = datetime.fromisoformat(data["modified_date"])
-        if data.get("last_accessed"):
-            data["last_accessed"] = datetime.fromisoformat(data["last_accessed"])
+        normalized = dict(data)
+        folder_id = normalized.get("folder_id") or normalized.get("id") or str(uuid.uuid4())
+        normalized["folder_id"] = folder_id
+        normalized["id"] = folder_id
 
-        # Handle nested objects
-        data["search_parameters"] = SearchParameters.from_dict(
-            data["search_parameters"]
-        )
+        if "path" in normalized and "directory_paths" not in normalized:
+            normalized["directory_paths"] = [normalized["path"]]
+        if "directory_paths" in normalized and not normalized.get("path"):
+            normalized["path"] = normalized["directory_paths"][0] if normalized["directory_paths"] else ""
+
+        # Handle datetime fields
+        for key in ("created_date", "modified_date", "last_accessed"):
+            if key in normalized and normalized[key]:
+                normalized[key] = datetime.fromisoformat(normalized[key])
+
+        if "search_parameters" in normalized and normalized["search_parameters"]:
+            normalized["search_parameters"] = SearchParameters.from_dict(
+                normalized["search_parameters"]
+            )
 
         # Handle statistics (optional for backward compatibility)
-        if "statistics" in data:
-            data["statistics"] = FolderStatistics.from_dict(data["statistics"])
+        if "statistics" in normalized:
+            normalized["statistics"] = FolderStatistics.from_dict(normalized["statistics"])
         else:
-            # Create default statistics if missing
-            data["statistics"] = FolderStatistics()
+            normalized["statistics"] = FolderStatistics()
 
-        data["sort_criteria"] = SortCriteria(data["sort_criteria"])
+        if "sort_criteria" in normalized and normalized["sort_criteria"]:
+            normalized["sort_criteria"] = SortCriteria(normalized["sort_criteria"])
 
-        return cls(**data)
+        return cls(**normalized)
 
     def update_access_time(self):
         """Update last accessed timestamp."""
@@ -266,19 +385,99 @@ class FolderConfiguration:
 class FolderConfigurationManager:
     """Manager for folder configurations with persistence."""
 
-    def __init__(self, config_manager=None):
+    def __init__(self, config_manager=None, config_file: Union[str, Path, None] = None):
         """Initialize the configuration manager.
 
         Args:
             config_manager: Optional ConfigManager instance for persistence
+            config_file: Optional path override for persistence
         """
+        if config_manager is None:
+            try:
+                from src.config import config_manager as config_manager_module
+
+                config_manager = config_manager_module.get_config_manager()
+            except Exception:
+                if get_config_manager is not None:
+                    try:
+                        config_manager = get_config_manager()
+                    except Exception:
+                        config_manager = None
+                else:
+                    config_manager = None
+
         self.config_manager = config_manager
         self.logger = logging.getLogger("AdvancedFolders.ConfigManager")
         self._configurations: Dict[str, FolderConfiguration] = {}
-        self._config_file = Path("config/advanced_folders.json")
+        self._config_file = Path(config_file) if config_file else Path("config/advanced_folders.json")
+        self.config_file = self._config_file
 
         # Load existing configurations
         self.load_configurations()
+
+    def _load_from_config_manager(self) -> List[FolderConfiguration]:
+        """Load folder configurations from the shared RFU config manager."""
+        if self.config_manager is None:
+            return list(self._configurations.values())
+
+        raw_configs = self.config_manager.get_setting(
+            "advanced_folders", "configurations", []
+        )
+        if not isinstance(raw_configs, list):
+            return list(self._configurations.values())
+
+        loaded: List[FolderConfiguration] = []
+        for item in raw_configs:
+            if not isinstance(item, dict):
+                continue
+            try:
+                config = FolderConfiguration.from_dict(item)
+                loaded.append(config)
+            except Exception as exc:
+                self.logger.warning(
+                    "Failed to decode advanced folder configuration from config manager: %s",
+                    exc,
+                )
+
+        self._configurations = {config.folder_id: config for config in loaded}
+        return loaded
+
+    def _save_to_config_manager(self, configurations: Optional[List[FolderConfiguration]] = None) -> None:
+        """Persist folder configurations back into the RFU config manager."""
+        if self.config_manager is None:
+            return
+
+        items = configurations if configurations is not None else list(self._configurations.values())
+        payload = [config.to_dict() for config in items]
+        self.config_manager.set_setting("advanced_folders", "configurations", payload)
+
+    @property
+    def config_file(self) -> Path:
+        return self._config_file
+
+    @config_file.setter
+    def config_file(self, value):
+        self._config_file = Path(value)
+        self._configurations = {}
+        if self._config_file.exists():
+            self.load_configurations()
+
+    def save_configuration(self, config: FolderConfiguration) -> bool:
+        """Backward-compatible method for saving a single configuration."""
+        self._configurations[config.folder_id] = config
+        return self.save_configurations()
+
+    def update_configuration(self, config: FolderConfiguration) -> bool:
+        """Backward-compatible method for updating a single configuration."""
+        self._configurations[config.folder_id] = config
+        return self.save_configurations()
+
+    def delete_configuration(self, folder_id: str) -> bool:
+        """Backward-compatible method for deleting a configuration."""
+        if folder_id in self._configurations:
+            self._configurations.pop(folder_id)
+            return self.save_configurations()
+        return False
 
     def create_folder(
         self,
@@ -441,16 +640,17 @@ class FolderConfigurationManager:
             self.logger.error(f"Failed to save configurations: {e}")
             return False
 
-    def load_configurations(self) -> bool:
+    def load_configurations(self) -> List[FolderConfiguration]:
         """Load configurations from file.
 
         Returns:
-            bool: True if load was successful
+            List[FolderConfiguration]: loaded configurations. This preserves
+            the legacy list-based API while still populating the manager state.
         """
         try:
             if not self._config_file.exists():
                 self.logger.info("No existing configuration file found")
-                return True
+                return list(self._configurations.values())
 
             with open(self._config_file, "r", encoding="utf-8") as f:
                 data = json.load(f)
@@ -467,11 +667,11 @@ class FolderConfigurationManager:
                     self.logger.error(f"Failed to load configuration {folder_id}: {e}")
 
             self.logger.info(f"Loaded {len(self._configurations)} configurations")
-            return True
+            return list(self._configurations.values())
 
         except Exception as e:
             self.logger.error(f"Failed to load configurations: {e}")
-            return False
+            return list(self._configurations.values())
 
     def export_configurations(self, export_path: Union[str, Path]) -> bool:
         """Export configurations to a file.

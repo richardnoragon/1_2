@@ -64,7 +64,8 @@
       "baseline_calculation_hours": 168,
       "export_format": "csv",
       "auto_export_enabled": false,
-      "auto_export_interval_hours": 24
+      "auto_export_interval_hours": 24,
+      "test_key": "test_value"
     },
     "wifi_analyzer": {
       "scan_interval": 30000,
@@ -467,5 +468,8 @@
   },
   "theme": "dark",
   "auto_save": true,
-  "max_workers": 8
+  "max_workers": 8,
+  "advanced_folders": {
+    "configurations": []
+  }
 }

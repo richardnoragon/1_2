@@ -20,6 +20,8 @@ This contract applies to:
 - All long‑running operations  
 - All Hub‑launched workflows  
 
+Issue #81 modernizes the shared styling layer behind this contract with refreshed tokens, contrast checks, and accessibility defaults on the common base windows and dialogs.
+
 ---
 
 ## **§10.3 Interaction Principles**

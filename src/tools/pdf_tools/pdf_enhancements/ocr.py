@@ -3,23 +3,60 @@ import sys
 import os
 import re
 import argparse
-import pytesseract
-from pytesseract import Output
-import cv2
-import numpy as np
-import fitz
 from io import BytesIO
+from types import SimpleNamespace
+
+try:
+    import pytesseract
+    from pytesseract import Output
+except ImportError:  # pragma: no cover - optional OCR dependency
+    pytesseract = None
+    Output = SimpleNamespace(DICT="dict")
+
+try:
+    import cv2
+except ImportError:  # pragma: no cover - optional OCR dependency
+    cv2 = None
+
+try:
+    import numpy as np
+except ImportError:  # pragma: no cover - optional OCR dependency
+    np = None
+
+try:
+    import fitz
+except ImportError:  # pragma: no cover - optional OCR dependency
+    fitz = None
+
 from PIL import Image
-import pandas as pd
-import filetype
+
+try:
+    import pandas as pd
+except ImportError:  # pragma: no cover - optional OCR dependency
+    pd = None
+
+try:
+    import filetype
+except ImportError:  # pragma: no cover - optional OCR dependency
+    filetype = None
+
 from PyQt5 import QtWidgets, uic, QtGui, QtCore
 from PyQt5.QtWidgets import QFileDialog, QMessageBox
 from log_config import setup_logger
 
+from src.gui.components.buttons import SecondaryButton
+from src.gui.components.loading_indicator import LoadingIndicator
+
 # Path Of The Tesseract OCR engine
 TESSERACT_PATH = r"C:\\Program Files\\Tesseract-OCR\\tesseract.exe"
 # Include tesseract executable
-pytesseract.pytesseract.tesseract_cmd = TESSERACT_PATH
+if pytesseract is not None:
+    pytesseract.pytesseract.tesseract_cmd = TESSERACT_PATH
+
+SUPPORTED_IMAGE_EXTENSIONS = (".pdf", ".png", ".jpg", ".jpeg", ".bmp", ".tiff")
+SUPPORTED_IMAGE_FILTER = (
+    "Supported Files (*.pdf *.png *.jpg *.jpeg *.bmp *.tiff)"
+)
 
 # Set up logger
 logger = setup_logger(__name__)
@@ -29,29 +66,34 @@ def pix2np(pix):
     """
     Converts a pixmap buffer into a numpy array
     """
+    if np is None or cv2 is None:
+        logger.error("NumPy/OpenCV is required for OCR processing")
+        return None
+
     try:
         # pix.samples = sequence of bytes of the image pixels like RGBA
         # pix.h = height in pixels
         # pix.w = width in pixels
-        # pix.n = number of components per pixel (depends on the colorspace and alpha)
+        # pix.n = number of components per pixel
+        # (depends on the colorspace and alpha)
         im = np.frombuffer(pix.samples, dtype=np.uint8).reshape(
             pix.h, pix.w, pix.n
         )
         try:
-            im = np.ascontiguousarray(im[..., [2, 1, 0]])  # RGB To BGR
+            im = np.ascontiguousarray(im[..., [2, 1, 0]])
         except IndexError:
-            # Convert Gray to RGB
             im = cv2.cvtColor(im, cv2.COLOR_GRAY2RGB)
-            im = np.ascontiguousarray(im[..., [2, 1, 0]])  # RGB To BGR
+            im = np.ascontiguousarray(im[..., [2, 1, 0]])
         return im
-    except Exception as e:
-        logger.error("Error converting pixmap to numpy array: %s", str(e))
+    except (AttributeError, TypeError, ValueError, IndexError) as exc:
+        logger.error("Error converting pixmap to numpy array: %s", exc)
         return None
 
 
-################################################################################
-# Image Pre-Processing Functions to improve output accurracy
-# Convert to grayscale
+# ---------------------------------------------------------------------------
+# Image Pre-Processing Functions to improve output accuracy.
+# Convert to grayscale.
+# ---------------------------------------------------------------------------
 
 
 def grayscale(img):
@@ -65,7 +107,6 @@ def remove_noise(img):
 
 # Thresholding
 def threshold(img):
-    # return cv2.threshold(img, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
     return cv2.threshold(img, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
 
 
@@ -94,7 +135,7 @@ def canny(img):
 
 # skew correction
 def deskew(img):
-    coords = np.column_stack(np.where(img > 0))
+    coords = np.column_stack(np.nonzero(img > 0))
     angle = cv2.minAreaRect(coords)[-1]
     if angle < -45:
         angle = -(90 + angle)
@@ -121,15 +162,15 @@ def convert_img2bin(img):
     # Convert the image into a grayscale image
     output_img = grayscale(img)
     # Invert the grayscale image by flipping pixel values.
-    # All pixels that are grater than 0 are set to 0 and all pixels that are = to 0 are set to 255
+    # All pixels > 0 are set to 0 and all pixels == 0 become 255.
     output_img = cv2.bitwise_not(output_img)
-    # Converting image to binary by Thresholding in order to show a clear separation between white and blacl pixels.
+    # Convert to binary to separate white and black pixels clearly.
     output_img = threshold(output_img)
     return output_img
 
 
 def display_img(title, img):
-    """Displays an image on screen and maintains the output until the user presses a key"""
+    """Display an image until the user presses a key."""
     try:
         cv2.namedWindow("img", cv2.WINDOW_NORMAL)
         cv2.setWindowTitle("img", title)
@@ -145,8 +186,7 @@ def display_img(title, img):
 
 
 def generate_ss_text(ss_details):
-    """Loops through the captured text of an image and arranges this text line by line.
-    This function depends on the image layout."""
+    """Arrange captured text by line based on the page layout."""
     # Arrange the captured text after scanning the page
     parse_text = []
     word_list = []
@@ -171,35 +211,34 @@ def search_for_text(ss_details, search_str):
     # Find all matches within one page
     results = re.findall(search_str, ss_details["text"], re.IGNORECASE)
     # In case multiple matches within one page
-    for result in results:
-        yield result
+    for _match in results:
+        yield _match
 
 
-def save_page_content(pdfContent, page_id, page_data):
-    """Appends the content of a scanned page, line by line, to a pandas DataFrame."""
+def save_page_content(pdf_content, page_id, page_data):
+    """Append scanned page content to a pandas DataFrame."""
     if page_data:
         for idx, line in enumerate(page_data, 1):
             line = " ".join(line)
-            pdfContent = pdfContent.append(
+            pdf_content = pdf_content.append(
                 {"page": page_id, "line_id": idx, "line": line},
                 ignore_index=True,
             )
-    return pdfContent
+    return pdf_content
 
 
-def save_file_content(pdfContent, input_file):
-    """Outputs the content of the pandas DataFrame to a CSV file having the same path as the input_file
-    but with different extension (.csv)"""
+def save_file_content(pdf_content, input_file):
+    """Write page text to a CSV next to the source file."""
     content_file = os.path.join(
         os.path.dirname(input_file),
         os.path.splitext(os.path.basename(input_file))[0] + ".csv",
     )
-    pdfContent.to_csv(content_file, sep=",", index=False)
+    pdf_content.to_csv(content_file, sep=",", index=False)
     return content_file
 
 
 def calculate_ss_confidence(ss_details: dict):
-    """Calculate the confidence score of the text grabbed from the scanned image."""
+    """Calculate OCR confidence for the scanned image text."""
     try:
         # page_num  --> Page number of the detected text or item
         # block_num --> Block number of the detected text or item
@@ -219,28 +258,58 @@ def calculate_ss_confidence(ss_details: dict):
         return 0
 
 
+def _draw_detection_box(img, details, seq, highlight_readable_text):
+    """Create a green box around readable OCR text when requested."""
+    if not highlight_readable_text:
+        return img
+
+    x, y, width, height = (
+        details["left"][seq],
+        details["top"][seq],
+        details["width"][seq],
+        details["height"][seq],
+    )
+    return cv2.rectangle(img, (x, y), (x + width, y + height), (0, 255, 0), 2)
+
+
+def _draw_match_box(img, details, seq, action):
+    """Highlight or redact matched text in the OCR output."""
+    if not action:
+        return img
+
+    x, y, width, height = (
+        details["left"][seq],
+        details["top"][seq],
+        details["width"][seq],
+        details["height"][seq],
+    )
+    start_point = (x, y)
+    end_point = (x + width, y + height)
+    if action == "Highlight":
+        color = (0, 255, 255)
+    elif action == "Redact":
+        color = (0, 0, 0)
+    else:
+        return img
+
+    thickness = -1
+    return cv2.rectangle(img, start_point, end_point, color, thickness)
+
+
 def ocr_img(
     img: np.array,
-    input_file: str,
     search_str: str,
+    input_file: str | None = None,
     highlight_readable_text: bool = False,
     action: str = "Highlight",
     show_comparison: bool = False,
     generate_output: bool = True,
 ):
-    """Scans an image buffer or an image file.
-    Pre-processes the image.
-    Calls the Tesseract engine with pre-defined parameters.
-    Calculates the confidence score of the image grabbed content.
-    Draws a green rectangle around readable text items having a confidence score > 30.
-    Searches for a specific text.
-    Highlight or redact found matches of the searched text.
-    Displays a window showing readable text fields or the highlighted or redacted text.
-    Generates the text content of the image.
-    Prints a summary to the console."""
+    """Scan an image or file, highlight matches, and return OCR output."""
     try:
         logger.info(
-            "Starting OCR on image%s", f": {input_file}" if input_file else ""
+            "Starting OCR on image%s",
+            f": {input_file}" if input_file else "",
         )
         logger.debug(
             "Parameters - Action: %s, Search: %s, Generate output: %s",
@@ -249,77 +318,45 @@ def ocr_img(
             generate_output,
         )
 
-        # If image source file is inputted as a parameter
         if input_file:
-            # Reading image using opencv
             img = cv2.imread(input_file)
-        # Preserve a copy of this image for comparison purposes
+        if img is None:
+            return None, 0, 0, 0, None
+
         initial_img = img.copy()
         highlighted_img = img.copy()
-        # Convert image to binary
         bin_img = convert_img2bin(img)
-        # Calling Tesseract
-        # Tesseract Configuration parameters
-        # oem --> OCR engine mode = 3 >> Legacy + LSTM mode only (LSTM neutral net mode works the best)
-        # psm --> page segmentation mode = 6 >> Assume as single uniform block of text (How a page of text can be analyzed)
         config_param = r"--oem 3 --psm 6"
-        # Feeding image to tesseract
         details = pytesseract.image_to_data(
-            bin_img, output_type=Output.DICT, config=config_param, lang="eng"
+            bin_img,
+            output_type=Output.DICT,
+            config=config_param,
+            lang="eng",
         )
-        # The details dictionary contains the information of the input image
-        # such as detected text, region, position, information, height, width, confidence score.
         ss_confidence = calculate_ss_confidence(details)
-        boxed_img = None
-        # Total readable items
+        boxed_img = img.copy()
         ss_readable_items = 0
-        # Total matches found
         ss_matches = 0
+
         for seq in range(len(details["text"])):
-            # Consider only text fields with confidence score > 30 (text is readable)
-            if float(details["conf"][seq]) > 30.0:
-                ss_readable_items += 1
-                # Draws a green rectangle around readable text items having a confidence score > 30
-                if highlight_readable_text:
-                    (x, y, w, h) = (
-                        details["left"][seq],
-                        details["top"][seq],
-                        details["width"][seq],
-                        details["height"][seq],
-                    )
-                    boxed_img = cv2.rectangle(
-                        img, (x, y), (x + w, y + h), (0, 255, 0), 2
-                    )
-                # Searches for the string
-                if search_str:
-                    results = re.findall(
-                        search_str, details["text"][seq], re.IGNORECASE
-                    )
-                    for result in results:
-                        ss_matches += 1
-                        if action:
-                            # Draw a red rectangle around the searchable text
-                            (x, y, w, h) = (
-                                details["left"][seq],
-                                details["top"][seq],
-                                details["width"][seq],
-                                details["height"][seq],
-                            )
-                            # Details of the rectangle
-                            # Starting coordinate representing the top left corner of the rectangle
-                            start_point = (x, y)
-                            # Ending coordinate representing the botton right corner of the rectangle
-                            end_point = (x + w, y + h)
-                            # Color in BGR -- Blue, Green, Red
-                            if action == "Highlight":
-                                color = (0, 255, 255)  # Yellow
-                            elif action == "Redact":
-                                color = (0, 0, 0)  # Black
-                            # Thickness in px (-1 will fill the entire shape)
-                            thickness = -1
-                            boxed_img = cv2.rectangle(
-                                img, start_point, end_point, color, thickness
-                            )
+            if float(details["conf"][seq]) <= 30.0:
+                continue
+
+            ss_readable_items += 1
+            boxed_img = _draw_detection_box(
+                boxed_img,
+                details,
+                seq,
+                highlight_readable_text,
+            )
+
+            if not search_str:
+                continue
+
+            results = re.findall(search_str, details["text"][seq], re.IGNORECASE)
+            for _result in results:
+                ss_matches += 1
+                boxed_img = _draw_match_box(boxed_img, details, seq, action)
 
         if (
             ss_readable_items > 0
@@ -327,27 +364,29 @@ def ocr_img(
             and not (ss_matches > 0 and action in ("Highlight", "Redact"))
         ):
             highlighted_img = boxed_img.copy()
-        # Highlight found matches of the search string
         if ss_matches > 0 and action == "Highlight":
             cv2.addWeighted(
-                boxed_img, 0.4, highlighted_img, 1 - 0.4, 0, highlighted_img
+                boxed_img,
+                0.4,
+                highlighted_img,
+                1 - 0.4,
+                0,
+                highlighted_img,
             )
-        # Redact found matches of the search string
         elif ss_matches > 0 and action == "Redact":
             highlighted_img = boxed_img.copy()
-            # cv2.addWeighted(boxed_img, 1, highlighted_img, 0, 0, highlighted_img)
-        # save the image
+
         cv2.imwrite("highlighted-text-image.jpg", highlighted_img)
-        # Displays window showing readable text fields or the highlighted or redacted data
+
         if show_comparison and (highlight_readable_text or action):
             title = input_file if input_file else "Compare"
             conc_img = cv2.hconcat([initial_img, highlighted_img])
             display_img(title, conc_img)
-        # Generates the text content of the image
+
         output_data = None
         if generate_output and details:
             output_data = generate_ss_text(details)
-        # Prints a summary to the console
+
         if input_file:
             summary = {
                 "File": input_file,
@@ -355,16 +394,10 @@ def ocr_img(
                 "Total matches": ss_matches,
                 "Confidence score": ss_confidence,
             }
-            # Printing Summary
-            logger.info(
-                "## Summary ########################################################"
-            )
-            logger.info(
-                "\n".join("{}:{}".format(i, j) for i, j in summary.items())
-            )
-            logger.info(
-                "###################################################################"
-            )
+            logger.info("## Summary ########################################################")
+            logger.info("\n".join("{}:{}".format(i, j) for i, j in summary.items()))
+            logger.info("###################################################################")
+
         return (
             highlighted_img,
             ss_readable_items,
@@ -372,8 +405,8 @@ def ocr_img(
             ss_confidence,
             output_data,
         )
-    except Exception as e:
-        logger.error("Error in OCR processing: %s", str(e))
+    except (AttributeError, IndexError, TypeError, ValueError, OSError) as exc:
+        logger.error("Error in OCR processing: %s", exc)
         return None, 0, 0, 0, None
 
 
@@ -382,10 +415,13 @@ def image_to_byte_array(image: Image):
     Converts an image into a byte array
     """
     try:
-        imgByteArr = BytesIO()
-        image.save(imgByteArr, format=image.format if image.format else "JPEG")
-        imgByteArr = imgByteArr.getvalue()
-        return imgByteArr
+        img_byte_arr = BytesIO()
+        image.save(
+            img_byte_arr,
+            format=image.format if image.format else "JPEG",
+        )
+        img_byte_arr = img_byte_arr.getvalue()
+        return img_byte_arr
     except Exception as e:
         logger.error("Error converting image to byte array: %s", str(e))
         return None
@@ -415,11 +451,11 @@ def ocr_file(**kwargs):
         show_comparison = kwargs.get("show_comparison")
         generate_output = kwargs.get("generate_output")
         # Opens the input PDF file
-        pdfIn = fitz.open(input_file)
+        pdf_in = fitz.open(input_file)
         # Opens a memory buffer for storing the output PDF file.
-        pdfOut = fitz.open()
+        pdf_out = fitz.open()
         # Creates an empty DataFrame for storing pages statistics
-        dfResult = pd.DataFrame(
+        df_result = pd.DataFrame(
             columns=[
                 "page",
                 "page_readable_items",
@@ -429,21 +465,21 @@ def ocr_file(**kwargs):
         )
         # Creates an empty DataFrame for storing file content
         if generate_output:
-            pdfContent = pd.DataFrame(columns=["page", "line_id", "line"])
+            pdf_content = pd.DataFrame(columns=["page", "line_id", "line"])
         # Iterate throughout the pages of the input file
-        for pg in range(pdfIn.page_count):
-            if str(pages) != str(None):
-                if str(pg) not in str(pages):
-                    continue
+        for pg in range(pdf_in.page_count):
+            if str(pages) != str(None) and str(pg) not in str(pages):
+                continue
             # Select a page
-            page = pdfIn[pg]
+            page = pdf_in[pg]
             # Rotation angle
             rotate = int(0)
-            # PDF Page is converted into a whole picture 1056*816 and then for each picture a screenshot is taken.
-            # zoom = 1.33333333 -----> Image size = 1056*816
-            # zoom = 2 ---> 2 * Default Resolution (text is clear, image text is hard to read)    = filesize small / Image size = 1584*1224
-            # zoom = 4 ---> 4 * Default Resolution (text is clear, image text is barely readable) = filesize large
-            # zoom = 8 ---> 8 * Default Resolution (text is clear, image text is readable) = filesize large
+            # PDF pages are rendered to a picture; screenshots are then
+            # captured from it.
+            # zoom = 1.33333333 -> image size ~1056x816
+            # zoom = 2 -> text clearer, image slightly larger
+            # zoom = 4 -> clearer but larger file size
+            # zoom = 8 -> clearer but much larger file size
             zoom_x = 2
             zoom_y = 2
             # The zoom factor is equal to 2 in order to make text clear
@@ -480,7 +516,7 @@ def ocr_file(**kwargs):
                 generate_output=generate_output,  # False
             )
             # Collects the statistics of the page
-            dfResult = dfResult.append(
+            df_result = df_result.append(
                 {
                     "page": (pg + 1),
                     "page_readable_items": pg_readable_items,
@@ -490,8 +526,8 @@ def ocr_file(**kwargs):
                 ignore_index=True,
             )
             if generate_output:
-                pdfContent = save_page_content(
-                    pdfContent=pdfContent,
+                pdf_content = save_page_content(
+                    pdf_content=pdf_content,
                     page_id=(pg + 1),
                     page_data=pg_output_data,
                 )
@@ -501,34 +537,23 @@ def ocr_file(**kwargs):
             # Convert the image to byte array
             upd_array = image_to_byte_array(upd_img)
             # Get Page Size
-            """
-            #To check whether initial page is portrait or landscape
-            if page.rect.width > page.rect.height:
-                fmt = fitz.PaperRect("a4-1")
-            else:
-                fmt = fitz.PaperRect("a4")
-
-            #pno = -1 -> Insert after last page
-            pageo = pdfOut.newPage(pno = -1, width = fmt.width, height = fmt.height)
-            """
-            pageo = pdfOut.newPage(
+            pageo = pdf_out.newPage(
                 pno=-1, width=page.rect.width, height=page.rect.height
             )
             pageo.insertImage(page.rect, stream=upd_array)
-            # pageo.insertImage(page.rect, stream=upd_img.tobytes())
-            # pageo.showPDFpage(pageo.rect, pdfDoc, page.number)
         content_file = None
         if generate_output:
             content_file = save_file_content(
-                pdfContent=pdfContent, input_file=input_file
+                pdf_content=pdf_content,
+                input_file=input_file,
             )
         summary = {
             "File": input_file,
-            "Total pages": pdfIn.pageCount,
-            "Processed pages": dfResult["page"].count(),
-            "Total readable words": dfResult["page_readable_items"].sum(),
-            "Total matches": dfResult["page_matches"].sum(),
-            "Confidence score": dfResult["page_total_confidence"].mean(),
+            "Total pages": pdf_in.pageCount,
+            "Processed pages": df_result["page"].count(),
+            "Total readable words": df_result["page_readable_items"].sum(),
+            "Total matches": df_result["page_matches"].sum(),
+            "Confidence score": df_result["page_total_confidence"].mean(),
             "Output file": output_file,
             "Content file": content_file,
         }
@@ -536,18 +561,16 @@ def ocr_file(**kwargs):
         logger.info(
             "## Summary ########################################################"
         )
-        logger.info(
-            "\n".join("{}:{}".format(i, j) for i, j in summary.items())
-        )
+        logger.info("\n".join(f"{i}: {j}" for i, j in summary.items()))
         logger.info("\nPages Statistics:")
-        logger.info(dfResult, sep="\n")
+        logger.info("%s", df_result.to_string())
         logger.info(
             "###################################################################"
         )
-        pdfIn.close()
+        pdf_in.close()
         if output_file:
-            pdfOut.save(output_file)
-        pdfOut.close()
+            pdf_out.save(output_file)
+        pdf_out.close()
     except Exception as e:
         logger.error("Error in file processing: %s", str(e))
         return False
@@ -563,7 +586,7 @@ def ocr_folder(**kwargs):
     action = kwargs.get("action")
     generate_output = kwargs.get("generate_output")
     # Loop though the files within the input folder.
-    for foldername, dirs, filenames in os.walk(input_folder):
+    for foldername, _, filenames in os.walk(input_folder):
         for filename in filenames:
             # Check if pdf file
             if not filename.endswith(".pdf"):
@@ -593,9 +616,9 @@ def ocr_folder(**kwargs):
 
 
 def is_valid_path(path):
-    """Validates the path inputted and checks whether it is a file path or a folder path"""
+    """Validate whether the given path is a file or a folder."""
     if not path:
-        raise ValueError(f"Invalid Path")
+        raise ValueError("Invalid Path")
     if os.path.isfile(path):
         return path
     elif os.path.isdir(path):
@@ -660,7 +683,10 @@ def parse_args():
             "-c",
             "--show-comparison",
             action="store_true",
-            help="Show comparison between captured image and the generated image",
+            help=(
+                "Show comparison between captured image and the "
+                "generated image"
+            ),
         )
     if os.path.isdir(path):
         parser.add_argument(
@@ -706,8 +732,8 @@ class OcrUI(QtWidgets.QMainWindow):
             )
 
             # Add navigation buttons for batch mode
-            self.prev_button = QtWidgets.QPushButton("Previous")
-            self.next_button = QtWidgets.QPushButton("Next")
+            self.prev_button = SecondaryButton("Previous")
+            self.next_button = SecondaryButton("Next")
             self.prev_button.clicked.connect(self.show_previous_preview)
             self.next_button.clicked.connect(self.show_next_preview)
             self.prev_button.hide()
@@ -718,7 +744,7 @@ class OcrUI(QtWidgets.QMainWindow):
             self.statusBar().addPermanentWidget(self.next_button)
 
             # Add progress bar
-            self.progressBar = QtWidgets.QProgressBar()
+            self.progressBar = LoadingIndicator(parent=self, message="Working...")
             self.statusBar().addPermanentWidget(self.progressBar)
             self.progressBar.hide()
 
@@ -749,17 +775,13 @@ class OcrUI(QtWidgets.QMainWindow):
         for url in event.mimeData().urls():
             file_path = url.toLocalFile()
             if os.path.isfile(file_path):
-                if file_path.lower().endswith(
-                    (".pdf", ".png", ".jpg", ".jpeg", ".bmp", ".tiff")
-                ):
+                if file_path.lower().endswith(SUPPORTED_IMAGE_EXTENSIONS):
                     files.append(file_path)
             elif os.path.isdir(file_path):
                 # If directory, add all supported files in it
                 for root, _, filenames in os.walk(file_path):
                     for filename in filenames:
-                        if filename.lower().endswith(
-                            (".pdf", ".png", ".jpg", ".jpeg", ".bmp", ".tiff")
-                        ):
+                        if filename.lower().endswith(SUPPORTED_IMAGE_EXTENSIONS):
                             files.append(os.path.join(root, filename))
 
         if files:
@@ -795,14 +817,7 @@ class OcrUI(QtWidgets.QMainWindow):
                         for root, _, files in os.walk(folder):
                             for file in files:
                                 if file.lower().endswith(
-                                    (
-                                        ".pdf",
-                                        ".png",
-                                        ".jpg",
-                                        ".jpeg",
-                                        ".bmp",
-                                        ".tiff",
-                                    )
+                                    SUPPORTED_IMAGE_EXTENSIONS
                                 ):
                                     self.input_files.append(
                                         os.path.join(root, file)
@@ -825,7 +840,7 @@ class OcrUI(QtWidgets.QMainWindow):
                         self,
                         "Select files",
                         "",
-                        "Supported Files (*.pdf *.png *.jpg *.jpeg *.bmp *.tiff)",
+                        SUPPORTED_IMAGE_FILTER,
                     )
                     if filenames:
                         self.input_files = filenames
@@ -840,7 +855,7 @@ class OcrUI(QtWidgets.QMainWindow):
                     self,
                     "Select file",
                     "",
-                    "Supported Files (*.pdf *.png *.jpg *.jpeg *.bmp *.tiff)",
+                    SUPPORTED_IMAGE_FILTER,
                 )
                 if filename:
                     self.input_files = [filename]
@@ -893,8 +908,8 @@ class OcrUI(QtWidgets.QMainWindow):
             self.statusBar().showMessage("Processing...")
             QtWidgets.QApplication.processEvents()
 
-            self.progressBar.show()
-            self.progressBar.setValue(0)
+            self.progressBar.start()
+            self.progressBar.set_progress(0)
 
             total_files = len(self.input_files)
             successful = 0
@@ -906,12 +921,13 @@ class OcrUI(QtWidgets.QMainWindow):
                     self.statusBar().showMessage(
                         f"Processing file {idx} of {total_files}: {os.path.basename(input_file)}"
                     )
-                    self.progressBar.setValue(int(progress_base))
+                    self.progressBar.set_progress(int(progress_base))
                     QtWidgets.QApplication.processEvents()
 
                     if filetype.is_image(input_file):
                         # Process image file
-                        img, readable, matches, confidence, data = ocr_img(
+                        _, readable, matches, confidence, _ = ocr_img(
+                            img=cv2.imread(input_file),
                             input_file=input_file,
                             search_str=search_text if search_text else None,
                             highlight_readable_text=False,
@@ -923,7 +939,7 @@ class OcrUI(QtWidgets.QMainWindow):
                             successful += 1
                             if not self.is_batch:
                                 output = [
-                                    f"Image processed successfully",
+                                    "Image processed successfully",
                                     f"OCR Confidence: {confidence:.1f}%",
                                 ]
                                 if matches:
@@ -963,12 +979,14 @@ class OcrUI(QtWidgets.QMainWindow):
 
                 except Exception as e:
                     logger.error(
-                        f"Error processing file {input_file}: {str(e)}"
+                        "Error processing file %s: %s",
+                        input_file,
+                        e,
                     )
                     failed += 1
                     continue
 
-                self.progressBar.setValue(int((idx * 100) / total_files))
+                self.progressBar.set_progress(int((idx * 100) / total_files))
                 QtWidgets.QApplication.processEvents()
 
             # Show final results
@@ -980,7 +998,7 @@ class OcrUI(QtWidgets.QMainWindow):
                 else:
                     QMessageBox.information(self, "Batch Complete", result_msg)
 
-            self.progressBar.hide()
+            self.progressBar.stop()
             self.statusBar().showMessage("Processing complete", 3000)
 
         except Exception as e:
@@ -995,6 +1013,7 @@ class OcrUI(QtWidgets.QMainWindow):
         """Show preview of PDF or image file"""
         try:
             self.preview_scene.clear()
+            pixmap = None
 
             if file_path.lower().endswith(".pdf"):
                 # Preview first page of PDF
@@ -1081,7 +1100,7 @@ class OcrUI(QtWidgets.QMainWindow):
 def main():
     try:
         app = QtWidgets.QApplication([])
-        window = OcrUI()
+        OcrUI()
         logger.info("Application started")
         app.exec_()
     except Exception as e:

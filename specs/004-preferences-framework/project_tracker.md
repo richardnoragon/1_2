@@ -17,14 +17,18 @@ advancing to the next checkpoint.
 | Release readiness proven                | Phase 3 – Quality & Release Readiness    | In Progress | Concurrent export integration test added (2025-11-13) via `tests/integration/test_preferences_portability_concurrent.py`; encrypted import coverage delivered (2025-11-14) in `tests/integration/test_preferences_portability_encrypted.py`; coverage HTML report generated 2025-11-14 for maintained unit/core suite (`reports/preferences_portability_cov/index.html`); performance benchmark recorded 2025-11-14 (`reports/preferences_portability_perf.md`) showing export 0.433 s and import 44.714 s for 10k entries. Remaining gap: release notes plus import throughput optimization. | Follow-up: prepare release notes; investigate import throughput improvements before RC-3 (Owner: Engineering Perf Team · Due 2025-12-05); provide a bootstrap-suppression toggle for ephemeral benchmarks (Owner: Dev Tooling · Due 2025-11-29); confirm operations environments provision `pyAesCrypt` for encrypted workflows (Owner: Morgan Patel · Due 2025-11-22); evaluate expanding coverage scope once additional test suites are restored (Owner: QA Lead · Due 2025-11-29). |
 | Post-launch monitoring established      | Phase 4 – Post-Launch Monitoring         | In Progress | Telemetry summary script `scripts/reporting/preferences_portability_summary.py` parses `logs/rfu.log` and now feeds Appendix B of the operations runbook with daily export/import dashboards (generated 2025-11-14). Quarterly smoke-test reminder scheduled for the first business Monday of each quarter (Program Mgmt calendar) covering CLI rerun, dependency verification, and screenshot refresh commitments. Feedback triage checklist drafted in fleeting notes.                                                                                                                      | Continue refining telemetry outputs (Grafana dashboard parity) and capture the first automated daily aggregation artifact once `scripts/reporting/preferences_portability_summary.py` runs via CI/cron.                                                                                                                                                                                                                                                                               |
 
+## UI / Preferences / Documentation Cluster Scope
+
+This tracker is the repo-authoritative status record for the active UI/preferences/documentation cluster currently represented in the project specs and tasks. It is intentionally limited to the preference portability and UI harmonization flow already defined in the repo, with no scope expansion into unrelated backlog items outside the validated spec set.
+
 ## Release Checkpoints
 
-| Checkpoint                 | Gate Description                                                                              | Status  | Owner / Notes                                                                                                                                                                                            | Linked Items                                                     |
-| -------------------------- | --------------------------------------------------------------------------------------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
-| RC-1: Pre-release baseline | Phase 0 follow-ups complete; tracker updated with schema snapshot and focused pytest results. | Ready   | Remediation item closed (`specs/004-preferences-framework/remediation_app_log_nameerror.md`); pytest baseline refreshed 2025-11-12 with maintained suites passing.                                       | Milestone: Baseline verification ready                           |
-| RC-2: Feature completeness | Phase 1 deliverables signed off (runbook, launcher UX, telemetry docs).                       | Pending | Runbook/operations approval captured (2025-11-12); operations dry-run completed 2025-11-13 (Morgan Patel). Pending: hub launcher UX review and runbook follow-up (Owner: Morgan Patel · Due 2025-11-15). | Milestone: Portability operationalization complete               |
-| RC-3: Release readiness    | Phase 2–3 milestones complete with benchmarks and release notes attached.                     | Pending | Dependent on cleanup audit and performance profiling.                                                                                                                                                    | Milestones: Adoption cleanup completed; Release readiness proven |
-| RC-4: Post-launch review   | Phase 4 monitoring tasks activated and triage cadence documented.                             | Pending | No post-launch activities executed yet.                                                                                                                                                                  | Milestone: Post-launch monitoring established                    |
+| Checkpoint | Gate Description | Status | Owner / Notes | Linked Items |
+| --- | --- | --- | --- | --- |
+| RC-1: Pre-release baseline | Phase 0 follow-ups complete; tracker updated with schema snapshot and focused pytest results. | Ready | Remediation item closed (`specs/004-preferences-framework/remediation_app_log_nameerror.md`); pytest baseline refreshed 2025-11-12 with maintained suites passing. | Milestone: Baseline verification ready |
+| RC-2: Feature completeness | Phase 1 deliverables signed off (runbook, launcher UX, telemetry docs). | Ready | Reviewer: Noragon (2026-09-11) approved the hub launcher, telemetry, and runbook path alignment for preference portability. Evidence: witnessed by reviewer; no notes were taken. Pending: screenshot artifact attachment for the launcher-flow manual evidence. | Milestone: Portability operationalization complete |
+| RC-3: Release readiness | Phase 2-3 milestones complete with benchmarks and release notes attached. | Pending | Dependent on cleanup audit and performance profiling. | Milestones: Adoption cleanup completed; Release readiness proven |
+| RC-4: Post-launch review | Phase 4 monitoring tasks activated and triage cadence documented. | Pending | No post-launch activities executed yet. | Milestone: Post-launch monitoring established |
 
 ## Documentation Diff Audit
 
@@ -41,6 +45,12 @@ advancing to the next checkpoint.
 - No additional terminology or contract drifts detected between the plan, runbook Appendix B, and fleeting notes after the telemetry + feedback updates; future diff audits will revisit once Grafana dashboard work begins.
 - Captured the DevOps automation follow-up: the telemetry helper now writes JSON/Markdown artifacts under `reports/telemetry/`, and the runbook Appendix B references the `_latest` snapshot for auditors.
 
+### 2026-09-11
+
+- Verified launcher wiring for "Preference Portability" in `main.py` under System Tools and `open_preference_portability()` launch callback.
+- Added runbook Appendix C summarizing CLI prompts, sample outputs, and screenshot evidence register in `docs/operations/preferences_portability_runbook.md`.
+- Updated Phase 1 references in `specs/004-preferences-framework/plan.md` to point to `docs/operations/preferences_portability_runbook.md` and preserve the 2025-11-12 approval-table provenance.
+
 ## Action Items
 
 - [x] Capture canonical `user_preferences` schema snapshot and attach evidence in this tracker (Phase 0 follow-up) — see `reports/preferences_schema_snapshot_2025-11-12.json`.
@@ -48,6 +58,6 @@ advancing to the next checkpoint.
 - [x] Summarize the Phase 0 documentation diff audit findings for traceability (see section above).
 - [x] Document the portability runbook draft and record operations sign-off reference (Phase 1 follow-up) — see `docs/operations/preferences_portability_runbook.md`.
 - [x] Open remediation tracking for the legacy `AppLog` NameError surfaced by the global pytest baseline (Phase 0 follow-up) — see `specs/004-preferences-framework/remediation_app_log_nameerror.md`.
-- [ ] Update `docs/operations/preferences_portability_runbook.md` with explicit `python -m` invocation guidance and a dependency pre-flight checklist (Owner: Morgan Patel · Due 2025-11-15).
+- [x] Update `docs/operations/preferences_portability_runbook.md` with explicit `python -m` invocation guidance and a dependency pre-flight checklist (Owner: Morgan Patel · Due 2025-11-15).
 - [ ] Assign QA owner for the PreferenceManager outage integration scenario and document the coverage plan (Coordinator: Priya Shah · Due 2025-11-18).
 - [x] Document quarterly CLI smoke test / dependency review cadence and schedule a recurring reminder (Owner: Program Mgmt · Logged 2025-11-14) — cadence: first business Monday of each quarter, covering CLI smoke test, dependency pin verification, and runbook screenshot refresh.

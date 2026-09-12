@@ -38,13 +38,13 @@ Based on analysis of the existing RFU codebase, the Qt Help system integration i
 ```python
 # main.py (1,774 lines) - Primary entry point
 # src/rfu/main.py (92 lines) - Core hub coordination
-# src/rfu/rfuhub.py - Main hub interface
+# src/tabbed_hub.py - Main hub interface
 ```
 
 **Integration Point:**
 
-- The help system integrates at the RFUMainWindow level
-- No changes required to core application entry points
+- The help system integrates at the hub window level
+- Core application entry points already expose the hub integration surface
 - Help manager initializes alongside existing component managers
 
 **Validation:**
@@ -66,7 +66,7 @@ class RFUMainWindow(QMainWindow):
     # NEW: Help system initialization (compatible addition)
     def _initialize_help_system(self):
         if not self.help_manager:
-            from src.rfu.core.help_manager import RFUHelpSystemManager
+            from src.core.help_manager import RFUHelpSystemManager
             self.help_manager = RFUHelpSystemManager(self)
 ```
 
@@ -172,6 +172,12 @@ def launch_tool(self, tool_name, module_name, class_name):
     # Database tracking already implemented
     # Error handling already comprehensive
 ```
+
+Current standardization adds a shared façade and lifecycle layer around that flow:
+
+- `src.core.application_state.build_application_state()` centralizes logger, config, and preference wiring for the hub entry points.
+- `src.core.tool_lifecycle.resolve_tool_launch_request()` resolves explicit launch parameters or manifest-backed metadata before import.
+- `src.core.tool_lifecycle.ToolRuntimeTracker` standardizes registration and progress snapshots for hub-managed tools.
 
 **Help Integration Validation:**
 
@@ -381,9 +387,9 @@ class MenuManager:
 
 **New Files Required:**
 
-- `src/rfu/core/help_manager.py` (200-300 lines)
-- `src/rfu/gui/help_dialog.py` (150-200 lines)
-- `src/rfu/gui/common/help_aware_widget.py` (50-100 lines)
+- `src/core/help_manager.py` (200-300 lines)
+- `src/gui/help_dialog.py` (150-200 lines)
+- `src/gui/common/help_aware_widget.py` (50-100 lines)
 
 **Integration Points:**
 

@@ -7,8 +7,8 @@ All colors resolved via token(); all fonts via Typography.
 
 import logging
 
-from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtWidgets import QAbstractButton, QPushButton, QSizePolicy
+from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtWidgets import QPushButton
 
 from src.gui.themes import Typography, token
 
@@ -46,7 +46,9 @@ class PrimaryButton(QPushButton):
             }}
             QPushButton:hover {{ background-color: {hover}; }}
             QPushButton:pressed {{ background-color: {pressed}; }}
-            QPushButton:disabled {{ background-color: {token("text_disabled")}; }}
+            QPushButton:disabled {{
+                background-color: {token("text_disabled")};
+            }}
             """
         )
 
@@ -91,18 +93,20 @@ class SecondaryButton(QPushButton):
             }}
             QPushButton:hover {{ background-color: {hover}; }}
             QPushButton:pressed {{ background-color: {pressed}; }}
-            QPushButton:disabled {{ background-color: {token("text_disabled")}; }}
+            QPushButton:disabled {{
+                background-color: {token("text_disabled")};
+            }}
             """
         )
 
 
 class DestructiveButton(PrimaryButton):
-    """Destructive action button — requires ConfirmationModal before acting (spec §5.2).
+    """Destructive action button.
 
-    The ``clicked`` signal is intercepted; the button emits ``action_confirmed``
-    only after the caller connects a confirmation callback via
-    ``set_confirmation_callback(fn)``.  If no callback is set the click is
-    silently suppressed (safe default).
+    The ``clicked`` signal is intercepted; the button emits
+    ``action_confirmed`` only after the caller connects a confirmation
+    callback via ``set_confirmation_callback(fn)``. If no callback is
+    set, the click is silently suppressed.
     """
 
     action_confirmed = pyqtSignal()
@@ -113,7 +117,8 @@ class DestructiveButton(PrimaryButton):
         self.setAccessibleName(text or "Destructive action")
         self._apply_destructive_style()
         # Disconnect parent class click → route through confirmation
-        self.clicked.disconnect() if self.receivers(self.clicked) else None
+        if self.receivers(self.clicked):
+            self.clicked.disconnect()
 
     def _apply_destructive_style(self):
         bg = token("semantic_error")
@@ -126,8 +131,13 @@ class DestructiveButton(PrimaryButton):
                 border-radius: 4px;
                 padding: 8px 16px;
             }}
-            QPushButton:hover {{ background-color: {token("semantic_error")}; opacity: 0.85; }}
-            QPushButton:disabled {{ background-color: {token("text_disabled")}; }}
+            QPushButton:hover {{
+                background-color: {token("semantic_error")};
+                opacity: 0.85;
+            }}
+            QPushButton:disabled {{
+                background-color: {token("text_disabled")};
+            }}
             """
         )
 

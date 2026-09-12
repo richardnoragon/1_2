@@ -10,8 +10,17 @@ from .data_visualization import (
     DataTable,
 )
 from .network_interface_selector import NetworkInterfaceSelector
-from .alert_panel import AlertPanel
-from .configuration_panel import ConfigurationPanel
+
+# Import optional components if they exist
+try:
+    from .alert_panel import AlertPanel
+except ImportError:
+    AlertPanel = None
+
+try:
+    from .configuration_panel import ConfigurationPanel
+except ImportError:
+    ConfigurationPanel = None
 
 __all__ = [
     "RealTimeChart",
@@ -19,6 +28,5 @@ __all__ = [
     "StatusIndicator",
     "DataTable",
     "NetworkInterfaceSelector",
-    "AlertPanel",
-    "ConfigurationPanel",
 ]
+

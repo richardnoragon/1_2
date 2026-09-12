@@ -20,7 +20,7 @@ Features:
 import logging
 from typing import Any, Dict, List, Optional, Set
 
-from PyQt5.QtCore import QObject, QTimer, pyqtSignal
+from PyQt5.QtCore import QObject, Qt, QTimer, pyqtSignal
 from PyQt5.QtGui import QColor, QPalette
 from PyQt5.QtWidgets import QApplication, QWidget
 

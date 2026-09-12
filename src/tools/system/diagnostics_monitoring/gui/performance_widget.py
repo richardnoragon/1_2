@@ -183,9 +183,8 @@ class PerformanceWidget(QWidget):
         layout.addWidget(self.interval_spin)
 
         # Manual refresh button
-        self.refresh_btn = QPushButton("Refresh Now")
+        self.refresh_btn = SecondaryButton("Refresh Now")
         self.refresh_btn.setAccessibleName("Refresh performance data now")
-        self.refresh_btn.setMinimumHeight(44)
         self.refresh_btn.clicked.connect(self.manual_refresh)
         layout.addWidget(self.refresh_btn)
 
@@ -257,6 +256,7 @@ class PerformanceWidget(QWidget):
 
         self.cpu_usage_bar = QProgressBar()
         self.cpu_usage_bar.setRange(0, 100)
+        self.cpu_usage_bar.setFormat("%p%")
         cpu_layout.addWidget(self.cpu_usage_bar, 0, 2)
 
         # CPU details
@@ -314,6 +314,7 @@ class PerformanceWidget(QWidget):
 
         self.memory_usage_bar = QProgressBar()
         self.memory_usage_bar.setRange(0, 100)
+        self.memory_usage_bar.setFormat("%p%")
         memory_layout.addWidget(self.memory_usage_bar, 0, 2)
 
         # Memory details
@@ -341,6 +342,7 @@ class PerformanceWidget(QWidget):
 
         self.swap_usage_bar = QProgressBar()
         self.swap_usage_bar.setRange(0, 100)
+        self.swap_usage_bar.setFormat("%p%")
         swap_layout.addWidget(self.swap_usage_bar, 0, 2)
 
         swap_layout.addWidget(QLabel("Total:"), 1, 0)
@@ -681,7 +683,7 @@ class PerformanceWidget(QWidget):
                 progress = QProgressBar()
                 progress.setRange(0, 100)
                 progress.setValue(int(usage))
-                progress.setFormat(f"{usage:.1f}%")
+                progress.setFormat("%p%")
                 self.per_core_layout.addWidget(progress, i // 4, (i % 4) * 2 + 1)
 
         except Exception as e:

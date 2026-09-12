@@ -20,14 +20,14 @@ try:
         QHBoxLayout,
         QHeaderView,
         QLabel,
-        QLineEdit,
         QMainWindow,
-        QPushButton,
         QTableWidget,
         QTableWidgetItem,
         QVBoxLayout,
         QWidget,
     )
+
+    from src.gui.components.inputs import TextInput
 except ImportError:
     print("PyQt5 not available. Please install PyQt5.")
     sys.exit(1)
@@ -310,9 +310,8 @@ class ProcessMonitorGUI(QMainWindow):
 
         # Filter
         control_layout.addWidget(QLabel("Filter:"))
-        self.filter_input = QLineEdit()
+        self.filter_input = TextInput("Filter", "Enter process name to filter...")
         self.filter_input.setAccessibleName("Process name filter")
-        self.filter_input.setPlaceholderText("Enter process name to filter...")
         self.filter_input.textChanged.connect(self._filter_processes)
         control_layout.addWidget(self.filter_input)
 

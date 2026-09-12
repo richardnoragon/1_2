@@ -4,6 +4,7 @@ from PyQt5 import QtWidgets, uic
 from PyQt5.QtWidgets import QFileDialog, QMessageBox
 import fitz
 from log_config import setup_logger
+from src.gui.components.loading_indicator import LoadingIndicator
 
 # Set up logger
 logger = setup_logger(__name__)
@@ -100,7 +101,7 @@ class WatermarkUI(QtWidgets.QMainWindow):
             self.config = config or {}
 
             # Add progress bar
-            self.progressBar = QtWidgets.QProgressBar()
+            self.progressBar = LoadingIndicator(parent=self, message="Working...")
             self.statusBar().addPermanentWidget(self.progressBar)
             self.progressBar.hide()
 
@@ -221,23 +222,23 @@ class WatermarkUI(QtWidgets.QMainWindow):
                     )
                     return
 
-            self.progressBar.show()
-            self.progressBar.setValue(0)
+            self.progressBar.start()
+            self.progressBar.set_progress(0)
             self.statusBar().showMessage("Loading document...")
             QtWidgets.QApplication.processEvents()
 
             try:
                 # Document loading
-                self.progressBar.setValue(10)
+                self.progressBar.set_progress(10)
                 QtWidgets.QApplication.processEvents()
 
                 # Create watermark
-                self.progressBar.setValue(20)
+                self.progressBar.set_progress(20)
                 self.statusBar().showMessage("Creating watermark...")
                 QtWidgets.QApplication.processEvents()
 
                 # Process pages
-                self.progressBar.setValue(30)
+                self.progressBar.set_progress(30)
                 self.statusBar().showMessage("Applying watermark...")
                 QtWidgets.QApplication.processEvents()
 
@@ -250,7 +251,7 @@ class WatermarkUI(QtWidgets.QMainWindow):
                 )
 
                 if success:
-                    self.progressBar.setValue(100)
+                    self.progressBar.set_progress(100)
                     logger.info("Watermark applied successfully")
                     QMessageBox.information(
                         self, "Success", "Watermark applied successfully!"
@@ -278,7 +279,7 @@ class WatermarkUI(QtWidgets.QMainWindow):
             self.statusBar().showMessage("Error occurred", 3000)
 
         finally:
-            self.progressBar.hide()
+            self.progressBar.stop()
 
 
 def main():

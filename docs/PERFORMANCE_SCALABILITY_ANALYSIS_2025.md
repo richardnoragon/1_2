@@ -17,6 +17,15 @@
 
 Richard's File Utilities demonstrates **solid foundational performance** with comprehensive monitoring and benchmarking systems. However, **critical scalability limitations** have been identified that require **systematic optimization** for Fortune 500 Manufacturing/Energy enterprise deployment.
 
+### Current Startup Baseline
+
+Issue #82 now defines the repo's documented startup baseline:
+
+- Database initialization is deferred until an on-demand UI or service path actually needs it.
+- Optional PDF integrations are loaded lazily when the relevant tools are opened.
+- Headless-safe cold import timing is the preferred regression check for startup-path changes.
+- The benchmark entry point is [docs/performance/ISSUE_82_PERFORMANCE_AND_STARTUP_PATH_OPTIMIZATION.md](performance/ISSUE_82_PERFORMANCE_AND_STARTUP_PATH_OPTIMIZATION.md) and [scripts/perf/startup_benchmark.py](../scripts/perf/startup_benchmark.py).
+
 ### 🎯 KEY PERFORMANCE FINDINGS
 
 **✅ PERFORMANCE STRENGTHS:**

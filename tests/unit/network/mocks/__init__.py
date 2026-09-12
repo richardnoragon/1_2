@@ -144,7 +144,7 @@ def setup_browser_detector_mocks() -> Dict[str, Any]:
     os_path_mock.join = lambda *args: "\\".join(args)  # Windows-style
     os_path_mock.expanduser = lambda path: path.replace(
         "~", "C:\\Users\\TestUser"
-    )
+    ).replace("/", "\\")
 
     return {"platform_mock": platform_mock, "os_path_mock": os_path_mock}
 

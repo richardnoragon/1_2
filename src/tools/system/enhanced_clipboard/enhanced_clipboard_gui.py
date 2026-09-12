@@ -25,14 +25,13 @@ try:
         QListWidgetItem,
         QMainWindow,
         QMessageBox,
-        QProgressBar,
-        QPushButton,
         QTabWidget,
         QTextEdit,
         QVBoxLayout,
         QWidget,
     )
 
+    from src.gui.components.buttons import PrimaryButton, SecondaryButton
     from src.gui.themes import token
 except ImportError:
     print("PyQt5 not available. Please install PyQt5.")
@@ -172,9 +171,8 @@ class EnhancedClipboardGUI(QMainWindow):
         controls_layout.addWidget(self.auto_monitor)
 
         # Clear history button
-        clear_btn = QPushButton("Clear History")
+        clear_btn = SecondaryButton("Clear History")
         clear_btn.setAccessibleName("Clear clipboard history")
-        clear_btn.setMinimumHeight(44)
         clear_btn.clicked.connect(self.clear_history)
         controls_layout.addWidget(clear_btn)
 
@@ -206,9 +204,8 @@ class EnhancedClipboardGUI(QMainWindow):
         # Create slot buttons
         slot_buttons_layout = QHBoxLayout()
         for i in range(1, 6):
-            slot_btn = QPushButton(f"Slot {i}")
+            slot_btn = SecondaryButton(f"Slot {i}")
             slot_btn.setAccessibleName(f"Save to slot {i}")
-            slot_btn.setMinimumHeight(44)
             slot_btn.clicked.connect(lambda checked, slot=i: self.save_to_slot(slot))
             slot_buttons_layout.addWidget(slot_btn)
 
@@ -217,9 +214,8 @@ class EnhancedClipboardGUI(QMainWindow):
         # Restore buttons
         restore_buttons_layout = QHBoxLayout()
         for i in range(1, 6):
-            restore_btn = QPushButton(f"Restore {i}")
+            restore_btn = SecondaryButton(f"Restore {i}")
             restore_btn.setAccessibleName(f"Restore from slot {i}")
-            restore_btn.setMinimumHeight(44)
             restore_btn.clicked.connect(
                 lambda checked, slot=i: self.restore_from_slot(slot)
             )
@@ -261,27 +257,23 @@ class EnhancedClipboardGUI(QMainWindow):
         # Tool buttons
         button_layout = QHBoxLayout()
 
-        uppercase_btn = QPushButton("UPPERCASE")
+        uppercase_btn = SecondaryButton("UPPERCASE")
         uppercase_btn.setAccessibleName("Convert to uppercase")
-        uppercase_btn.setMinimumHeight(44)
         uppercase_btn.clicked.connect(self.convert_uppercase)
         button_layout.addWidget(uppercase_btn)
 
-        lowercase_btn = QPushButton("lowercase")
+        lowercase_btn = SecondaryButton("lowercase")
         lowercase_btn.setAccessibleName("Convert to lowercase")
-        lowercase_btn.setMinimumHeight(44)
         lowercase_btn.clicked.connect(self.convert_lowercase)
         button_layout.addWidget(lowercase_btn)
 
-        title_case_btn = QPushButton("Title Case")
+        title_case_btn = SecondaryButton("Title Case")
         title_case_btn.setAccessibleName("Convert to title case")
-        title_case_btn.setMinimumHeight(44)
         title_case_btn.clicked.connect(self.convert_title_case)
         button_layout.addWidget(title_case_btn)
 
-        remove_spaces_btn = QPushButton("Remove Spaces")
+        remove_spaces_btn = SecondaryButton("Remove Spaces")
         remove_spaces_btn.setAccessibleName("Remove extra spaces")
-        remove_spaces_btn.setMinimumHeight(44)
         remove_spaces_btn.clicked.connect(self.remove_spaces)
         button_layout.addWidget(remove_spaces_btn)
 
@@ -290,21 +282,18 @@ class EnhancedClipboardGUI(QMainWindow):
         # Second row of buttons
         button_layout2 = QHBoxLayout()
 
-        remove_lines_btn = QPushButton("Remove Empty Lines")
+        remove_lines_btn = SecondaryButton("Remove Empty Lines")
         remove_lines_btn.setAccessibleName("Remove empty lines")
-        remove_lines_btn.setMinimumHeight(44)
         remove_lines_btn.clicked.connect(self.remove_empty_lines)
         button_layout2.addWidget(remove_lines_btn)
 
-        sort_lines_btn = QPushButton("Sort Lines")
+        sort_lines_btn = SecondaryButton("Sort Lines")
         sort_lines_btn.setAccessibleName("Sort lines alphabetically")
-        sort_lines_btn.setMinimumHeight(44)
         sort_lines_btn.clicked.connect(self.sort_lines)
         button_layout2.addWidget(sort_lines_btn)
 
-        word_count_btn = QPushButton("Word Count")
+        word_count_btn = SecondaryButton("Word Count")
         word_count_btn.setAccessibleName("Show word count")
-        word_count_btn.setMinimumHeight(44)
         word_count_btn.clicked.connect(self.show_word_count)
         button_layout2.addWidget(word_count_btn)
 
@@ -327,21 +316,18 @@ class EnhancedClipboardGUI(QMainWindow):
         # Analysis buttons
         button_layout = QHBoxLayout()
 
-        analyze_btn = QPushButton("Analyze Current Clipboard")
+        analyze_btn = PrimaryButton("Analyze Current Clipboard")
         analyze_btn.setAccessibleName("Analyze current clipboard content")
-        analyze_btn.setMinimumHeight(44)
         analyze_btn.clicked.connect(self.analyze_clipboard)
         button_layout.addWidget(analyze_btn)
 
-        history_stats_btn = QPushButton("History Statistics")
+        history_stats_btn = SecondaryButton("History Statistics")
         history_stats_btn.setAccessibleName("Show clipboard history statistics")
-        history_stats_btn.setMinimumHeight(44)
         history_stats_btn.clicked.connect(self.show_history_stats)
         button_layout.addWidget(history_stats_btn)
 
-        data_types_btn = QPushButton("Data Types Report")
+        data_types_btn = SecondaryButton("Data Types Report")
         data_types_btn.setAccessibleName("Show clipboard data types report")
-        data_types_btn.setMinimumHeight(44)
         data_types_btn.clicked.connect(self.show_data_types)
         button_layout.addWidget(data_types_btn)
 

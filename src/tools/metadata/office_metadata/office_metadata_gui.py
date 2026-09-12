@@ -7,6 +7,7 @@ for various office formats. Integrated with the StandardWindow framework
 for consistent UI.
 """
 
+import importlib
 import json
 import logging
 import os
@@ -25,8 +26,6 @@ try:
         QHBoxLayout,
         QLabel,
         QMessageBox,
-        QProgressBar,
-        QPushButton,
         QTableWidget,
         QTableWidgetItem,
         QTabWidget,
@@ -35,6 +34,8 @@ try:
         QWidget,
     )
 
+    from src.gui.components.buttons import PrimaryButton, SecondaryButton
+    from src.gui.components.loading_indicator import LoadingIndicator
     from src.gui.themes import ThemeManager, token
 except ImportError:
     print("PyQt5 not available. Please install PyQt5 to use the GUI features.")
@@ -61,7 +62,7 @@ try:
 except ImportError:
 
     class _OMStrings:
-        """Fallback string constants — mirrors src/rfu/ui_strings.OfficeMetadata."""
+        """Fallback string constants used when ui strings are unavailable."""
 
         TITLE = "Office Metadata Tools"
         WINDOW_TITLE = "Office Metadata Tools — RFU"
@@ -80,18 +81,15 @@ except ImportError:
         )
 
 
+OFFICE_DOCUMENT_FILTER = (
+    "Office Documents (*.docx *.xlsx *.pptx *.doc *.xls *.ppt *.pdf);;"
+    "All Files (*.*)"
+)
+
+
 # ---------------------------------------------------------------------------
 # CP: Component Placement — PrimaryButton / SecondaryButton / Modal
 # ---------------------------------------------------------------------------
-try:
-    from src.gui.components.buttons import PrimaryButton, SecondaryButton
-
-    _CP_AVAILABLE = True
-except ImportError:
-    PrimaryButton = QPushButton  # type: ignore[misc,assignment]
-    SecondaryButton = QPushButton  # type: ignore[misc,assignment]
-    _CP_AVAILABLE = False
-
 try:
     from src.gui.components.modal import Modal
 except ImportError:
@@ -135,21 +133,27 @@ class OfficeMetadataLogic:
                 if "docProps/core.xml" in zip_file.namelist():
                     core_xml = zip_file.read("docProps/core.xml")
                     metadata["core_properties"] = (
-                        OfficeMetadataLogic._parse_core_properties(core_xml)
+                        OfficeMetadataLogic._parse_core_properties(
+                            core_xml
+                        )
                     )
 
                 # App properties
                 if "docProps/app.xml" in zip_file.namelist():
                     app_xml = zip_file.read("docProps/app.xml")
                     metadata["app_properties"] = (
-                        OfficeMetadataLogic._parse_app_properties(app_xml)
+                        OfficeMetadataLogic._parse_app_properties(
+                            app_xml
+                        )
                     )
 
                 # Custom properties
                 if "docProps/custom.xml" in zip_file.namelist():
                     custom_xml = zip_file.read("docProps/custom.xml")
                     metadata["custom_properties"] = (
-                        OfficeMetadataLogic._parse_custom_properties(custom_xml)
+                        OfficeMetadataLogic._parse_custom_properties(
+                            custom_xml
+                        )
                     )
 
                 # Security analysis
@@ -157,10 +161,8 @@ class OfficeMetadataLogic:
                     OfficeMetadataLogic._analyze_security_metadata(metadata)
                 )
 
-        except (
-            Exception
-        ) as e:  # ERR: non-fatal — exception re-raised to calling GUI handler
-            raise Exception(f"Error reading OOXML file: {e}")
+        except (zipfile.BadZipFile, KeyError, OSError, ValueError) as exc:
+            raise RuntimeError(f"Error reading OOXML file: {exc}") from exc
 
         return metadata
 
@@ -170,8 +172,14 @@ class OfficeMetadataLogic:
         metadata = {
             "file_info": OfficeMetadataLogic._get_file_info(file_path),
             "ole_properties": {
-                "note": "OLE metadata extraction requires additional libraries (olefile, python-oletools)",
-                "suggestion": "Convert to modern format (DOCX/XLSX/PPTX) for full metadata access",
+                "note": (
+                    "OLE metadata extraction requires additional libraries "
+                    "(olefile, python-oletools)"
+                ),
+                "suggestion": (
+                    "Convert to modern format (DOCX/XLSX/PPTX) for full "
+                    "metadata access"
+                ),
                 "basic_analysis": "File appears to be legacy Office format",
             },
         }
@@ -183,8 +191,14 @@ class OfficeMetadataLogic:
         metadata = {
             "file_info": OfficeMetadataLogic._get_file_info(file_path),
             "pdf_properties": {
-                "note": "PDF metadata extraction requires PyPDF2 or similar library",
-                "suggestion": "Install PyPDF2 for full PDF metadata support: pip install PyPDF2",
+                "note": (
+                    "PDF metadata extraction requires PyPDF2 or similar "
+                    "library"
+                ),
+                "suggestion": (
+                    "Install PyPDF2 for full PDF metadata support: "
+                    "pip install PyPDF2"
+                ),
                 "basic_analysis": "File appears to be PDF format",
             },
         }
@@ -198,7 +212,9 @@ class OfficeMetadataLogic:
             "filename": os.path.basename(file_path),
             "filepath": file_path,
             "size": stat.st_size,
-            "size_formatted": OfficeMetadataLogic._format_file_size(stat.st_size),
+            "size_formatted": (
+                OfficeMetadataLogic._format_file_size(stat.st_size)
+            ),
             "created": datetime.fromtimestamp(stat.st_ctime).isoformat(),
             "modified": datetime.fromtimestamp(stat.st_mtime).isoformat(),
             "accessed": datetime.fromtimestamp(stat.st_atime).isoformat(),
@@ -223,7 +239,10 @@ class OfficeMetadataLogic:
 
             # Define namespace mappings
             namespaces = {
-                "cp": "http://schemas.openxmlformats.org/package/2006/metadata/core-properties",
+                "cp": (
+                    "http://schemas.openxmlformats.org/package/2006/"
+                    "metadata/core-properties"
+                ),
                 "dc": "http://purl.org/dc/elements/1.1/",
                 "dcterms": "http://purl.org/dc/terms/",
             }
@@ -250,10 +269,8 @@ class OfficeMetadataLogic:
 
             return properties
 
-        except (
-            Exception
-        ) as e:  # ERR: non-fatal — returns error dict; error key surfaced in metadata display
-            return {"error": f"Error parsing core properties: {e}"}
+        except (ET.ParseError, TypeError, ValueError, OSError) as exc:
+            return {"error": f"Error parsing core properties: {exc}"}
 
     @staticmethod
     def _parse_app_properties(xml_data: bytes) -> Dict[str, str]:
@@ -291,10 +308,8 @@ class OfficeMetadataLogic:
 
             return properties
 
-        except (
-            Exception
-        ) as e:  # ERR: non-fatal — returns error dict; error key surfaced in metadata display
-            return {"error": f"Error parsing app properties: {e}"}
+        except (ET.ParseError, TypeError, ValueError, OSError) as exc:
+            return {"error": f"Error parsing app properties: {exc}"}
 
     @staticmethod
     def _parse_custom_properties(xml_data: bytes) -> Dict[str, str]:
@@ -312,10 +327,8 @@ class OfficeMetadataLogic:
 
             return properties
 
-        except (
-            Exception
-        ) as e:  # ERR: non-fatal — returns error dict; error key surfaced in metadata display
-            return {"error": f"Error parsing custom properties: {e}"}
+        except (ET.ParseError, TypeError, ValueError, OSError) as exc:
+            return {"error": f"Error parsing custom properties: {exc}"}
 
     @staticmethod
     def _analyze_security_metadata(metadata: Dict[str, Any]) -> Dict[str, Any]:
@@ -326,41 +339,65 @@ class OfficeMetadataLogic:
             "recommendations": [],
         }
 
-        # Check for personal information in core properties
+        OfficeMetadataLogic._collect_privacy_concerns(
+            metadata, security_info
+        )
+        OfficeMetadataLogic._collect_sensitive_custom_properties(
+            metadata, security_info
+        )
+        OfficeMetadataLogic._add_security_recommendations(security_info)
+
+        return security_info
+
+    @staticmethod
+    def _collect_privacy_concerns(
+        metadata: Dict[str, Any], security_info: Dict[str, Any]
+    ) -> None:
         core_props = metadata.get("core_properties", {})
-        if core_props.get("creator"):
-            security_info["privacy_concerns"].append(
-                f"Author name: {core_props['creator']}"
-            )
-        if core_props.get("lastModifiedBy"):
-            security_info["privacy_concerns"].append(
-                f"Last modified by: {core_props['lastModifiedBy']}"
-            )
-
-        # Check application properties for company info
         app_props = metadata.get("app_properties", {})
-        if app_props.get("Company"):
-            security_info["privacy_concerns"].append(f"Company: {app_props['Company']}")
-        if app_props.get("Manager"):
-            security_info["privacy_concerns"].append(f"Manager: {app_props['Manager']}")
 
-        # Check for potentially sensitive custom properties
+        OfficeMetadataLogic._append_privacy_concern(
+            security_info,
+            "Author name",
+            core_props.get("creator"),
+        )
+        OfficeMetadataLogic._append_privacy_concern(
+            security_info,
+            "Last modified by",
+            core_props.get("lastModifiedBy"),
+        )
+        OfficeMetadataLogic._append_privacy_concern(
+            security_info,
+            "Company",
+            app_props.get("Company"),
+        )
+        OfficeMetadataLogic._append_privacy_concern(
+            security_info,
+            "Manager",
+            app_props.get("Manager"),
+        )
+
+    @staticmethod
+    def _append_privacy_concern(
+        security_info: Dict[str, Any], label: str, value: Any
+    ) -> None:
+        if value:
+            security_info["privacy_concerns"].append(f"{label}: {value}")
+
+    @staticmethod
+    def _collect_sensitive_custom_properties(
+        metadata: Dict[str, Any], security_info: Dict[str, Any]
+    ) -> None:
         custom_props = metadata.get("custom_properties", {})
-        for key, value in custom_props.items():
-            if any(
-                keyword in key.lower()
-                for keyword in [
-                    "password",
-                    "secret",
-                    "confidential",
-                    "private",
-                ]
-            ):
+        sensitive_keywords = ("password", "secret", "confidential", "private")
+        for key, _value in custom_props.items():
+            if any(keyword in key.lower() for keyword in sensitive_keywords):
                 security_info["sensitive_data"].append(
                     f"Custom property '{key}' may contain sensitive data"
                 )
 
-        # Generate recommendations
+    @staticmethod
+    def _add_security_recommendations(security_info: Dict[str, Any]) -> None:
         if security_info["privacy_concerns"]:
             security_info["recommendations"].append(
                 "Consider removing or anonymizing personal information"
@@ -376,8 +413,6 @@ class OfficeMetadataLogic:
             security_info["recommendations"].append(
                 "No obvious privacy concerns detected"
             )
-
-        return security_info
 
 
 class MetadataWorker(QThread):
@@ -396,7 +431,8 @@ class MetadataWorker(QThread):
     def run(self):
         """Run the metadata operation."""
         try:
-            self.status_updated.emit(f"Processing: {os.path.basename(self.file_path)}")
+            file_name = os.path.basename(self.file_path)
+            self.status_updated.emit(f"Processing: {file_name}")
             self.progress_updated.emit(20)
 
             if self.operation_type == "extract":
@@ -407,8 +443,8 @@ class MetadataWorker(QThread):
             self.progress_updated.emit(100)
             self.status_updated.emit("Operation completed successfully")
 
-        except Exception as e:
-            self.error_occurred.emit(str(e))
+        except (OSError, RuntimeError, ValueError) as exc:
+            self.error_occurred.emit(str(exc))
 
 
 class OfficeMetadataGUI(StandardWindow):
@@ -428,8 +464,10 @@ class OfficeMetadataGUI(StandardWindow):
         self._hub = hub_instance
         if _get_log_manager is not None:
             try:
-                self._logger = _get_log_manager().get_logger("OfficeMetadataGUI")
-            except Exception:
+                self._logger = _get_log_manager().get_logger(
+                    "OfficeMetadataGUI"
+                )
+            except (AttributeError, RuntimeError, TypeError):
                 self._logger = logging.getLogger("OfficeMetadataGUI")
         else:
             self._logger = logging.getLogger("OfficeMetadataGUI")
@@ -437,6 +475,22 @@ class OfficeMetadataGUI(StandardWindow):
         self.current_file = None
         self.current_metadata = {}
         self.metadata_worker = None
+
+        self.status_label = None
+        self.progress_bar = None
+        self.tab_widget = None
+        self.file_info_tab = None
+        self.file_info_table = None
+        self.core_props_tab = None
+        self.core_props_table = None
+        self.app_props_tab = None
+        self.app_props_table = None
+        self.custom_props_tab = None
+        self.custom_props_table = None
+        self.security_tab = None
+        self.security_text = None
+        self.raw_data_tab = None
+        self.raw_data_text = None
 
         self.init_ui()
 
@@ -453,28 +507,33 @@ class OfficeMetadataGUI(StandardWindow):
     # ── GRD : ComponentGuardian integration ──────────────────────────
 
     def _on_theme_changed(self, variant: str) -> None:
-        """Re-apply token-based stylesheets when the active theme variant changes."""
-        pass  # stylesheets applied at init; live re-apply pending TH-4c/4d
+        """Re-apply token-based stylesheets for theme changes."""
+        del variant
 
-    def register_gui_component(self, tool_id: str, recovery_callback=None) -> None:
-        """Register this widget with ComponentGuardian (no-op if unavailable)."""
+    def register_gui_component(
+        self, tool_id: str, recovery_callback=None
+    ) -> None:
+        """Register this widget with ComponentGuardian."""
         try:
-            from src.core.guardian.component_guardian import ComponentGuardian
-
-            ComponentGuardian.instance().register(
-                tool_id, self, recovery_callback=recovery_callback
+            guardian_module = importlib.import_module(
+                "src.core.guardian.component_guardian"
             )
-        except Exception:
+            component_guardian = guardian_module.ComponentGuardian
+            component_guardian.instance().register(
+                tool_id,
+                self,
+                recovery_callback=recovery_callback,
+            )
+        except (AttributeError, ImportError, RuntimeError, TypeError):
             pass
 
     # ── TEL : telemetry stub ──────────────────────────────────────────
     def _emit_telemetry(self, event_type: str, **kwargs) -> None:
-        """Emit a telemetry event (no-op stub until TEL infrastructure lands)."""
+        """Emit a telemetry event when the telemetry layer is available."""
         try:
-            from src.core.telemetry import emit_telemetry
-
-            emit_telemetry(event_type, **kwargs)
-        except Exception:
+            telemetry_module = importlib.import_module("src.core.telemetry")
+            telemetry_module.emit_telemetry(event_type, **kwargs)
+        except (AttributeError, ImportError, RuntimeError, TypeError):
             pass
 
     def health_check(self) -> bool:
@@ -489,18 +548,30 @@ class OfficeMetadataGUI(StandardWindow):
                 _OMStrings.TITLE,
                 _OMStrings.ERR_INIT_FAILED,
             )
-        except Exception:
+        except (AttributeError, RuntimeError, TypeError):
             pass
 
     def _setup_menu_callbacks(self):
         """Setup tool-specific menu callbacks."""
         if hasattr(self, "menu_manager"):
-            self.menu_manager.register_callback("open_office_file", self.open_file)
-            self.menu_manager.register_callback("save_metadata", self.save_metadata)
-            self.menu_manager.register_callback("export_metadata", self.export_metadata)
-            self.menu_manager.register_callback("batch_process", self.batch_process)
-            self.menu_manager.register_callback("security_scan", self.security_scan)
-            self.menu_manager.register_callback("help_office_metadata", self.show_help)
+            self.menu_manager.register_callback(
+                "open_office_file", self.open_file
+            )
+            self.menu_manager.register_callback(
+                "save_metadata", self.save_metadata
+            )
+            self.menu_manager.register_callback(
+                "export_metadata", self.export_metadata
+            )
+            self.menu_manager.register_callback(
+                "batch_process", self.batch_process
+            )
+            self.menu_manager.register_callback(
+                "security_scan", self.security_scan
+            )
+            self.menu_manager.register_callback(
+                "help_office_metadata", self.show_help
+            )
 
     def init_ui(self):
         """Initialize the user interface."""
@@ -520,7 +591,10 @@ class OfficeMetadataGUI(StandardWindow):
         self.create_control_panel(layout)
 
         # Progress bar
-        self.progress_bar = QProgressBar()
+        self.progress_bar = LoadingIndicator(
+            parent=self,
+            message="Processing...",
+        )
         self.progress_bar.setVisible(False)
         layout.addWidget(self.progress_bar)
 
@@ -537,8 +611,11 @@ class OfficeMetadataGUI(StandardWindow):
                 font-weight: bold;
                 color: {token('text_primary')};
                 padding: 15px;
-                background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
-                    stop:0 {token('accentf')}, stop:1 {token('button_primary_hover')});
+                background: qlineargradient(
+                    x1:0, y1:0, x2:1, y2:0,
+                    stop:0 {token('accentf')},
+                    stop:1 {token('button_primary_hover')}
+                );
                 color: white;
                 border-radius: 8px;
                 margin-bottom: 10px;
@@ -548,7 +625,8 @@ class OfficeMetadataGUI(StandardWindow):
         layout.addWidget(header_label)
 
         description = QLabel(
-            "Extract, view, edit, and analyze metadata from Office documents, PDFs, and more"
+            "Extract, view, edit, and analyze metadata from Office "
+            "documents, PDFs, and more"
         )
         description.setStyleSheet(
             """
@@ -706,7 +784,9 @@ class OfficeMetadataGUI(StandardWindow):
         self.core_props_table.setColumnCount(2)
         self.core_props_table.setHorizontalHeaderLabels(["Property", "Value"])
         self.core_props_table.horizontalHeader().setStretchLastSection(True)
-        self.core_props_table.itemDoubleClicked.connect(self.edit_metadata_item)
+        self.core_props_table.itemDoubleClicked.connect(
+            self.edit_metadata_item
+        )
         layout.addWidget(self.core_props_table)
 
     def create_app_properties_tab(self):
@@ -748,9 +828,13 @@ class OfficeMetadataGUI(StandardWindow):
         self.custom_props_table = QTableWidget()
         self.custom_props_table.setAccessibleName("Custom properties table")
         self.custom_props_table.setColumnCount(2)
-        self.custom_props_table.setHorizontalHeaderLabels(["Property", "Value"])
+        self.custom_props_table.setHorizontalHeaderLabels(
+            ["Property", "Value"]
+        )
         self.custom_props_table.horizontalHeader().setStretchLastSection(True)
-        self.custom_props_table.itemDoubleClicked.connect(self.edit_metadata_item)
+        self.custom_props_table.itemDoubleClicked.connect(
+            self.edit_metadata_item
+        )
         layout.addWidget(self.custom_props_table)
 
     def create_security_tab(self):
@@ -788,7 +872,7 @@ class OfficeMetadataGUI(StandardWindow):
                 self,
                 "Open Office Document",
                 "",
-                "Office Documents (*.docx *.xlsx *.pptx *.doc *.xls *.ppt *.pdf);;All Files (*.*)",
+                OFFICE_DOCUMENT_FILTER,
             )
 
         if file_path and os.path.exists(file_path):
@@ -796,14 +880,20 @@ class OfficeMetadataGUI(StandardWindow):
             self.clear_metadata()
 
             # Show progress and start worker
-            self.progress_bar.setVisible(True)
-            self.progress_bar.setValue(0)
+            self.progress_bar.start()
+            self.progress_bar.set_progress(0)
 
             # Create and start metadata worker
             self.metadata_worker = MetadataWorker(file_path, "extract")
-            self.metadata_worker.progress_updated.connect(self.progress_bar.setValue)
-            self.metadata_worker.status_updated.connect(self.status_label.setText)
-            self.metadata_worker.metadata_extracted.connect(self.display_metadata)
+            self.metadata_worker.progress_updated.connect(
+                self.progress_bar.set_progress
+            )
+            self.metadata_worker.status_updated.connect(
+                self.status_label.setText
+            )
+            self.metadata_worker.metadata_extracted.connect(
+                self.display_metadata
+            )
             self.metadata_worker.error_occurred.connect(self.handle_error)
             self.metadata_worker.finished.connect(self.worker_finished)
 
@@ -819,15 +909,24 @@ class OfficeMetadataGUI(StandardWindow):
 
         # Core Properties
         if "core_properties" in metadata:
-            self.populate_table(self.core_props_table, metadata["core_properties"])
+            self.populate_table(
+                self.core_props_table,
+                metadata["core_properties"],
+            )
 
         # Application Properties
         if "app_properties" in metadata:
-            self.populate_table(self.app_props_table, metadata["app_properties"])
+            self.populate_table(
+                self.app_props_table,
+                metadata["app_properties"],
+            )
 
         # Custom Properties
         if "custom_properties" in metadata:
-            self.populate_table(self.custom_props_table, metadata["custom_properties"])
+            self.populate_table(
+                self.custom_props_table,
+                metadata["custom_properties"],
+            )
 
         # Security Analysis
         if "security_info" in metadata:
@@ -860,31 +959,36 @@ class OfficeMetadataGUI(StandardWindow):
 
         table.resizeColumnsToContents()
 
+    @staticmethod
+    def _build_security_section(title: str, values: list[str]) -> str:
+        """Build a formatted security-analysis block."""
+        if not values:
+            return ""
+        lines = [f"{title}:\n"]
+        for value in values:
+            lines.append(f"  • {value}")
+        lines.append("")
+        return "\n".join(lines)
+
     def display_security_analysis(self, security_info):
         """Display security analysis results."""
+        sections = [
+            (
+                "⚠️ Privacy Concerns Found",
+                security_info.get("privacy_concerns", []),
+            ),
+            (
+                "🚨 Potentially Sensitive Data",
+                security_info.get("sensitive_data", []),
+            ),
+            (
+                "💡 Recommendations",
+                security_info.get("recommendations", []),
+            ),
+        ]
         analysis_text = "🔒 Security Analysis Results\n" + "=" * 50 + "\n\n"
-
-        # Privacy concerns
-        if security_info.get("privacy_concerns"):
-            analysis_text += "⚠️ Privacy Concerns Found:\n"
-            for concern in security_info["privacy_concerns"]:
-                analysis_text += f"  • {concern}\n"
-            analysis_text += "\n"
-
-        # Sensitive data
-        if security_info.get("sensitive_data"):
-            analysis_text += "🚨 Potentially Sensitive Data:\n"
-            for data in security_info["sensitive_data"]:
-                analysis_text += f"  • {data}\n"
-            analysis_text += "\n"
-
-        # Recommendations
-        if security_info.get("recommendations"):
-            analysis_text += "💡 Recommendations:\n"
-            for rec in security_info["recommendations"]:
-                analysis_text += f"  • {rec}\n"
-            analysis_text += "\n"
-
+        for title, values in sections:
+            analysis_text += self._build_security_section(title, values)
         self.security_text.setText(analysis_text)
 
     def clear_metadata(self):
@@ -903,13 +1007,16 @@ class OfficeMetadataGUI(StandardWindow):
 
     def worker_finished(self):
         """Handle worker thread completion."""
-        self.progress_bar.setVisible(False)
+        self.progress_bar.stop()
 
     def handle_error(self, error_message):
         """Handle worker errors."""
         if Modal:
             Modal(
-                "Error", f"Error processing file:\n{error_message}", ["OK"], self
+                "Error",
+                f"Error processing file:\n{error_message}",
+                ["OK"],
+                self,
             ).exec_()
         else:
             QMessageBox.critical(
@@ -923,9 +1030,9 @@ class OfficeMetadataGUI(StandardWindow):
             if Modal:
                 Modal(
                     "Edit Metadata",
-                    "Metadata editing will be available in a future version.\n\n"
-                    "This will allow you to modify metadata values and save "
-                    "changes back to the document.",
+                    "Metadata editing will be available in a future "
+                    "version.\n\nThis will allow you to modify metadata "
+                    "values and save changes back to the document.",
                     ["OK"],
                     self,
                 ).exec_()
@@ -933,9 +1040,9 @@ class OfficeMetadataGUI(StandardWindow):
                 QMessageBox.information(
                     self,
                     "Edit Metadata",
-                    "Metadata editing will be available in a future version.\n\n"
-                    "This will allow you to modify metadata values and save "
-                    "changes back to the document.",
+                    "Metadata editing will be available in a future "
+                    "version.\n\nThis will allow you to modify metadata "
+                    "values and save changes back to the document.",
                 )
 
     def add_custom_property(self):
@@ -943,7 +1050,8 @@ class OfficeMetadataGUI(StandardWindow):
         if Modal:
             Modal(
                 "Add Custom Property",
-                "Custom property addition will be available in a future version.",
+                "Custom property addition will be available in a future "
+                "version.",
                 ["OK"],
                 self,
             ).exec_()
@@ -951,7 +1059,8 @@ class OfficeMetadataGUI(StandardWindow):
             QMessageBox.information(
                 self,
                 "Add Custom Property",
-                "Custom property addition will be available in a future version.",
+                "Custom property addition will be available in a future "
+                "version.",
             )
 
     def remove_custom_property(self):
@@ -959,7 +1068,8 @@ class OfficeMetadataGUI(StandardWindow):
         if Modal:
             Modal(
                 "Remove Custom Property",
-                "Custom property removal will be available in a future version.",
+                "Custom property removal will be available in a future "
+                "version.",
                 ["OK"],
                 self,
             ).exec_()
@@ -967,7 +1077,8 @@ class OfficeMetadataGUI(StandardWindow):
             QMessageBox.information(
                 self,
                 "Remove Custom Property",
-                "Custom property removal will be available in a future version.",
+                "Custom property removal will be available in a future "
+                "version.",
             )
 
     def batch_process(self):
@@ -1000,9 +1111,18 @@ class OfficeMetadataGUI(StandardWindow):
         """Perform detailed security scan."""
         if not self.current_metadata:
             if Modal:
-                Modal("Warning", "No file is currently loaded.", ["OK"], self).exec_()
+                Modal(
+                    "Warning",
+                    "No file is currently loaded.",
+                    ["OK"],
+                    self,
+                ).exec_()
             else:
-                QMessageBox.warning(self, "Warning", "No file is currently loaded.")
+                QMessageBox.warning(
+                    self,
+                    "Warning",
+                    "No file is currently loaded.",
+                )
             return
 
         # Switch to security analysis tab
@@ -1036,9 +1156,18 @@ class OfficeMetadataGUI(StandardWindow):
         """Save metadata changes back to file."""
         if not self.current_file:
             if Modal:
-                Modal("Warning", "No file is currently open.", ["OK"], self).exec_()
+                Modal(
+                    "Warning",
+                    "No file is currently open.",
+                    ["OK"],
+                    self,
+                ).exec_()
             else:
-                QMessageBox.warning(self, "Warning", "No file is currently open.")
+                QMessageBox.warning(
+                    self,
+                    "Warning",
+                    "No file is currently open.",
+                )
             return
 
         if Modal:
@@ -1062,116 +1191,157 @@ class OfficeMetadataGUI(StandardWindow):
     def export_metadata(self):
         """Export metadata to external file."""
         if not self.current_metadata:
-            if Modal:
-                Modal("Warning", "No metadata to export.", ["OK"], self).exec_()
-            else:
-                QMessageBox.warning(self, "Warning", "No metadata to export.")
+            self._show_export_warning("No metadata to export.")
             return
 
         filename, file_type = QFileDialog.getSaveFileName(
             self,
             "Export Metadata",
-            f"{os.path.splitext(os.path.basename(self.current_file))[0]}_metadata.json",
-            "JSON Files (*.json);;XML Files (*.xml);;CSV Files (*.csv);;Text Files (*.txt);;All Files (*.*)",
+            (
+                f"{os.path.splitext(os.path.basename(self.current_file))[0]}"
+                "_metadata.json"
+            ),
+            (
+                "JSON Files (*.json);;XML Files (*.xml);;CSV Files (*.csv);;"
+                "Text Files (*.txt);;All Files (*.*)"
+            ),
         )
 
-        if filename:
-            try:
-                if filename.endswith(".json"):
-                    with open(filename, "w", encoding="utf-8") as f:
-                        json.dump(
-                            self.current_metadata,
-                            f,
-                            indent=2,
-                            default=str,
-                            ensure_ascii=False,
-                        )
-                elif filename.endswith(".txt"):
-                    with open(filename, "w", encoding="utf-8") as f:
-                        f.write(
-                            json.dumps(self.current_metadata, indent=2, default=str)
-                        )
-                else:
-                    # Default to JSON format
-                    with open(filename, "w", encoding="utf-8") as f:
-                        json.dump(
-                            self.current_metadata,
-                            f,
-                            indent=2,
-                            default=str,
-                            ensure_ascii=False,
-                        )
+        if not filename:
+            return
 
-                if Modal:
-                    Modal(
-                        "Export Successful",
-                        f"Metadata exported to:\n{filename}",
-                        ["OK"],
-                        self,
-                    ).exec_()
-                else:
-                    QMessageBox.information(
-                        self,
-                        "Export Successful",
-                        f"Metadata exported to:\n{filename}",
+        try:
+            self._write_metadata_export(filename, file_type)
+            self._show_export_success(filename)
+        except OSError as exc:
+            self._show_export_error(str(exc))
+
+    def _show_export_warning(self, message: str) -> None:
+        """Show an alert when export cannot proceed."""
+        if Modal:
+            Modal("Warning", message, ["OK"], self).exec_()
+        else:
+            QMessageBox.warning(self, "Warning", message)
+
+    def _write_metadata_export(self, filename: str, file_type: str) -> None:
+        """Persist metadata using the user's chosen file type."""
+        is_text_export = filename.endswith(".txt") or "Text Files" in file_type
+        if is_text_export:
+            with open(filename, "w", encoding="utf-8") as handle:
+                handle.write(
+                    json.dumps(
+                        self.current_metadata,
+                        indent=2,
+                        default=str,
                     )
+                )
+            return
 
-            except Exception as e:
-                if Modal:
-                    Modal(
-                        "Export Error",
-                        f"Error exporting metadata:\n{e}",
-                        ["OK"],
-                        self,
-                    ).exec_()
-                else:
-                    QMessageBox.critical(
-                        self, "Export Error", f"Error exporting metadata:\n{e}"
-                    )
+        with open(filename, "w", encoding="utf-8") as handle:
+            json.dump(
+                self.current_metadata,
+                handle,
+                indent=2,
+                default=str,
+                ensure_ascii=False,
+            )
 
-    def show_help(self):
-        """Show comprehensive help for Office Metadata Tools."""
-        help_text = """
+    def _show_export_success(self, filename: str) -> None:
+        """Notify the user that the export completed."""
+        if Modal:
+            Modal(
+                "Export Successful",
+                f"Metadata exported to:\n{filename}",
+                ["OK"],
+                self,
+            ).exec_()
+        else:
+            QMessageBox.information(
+                self,
+                "Export Successful",
+                f"Metadata exported to:\n{filename}",
+            )
+
+    def _show_export_error(self, error_message: str) -> None:
+        """Notify the user that the export failed."""
+        if Modal:
+            Modal(
+                "Export Error",
+                f"Error exporting metadata:\n{error_message}",
+                ["OK"],
+                self,
+            ).exec_()
+        else:
+            QMessageBox.critical(
+                self,
+                "Export Error",
+                f"Error exporting metadata:\n{error_message}",
+            )
+
+    @staticmethod
+    def _build_help_text() -> str:
+        """Build the help HTML content used by the modal dialog."""
+        return """
         <h2>Office Metadata Tools - Comprehensive Guide</h2>
-        
+
         <h3>📄 Overview</h3>
-        <p>Extract, view, edit, and analyze metadata from Office documents, PDFs, and other file formats. 
-        This tool helps you understand what information is embedded in your documents and manage it securely.</p>
-        
+        <p>Extract, view, edit, and analyze metadata from Office
+        documents, PDFs, and other file formats. This tool helps you
+        understand what information is embedded in your documents and
+        manage it securely.</p>
+
         <h3>🚀 Key Features</h3>
         <ul>
-            <li><b>Multi-Format Support:</b> DOCX, XLSX, PPTX, DOC, XLS, PPT, PDF</li>
-            <li><b>Comprehensive Analysis:</b> Core, application, and custom properties</li>
-            <li><b>Security Scanning:</b> Identify potentially sensitive metadata</li>
-            <li><b>Export Options:</b> JSON, XML, CSV, and text formats</li>
-            <li><b>Batch Processing:</b> Handle multiple files (coming soon)</li>
+            <li><b>Multi-Format Support:</b> DOCX, XLSX, PPTX, DOC,
+            XLS, PPT, PDF</li>
+            <li><b>Comprehensive Analysis:</b> Core, application,
+            and custom properties</li>
+            <li><b>Security Scanning:</b> Identify potentially sensitive
+            metadata</li>
+            <li><b>Export Options:</b> JSON, XML, CSV, and text
+            formats</li>
+            <li><b>Batch Processing:</b> Handle multiple files
+            (coming soon)</li>
         </ul>
-        
+
         <h3>📊 Metadata Types</h3>
         <ul>
-            <li><b>File Information:</b> Size, dates, path, format details</li>
-            <li><b>Core Properties:</b> Title, author, subject, keywords, description</li>
-            <li><b>Application Properties:</b> Software version, company, document statistics</li>
-            <li><b>Custom Properties:</b> User-defined metadata fields</li>
-            <li><b>Security Analysis:</b> Privacy concerns and sensitive data detection</li>
+            <li><b>File Information:</b> Size, dates, path,
+            format details</li>
+            <li><b>Core Properties:</b> Title, author, subject,
+            keywords, description</li>
+            <li><b>Application Properties:</b> Software version,
+            company, document statistics</li>
+            <li><b>Custom Properties:</b> User-defined metadata
+            fields</li>
+            <li><b>Security Analysis:</b> Privacy concerns and
+            sensitive data detection</li>
         </ul>
-        
+
         <h3>🔒 Security Features</h3>
         <ul>
-            <li><b>Privacy Detection:</b> Identifies author names, company info</li>
-            <li><b>Sensitive Data Scanning:</b> Finds potentially confidential metadata</li>
-            <li><b>Recommendations:</b> Suggests metadata cleanup actions</li>
-            <li><b>Export for Analysis:</b> Save metadata for security review</li>
+            <li><b>Privacy Detection:</b> Identifies author names,
+            company info</li>
+            <li><b>Sensitive Data Scanning:</b> Finds potentially
+            confidential metadata</li>
+            <li><b>Recommendations:</b> Suggests metadata cleanup
+            actions</li>
+            <li><b>Export for Analysis:</b> Save metadata for
+            security review</li>
         </ul>
-        
+
         <h3>📋 Usage Instructions</h3>
         <ol>
-            <li><b>Open File:</b> Click "Open File" and select an office document</li>
-            <li><b>Review Metadata:</b> Browse through the different tabs to examine metadata</li>
-            <li><b>Security Analysis:</b> Check the Security Analysis tab for privacy concerns</li>
-            <li><b>Export Data:</b> Use "Export Metadata" to save analysis results</li>
+            <li><b>Open File:</b> Click "Open File" and select an
+            office document</li>
+            <li><b>Review Metadata:</b> Browse through the different
+            tabs to examine metadata</li>
+            <li><b>Security Analysis:</b> Check the Security Analysis
+            tab for privacy concerns</li>
+            <li><b>Export Data:</b> Use "Export Metadata" to save
+            analysis results</li>
         </ol>
-        
+
         <h3>⚠️ Important Notes</h3>
         <ul>
             <li>Always backup important files before making changes</li>
@@ -1179,11 +1349,15 @@ class OfficeMetadataGUI(StandardWindow):
             <li>Some features require additional Python libraries</li>
             <li>Legacy Office formats have limited metadata extraction</li>
         </ul>
-        
-        <p><b>Future Enhancements:</b> Metadata editing, batch processing, automated cleaning, 
-        and advanced security scanning features are in development.</p>
+
+        <p><b>Future Enhancements:</b> Metadata editing, batch
+        processing, automated cleaning, and advanced security scanning
+        features are in development.</p>
         """
 
+    def show_help(self):
+        """Show comprehensive help for Office Metadata Tools."""
+        help_text = self._build_help_text()
         if Modal:
             Modal(
                 "Office Metadata Tools - Help",

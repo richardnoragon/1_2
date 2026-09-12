@@ -18,8 +18,6 @@ try:
         QHeaderView,
         QLabel,
         QMessageBox,
-        QProgressBar,
-        QPushButton,
         QScrollArea,
         QSpinBox,
         QSplitter,
@@ -32,6 +30,9 @@ try:
         QVBoxLayout,
         QWidget,
     )
+
+    from src.gui.components.buttons import PrimaryButton, SecondaryButton
+    from src.gui.components.loading_indicator import LoadingIndicator
 
     PYQT_AVAILABLE = True
 except ImportError:
@@ -211,9 +212,8 @@ class FilesystemIntegrityWidget(QWidget):
 
         # Scan paths
         scan_layout.addWidget(QLabel("Scan Paths:"), 1, 0)
-        self.paths_button = QPushButton("Select Paths...")
+        self.paths_button = SecondaryButton("Select Paths...")
         self.paths_button.setAccessibleName("Select scan paths")
-        self.paths_button.setMinimumHeight(44)
         self.paths_button.clicked.connect(self.select_scan_paths)
         scan_layout.addWidget(self.paths_button, 1, 1)
 
@@ -251,15 +251,13 @@ class FilesystemIntegrityWidget(QWidget):
         controls_group = QGroupBox("Scan Controls")
         controls_layout = QVBoxLayout(controls_group)
 
-        self.start_scan_button = QPushButton("Start Scan")
+        self.start_scan_button = PrimaryButton("Start Scan")
         self.start_scan_button.setAccessibleName("Start filesystem scan")
-        self.start_scan_button.setMinimumHeight(44)
         self.start_scan_button.clicked.connect(self.start_scan)
         controls_layout.addWidget(self.start_scan_button)
 
-        self.stop_scan_button = QPushButton("Stop Scan")
+        self.stop_scan_button = SecondaryButton("Stop Scan")
         self.stop_scan_button.setAccessibleName("Stop filesystem scan")
-        self.stop_scan_button.setMinimumHeight(44)
         self.stop_scan_button.clicked.connect(self.stop_scan)
         self.stop_scan_button.setEnabled(False)
         controls_layout.addWidget(self.stop_scan_button)
@@ -270,7 +268,7 @@ class FilesystemIntegrityWidget(QWidget):
         progress_group = QGroupBox("Scan Progress")
         progress_layout = QVBoxLayout(progress_group)
 
-        self.progress_bar = QProgressBar()
+        self.progress_bar = LoadingIndicator(parent=self, message="Scanning...")
         progress_layout.addWidget(self.progress_bar)
 
         self.progress_label = QLabel("No scan running")
@@ -288,9 +286,8 @@ class FilesystemIntegrityWidget(QWidget):
         schedule_group = QGroupBox("Scheduled Scans")
         schedule_layout = QVBoxLayout(schedule_group)
 
-        self.schedule_button = QPushButton("Schedule Scan...")
+        self.schedule_button = SecondaryButton("Schedule Scan...")
         self.schedule_button.setAccessibleName("Schedule a scan")
-        self.schedule_button.setMinimumHeight(44)
         self.schedule_button.clicked.connect(self.schedule_scan)
         schedule_layout.addWidget(self.schedule_button)
 
@@ -436,9 +433,8 @@ class FilesystemIntegrityWidget(QWidget):
         export_layout = QHBoxLayout()
         export_layout.addStretch()
 
-        self.export_results_button = QPushButton("Export Results...")
+        self.export_results_button = SecondaryButton("Export Results...")
         self.export_results_button.setAccessibleName("Export scan results")
-        self.export_results_button.setMinimumHeight(44)
         self.export_results_button.clicked.connect(self.export_results)
         export_layout.addWidget(self.export_results_button)
 
@@ -522,15 +518,13 @@ class FilesystemIntegrityWidget(QWidget):
         # Action buttons
         action_layout = QHBoxLayout()
 
-        self.apply_selected_button = QPushButton("Apply Selected")
+        self.apply_selected_button = PrimaryButton("Apply Selected")
         self.apply_selected_button.setAccessibleName("Apply selected repairs")
-        self.apply_selected_button.setMinimumHeight(44)
         self.apply_selected_button.clicked.connect(self.apply_selected_recommendations)
         action_layout.addWidget(self.apply_selected_button)
 
-        self.generate_script_button = QPushButton("Generate Script...")
+        self.generate_script_button = SecondaryButton("Generate Script...")
         self.generate_script_button.setAccessibleName("Generate repair script")
-        self.generate_script_button.setMinimumHeight(44)
         self.generate_script_button.clicked.connect(self.generate_repair_script)
         action_layout.addWidget(self.generate_script_button)
 
@@ -573,15 +567,13 @@ class FilesystemIntegrityWidget(QWidget):
         # History controls
         history_controls = QHBoxLayout()
 
-        self.clear_history_button = QPushButton("Clear History")
+        self.clear_history_button = SecondaryButton("Clear History")
         self.clear_history_button.setAccessibleName("Clear scan history")
-        self.clear_history_button.setMinimumHeight(44)
         self.clear_history_button.clicked.connect(self.clear_scan_history)
         history_controls.addWidget(self.clear_history_button)
 
-        self.export_history_button = QPushButton("Export History...")
+        self.export_history_button = SecondaryButton("Export History...")
         self.export_history_button.setAccessibleName("Export scan history")
-        self.export_history_button.setMinimumHeight(44)
         self.export_history_button.clicked.connect(self.export_scan_history)
         history_controls.addWidget(self.export_history_button)
 
@@ -644,7 +636,8 @@ class FilesystemIntegrityWidget(QWidget):
             # Update UI state
             self.start_scan_button.setEnabled(False)
             self.stop_scan_button.setEnabled(True)
-            self.progress_bar.setValue(0)
+            self.progress_bar.start()
+            self.progress_bar.set_progress(0)
             self.progress_label.setText("Starting scan...")
             self.status_label.setText("Scan in progress...")
 
@@ -684,7 +677,7 @@ class FilesystemIntegrityWidget(QWidget):
             errors_found = progress_data.get("errors_found", 0)
             current_path = progress_data.get("current_path", "")
 
-            self.progress_bar.setValue(int(progress))
+            self.progress_bar.set_progress(int(progress))
             self.progress_label.setText(f"Scanning: {current_path}")
             self.files_scanned_label.setText(f"Files scanned: {files_scanned}")
             self.errors_found_label.setText(f"Errors found: {errors_found}")
@@ -707,7 +700,7 @@ class FilesystemIntegrityWidget(QWidget):
 
             # Update UI
             self.scan_stopped()
-            self.progress_bar.setValue(100)
+            self.progress_bar.set_progress(100)
             self.progress_label.setText("Scan completed")
             self.status_label.setText("Scan completed successfully")
 
@@ -734,6 +727,7 @@ class FilesystemIntegrityWidget(QWidget):
         if not PYQT_AVAILABLE:
             return
 
+        self.progress_bar.stop()
         self.scan_stopped()
         self.progress_label.setText(f"Scan failed: {error_message}")
         self.status_label.setText("Scan failed")
@@ -747,6 +741,7 @@ class FilesystemIntegrityWidget(QWidget):
 
         self.start_scan_button.setEnabled(True)
         self.stop_scan_button.setEnabled(False)
+        self.progress_bar.stop()
         self.current_scan_worker = None
 
     def populate_scan_results(self, scan_result: Dict[str, Any]):

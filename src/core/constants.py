@@ -1,11 +1,33 @@
-from src.gui.themes import token
-"""Central repository for RFU constants."""
+"""Central repository for RFU constants.
+
+This module intentionally avoids importing GUI-only packages at import time so the
+startup path stays lightweight and can be used by non-GUI tooling.
+"""
+
+
+_DEFAULT_THEME_TOKENS = {
+    "text_primary": "#1f2937",
+    "text_secondary": "#495057",
+    "button_primary": "#3498db",
+    "button_primary_hover": "#2980b9",
+    "button_primary_pressed": "#21618c",
+    "button_secondary": "#95a5a6",
+    "button_secondary_hover": "#7f8c8d",
+    "button_secondary_pressed": "#6c7a89",
+}
+
+
+def token(key: str, default: str = "#000000") -> str:
+    """Return a lightweight theme token without importing PyQt during startup."""
+    return _DEFAULT_THEME_TOKENS.get(key, default)
+
 
 # Application Identity
-APP_NAME = "Richard's File Utilities"
-APP_TITLE = "Richard's File Utilities"
+_APP_DISPLAY_NAME = "Richard's File Utilities"
+APP_NAME = _APP_DISPLAY_NAME
+APP_TITLE = _APP_DISPLAY_NAME
 APP_VERSION = "3.0.0"
-APP_ORGANIZATION = "Richard's File Utilities"
+APP_ORGANIZATION = _APP_DISPLAY_NAME
 
 # File Types and Filters
 JSON_FILES_FILTER = "JSON Files (*.json);;All Files (*)"

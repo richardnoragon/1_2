@@ -41,16 +41,19 @@ structure below.
 ## Phase 1 – Portability Operationalization
 
 1. **Runbook Authoring**
-   - Draft `docs/operations/preferences_portability.md` covering:
+  - Use `docs/operations/preferences_portability_runbook.md` as the canonical operations reference covering:
      - Export usage examples with and without AES.
      - Import collision handling (skip vs overwrite).
      - Common failure remediation (missing `pyAesCrypt`, malformed payloads) and guidance when AES is unavailable.
+   - Canonical operations reference is now `docs/operations/preferences_portability_runbook.md`, including the operations approval table dated 2025-11-12.
    - Peer review with operations SMEs; record approval in fleeting notes.
+
 1. **CLI Integration**
    - Expose portability tooling via the RFU hub launcher:
      - Add a menu/button entry calling `self.launch_tool("Preference Portability", ...)` (follow tool discovery conventions).
      - Validate that launching opens a small wrapper window or terminal prompt per UX guidelines.
      - Acceptance criteria: UI entry visible in hub, manual launch completes without error, CLI smoke test passes, telemetry event recorded.
+     - Documentation checkpoint: Phase 1 references must point to `docs/operations/preferences_portability_runbook.md` and preserve the 2025-11-12 approval table provenance.
 1. **Automated Smoke Test**
    - Add `tests/integration/test_preferences_portability_cli.py` running the
      CLI via `subprocess.run` (no AES) to export/import sample data and assert

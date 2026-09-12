@@ -11,10 +11,11 @@ from typing import Optional
 from PyQt5.QtWidgets import (
     QFileDialog,
     QMessageBox,
-    QProgressBar,
     QApplication,
 )
 import pdfplumber
+
+from src.gui.components.loading_indicator import LoadingIndicator
 
 # Add parent directory to path for main project imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -62,7 +63,7 @@ class ExtractTextWindow(BaseWindow):
         """Setup additional UI components and connections."""
         try:
             # Add progress bar to status bar (BaseWindow provides statusBar)
-            self.progress_bar = QProgressBar()
+            self.progress_bar = LoadingIndicator(parent=self, message="Working...")
             self.statusBar().addPermanentWidget(self.progress_bar)
             self.progress_bar.hide()
 
@@ -224,8 +225,8 @@ class ExtractTextWindow(BaseWindow):
             )
 
             # Show progress
-            self.progress_bar.show()
-            self.progress_bar.setValue(0)
+            self.progress_bar.start()
+            self.progress_bar.set_progress(0)
             self.set_status_message("Loading document...")
             QApplication.processEvents()
 
@@ -293,7 +294,7 @@ class ExtractTextWindow(BaseWindow):
                 return None
 
             # Update progress
-            self.progress_bar.setValue(20)
+            self.progress_bar.set_progress(20)
             self.set_status_message("Opening PDF...")
             QApplication.processEvents()
 
@@ -309,7 +310,7 @@ class ExtractTextWindow(BaseWindow):
                     return None
 
                 # Update progress
-                self.progress_bar.setValue(40)
+                self.progress_bar.set_progress(40)
                 self.set_status_message("Extracting text...")
                 QApplication.processEvents()
 
@@ -346,7 +347,7 @@ class ExtractTextWindow(BaseWindow):
 
                         # Update progress
                         progress = 40 + int((idx + 1) / total_pages * 50)
-                        self.progress_bar.setValue(progress)
+                        self.progress_bar.set_progress(progress)
                         QApplication.processEvents()
 
                     except Exception as e:
@@ -360,7 +361,7 @@ class ExtractTextWindow(BaseWindow):
                         )
 
                 # Finalize
-                self.progress_bar.setValue(100)
+                self.progress_bar.set_progress(100)
                 extracted_text = "".join(text_parts)
 
                 if not extracted_text.strip():
@@ -469,8 +470,8 @@ class ExtractTextWindow(BaseWindow):
             )
 
             if filename:
-                self.progress_bar.show()
-                self.progress_bar.setValue(0)
+                self.progress_bar.start()
+                self.progress_bar.set_progress(0)
                 self.set_status_message("Saving text...")
                 QApplication.processEvents()
 
@@ -480,7 +481,7 @@ class ExtractTextWindow(BaseWindow):
                     with open(filename, "w", encoding="utf-8") as f:
                         f.write(self.extracted_text)
 
-                    self.progress_bar.setValue(100)
+                    self.progress_bar.set_progress(100)
                     self.set_status_message("Save completed successfully")
 
                     QMessageBox.information(
@@ -499,7 +500,7 @@ class ExtractTextWindow(BaseWindow):
                     )
                     self.set_status_message("Error saving text")
                 finally:
-                    self.progress_bar.hide()
+                    self.progress_bar.stop()
 
         except Exception as e:
             self.logger.error(f"Error in save operation: {e}", exc_info=True)

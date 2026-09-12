@@ -12,7 +12,26 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
+from .settings import AppearanceSettings
+from .styles import Theme, get_base_styles
+
 DEFAULT_FILE_FILTER = "All Files (*.*)"
+
+
+def _resolve_theme() -> Theme:
+    settings = AppearanceSettings()
+    return settings.theme
+
+
+def _style_message_box(message_box: QMessageBox, message: str) -> None:
+    """Apply shared styling and accessible metadata to QMessageBox."""
+
+    theme = _resolve_theme()
+    font_size = AppearanceSettings().font_size
+    message_box.setStyleSheet(get_base_styles(theme=theme, font_size=font_size))
+    title = message_box.windowTitle() or "Dialog"
+    message_box.setAccessibleName(f"{title} dialog")
+    message_box.setAccessibleDescription(message)
 
 
 def show_error_dialog(
@@ -25,7 +44,13 @@ def show_error_dialog(
         title: Dialog title
         parent: Parent widget
     """
-    QMessageBox.critical(parent, title, message)
+    dialog = QMessageBox(parent)
+    dialog.setIcon(QMessageBox.Critical)
+    dialog.setWindowTitle(title)
+    dialog.setText(message)
+    dialog.setStandardButtons(QMessageBox.Ok)
+    _style_message_box(dialog, message)
+    dialog.exec_()
 
 
 def show_info_dialog(
@@ -38,7 +63,13 @@ def show_info_dialog(
         title: Dialog title
         parent: Parent widget
     """
-    QMessageBox.information(parent, title, message)
+    dialog = QMessageBox(parent)
+    dialog.setIcon(QMessageBox.Information)
+    dialog.setWindowTitle(title)
+    dialog.setText(message)
+    dialog.setStandardButtons(QMessageBox.Ok)
+    _style_message_box(dialog, message)
+    dialog.exec_()
 
 
 def show_warning_dialog(
@@ -51,7 +82,13 @@ def show_warning_dialog(
         title: Dialog title
         parent: Parent widget
     """
-    QMessageBox.warning(parent, title, message)
+    dialog = QMessageBox(parent)
+    dialog.setIcon(QMessageBox.Warning)
+    dialog.setWindowTitle(title)
+    dialog.setText(message)
+    dialog.setStandardButtons(QMessageBox.Ok)
+    _style_message_box(dialog, message)
+    dialog.exec_()
 
 
 def show_question_dialog(
@@ -72,9 +109,14 @@ def show_question_dialog(
         True if Yes was clicked, False otherwise
     """
     default = QMessageBox.No if default_no else QMessageBox.Yes
-    reply = QMessageBox.question(
-        parent, title, message, QMessageBox.Yes | QMessageBox.No, default
-    )
+    dialog = QMessageBox(parent)
+    dialog.setIcon(QMessageBox.Question)
+    dialog.setWindowTitle(title)
+    dialog.setText(message)
+    dialog.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+    dialog.setDefaultButton(default)
+    _style_message_box(dialog, message)
+    reply = dialog.exec_()
     return reply == QMessageBox.Yes
 
 

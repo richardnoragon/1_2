@@ -13,7 +13,6 @@ from pdf_security_engine import (
     SecuritySettings,
 )
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import (
     QCheckBox,
     QComboBox,
@@ -25,17 +24,18 @@ from PyQt5.QtWidgets import (
     QGroupBox,
     QHBoxLayout,
     QLabel,
-    QLineEdit,
     QMessageBox,
-    QPushButton,
     QScrollArea,
     QSpinBox,
     QTabWidget,
     QVBoxLayout,
     QWidget,
+    QLineEdit,
 )
 
-from src.gui.themes import ThemeManager, Typography, token
+from src.gui.components.buttons import PrimaryButton, SecondaryButton
+from src.gui.components.inputs import TextInput
+from src.gui.themes import Typography, token
 
 # Constants
 INVALID_INPUT_TITLE = "Invalid Input"
@@ -76,16 +76,12 @@ class BaseSecurityDialog(QDialog):
         button_layout = QHBoxLayout()
         button_layout.addStretch()
 
-        self.ok_button = QPushButton("OK")
+        self.ok_button = PrimaryButton("OK")
         self.ok_button.setAccessibleName("Confirm settings")
-        self.ok_button.setMinimumHeight(44)
-        self.ok_button.setMinimumSize(100, 35)
         self.ok_button.clicked.connect(self.accept)
 
-        self.cancel_button = QPushButton("Cancel")
+        self.cancel_button = SecondaryButton("Cancel")
         self.cancel_button.setAccessibleName("Cancel and close dialog")
-        self.cancel_button.setMinimumHeight(44)
-        self.cancel_button.setMinimumSize(100, 35)
         self.cancel_button.clicked.connect(self.reject)
 
         button_layout.addWidget(self.ok_button)
@@ -163,17 +159,23 @@ class PDFEncryptionDialog(BaseSecurityDialog):
         password_group = QGroupBox("Password Settings")
         password_layout = QFormLayout(password_group)
 
-        self.user_password_edit = QLineEdit()
-        self.user_password_edit.setAccessibleName("User password")
+        self.user_password_edit = TextInput(
+            "User Password",
+            "Enter user password",
+            accessible_name="User password",
+        )
+        self.user_password_edit.setReadOnly(False)
         self.user_password_edit.setEchoMode(QLineEdit.Password)
-        self.user_password_edit.setPlaceholderText("Enter user password")
-        password_layout.addRow("User Password:", self.user_password_edit)
+        password_layout.addRow(self.user_password_edit)
 
-        self.owner_password_edit = QLineEdit()
-        self.owner_password_edit.setAccessibleName("Owner password")
+        self.owner_password_edit = TextInput(
+            "Owner Password",
+            "Enter owner password",
+            accessible_name="Owner password",
+        )
+        self.owner_password_edit.setReadOnly(False)
         self.owner_password_edit.setEchoMode(QLineEdit.Password)
-        self.owner_password_edit.setPlaceholderText("Enter owner password")
-        password_layout.addRow("Owner Password:", self.owner_password_edit)
+        password_layout.addRow(self.owner_password_edit)
 
         self.show_passwords_cb = QCheckBox("Show passwords")
         self.show_passwords_cb.setAccessibleName("Show passwords")
@@ -205,7 +207,9 @@ class PDFEncryptionDialog(BaseSecurityDialog):
             "for most applications."
         )
         encryption_info.setWordWrap(True)
-        encryption_info.setStyleSheet(f"color: {token('text_muted')}; font-size: 8pt;")
+        encryption_info.setStyleSheet(
+            f"color: {token('text_muted')}; font-size: 8pt;"
+        )
         encryption_layout.addWidget(encryption_info)
 
         self.content_layout.addWidget(encryption_group)
@@ -221,7 +225,9 @@ class PDFEncryptionDialog(BaseSecurityDialog):
         permissions_layout.addWidget(self.allow_printing_cb, 0, 0)
 
         self.allow_modification_cb = QCheckBox("Allow content modification")
-        self.allow_modification_cb.setAccessibleName("Allow content modification")
+        self.allow_modification_cb.setAccessibleName(
+            "Allow content modification"
+        )
         self.allow_modification_cb.setMinimumHeight(44)
         permissions_layout.addWidget(self.allow_modification_cb, 0, 1)
 
@@ -243,7 +249,9 @@ class PDFEncryptionDialog(BaseSecurityDialog):
         permissions_layout.addWidget(self.allow_form_filling_cb, 2, 0)
 
         self.allow_text_extraction_cb = QCheckBox("Allow text extraction")
-        self.allow_text_extraction_cb.setAccessibleName("Allow text extraction")
+        self.allow_text_extraction_cb.setAccessibleName(
+            "Allow text extraction"
+        )
         self.allow_text_extraction_cb.setMinimumHeight(44)
         self.allow_text_extraction_cb.setChecked(True)
         permissions_layout.addWidget(self.allow_text_extraction_cb, 2, 1)
@@ -280,7 +288,9 @@ class PDFEncryptionDialog(BaseSecurityDialog):
         settings = SecuritySettings(
             user_password=self.user_password_edit.text(),
             owner_password=self.owner_password_edit.text(),
-            encryption_level=encryption_map[self.encryption_combo.currentIndex()],
+            encryption_level=(
+                encryption_map[self.encryption_combo.currentIndex()]
+            ),
             allow_printing=self.allow_printing_cb.isChecked(),
             allow_modification=self.allow_modification_cb.isChecked(),
             allow_copying=self.allow_copying_cb.isChecked(),
@@ -325,18 +335,22 @@ class PDFDecryptionDialog(BaseSecurityDialog):
             "Try the user password first, then the owner password if needed."
         )
         info_label.setWordWrap(True)
-        info_label.setStyleSheet(f"color: {token('text_muted')}; margin-bottom: 15px;")
+        info_label.setStyleSheet(
+            f"color: {token('text_muted')}; margin-bottom: 15px;"
+        )
         self.content_layout.addWidget(info_label)
 
         # Password input
         password_group = QGroupBox("Password")
         password_layout = QFormLayout(password_group)
 
-        self.password_edit = QLineEdit()
-        self.password_edit.setAccessibleName("Document password")
+        self.password_edit = TextInput(
+            "Password",
+            "Enter document password",
+            accessible_name="Document password",
+        )
         self.password_edit.setEchoMode(QLineEdit.Password)
-        self.password_edit.setPlaceholderText("Enter document password")
-        password_layout.addRow("Password:", self.password_edit)
+        password_layout.addRow(self.password_edit)
 
         self.show_password_cb = QCheckBox("Show password")
         self.show_password_cb.setAccessibleName("Show password")
@@ -350,8 +364,12 @@ class PDFDecryptionDialog(BaseSecurityDialog):
         hint_group = QGroupBox("Password Types")
         hint_layout = QVBoxLayout(hint_group)
 
-        user_hint = QLabel("• User Password: Allows viewing and limited operations")
-        owner_hint = QLabel("• Owner Password: Full access to all document features")
+        user_hint = QLabel(
+            "• User Password: Allows viewing and limited operations"
+        )
+        owner_hint = QLabel(
+            "• Owner Password: Full access to all document features"
+        )
 
         hint_layout.addWidget(user_hint)
         hint_layout.addWidget(owner_hint)
@@ -395,37 +413,41 @@ class PDFDigitalSignatureDialog(BaseSecurityDialog):
         cert_group = QGroupBox("Certificate Settings")
         cert_form = QFormLayout(cert_group)
 
-        self.cert_path_edit = QLineEdit()
-        self.cert_path_edit.setAccessibleName("Certificate file path")
-        self.cert_path_edit.setPlaceholderText("Select certificate file")
-        cert_browse_btn = QPushButton("Browse...")
+        self.cert_path_edit = TextInput(
+            "Certificate File",
+            "Select certificate file",
+            accessible_name="Certificate file path",
+        )
+        cert_browse_btn = SecondaryButton("Browse...")
         cert_browse_btn.setAccessibleName("Browse for certificate file")
-        cert_browse_btn.setMinimumHeight(44)
         cert_browse_btn.clicked.connect(self.browse_certificate)
 
         cert_row = QHBoxLayout()
         cert_row.addWidget(self.cert_path_edit)
         cert_row.addWidget(cert_browse_btn)
-        cert_form.addRow("Certificate File:", cert_row)
+        cert_form.addRow(cert_row)
 
-        self.private_key_edit = QLineEdit()
-        self.private_key_edit.setAccessibleName("Private key file path")
-        self.private_key_edit.setPlaceholderText("Select private key file")
-        key_browse_btn = QPushButton("Browse...")
+        self.private_key_edit = TextInput(
+            "Private Key File",
+            "Select private key file",
+            accessible_name="Private key file path",
+        )
+        key_browse_btn = SecondaryButton("Browse...")
         key_browse_btn.setAccessibleName("Browse for private key file")
-        key_browse_btn.setMinimumHeight(44)
         key_browse_btn.clicked.connect(self.browse_private_key)
 
         key_row = QHBoxLayout()
         key_row.addWidget(self.private_key_edit)
         key_row.addWidget(key_browse_btn)
-        cert_form.addRow("Private Key File:", key_row)
+        cert_form.addRow(key_row)
 
-        self.cert_password_edit = QLineEdit()
-        self.cert_password_edit.setAccessibleName("Certificate password")
+        self.cert_password_edit = TextInput(
+            "Certificate Password",
+            "Certificate password",
+            accessible_name="Certificate password",
+        )
         self.cert_password_edit.setEchoMode(QLineEdit.Password)
-        self.cert_password_edit.setPlaceholderText("Certificate password")
-        cert_form.addRow("Certificate Password:", self.cert_password_edit)
+        cert_form.addRow(self.cert_password_edit)
 
         cert_layout.addWidget(cert_group)
         tab_widget.addTab(cert_tab, "Certificate")
@@ -437,23 +459,33 @@ class PDFDigitalSignatureDialog(BaseSecurityDialog):
         details_group = QGroupBox("Signature Details")
         details_form = QFormLayout(details_group)
 
-        self.reason_edit = QLineEdit("Document verification")
-        self.reason_edit.setAccessibleName("Signature reason")
-        details_form.addRow("Reason:", self.reason_edit)
+        self.reason_edit = TextInput(
+            "Reason",
+            "Document verification",
+            accessible_name="Signature reason",
+        )
+        details_form.addRow(self.reason_edit)
 
-        self.location_edit = QLineEdit()
-        self.location_edit.setAccessibleName("Signature location")
-        self.location_edit.setPlaceholderText("Location (optional)")
-        details_form.addRow("Location:", self.location_edit)
+        self.location_edit = TextInput(
+            "Location",
+            "Location (optional)",
+            accessible_name="Signature location",
+        )
+        details_form.addRow(self.location_edit)
 
-        self.contact_edit = QLineEdit()
-        self.contact_edit.setAccessibleName("Signature contact information")
-        self.contact_edit.setPlaceholderText("Contact information")
-        details_form.addRow("Contact Info:", self.contact_edit)
+        self.contact_edit = TextInput(
+            "Contact Info",
+            "Contact information",
+            accessible_name="Signature contact information",
+        )
+        details_form.addRow(self.contact_edit)
 
-        self.field_name_edit = QLineEdit("Signature1")
-        self.field_name_edit.setAccessibleName("Signature field name")
-        details_form.addRow("Signature Field:", self.field_name_edit)
+        self.field_name_edit = TextInput(
+            "Signature Field",
+            "Signature1",
+            accessible_name="Signature field name",
+        )
+        details_form.addRow(self.field_name_edit)
 
         details_layout.addWidget(details_group)
 
@@ -632,7 +664,9 @@ class PDFSecurityInfoDialog(BaseSecurityDialog):
             for perm, allowed in permissions.items():
                 label = QLabel(perm.replace("_", " ").title() + ":")
                 status = QLabel("Allowed" if allowed else "Restricted")
-                status.setStyleSheet("color: green;" if allowed else "color: red;")
+                status.setStyleSheet(
+                    "color: green;" if allowed else "color: red;"
+                )
 
                 self.permissions_layout.addWidget(label, row, 0)
                 self.permissions_layout.addWidget(status, row, 1)

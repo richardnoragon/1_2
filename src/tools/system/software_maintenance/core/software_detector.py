@@ -10,11 +10,15 @@ import os
 import sys
 import json
 import subprocess
-import winreg
 from pathlib import Path
 from typing import Dict, List, Optional, Set, Tuple
 from dataclasses import dataclass
 from datetime import datetime
+
+try:
+    import winreg
+except ImportError:  # pragma: no cover - Windows-only dependency
+    winreg = None
 
 from .maintenance_base import MaintenanceToolBase
 
@@ -68,20 +72,22 @@ class SoftwareDetector(MaintenanceToolBase):
         self.platform = sys.platform
 
         # Registry paths for Windows software detection
-        self.registry_paths = [
-            (
-                winreg.HKEY_LOCAL_MACHINE,
-                r"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall",
-            ),
-            (
-                winreg.HKEY_LOCAL_MACHINE,
-                r"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall",
-            ),
-            (
-                winreg.HKEY_CURRENT_USER,
-                r"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall",
-            ),
-        ]
+        self.registry_paths = []
+        if winreg is not None and sys.platform == "win32":
+            self.registry_paths = [
+                (
+                    winreg.HKEY_LOCAL_MACHINE,
+                    r"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall",
+                ),
+                (
+                    winreg.HKEY_LOCAL_MACHINE,
+                    r"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall",
+                ),
+                (
+                    winreg.HKEY_CURRENT_USER,
+                    r"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall",
+                ),
+            ]
 
         # System components to potentially filter out
         self.system_components = {

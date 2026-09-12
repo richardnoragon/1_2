@@ -549,6 +549,43 @@ class ConfigManager:
     # ------------------------------------------------------------------
     # Public API
     # ------------------------------------------------------------------
+    @property
+    def config_path(self) -> Path:
+        return self.config_file
+
+    @config_path.setter
+    def config_path(self, value: Union[str, Path]) -> None:
+        self._config_file_override = Path(value)
+        self._setup_config(reinitialize=True)
+
+    def get_value(self, key: str, default: Any = None) -> Any:
+        if key in self.config:
+            return self.config[key]
+        for section in self.config.values():
+            if isinstance(section, dict) and key in section:
+                return section[key]
+        return default
+
+    def set_value(self, key: str, value: Any) -> Any:
+        if key in self.config:
+            self.config[key] = value
+        else:
+            self.config.setdefault("general", {})[key] = value
+        self.save_config()
+        return value
+
+    def merge_config(self, updates: Dict[str, Any]) -> Dict[str, Any]:
+        if not isinstance(updates, dict):
+            raise ValueError("merge_config expects a dictionary")
+        self.config = _deepcopy(self.config)
+        for key, value in updates.items():
+            if isinstance(value, dict) and isinstance(self.config.get(key), dict):
+                self.config[key].update(value)
+            else:
+                self.config[key] = _deepcopy(value)
+        self.save_config()
+        return _deepcopy(self.config)
+
     def get_setting(
         self, section: str, key: Optional[str] = None, default: Any = None
     ) -> Any:
@@ -634,7 +671,7 @@ class ConfigManager:
         self,
         config_data: Optional[Dict[str, Any]] = None,
         validate_required: bool = False,
-    ) -> None:
+    ) -> bool:
         try:
             if config_data is not None:
                 self._validate_config_types(config_data)
@@ -659,6 +696,7 @@ class ConfigManager:
                 "Configuration saved to %s",
                 self.config_file,
             )
+            return True
         except Exception as exc:
             self.logger.error(
                 "Error saving configuration: %s",

@@ -44,6 +44,12 @@ try:
 except ImportError as e:
     warnings.warn(f"Could not import file_splitter: {e}")
 
+try:
+    from . import file_splitter_logic  # noqa: F401
+    __all__.append("file_splitter_logic")
+except ImportError as e:
+    warnings.warn(f"Could not import file_splitter_logic: {e}")
+
 if os.environ.get("RFU_SKIP_ENHANCED_EDITOR_IMPORT", "0") != "1":
     try:
         from .enhanced_editor import EnhancedEditor  # noqa: F401

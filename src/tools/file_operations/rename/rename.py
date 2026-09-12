@@ -20,18 +20,18 @@ try:
         QGroupBox,
         QHBoxLayout,
         QLabel,
-        QLineEdit,
         QListWidget,
         QListWidgetItem,
         QMainWindow,
         QMessageBox,
-        QPushButton,
         QRadioButton,
         QTextEdit,
         QVBoxLayout,
         QWidget,
     )
 
+    from src.gui.components.buttons import PrimaryButton, SecondaryButton
+    from src.gui.components.inputs import TextInput
     from src.gui.themes import token
 except ImportError:
     print("PyQt5 not available. Please install PyQt5.")
@@ -309,14 +309,12 @@ class RenameWindow(StandardWindow):
         dir_layout = QGridLayout(dir_group)
 
         dir_layout.addWidget(QLabel("Directory:"), 0, 0)
-        self.directory_edit = QLineEdit()
+        self.directory_edit = TextInput("Directory", "Select a directory...")
         self.directory_edit.setAccessibleName("Directory to rename files in")
-        self.directory_edit.setPlaceholderText("Select a directory...")
         dir_layout.addWidget(self.directory_edit, 0, 1)
 
-        self.browse_button = QPushButton("Browse")
+        self.browse_button = SecondaryButton("Browse")
         self.browse_button.setAccessibleName("Browse for directory to rename files in")
-        self.browse_button.setMinimumHeight(44)
         self.browse_button.clicked.connect(self.browse_directory)
         dir_layout.addWidget(self.browse_button, 0, 2)
 
@@ -336,27 +334,23 @@ class RenameWindow(StandardWindow):
         # Selection buttons
         selection_layout = QHBoxLayout()
 
-        self.add_button = QPushButton("Add Selected →")
+        self.add_button = SecondaryButton("Add Selected →")
         self.add_button.setAccessibleName("Add selected files to rename list")
-        self.add_button.setMinimumHeight(44)
         self.add_button.clicked.connect(self.add_selected_files)
         selection_layout.addWidget(self.add_button)
 
-        self.add_all_button = QPushButton("Add All \u2192")
+        self.add_all_button = SecondaryButton("Add All \u2192")
         self.add_all_button.setAccessibleName("Add all files to rename list")
-        self.add_all_button.setMinimumHeight(44)
         self.add_all_button.clicked.connect(self.add_all_files)
         selection_layout.addWidget(self.add_all_button)
 
-        self.remove_button = QPushButton("\u2190 Remove Selected")
+        self.remove_button = SecondaryButton("\u2190 Remove Selected")
         self.remove_button.setAccessibleName("Remove selected files from rename list")
-        self.remove_button.setMinimumHeight(44)
         self.remove_button.clicked.connect(self.remove_selected_files)
         selection_layout.addWidget(self.remove_button)
 
-        self.clear_button = QPushButton("\u2190 Clear All")
+        self.clear_button = SecondaryButton("\u2190 Clear All")
         self.clear_button.setAccessibleName("Clear all files from rename list")
-        self.clear_button.setMinimumHeight(44)
         self.clear_button.clicked.connect(self.clear_selected_files)
         selection_layout.addWidget(self.clear_button)
 
@@ -386,9 +380,8 @@ class RenameWindow(StandardWindow):
         self.rename_mode_group.addButton(self.add_prefix_radio)
         options_layout.addWidget(self.add_prefix_radio, 0, 0)
 
-        self.prefix_edit = QLineEdit()
+        self.prefix_edit = TextInput("Prefix", "Enter prefix text...")
         self.prefix_edit.setAccessibleName("Prefix text to add")
-        self.prefix_edit.setPlaceholderText("Enter prefix text...")
         options_layout.addWidget(self.prefix_edit, 0, 1)
 
         self.add_suffix_radio = QRadioButton("Add Suffix:")
@@ -397,9 +390,8 @@ class RenameWindow(StandardWindow):
         self.rename_mode_group.addButton(self.add_suffix_radio)
         options_layout.addWidget(self.add_suffix_radio, 1, 0)
 
-        self.suffix_edit = QLineEdit()
+        self.suffix_edit = TextInput("Suffix", "Enter suffix text...")
         self.suffix_edit.setAccessibleName("Suffix text to add")
-        self.suffix_edit.setPlaceholderText("Enter suffix text...")
         options_layout.addWidget(self.suffix_edit, 1, 1)
 
         # Case options
@@ -423,22 +415,20 @@ class RenameWindow(StandardWindow):
         options_layout.addWidget(self.replace_radio, 3, 0)
 
         replace_layout = QHBoxLayout()
-        self.find_edit = QLineEdit()
+        self.find_edit = TextInput("Find", "Find...")
         self.find_edit.setAccessibleName("Text to find in filename")
         self.find_edit.setAccessibleDescription(
             "The exact text to search for in each filename; matching is case-sensitive"
         )
-        self.find_edit.setPlaceholderText("Find...")
         replace_layout.addWidget(self.find_edit)
 
         replace_layout.addWidget(QLabel("→"))
 
-        self.replace_edit = QLineEdit()
+        self.replace_edit = TextInput("Replace", "Replace with...")
         self.replace_edit.setAccessibleName("Replacement text for filename")
         self.replace_edit.setAccessibleDescription(
             "The text to substitute; leave blank to remove the found text"
         )
-        self.replace_edit.setPlaceholderText("Replace with...")
         replace_layout.addWidget(self.replace_edit)
 
         options_layout.addLayout(replace_layout, 3, 1)
@@ -452,15 +442,14 @@ class RenameWindow(StandardWindow):
 
         number_layout = QHBoxLayout()
         number_layout.addWidget(QLabel("Start:"))
-        self.start_number_edit = QLineEdit("1")
+        self.start_number_edit = TextInput("Start", "1")
         self.start_number_edit.setAccessibleName("Number sequence start value")
         self.start_number_edit.setMaximumWidth(60)
         number_layout.addWidget(self.start_number_edit)
 
         number_layout.addWidget(QLabel("Format:"))
-        self.number_format_edit = QLineEdit("_{:03d}")
+        self.number_format_edit = TextInput("Format", "_{:03d}")
         self.number_format_edit.setAccessibleName("Number sequence format string")
-        self.number_format_edit.setPlaceholderText("_{:03d}")
         number_layout.addWidget(self.number_format_edit)
 
         options_layout.addLayout(number_layout, 4, 1)
@@ -472,9 +461,8 @@ class RenameWindow(StandardWindow):
         action_layout = QVBoxLayout(action_group)
 
         # Preview button
-        self.preview_button = QPushButton("Preview Changes")
+        self.preview_button = SecondaryButton("Preview Changes")
         self.preview_button.setAccessibleName("Preview rename changes")
-        self.preview_button.setMinimumHeight(44)
         self.preview_button.clicked.connect(self.preview_changes)
         action_layout.addWidget(self.preview_button)
 
@@ -486,9 +474,8 @@ class RenameWindow(StandardWindow):
         action_layout.addWidget(self.preview_text)
 
         # Rename button
-        self.rename_button = QPushButton("Apply Rename")
+        self.rename_button = PrimaryButton("Apply Rename")
         self.rename_button.setAccessibleName("Apply rename operation")
-        self.rename_button.setMinimumHeight(44)
         self.rename_button.clicked.connect(self.apply_rename)
         self.rename_button.setStyleSheet(
             """

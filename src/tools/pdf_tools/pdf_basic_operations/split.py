@@ -8,6 +8,8 @@ from PyQt5 import QtWidgets, uic
 from PyQt5.QtWidgets import QFileDialog, QMessageBox
 from log_config import setup_logger
 
+from src.gui.components.loading_indicator import LoadingIndicator
+
 # Set up logger
 logger = setup_logger(__name__)
 
@@ -161,7 +163,7 @@ class SplitUI(QtWidgets.QMainWindow):
             logger.debug("UI file loaded successfully")
 
             # Add progress bar
-            self.progressBar = QtWidgets.QProgressBar()
+            self.progressBar = LoadingIndicator(parent=self, message="Working...")
             self.statusBar().addPermanentWidget(self.progressBar)
             self.progressBar.hide()
 
@@ -268,13 +270,13 @@ class SplitUI(QtWidgets.QMainWindow):
                     )
                     return
 
-            self.progressBar.show()
-            self.progressBar.setValue(0)
+            self.progressBar.start()
+            self.progressBar.set_progress(0)
             self.statusBar().showMessage("Preparing to split PDF...")
             QtWidgets.QApplication.processEvents()
 
             # Load document
-            self.progressBar.setValue(10)
+            self.progressBar.set_progress(10)
             self.statusBar().showMessage("Loading document...")
             QtWidgets.QApplication.processEvents()
 
@@ -282,7 +284,7 @@ class SplitUI(QtWidgets.QMainWindow):
                 doc = fitz.open(self.current_file)
                 total_pages = doc.page_count
 
-                self.progressBar.setValue(20)
+                self.progressBar.set_progress(20)
                 self.statusBar().showMessage("Analyzing document structure...")
                 QtWidgets.QApplication.processEvents()
 
@@ -310,7 +312,7 @@ class SplitUI(QtWidgets.QMainWindow):
                         x, base_progress
                     ),
                 ):
-                    self.progressBar.setValue(100)
+                    self.progressBar.set_progress(100)
                     logger.info("Split operation completed successfully")
                     QMessageBox.information(
                         self,
@@ -342,12 +344,12 @@ class SplitUI(QtWidgets.QMainWindow):
             self.statusBar().showMessage("Error occurred", 3000)
 
         finally:
-            self.progressBar.hide()
+            self.progressBar.stop()
 
     def update_progress(self, percent, base_progress):
         """Update progress bar during split operation"""
         progress = base_progress + int(percent * (90 - base_progress) / 100)
-        self.progressBar.setValue(progress)
+        self.progressBar.set_progress(progress)
         self.statusBar().showMessage(f"Splitting PDF... {percent}%")
         QtWidgets.QApplication.processEvents()
 

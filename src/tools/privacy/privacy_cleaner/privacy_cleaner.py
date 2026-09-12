@@ -24,14 +24,14 @@ try:
         QLabel,
         QMainWindow,
         QMessageBox,
-        QProgressBar,
-        QPushButton,
         QTabWidget,
         QTextEdit,
         QVBoxLayout,
         QWidget,
     )
 
+    from src.gui.components.buttons import PrimaryButton, SecondaryButton
+    from src.gui.components.loading_indicator import LoadingIndicator
     from src.gui.themes import token
 except ImportError:
     print("PyQt5 not available. Please install PyQt5.")
@@ -148,8 +148,7 @@ class PrivacyCleanerGUI(QMainWindow):
         self.main_layout.addWidget(results_group)
 
         # Progress bar
-        self.progress_bar = QProgressBar()
-        self.progress_bar.setVisible(False)
+        self.progress_bar = LoadingIndicator(parent=self, message="Working...")
         self.main_layout.addWidget(self.progress_bar)
 
     def create_browser_cleanup_tab(self):
@@ -190,9 +189,8 @@ class PrivacyCleanerGUI(QMainWindow):
         browser_layout.addWidget(self.clear_passwords)
 
         # Cleanup button
-        cleanup_browser_btn = QPushButton("Clean Browser Data")
+        cleanup_browser_btn = PrimaryButton("Clean Browser Data")
         cleanup_browser_btn.setAccessibleName("Clean browser data")
-        cleanup_browser_btn.setMinimumHeight(44)
         cleanup_browser_btn.clicked.connect(self.cleanup_browser_data)
         browser_layout.addWidget(cleanup_browser_btn)
 
@@ -236,9 +234,8 @@ class PrivacyCleanerGUI(QMainWindow):
         system_layout.addWidget(self.clean_registry)
 
         # Cleanup button
-        cleanup_system_btn = QPushButton("Clean System Data")
+        cleanup_system_btn = PrimaryButton("Clean System Data")
         cleanup_system_btn.setAccessibleName("Clean system data")
-        cleanup_system_btn.setMinimumHeight(44)
         cleanup_system_btn.clicked.connect(self.cleanup_system_data)
         system_layout.addWidget(cleanup_system_btn)
 
@@ -280,16 +277,14 @@ class PrivacyCleanerGUI(QMainWindow):
         metadata_layout.addWidget(self.scrub_video)
 
         # File selection button
-        select_files_btn = QPushButton("Select Files to Scrub")
+        select_files_btn = SecondaryButton("Select Files to Scrub")
         select_files_btn.setAccessibleName("Select files to scrub metadata")
-        select_files_btn.setMinimumHeight(44)
         select_files_btn.clicked.connect(self.select_files_for_scrubbing)
         metadata_layout.addWidget(select_files_btn)
 
         # Scrub button
-        scrub_btn = QPushButton("Scrub Metadata")
+        scrub_btn = PrimaryButton("Scrub Metadata")
         scrub_btn.setAccessibleName("Scrub metadata from selected files")
-        scrub_btn.setMinimumHeight(44)
         scrub_btn.clicked.connect(self.scrub_metadata)
         metadata_layout.addWidget(scrub_btn)
 
@@ -330,16 +325,14 @@ class PrivacyCleanerGUI(QMainWindow):
         wipe_layout.addWidget(self.wipe_dod)
 
         # File selection
-        select_wipe_files_btn = QPushButton("Select Files/Folders to Wipe")
+        select_wipe_files_btn = SecondaryButton("Select Files/Folders to Wipe")
         select_wipe_files_btn.setAccessibleName("Select files or folders to wipe")
-        select_wipe_files_btn.setMinimumHeight(44)
         select_wipe_files_btn.clicked.connect(self.select_files_for_wiping)
         wipe_layout.addWidget(select_wipe_files_btn)
 
         # Wipe button
-        wipe_btn = QPushButton(SECURE_WIPE_LABEL)
+        wipe_btn = PrimaryButton(SECURE_WIPE_LABEL)
         wipe_btn.setAccessibleName("Securely wipe selected files")
-        wipe_btn.setMinimumHeight(44)
         wipe_btn.clicked.connect(self.secure_wipe)
         wipe_layout.addWidget(wipe_btn)
 

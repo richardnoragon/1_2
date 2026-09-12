@@ -12,6 +12,8 @@ from pathlib import Path
 from threading import Lock
 from typing import Any, Dict, Optional, Union
 
+from .audit_trail import get_audit_trail
+
 # Import the database manager
 try:
     from .database_manager import get_database_manager
@@ -57,6 +59,7 @@ class EnhancedConfigManager:
 
         # Initialize logger
         self.logger = logging.getLogger("RFU.EnhancedConfigManager")
+        self.audit_trail = get_audit_trail()
 
         # Initialize database manager if available
         self.use_database = DATABASE_AVAILABLE
@@ -157,7 +160,7 @@ class EnhancedConfigManager:
             },
             "database": {
                 "enable_database_logging": True,
-                "log_retention_days": 90,
+                "log_retention_days": 365,
                 "backup_retention_days": 30,
                 "auto_backup": True,
                 "vacuum_on_startup": False,
@@ -447,6 +450,14 @@ class EnhancedConfigManager:
             if self.use_database:
                 self._store_setting_in_database(section, key, value)
                 self.logger.debug(f"Set database setting {section}.{key} = {value}")
+                self.audit_trail.log_config_operation(
+                    "setting_updated",
+                    resource=f"{section}.{key}",
+                    metadata={
+                        "backend": "database",
+                        "value_type": self._determine_value_type(value),
+                    },
+                )
                 return True
             else:
                 # Fallback to file-based config
@@ -461,10 +472,24 @@ class EnhancedConfigManager:
 
                 msg = f"Set file setting {section}.{key} = {value}"
                 self.logger.debug(msg)
+                self.audit_trail.log_config_operation(
+                    "setting_updated",
+                    resource=f"{section}.{key}",
+                    metadata={
+                        "backend": "file",
+                        "value_type": self._determine_value_type(value),
+                    },
+                )
                 return True
 
         except Exception as e:
             self.logger.error(f"Error setting {section}.{key}: {e}")
+            self.audit_trail.log_security_operation(
+                "config_update_failed",
+                status="error",
+                resource=f"{section}.{key}",
+                metadata={"error": str(e)},
+            )
             return False
         finally:
             self._decrement_recursion_depth()
@@ -482,6 +507,12 @@ class EnhancedConfigManager:
                     (section, key),
                 )
                 self.logger.info(f"Removed database setting {section}.{key}")
+                if affected > 0:
+                    self.audit_trail.log_config_operation(
+                        "setting_removed",
+                        resource=f"{section}.{key}",
+                        metadata={"backend": "database"},
+                    )
                 return affected > 0
             else:
                 # Fallback to file-based config
@@ -493,11 +524,22 @@ class EnhancedConfigManager:
                         self.save_config()
 
                     self.logger.info(f"Removed file setting {section}.{key}")
+                    self.audit_trail.log_config_operation(
+                        "setting_removed",
+                        resource=f"{section}.{key}",
+                        metadata={"backend": "file"},
+                    )
                     return True
                 return False
 
         except Exception as e:
             self.logger.error(f"Error removing {section}.{key}: {e}")
+            self.audit_trail.log_security_operation(
+                "config_remove_failed",
+                status="error",
+                resource=f"{section}.{key}",
+                metadata={"error": str(e)},
+            )
             return False
         finally:
             self._decrement_recursion_depth()
@@ -515,9 +557,20 @@ class EnhancedConfigManager:
                     json.dump(self.config, f, indent=2, ensure_ascii=False)
                 msg = f"File configuration saved to {self.config_file}"
                 self.logger.debug(msg)
+                self.audit_trail.log_config_operation(
+                    "config_saved",
+                    resource=str(self.config_file),
+                    metadata={"backend": "file"},
+                )
                 return True
             except Exception as e:
                 self.logger.error(f"Failed to save file configuration: {e}")
+                self.audit_trail.log_security_operation(
+                    "config_save_failed",
+                    status="error",
+                    resource=str(self.config_file),
+                    metadata={"error": str(e)},
+                )
                 return False
         return True  # Database saves automatically
 
@@ -554,10 +607,24 @@ class EnhancedConfigManager:
                 json.dump(config_data, f, indent=2, ensure_ascii=False)
 
             self.logger.info(f"Configuration exported to {export_file}")
+            self.audit_trail.log_config_operation(
+                "config_exported",
+                resource=str(export_file),
+                metadata={
+                    "backend": "database" if self.use_database else "file",
+                        "sections": sorted(config_data.keys()),
+                },
+            )
             return True
 
         except Exception as e:
             self.logger.error(f"Failed to export configuration: {e}")
+            self.audit_trail.log_security_operation(
+                "config_export_failed",
+                status="error",
+                resource=str(export_path),
+                metadata={"error": str(e)},
+            )
             return False
 
     def get_config_info(self) -> Dict[str, Any]:

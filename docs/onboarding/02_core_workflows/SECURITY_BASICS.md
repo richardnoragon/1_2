@@ -17,6 +17,8 @@ RFU implements enterprise-grade security across four key areas:
 📋 Audit Logging     → Comprehensive operation tracking
 ```
 
+The current repo-wide hardening baseline is documented in [docs/security/ISSUE_80_SECURITY_AUDIT_AND_DEPENDENCY_HARDENING.md](../../security/ISSUE_80_SECURITY_AUDIT_AND_DEPENDENCY_HARDENING.md) and includes dependency scanning, SBOM generation, and 12-month audit retention.
+
 [SCREENSHOT: security_overview_dashboard - Security Preferences dialog showing four main tabs with status indicators: Database Migration (green), Theme Security (green), Directory Security (amber), and Audit Logging (green)]
 
 ## Security Configuration Essentials

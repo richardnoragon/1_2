@@ -130,16 +130,14 @@ class DiskHealthWidget(QWidget):
             header_layout.addStretch()
 
             # Refresh button
-            self.refresh_button = QPushButton("Refresh")
+            self.refresh_button = SecondaryButton("Refresh")
             self.refresh_button.setAccessibleName("Refresh disk data")
-            self.refresh_button.setMinimumHeight(44)
             self.refresh_button.clicked.connect(self.refresh_data)
             header_layout.addWidget(self.refresh_button)
 
             # Auto-refresh toggle
-            self.auto_refresh_button = QPushButton("Auto-Refresh: ON")
+            self.auto_refresh_button = SecondaryButton("Auto-Refresh: ON")
             self.auto_refresh_button.setAccessibleName("Toggle auto-refresh")
-            self.auto_refresh_button.setMinimumHeight(44)
             self.auto_refresh_button.setCheckable(True)
             self.auto_refresh_button.setChecked(True)
             self.auto_refresh_button.clicked.connect(self.toggle_auto_refresh)
@@ -328,7 +326,9 @@ class DiskHealthWidget(QWidget):
             usage_layout = QVBoxLayout(usage_group)
 
             self.usage_progress = QProgressBar()
+            self.usage_progress.setRange(0, 100)
             self.usage_progress.setTextVisible(True)
+            self.usage_progress.setFormat("%p%")
             self.usage_label = QLabel("Used: 0 GB / 0 GB (0%)")
 
             usage_layout.addWidget(self.usage_progress)

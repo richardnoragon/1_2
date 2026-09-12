@@ -7,8 +7,55 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Callable, Dict, Optional
 
-from PyQt5.QtCore import QObject, pyqtSignal
-from PyQt5.QtWidgets import QApplication, QMessageBox
+try:
+    from PyQt5.QtCore import QObject, pyqtSignal
+    from PyQt5.QtWidgets import QApplication, QMessageBox
+except ImportError:  # pragma: no cover - graceful fallback for headless startup
+    class QObject:  # type: ignore[override]
+        pass
+
+    class _FallbackSignal:
+        def __call__(self, *args, **kwargs):
+            return None
+
+        def emit(self, *args, **kwargs):
+            return None
+
+    def pyqt_signal(*args, **kwargs):
+        return _FallbackSignal()
+
+    pyqtSignal = pyqt_signal
+
+    class QApplication:  # type: ignore[override]
+        @staticmethod
+        def instance():
+            return None
+
+    class QMessageBox:  # type: ignore[override]
+        Critical = 0
+        Warning = 1
+        Information = 2
+
+        def __init__(self, *args, **kwargs):
+            pass
+
+        def setIcon(self, *args, **kwargs):
+            pass
+
+        def setWindowTitle(self, *args, **kwargs):
+            pass
+
+        def setText(self, *args, **kwargs):
+            pass
+
+        def setDetailedText(self, *args, **kwargs):
+            pass
+
+        def exec_(self):
+            return 0
+
+from .audit_trail import get_audit_trail
+from .observability import ObservabilityService
 
 
 class ErrorHandler(QObject):
@@ -29,6 +76,11 @@ class ErrorHandler(QObject):
         self.log_file = self.log_dir / "rfu.log"
 
         self.logger = logging.getLogger("RFU.ErrorHandler")
+        self.audit_trail = get_audit_trail()
+        self.observability = ObservabilityService(
+            logger=self.logger,
+            audit_trail=self.audit_trail,
+        )
         if not self.logger.handlers:
             self.logger.setLevel(logging.INFO)
 
@@ -49,14 +101,35 @@ class ErrorHandler(QObject):
     # ------------------------------------------------------------------
     def log_error(self, message: str, exception: Optional[Exception] = None) -> None:
         if exception:
+            self.observability.record_error(
+                component="unknown",
+                operation="log_error",
+                message=str(message),
+                exception=exception,
+            )
             self.logger.error("%s: %s", message, exception)
         else:
+            self.observability.record_error(
+                component="unknown",
+                operation="log_error",
+                message=str(message),
+            )
             self.logger.error(message)
 
     def log_warning(self, message: str) -> None:
+        self.observability.record_warning(
+            component="unknown",
+            operation="log_warning",
+            message=message,
+        )
         self.logger.warning(message)
 
     def log_info(self, message: str) -> None:
+        self.observability.record_info(
+            component="unknown",
+            operation="log_info",
+            message=message,
+        )
         self.logger.info(message)
 
     # ------------------------------------------------------------------
@@ -106,6 +179,24 @@ class ErrorHandler(QObject):
             traceback.format_exception(exc_type, exc_value, exc_traceback)
         )
         self.logger.error("Uncaught exception: %s", error_msg)
+        self.observability.record_error(
+            component="unknown",
+            operation="uncaught_exception",
+            message=str(exc_value),
+            exception=exc_value,
+            metadata={
+                "exception_type": getattr(exc_type, "__name__", str(exc_type)),
+                "traceback": error_msg,
+            },
+        )
+        self.audit_trail.log_security_operation(
+            "uncaught_exception",
+            status="error",
+            metadata={
+                "exception_type": getattr(exc_type, "__name__", str(exc_type)),
+                "message": str(exc_value),
+            },
+        )
 
         if QApplication.instance() is not None:
             self.show_error_dialog("Unexpected Error", str(exc_value))
@@ -132,6 +223,26 @@ class ErrorHandler(QObject):
             f"{context_line}Traceback:\n{traceback_line}"
         )
         self.logger.error(details)
+        self.observability.record_error(
+            component=(context or {}).get("component", "unknown"),
+            operation=operation,
+            message=str(error),
+            exception=error,
+            metadata={
+                "error_type": type(error).__name__,
+                "context": context or {},
+            },
+        )
+        self.audit_trail.log_security_operation(
+            "operation_error",
+            status="error",
+            resource=operation,
+            metadata={
+                "error_type": type(error).__name__,
+                "error_message": str(error),
+                "context": context or {},
+            },
+        )
 
         if show_dialog:
             default_msg = (
@@ -147,7 +258,7 @@ class ErrorHandler(QObject):
 # ----------------------------------------------------------------------
 # Convenience helpers mirroring legacy interface
 # ----------------------------------------------------------------------
-_error_handler: Optional[ErrorHandler] = None
+_error_handler: Optional["ErrorHandler"] = None
 
 
 def get_error_handler() -> ErrorHandler:
@@ -162,6 +273,12 @@ def safe_execute(func: Callable[..., Any], *args, **kwargs) -> Any:
         return func(*args, **kwargs)
     except Exception as exc:  # pragma: no cover - defensive wrapper
         get_error_handler().log_error(f"Error executing {func.__name__}", exc)
+        get_error_handler().audit_trail.log_security_operation(
+            "safe_execute_failed",
+            status="error",
+            resource=func.__name__,
+            metadata={"error": str(exc)},
+        )
         return None
 
 
@@ -170,6 +287,12 @@ def handle_gui_error(func: Callable[..., Any]) -> Callable[..., Any]:
         try:
             return func(*args, **kwargs)
         except Exception as exc:  # pragma: no cover - GUI wrapper
+            get_error_handler().audit_trail.log_security_operation(
+                "gui_handler_failed",
+                status="error",
+                resource=func.__name__,
+                metadata={"error": str(exc)},
+            )
             get_error_handler().show_error_dialog(
                 "GUI Error",
                 f"An error occurred in {func.__name__}: {exc}",

@@ -10,6 +10,8 @@ safety features and progress tracking.
 import logging
 from typing import Any, Dict
 
+SYSTEM_CLEANUP_LOGGER_NAME = "RFU.SystemCleanup"
+
 try:
     from PyQt5.QtCore import QObject, QThread, pyqtSignal
     from PyQt5.QtWidgets import (
@@ -237,7 +239,9 @@ try:
 except ImportError:
     COMPONENT_GUARDIAN_AVAILABLE = False
 
-    def register_gui_component(widget, component_type=None, recovery_callback=None):
+    def register_gui_component(
+        _widget, _component_type=None, _recovery_callback=None
+    ):
         """No-op stub used when ComponentGuardian is unavailable."""
         return ""
 
@@ -295,11 +299,9 @@ class CleanupWorker(QObject):
             result = self.cleanup_tool.execute_operation(**self.operation_params)
             self.operation_complete.emit(result)
 
-        except (
-            Exception
-        ) as e:  # ERR: non-fatal — propagated via error_occurred signal to on_cleanup_error  # noqa: E501
-            logging.getLogger("RFU.SystemCleanup").error(
-                f"Cleanup operation failed: {e}"
+        except Exception:  # ERR: non-fatal — propagated via error_occurred signal to on_cleanup_error  # noqa: E501
+            logging.getLogger(SYSTEM_CLEANUP_LOGGER_NAME).exception(
+                "Cleanup operation failed"
             )
             self.error_occurred.emit("Cleanup operation failed")
 
@@ -342,10 +344,10 @@ class EstimateWorker(QObject):
                 include_system_temp=self._include_system_temp,
             )
             self.estimate_ready.emit(size)
-        except (
-            Exception
-        ) as e:  # ERR: non-fatal — propagated via error_occurred signal to _on_estimate_error  # noqa: E501
-            logging.getLogger("RFU.SystemCleanup").error(f"Estimate worker failed: {e}")
+        except Exception:  # ERR: non-fatal — propagated via error_occurred signal to _on_estimate_error  # noqa: E501
+            logging.getLogger(SYSTEM_CLEANUP_LOGGER_NAME).exception(
+                "Estimate worker failed"
+            )
             self.error_occurred.emit("Unable to estimate cleanup size")
 
 
@@ -368,10 +370,10 @@ class PreviewWorker(QObject):
         try:
             preview = self._temp_tool.preview_operation(**self._params)
             self.preview_ready.emit(preview)
-        except (
-            Exception
-        ) as e:  # ERR: non-fatal — propagated via error_occurred signal to _on_preview_error  # noqa: E501
-            logging.getLogger("RFU.SystemCleanup").error(f"Preview worker failed: {e}")
+        except Exception:  # ERR: non-fatal — propagated via error_occurred signal to _on_preview_error  # noqa: E501
+            logging.getLogger(SYSTEM_CLEANUP_LOGGER_NAME).exception(
+                "Preview worker failed"
+            )
             self.error_occurred.emit("Unable to generate preview")
 
 
@@ -405,7 +407,7 @@ class SystemCleanupGUI(SystemDiagnosticsGUI):
         super().__init__(hub_instance, parent)
 
         # Setup logging
-        self.logger = logging.getLogger("RFU.SystemCleanup")
+        self.logger = logging.getLogger(SYSTEM_CLEANUP_LOGGER_NAME)
 
         # Cleanup-specific components
         self.cleanup_tools = {}
@@ -469,7 +471,7 @@ class SystemCleanupGUI(SystemDiagnosticsGUI):
                 if TempFilesCleaner:
                     self.cleanup_tools["temp_files"] = TempFilesCleaner()
 
-                # TODO: Add other cleanup tools as they become available
+                # Additional cleanup tools can be added here as they become available.
                 # self.cleanup_tools['registry'] = RegistryCleaner()
                 # self.cleanup_tools['cache'] = CacheCleaner()
                 # self.cleanup_tools['logs'] = LogCleaner()
@@ -540,6 +542,29 @@ class SystemCleanupGUI(SystemDiagnosticsGUI):
         ) as e:  # ERR: non-fatal — cosmetic only; tool remains functional
             self.logger.error(f"Error updating header: {e}")
 
+    @staticmethod
+    def _build_checkbox(
+        label: str,
+        *,
+        checked: bool = False,
+        enabled: bool = True,
+        tooltip: str = "",
+        accessible_name: str = "",
+        accessible_description: str = "",
+    ) -> QCheckBox:
+        """Create a themed checkbox with standard accessibility attributes."""
+        checkbox = QCheckBox(label)
+        checkbox.setChecked(checked)
+        checkbox.setEnabled(enabled)
+        if tooltip:
+            checkbox.setToolTip(tooltip)
+        if accessible_name:
+            checkbox.setAccessibleName(accessible_name)
+        if accessible_description:
+            checkbox.setAccessibleDescription(accessible_description)
+        checkbox.setMinimumHeight(44)
+        return checkbox
+
     def create_quick_cleanup_tab(self):
         """Create the quick cleanup tab with common operations."""
         try:
@@ -553,45 +578,33 @@ class SystemCleanupGUI(SystemDiagnosticsGUI):
             # Quick cleanup options
             self.quick_cleanup_options = {}
 
-            # Temporary files cleanup
-            temp_checkbox = QCheckBox(_SystemCleanupStrings.CHK_TEMP_FILES)
-            temp_checkbox.setChecked(True)
-            temp_checkbox.setToolTip(
-                "Remove temporary files from system and user temp directories"
+            temp_checkbox = self._build_checkbox(
+                _SystemCleanupStrings.CHK_TEMP_FILES,
+                checked=True,
+                tooltip="Remove temporary files from system and user temp directories",
+                accessible_name="Clean Temporary Files",
+                accessible_description="Removes files from system and user temp directories",
             )
-            temp_checkbox.setAccessibleName("Clean Temporary Files")
-            temp_checkbox.setAccessibleDescription(
-                "Removes files from system and user temp directories"
-            )
-            temp_checkbox.setMinimumHeight(44)  # A11Y-8c
             self.quick_cleanup_options["temp_files"] = temp_checkbox
             quick_layout.addWidget(temp_checkbox)
 
-            # Cache cleanup (placeholder for future implementation)
-            cache_checkbox = QCheckBox(_SystemCleanupStrings.CHK_CACHE)
-            cache_checkbox.setToolTip(
-                "Clear application and system caches (Coming Soon)"
+            cache_checkbox = self._build_checkbox(
+                _SystemCleanupStrings.CHK_CACHE,
+                enabled=False,
+                tooltip="Clear application and system caches (Coming Soon)",
+                accessible_name="Clear Application Caches",
+                accessible_description="Clear application and system caches (Coming Soon)",
             )
-            cache_checkbox.setEnabled(False)  # Disabled until implemented
-            cache_checkbox.setAccessibleName("Clear Application Caches")
-            cache_checkbox.setAccessibleDescription(
-                "Clear application and system caches (Coming Soon)"
-            )
-            cache_checkbox.setMinimumHeight(44)  # A11Y-8c
             self.quick_cleanup_options["cache"] = cache_checkbox
             quick_layout.addWidget(cache_checkbox)
 
-            # Windows logs cleanup (placeholder)
-            logs_checkbox = QCheckBox(_SystemCleanupStrings.CHK_LOGS)
-            logs_checkbox.setToolTip(
-                "Remove old Windows system and application logs (Coming Soon)"
+            logs_checkbox = self._build_checkbox(
+                _SystemCleanupStrings.CHK_LOGS,
+                enabled=False,
+                tooltip="Remove old Windows system and application logs (Coming Soon)",
+                accessible_name="Clean Windows Logs",
+                accessible_description="Remove old Windows system and application logs (Coming Soon)",
             )
-            logs_checkbox.setEnabled(False)  # Disabled until implemented
-            logs_checkbox.setAccessibleName("Clean Windows Logs")
-            logs_checkbox.setAccessibleDescription(
-                "Remove old Windows system and application logs (Coming Soon)"
-            )
-            logs_checkbox.setMinimumHeight(44)  # A11Y-8c
             self.quick_cleanup_options["logs"] = logs_checkbox
             quick_layout.addWidget(logs_checkbox)
 
@@ -792,133 +805,101 @@ class SystemCleanupGUI(SystemDiagnosticsGUI):
 
         return temp_group
 
+    def _build_backup_confirmation_callback(self, *, title: str, message: str, confirm_text: str):
+        """Build a standard confirmation callback used by destructive backup actions."""
+        return lambda: ConfirmationModal(
+            title,
+            message,
+            confirm_text,
+            _SystemCleanupStrings.CONFIRM_CANCEL,
+            self,
+        ).exec_() == QDialog.Accepted
+
     def create_safety_backup_tab(self):
         """Create the safety and backup management tab."""
         try:
             safety_widget = QWidget()
             layout = QVBoxLayout(safety_widget)
 
-            # Safety settings
             safety_group = QGroupBox(_SystemCleanupStrings.GROUP_SAFETY_SETTINGS)
             safety_layout = QVBoxLayout(safety_group)
 
-            # Create restore point
-            self.restore_point_checkbox = QCheckBox(
-                _SystemCleanupStrings.CHK_RESTORE_POINT
+            self.restore_point_checkbox = self._build_checkbox(
+                _SystemCleanupStrings.CHK_RESTORE_POINT,
+                checked=True,
+                tooltip="Create a system restore point before performing cleanup operations",
+                accessible_name="Create system restore point before cleanup",
             )
-            self.restore_point_checkbox.setChecked(True)
-            self.restore_point_checkbox.setToolTip(
-                "Create a system restore point before performing cleanup operations"  # noqa: E501
-            )
-            self.restore_point_checkbox.setAccessibleName(
-                "Create system restore point before cleanup"
-            )
-            self.restore_point_checkbox.setMinimumHeight(44)  # A11Y-8c
             safety_layout.addWidget(self.restore_point_checkbox)
 
-            # Backup important files
-            self.backup_files_checkbox = QCheckBox(
-                _SystemCleanupStrings.CHK_BACKUP_FILES
+            self.backup_files_checkbox = self._build_checkbox(
+                _SystemCleanupStrings.CHK_BACKUP_FILES,
+                checked=True,
+                tooltip="Create backups of important files before deletion",
+                accessible_name="Backup important files before deletion",
             )
-            self.backup_files_checkbox.setChecked(True)
-            self.backup_files_checkbox.setToolTip(
-                "Create backups of important files before deletion"
-            )
-            self.backup_files_checkbox.setAccessibleName(
-                "Backup important files before deletion"
-            )
-            self.backup_files_checkbox.setMinimumHeight(44)  # A11Y-8c
             safety_layout.addWidget(self.backup_files_checkbox)
 
-            # Confirmation dialogs
-            self.confirm_operations_checkbox = QCheckBox(
-                _SystemCleanupStrings.CHK_CONFIRM_OPS
+            self.confirm_operations_checkbox = self._build_checkbox(
+                _SystemCleanupStrings.CHK_CONFIRM_OPS,
+                checked=True,
+                tooltip="Show confirmation dialogs before performing potentially destructive operations",
+                accessible_name="Show confirmation dialogs for destructive operations",
             )
-            self.confirm_operations_checkbox.setChecked(True)
-            self.confirm_operations_checkbox.setToolTip(
-                "Show confirmation dialogs before performing potentially destructive operations"  # noqa: E501
-            )
-            self.confirm_operations_checkbox.setAccessibleName(
-                "Show confirmation dialogs for destructive operations"
-            )
-            self.confirm_operations_checkbox.setMinimumHeight(44)  # A11Y-8c
             safety_layout.addWidget(self.confirm_operations_checkbox)
 
             layout.addWidget(safety_group)
 
-            # Backup management
             backup_group = QGroupBox(_SystemCleanupStrings.GROUP_BACKUP_MGMT)
             backup_layout = QVBoxLayout(backup_group)
 
-            # Backup location
             backup_info_layout = QHBoxLayout()
-            backup_info_layout.addWidget(
-                QLabel(_SystemCleanupStrings.LABEL_BACKUP_LOCATION)
-            )
+            backup_info_layout.addWidget(QLabel(_SystemCleanupStrings.LABEL_BACKUP_LOCATION))
             self.backup_location_label = QLabel(
                 _SystemCleanupStrings.LABEL_BACKUP_NOT_INITIALIZED
             )
             if self.safety_manager:
-                self.backup_location_label.setText(
-                    str(self.safety_manager.session_backup_dir)
-                )
+                self.backup_location_label.setText(str(self.safety_manager.session_backup_dir))
             backup_info_layout.addWidget(self.backup_location_label)
             backup_layout.addLayout(backup_info_layout)
 
-            # Backup actions
             backup_actions_layout = QHBoxLayout()
 
-            self.view_backups_button = SecondaryButton(
-                _SystemCleanupStrings.BTN_VIEW_BACKUPS
-            )
-            view_backups_button = self.view_backups_button
-            view_backups_button.clicked.connect(self.view_backups)
-            backup_actions_layout.addWidget(view_backups_button)
+            self.view_backups_button = SecondaryButton(_SystemCleanupStrings.BTN_VIEW_BACKUPS)
+            self.view_backups_button.clicked.connect(self.view_backups)
+            backup_actions_layout.addWidget(self.view_backups_button)
 
             self.cleanup_backups_button = DestructiveButton(
                 _SystemCleanupStrings.BTN_CLEANUP_OLD_BACKUPS
             )
             self.cleanup_backups_button.set_confirmation_callback(
-                lambda: ConfirmationModal(
-                    _SystemCleanupStrings.CONFIRM_BACKUP_CLEANUP_TITLE,
-                    _SystemCleanupStrings.CONFIRM_BACKUP_CLEANUP_MSG,
-                    _SystemCleanupStrings.CONFIRM_BACKUP_CLEANUP_YES,
-                    _SystemCleanupStrings.CONFIRM_CANCEL,
-                    self,
-                ).exec_()
-                == QDialog.Accepted
+                self._build_backup_confirmation_callback(
+                    title=_SystemCleanupStrings.CONFIRM_BACKUP_CLEANUP_TITLE,
+                    message=_SystemCleanupStrings.CONFIRM_BACKUP_CLEANUP_MSG,
+                    confirm_text=_SystemCleanupStrings.CONFIRM_BACKUP_CLEANUP_YES,
+                )
             )
-            self.cleanup_backups_button.action_confirmed.connect(
-                self.cleanup_old_backups
-            )
+            self.cleanup_backups_button.action_confirmed.connect(self.cleanup_old_backups)
             backup_actions_layout.addWidget(self.cleanup_backups_button)
 
             self.restore_backups_button = DestructiveButton(
                 _SystemCleanupStrings.BTN_RESTORE_ALL_BACKUPS
             )
             self.restore_backups_button.set_confirmation_callback(
-                lambda: ConfirmationModal(
-                    _SystemCleanupStrings.CONFIRM_RESTORE_ALL_TITLE,
-                    _SystemCleanupStrings.CONFIRM_RESTORE_ALL_MSG,
-                    _SystemCleanupStrings.CONFIRM_RESTORE_ALL_YES,
-                    _SystemCleanupStrings.CONFIRM_CANCEL,
-                    self,
-                ).exec_()
-                == QDialog.Accepted
+                self._build_backup_confirmation_callback(
+                    title=_SystemCleanupStrings.CONFIRM_RESTORE_ALL_TITLE,
+                    message=_SystemCleanupStrings.CONFIRM_RESTORE_ALL_MSG,
+                    confirm_text=_SystemCleanupStrings.CONFIRM_RESTORE_ALL_YES,
+                )
             )
-            self.restore_backups_button.action_confirmed.connect(
-                self.restore_all_backups
-            )
+            self.restore_backups_button.action_confirmed.connect(self.restore_all_backups)
             backup_actions_layout.addWidget(self.restore_backups_button)
 
             backup_layout.addLayout(backup_actions_layout)
-
             layout.addWidget(backup_group)
 
-            # System information
             system_group = QGroupBox(_SystemCleanupStrings.GROUP_SYSTEM_INFO)
             system_layout = QVBoxLayout(system_group)
-
             self.system_info_text = QTextEdit()
             self.system_info_text.setReadOnly(True)
             self.system_info_text.setMaximumHeight(200)
@@ -957,6 +938,9 @@ class SystemCleanupGUI(SystemDiagnosticsGUI):
 
             # Progress bar
             self.cleanup_progress_bar = QProgressBar()
+            self.cleanup_progress_bar.setRange(0, 100)
+            self.cleanup_progress_bar.setTextVisible(True)
+            self.cleanup_progress_bar.setFormat("%p%")
             self.cleanup_progress_bar.setVisible(False)
             status_layout.addWidget(self.cleanup_progress_bar)
 
@@ -1189,19 +1173,18 @@ class SystemCleanupGUI(SystemDiagnosticsGUI):
                 return
 
             # Confirm operation
-            if self.confirm_operations_checkbox.isChecked():
-                if (
-                    ConfirmationModal(
-                        _SystemCleanupStrings.CONFIRM_QUICK_CLEANUP_TITLE,
-                        f"Are you sure you want to run quick cleanup?\n\n"
-                        f"Selected tools: {', '.join(selected_tools)}\n\n"
-                        f"This operation may delete files permanently.",
-                        confirm_text=_SystemCleanupStrings.CONFIRM_YES,
-                        cancel_text=_SystemCleanupStrings.CONFIRM_CANCEL,
-                        parent=self,
-                    ).exec_()
-                    != QDialog.Accepted
-                ):
+            if self.confirm_operations_checkbox.isChecked() and (
+                ConfirmationModal(
+                    _SystemCleanupStrings.CONFIRM_QUICK_CLEANUP_TITLE,
+                    f"Are you sure you want to run quick cleanup?\n\n"
+                    f"Selected tools: {', '.join(selected_tools)}\n\n"
+                    f"This operation may delete files permanently.",
+                    confirm_text=_SystemCleanupStrings.CONFIRM_YES,
+                    cancel_text=_SystemCleanupStrings.CONFIRM_CANCEL,
+                    parent=self,
+                ).exec_()
+                != QDialog.Accepted
+            ):
                     return
 
             # Restore point created inside the worker thread (PERF-1d): pass
@@ -1219,7 +1202,7 @@ class SystemCleanupGUI(SystemDiagnosticsGUI):
                     restore_point_description=restore_desc
                 )
 
-            # TODO: Add other quick cleanup operations as tools become available  # noqa: E501
+            # Additional quick cleanup operations can be added here as tools become available.  # noqa: E501
 
         except Exception as e:  # ERR: non-fatal — surfaced via Modal
             self.logger.error(f"Error running quick cleanup: {e}")
@@ -1441,17 +1424,16 @@ class SystemCleanupGUI(SystemDiagnosticsGUI):
                 return
 
             # Confirm operation
-            if self.confirm_operations_checkbox.isChecked():
-                if (
-                    ConfirmationModal(
-                        _SystemCleanupStrings.CONFIRM_TEMP_CLEANUP_TITLE,
-                        _SystemCleanupStrings.CONFIRM_TEMP_CLEANUP_MSG,
-                        confirm_text=_SystemCleanupStrings.CONFIRM_YES,
-                        cancel_text=_SystemCleanupStrings.CONFIRM_CANCEL,
-                        parent=self,
-                    ).exec_()
-                    != QDialog.Accepted
-                ):
+            if self.confirm_operations_checkbox.isChecked() and (
+                ConfirmationModal(
+                    _SystemCleanupStrings.CONFIRM_TEMP_CLEANUP_TITLE,
+                    _SystemCleanupStrings.CONFIRM_TEMP_CLEANUP_MSG,
+                    confirm_text=_SystemCleanupStrings.CONFIRM_YES,
+                    cancel_text=_SystemCleanupStrings.CONFIRM_CANCEL,
+                    parent=self,
+                ).exec_()
+                != QDialog.Accepted
+            ):
                     return
 
             # Restore point created inside the worker thread (PERF-1d).
@@ -1487,7 +1469,7 @@ class SystemCleanupGUI(SystemDiagnosticsGUI):
             "min_size_bytes": self.temp_size_spinbox.value()
             * 1024
             * 1024,  # Convert MB to bytes
-            "file_extensions": [],  # TODO: Add extension filter UI
+            "file_extensions": [],  # Extension filter UI can be added later.
             "include_system_temp": self.temp_system_checkbox.isChecked(),
             "create_backup": self.temp_backup_checkbox.isChecked(),
             "secure_delete": self.temp_secure_checkbox.isChecked(),
@@ -1649,8 +1631,6 @@ class SystemCleanupGUI(SystemDiagnosticsGUI):
 
     def export_results_report(self):
         """Export the cleanup results report.
-
-        TODO: Implement full file-export functionality (see FN-032).
         """
         # TEL-2b: KEY_ACTION 6 — Export Report
         _emit_telemetry(

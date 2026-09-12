@@ -10,11 +10,15 @@ import os
 import json
 import shutil
 import subprocess
-import winreg
 from pathlib import Path
 from typing import Dict, List, Optional, Set, Tuple
 from datetime import datetime
 from dataclasses import dataclass
+
+try:
+    import winreg
+except ImportError:  # pragma: no cover - Windows-only dependency
+    winreg = None
 
 from ..core.maintenance_base import MaintenanceToolBase
 from ..core.software_detector import SoftwareDetector, SoftwareInfo
