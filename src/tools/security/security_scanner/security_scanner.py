@@ -1,3 +1,5 @@
+from src.rfu.localization import localized_widget as _ui_widget, bind_literal as _ui_bind
+from src.rfu import font_tokens
 from src.gui.themes import ThemeManager, Typography, token
 
 """
@@ -321,7 +323,7 @@ class SimpleSecurityScannerGUI(QMainWindow):
             f"""
             QMainWindow {{
                 background-color: {token('surface')};
-                font-family: 'Segoe UI', Arial, sans-serif;
+
             }}
             QGroupBox {{
                 font-weight: bold;
@@ -339,11 +341,12 @@ class SimpleSecurityScannerGUI(QMainWindow):
                 border: 1px solid {token('border')};
                 border-radius: 4px;
                 padding: 8px;
-                font-family: 'Courier New', monospace;
-                font-size: 11px;
+
+
             }}
         """
         )
+        font_tokens.bind(self, "font.body")
 
         self.scan_worker = None
         self._setup_ui()
@@ -381,48 +384,40 @@ class SimpleSecurityScannerGUI(QMainWindow):
         layout = QVBoxLayout(central_widget)
 
         # Title
-        title = QLabel("🔍 Security Scanner")
+        title = _ui_widget(QLabel, 'Legacy.s36002003de401cfe', 'setText')
         title.setAlignment(Qt.AlignCenter)
-        title.setFont(Typography.h1())
+        font_tokens.bind(title, "font.toolHeader")
         layout.addWidget(title)
 
         # Scan options
-        options_group = QGroupBox("Scan Options")
+        options_group = _ui_widget(QGroupBox, 'Legacy.saf90322a50f97612', 'setTitle')
         options_layout = QVBoxLayout(options_group)
 
-        self.system_info_check = QCheckBox("System Information")
+        self.system_info_check = _ui_widget(QCheckBox, 'Legacy.s8ad54ec1c0dcab4f', 'setText')
         self.system_info_check.setChecked(True)
-        self.system_info_check.setAccessibleName("Scan system information")
-        self.system_info_check.setAccessibleDescription(
-            "Checks OS version, user accounts, and installed security features"
-        )
+        _ui_bind(self.system_info_check, 'setAccessibleName', 'Legacy.s6d16f17903056b4f')
+        _ui_bind(self.system_info_check, 'setAccessibleDescription', 'Legacy.sc36ca79dabc7d13c')
         self.system_info_check.setMinimumHeight(44)
         options_layout.addWidget(self.system_info_check)
 
-        self.network_ports_check = QCheckBox("Network Ports")
+        self.network_ports_check = _ui_widget(QCheckBox, 'Legacy.s8f7f7754b7590b3b', 'setText')
         self.network_ports_check.setChecked(True)
-        self.network_ports_check.setAccessibleName("Scan network ports")
-        self.network_ports_check.setAccessibleDescription(
-            "Lists all open TCP/UDP ports and associated services"
-        )
+        _ui_bind(self.network_ports_check, 'setAccessibleName', 'Legacy.sd3571841a05731f3')
+        _ui_bind(self.network_ports_check, 'setAccessibleDescription', 'Legacy.s6479af1c016a139e')
         self.network_ports_check.setMinimumHeight(44)
         options_layout.addWidget(self.network_ports_check)
 
-        self.file_permissions_check = QCheckBox("File Permissions")
+        self.file_permissions_check = _ui_widget(QCheckBox, 'Legacy.sd34508eaa65a6f53', 'setText')
         self.file_permissions_check.setChecked(True)
-        self.file_permissions_check.setAccessibleName("Scan file permissions")
-        self.file_permissions_check.setAccessibleDescription(
-            "Identifies files with overly broad permissions that may be security risks"
-        )
+        _ui_bind(self.file_permissions_check, 'setAccessibleName', 'Legacy.s2e251ee42c6b5dc6')
+        _ui_bind(self.file_permissions_check, 'setAccessibleDescription', 'Legacy.sebca643d7fe17200')
         self.file_permissions_check.setMinimumHeight(44)
         options_layout.addWidget(self.file_permissions_check)
 
-        self.running_processes_check = QCheckBox("Running Processes")
+        self.running_processes_check = _ui_widget(QCheckBox, 'Legacy.s3ab71d100a19b5d1', 'setText')
         self.running_processes_check.setChecked(True)
-        self.running_processes_check.setAccessibleName("Scan running processes")
-        self.running_processes_check.setAccessibleDescription(
-            "Lists all active processes and flags unrecognized or suspicious entries"
-        )
+        _ui_bind(self.running_processes_check, 'setAccessibleName', 'Legacy.sc362d22ad1165cfd')
+        _ui_bind(self.running_processes_check, 'setAccessibleDescription', 'Legacy.sba257009e3e8929b')
         self.running_processes_check.setMinimumHeight(44)
         options_layout.addWidget(self.running_processes_check)
 
@@ -431,11 +426,11 @@ class SimpleSecurityScannerGUI(QMainWindow):
         # Control buttons
         button_layout = QHBoxLayout()
 
-        self.start_scan_btn = PrimaryButton("🚀 Start Security Scan")
+        self.start_scan_btn = _ui_widget(PrimaryButton, 'Legacy.sa21976ef55856650', 'setText')
         self.start_scan_btn.clicked.connect(self.start_scan)
         button_layout.addWidget(self.start_scan_btn)
 
-        self.clear_btn = SecondaryButton("🗑️ Clear Results")
+        self.clear_btn = _ui_widget(SecondaryButton, 'Legacy.s54b9e229891145d6', 'setText')
         self.clear_btn.clicked.connect(self.clear_results)
         button_layout.addWidget(self.clear_btn)
 
@@ -447,7 +442,7 @@ class SimpleSecurityScannerGUI(QMainWindow):
         layout.addWidget(self.progress_bar)
 
         # Status label
-        self.status_label = QLabel("Ready to scan")
+        self.status_label = _ui_widget(QLabel, 'Legacy.s6b32c3b007101256', 'setText')
         layout.addWidget(self.status_label)
 
         # Toast notification for completion messages (CP-5)
@@ -457,11 +452,11 @@ class SimpleSecurityScannerGUI(QMainWindow):
             self._toast = None
 
         # Results area
-        results_group = QGroupBox("Scan Results")
+        results_group = _ui_widget(QGroupBox, 'Legacy.scf47fe8237c0201a', 'setTitle')
         results_layout = QVBoxLayout(results_group)
 
         self.results_text = QTextEdit()
-        self.results_text.setAccessibleName("Security scan results")
+        _ui_bind(self.results_text, 'setAccessibleName', 'Legacy.s610e2ed714d1a52b')
         self.results_text.setPlainText(
             "Click 'Start Security Scan' to begin scanning for security issues..."
         )

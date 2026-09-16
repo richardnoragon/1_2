@@ -9,6 +9,7 @@ A comprehensive bookmark management tool that supports:
 - Tag-based organization
 - Cross-platform storage with SQLite
 """
+from src.rfu.localization import localized_widget as _ui_widget, bind_literal as _ui_bind
 
 import csv
 import html
@@ -334,7 +335,7 @@ class BookmarkModel:
             current_time = datetime.now().isoformat()
             cursor.execute(
                 """
-                UPDATE bookmarks 
+                UPDATE bookmarks
                 SET title=?, url=?, description=?, tags=?, folder=?, modified_date=?
                 WHERE id=?
             """,
@@ -447,7 +448,7 @@ class BookmarkModel:
             else:  # search all fields
                 cursor.execute(
                     """
-                    SELECT * FROM bookmarks 
+                    SELECT * FROM bookmarks
                     WHERE title LIKE ? OR url LIKE ? OR tags LIKE ? OR description LIKE ?
                 """,
                     (query, query, query, query),
@@ -779,34 +780,34 @@ class BookmarkDialog(QDialog):
         form_layout = QGridLayout()
 
         # Title
-        form_layout.addWidget(QLabel("Title:"), 0, 0)
+        form_layout.addWidget(_ui_widget(QLabel, 'Legacy.secd11fd9f6ba3ceb', 'setText'), 0, 0)
         self.title_edit = TextInput("Title") if TextInput else QLineEdit()
-        self.title_edit.setAccessibleName("Bookmark title")
+        _ui_bind(self.title_edit, 'setAccessibleName', 'Legacy.s717ab8ff450d4135')
         form_layout.addWidget(self.title_edit, 0, 1)
 
         # URL
-        form_layout.addWidget(QLabel("URL:"), 1, 0)
+        form_layout.addWidget(_ui_widget(QLabel, 'Legacy.s734fd77b36107c77', 'setText'), 1, 0)
         self.url_edit = TextInput("URL") if TextInput else QLineEdit()
-        self.url_edit.setAccessibleName("Bookmark URL")
+        _ui_bind(self.url_edit, 'setAccessibleName', 'Legacy.s28bff7410f8cb75c')
         form_layout.addWidget(self.url_edit, 1, 1)
 
         # Description
-        form_layout.addWidget(QLabel("Description:"), 2, 0)
+        form_layout.addWidget(_ui_widget(QLabel, 'Legacy.s0cf2814604b4c9ad', 'setText'), 2, 0)
         self.description_edit = QTextEdit()
-        self.description_edit.setAccessibleName("Bookmark description")
+        _ui_bind(self.description_edit, 'setAccessibleName', 'Legacy.s6b62ff5df49f466d')
         self.description_edit.setMaximumHeight(100)
         form_layout.addWidget(self.description_edit, 2, 1)
 
         # Tags
-        form_layout.addWidget(QLabel("Tags:"), 3, 0)
+        form_layout.addWidget(_ui_widget(QLabel, 'Legacy.s865658f888f2c502', 'setText'), 3, 0)
         self.tags_edit = TextInput("Tags", "Enter tags separated by commas") if TextInput else QLineEdit()
-        self.tags_edit.setAccessibleName("Bookmark tags")
+        _ui_bind(self.tags_edit, 'setAccessibleName', 'Legacy.s38f36620e7357493')
         form_layout.addWidget(self.tags_edit, 3, 1)
 
         # Folder
-        form_layout.addWidget(QLabel("Folder:"), 4, 0)
+        form_layout.addWidget(_ui_widget(QLabel, 'Legacy.sa6b3283eb666a921', 'setText'), 4, 0)
         self.folder_edit = TextInput("Folder") if TextInput else QLineEdit()
-        self.folder_edit.setAccessibleName("Bookmark folder")
+        _ui_bind(self.folder_edit, 'setAccessibleName', 'Legacy.s582666f3e774b171')
         self.folder_edit.setText("Default")
         form_layout.addWidget(self.folder_edit, 4, 1)
 
@@ -842,7 +843,7 @@ class BookmarkManagerGUI(QMainWindow):
 
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Bookmark Manager - Richard's File Utilities")
+        _ui_bind(self, 'setWindowTitle', 'Legacy.s2f2e51e1a4ebbaf6')
         self.setGeometry(200, 200, 1000, 700)
 
         # Create central widget and main layout
@@ -941,45 +942,45 @@ class BookmarkManagerGUI(QMainWindow):
         toolbar_layout = QHBoxLayout(toolbar_widget)
 
         # Add bookmark button
-        add_btn = PrimaryButton("Add Bookmark") if PrimaryButton else QPushButton("Add Bookmark")
-        add_btn.setAccessibleName("Add bookmark")
+        add_btn = _ui_widget(PrimaryButton, 'Legacy.s7d02d990babdf216', 'setText') if PrimaryButton else _ui_widget(QPushButton, 'Legacy.s7d02d990babdf216', 'setText')
+        _ui_bind(add_btn, 'setAccessibleName', 'Legacy.sb5255f4dadf0e816')
         add_btn.clicked.connect(self.add_bookmark)
         toolbar_layout.addWidget(add_btn)
 
         # Edit bookmark button
-        edit_btn = SecondaryButton("Edit") if SecondaryButton else QPushButton("Edit")
-        edit_btn.setAccessibleName("Edit bookmark")
+        edit_btn = _ui_widget(SecondaryButton, 'Legacy.s464c4ffd019e1e96', 'setText') if SecondaryButton else _ui_widget(QPushButton, 'Legacy.s464c4ffd019e1e96', 'setText')
+        _ui_bind(edit_btn, 'setAccessibleName', 'Legacy.s0fbc7a7f4685d957')
         edit_btn.clicked.connect(self.edit_bookmark)
         toolbar_layout.addWidget(edit_btn)
 
         # Delete bookmark button
-        delete_btn = SecondaryButton("Delete") if SecondaryButton else QPushButton("Delete")
-        delete_btn.setAccessibleName("Delete bookmark")
+        delete_btn = _ui_widget(SecondaryButton, 'Legacy.se2d0a54968ead24e', 'setText') if SecondaryButton else _ui_widget(QPushButton, 'Legacy.se2d0a54968ead24e', 'setText')
+        _ui_bind(delete_btn, 'setAccessibleName', 'Legacy.sc49d1ca1d9a41b0d')
         delete_btn.clicked.connect(self.delete_bookmark)
         toolbar_layout.addWidget(delete_btn)
 
         toolbar_layout.addWidget(QFrame())  # Separator
 
         # Import button
-        import_btn = SecondaryButton("Import") if SecondaryButton else QPushButton("Import")
-        import_btn.setAccessibleName("Import bookmarks")
+        import_btn = _ui_widget(SecondaryButton, 'Legacy.s2cff9baabf56ca00', 'setText') if SecondaryButton else _ui_widget(QPushButton, 'Legacy.s2cff9baabf56ca00', 'setText')
+        _ui_bind(import_btn, 'setAccessibleName', 'Legacy.se39ba79b8f3f9001')
         import_btn.clicked.connect(self.import_bookmarks)
         toolbar_layout.addWidget(import_btn)
 
         # Export button
-        export_btn = SecondaryButton("Export") if SecondaryButton else QPushButton("Export")
-        export_btn.setAccessibleName("Export bookmarks")
+        export_btn = _ui_widget(SecondaryButton, 'Legacy.s3664895579f0a7e6', 'setText') if SecondaryButton else _ui_widget(QPushButton, 'Legacy.s3664895579f0a7e6', 'setText')
+        _ui_bind(export_btn, 'setAccessibleName', 'Legacy.sc4e230961250a02f')
         export_btn.clicked.connect(self.export_bookmarks)
         toolbar_layout.addWidget(export_btn)
 
         toolbar_layout.addStretch()
 
         # Search box
-        search_label = QLabel("Search:")
+        search_label = _ui_widget(QLabel, 'Legacy.sbd689c15b2ca8b8c', 'setText')
         toolbar_layout.addWidget(search_label)
 
         self.search_box = TextInput("Search", "Search bookmarks...") if TextInput else QLineEdit()
-        self.search_box.setAccessibleName("Search bookmarks")
+        _ui_bind(self.search_box, 'setAccessibleName', 'Legacy.sf7e62e8448fcc316')
         self.search_box.textChanged.connect(self.search_bookmarks)
         toolbar_layout.addWidget(self.search_box)
 
@@ -991,36 +992,36 @@ class BookmarkManagerGUI(QMainWindow):
         layout = QVBoxLayout(panel)
 
         # Search filters
-        filter_group = QGroupBox("Search Filters")
+        filter_group = _ui_widget(QGroupBox, 'Legacy.s9fc1b712bbe275f1', 'setTitle')
         filter_layout = QVBoxLayout(filter_group)
 
         self.search_field_combo = QComboBox()
-        self.search_field_combo.setAccessibleName("Search field filter")
+        _ui_bind(self.search_field_combo, 'setAccessibleName', 'Legacy.s7c15a696cd28d06d')
         self.search_field_combo.addItems(
             ["All Fields", "Title", "URL", "Tags", "Description"]
         )
-        filter_layout.addWidget(QLabel("Search in:"))
+        filter_layout.addWidget(_ui_widget(QLabel, 'Legacy.s2e2af39e4acaf21a', 'setText'))
         filter_layout.addWidget(self.search_field_combo)
 
         layout.addWidget(filter_group)
 
         # Folders
-        folders_group = QGroupBox("Folders")
+        folders_group = _ui_widget(QGroupBox, 'Legacy.sc4d6bb200f4c058a', 'setTitle')
         folders_layout = QVBoxLayout(folders_group)
 
         self.folders_list = QListWidget()
-        self.folders_list.setAccessibleName("Bookmark folders list")
+        _ui_bind(self.folders_list, 'setAccessibleName', 'Legacy.s9a33cd7d64ec1c68')
         self.folders_list.itemClicked.connect(self.filter_by_folder)
         folders_layout.addWidget(self.folders_list)
 
         layout.addWidget(folders_group)
 
         # Tags
-        tags_group = QGroupBox("Tags")
+        tags_group = _ui_widget(QGroupBox, 'Legacy.s1331275bc537b4c2', 'setTitle')
         tags_layout = QVBoxLayout(tags_group)
 
         self.tags_list = QListWidget()
-        self.tags_list.setAccessibleName("Bookmark tags list")
+        _ui_bind(self.tags_list, 'setAccessibleName', 'Legacy.sc27756cf08c89d1d')
         self.tags_list.itemClicked.connect(self.filter_by_tag)
         tags_layout.addWidget(self.tags_list)
 
@@ -1037,7 +1038,7 @@ class BookmarkManagerGUI(QMainWindow):
 
         # Bookmark table
         self.bookmark_table = QTableWidget()
-        self.bookmark_table.setAccessibleName("Bookmarks table")
+        _ui_bind(self.bookmark_table, 'setAccessibleName', 'Legacy.s76f2550bbb01abeb')
         self.bookmark_table.setColumnCount(6)
         self.bookmark_table.setHorizontalHeaderLabels(
             ["Title", "URL", "Tags", "Folder", "Created", "Actions"]

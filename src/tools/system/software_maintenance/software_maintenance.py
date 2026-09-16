@@ -7,6 +7,7 @@ package directory.
 """
 
 from __future__ import annotations
+from src.rfu.localization import localized_widget as _ui_widget, bind_literal as _ui_bind
 
 try:
     from . import SoftwareMaintenanceGUI
@@ -25,7 +26,7 @@ def main() -> None:
 
     app = QApplication(sys.argv)
     window = SoftwareMaintenanceGUI()
-    window.setWindowTitle("Software Maintenance Toolkit - Richard's File Utilities")
+    _ui_bind(window, 'setWindowTitle', 'Legacy.s36f459ba42f1a233')
     window.show()
     sys.exit(app.exec_())
 

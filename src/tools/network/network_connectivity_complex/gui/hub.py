@@ -1,4 +1,6 @@
 """Network Connectivity Hub - Main interface for all network tools."""
+from src.rfu.localization import localized_widget as _ui_widget, bind_literal as _ui_bind
+from src.rfu import font_tokens
 
 from typing import Any, Dict, List, Optional
 
@@ -125,7 +127,8 @@ class NetworkToolCard(QWidget):
             icon_label = QLabel()
             # icon_label.setPixmap(QPixmap(self.icon_path).scaled(32, 32))
             icon_label.setText("🔧")  # Placeholder emoji
-            icon_label.setStyleSheet("font-size: 24px;")
+            icon_label.setStyleSheet("")
+            font_tokens.bind(icon_label, "font.body")
             header_layout.addWidget(icon_label)
 
         # Title
@@ -145,7 +148,7 @@ class NetworkToolCard(QWidget):
         layout.addStretch()
 
         # Launch button
-        self.launch_button = PrimaryButton("Launch")
+        self.launch_button = _ui_widget(PrimaryButton, 'Legacy.sccf56ef5db0b82a5', 'setText')
         self.launch_button.setMaximumWidth(100)
         layout.addWidget(self.launch_button, alignment=Qt.AlignRight)
 
@@ -188,25 +191,22 @@ class NetworkToolsOverview(QWidget):
         layout.setSpacing(Spacing.LARGE_SPACING)
 
         # Title
-        title_label = QLabel("Network Connectivity Tools")
+        title_label = _ui_widget(QLabel, 'Legacy.s45acab8512bdb8a1', 'setText')
         title_label.setStyleSheet(
             f"""
             QLabel {{
                 color: {Colors.TEXT_PRIMARY};
-                font-size: 24px;
+
                 font-weight: bold;
                 margin-bottom: {Spacing.MEDIUM_SPACING}px;
             }}
         """
         )
+        font_tokens.bind(title_label, "font.toolHeader")
         layout.addWidget(title_label, alignment=Qt.AlignCenter)
 
         # Description
-        desc_label = QLabel(
-            "Comprehensive network analysis and monitoring tools for "
-            "bandwidth monitoring, port scanning, Wi-Fi analysis, "
-            "and LAN file transfer."
-        )
+        desc_label = _ui_widget(QLabel, 'Legacy.s87c8ee5c12c9df99', 'setText')
         desc_label.setWordWrap(True)
         desc_label.setAlignment(Qt.AlignCenter)
         ThemeManager.style_label(desc_label)
@@ -324,7 +324,7 @@ class NetworkConnectivityHub(StandardWindow):
         """Setup hub UI."""
         # Create main tab widget
         self.tab_widget = QTabWidget()
-        self.tab_widget.setAccessibleName("Network connectivity tool tabs")
+        _ui_bind(self.tab_widget, 'setAccessibleName', 'Legacy.sbd706e69654a9f67')
         self.tab_widget.setTabPosition(QTabWidget.North)
         self.tab_widget.setMovable(True)
         self.tab_widget.setTabsClosable(True)

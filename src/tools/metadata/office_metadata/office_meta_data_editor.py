@@ -4,6 +4,8 @@ Office Metadata Editor Tool for Richard's File Utilities
 
 A comprehensive office document metadata viewing and editing utility.
 """
+from src.rfu.localization import localized_widget as _ui_widget, bind_literal as _ui_bind
+from src.rfu import font_tokens
 
 import json
 import os
@@ -78,13 +80,14 @@ except ImportError:
                 header.setStyleSheet(
                     """
                     QLabel {
-                        font-size: 18px;
+
                         font-weight: bold;
                         padding: 10px;
                         margin-bottom: 10px;
                     }
                 """
                 )
+                font_tokens.bind(header, "font.toolHeader")
                 return header
 
             def get_file_path(self, title="Select File", file_filter="All Files (*)"):
@@ -402,7 +405,7 @@ class OfficeMetaDataEditorGUI(StandardWindow):
 
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Office Metadata Editor - Richard's File Utilities")
+        _ui_bind(self, 'setWindowTitle', 'Legacy.s518d5962c76ad2cb')
         self.worker = None
         self.selected_files = []
         self.current_metadata = {}
@@ -476,44 +479,45 @@ class OfficeMetaDataEditorGUI(StandardWindow):
         left_layout = QVBoxLayout(left_panel)
 
         # File selection group
-        selection_group = QGroupBox("Document Selection")
+        selection_group = _ui_widget(QGroupBox, 'Legacy.saba0e17c23aebae4', 'setTitle')
         selection_layout = QGridLayout(selection_group)
 
         # File input
-        selection_layout.addWidget(QLabel("Files:"), 0, 0)
+        selection_layout.addWidget(_ui_widget(QLabel, 'Legacy.se1a1abcfc47a58d9', 'setText'), 0, 0)
         self.files_edit = TextInput("Files", "Select office documents...")
-        self.files_edit.setAccessibleName("Document files path")
+        _ui_bind(self.files_edit, 'setAccessibleName', 'Legacy.sd39cbe35afb2e13b')
         self.files_edit.setReadOnly(True)
         selection_layout.addWidget(self.files_edit, 0, 1)
 
         # Browse buttons
-        self.browse_files_button = SecondaryButton("Browse Documents")
-        self.browse_files_button.setAccessibleName("Browse for documents")
+        self.browse_files_button = _ui_widget(SecondaryButton, 'Legacy.sb8d0ac733055d758', 'setText')
+        _ui_bind(self.browse_files_button, 'setAccessibleName', 'Legacy.sd880c3fe088be05a')
         self.browse_files_button.clicked.connect(self.browse_files)
         selection_layout.addWidget(self.browse_files_button, 0, 2)
 
-        self.browse_folder_button = SecondaryButton("Browse Folder")
-        self.browse_folder_button.setAccessibleName("Browse for folder")
+        self.browse_folder_button = _ui_widget(SecondaryButton, 'Legacy.s28bbf5e4e8dc04d6', 'setText')
+        _ui_bind(self.browse_folder_button, 'setAccessibleName', 'Legacy.s6556155f1285944b')
         self.browse_folder_button.clicked.connect(self.browse_folder)
         selection_layout.addWidget(self.browse_folder_button, 0, 3)
 
         # Options
-        self.recursive_check = QCheckBox("Include subdirectories")
+        self.recursive_check = _ui_widget(QCheckBox, 'Legacy.s7fe3b250ab4b4940', 'setText')
         self.recursive_check.setChecked(False)
-        self.recursive_check.setAccessibleName("Include subdirectories")
+        _ui_bind(self.recursive_check, 'setAccessibleName', 'Legacy.s7fe3b250ab4b4940')
         self.recursive_check.setMinimumHeight(44)
         selection_layout.addWidget(self.recursive_check, 1, 0, 1, 2)
 
         # Supported formats info
-        formats_label = QLabel("Supported: DOCX, XLSX, PPTX, DOC, XLS, PPT, PDF")
+        formats_label = _ui_widget(QLabel, 'Legacy.s0c0d2aaef2c0b55b', 'setText')
         formats_label.setStyleSheet(
-            f"color: {token('text_secondary')}; font-size: 10px;"
+            f"color: {token('text_secondary')}; "
         )
+        font_tokens.bind(formats_label, "font.body")
         selection_layout.addWidget(formats_label, 1, 2, 1, 2)
 
         # Action buttons
-        self.read_button = PrimaryButton("Read Metadata")
-        self.read_button.setAccessibleName("Read metadata")
+        self.read_button = _ui_widget(PrimaryButton, 'Legacy.s59fb7cfbd558de24', 'setText')
+        _ui_bind(self.read_button, 'setAccessibleName', 'Legacy.sc739b15d4f665cf3')
         self.read_button.clicked.connect(self.read_metadata)
         self.read_button.setStyleSheet(
             """
@@ -532,8 +536,8 @@ class OfficeMetaDataEditorGUI(StandardWindow):
         )
         selection_layout.addWidget(self.read_button, 2, 0, 1, 2)
 
-        self.edit_button = SecondaryButton("Edit Metadata")
-        self.edit_button.setAccessibleName("Edit metadata")
+        self.edit_button = _ui_widget(SecondaryButton, 'Legacy.s7977534510c6f887', 'setText')
+        _ui_bind(self.edit_button, 'setAccessibleName', 'Legacy.sa4ce10f7b6152582')
         self.edit_button.clicked.connect(self.edit_metadata)
         self.edit_button.setStyleSheet(
             """
@@ -556,29 +560,29 @@ class OfficeMetaDataEditorGUI(StandardWindow):
         left_layout.addWidget(selection_group)
 
         # Progress section
-        progress_group = QGroupBox("Progress")
+        progress_group = _ui_widget(QGroupBox, 'Legacy.s4664827f8e890192', 'setTitle')
         progress_layout = QVBoxLayout(progress_group)
 
         self.progress_bar = LoadingIndicator(parent=self, cancellable=False, message="Working...")
         progress_layout.addWidget(self.progress_bar)
 
-        self.status_label = QLabel("Ready to process office documents")
+        self.status_label = _ui_widget(QLabel, 'Legacy.s74325a97bd0cd095', 'setText')
         progress_layout.addWidget(self.status_label)
 
         left_layout.addWidget(progress_group)
 
         # Quick actions group
-        actions_group = QGroupBox("Quick Actions")
+        actions_group = _ui_widget(QGroupBox, 'Legacy.s2cc2b6f7f200e65c', 'setTitle')
         actions_layout = QVBoxLayout(actions_group)
 
-        self.export_button = SecondaryButton("Export Metadata")
-        self.export_button.setAccessibleName("Export metadata")
+        self.export_button = _ui_widget(SecondaryButton, 'Legacy.s7990616d86618452', 'setText')
+        _ui_bind(self.export_button, 'setAccessibleName', 'Legacy.s87b997c9c29a0662')
         self.export_button.clicked.connect(self.export_metadata)
         self.export_button.setEnabled(False)
         actions_layout.addWidget(self.export_button)
 
-        self.clear_button = SecondaryButton("Clear Results")
-        self.clear_button.setAccessibleName("Clear results")
+        self.clear_button = _ui_widget(SecondaryButton, 'Legacy.s6b46cb7814332a7a', 'setText')
+        _ui_bind(self.clear_button, 'setAccessibleName', 'Legacy.s9d613b6c8ecdca7d')
         self.clear_button.clicked.connect(self.clear_results)
         actions_layout.addWidget(self.clear_button)
 
@@ -592,15 +596,15 @@ class OfficeMetaDataEditorGUI(StandardWindow):
 
         # Metadata tabs
         self.metadata_tabs = QTabWidget()
-        self.metadata_tabs.setAccessibleName("Metadata tabs")
+        _ui_bind(self.metadata_tabs, 'setAccessibleName', 'Legacy.s841b0a5c37417183')
 
         # File list tab
         self.file_list_tab = QWidget()
         file_list_layout = QVBoxLayout(self.file_list_tab)
 
-        file_list_layout.addWidget(QLabel("Processed Documents:"))
+        file_list_layout.addWidget(_ui_widget(QLabel, 'Legacy.s9aa6a8548e908a67', 'setText'))
         self.file_tree = QTreeWidget()
-        self.file_tree.setAccessibleName("Document files list")
+        _ui_bind(self.file_tree, 'setAccessibleName', 'Legacy.s845c16c21af9aaf7')
         self.file_tree.setHeaderLabels(["Filename", "Type", "Size", "Modified"])
         self.file_tree.itemClicked.connect(self.show_file_metadata)
         file_list_layout.addWidget(self.file_tree)
@@ -611,9 +615,9 @@ class OfficeMetaDataEditorGUI(StandardWindow):
         self.builtin_tab = QWidget()
         builtin_layout = QVBoxLayout(self.builtin_tab)
 
-        builtin_layout.addWidget(QLabel("Built-in Properties:"))
+        builtin_layout.addWidget(_ui_widget(QLabel, 'Legacy.sb05d3bbb47a769f1', 'setText'))
         self.builtin_table = QTableWidget()
-        self.builtin_table.setAccessibleName("Built-in properties table")
+        _ui_bind(self.builtin_table, 'setAccessibleName', 'Legacy.se5864ab887b8c0c1')
         self.builtin_table.setColumnCount(2)
         self.builtin_table.setHorizontalHeaderLabels(["Property", "Value"])
         builtin_layout.addWidget(self.builtin_table)
@@ -624,9 +628,9 @@ class OfficeMetaDataEditorGUI(StandardWindow):
         self.document_tab = QWidget()
         document_layout = QVBoxLayout(self.document_tab)
 
-        document_layout.addWidget(QLabel("Document Properties:"))
+        document_layout.addWidget(_ui_widget(QLabel, 'Legacy.sb69928796aad235c', 'setText'))
         self.document_table = QTableWidget()
-        self.document_table.setAccessibleName("Document properties table")
+        _ui_bind(self.document_table, 'setAccessibleName', 'Legacy.s77d9e8a9ebb2551c')
         self.document_table.setColumnCount(2)
         self.document_table.setHorizontalHeaderLabels(["Property", "Value"])
         document_layout.addWidget(self.document_table)
@@ -637,9 +641,9 @@ class OfficeMetaDataEditorGUI(StandardWindow):
         self.custom_tab = QWidget()
         custom_layout = QVBoxLayout(self.custom_tab)
 
-        custom_layout.addWidget(QLabel("Custom Properties:"))
+        custom_layout.addWidget(_ui_widget(QLabel, 'Legacy.sf29870b740a4b5b5', 'setText'))
         self.custom_table = QTableWidget()
-        self.custom_table.setAccessibleName("Custom properties table")
+        _ui_bind(self.custom_table, 'setAccessibleName', 'Legacy.sa0921105b152bc0f')
         self.custom_table.setColumnCount(2)
         self.custom_table.setHorizontalHeaderLabels(["Property", "Value"])
         custom_layout.addWidget(self.custom_table)
@@ -1070,18 +1074,18 @@ class OfficeMetaDataEditorGUI(StandardWindow):
         """Show help dialog for Office Metadata Editor."""
         help_text = """
         <h2>Office Metadata Editor - Help</h2>
-        
+
         <h3>Overview:</h3>
         <p>The Office Metadata Editor allows you to view and analyze
         metadata from various office document formats.</p>
-        
+
         <h3>Supported Formats:</h3>
         <ul>
         <li><b>DOCX, XLSX, PPTX:</b> Modern Office formats with full support</li>
         <li><b>DOC, XLS, PPT:</b> Legacy formats (limited support)</li>
         <li><b>PDF:</b> Basic metadata extraction</li>
         </ul>
-        
+
         <h3>Features:</h3>
         <ul>
         <li><b>Batch Processing:</b> Analyze multiple documents at once</li>
@@ -1089,7 +1093,7 @@ class OfficeMetaDataEditorGUI(StandardWindow):
         <li><b>Property Types:</b> Built-in, document, and custom properties</li>
         <li><b>Search:</b> Recursive folder scanning</li>
         </ul>
-        
+
         <h3>Usage:</h3>
         <ol>
         <li>Select documents or folders using Browse buttons</li>
@@ -1097,7 +1101,7 @@ class OfficeMetaDataEditorGUI(StandardWindow):
         <li>View results in the tabbed interface</li>
         <li>Export results using the Export button</li>
         </ol>
-        
+
         <h3>Keyboard Shortcuts:</h3>
         <ul>
         <li><b>Ctrl+O:</b> Open documents</li>

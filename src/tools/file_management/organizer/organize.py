@@ -3,6 +3,7 @@
 This module provides functionality to organize files based on
 customizable rules such as file type, size, date, and naming patterns.
 """
+from src.rfu.localization import localized_widget as _ui_widget, bind_literal as _ui_bind
 
 import logging
 import os
@@ -1010,16 +1011,16 @@ class RulesDialog(QDialog):
 
     def _init_ui(self) -> None:
         """Initialize the dialog UI."""
-        self.setWindowTitle("Manage Organization Rules")
+        _ui_bind(self, 'setWindowTitle', 'Legacy.sab7b0315f9de7bfc')
         self.setGeometry(100, 100, 500, 400)
 
         layout = QVBoxLayout()
 
         # Rules list
         self.rules_list = QListWidget()
-        self.rules_list.setAccessibleName("Organization rules")
+        _ui_bind(self.rules_list, 'setAccessibleName', 'Legacy.s1a3b4e0512f971c2')
         self._populate_rules_list()
-        layout.addWidget(QLabel("Organization Rules:"))
+        layout.addWidget(_ui_widget(QLabel, 'Legacy.s1b732e8bdc4ef0f3', 'setText'))
         layout.addWidget(self.rules_list)
 
         # Buttons
@@ -1106,16 +1107,16 @@ class RuleEditDialog(QDialog):
 
     def _init_ui(self) -> None:
         """Initialize the dialog UI."""
-        self.setWindowTitle("Edit Rule")
+        _ui_bind(self, 'setWindowTitle', 'Legacy.s257ceefcf23f0dc0')
         self.setGeometry(100, 100, 400, 200)
 
         layout = QVBoxLayout()
 
         # Rule name
         name_layout = QHBoxLayout()
-        name_layout.addWidget(QLabel("Rule Name:"))
+        name_layout.addWidget(_ui_widget(QLabel, 'Legacy.s8fdad3bc4fb3cb50', 'setText'))
         self.name_edit = QLineEdit()
-        self.name_edit.setAccessibleName("Rule name")
+        _ui_bind(self.name_edit, 'setAccessibleName', 'Legacy.s7c9de4e8e989511f')
         if self._rule:
             self.name_edit.setText(self._rule.name)
         name_layout.addWidget(self.name_edit)
@@ -1123,9 +1124,9 @@ class RuleEditDialog(QDialog):
 
         # File pattern
         pattern_layout = QHBoxLayout()
-        pattern_layout.addWidget(QLabel("File Pattern:"))
+        pattern_layout.addWidget(_ui_widget(QLabel, 'Legacy.sea823d52add28a6e', 'setText'))
         self.pattern_edit = QLineEdit()
-        self.pattern_edit.setAccessibleName("File pattern")
+        _ui_bind(self.pattern_edit, 'setAccessibleName', 'Legacy.sd7e7b6eb5ff6f813')
         if self._rule:
             self.pattern_edit.setText(self._rule.pattern)
         pattern_layout.addWidget(self.pattern_edit)
@@ -1133,9 +1134,9 @@ class RuleEditDialog(QDialog):
 
         # Destination folder
         dest_layout = QHBoxLayout()
-        dest_layout.addWidget(QLabel("Destination:"))
+        dest_layout.addWidget(_ui_widget(QLabel, 'Legacy.s0c109e62332e2b1b', 'setText'))
         self.dest_edit = QLineEdit()
-        self.dest_edit.setAccessibleName("Destination folder")
+        _ui_bind(self.dest_edit, 'setAccessibleName', 'Legacy.se5cc0d5cbec38423')
         if self._rule:
             self.dest_edit.setText(self._rule.destination)
         dest_layout.addWidget(self.dest_edit)

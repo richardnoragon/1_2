@@ -85,49 +85,19 @@ class FileSplitterConfig:
         """Get default configuration file path."""
         # Use file_utilities_2 configuration directory
         config_dir = os.path.expanduser("~/.file_utilities_2")
-        os.makedirs(config_dir, exist_ok=True)
         return os.path.join(config_dir, "file_splitter_config.json")
 
+    def _preference_store(self):
+        from src.core.preferences.legacy_json import LegacyJSONPreferences
+        return LegacyJSONPreferences("file-splitter", self.DEFAULT_CONFIG)
+
     def _load_config(self):
-        """Load configuration from file."""
-        try:
-            if os.path.exists(self.config_path):
-                with open(self.config_path, "r", encoding="utf-8") as f:
-                    self._user_config = json.load(f)
-
-                # Merge user config with defaults
-                self._config.update(self._user_config)
-
-                self.logger.info(
-                    f"Configuration loaded: {len(self._user_config)} settings"
-                )
-            else:
-                self.logger.info("No existing configuration found, using defaults")
-
-        except (json.JSONDecodeError, IOError) as e:
-            self.logger.warning(f"Failed to load configuration: {e}")
-            self._user_config = {}
+        self._config = self._preference_store().load(self.config_path)
+        self._user_config = dict(self._config)
 
     def save_config(self):
-        """Save current configuration to file."""
-        try:
-            # Ensure directory exists
-            os.makedirs(os.path.dirname(self.config_path), exist_ok=True)
-
-            # Save only non-default values to keep file clean
-            config_to_save = {}
-            for key, value in self._config.items():
-                if key not in self.DEFAULT_CONFIG or self.DEFAULT_CONFIG[key] != value:
-                    config_to_save[key] = value
-
-            with open(self.config_path, "w", encoding="utf-8") as f:
-                json.dump(config_to_save, f, indent=2, ensure_ascii=False)
-
-            self._user_config = config_to_save
-            self.logger.info(f"Configuration saved: {len(config_to_save)} settings")
-
-        except (IOError, OSError) as e:
-            self.logger.error(f"Failed to save configuration: {e}")
+        self._preference_store().save(self._config)
+        self._user_config = dict(self._config)
 
     def get(self, key: str, default: Any = None) -> Any:
         """

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <ui version="4.0">
  <class>CompressDecompress</class>
  <widget class="QMainWindow" name="CompressDecompress">
@@ -20,6 +20,9 @@
       <property name="text">
        <string>Select Folder to Compress:</string>
       </property>
+      <property name="rfuLocale_setText" stdset="0">
+       <string notr="true">Legacy.s09fa0d7ad7ed24ec</string>
+      </property>
      </widget>
     </item>
     <item>
@@ -29,12 +32,18 @@
         <property name="placeholderText">
          <string>Enter folder path...</string>
         </property>
+        <property name="rfuLocale_setPlaceholderText" stdset="0">
+         <string notr="true">Legacy.s5b8c4ef76f75c883</string>
+        </property>
        </widget>
       </item>
       <item>
        <widget class="QPushButton" name="buttonBrowseFolder">
         <property name="text">
          <string>Browse</string>
+        </property>
+        <property name="rfuLocale_setText" stdset="0">
+         <string notr="true">Legacy.s3227aa9666253f7a</string>
         </property>
        </widget>
       </item>
@@ -44,6 +53,9 @@
      <widget class="QLabel" name="labelFormat">
       <property name="text">
        <string>Compression Format:</string>
+      </property>
+      <property name="rfuLocale_setText" stdset="0">
+       <string notr="true">Legacy.s2303d51f31bb716d</string>
       </property>
      </widget>
     </item>
@@ -76,6 +88,9 @@
       <property name="text">
        <string>Compression Level (0-9):</string>
       </property>
+      <property name="rfuLocale_setText" stdset="0">
+       <string notr="true">Legacy.scce21f55c0af8019</string>
+      </property>
      </widget>
     </item>
     <item>
@@ -99,6 +114,9 @@
       <property name="text">
        <string>Password (optional):</string>
       </property>
+      <property name="rfuLocale_setText" stdset="0">
+       <string notr="true">Legacy.sa1741e8b125b993c</string>
+      </property>
      </widget>
     </item>
     <item>
@@ -109,12 +127,18 @@
       <property name="placeholderText">
        <string>Enter password to protect archive...</string>
       </property>
+      <property name="rfuLocale_setPlaceholderText" stdset="0">
+       <string notr="true">Legacy.s83c4d5028d5cb707</string>
+      </property>
      </widget>
     </item>
     <item>
      <widget class="QLabel" name="labelOutput">
       <property name="text">
        <string>Specify Output File:</string>
+      </property>
+      <property name="rfuLocale_setText" stdset="0">
+       <string notr="true">Legacy.s9b8b966fef172108</string>
       </property>
      </widget>
     </item>
@@ -125,12 +149,18 @@
         <property name="placeholderText">
          <string>Enter output file path...</string>
         </property>
+        <property name="rfuLocale_setPlaceholderText" stdset="0">
+         <string notr="true">Legacy.sf2d1a5dfce3a0ee1</string>
+        </property>
        </widget>
       </item>
       <item>
        <widget class="QPushButton" name="buttonBrowseOutput">
         <property name="text">
          <string>Browse</string>
+        </property>
+        <property name="rfuLocale_setText" stdset="0">
+         <string notr="true">Legacy.s3227aa9666253f7a</string>
         </property>
        </widget>
       </item>
@@ -141,12 +171,18 @@
       <property name="text">
        <string>Compress</string>
       </property>
+      <property name="rfuLocale_setText" stdset="0">
+       <string notr="true">Legacy.s033fc0445b90d3a7</string>
+      </property>
      </widget>
     </item>
     <item>
      <widget class="QLabel" name="labelDecompress">
       <property name="text">
        <string>Select File to Decompress:</string>
+      </property>
+      <property name="rfuLocale_setText" stdset="0">
+       <string notr="true">Legacy.s950997c8e936af99</string>
       </property>
      </widget>
     </item>
@@ -157,12 +193,18 @@
         <property name="placeholderText">
          <string>Enter file path...</string>
         </property>
+        <property name="rfuLocale_setPlaceholderText" stdset="0">
+         <string notr="true">Legacy.sd94dae5c52956c66</string>
+        </property>
        </widget>
       </item>
       <item>
        <widget class="QPushButton" name="buttonBrowseDecompress">
         <property name="text">
          <string>Browse</string>
+        </property>
+        <property name="rfuLocale_setText" stdset="0">
+         <string notr="true">Legacy.s3227aa9666253f7a</string>
         </property>
        </widget>
       </item>
@@ -172,6 +214,9 @@
      <widget class="QPushButton" name="buttonDecompress">
       <property name="text">
        <string>Decompress</string>
+      </property>
+      <property name="rfuLocale_setText" stdset="0">
+       <string notr="true">Legacy.sba208c4d49178dcb</string>
       </property>
      </widget>
     </item>
@@ -190,11 +235,14 @@
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="actionExit"/>
+    <addaction name="actionExit" />
+    <property name="rfuLocale_setTitle" stdset="0">
+     <string notr="true">Legacy.s50009ce1da4d15e1</string>
+    </property>
    </widget>
-   <addaction name="menuFile"/>
+   <addaction name="menuFile" />
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QStatusBar" name="statusbar" />
   <action name="actionExit">
    <property name="text">
     <string>Exit</string>
@@ -202,8 +250,14 @@
    <property name="shortcut">
     <string>Ctrl+Q</string>
    </property>
+   <property name="rfuLocale_setText" stdset="0">
+    <string notr="true">Legacy.sd17d84a604994b72</string>
+   </property>
   </action>
+  <property name="rfuLocale_setWindowTitle" stdset="0">
+   <string notr="true">Legacy.s23faaefd5bebe158</string>
+  </property>
  </widget>
- <resources/>
- <connections/>
+ <resources />
+ <connections />
 </ui>

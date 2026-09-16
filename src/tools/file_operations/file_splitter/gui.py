@@ -4,6 +4,8 @@ Provides the enhanced Qt-based interface for splitting large files into
 manageable chunks and joining them back together while integrating with the
 shared StandardWindow framework, logging, and configuration helpers.
 """
+from src.rfu.localization import localized_widget as _ui_widget, bind_literal as _ui_bind
+from src.rfu import font_tokens
 
 import math
 import os
@@ -155,11 +157,11 @@ class FileSplitJoinGUI(StandardWindow):
             layout = QVBoxLayout(central_widget)
 
         # Create header
-        header_label = QLabel("File Splitter & Joiner")
+        header_label = _ui_widget(QLabel, 'Legacy.s437ccb48e73d7cdc', 'setText')
         header_label.setStyleSheet(
             """
             QLabel {
-                font-size: 18px;
+
                 font-weight: bold;
                 color: {token('text_primary')};
                 padding: 10px;
@@ -169,6 +171,7 @@ class FileSplitJoinGUI(StandardWindow):
             }
         """
         )
+        font_tokens.bind(header_label, "font.toolHeader")
         layout.addWidget(header_label)
 
         # Create split section
@@ -182,62 +185,55 @@ class FileSplitJoinGUI(StandardWindow):
 
     def _create_split_section(self, parent_layout):
         """Create the file splitting section."""
-        split_group = QGroupBox("Split File")
+        split_group = _ui_widget(QGroupBox, 'Legacy.s620ce9fb1020a2da', 'setTitle')
         split_layout = QGridLayout(split_group)
 
         # Input file selection
-        split_layout.addWidget(QLabel("File to Split:"), 0, 0)
+        split_layout.addWidget(_ui_widget(QLabel, 'Legacy.scc14a62bfd5df0c5', 'setText'), 0, 0)
         self.split_file_edit = QLineEdit()
-        self.split_file_edit.setAccessibleName("File to split")
-        self.split_file_edit.setPlaceholderText("Select file to split...")
+        _ui_bind(self.split_file_edit, 'setAccessibleName', 'Legacy.sbeeffea7ce781e78')
+        _ui_bind(self.split_file_edit, 'setPlaceholderText', 'Legacy.s73635a38c219cd02')
         split_layout.addWidget(self.split_file_edit, 0, 1)
 
-        self.browse_split_button = QPushButton("Browse")
-        self.browse_split_button.setAccessibleName("Browse for file to split")
+        self.browse_split_button = _ui_widget(QPushButton, 'Legacy.s3227aa9666253f7a', 'setText')
+        _ui_bind(self.browse_split_button, 'setAccessibleName', 'Legacy.s8b25f6b043bdba27')
         self.browse_split_button.setMinimumHeight(44)
         self.browse_split_button.clicked.connect(self.browse_split_file)
         split_layout.addWidget(self.browse_split_button, 0, 2)
 
         # Chunk size
-        split_layout.addWidget(QLabel("Chunk Size (MB):"), 1, 0)
+        split_layout.addWidget(_ui_widget(QLabel, 'Legacy.s40ca0b7ac864a185', 'setText'), 1, 0)
         self.chunk_size_spin = QSpinBox()
-        self.chunk_size_spin.setAccessibleName("Chunk size in megabytes")
+        _ui_bind(self.chunk_size_spin, 'setAccessibleName', 'Legacy.s2184df6d8f299715')
         self.chunk_size_spin.setMinimumHeight(44)
         self.chunk_size_spin.setRange(1, 2048)
         self.chunk_size_spin.setValue(100)
         split_layout.addWidget(self.chunk_size_spin, 1, 1)
 
         # Output directory
-        split_layout.addWidget(QLabel("Output Directory:"), 2, 0)
+        split_layout.addWidget(_ui_widget(QLabel, 'Legacy.sf14245e1dd8c28ac', 'setText'), 2, 0)
         self.split_output_edit = QLineEdit()
-        self.split_output_edit.setAccessibleName("Split output directory")
-        self.split_output_edit.setPlaceholderText("Same as input file")
+        _ui_bind(self.split_output_edit, 'setAccessibleName', 'Legacy.s6f9bb2768cf6e9d2')
+        _ui_bind(self.split_output_edit, 'setPlaceholderText', 'Legacy.s756dd9d7975c1979')
         split_layout.addWidget(self.split_output_edit, 2, 1)
 
-        self.browse_split_output_button = QPushButton("Browse")
-        self.browse_split_output_button.setAccessibleName(
-            "Browse for split output directory"
-        )
+        self.browse_split_output_button = _ui_widget(QPushButton, 'Legacy.s3227aa9666253f7a', 'setText')
+        _ui_bind(self.browse_split_output_button, 'setAccessibleName', 'Legacy.sc615df9b2f4f7a36')
         self.browse_split_output_button.setMinimumHeight(44)
         self.browse_split_output_button.clicked.connect(self.browse_split_output)
         split_layout.addWidget(self.browse_split_output_button, 2, 2)
 
         # Preview button (dry run — must precede split button per spec §5.2)
-        self.preview_split_button = QPushButton("🔍 Preview Split (Dry Run)")
-        self.preview_split_button.setAccessibleName(
-            "Preview split without creating files"
-        )
+        self.preview_split_button = _ui_widget(QPushButton, 'Legacy.s151024547572d853', 'setText')
+        _ui_bind(self.preview_split_button, 'setAccessibleName', 'Legacy.sa54835fceef0f56a')
         self.preview_split_button.setMinimumHeight(44)
         self.preview_split_button.clicked.connect(self.preview_split)
-        self.preview_split_button.setToolTip(
-            "Calculate how many parts would be created and their sizes "
-            "without writing any files."
-        )
+        _ui_bind(self.preview_split_button, 'setToolTip', 'Legacy.s70d8b635813eb754')
         split_layout.addWidget(self.preview_split_button, 3, 0, 1, 3)
 
         # Split button
-        self.split_button = QPushButton("Split File")
-        self.split_button.setAccessibleName("Split file into parts")
+        self.split_button = _ui_widget(QPushButton, 'Legacy.s620ce9fb1020a2da', 'setText')
+        _ui_bind(self.split_button, 'setAccessibleName', 'Legacy.s389ce2c62976a80d')
         self.split_button.setMinimumHeight(44)
         self.split_button.clicked.connect(self.split_file)
         self.split_button.setStyleSheet(
@@ -264,38 +260,38 @@ class FileSplitJoinGUI(StandardWindow):
 
     def _create_join_section(self, parent_layout):
         """Create the file joining section."""
-        join_group = QGroupBox("Join Files")
+        join_group = _ui_widget(QGroupBox, 'Legacy.sa95f7c3af18995bc', 'setTitle')
         join_layout = QGridLayout(join_group)
 
         # First part file selection
-        join_layout.addWidget(QLabel("First Part File:"), 0, 0)
+        join_layout.addWidget(_ui_widget(QLabel, 'Legacy.s69e911b276462de8', 'setText'), 0, 0)
         self.join_file_edit = QLineEdit()
-        self.join_file_edit.setAccessibleName("First part file to join")
-        self.join_file_edit.setPlaceholderText("Select first part file (.part001)...")
+        _ui_bind(self.join_file_edit, 'setAccessibleName', 'Legacy.s918450e51a439b1c')
+        _ui_bind(self.join_file_edit, 'setPlaceholderText', 'Legacy.s6db43a2714da8087')
         join_layout.addWidget(self.join_file_edit, 0, 1)
 
-        self.browse_join_button = QPushButton("Browse")
-        self.browse_join_button.setAccessibleName("Browse for first part file to join")
+        self.browse_join_button = _ui_widget(QPushButton, 'Legacy.s3227aa9666253f7a', 'setText')
+        _ui_bind(self.browse_join_button, 'setAccessibleName', 'Legacy.sfdccae902d0310d1')
         self.browse_join_button.setMinimumHeight(44)
         self.browse_join_button.clicked.connect(self.browse_join_file)
         join_layout.addWidget(self.browse_join_button, 0, 2)
 
         # Output file
-        join_layout.addWidget(QLabel("Output File:"), 1, 0)
+        join_layout.addWidget(_ui_widget(QLabel, 'Legacy.sb20feaf128a2aa6d', 'setText'), 1, 0)
         self.join_output_edit = QLineEdit()
-        self.join_output_edit.setAccessibleName("Join output file")
-        self.join_output_edit.setPlaceholderText("Auto-detected from metadata")
+        _ui_bind(self.join_output_edit, 'setAccessibleName', 'Legacy.s0cffccc211f47c8a')
+        _ui_bind(self.join_output_edit, 'setPlaceholderText', 'Legacy.sb875b52d8d42589b')
         join_layout.addWidget(self.join_output_edit, 1, 1)
 
-        self.browse_join_output_button = QPushButton("Browse")
-        self.browse_join_output_button.setAccessibleName("Browse for join output file")
+        self.browse_join_output_button = _ui_widget(QPushButton, 'Legacy.s3227aa9666253f7a', 'setText')
+        _ui_bind(self.browse_join_output_button, 'setAccessibleName', 'Legacy.sf5311a974fa2195a')
         self.browse_join_output_button.setMinimumHeight(44)
         self.browse_join_output_button.clicked.connect(self.browse_join_output)
         join_layout.addWidget(self.browse_join_output_button, 1, 2)
 
         # Join button
-        self.join_button = QPushButton("Join Files")
-        self.join_button.setAccessibleName("Join file parts")
+        self.join_button = _ui_widget(QPushButton, 'Legacy.sa95f7c3af18995bc', 'setText')
+        _ui_bind(self.join_button, 'setAccessibleName', 'Legacy.s3e05fb8334d496a6')
         self.join_button.setMinimumHeight(44)
         self.join_button.clicked.connect(self.join_files)
         self.join_button.setStyleSheet(
@@ -322,7 +318,7 @@ class FileSplitJoinGUI(StandardWindow):
 
     def _create_progress_section(self, parent_layout):
         """Create the progress monitoring section."""
-        progress_group = QGroupBox("Operation Progress")
+        progress_group = _ui_widget(QGroupBox, 'Legacy.s9ece66e0d30cdbcc', 'setTitle')
         progress_layout = QVBoxLayout(progress_group)
 
         # Progress bar
@@ -332,7 +328,7 @@ class FileSplitJoinGUI(StandardWindow):
 
         # Status text
         self.status_text = QTextEdit()
-        self.status_text.setAccessibleName("Operation progress status")
+        _ui_bind(self.status_text, 'setAccessibleName', 'Legacy.s749dd48425dda10a')
         self.status_text.setMaximumHeight(100)
         self.status_text.setReadOnly(True)
         progress_layout.addWidget(self.status_text)

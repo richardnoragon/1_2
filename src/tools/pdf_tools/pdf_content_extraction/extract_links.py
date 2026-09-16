@@ -1,124 +1,97 @@
-import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox
-from PyQt5 import QtWidgets, uic
-import pikepdf
-import os
-from log_config import setup_logger
+"""Read-only PDF link inspection with explicit atomic CSV export."""
+import csv
+from pathlib import Path
+import fitz
+from PyQt5.QtWidgets import QApplication, QFileDialog, QHBoxLayout, QTableWidget, QTableWidgetItem
+from src.core.document_export import atomic_export, check_cancel
+from src.gui.document_tool import DocumentToolWindow
+from src.rfu import font_tokens
+from src.rfu.localization import service, tr
 
-# Set up logger
-logger = setup_logger(__name__)
+
+def inspect_links(path, cancel=None):
+    links = []
+    with fitz.open(path) as document:
+        if document.needs_pass:
+            raise ValueError('An unencrypted PDF is required.')
+        for index, page in enumerate(document):
+            check_cancel(cancel)
+            for link in page.get_links():
+                if link.get('uri'):
+                    links.append((index + 1, link['uri']))
+    check_cancel(cancel)
+    return links
 
 
-class ExtractLinksUI(QMainWindow):
-    def __init__(self):
-        try:
-            super(ExtractLinksUI, self).__init__()
-            uic.loadUi("extract_links.ui", self)
+def export_links(source, links, destination, cancel=None):
+    def write(path):
+        with path.open('w', encoding='utf-8', newline='') as stream:
+            writer = csv.writer(stream)
+            writer.writerow(['Page', 'URL'])
+            for page, uri in links:
+                check_cancel(cancel)
+                writer.writerow([page, "'" + uri if uri.startswith(('=', '+', '-', '@', '\t', '\r')) else uri])
+    atomic_export(destination, [source], write, cancel)
 
-            # Connect signals
-            self.browseButton.clicked.connect(self.browse_file)
-            self.extractButton.clicked.connect(self.extract_links)
-            self.actionExit.triggered.connect(self.close)
 
-            logger.info("Link extractor initialized")
-            self.show()
-        except Exception as e:
-            logger.error("Failed to initialize link extractor: %s", str(e))
-            raise
+class ExtractLinksUI(DocumentToolWindow):
+    undo_supported = False
 
-    def browse_file(self):
-        try:
-            filename, _ = QFileDialog.getOpenFileName(
-                self, "Select PDF file", "", "PDF Files (*.pdf)"
-            )
-            if filename:
-                logger.info("Selected input file: %s", filename)
-                self.inputFileEdit.setText(filename)
-        except Exception as e:
-            logger.error("Error browsing for file: %s", str(e))
-            QMessageBox.critical(
-                self, "Error", f"Error selecting file: {str(e)}"
-            )
+    def __init__(self, parent=None):
+        super().__init__('pdf-extract-links', 'PDFLinks.TITLE', 'PDFLinks.HELP', parent)
+        self.source = None
+        self.links = []
+        self.table = QTableWidget(0, 2)
+        self.table.setEditTriggers(QTableWidget.NoEditTriggers)
+        self.table.setHorizontalHeaderLabels(tr('PDFLinks.HEADERS').split('|'))
+        service.bind(self.table, 'setAccessibleName', 'PDFLinks.TABLE')
+        font_tokens.bind(self.table)
+        self.layout.addWidget(self.table)
+        row = QHBoxLayout()
+        row.addWidget(self.button('DocumentTool.OPEN', self.choose_file))
+        row.addStretch()
+        self.save_button = self.button('DocumentTool.SAVE', self.save_as, primary=True)
+        row.addWidget(self.save_button)
+        self.layout.addLayout(row)
+        self.update_controls()
+        service.subscribe(self, 'retranslate')
 
-    def extract_links(self):
-        try:
-            input_file = self.inputFileEdit.text()
-            if not input_file:
-                logger.warning("No input file selected")
-                QMessageBox.warning(
-                    self, "Error", "Please select a PDF file first!"
-                )
-                return
+    def retranslate(self):
+        self.table.setHorizontalHeaderLabels(tr('PDFLinks.HEADERS').split('|'))
 
-            try:
-                # Create urls directory if it doesn't exist
-                if not os.path.exists("urls"):
-                    logger.info("Creating urls directory")
-                    os.makedirs("urls")
+    def choose_file(self):
+        path, _ = QFileDialog.getOpenFileName(self, tr('DocumentTool.OPEN'), '', 'PDF (*.pdf)')
+        if path:
+            self.load_file(path)
 
-                logger.info("Opening PDF file: %s", input_file)
-                pdf_file = pikepdf.Pdf.open(input_file)
-                urls = []
+    def load_file(self, path):
+        def loaded(links):
+            self.source = Path(path).resolve()
+            self.links = links
+            self.table.setRowCount(min(len(links), 1000))
+            for row, (page, uri) in enumerate(links[:1000]):
+                self.table.setItem(row, 0, QTableWidgetItem(str(page)))
+                self.table.setItem(row, 1, QTableWidgetItem(uri))
+            self.table.resizeColumnsToContents()
+            self.status.setText(tr('PDFLinks.READY').format(count=len(links)))
+        self.run_job('inspect', lambda: inspect_links(path, self.cancel), loaded)
 
-                # Extract URLs
-                logger.info("Starting URL extraction")
-                for page_num, page in enumerate(pdf_file.pages):
-                    logger.debug("Processing page %d", page_num + 1)
-                    for annots in page.get("/Annots", []):
-                        if isinstance(annots, pikepdf.Array):
-                            continue
-                        uri = annots.get("/A", {}).get("/URI")
-                        if uri is not None:
-                            urls.append(str(uri))
-                            logger.debug("Found URL: %s", uri)
-                            self.outputText.append(f"[+] URL Found: {uri}")
+    def save_as(self):
+        path, _ = QFileDialog.getSaveFileName(self, tr('DocumentTool.SAVE'), 'links.csv', 'CSV (*.csv)')
+        if path:
+            self.run_job('export', lambda: export_links(self.source, self.links, path, self.cancel), self.exported)
 
-                # Save URLs to file
-                output_filename = os.path.join(
-                    "urls", os.path.basename(input_file) + ".txt"
-                )
-                logger.info("Saving URLs to: %s", output_filename)
-                with open(output_filename, "w") as f:
-                    for url in urls:
-                        f.write(url + "\n")
-
-                # Move PDF file if requested
-                try:
-                    dest_path = os.path.join(
-                        "urls", os.path.basename(input_file)
-                    )
-                    logger.info("Moving PDF file to: %s", dest_path)
-                    os.rename(input_file, dest_path)
-                except Exception as e:
-                    logger.warning("Could not move PDF file: %s", str(e))
-
-                self.outputText.append(
-                    f"\n[*] Total URLs extracted: {len(urls)}"
-                )
-                logger.info("Extraction completed. Found %d URLs", len(urls))
-                pdf_file.close()
-
-            except Exception as e:
-                logger.error("Error during extraction: %s", str(e))
-                QMessageBox.critical(
-                    self, "Error", f"An error occurred: {str(e)}"
-                )
-
-        except Exception as e:
-            logger.error("Error in extract operation: %s", str(e))
-            QMessageBox.critical(self, "Error", f"An error occurred: {str(e)}")
+    def update_controls(self):
+        self.save_button.setEnabled(self.source is not None)
 
 
 def main():
-    try:
-        app = QApplication(sys.argv)
-        window = ExtractLinksUI()
-        logger.info("Application started")
-        sys.exit(app.exec_())
-    except Exception as e:
-        logger.critical("Application failed to start: %s", str(e))
-        sys.exit(1)
+    import sys
+    app = QApplication.instance() or QApplication(sys.argv)
+    window = ExtractLinksUI()
+    window.show()
+    sys.exit(app.exec_())
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

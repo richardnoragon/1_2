@@ -16,7 +16,9 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
+from src.rfu import font_tokens
 from src.gui.themes import Typography, token
+from src.core.error_codes import resolve_error
 
 _log = logging.getLogger("RFU.components.hub_error_screen")
 
@@ -74,23 +76,23 @@ class HubErrorScreen(QWidget):
         layout.setAlignment(Qt.AlignCenter)
 
         icon_label = QLabel("⚠", self)
-        icon_label.setFont(Typography.h1())
+        font_tokens.bind(icon_label, "font.toolHeader")
         icon_label.setAlignment(Qt.AlignCenter)
         icon_label.setStyleSheet(f"color: {token('semantic_warning')};")
         layout.addWidget(icon_label)
 
         heading = QLabel(f"Something went wrong in {self._tool_name}", self)
-        heading.setFont(Typography.h2())
+        font_tokens.bind(heading, "font.title")
         heading.setAlignment(Qt.AlignCenter)
         heading.setWordWrap(True)
         heading.setStyleSheet(f"color: {token('text_primary')};")
         layout.addWidget(heading)
 
         self._message_label = QLabel(
-            "An unexpected error occurred. You can try again or return to the Hub.",
+            resolve_error(self._error_code).message,
             self,
         )
-        self._message_label.setFont(Typography.body())
+        font_tokens.bind(self._message_label, "font.body")
         self._message_label.setAlignment(Qt.AlignCenter)
         self._message_label.setWordWrap(True)
         self._message_label.setStyleSheet(f"color: {token('text_secondary')};")
@@ -101,7 +103,7 @@ class HubErrorScreen(QWidget):
         btn_row.addStretch()
 
         self._retry_btn = QPushButton("Retry", self)
-        self._retry_btn.setFont(Typography.body())
+        font_tokens.bind(self._retry_btn, "font.body")
         self._retry_btn.setMinimumSize(120, 44)
         self._retry_btn.setAccessibleName("Retry")
         self._retry_btn.clicked.connect(self.retry_requested)
@@ -121,7 +123,7 @@ class HubErrorScreen(QWidget):
         btn_row.addWidget(self._retry_btn)
 
         self._home_btn = QPushButton("Go to Hub", self)
-        self._home_btn.setFont(Typography.body())
+        font_tokens.bind(self._home_btn, "font.body")
         self._home_btn.setMinimumSize(120, 44)
         self._home_btn.setAccessibleName("Go to Hub")
         self._home_btn.clicked.connect(self.go_home_requested)

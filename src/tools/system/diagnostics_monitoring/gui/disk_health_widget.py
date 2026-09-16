@@ -1,5 +1,7 @@
 """Disk health visualization widget for diagnostics monitoring."""
+from src.rfu.localization import localized_widget as _ui_widget, bind_literal as _ui_bind
 
+from src.rfu import font_tokens
 import sys
 from datetime import datetime
 from typing import Any, Dict, List, Optional
@@ -122,22 +124,22 @@ class DiskHealthWidget(QWidget):
             header_layout = QHBoxLayout()
 
             # Title
-            title_label = QLabel("Disk Health Monitor")
-            title_label.setFont(Typography.h1())
+            title_label = _ui_widget(QLabel, 'Legacy.s738ca56953df7bfa', 'setText')
+            font_tokens.bind(title_label, "font.toolHeader")
             header_layout.addWidget(title_label)
 
             # Spacer
             header_layout.addStretch()
 
             # Refresh button
-            self.refresh_button = SecondaryButton("Refresh")
-            self.refresh_button.setAccessibleName("Refresh disk data")
+            self.refresh_button = _ui_widget(SecondaryButton, 'Legacy.s0e91610117029a62', 'setText')
+            _ui_bind(self.refresh_button, 'setAccessibleName', 'Legacy.s072db3b13c1f3cfb')
             self.refresh_button.clicked.connect(self.refresh_data)
             header_layout.addWidget(self.refresh_button)
 
             # Auto-refresh toggle
-            self.auto_refresh_button = SecondaryButton("Auto-Refresh: ON")
-            self.auto_refresh_button.setAccessibleName("Toggle auto-refresh")
+            self.auto_refresh_button = _ui_widget(SecondaryButton, 'Legacy.scfafce4c1d35ba42', 'setText')
+            _ui_bind(self.auto_refresh_button, 'setAccessibleName', 'Legacy.s904253c09a9f4ba6')
             self.auto_refresh_button.setCheckable(True)
             self.auto_refresh_button.setChecked(True)
             self.auto_refresh_button.clicked.connect(self.toggle_auto_refresh)
@@ -160,8 +162,8 @@ class DiskHealthWidget(QWidget):
             layout = QVBoxLayout(panel)
 
             # Panel title
-            title_label = QLabel("Disk Overview")
-            title_label.setFont(Typography.h3())
+            title_label = _ui_widget(QLabel, 'Legacy.s9193f9575ac3a9a1', 'setText')
+            font_tokens.bind(title_label, "font.bodyBold")
             layout.addWidget(title_label)
 
             # Summary section
@@ -170,7 +172,7 @@ class DiskHealthWidget(QWidget):
 
             # Disk tree
             self.disk_tree = QTreeWidget()
-            self.disk_tree.setAccessibleName("Disk overview tree")
+            _ui_bind(self.disk_tree, 'setAccessibleName', 'Legacy.sdef874fa1d6a0b8e')
             self.disk_tree.setHeaderLabels(
                 ["Device", "Type", "Size", "Health", "Usage"]
             )
@@ -190,16 +192,16 @@ class DiskHealthWidget(QWidget):
             QGroupBox: Summary group box
         """
         try:
-            group = QGroupBox("Summary")
+            group = _ui_widget(QGroupBox, 'Legacy.s8e76a94ac8320d51', 'setTitle')
             layout = QVBoxLayout(group)
 
             # Summary labels
-            self.total_disks_label = QLabel("Total Disks: 0")
-            self.healthy_disks_label = QLabel("Healthy: 0")
-            self.warning_disks_label = QLabel("Warning: 0")
-            self.critical_disks_label = QLabel("Critical: 0")
-            self.total_capacity_label = QLabel("Total Capacity: 0 GB")
-            self.total_used_label = QLabel("Total Used: 0 GB")
+            self.total_disks_label = _ui_widget(QLabel, 'Legacy.s4a95fe9396784421', 'setText')
+            self.healthy_disks_label = _ui_widget(QLabel, 'Legacy.sbdc65bc944debb2f', 'setText')
+            self.warning_disks_label = _ui_widget(QLabel, 'Legacy.s21950b9b4b673404', 'setText')
+            self.critical_disks_label = _ui_widget(QLabel, 'Legacy.s08ec832fda7a5de3', 'setText')
+            self.total_capacity_label = _ui_widget(QLabel, 'Legacy.s43ee4fcc8893e25f', 'setText')
+            self.total_used_label = _ui_widget(QLabel, 'Legacy.s635ea173deacb1eb', 'setText')
 
             layout.addWidget(self.total_disks_label)
             layout.addWidget(self.healthy_disks_label)
@@ -225,13 +227,13 @@ class DiskHealthWidget(QWidget):
             layout = QVBoxLayout(panel)
 
             # Panel title
-            self.details_title = QLabel("Select a disk to view details")
-            self.details_title.setFont(Typography.h3())
+            self.details_title = _ui_widget(QLabel, 'Legacy.s9163ad81bcf1cc3d', 'setText')
+            font_tokens.bind(self.details_title, "font.bodyBold")
             layout.addWidget(self.details_title)
 
             # Details tabs
             self.details_tabs = QTabWidget()
-            self.details_tabs.setAccessibleName("Disk detail tabs")
+            _ui_bind(self.details_tabs, 'setAccessibleName', 'Legacy.sb286353491e3b990')
             layout.addWidget(self.details_tabs)
 
             # General tab
@@ -271,13 +273,13 @@ class DiskHealthWidget(QWidget):
             content_layout = QVBoxLayout(content)
 
             # General information labels
-            self.device_id_label = QLabel("Device ID: -")
-            self.device_path_label = QLabel("Device Path: -")
-            self.model_label = QLabel("Model: -")
-            self.serial_label = QLabel("Serial Number: -")
-            self.size_label = QLabel("Size: -")
-            self.filesystem_label = QLabel("Filesystem: -")
-            self.mount_point_label = QLabel("Mount Point: -")
+            self.device_id_label = _ui_widget(QLabel, 'Legacy.s5b21a8580bd69329', 'setText')
+            self.device_path_label = _ui_widget(QLabel, 'Legacy.sac57e81bba7f0d03', 'setText')
+            self.model_label = _ui_widget(QLabel, 'Legacy.sacb71f8252dedddd', 'setText')
+            self.serial_label = _ui_widget(QLabel, 'Legacy.s16d1c8594ed84b13', 'setText')
+            self.size_label = _ui_widget(QLabel, 'Legacy.se7507ca45d2053b7', 'setText')
+            self.filesystem_label = _ui_widget(QLabel, 'Legacy.sb135eb490c3f1d77', 'setText')
+            self.mount_point_label = _ui_widget(QLabel, 'Legacy.s04fcdd1b872ebfe6', 'setText')
 
             content_layout.addWidget(self.device_id_label)
             content_layout.addWidget(self.device_path_label)
@@ -308,12 +310,12 @@ class DiskHealthWidget(QWidget):
             layout = QVBoxLayout(tab)
 
             # Health status
-            health_group = QGroupBox("Health Status")
+            health_group = _ui_widget(QGroupBox, 'Legacy.s97b7a73d47fd543e', 'setTitle')
             health_layout = QVBoxLayout(health_group)
 
-            self.health_status_label = QLabel("Status: Unknown")
-            self.temperature_label = QLabel("Temperature: -")
-            self.power_on_hours_label = QLabel("Power On Hours: -")
+            self.health_status_label = _ui_widget(QLabel, 'Legacy.s9abb5dd0a5fbb800', 'setText')
+            self.temperature_label = _ui_widget(QLabel, 'Legacy.saf5d85c0093d1303', 'setText')
+            self.power_on_hours_label = _ui_widget(QLabel, 'Legacy.s7047bb1eda25b9c2', 'setText')
 
             health_layout.addWidget(self.health_status_label)
             health_layout.addWidget(self.temperature_label)
@@ -322,14 +324,14 @@ class DiskHealthWidget(QWidget):
             layout.addWidget(health_group)
 
             # Space usage (for logical disks)
-            usage_group = QGroupBox("Space Usage")
+            usage_group = _ui_widget(QGroupBox, 'Legacy.s071cfc4d9e959449', 'setTitle')
             usage_layout = QVBoxLayout(usage_group)
 
             self.usage_progress = QProgressBar()
             self.usage_progress.setRange(0, 100)
             self.usage_progress.setTextVisible(True)
             self.usage_progress.setFormat("%p%")
-            self.usage_label = QLabel("Used: 0 GB / 0 GB (0%)")
+            self.usage_label = _ui_widget(QLabel, 'Legacy.sac3362789d306c9a', 'setText')
 
             usage_layout.addWidget(self.usage_progress)
             usage_layout.addWidget(self.usage_label)
@@ -354,13 +356,13 @@ class DiskHealthWidget(QWidget):
             layout = QVBoxLayout(tab)
 
             # I/O Statistics
-            io_group = QGroupBox("I/O Statistics")
+            io_group = _ui_widget(QGroupBox, 'Legacy.s2e5c0571d9958b6e', 'setTitle')
             io_layout = QVBoxLayout(io_group)
 
-            self.reads_label = QLabel("Reads: -")
-            self.writes_label = QLabel("Writes: -")
-            self.read_bytes_label = QLabel("Bytes Read: -")
-            self.write_bytes_label = QLabel("Bytes Written: -")
+            self.reads_label = _ui_widget(QLabel, 'Legacy.s94cd4de613a7acf8', 'setText')
+            self.writes_label = _ui_widget(QLabel, 'Legacy.s0a8d208a6d56ebed', 'setText')
+            self.read_bytes_label = _ui_widget(QLabel, 'Legacy.sb6f32e55bd65de8d', 'setText')
+            self.write_bytes_label = _ui_widget(QLabel, 'Legacy.s10b673fb2e83f31a', 'setText')
 
             io_layout.addWidget(self.reads_label)
             io_layout.addWidget(self.writes_label)
@@ -386,14 +388,14 @@ class DiskHealthWidget(QWidget):
             status_layout = QHBoxLayout()
 
             # Status label
-            self.status_label = QLabel("Ready")
+            self.status_label = _ui_widget(QLabel, 'Legacy.s5fa7aac5375c5815', 'setText')
             status_layout.addWidget(self.status_label)
 
             # Spacer
             status_layout.addStretch()
 
             # Last update label
-            self.last_update_label = QLabel("Last Update: Never")
+            self.last_update_label = _ui_widget(QLabel, 'Legacy.s3d845889d70e289c', 'setText')
             status_layout.addWidget(self.last_update_label)
 
             return status_layout

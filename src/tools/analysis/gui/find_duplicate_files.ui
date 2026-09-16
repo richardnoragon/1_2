@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <ui version="4.0">
  <class>FindDuplicateFiles</class>
  <widget class="QWidget" name="FindDuplicateFiles">
@@ -18,11 +18,6 @@
   </property>
   <property name="windowTitle">
    <string>Find Duplicate Files</string>
-  </property>
-  <property name="font">
-   <font>
-    <pointsize>12</pointsize>
-   </font>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <property name="spacing">
@@ -45,10 +40,8 @@
      <property name="text">
       <string>Select Folder:</string>
      </property>
-     <property name="font">
-      <font>
-       <pointsize>12</pointsize>
-      </font>
+     <property name="rfuLocale_setText" stdset="0">
+      <string notr="true">Legacy.s82887767ccbb3a97</string>
      </property>
     </widget>
    </item>
@@ -59,10 +52,8 @@
        <property name="placeholderText">
         <string>Enter folder path...</string>
        </property>
-       <property name="font">
-        <font>
-         <pointsize>12</pointsize>
-        </font>
+       <property name="rfuLocale_setPlaceholderText" stdset="0">
+        <string notr="true">Legacy.s5b8c4ef76f75c883</string>
        </property>
       </widget>
      </item>
@@ -74,10 +65,8 @@
        <property name="text">
         <string>Browse</string>
        </property>
-       <property name="font">
-        <font>
-         <pointsize>12</pointsize>
-        </font>
+       <property name="rfuLocale_setText" stdset="0">
+        <string notr="true">Legacy.s3227aa9666253f7a</string>
        </property>
       </widget>
      </item>
@@ -88,10 +77,8 @@
      <property name="text">
       <string>Specify File Name:</string>
      </property>
-     <property name="font">
-      <font>
-       <pointsize>12</pointsize>
-      </font>
+     <property name="rfuLocale_setText" stdset="0">
+      <string notr="true">Legacy.sce7758dac5ca5558</string>
      </property>
     </widget>
    </item>
@@ -100,10 +87,8 @@
      <property name="placeholderText">
       <string>Enter file name...</string>
      </property>
-     <property name="font">
-      <font>
-       <pointsize>12</pointsize>
-      </font>
+     <property name="rfuLocale_setPlaceholderText" stdset="0">
+      <string notr="true">Legacy.s3bfd190877e4287c</string>
      </property>
     </widget>
    </item>
@@ -115,10 +100,8 @@
      <property name="text">
       <string>Find Duplicates</string>
      </property>
-     <property name="font">
-      <font>
-       <pointsize>12</pointsize>
-      </font>
+     <property name="rfuLocale_setText" stdset="0">
+      <string notr="true">Legacy.s464e1de43383aadf</string>
      </property>
     </widget>
    </item>
@@ -178,6 +161,9 @@
        <property name="alignment">
         <set>Qt::AlignCenter</set>
        </property>
+       <property name="rfuLocale_setText" stdset="0">
+        <string notr="true">Legacy.s324b134f57c70c72</string>
+       </property>
       </widget>
      </item>
      <item>
@@ -215,12 +201,18 @@
        <property name="text">
         <string>Apply Action</string>
        </property>
+       <property name="rfuLocale_setText" stdset="0">
+        <string notr="true">Legacy.s8f433ba46fc7730c</string>
+       </property>
       </widget>
      </item>
     </layout>
    </item>
   </layout>
+  <property name="rfuLocale_setWindowTitle" stdset="0">
+   <string notr="true">Legacy.s5ca85764681143c0</string>
+  </property>
  </widget>
- <resources/>
- <connections/>
+ <resources />
+ <connections />
 </ui>

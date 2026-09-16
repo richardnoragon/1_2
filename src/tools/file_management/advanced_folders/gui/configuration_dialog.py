@@ -16,6 +16,8 @@ Features:
 Author: RFU Development Team
 Version: 1.0.0
 """
+from src.rfu.localization import localized_widget as _ui_widget, bind_literal as _ui_bind
+from src.rfu import font_tokens
 
 import logging
 import sys
@@ -288,8 +290,8 @@ class FolderConfigurationDialog(QDialog):
         self.tab_widget.setTabPosition(QTabWidget.North)
         self.tab_widget.setDocumentMode(True)
         self.tab_widget.setUsesScrollButtons(True)
-        self.tab_widget.setAccessibleName("Folder configuration sections")
-        self.tab_widget.setAccessibleName("Folder configuration sections")
+        _ui_bind(self.tab_widget, 'setAccessibleName', 'Legacy.s174fabce15ac3373')
+        _ui_bind(self.tab_widget, 'setAccessibleName', 'Legacy.s174fabce15ac3373')
 
         # Create tabs if available
         if TABS_AVAILABLE:
@@ -298,7 +300,7 @@ class FolderConfigurationDialog(QDialog):
             # Fallback placeholder
             placeholder = QWidget()
             placeholder_layout = QVBoxLayout(placeholder)
-            placeholder_layout.addWidget(QLabel("Configuration tabs are loading..."))
+            placeholder_layout.addWidget(_ui_widget(QLabel, 'Legacy.s2fd18a7d818d995b', 'setText'))
             self.tab_widget.addTab(placeholder, "Configuration")
 
         # Create help panel
@@ -356,7 +358,7 @@ class FolderConfigurationDialog(QDialog):
 
     def _create_help_panel(self):
         """Create the contextual help panel."""
-        help_group = QGroupBox("Help & Information")
+        help_group = _ui_widget(QGroupBox, 'Legacy.sbab7d064cbd70cb0', 'setTitle')
         help_group.setStyleSheet(Styles.GROUP_BOX_STYLE)
         help_group.setMaximumWidth(300)
         help_group.setMinimumWidth(250)
@@ -369,7 +371,7 @@ class FolderConfigurationDialog(QDialog):
         self.help_text = QTextEdit()
         self.help_text.setReadOnly(True)
         self.help_text.setMaximumHeight(200)
-        self.help_text.setAccessibleName("Contextual help text")
+        _ui_bind(self.help_text, 'setAccessibleName', 'Legacy.s87e4f70f41c41c41')
         self.help_text.setStyleSheet(
             f"""
             QTextEdit {{
@@ -377,10 +379,11 @@ class FolderConfigurationDialog(QDialog):
                 border-radius: 4px;
                 background-color: {Colors.BACKGROUND_SECONDARY};
                 padding: 8px;
-                font-size: 9pt;
+
             }}
         """
         )
+        font_tokens.bind(self.help_text, "font.body")
 
         # Set initial help text
         self._update_help_content("general")
@@ -409,7 +412,7 @@ class FolderConfigurationDialog(QDialog):
         status_layout.setContentsMargins(10, 5, 10, 5)
 
         # Status label
-        self.status_label = QLabel("Ready")
+        self.status_label = _ui_widget(QLabel, 'Legacy.s5fa7aac5375c5815', 'setText')
         self.status_label.setFont(Fonts.label_font())
         self.status_label.setStyleSheet(f"color: {Colors.TEXT_SECONDARY};")
         self.status_label.setVisible(False)  # replaced by ToastNotification
@@ -446,7 +449,7 @@ class FolderConfigurationDialog(QDialog):
             save_button.clicked.connect(self._save_configuration)
 
             # Apply button (for immediate application without closing)
-            apply_button = SecondaryButton("Apply")
+            apply_button = _ui_widget(SecondaryButton, 'Legacy.s31e392d1c0378bec', 'setText')
             apply_button.clicked.connect(self._apply_configuration)
 
             button_layout.addWidget(apply_button)
@@ -493,11 +496,8 @@ class FolderConfigurationDialog(QDialog):
     def _setup_accessibility(self):
         """Setup accessibility features and keyboard navigation."""
         # Set accessible names and descriptions
-        self.setAccessibleName("Advanced Folders Configuration Dialog")
-        self.setAccessibleDescription(
-            "Configure advanced folder settings including directories, "
-            "search parameters, file filters, and display options"
-        )
+        _ui_bind(self, 'setAccessibleName', 'Legacy.s09a2e2764132669b')
+        _ui_bind(self, 'setAccessibleDescription', 'Legacy.s191c6bacd159324b')
 
         # Setup keyboard shortcuts
         try:

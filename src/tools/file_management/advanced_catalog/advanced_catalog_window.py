@@ -3,7 +3,9 @@
 This module provides the main GUI interface for the advanced catalog generator
 with comprehensive sorting, color-coding, and export capabilities.
 """
+from src.rfu.localization import localized_widget as _ui_widget, bind_literal as _ui_bind
 
+from src.rfu import font_tokens
 import logging
 import os
 import sys
@@ -257,9 +259,9 @@ class AdvancedCatalogWindow(StandardWindow):
         main_layout.setSpacing(15)
 
         # Header
-        header_label = QLabel("Advanced File Catalog Generator")
+        header_label = _ui_widget(QLabel, 'Legacy.s04592b544f8d18f7', 'setText')
         header_font = Typography.body()
-        header_font.setPointSize(18)
+
         header_font.setBold(True)
         header_label.setFont(header_font)
         header_label.setAlignment(Qt.AlignCenter)
@@ -290,7 +292,7 @@ class AdvancedCatalogWindow(StandardWindow):
 
         # Status and progress
         status_layout = QHBoxLayout()
-        self.status_label = QLabel("Ready - Select a directory to begin")
+        self.status_label = _ui_widget(QLabel, 'Legacy.s0506135a8bea582e', 'setText')
         self.progress_bar = QProgressBar()
         self.progress_bar.setVisible(False)
 
@@ -300,20 +302,18 @@ class AdvancedCatalogWindow(StandardWindow):
 
     def _create_directory_group(self) -> QGroupBox:
         """Create directory selection group."""
-        group = QGroupBox("Directory Selection")
+        group = _ui_widget(QGroupBox, 'Legacy.s30d2d5574cce5ea3', 'setTitle')
         layout = QHBoxLayout(group)
 
-        self.select_dir_btn = SecondaryButton("Select Directory")
-        self.dir_label = QLabel("No directory selected")
+        self.select_dir_btn = _ui_widget(SecondaryButton, 'Legacy.s220c3fe6289ca828', 'setText')
+        self.dir_label = _ui_widget(QLabel, 'Legacy.sbf355de778591b63', 'setText')
         self.dir_label.setStyleSheet(
-            f"QLabel { border: 1px solid gray; padding: 5px; background-color: {token('surface')}; }"
+            f"QLabel {{ border: 1px solid gray; padding: 5px; background-color: {token('surface')}; }}"
         )
-        self.recursive_cb = QCheckBox("Include Subdirectories")
+        self.recursive_cb = _ui_widget(QCheckBox, 'Legacy.s73d35e999740bfc8', 'setText')
         self.recursive_cb.setChecked(True)
-        self.recursive_cb.setAccessibleName("Include subdirectories")
-        self.recursive_cb.setAccessibleDescription(
-            "Scans all folders inside the selected directory, not just the top level"
-        )
+        _ui_bind(self.recursive_cb, 'setAccessibleName', 'Legacy.s7fe3b250ab4b4940')
+        _ui_bind(self.recursive_cb, 'setAccessibleDescription', 'Legacy.sdc6b4d7e4114808d')
         self.recursive_cb.setMinimumHeight(44)
 
         layout.addWidget(self.select_dir_btn)
@@ -328,15 +328,15 @@ class AdvancedCatalogWindow(StandardWindow):
         layout = QVBoxLayout(widget)
 
         # Sort configuration
-        sort_group = QGroupBox("Sorting Configuration")
+        sort_group = _ui_widget(QGroupBox, 'Legacy.sd4bd4904fbaa4a06', 'setTitle')
         sort_layout = QVBoxLayout(sort_group)
 
         # Sort criteria selection
         criteria_layout = QHBoxLayout()
-        criteria_layout.addWidget(QLabel("Sort by:"))
+        criteria_layout.addWidget(_ui_widget(QLabel, 'Legacy.s27ab0062ef43bf40', 'setText'))
 
         self.sort_combo = QComboBox()
-        self.sort_combo.setAccessibleName("Sort order")
+        _ui_bind(self.sort_combo, 'setAccessibleName', 'Legacy.s3c9b30285f90cf05')
         self.sort_combo.addItems(
             [
                 "Alphabetical (A-Z)",
@@ -352,31 +352,29 @@ class AdvancedCatalogWindow(StandardWindow):
 
         # Sort order
         order_layout = QHBoxLayout()
-        self.ascending_cb = QCheckBox("Ascending Order")
+        self.ascending_cb = _ui_widget(QCheckBox, 'Legacy.sfa5a12e1c71f6bb9', 'setText')
         self.ascending_cb.setChecked(True)
-        self.ascending_cb.setAccessibleName("Ascending order")
-        self.ascending_cb.setAccessibleDescription(
-            "When checked, results are sorted A\u2013Z or smallest to largest"
-        )
+        _ui_bind(self.ascending_cb, 'setAccessibleName', 'Legacy.s7005a161d4aa0778')
+        _ui_bind(self.ascending_cb, 'setAccessibleDescription', 'Legacy.s136e6e6b129695ad')
         self.ascending_cb.setMinimumHeight(44)
         order_layout.addWidget(self.ascending_cb)
         sort_layout.addLayout(order_layout)
 
         # Apply sort button
-        self.apply_sort_btn = SecondaryButton("Apply Sort")
+        self.apply_sort_btn = _ui_widget(SecondaryButton, 'Legacy.s287604906bf25b92', 'setText')
         sort_layout.addWidget(self.apply_sort_btn)
 
         layout.addWidget(sort_group)
 
         # Color scheme configuration
-        color_group = QGroupBox("Color Scheme")
+        color_group = _ui_widget(QGroupBox, 'Legacy.sc52309d3f294de8f', 'setTitle')
         color_layout = QVBoxLayout(color_group)
 
         scheme_layout = QHBoxLayout()
-        scheme_layout.addWidget(QLabel("Scheme:"))
+        scheme_layout.addWidget(_ui_widget(QLabel, 'Legacy.sd22fb33a0d2d41fc', 'setText'))
 
         self.color_scheme_combo = QComboBox()
-        self.color_scheme_combo.setAccessibleName("Color scheme")
+        _ui_bind(self.color_scheme_combo, 'setAccessibleName', 'Legacy.s10ee94005bb99845')
         self.color_scheme_combo.addItems(
             ["Default", "High Contrast", "Colorblind Friendly", "Monochrome"]
         )
@@ -384,22 +382,20 @@ class AdvancedCatalogWindow(StandardWindow):
         color_layout.addLayout(scheme_layout)
 
         # Accessibility options
-        self.accessibility_cb = QCheckBox("Accessibility Mode (Patterns & Icons)")
-        self.accessibility_cb.setAccessibleName("Accessibility mode")
-        self.accessibility_cb.setAccessibleDescription(
-            "Adds pattern symbols and icons to colour-coded items and the legend"
-        )
+        self.accessibility_cb = _ui_widget(QCheckBox, 'Legacy.s76dc0d6a3f889459', 'setText')
+        _ui_bind(self.accessibility_cb, 'setAccessibleName', 'Legacy.s42f20d3219f95d26')
+        _ui_bind(self.accessibility_cb, 'setAccessibleDescription', 'Legacy.s1216179652e1db5d')
         self.accessibility_cb.setMinimumHeight(44)
         color_layout.addWidget(self.accessibility_cb)
 
         layout.addWidget(color_group)
 
         # Statistics
-        stats_group = QGroupBox("Statistics")
+        stats_group = _ui_widget(QGroupBox, 'Legacy.sa656107e99c71dea', 'setTitle')
         stats_layout = QVBoxLayout(stats_group)
 
         self.stats_text = QTextEdit()
-        self.stats_text.setAccessibleName("Statistics")
+        _ui_bind(self.stats_text, 'setAccessibleName', 'Legacy.sa656107e99c71dea')
         self.stats_text.setMaximumHeight(150)
         self.stats_text.setReadOnly(True)
         stats_layout.addWidget(self.stats_text)
@@ -415,23 +411,23 @@ class AdvancedCatalogWindow(StandardWindow):
         layout = QVBoxLayout(widget)
 
         # File preview
-        preview_group = QGroupBox("File Preview (Color-Coded)")
+        preview_group = _ui_widget(QGroupBox, 'Legacy.s07f3d730cfb74f22', 'setTitle')
         preview_layout = QVBoxLayout(preview_group)
 
         # File count label
-        self.file_count_label = QLabel("0 files")
+        self.file_count_label = _ui_widget(QLabel, 'Legacy.sff4cfe58b8d5f546', 'setText')
         preview_layout.addWidget(self.file_count_label)
 
         # File list
         self.file_list = QListWidget()
-        self.file_list.setAccessibleName("Catalog file list")
+        _ui_bind(self.file_list, 'setAccessibleName', 'Legacy.s66abb418a562e894')
         self.file_list.setAlternatingRowColors(True)
         preview_layout.addWidget(self.file_list)
 
         layout.addWidget(preview_group)
 
         # Color legend
-        legend_group = QGroupBox("Color Legend")
+        legend_group = _ui_widget(QGroupBox, 'Legacy.s481edca6e8686d1b', 'setTitle')
         legend_layout = QVBoxLayout(legend_group)
 
         # Legend scroll area
@@ -449,31 +445,29 @@ class AdvancedCatalogWindow(StandardWindow):
 
     def _create_export_group(self) -> QGroupBox:
         """Create export configuration group."""
-        group = QGroupBox("Export Configuration")
+        group = _ui_widget(QGroupBox, 'Legacy.sfa02422c2640e672', 'setTitle')
         layout = QHBoxLayout(group)
 
         # Format selection
-        layout.addWidget(QLabel("Export Format:"))
+        layout.addWidget(_ui_widget(QLabel, 'Legacy.s0511f25cd80edb02', 'setText'))
 
         self.export_format_combo = QComboBox()
-        self.export_format_combo.setAccessibleName("Export format")
+        _ui_bind(self.export_format_combo, 'setAccessibleName', 'Legacy.sdf339cb8da14714c')
         self.export_format_combo.addItems(
             ["HTML (with CSS)", "CSV (with metadata)", "JSON (structured)"]
         )
         layout.addWidget(self.export_format_combo)
 
         # Export button
-        self.export_btn = PrimaryButton("Export Catalog")
+        self.export_btn = _ui_widget(PrimaryButton, 'Legacy.sa6574d527b5c1287', 'setText')
         self.export_btn.setEnabled(False)
         layout.addWidget(self.export_btn)
 
         # Open after export
-        self.open_after_export_cb = QCheckBox("Open after export")
+        self.open_after_export_cb = _ui_widget(QCheckBox, 'Legacy.se16d248630cc1b61', 'setText')
         self.open_after_export_cb.setChecked(True)
-        self.open_after_export_cb.setAccessibleName("Open after export")
-        self.open_after_export_cb.setAccessibleDescription(
-            "Automatically opens the exported file in the default application when complete"
-        )
+        _ui_bind(self.open_after_export_cb, 'setAccessibleName', 'Legacy.se16d248630cc1b61')
+        _ui_bind(self.open_after_export_cb, 'setAccessibleDescription', 'Legacy.s5bb3506732731c57')
         self.open_after_export_cb.setMinimumHeight(44)
         layout.addWidget(self.open_after_export_cb)
 
@@ -699,7 +693,7 @@ class AdvancedCatalogWindow(StandardWindow):
         ) in self.catalog_data.color_legend.items():
             # Category header
             header = QLabel(category_name)
-            header.setFont(Typography.body())
+            font_tokens.bind(header, "font.body")
             self.legend_layout.addWidget(header)
 
             # Color items

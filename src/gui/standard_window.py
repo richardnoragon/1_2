@@ -117,10 +117,8 @@ class StandardWindow(QMainWindow):
 
     def _on_uap_font_changed(self, family: str, size: int) -> None:
         """T033 — Propagate font change to this window and all child widgets (U1)."""
-        font = QFont(family, size)
-        self.setFont(font)
-        for widget in self.findChildren(QWidget):
-            widget.setFont(font)
+        from src.rfu.font_tokens import apply_profile
+        apply_profile(self, family, size)
 
     def _on_uap_geometry_changed(self, width: int, height: int, x: int, y: int) -> None:
         """T033 — Respond to geometry change signal."""

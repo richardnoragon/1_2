@@ -19,6 +19,7 @@ class Hub:
     LOADING = "Loading Hub…"
 
 
+
 # ---------------------------------------------------------------------------
 # File Management tools
 # ---------------------------------------------------------------------------
@@ -933,6 +934,22 @@ class Privacy:
 
 
 class Menu:
+    FILE = "&File"
+    EDIT = "&Edit"
+    VIEW = "&View"
+    TOOLS = "&Tools"
+    REPORTS = "&Reports"
+    WINDOW = "&Window"
+    HELP = "&Help"
+    RETURN_TO_HUB = "Return to &Hub"
+    LOAD_PLUGIN = "Load Local Plu&gin…"
+    PLUGIN_FILTER = "Plugin manifests (*.json)"
+    PLUGIN_ERROR = "The plugin could not be loaded. Check its manifest and installed Python package."
+    REOPEN = "Reopen {tool}"
+    OPEN_WINDOWS = "&Open Windows"
+    UNAVAILABLE = "Tool &Unavailable"
+    CAPABILITIES = "Tool Capa&bilities…"
+
     """Shared hub-level menu item tokens (§9.6 Hub-Specific Menu Items)."""
 
     # File menu — hub-provided items (§9.6, §9.7.1)
@@ -1309,3 +1326,172 @@ class EnhancedClipboard:
     MENU_TOOLS_HISTORY = "Clipboard History\u2026"
     MENU_TOOLS_CLEAR = "Clear All\u2026"
     MENU_REPORTS_EXPORT = "Export Clipboard History\u2026"
+
+
+class Undo:
+    HISTORY = "Undo &History…"
+    TITLE = "Undo History"
+
+
+class Capabilities:
+    TITLE = "Tool Capabilities"
+    DESCRIPTION = "Capabilities require recorded review evidence. Unverified does not mean unsupported."
+    TABLE = "Tool capability matrix"
+    HEADERS = "Tool|Source|Dry Run|Critical Engine|Accessibility|Performance|Undo|Health|Last Activity"
+    REFRESH = "Refresh"
+    VERIFIED = "Verified"
+    UNVERIFIED = "Unverified"
+    NOT_APPLICABLE = "Not applicable"
+    UNKNOWN = "Unknown"
+    SUPPORTED = "Supported"
+    UNSUPPORTED = "Unsupported"
+    PRESENT = "Present"
+    MISSING = "Not in source tree"
+
+
+class Workflow:
+    TITLE = "File Inspection Workflow"
+    INSTRUCTIONS = "Choose a folder to find files and calculate SHA-256 checksums. Inspection leaves the files unchanged. Export creates a CSV report."
+    INSPECT = "Inspect Folder…"
+    EXPORT = "Export Report…"
+    CLOSE = "Close"
+    CHOOSE = "Choose a Folder"
+    RUNNING = "Operation in progress…"
+    COUNT = "Inspected {count} files"
+    COMPLETE = "Inspected {count} files. The report is ready to export."
+    EXPORTED = "Report exported."
+    INPUT_OVERWRITE = "Choose another destination to avoid overwriting an inspected file."
+
+
+class MenuLabels:
+    """Canonical labels shared by both legacy menu builders."""
+    FILE_WORKFLOW = "Inspect Files and &Checksums…"
+    LOAD_LOCALE = "Load &Language Pack…"
+    LANGUAGE = "&Language"
+    ABOUT = '&About'
+    ALWAYS_ON_TOP = 'Always on &Top'
+    CHECK_FOR_UPDATES = 'Check for &Updates…'
+    COPY = '&Copy'
+    CUT = 'Cu&t'
+    DARK_THEME = '&Dark Theme'
+    EDIT = '&Edit'
+    EXIT = 'E&xit'
+    EXPORT = '&Export…'
+    FILE = '&File'
+    FIND = '&Find…'
+    FONT = '&Font…'
+    FULLSCREEN = '&Fullscreen'
+    HELP = '&Help'
+    IMPORT = '&Import…'
+    KEYBOARD_SHORTCUTS = '&Keyboard Shortcuts…'
+    LIGHT_THEME = '&Light Theme'
+    LOG_VIEWER = '&Log Viewer…'
+    NEW_PROJECT = '&New Project…'
+    OPEN = '&Open…'
+    OPTIONS = '&Options…'
+    PASTE = '&Paste'
+    PERFORMANCE_MONITOR = '&Performance Monitor…'
+    PREFERENCES = 'Pr&eferences…'
+    RECENT_FILES = 'Recent &Files'
+    REDO = '&Redo'
+    REFRESH = '&Refresh'
+    REPLACE = '&Replace…'
+    REPORT_BUG = '&Report Bug…'
+    RESET_PREFERENCES = '&Reset Preferences…'
+    RESET_ZOOM = 'Reset &Zoom'
+    SAVE = '&Save'
+    SAVE_AS = 'Save &As…'
+    SELECT_ALL = 'Select &All'
+    SYSTEM_INFORMATION = 'System &Information…'
+    THEME = '&Theme'
+    TOOLS = '&Tools'
+    UNDO = '&Undo'
+    USER_GUIDE = '&User Guide'
+    VIEW = '&View'
+    VISIT_WEBSITE = 'Visit &Website'
+    WORKING_DIRECTORY = '&Working Directory…'
+    ZOOM_IN = 'Zoom &In'
+    ZOOM_OUT = 'Zoom &Out'
+
+
+class DocumentTool:
+    OPEN = 'Open file…'
+    SAVE = 'Save As…'
+    CANCEL = 'Cancel operation'
+    BUSY = 'Working…'
+    READY = 'Ready.'
+    SAVED = 'Export complete. Source files were preserved.'
+    FAILED = 'The operation could not be completed. Check the file format and destination.'
+    CANCELLED = 'Operation cancelled; no output was committed.'
+    PDF_TITLE = 'PDF Page Administration'
+    PDF_HELP = 'Open a PDF, select pages, and edit the draft. Save As exports the full draft; Extract exports selected pages. Insert adds all pages from another PDF after the selected page. Undo applies to draft edits.'
+    INSERT = 'Insert PDF…'
+    UP = 'Move up'
+    DOWN = 'Move down'
+    ROTATE = 'Rotate 90°'
+    DELETE = 'Remove from draft'
+    EXTRACT = 'Extract selected…'
+    PAGES = 'Pages in output order'
+    PREVIEW = 'Page preview'
+    PAGE = '{position}: {file}, page {page} (+{rotation}°)'
+    ANON_TITLE = 'Data Anonymizer'
+    ANON_HELP = 'Choose top-level CSV columns or JSON fields to transform. Nested values are replaced as a whole. Preview up to 100 records (64 KiB of text) before exporting a separate copy. Pseudonyms are consistent within this session; unselected fields may still identify people.'
+    FIELDS = 'Field transformations'
+    HEADERS = 'Field|Transformation'
+    KEEP = 'Keep'
+    REDACT = 'Redact'
+    PSEUDONYM = 'Pseudonymize'
+    PREVIEW_DATA = 'Preview transformations'
+    DATA_PREVIEW = 'Transformed records (first 100, up to 64 KiB)'
+    PREVIEW_READY = '{count} records transformed. Review the preview before export.'
+    SELECT_RULE = 'Select at least one field to redact or pseudonymize.'
+    DRAFT_EDIT = 'Edit page draft'
+    INSPECT_LINKS = 'Inspect links in exported PDF'
+    HANDOFF_FAILED = 'The document could not be handed off. Check that it still exists and the destination tool is ready.'
+
+
+class ToolCatalogue:
+    TITLE = 'Tools'
+    SEARCH = 'Search tools by name or category'
+    HEADERS = 'Tool|Category'
+    OPEN = 'Open selected tool'
+    UNAVAILABLE = 'This tool could not start. Check its installed dependencies and try again.'
+
+
+class PDFLinks:
+    TITLE = 'PDF Link Extractor'
+    HELP = 'Open a PDF to inspect its link annotations. Export the list to a separate CSV file. The source PDF stays in place; links are never opened automatically.'
+    TABLE = 'Extracted PDF links'
+    HEADERS = 'Page|URL'
+    READY = '{count} links found (preview shows up to 1,000). Choose Save As to export all.'
+
+
+class StorageMonitor:
+    TITLE = 'Storage Monitor'
+    DRIVE = 'Drive or network path'
+    ADD = 'Add path…'
+    PATH = 'Enter a mounted folder or network path (for example, a mapped drive or UNC share).'
+    REFRESH = 'Refresh drives'
+    TOP = 'Always on top'
+    SOURCE = 'Activity source (operating-system device)'
+    UNAVAILABLE = 'Activity unavailable for this drive'
+    RESERVED = 'Used percentage is based on total capacity. Free space can exclude filesystem-reserved space.'
+    SPACE = 'Used capacity'
+    CAPACITY = 'Total: {total}    Used: {used}    Free: {free}'
+    READING = 'Reading: {rate}    Highest observed: {peak}'
+    WRITING = 'Writing: {rate}    Highest observed: {peak}'
+    WAITING = 'Waiting for a second activity sample…'
+    UNKNOWN = 'Unavailable'
+    READY = 'Activity source: {device}. Rates cover that device, which may serve several volumes.'
+    NETWORK = 'No activity device is matched to this path. You may select an OS device separately. Network shares generally do not expose per-share counters here; capacity and an optional path benchmark remain available.'
+    FAILED = 'Drive data unavailable or the network path did not respond. Retrying…'
+    ENABLE_BENCH = 'Enable optional speed benchmark'
+    BENCH = 'Run 128 MiB benchmark'
+    BENCH_TITLE = 'Confirm Speed Benchmark'
+    BENCH_CONFIRM = 'Write and read a temporary 128 MiB file in:\n{path}\n\nThis uses free space and bandwidth. The test file is removed afterwards. Existing files are not modified. Cached results are not the drive’s maximum speed.'
+    BENCH_RESULT = 'Benchmark (128 MiB): read {read}, write {write}. Read may be cached; write includes a flush. This is not rated maximum speed.'
+    BENCH_HELP = 'Benchmark is optional and requires a writable path with at least 192 MiB free. Cancel waits for the current I/O call, then removes the test file.'
+    GRAPH = 'Recent read and write activity; read is blue, write is orange'
+    IDLE = 'Idle'
+    ACTIVE = 'Active'
+    STATE = '{state} — capacity and activity refresh about once per second.'

@@ -1,5 +1,10 @@
 
 # 🧭 **Harmonization Roadmap (Phase 2 → Phase 4)**  
+
+Current code, confirmed decisions, validation and remaining rollout:
+[Implementation status](implementation-status.md). The conversation below is
+historical planning material; the repository contracts and recorded user
+decisions govern implementation.
 Organized by dependency order and governance leverage.
 
 ---

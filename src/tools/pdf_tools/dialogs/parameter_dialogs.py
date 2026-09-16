@@ -3,6 +3,8 @@
 PDF Parameter Dialogs - User interface dialogs for PDF operations
 Provides modern, intuitive dialogs for merge, split, and sign operations
 """
+from src.rfu.localization import localized_widget as _ui_widget, bind_literal as _ui_bind
+from src.rfu import font_tokens
 
 import logging
 import os
@@ -116,7 +118,7 @@ class FilePreviewWidget(QWidget):
         layout = QVBoxLayout(self)
 
         # Preview label
-        self.preview_label = QLabel("No file selected")
+        self.preview_label = _ui_widget(QLabel, 'Legacy.s26bfbd5c83f90db3', 'setText')
         self.preview_label.setAlignment(Qt.AlignCenter)
         self.preview_label.setStyleSheet(
             f"""
@@ -126,10 +128,11 @@ class FilePreviewWidget(QWidget):
                 padding: 20px;
                 background-color: {token('surface')};
                 color: {token('text_muted')};
-                font-size: 12pt;
+
             }}
         """
         )
+        font_tokens.bind(self.preview_label, "font.body")
         self.preview_label.setMinimumHeight(120)
         layout.addWidget(self.preview_label)
 
@@ -137,8 +140,9 @@ class FilePreviewWidget(QWidget):
         self.info_label = QLabel("")
         self.info_label.setWordWrap(True)
         self.info_label.setStyleSheet(
-            f"font-size: 10pt; color: {token('text_muted')};"
+            f" color: {token('text_muted')};"
         )
+        font_tokens.bind(self.info_label, "font.body")
         layout.addWidget(self.info_label)
 
     def update_preview(self, file_path: str, page_count: int = 0, file_size: int = 0):
@@ -174,7 +178,7 @@ class PDFMergeDialog(QDialog):
         self.output_file = ""
         self.merge_options = {}
 
-        self.setWindowTitle("Merge PDF Files")
+        _ui_bind(self, 'setWindowTitle', 'Legacy.sbac5b212c95d0405')
         self.setModal(True)
         self.resize(800, 600)
         self.init_ui()
@@ -190,13 +194,13 @@ class PDFMergeDialog(QDialog):
         buttons_layout = QHBoxLayout()
         buttons_layout.addStretch()
 
-        self.cancel_btn = SecondaryButton("Cancel")
-        self.cancel_btn.setAccessibleName("Cancel merge operation")
+        self.cancel_btn = _ui_widget(SecondaryButton, 'Legacy.s19766ed6ccb2f4a3', 'setText')
+        _ui_bind(self.cancel_btn, 'setAccessibleName', 'Legacy.sd2c4bacb083314c5')
         self.cancel_btn.clicked.connect(self.reject)
         buttons_layout.addWidget(self.cancel_btn)
 
-        self.merge_btn = PrimaryButton("Merge PDFs")
-        self.merge_btn.setAccessibleName("Merge PDF files")
+        self.merge_btn = _ui_widget(PrimaryButton, 'Legacy.s43d1539b7596aa88', 'setText')
+        _ui_bind(self.merge_btn, 'setAccessibleName', 'Legacy.s13ef4c4313541340')
         self.merge_btn.clicked.connect(self.accept)
         self.merge_btn.setEnabled(False)
         self.merge_btn.setStyleSheet(
@@ -226,7 +230,7 @@ class PDFMergeDialog(QDialog):
         left_panel = QWidget()
         left_layout = QVBoxLayout(left_panel)
 
-        files_group = QGroupBox("Input Files")
+        files_group = _ui_widget(QGroupBox, 'Legacy.sb2cd7c00fb28900d', 'setTitle')
         files_layout = QVBoxLayout(files_group)
         self.file_list = DragDropListWidget()
         self.file_list.files_reordered.connect(self.on_files_reordered)
@@ -234,25 +238,25 @@ class PDFMergeDialog(QDialog):
         files_layout.addWidget(self.file_list)
 
         file_buttons_layout = QHBoxLayout()
-        self.add_files_btn = SecondaryButton("Add Files")
-        self.add_files_btn.setAccessibleName("Add PDF files to merge list")
+        self.add_files_btn = _ui_widget(SecondaryButton, 'Legacy.s7e69772d579a9448', 'setText')
+        _ui_bind(self.add_files_btn, 'setAccessibleName', 'Legacy.sc76572f3277f0db4')
         self.add_files_btn.clicked.connect(self.add_files)
         file_buttons_layout.addWidget(self.add_files_btn)
 
-        self.remove_file_btn = SecondaryButton("Remove")
-        self.remove_file_btn.setAccessibleName("Remove selected file from merge list")
+        self.remove_file_btn = _ui_widget(SecondaryButton, 'Legacy.sc3812fc4acb861d5', 'setText')
+        _ui_bind(self.remove_file_btn, 'setAccessibleName', 'Legacy.s15a64ac455e78ba9')
         self.remove_file_btn.clicked.connect(self.remove_selected_file)
         self.remove_file_btn.setEnabled(False)
         file_buttons_layout.addWidget(self.remove_file_btn)
 
-        self.move_up_btn = SecondaryButton("↑")
-        self.move_up_btn.setAccessibleName("Move file up in merge order")
+        self.move_up_btn = _ui_widget(SecondaryButton, 'Legacy.sd2e966bf8db85620', 'setText')
+        _ui_bind(self.move_up_btn, 'setAccessibleName', 'Legacy.s00c5f50b2179d252')
         self.move_up_btn.clicked.connect(self.move_file_up)
         self.move_up_btn.setEnabled(False)
         file_buttons_layout.addWidget(self.move_up_btn)
 
-        self.move_down_btn = SecondaryButton("↓")
-        self.move_down_btn.setAccessibleName("Move file down in merge order")
+        self.move_down_btn = _ui_widget(SecondaryButton, 'Legacy.s07a2abcd3189716d', 'setText')
+        _ui_bind(self.move_down_btn, 'setAccessibleName', 'Legacy.s5e5c23786326d221')
         self.move_down_btn.clicked.connect(self.move_file_down)
         self.move_down_btn.setEnabled(False)
         file_buttons_layout.addWidget(self.move_down_btn)
@@ -260,33 +264,33 @@ class PDFMergeDialog(QDialog):
         files_layout.addLayout(file_buttons_layout)
         left_layout.addWidget(files_group)
 
-        options_group = QGroupBox("Merge Options")
+        options_group = _ui_widget(QGroupBox, 'Legacy.sbd13c923ae59829f', 'setTitle')
         options_layout = QFormLayout(options_group)
-        self.preserve_bookmarks_cb = QCheckBox("Preserve bookmarks")
-        self.preserve_bookmarks_cb.setAccessibleName("Preserve bookmarks")
+        self.preserve_bookmarks_cb = _ui_widget(QCheckBox, 'Legacy.sc20d60fcbccc76d7', 'setText')
+        _ui_bind(self.preserve_bookmarks_cb, 'setAccessibleName', 'Legacy.sc20d60fcbccc76d7')
         self.preserve_bookmarks_cb.setMinimumHeight(44)
         self.preserve_bookmarks_cb.setChecked(True)
         options_layout.addRow(self.preserve_bookmarks_cb)
 
-        self.preserve_metadata_cb = QCheckBox("Preserve metadata")
-        self.preserve_metadata_cb.setAccessibleName("Preserve metadata")
+        self.preserve_metadata_cb = _ui_widget(QCheckBox, 'Legacy.s9d577b82b5d3ce25', 'setText')
+        _ui_bind(self.preserve_metadata_cb, 'setAccessibleName', 'Legacy.s9d577b82b5d3ce25')
         self.preserve_metadata_cb.setMinimumHeight(44)
         self.preserve_metadata_cb.setChecked(True)
         options_layout.addRow(self.preserve_metadata_cb)
 
-        self.optimize_output_cb = QCheckBox("Optimize output file")
-        self.optimize_output_cb.setAccessibleName("Optimize output file")
+        self.optimize_output_cb = _ui_widget(QCheckBox, 'Legacy.s3c6477d617f72da6', 'setText')
+        _ui_bind(self.optimize_output_cb, 'setAccessibleName', 'Legacy.s3c6477d617f72da6')
         self.optimize_output_cb.setMinimumHeight(44)
         options_layout.addRow(self.optimize_output_cb)
 
-        self.custom_ranges_cb = QCheckBox("Use custom page ranges")
-        self.custom_ranges_cb.setAccessibleName("Use custom page ranges")
+        self.custom_ranges_cb = _ui_widget(QCheckBox, 'Legacy.s2a640752e57ef36d', 'setText')
+        _ui_bind(self.custom_ranges_cb, 'setAccessibleName', 'Legacy.s2a640752e57ef36d')
         self.custom_ranges_cb.setMinimumHeight(44)
         self.custom_ranges_cb.toggled.connect(self.toggle_custom_ranges)
         options_layout.addRow(self.custom_ranges_cb)
         left_layout.addWidget(options_group)
 
-        output_group = QGroupBox("Output")
+        output_group = _ui_widget(QGroupBox, 'Legacy.sb2439bcb8dee14b6', 'setTitle')
         output_layout = QFormLayout(output_group)
         output_file_layout = QHBoxLayout()
         self.output_file_edit = TextInput(
@@ -296,8 +300,8 @@ class PDFMergeDialog(QDialog):
         )
         output_file_layout.addWidget(self.output_file_edit)
 
-        self.browse_output_btn = SecondaryButton("Browse")
-        self.browse_output_btn.setAccessibleName("Browse for merged output file")
+        self.browse_output_btn = _ui_widget(SecondaryButton, 'Legacy.s3227aa9666253f7a', 'setText')
+        _ui_bind(self.browse_output_btn, 'setAccessibleName', 'Legacy.s288a747d781539e2')
         self.browse_output_btn.clicked.connect(self.browse_output_file)
         output_file_layout.addWidget(self.browse_output_btn)
 
@@ -309,31 +313,29 @@ class PDFMergeDialog(QDialog):
         right_panel = QWidget()
         right_layout = QVBoxLayout(right_panel)
 
-        preview_group = QGroupBox("Preview")
+        preview_group = _ui_widget(QGroupBox, 'Legacy.s324b134f57c70c72', 'setTitle')
         preview_layout = QVBoxLayout(preview_group)
         self.preview_widget = FilePreviewWidget()
         preview_layout.addWidget(self.preview_widget)
 
         self.details_text = QTextEdit()
-        self.details_text.setAccessibleName("File details")
+        _ui_bind(self.details_text, 'setAccessibleName', 'Legacy.s1c55b4b480437b49')
         self.details_text.setMaximumHeight(100)
         self.details_text.setReadOnly(True)
         preview_layout.addWidget(self.details_text)
         right_layout.addWidget(preview_group)
 
-        self.ranges_group = QGroupBox("Custom Page Ranges")
+        self.ranges_group = _ui_widget(QGroupBox, 'Legacy.s313beedd21da1799', 'setTitle')
         self.ranges_group.setVisible(False)
         ranges_layout = QVBoxLayout(self.ranges_group)
-        ranges_help = QLabel(
-            "Specify page ranges for each file (e.g., 1-5,10-15).\n"
-            "Leave empty to include all pages."
-        )
+        ranges_help = _ui_widget(QLabel, 'Legacy.s492603ffce52e861', 'setText')
         ranges_help.setWordWrap(True)
-        ranges_help.setStyleSheet(f"color: {token('text_muted')}; font-size: 9pt;")
+        ranges_help.setStyleSheet(f"color: {token('text_muted')}; ")
+        font_tokens.bind(ranges_help, "font.body")
         ranges_layout.addWidget(ranges_help)
 
         self.ranges_list = QListWidget()
-        self.ranges_list.setAccessibleName("Custom page ranges list")
+        _ui_bind(self.ranges_list, 'setAccessibleName', 'Legacy.s59799a0b4e8e376c')
         ranges_layout.addWidget(self.ranges_list)
         right_layout.addWidget(self.ranges_group)
         return right_panel
@@ -344,7 +346,7 @@ class PDFMergeDialog(QDialog):
             f"""
             QDialog {{
                 background-color: {token('window_background')};
-                font-family: "Segoe UI", Arial, sans-serif;
+
             }}
             QGroupBox {{
                 font-weight: bold;
@@ -379,6 +381,7 @@ class PDFMergeDialog(QDialog):
             }}
         """
         )
+        font_tokens.bind(self, "font.body")
 
     def add_files(self):
         """Add PDF files to the merge list"""
@@ -551,7 +554,7 @@ class PDFSplitDialog(QDialog):
         self.output_directory = ""
         self.split_options = {}
 
-        self.setWindowTitle("Split PDF File")
+        _ui_bind(self, 'setWindowTitle', 'Legacy.s7a49bebdd6f720a1')
         self.setModal(True)
         self.resize(700, 500)
         self.init_ui()
@@ -560,7 +563,7 @@ class PDFSplitDialog(QDialog):
         layout = QVBoxLayout(self)
 
         # Input file section
-        input_group = QGroupBox("Input File")
+        input_group = _ui_widget(QGroupBox, 'Legacy.s87e183ba430af487', 'setTitle')
         input_layout = QFormLayout(input_group)
 
         input_file_layout = QHBoxLayout()
@@ -572,10 +575,8 @@ class PDFSplitDialog(QDialog):
         self.input_file_edit.textChanged.connect(self.on_input_file_changed)
         input_file_layout.addWidget(self.input_file_edit)
 
-        self.browse_input_btn = SecondaryButton("Browse")
-        self.browse_input_btn.setAccessibleName(
-            "Browse for PDF file to split"
-        )
+        self.browse_input_btn = _ui_widget(SecondaryButton, 'Legacy.s3227aa9666253f7a', 'setText')
+        _ui_bind(self.browse_input_btn, 'setAccessibleName', 'Legacy.s91ae8b59118f2781')
         self.browse_input_btn.clicked.connect(self.browse_input_file)
         input_file_layout.addWidget(self.browse_input_btn)
 
@@ -583,21 +584,22 @@ class PDFSplitDialog(QDialog):
 
         self.file_info_label = QLabel("")
         self.file_info_label.setStyleSheet(
-            f"color: {token('text_muted')}; font-size: 10pt;"
+            f"color: {token('text_muted')}; "
         )
+        font_tokens.bind(self.file_info_label, "font.body")
         input_layout.addRow(self.file_info_label)
 
         layout.addWidget(input_group)
 
         # Split method section
-        method_group = QGroupBox("Split Method")
+        method_group = _ui_widget(QGroupBox, 'Legacy.s1b4eccc4f009a2da', 'setTitle')
         method_layout = QVBoxLayout(method_group)
 
         self.method_group = QButtonGroup()
 
         # By page count
-        self.pages_radio = QRadioButton("Split by page count")
-        self.pages_radio.setAccessibleName("Split method: by page count")
+        self.pages_radio = _ui_widget(QRadioButton, 'Legacy.s62e1c4f470a4f4b2', 'setText')
+        _ui_bind(self.pages_radio, 'setAccessibleName', 'Legacy.s62a46e9cf5484ad7')
         self.pages_radio.setMinimumHeight(44)
         self.pages_radio.setChecked(True)
         self.pages_radio.toggled.connect(self.on_method_changed)
@@ -606,9 +608,9 @@ class PDFSplitDialog(QDialog):
 
         pages_layout = QHBoxLayout()
         pages_layout.addSpacing(20)
-        pages_layout.addWidget(QLabel("Pages per file:"))
+        pages_layout.addWidget(_ui_widget(QLabel, 'Legacy.s513129314fbd6430', 'setText'))
         self.pages_spinbox = QSpinBox()
-        self.pages_spinbox.setAccessibleName("Pages per output file")
+        _ui_bind(self.pages_spinbox, 'setAccessibleName', 'Legacy.s176a703e9437c937')
         self.pages_spinbox.setMinimumHeight(44)
         self.pages_spinbox.setMinimum(1)
         self.pages_spinbox.setMaximum(1000)
@@ -618,8 +620,8 @@ class PDFSplitDialog(QDialog):
         method_layout.addLayout(pages_layout)
 
         # By page ranges
-        self.ranges_radio = QRadioButton("Split by page ranges")
-        self.ranges_radio.setAccessibleName("Split method: by page ranges")
+        self.ranges_radio = _ui_widget(QRadioButton, 'Legacy.s6f63b08cbd1514e8', 'setText')
+        _ui_bind(self.ranges_radio, 'setAccessibleName', 'Legacy.s93cc2fc1a2ca3552')
         self.ranges_radio.setMinimumHeight(44)
         self.ranges_radio.toggled.connect(self.on_method_changed)
         self.method_group.addButton(self.ranges_radio)
@@ -627,7 +629,7 @@ class PDFSplitDialog(QDialog):
 
         ranges_layout = QHBoxLayout()
         ranges_layout.addSpacing(20)
-        ranges_layout.addWidget(QLabel("Page ranges:"))
+        ranges_layout.addWidget(_ui_widget(QLabel, 'Legacy.sa4a045c02a534f52', 'setText'))
         self.ranges_edit = TextInput(
             "Page Ranges",
             "e.g., 1-10,11-20,21-30",
@@ -638,16 +640,16 @@ class PDFSplitDialog(QDialog):
         method_layout.addLayout(ranges_layout)
 
         # By bookmarks
-        self.bookmarks_radio = QRadioButton("Split by bookmarks (chapter-based)")
-        self.bookmarks_radio.setAccessibleName("Split method: by bookmarks")
+        self.bookmarks_radio = _ui_widget(QRadioButton, 'Legacy.s63eaefdbf33c3e7d', 'setText')
+        _ui_bind(self.bookmarks_radio, 'setAccessibleName', 'Legacy.s1ab781a278e82dca')
         self.bookmarks_radio.setMinimumHeight(44)
         self.bookmarks_radio.toggled.connect(self.on_method_changed)
         self.method_group.addButton(self.bookmarks_radio)
         method_layout.addWidget(self.bookmarks_radio)
 
         # By file size
-        self.size_radio = QRadioButton("Split by file size")
-        self.size_radio.setAccessibleName("Split method: by file size")
+        self.size_radio = _ui_widget(QRadioButton, 'Legacy.sb02156ab99e52549', 'setText')
+        _ui_bind(self.size_radio, 'setAccessibleName', 'Legacy.s65606affebc4ae70')
         self.size_radio.setMinimumHeight(44)
         self.size_radio.toggled.connect(self.on_method_changed)
         self.method_group.addButton(self.size_radio)
@@ -655,36 +657,36 @@ class PDFSplitDialog(QDialog):
 
         size_layout = QHBoxLayout()
         size_layout.addSpacing(20)
-        size_layout.addWidget(QLabel("Max size per file:"))
+        size_layout.addWidget(_ui_widget(QLabel, 'Legacy.s48818834a3c076c3', 'setText'))
         self.size_spinbox = QSpinBox()
-        self.size_spinbox.setAccessibleName("Maximum size per output file in MB")
+        _ui_bind(self.size_spinbox, 'setAccessibleName', 'Legacy.s9c5e4395126dc80c')
         self.size_spinbox.setMinimumHeight(44)
         self.size_spinbox.setMinimum(1)
         self.size_spinbox.setMaximum(100)
         self.size_spinbox.setValue(5)
         self.size_spinbox.setEnabled(False)
         size_layout.addWidget(self.size_spinbox)
-        size_layout.addWidget(QLabel("MB"))
+        size_layout.addWidget(_ui_widget(QLabel, 'Legacy.s1d09f6fa23235881', 'setText'))
         size_layout.addStretch()
         method_layout.addLayout(size_layout)
 
         layout.addWidget(method_group)
 
         # Preview section
-        preview_group = QGroupBox("Preview")
+        preview_group = _ui_widget(QGroupBox, 'Legacy.s324b134f57c70c72', 'setTitle')
         preview_layout = QVBoxLayout(preview_group)
 
         self.preview_text = QTextEdit()
-        self.preview_text.setAccessibleName("Split preview")
+        _ui_bind(self.preview_text, 'setAccessibleName', 'Legacy.s8238aafad32848b1')
         self.preview_text.setMaximumHeight(100)
         self.preview_text.setReadOnly(True)
-        self.preview_text.setPlaceholderText("Split preview will appear here...")
+        _ui_bind(self.preview_text, 'setPlaceholderText', 'Legacy.sbf2283a271ae5718')
         preview_layout.addWidget(self.preview_text)
 
         layout.addWidget(preview_group)
 
         # Output section
-        output_group = QGroupBox("Output")
+        output_group = _ui_widget(QGroupBox, 'Legacy.sb2439bcb8dee14b6', 'setTitle')
         output_layout = QFormLayout(output_group)
 
         output_dir_layout = QHBoxLayout()
@@ -696,10 +698,8 @@ class PDFSplitDialog(QDialog):
         self.output_dir_edit.textChanged.connect(self.update_split_button)
         output_dir_layout.addWidget(self.output_dir_edit)
 
-        self.browse_output_btn = SecondaryButton("Browse")
-        self.browse_output_btn.setAccessibleName(
-            "Browse for split output directory"
-        )
+        self.browse_output_btn = _ui_widget(SecondaryButton, 'Legacy.s3227aa9666253f7a', 'setText')
+        _ui_bind(self.browse_output_btn, 'setAccessibleName', 'Legacy.sc615df9b2f4f7a36')
         self.browse_output_btn.clicked.connect(self.browse_output_directory)
         output_dir_layout.addWidget(self.browse_output_btn)
 
@@ -718,13 +718,13 @@ class PDFSplitDialog(QDialog):
         buttons_layout = QHBoxLayout()
         buttons_layout.addStretch()
 
-        self.cancel_btn = SecondaryButton("Cancel")
-        self.cancel_btn.setAccessibleName("Cancel split operation")
+        self.cancel_btn = _ui_widget(SecondaryButton, 'Legacy.s19766ed6ccb2f4a3', 'setText')
+        _ui_bind(self.cancel_btn, 'setAccessibleName', 'Legacy.s7428753b7bb36bfa')
         self.cancel_btn.clicked.connect(self.reject)
         buttons_layout.addWidget(self.cancel_btn)
 
-        self.split_btn = PrimaryButton("Split PDF")
-        self.split_btn.setAccessibleName("Split PDF into parts")
+        self.split_btn = _ui_widget(PrimaryButton, 'Legacy.s4f1b846cb144435e', 'setText')
+        _ui_bind(self.split_btn, 'setAccessibleName', 'Legacy.s869441f8aa22d755')
         self.split_btn.clicked.connect(self.accept)
         self.split_btn.setEnabled(False)
         self.split_btn.setStyleSheet(
@@ -757,7 +757,7 @@ class PDFSplitDialog(QDialog):
             f"""
             QDialog {{
                 background-color: {token('window_background')};
-                font-family: "Segoe UI", Arial, sans-serif;
+
             }}
             QGroupBox {{
                 font-weight: bold;
@@ -791,6 +791,7 @@ class PDFSplitDialog(QDialog):
             }}
         """
         )
+        font_tokens.bind(self, "font.body")
 
     def browse_input_file(self):
         """Browse for input PDF file"""
@@ -934,7 +935,7 @@ class PDFSignDialog(QDialog):
         self.output_file = ""
         self.sign_options = {}
 
-        self.setWindowTitle("Sign PDF Document")
+        _ui_bind(self, 'setWindowTitle', 'Legacy.s69a77e93050118ee')
         self.setModal(True)
         self.resize(600, 500)
         self.init_ui()
@@ -943,7 +944,7 @@ class PDFSignDialog(QDialog):
         layout = QVBoxLayout(self)
 
         # Input files section
-        files_group = QGroupBox("Files")
+        files_group = _ui_widget(QGroupBox, 'Legacy.sabc7e9892806b047', 'setTitle')
         files_layout = QFormLayout(files_group)
 
         # PDF file
@@ -956,10 +957,8 @@ class PDFSignDialog(QDialog):
         self.pdf_file_edit.textChanged.connect(self.update_sign_button)
         pdf_file_layout.addWidget(self.pdf_file_edit)
 
-        self.browse_pdf_btn = SecondaryButton("Browse")
-        self.browse_pdf_btn.setAccessibleName(
-            "Browse for PDF file to sign"
-        )
+        self.browse_pdf_btn = _ui_widget(SecondaryButton, 'Legacy.s3227aa9666253f7a', 'setText')
+        _ui_bind(self.browse_pdf_btn, 'setAccessibleName', 'Legacy.s1f8deb9bf96c614f')
         self.browse_pdf_btn.clicked.connect(self.browse_pdf_file)
         pdf_file_layout.addWidget(self.browse_pdf_btn)
 
@@ -975,10 +974,8 @@ class PDFSignDialog(QDialog):
         self.sig_file_edit.textChanged.connect(self.update_sign_button)
         sig_file_layout.addWidget(self.sig_file_edit)
 
-        self.browse_sig_btn = SecondaryButton("Browse")
-        self.browse_sig_btn.setAccessibleName(
-            "Browse for signature image file"
-        )
+        self.browse_sig_btn = _ui_widget(SecondaryButton, 'Legacy.s3227aa9666253f7a', 'setText')
+        _ui_bind(self.browse_sig_btn, 'setAccessibleName', 'Legacy.saeeaa9a5c56800e7')
         self.browse_sig_btn.clicked.connect(self.browse_signature_file)
         sig_file_layout.addWidget(self.browse_sig_btn)
 
@@ -995,7 +992,7 @@ class PDFSignDialog(QDialog):
         left_layout = QVBoxLayout(left_panel)
 
         # Position section
-        position_group = QGroupBox("Position")
+        position_group = _ui_widget(QGroupBox, 'Legacy.s6d031af10da7a25e', 'setTitle')
         position_layout = QGridLayout(position_group)
 
         self.position_group = QButtonGroup()
@@ -1021,18 +1018,18 @@ class PDFSignDialog(QDialog):
 
         # Custom coordinates
         custom_layout = QHBoxLayout()
-        custom_layout.addWidget(QLabel("X:"))
+        custom_layout.addWidget(_ui_widget(QLabel, 'Legacy.s939fc7d2410705f9', 'setText'))
         self.custom_x_spin = QSpinBox()
-        self.custom_x_spin.setAccessibleName("Custom signature X position")
+        _ui_bind(self.custom_x_spin, 'setAccessibleName', 'Legacy.sc832d561b54c0a4d')
         self.custom_x_spin.setMinimumHeight(44)
         self.custom_x_spin.setRange(0, 1000)
         self.custom_x_spin.setValue(100)
         self.custom_x_spin.setEnabled(False)
         custom_layout.addWidget(self.custom_x_spin)
 
-        custom_layout.addWidget(QLabel("Y:"))
+        custom_layout.addWidget(_ui_widget(QLabel, 'Legacy.s841ceee9c2d2e386', 'setText'))
         self.custom_y_spin = QSpinBox()
-        self.custom_y_spin.setAccessibleName("Custom signature Y position")
+        _ui_bind(self.custom_y_spin, 'setAccessibleName', 'Legacy.s3ecbf805feaa8391')
         self.custom_y_spin.setMinimumHeight(44)
         self.custom_y_spin.setRange(0, 1000)
         self.custom_y_spin.setValue(100)
@@ -1047,32 +1044,32 @@ class PDFSignDialog(QDialog):
         left_layout.addWidget(position_group)
 
         # Pages section
-        pages_group = QGroupBox("Pages to Sign")
+        pages_group = _ui_widget(QGroupBox, 'Legacy.scc7f571a2b00d8f5', 'setTitle')
         pages_layout = QVBoxLayout(pages_group)
 
         self.pages_group = QButtonGroup()
 
-        self.all_pages_radio = QRadioButton("All pages")
-        self.all_pages_radio.setAccessibleName("Sign all pages")
+        self.all_pages_radio = _ui_widget(QRadioButton, 'Legacy.s903542125c003f8f', 'setText')
+        _ui_bind(self.all_pages_radio, 'setAccessibleName', 'Legacy.sa293cb858ee48545')
         self.all_pages_radio.setMinimumHeight(44)
         self.all_pages_radio.setChecked(True)
         self.pages_group.addButton(self.all_pages_radio)
         pages_layout.addWidget(self.all_pages_radio)
 
-        self.first_page_radio = QRadioButton("First page only")
-        self.first_page_radio.setAccessibleName("Sign first page only")
+        self.first_page_radio = _ui_widget(QRadioButton, 'Legacy.sb881647b7191c901', 'setText')
+        _ui_bind(self.first_page_radio, 'setAccessibleName', 'Legacy.s5366dccd9ef0558e')
         self.first_page_radio.setMinimumHeight(44)
         self.pages_group.addButton(self.first_page_radio)
         pages_layout.addWidget(self.first_page_radio)
 
-        self.last_page_radio = QRadioButton("Last page only")
-        self.last_page_radio.setAccessibleName("Sign last page only")
+        self.last_page_radio = _ui_widget(QRadioButton, 'Legacy.s38133d2e747c541a', 'setText')
+        _ui_bind(self.last_page_radio, 'setAccessibleName', 'Legacy.s0fab69634a890490')
         self.last_page_radio.setMinimumHeight(44)
         self.pages_group.addButton(self.last_page_radio)
         pages_layout.addWidget(self.last_page_radio)
 
-        self.custom_pages_radio = QRadioButton("Custom pages:")
-        self.custom_pages_radio.setAccessibleName("Sign custom pages")
+        self.custom_pages_radio = _ui_widget(QRadioButton, 'Legacy.s06dd8a91390b2c38', 'setText')
+        _ui_bind(self.custom_pages_radio, 'setAccessibleName', 'Legacy.s8b068714e4b3c056')
         self.custom_pages_radio.setMinimumHeight(44)
         self.pages_group.addButton(self.custom_pages_radio)
         pages_layout.addWidget(self.custom_pages_radio)
@@ -1093,23 +1090,23 @@ class PDFSignDialog(QDialog):
         left_layout.addWidget(pages_group)
 
         # Options section
-        options_group = QGroupBox("Options")
+        options_group = _ui_widget(QGroupBox, 'Legacy.sd0db8b5e364b6989', 'setTitle')
         options_layout = QFormLayout(options_group)
 
         # Size
         size_layout = QHBoxLayout()
         self.width_spin = QSpinBox()
-        self.width_spin.setAccessibleName("Signature width")
+        _ui_bind(self.width_spin, 'setAccessibleName', 'Legacy.sd53c9c874144f37c')
         self.width_spin.setMinimumHeight(44)
         self.width_spin.setRange(10, 500)
         self.width_spin.setValue(100)
         self.width_spin.setSuffix(" pt")
         size_layout.addWidget(self.width_spin)
 
-        size_layout.addWidget(QLabel("×"))
+        size_layout.addWidget(_ui_widget(QLabel, 'Legacy.s8db71ed28b0f2f14', 'setText'))
 
         self.height_spin = QSpinBox()
-        self.height_spin.setAccessibleName("Signature height")
+        _ui_bind(self.height_spin, 'setAccessibleName', 'Legacy.sa847d4babec4bde5')
         self.height_spin.setMinimumHeight(44)
         self.height_spin.setRange(10, 500)
         self.height_spin.setValue(50)
@@ -1120,7 +1117,7 @@ class PDFSignDialog(QDialog):
 
         # Transparency
         self.transparency_slider = QSlider(Qt.Horizontal)
-        self.transparency_slider.setAccessibleName("Signature transparency")
+        _ui_bind(self.transparency_slider, 'setAccessibleName', 'Legacy.s47363504883f23b0')
         self.transparency_slider.setMinimumHeight(44)
         self.transparency_slider.setRange(0, 100)
         self.transparency_slider.setValue(80)
@@ -1128,14 +1125,14 @@ class PDFSignDialog(QDialog):
 
         transparency_layout = QHBoxLayout()
         transparency_layout.addWidget(self.transparency_slider)
-        self.transparency_label = QLabel("80%")
+        self.transparency_label = _ui_widget(QLabel, 'Legacy.sf39dda09980ef9a6', 'setText')
         transparency_layout.addWidget(self.transparency_label)
 
         options_layout.addRow("Transparency:", transparency_layout)
 
         # Digital signature
-        self.digital_sig_cb = QCheckBox("Add digital signature (requires certificate)")
-        self.digital_sig_cb.setAccessibleName("Add digital signature")
+        self.digital_sig_cb = _ui_widget(QCheckBox, 'Legacy.s166ec6598ee3d2b5', 'setText')
+        _ui_bind(self.digital_sig_cb, 'setAccessibleName', 'Legacy.seffad318a98e2686')
         self.digital_sig_cb.setMinimumHeight(44)
         self.digital_sig_cb.toggled.connect(self.toggle_certificate)
         options_layout.addRow(self.digital_sig_cb)
@@ -1150,8 +1147,8 @@ class PDFSignDialog(QDialog):
         self.cert_file_edit.setEnabled(False)
         cert_layout.addWidget(self.cert_file_edit)
 
-        self.browse_cert_btn = SecondaryButton("Browse")
-        self.browse_cert_btn.setAccessibleName("Browse for certificate file")
+        self.browse_cert_btn = _ui_widget(SecondaryButton, 'Legacy.s3227aa9666253f7a', 'setText')
+        _ui_bind(self.browse_cert_btn, 'setAccessibleName', 'Legacy.s0782eb8dbd434fda')
         self.browse_cert_btn.clicked.connect(self.browse_certificate_file)
         self.browse_cert_btn.setEnabled(False)
         cert_layout.addWidget(self.browse_cert_btn)
@@ -1166,11 +1163,11 @@ class PDFSignDialog(QDialog):
         right_panel = QWidget()
         right_layout = QVBoxLayout(right_panel)
 
-        preview_group = QGroupBox("Preview")
+        preview_group = _ui_widget(QGroupBox, 'Legacy.s324b134f57c70c72', 'setTitle')
         preview_layout = QVBoxLayout(preview_group)
 
         # Preview area (placeholder)
-        self.preview_label = QLabel("Preview will appear here")
+        self.preview_label = _ui_widget(QLabel, 'Legacy.s0a44b1414f67ff5d', 'setText')
         self.preview_label.setAlignment(Qt.AlignCenter)
         self.preview_label.setStyleSheet(
             f"""
@@ -1180,10 +1177,11 @@ class PDFSignDialog(QDialog):
                 padding: 40px;
                 background-color: {token('surface')};
                 color: {token('text_muted')};
-                font-size: 12pt;
+
             }}
         """
         )
+        font_tokens.bind(self.preview_label, "font.body")
         self.preview_label.setMinimumHeight(200)
         preview_layout.addWidget(self.preview_label)
 
@@ -1193,7 +1191,7 @@ class PDFSignDialog(QDialog):
         splitter.setSizes([350, 250])
 
         # Output section
-        output_group = QGroupBox("Output")
+        output_group = _ui_widget(QGroupBox, 'Legacy.sb2439bcb8dee14b6', 'setTitle')
         output_layout = QFormLayout(output_group)
 
         output_file_layout = QHBoxLayout()
@@ -1205,10 +1203,8 @@ class PDFSignDialog(QDialog):
         self.output_file_edit.textChanged.connect(self.update_sign_button)
         output_file_layout.addWidget(self.output_file_edit)
 
-        self.browse_output_btn = SecondaryButton("Browse")
-        self.browse_output_btn.setAccessibleName(
-            "Browse for signed output file"
-        )
+        self.browse_output_btn = _ui_widget(SecondaryButton, 'Legacy.s3227aa9666253f7a', 'setText')
+        _ui_bind(self.browse_output_btn, 'setAccessibleName', 'Legacy.s4c87616d148247fd')
         self.browse_output_btn.clicked.connect(self.browse_output_file)
         output_file_layout.addWidget(self.browse_output_btn)
 
@@ -1220,13 +1216,13 @@ class PDFSignDialog(QDialog):
         buttons_layout = QHBoxLayout()
         buttons_layout.addStretch()
 
-        self.cancel_btn = SecondaryButton("Cancel")
-        self.cancel_btn.setAccessibleName("Cancel sign operation")
+        self.cancel_btn = _ui_widget(SecondaryButton, 'Legacy.s19766ed6ccb2f4a3', 'setText')
+        _ui_bind(self.cancel_btn, 'setAccessibleName', 'Legacy.s108c6eaa3f0db951')
         self.cancel_btn.clicked.connect(self.reject)
         buttons_layout.addWidget(self.cancel_btn)
 
-        self.sign_btn = PrimaryButton("Sign Document")
-        self.sign_btn.setAccessibleName("Sign PDF document")
+        self.sign_btn = _ui_widget(PrimaryButton, 'Legacy.sd78d69270eb64ab4', 'setText')
+        _ui_bind(self.sign_btn, 'setAccessibleName', 'Legacy.sd1a8b617a29083a7')
         self.sign_btn.clicked.connect(self.accept)
         self.sign_btn.setEnabled(False)
         self.sign_btn.setStyleSheet(
@@ -1259,7 +1255,7 @@ class PDFSignDialog(QDialog):
             f"""
             QDialog {{
                 background-color: {token('window_background')};
-                font-family: "Segoe UI", Arial, sans-serif;
+
             }}
             QGroupBox {{
                 font-weight: bold;
@@ -1289,6 +1285,7 @@ class PDFSignDialog(QDialog):
             }}
         """
         )
+        font_tokens.bind(self, "font.body")
 
     def browse_pdf_file(self):
         """Browse for PDF file to sign"""

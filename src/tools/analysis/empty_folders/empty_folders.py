@@ -4,6 +4,8 @@ Empty Folders Finder for Richard's File Utilities
 
 A streamlined empty folders finder utility with essential functionality.
 """
+from src.rfu.localization import localized_widget as _ui_widget, bind_literal as _ui_bind
+from src.rfu import font_tokens
 
 import logging
 import os
@@ -31,7 +33,7 @@ except ImportError:
 from PyQt5.QtWidgets import QPushButton as _QPushButton
 
 try:
-    from PyQt5.QtCore import QObject, Qt, QThread, pyqtSignal
+    from PyQt5.QtCore import QObject, Qt, QThread, pyqtSignal, pyqtSlot
     from PyQt5.QtGui import QColor
     from PyQt5.QtWidgets import (
         QAbstractItemView,
@@ -147,6 +149,14 @@ class EmptyFolderLogic(QObject):
         """Stop the operation."""
         self._is_running = False
         self.progress_updated.emit("Stopping operation...")
+
+    @pyqtSlot()
+    def run_scan(self):
+        self.find_empty_folders(self.pending_path)
+
+    @pyqtSlot()
+    def run_delete(self):
+        self.delete_folders(self.pending_folders)
 
     def find_empty_folders(self, start_path: str) -> None:
         """Find empty folders recursively."""
@@ -272,7 +282,7 @@ class EmptyFoldersGUI(StandardWindow):
     def health_check(self) -> bool:
         """Return True if core UI is functional (GRD-3a)."""
         try:
-            return hasattr(self, "folder_list") and self.folder_list is not None
+            return hasattr(self, "results_list") and self.results_list is not None
         except Exception:
             return False
 
@@ -308,7 +318,7 @@ class EmptyFoldersGUI(StandardWindow):
         """Show help dialog for Empty Folders tool."""
         help_text = """
         <h2>Empty Folders Finder - Help</h2>
-        
+
         <h3>How to Find Empty Folders:</h3>
         <ul>
         <li><b>Select Directory:</b> Choose the folder to scan</li>
@@ -316,7 +326,7 @@ class EmptyFoldersGUI(StandardWindow):
         <li><b>Review Results:</b> Browse the list of found empty folders</li>
         <li><b>Delete Selected:</b> Remove unwanted empty directories</li>
         </ul>
-        
+
         <h3>Scan Features:</h3>
         <ul>
         <li><b>Recursive Search:</b> Scans all subdirectories thoroughly</li>
@@ -324,7 +334,7 @@ class EmptyFoldersGUI(StandardWindow):
         <li><b>Progress Tracking:</b> Real-time scan progress updates</li>
         <li><b>Error Handling:</b> Handles permission and access issues</li>
         </ul>
-        
+
         <h3>Deletion Safety:</h3>
         <ul>
         <li><b>Selective Deletion:</b> Choose which folders to remove</li>
@@ -332,7 +342,7 @@ class EmptyFoldersGUI(StandardWindow):
         <li><b>Confirmation:</b> Asks before permanent deletion</li>
         <li><b>Status Updates:</b> Shows success/failure for each folder</li>
         </ul>
-        
+
         <h3>Use Cases:</h3>
         <ul>
         <li><b>Cleanup:</b> Remove leftover empty directories</li>
@@ -340,7 +350,7 @@ class EmptyFoldersGUI(StandardWindow):
         <li><b>Maintenance:</b> Regular system housekeeping</li>
         <li><b>Archive Prep:</b> Clean folders before archiving</li>
         </ul>
-        
+
         <h3>Best Practices:</h3>
         <ul>
         <li><b>Test First:</b> Scan before deleting to review results</li>
@@ -348,7 +358,7 @@ class EmptyFoldersGUI(StandardWindow):
         <li><b>Avoid System:</b> Don't scan critical system directories</li>
         <li><b>Regular Use:</b> Run periodically for maintenance</li>
         </ul>
-        
+
         <h3>Keyboard Shortcuts:</h3>
         <ul>
         <li><b>Ctrl+Q:</b> Exit application</li>
@@ -393,11 +403,11 @@ class EmptyFoldersGUI(StandardWindow):
             layout = QVBoxLayout(central_widget)
 
         # Add header
-        header_label = QLabel("Empty Folders Finder")
+        header_label = _ui_widget(QLabel, 'Legacy.s27be31b1452098f2', 'setText')
         header_label.setStyleSheet(
             f"""
             QLabel {{
-                font-size: 18px;
+
                 font-weight: bold;
                 color: {token('text_primary')};
                 padding: 10px;
@@ -407,15 +417,16 @@ class EmptyFoldersGUI(StandardWindow):
             }}
         """
         )
+        font_tokens.bind(header_label, "font.toolHeader")
         layout.addWidget(header_label)
 
         # Directory selection area
-        selection_group = QGroupBox("Directory Selection")
+        selection_group = _ui_widget(QGroupBox, 'Legacy.s30d2d5574cce5ea3', 'setTitle')
         selection_layout = QVBoxLayout(selection_group)
 
         # Path selection
         path_layout = QHBoxLayout()
-        self.path_input = QLabel("No directory selected")
+        self.path_input = _ui_widget(QLabel, 'Legacy.sbf355de778591b63', 'setText')
         self.path_input.setStyleSheet(
             f"""
             QLabel {{
@@ -454,11 +465,11 @@ class EmptyFoldersGUI(StandardWindow):
         layout.addWidget(selection_group)
 
         # Results area
-        results_group = QGroupBox("Empty Folders Found")
+        results_group = _ui_widget(QGroupBox, 'Legacy.sd7053555fe638c79', 'setTitle')
         results_layout = QVBoxLayout(results_group)
 
         self.results_list = QListWidget()
-        self.results_list.setAccessibleName("Empty folders list")
+        _ui_bind(self.results_list, 'setAccessibleName', 'Legacy.sc9fdae2b72d21e5a')
         self.results_list.setSelectionMode(QAbstractItemView.ExtendedSelection)
         results_layout.addWidget(self.results_list)
 
@@ -475,9 +486,9 @@ class EmptyFoldersGUI(StandardWindow):
         self.unselect_all_button.clicked.connect(self.unselect_all_folders)
         self.unselect_all_button.setEnabled(False)
         if _COMPONENTS_AVAILABLE:
-            self.delete_button = DestructiveButton("Delete Selected")
-            self.delete_button.set_confirmation_callback(self._confirm_delete)
-            self.delete_button.action_confirmed.connect(self._perform_deletion)
+            self.delete_button = _ui_widget(SecondaryButton, 'Legacy.s6662750e03313bdd', 'setText')
+            self.delete_button.setStyleSheet(f"color: {token('semantic_error')};")
+            self.delete_button.clicked.connect(self.delete_selected)
         else:
             self.delete_button = _QPushButton("Delete Selected")
             self.delete_button.clicked.connect(self.delete_selected)
@@ -492,7 +503,7 @@ class EmptyFoldersGUI(StandardWindow):
         layout.addWidget(results_group)
 
         # Status area
-        self.status_label = QLabel("Ready - Select a directory to begin")
+        self.status_label = _ui_widget(QLabel, 'Legacy.s0506135a8bea582e', 'setText')
         self.status_label.setStyleSheet(
             f"""
             QLabel {{
@@ -563,9 +574,8 @@ class EmptyFoldersGUI(StandardWindow):
         self.logic.folders_found.connect(self.display_folders)
         self.logic.error_occurred.connect(self.handle_error)
         self.logic.finished.connect(self.scan_complete)
-        self.thread.started.connect(
-            lambda: self.logic.find_empty_folders(self.current_path)
-        )
+        self.logic.pending_path = self.current_path
+        self.thread.started.connect(self.logic.run_scan)
 
         self.thread.start()
 
@@ -677,9 +687,8 @@ class EmptyFoldersGUI(StandardWindow):
         self.logic.deletion_update.connect(self.handle_deletion)
         self.logic.error_occurred.connect(self.handle_error)
         self.logic.finished.connect(self.delete_complete)
-        self.thread.started.connect(
-            lambda: self.logic.delete_folders(folders_to_delete)
-        )
+        self.logic.pending_folders = list(folders_to_delete)
+        self.thread.started.connect(self.logic.run_delete)
 
         self.thread.start()
 

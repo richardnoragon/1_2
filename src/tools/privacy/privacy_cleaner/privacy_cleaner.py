@@ -9,6 +9,8 @@ A comprehensive privacy and data cleaning tool that provides:
 - Secure data wiping
 - Registry cleanup (Windows)
 """
+from src.rfu.localization import localized_widget as _ui_widget, bind_literal as _ui_bind
+from src.rfu import font_tokens
 
 import sys
 
@@ -43,7 +45,7 @@ class PrivacyCleanerGUI(QMainWindow):
 
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Privacy Cleaner - Richard's File Utilities")
+        _ui_bind(self, 'setWindowTitle', 'Legacy.s1de9c2bac30947e4')
         self.setGeometry(200, 200, 900, 700)
 
         # Create central widget and main layout
@@ -86,11 +88,11 @@ class PrivacyCleanerGUI(QMainWindow):
     def init_ui(self):
         """Initialize the user interface."""
         # Create header
-        header_label = QLabel("Privacy Cleaner & Data Protection")
+        header_label = _ui_widget(QLabel, 'Legacy.s1acf7b323e8cb4c3', 'setText')
         header_label.setStyleSheet(
             """
             QLabel {
-                font-size: 18px;
+
                 font-weight: bold;
                 color: {token('text_primary')};
                 padding: 10px;
@@ -100,11 +102,12 @@ class PrivacyCleanerGUI(QMainWindow):
             }
         """
         )
+        font_tokens.bind(header_label, "font.toolHeader")
         self.main_layout.addWidget(header_label)
 
         # Create tab widget for different privacy tools
         tab_widget = QTabWidget()
-        tab_widget.setAccessibleName("Privacy tool categories")
+        _ui_bind(tab_widget, 'setAccessibleName', 'Legacy.s4dd00468800a9c8e')
         self.main_layout.addWidget(tab_widget)
 
         # Browser Cleanup Tab
@@ -124,11 +127,11 @@ class PrivacyCleanerGUI(QMainWindow):
         tab_widget.addTab(secure_tab, SECURE_WIPE_LABEL)
 
         # Results area
-        results_group = QGroupBox("Cleanup Results and Status")
+        results_group = _ui_widget(QGroupBox, 'Legacy.sf2b830dd643579f6', 'setTitle')
         results_layout = QVBoxLayout(results_group)
 
         self.results_text = QTextEdit()
-        self.results_text.setAccessibleName("Cleanup results and status")
+        _ui_bind(self.results_text, 'setAccessibleName', 'Legacy.s1d1a13623b885f7f')
         self.results_text.setReadOnly(True)
         self.results_text.setPlainText(
             (
@@ -157,40 +160,40 @@ class PrivacyCleanerGUI(QMainWindow):
         layout = QVBoxLayout(tab)
 
         # Browser selection
-        browser_group = QGroupBox("Browser Data Cleanup")
+        browser_group = _ui_widget(QGroupBox, 'Legacy.s70d1bc4d139f4339', 'setTitle')
         browser_layout = QVBoxLayout(browser_group)
 
         # Checkboxes for cleanup options
-        self.clear_cookies = QCheckBox("Clear Cookies")
-        self.clear_cookies.setAccessibleName("Clear browser cookies")
+        self.clear_cookies = _ui_widget(QCheckBox, 'Legacy.sdfcbbbb5b1718a8d', 'setText')
+        _ui_bind(self.clear_cookies, 'setAccessibleName', 'Legacy.s7d65830530158c6a')
         self.clear_cookies.setMinimumHeight(44)
         self.clear_cookies.setChecked(True)
         browser_layout.addWidget(self.clear_cookies)
 
-        self.clear_cache = QCheckBox("Clear Cache")
-        self.clear_cache.setAccessibleName("Clear browser cache")
+        self.clear_cache = _ui_widget(QCheckBox, 'Legacy.s3da74d414ba19ebb', 'setText')
+        _ui_bind(self.clear_cache, 'setAccessibleName', 'Legacy.sb42b6726af85679d')
         self.clear_cache.setMinimumHeight(44)
         self.clear_cache.setChecked(True)
         browser_layout.addWidget(self.clear_cache)
 
-        self.clear_history = QCheckBox("Clear Browsing History")
-        self.clear_history.setAccessibleName("Clear browsing history")
+        self.clear_history = _ui_widget(QCheckBox, 'Legacy.sfaccb39b243344ea', 'setText')
+        _ui_bind(self.clear_history, 'setAccessibleName', 'Legacy.s67664dcf220a8b04')
         self.clear_history.setMinimumHeight(44)
         browser_layout.addWidget(self.clear_history)
 
-        self.clear_downloads = QCheckBox("Clear Download History")
-        self.clear_downloads.setAccessibleName("Clear download history")
+        self.clear_downloads = _ui_widget(QCheckBox, 'Legacy.s35f4d71d0afaf364', 'setText')
+        _ui_bind(self.clear_downloads, 'setAccessibleName', 'Legacy.s2933d75fc5a44088')
         self.clear_downloads.setMinimumHeight(44)
         browser_layout.addWidget(self.clear_downloads)
 
-        self.clear_passwords = QCheckBox("Clear Saved Passwords")
-        self.clear_passwords.setAccessibleName("Clear saved passwords")
+        self.clear_passwords = _ui_widget(QCheckBox, 'Legacy.s80c03f330a5db1cc', 'setText')
+        _ui_bind(self.clear_passwords, 'setAccessibleName', 'Legacy.s67ecbf48cae97bed')
         self.clear_passwords.setMinimumHeight(44)
         browser_layout.addWidget(self.clear_passwords)
 
         # Cleanup button
-        cleanup_browser_btn = PrimaryButton("Clean Browser Data")
-        cleanup_browser_btn.setAccessibleName("Clean browser data")
+        cleanup_browser_btn = _ui_widget(PrimaryButton, 'Legacy.sac71b5d71fa8ff2c', 'setText')
+        _ui_bind(cleanup_browser_btn, 'setAccessibleName', 'Legacy.s7f1b22556b38c6e8')
         cleanup_browser_btn.clicked.connect(self.cleanup_browser_data)
         browser_layout.addWidget(cleanup_browser_btn)
 
@@ -205,37 +208,37 @@ class PrivacyCleanerGUI(QMainWindow):
         layout = QVBoxLayout(tab)
 
         # System cleanup options
-        system_group = QGroupBox("System Cleanup Options")
+        system_group = _ui_widget(QGroupBox, 'Legacy.sbce63106e7328355', 'setTitle')
         system_layout = QVBoxLayout(system_group)
 
         # Temp files
-        self.clear_temp = QCheckBox("Clear Temporary Files")
-        self.clear_temp.setAccessibleName("Clear temporary files")
+        self.clear_temp = _ui_widget(QCheckBox, 'Legacy.s40d33f3ad5a42ebe', 'setText')
+        _ui_bind(self.clear_temp, 'setAccessibleName', 'Legacy.s12f067bc02c6a35e')
         self.clear_temp.setMinimumHeight(44)
         self.clear_temp.setChecked(True)
         system_layout.addWidget(self.clear_temp)
 
         # Log files
-        self.clear_logs = QCheckBox("Clear Log Files")
-        self.clear_logs.setAccessibleName("Clear log files")
+        self.clear_logs = _ui_widget(QCheckBox, 'Legacy.sbbb6701653948df1', 'setText')
+        _ui_bind(self.clear_logs, 'setAccessibleName', 'Legacy.sf2eea3b022245890')
         self.clear_logs.setMinimumHeight(44)
         system_layout.addWidget(self.clear_logs)
 
         # Recycle bin
-        self.empty_recycle = QCheckBox("Empty Recycle Bin")
-        self.empty_recycle.setAccessibleName("Empty recycle bin")
+        self.empty_recycle = _ui_widget(QCheckBox, 'Legacy.sf9a4ed0dcb06b2f8', 'setText')
+        _ui_bind(self.empty_recycle, 'setAccessibleName', 'Legacy.s7490785f28aa6672')
         self.empty_recycle.setMinimumHeight(44)
         system_layout.addWidget(self.empty_recycle)
 
         # Registry cleanup (Windows only)
-        self.clean_registry = QCheckBox("Clean Registry (Windows)")
-        self.clean_registry.setAccessibleName("Clean Windows registry")
+        self.clean_registry = _ui_widget(QCheckBox, 'Legacy.se9cbcd73203ee876', 'setText')
+        _ui_bind(self.clean_registry, 'setAccessibleName', 'Legacy.s55a7a84781421596')
         self.clean_registry.setMinimumHeight(44)
         system_layout.addWidget(self.clean_registry)
 
         # Cleanup button
-        cleanup_system_btn = PrimaryButton("Clean System Data")
-        cleanup_system_btn.setAccessibleName("Clean system data")
+        cleanup_system_btn = _ui_widget(PrimaryButton, 'Legacy.sd1b66a2d7370f1eb', 'setText')
+        _ui_bind(cleanup_system_btn, 'setAccessibleName', 'Legacy.sde962aaa26e97e41')
         cleanup_system_btn.clicked.connect(self.cleanup_system_data)
         system_layout.addWidget(cleanup_system_btn)
 
@@ -250,41 +253,41 @@ class PrivacyCleanerGUI(QMainWindow):
         layout = QVBoxLayout(tab)
 
         # Metadata scrubbing options
-        metadata_group = QGroupBox("File Metadata Scrubber")
+        metadata_group = _ui_widget(QGroupBox, 'Legacy.sb49873262480189d', 'setTitle')
         metadata_layout = QVBoxLayout(metadata_group)
 
         # File type options
-        self.scrub_images = QCheckBox("Remove EXIF data from images")
-        self.scrub_images.setAccessibleName("Remove EXIF data from images")
+        self.scrub_images = _ui_widget(QCheckBox, 'Legacy.s219371b5e04dbb90', 'setText')
+        _ui_bind(self.scrub_images, 'setAccessibleName', 'Legacy.s219371b5e04dbb90')
         self.scrub_images.setMinimumHeight(44)
         self.scrub_images.setChecked(True)
         metadata_layout.addWidget(self.scrub_images)
 
-        self.scrub_documents = QCheckBox("Remove metadata from documents")
-        self.scrub_documents.setAccessibleName("Remove metadata from documents")
+        self.scrub_documents = _ui_widget(QCheckBox, 'Legacy.sc334db8e0cddecbd', 'setText')
+        _ui_bind(self.scrub_documents, 'setAccessibleName', 'Legacy.sc334db8e0cddecbd')
         self.scrub_documents.setMinimumHeight(44)
         self.scrub_documents.setChecked(True)
         metadata_layout.addWidget(self.scrub_documents)
 
-        self.scrub_audio = QCheckBox("Remove metadata from audio files")
-        self.scrub_audio.setAccessibleName("Remove metadata from audio files")
+        self.scrub_audio = _ui_widget(QCheckBox, 'Legacy.s8f5811f5d7e68762', 'setText')
+        _ui_bind(self.scrub_audio, 'setAccessibleName', 'Legacy.s8f5811f5d7e68762')
         self.scrub_audio.setMinimumHeight(44)
         metadata_layout.addWidget(self.scrub_audio)
 
-        self.scrub_video = QCheckBox("Remove metadata from video files")
-        self.scrub_video.setAccessibleName("Remove metadata from video files")
+        self.scrub_video = _ui_widget(QCheckBox, 'Legacy.s8e919cb6b8331ef4', 'setText')
+        _ui_bind(self.scrub_video, 'setAccessibleName', 'Legacy.s8e919cb6b8331ef4')
         self.scrub_video.setMinimumHeight(44)
         metadata_layout.addWidget(self.scrub_video)
 
         # File selection button
-        select_files_btn = SecondaryButton("Select Files to Scrub")
-        select_files_btn.setAccessibleName("Select files to scrub metadata")
+        select_files_btn = _ui_widget(SecondaryButton, 'Legacy.s653a7665648472f6', 'setText')
+        _ui_bind(select_files_btn, 'setAccessibleName', 'Legacy.s8f5fcee3ac72deea')
         select_files_btn.clicked.connect(self.select_files_for_scrubbing)
         metadata_layout.addWidget(select_files_btn)
 
         # Scrub button
-        scrub_btn = PrimaryButton("Scrub Metadata")
-        scrub_btn.setAccessibleName("Scrub metadata from selected files")
+        scrub_btn = _ui_widget(PrimaryButton, 'Legacy.s22f42212eb2d98c6', 'setText')
+        _ui_bind(scrub_btn, 'setAccessibleName', 'Legacy.scaa5664c3e6cb8e3')
         scrub_btn.clicked.connect(self.scrub_metadata)
         metadata_layout.addWidget(scrub_btn)
 
@@ -299,40 +302,40 @@ class PrivacyCleanerGUI(QMainWindow):
         layout = QVBoxLayout(tab)
 
         # Secure wipe options
-        wipe_group = QGroupBox("Secure Data Wiping")
+        wipe_group = _ui_widget(QGroupBox, 'Legacy.sf4b0f7baf2ff76e4', 'setTitle')
         wipe_layout = QVBoxLayout(wipe_group)
 
         # Warning label
-        warning_label = QLabel("⚠️ WARNING: Secure wiping permanently destroys data!")
+        warning_label = _ui_widget(QLabel, 'Legacy.s19f307c6ea1a98df', 'setText')
         warning_label.setStyleSheet("color: red; font-weight: bold;")
         wipe_layout.addWidget(warning_label)
 
         # Wipe level options
-        self.wipe_single = QCheckBox("Single Pass (Fast)")
-        self.wipe_single.setAccessibleName("Single pass wipe")
+        self.wipe_single = _ui_widget(QCheckBox, 'Legacy.scb0ada1b78f92832', 'setText')
+        _ui_bind(self.wipe_single, 'setAccessibleName', 'Legacy.sff70c4a0d48f0b52')
         self.wipe_single.setMinimumHeight(44)
         self.wipe_single.setChecked(True)
         wipe_layout.addWidget(self.wipe_single)
 
-        self.wipe_triple = QCheckBox("Triple Pass (Secure)")
-        self.wipe_triple.setAccessibleName("Triple pass secure wipe")
+        self.wipe_triple = _ui_widget(QCheckBox, 'Legacy.s5f718c8b7f9454f8', 'setText')
+        _ui_bind(self.wipe_triple, 'setAccessibleName', 'Legacy.sd599238c95d98126')
         self.wipe_triple.setMinimumHeight(44)
         wipe_layout.addWidget(self.wipe_triple)
 
-        self.wipe_dod = QCheckBox("DoD 5220.22-M (Military Grade)")
-        self.wipe_dod.setAccessibleName("DoD military grade wipe")
+        self.wipe_dod = _ui_widget(QCheckBox, 'Legacy.sb5b9ba43211082f3', 'setText')
+        _ui_bind(self.wipe_dod, 'setAccessibleName', 'Legacy.s81e18ea085bff05c')
         self.wipe_dod.setMinimumHeight(44)
         wipe_layout.addWidget(self.wipe_dod)
 
         # File selection
-        select_wipe_files_btn = SecondaryButton("Select Files/Folders to Wipe")
-        select_wipe_files_btn.setAccessibleName("Select files or folders to wipe")
+        select_wipe_files_btn = _ui_widget(SecondaryButton, 'Legacy.sb4f5903520fb8060', 'setText')
+        _ui_bind(select_wipe_files_btn, 'setAccessibleName', 'Legacy.s37034da27091af90')
         select_wipe_files_btn.clicked.connect(self.select_files_for_wiping)
         wipe_layout.addWidget(select_wipe_files_btn)
 
         # Wipe button
         wipe_btn = PrimaryButton(SECURE_WIPE_LABEL)
-        wipe_btn.setAccessibleName("Securely wipe selected files")
+        _ui_bind(wipe_btn, 'setAccessibleName', 'Legacy.sdd64c2c6f015ce72')
         wipe_btn.clicked.connect(self.secure_wipe)
         wipe_layout.addWidget(wipe_btn)
 

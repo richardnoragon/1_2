@@ -1,0 +1,653 @@
+{
+  "schema_version": 1,
+  "violations": [
+    {
+      "path": "src/tools/analysis/checksum/check_sum.py",
+      "rule": "FNT",
+      "fingerprint": "f1bd6cd38de884a958a3edb4805217443616599132494eed322b95c9d333fc1b",
+      "count": 1
+    },
+    {
+      "path": "src/tools/analysis/config/config_analyzer.py",
+      "rule": "FNT",
+      "fingerprint": "e2c082c43d6112050e6e7c3e1485b12e86586f1fce9f9560dbfefc963c03c512",
+      "count": 1
+    },
+    {
+      "path": "src/tools/analysis/duplicate_finder/find_duplicate_files.py",
+      "rule": "FNT",
+      "fingerprint": "f1bd6cd38de884a958a3edb4805217443616599132494eed322b95c9d333fc1b",
+      "count": 1
+    },
+    {
+      "path": "src/tools/analysis/empty_folders/empty_folders.py",
+      "rule": "FNT",
+      "fingerprint": "f1bd6cd38de884a958a3edb4805217443616599132494eed322b95c9d333fc1b",
+      "count": 1
+    },
+    {
+      "path": "src/tools/analysis/size_analyzer/size_analyzer.py",
+      "rule": "FNT",
+      "fingerprint": "f1bd6cd38de884a958a3edb4805217443616599132494eed322b95c9d333fc1b",
+      "count": 1
+    },
+    {
+      "path": "src/tools/file_management/advanced_catalog/catalog/catalog.py",
+      "rule": "FNT",
+      "fingerprint": "e2c082c43d6112050e6e7c3e1485b12e86586f1fce9f9560dbfefc963c03c512",
+      "count": 1
+    },
+    {
+      "path": "src/tools/file_management/advanced_catalog/catalog/catalog.py",
+      "rule": "FNT",
+      "fingerprint": "ec46f02e62f36073ca27478157b5136bc88b20eca22b7008f95c0b004919db9b",
+      "count": 1
+    },
+    {
+      "path": "src/tools/file_management/advanced_catalog/catalog_tool.py",
+      "rule": "FNT",
+      "fingerprint": "e2c082c43d6112050e6e7c3e1485b12e86586f1fce9f9560dbfefc963c03c512",
+      "count": 1
+    },
+    {
+      "path": "src/tools/file_management/advanced_catalog/catalog_tool.py",
+      "rule": "FNT",
+      "fingerprint": "f1bd6cd38de884a958a3edb4805217443616599132494eed322b95c9d333fc1b",
+      "count": 1
+    },
+    {
+      "path": "src/tools/file_management/advanced_catalog/export_engine/html_exporter.py",
+      "rule": "FNT",
+      "fingerprint": "07a63655b2a149e201a99099516e213d4304ea0ee19c132619e69d30294fdd9f",
+      "count": 1
+    },
+    {
+      "path": "src/tools/file_management/advanced_catalog/export_engine/html_exporter.py",
+      "rule": "FNT",
+      "fingerprint": "1c3bd94678180cad4fec171b1696f8ab7912c57f493ee5d4b87cad720445b1dc",
+      "count": 1
+    },
+    {
+      "path": "src/tools/file_management/advanced_catalog/export_engine/html_exporter.py",
+      "rule": "FNT",
+      "fingerprint": "8d3349edbb282da076eeabbbf90a69605447ad0a65e5219c5a10e81b77efec8e",
+      "count": 1
+    },
+    {
+      "path": "src/tools/file_management/advanced_catalog/export_engine/html_exporter.py",
+      "rule": "FNT",
+      "fingerprint": "9518f90ee40fc5c9ebdbd3fe08c70ff8bf0042fd4ab0d7627bae07ee054a1ae0",
+      "count": 1
+    },
+    {
+      "path": "src/tools/file_management/advanced_catalog/export_engine/html_exporter.py",
+      "rule": "FNT",
+      "fingerprint": "aa661633dfc0a6e230ff8e2f26f2dab4d4b12ebe26c5806847e9cd60a2dbca50",
+      "count": 1
+    },
+    {
+      "path": "src/tools/file_management/advanced_catalog/export_engine/html_exporter.py",
+      "rule": "FNT",
+      "fingerprint": "b347eea070b51d51e6ec13f40150aed90347d1eae4a7037c3f332bd35449d590",
+      "count": 1
+    },
+    {
+      "path": "src/tools/file_management/advanced_catalog/export_engine/html_exporter.py",
+      "rule": "FNT",
+      "fingerprint": "c7907c16b5f412440ffb79389e92fa578553f5c0cff6cf99ea7ce5288405f2c4",
+      "count": 2
+    },
+    {
+      "path": "src/tools/file_management/advanced_catalog/export_engine/html_exporter.py",
+      "rule": "FNT",
+      "fingerprint": "d53ef2bba44479d1af8206407ba4456d1ea75d5f416967ace5330e725be0fa6b",
+      "count": 1
+    },
+    {
+      "path": "src/tools/file_management/advanced_catalog/export_engine/html_exporter.py",
+      "rule": "FNT",
+      "fingerprint": "ec46f02e62f36073ca27478157b5136bc88b20eca22b7008f95c0b004919db9b",
+      "count": 5
+    },
+    {
+      "path": "src/tools/file_management/advanced_folders/gui/configuration_dialog.py",
+      "rule": "FNT",
+      "fingerprint": "20bce160be29e13962ed08d3528ad06bbf5a4b9a46ac37c7dfd760915786c078",
+      "count": 1
+    },
+    {
+      "path": "src/tools/file_management/advanced_folders/gui/constants.py",
+      "rule": "FNT",
+      "fingerprint": "11a410a3aafef519d5da9d6f50526f5ca78f713bfdc1dd56dcf5f94ad5c1adc1",
+      "count": 1
+    },
+    {
+      "path": "src/tools/file_management/advanced_folders/gui/constants.py",
+      "rule": "FNT",
+      "fingerprint": "78cd045c7f15b86ddc933147b0c6efa3f4042d811b0f6a84d98f948236849449",
+      "count": 1
+    },
+    {
+      "path": "src/tools/file_management/advanced_folders/gui/constants.py",
+      "rule": "FNT",
+      "fingerprint": "e97a67ce0c00123648c4ae9bebaa03e87b36d33b83dee9bfd4e8e5390aff83f8",
+      "count": 5
+    },
+    {
+      "path": "src/tools/file_management/advanced_folders/gui/constants_fixed.py",
+      "rule": "FNT",
+      "fingerprint": "11a410a3aafef519d5da9d6f50526f5ca78f713bfdc1dd56dcf5f94ad5c1adc1",
+      "count": 1
+    },
+    {
+      "path": "src/tools/file_management/advanced_folders/gui/constants_fixed.py",
+      "rule": "FNT",
+      "fingerprint": "78cd045c7f15b86ddc933147b0c6efa3f4042d811b0f6a84d98f948236849449",
+      "count": 1
+    },
+    {
+      "path": "src/tools/file_management/advanced_folders/gui/constants_fixed.py",
+      "rule": "FNT",
+      "fingerprint": "e97a67ce0c00123648c4ae9bebaa03e87b36d33b83dee9bfd4e8e5390aff83f8",
+      "count": 5
+    },
+    {
+      "path": "src/tools/file_management/advanced_folders/gui/directory_browser.py",
+      "rule": "FNT",
+      "fingerprint": "20bce160be29e13962ed08d3528ad06bbf5a4b9a46ac37c7dfd760915786c078",
+      "count": 1
+    },
+    {
+      "path": "src/tools/file_management/advanced_folders/gui/folder_tree_view.py",
+      "rule": "FNT",
+      "fingerprint": "003f815a2249017124e36f7b1ec6a8ef7a8ca12963bbb86b526e4b4b1128e1ac",
+      "count": 2
+    },
+    {
+      "path": "src/tools/file_management/advanced_folders/gui/folder_tree_view.py",
+      "rule": "FNT",
+      "fingerprint": "78cd045c7f15b86ddc933147b0c6efa3f4042d811b0f6a84d98f948236849449",
+      "count": 1
+    },
+    {
+      "path": "src/tools/file_management/advanced_folders/gui/folder_tree_view.py",
+      "rule": "MEN",
+      "fingerprint": "b2c64a090e8050f99214d8088bcac02dd5e4369523c4857801166b801c8f9285",
+      "count": 1
+    },
+    {
+      "path": "src/tools/file_management/advanced_folders/gui/keyboard_shortcuts.py",
+      "rule": "FNT",
+      "fingerprint": "0723976085c891f342ddf95447f1e8c51e00934a63384175abc5e6b6e21aea9a",
+      "count": 1
+    },
+    {
+      "path": "src/tools/file_management/advanced_folders/gui/menu_manager.py",
+      "rule": "FNT",
+      "fingerprint": "6e50be71649ea3e1adf02deb3d55192b49b0ce13cd32e83d69bbed6a0725a18b",
+      "count": 1
+    },
+    {
+      "path": "src/tools/file_management/advanced_folders/gui/menu_manager.py",
+      "rule": "MEN",
+      "fingerprint": "4d3cf4131dc898af4295b7e57039b08d93478477c6dc6216f8a8d993a4de63ac",
+      "count": 1
+    },
+    {
+      "path": "src/tools/file_management/advanced_folders/gui/menu_manager.py",
+      "rule": "MEN",
+      "fingerprint": "8726f316cedf7f36223fc1c57e7e06f1b8b37d835222d9c7ee54ea3df7bc79f4",
+      "count": 1
+    },
+    {
+      "path": "src/tools/file_management/advanced_folders/gui/menu_manager.py",
+      "rule": "MEN",
+      "fingerprint": "b23a3dbcfeb758aeaf89c45879094d337db6c1d31eddeb7a7312d5ebccfa551b",
+      "count": 1
+    },
+    {
+      "path": "src/tools/file_management/advanced_folders/gui/menu_manager.py",
+      "rule": "MEN",
+      "fingerprint": "bb1c83bff65380f5780babcc40ae8bb415a0b230507bde2db3ae4bd2640750a9",
+      "count": 1
+    },
+    {
+      "path": "src/tools/file_management/advanced_folders/gui/menu_manager.py",
+      "rule": "MEN",
+      "fingerprint": "c052f49e9d17ff3576e44ef62c5f6ea3455ccdffc9ff7ddd29b07c26efa27926",
+      "count": 1
+    },
+    {
+      "path": "src/tools/file_management/advanced_folders/gui/preview_pane.py",
+      "rule": "FNT",
+      "fingerprint": "1c3bd94678180cad4fec171b1696f8ab7912c57f493ee5d4b87cad720445b1dc",
+      "count": 1
+    },
+    {
+      "path": "src/tools/file_management/advanced_folders/gui/preview_pane.py",
+      "rule": "FNT",
+      "fingerprint": "6e50be71649ea3e1adf02deb3d55192b49b0ce13cd32e83d69bbed6a0725a18b",
+      "count": 2
+    },
+    {
+      "path": "src/tools/file_management/advanced_folders/gui/preview_pane.py",
+      "rule": "FNT",
+      "fingerprint": "8d3349edbb282da076eeabbbf90a69605447ad0a65e5219c5a10e81b77efec8e",
+      "count": 1
+    },
+    {
+      "path": "src/tools/file_management/advanced_folders/gui/preview_pane.py",
+      "rule": "FNT",
+      "fingerprint": "e2c082c43d6112050e6e7c3e1485b12e86586f1fce9f9560dbfefc963c03c512",
+      "count": 1
+    },
+    {
+      "path": "src/tools/file_management/advanced_folders/gui/preview_pane.py",
+      "rule": "FNT",
+      "fingerprint": "fe64290e85375679d25d9a6943ff7fb73d773f7ded2879d8689465009b024b6d",
+      "count": 1
+    },
+    {
+      "path": "src/tools/file_management/advanced_folders/gui/search_results_table.py",
+      "rule": "FNT",
+      "fingerprint": "003f815a2249017124e36f7b1ec6a8ef7a8ca12963bbb86b526e4b4b1128e1ac",
+      "count": 2
+    },
+    {
+      "path": "src/tools/file_management/advanced_folders/gui/search_results_table.py",
+      "rule": "FNT",
+      "fingerprint": "78cd045c7f15b86ddc933147b0c6efa3f4042d811b0f6a84d98f948236849449",
+      "count": 2
+    },
+    {
+      "path": "src/tools/file_management/advanced_folders/gui/toolbar_manager.py",
+      "rule": "FNT",
+      "fingerprint": "003f815a2249017124e36f7b1ec6a8ef7a8ca12963bbb86b526e4b4b1128e1ac",
+      "count": 1
+    },
+    {
+      "path": "src/tools/file_management/finder/file_finder.py",
+      "rule": "MEN",
+      "fingerprint": "dffd456b553ab6921271d97c38d79833cd6c39eeb46656d327a47ef059226f21",
+      "count": 1
+    },
+    {
+      "path": "src/tools/file_management/synchronization_backup/sync.py",
+      "rule": "FNT",
+      "fingerprint": "8d3349edbb282da076eeabbbf90a69605447ad0a65e5219c5a10e81b77efec8e",
+      "count": 1
+    },
+    {
+      "path": "src/tools/file_operations/compression/compress_decompress.py",
+      "rule": "FNT",
+      "fingerprint": "f1bd6cd38de884a958a3edb4805217443616599132494eed322b95c9d333fc1b",
+      "count": 1
+    },
+    {
+      "path": "src/tools/file_operations/enhanced_editor/enhanced_editor.py",
+      "rule": "FNT",
+      "fingerprint": "1bea34be93c65e741e6a580c70c7a8f7c7ed779ecb647a68653324ed4181525f",
+      "count": 1
+    },
+    {
+      "path": "src/tools/file_operations/file_splitter/gui.py",
+      "rule": "FNT",
+      "fingerprint": "f1bd6cd38de884a958a3edb4805217443616599132494eed322b95c9d333fc1b",
+      "count": 1
+    },
+    {
+      "path": "src/tools/file_operations/rename/gui.py",
+      "rule": "MEN",
+      "fingerprint": "6a79dd507ca8421977318fe84cadd0b64ae4c99807f3ca6d4412dddee399a3c2",
+      "count": 1
+    },
+    {
+      "path": "src/tools/file_operations/rename/rename.py",
+      "rule": "FNT",
+      "fingerprint": "6e50be71649ea3e1adf02deb3d55192b49b0ce13cd32e83d69bbed6a0725a18b",
+      "count": 1
+    },
+    {
+      "path": "src/tools/file_operations/rename/rename.py",
+      "rule": "FNT",
+      "fingerprint": "f1bd6cd38de884a958a3edb4805217443616599132494eed322b95c9d333fc1b",
+      "count": 1
+    },
+    {
+      "path": "src/tools/file_operations/rename/rename.py",
+      "rule": "MEN",
+      "fingerprint": "6a79dd507ca8421977318fe84cadd0b64ae4c99807f3ca6d4412dddee399a3c2",
+      "count": 1
+    },
+    {
+      "path": "src/tools/file_operations/secure_delete/secure_delete.py",
+      "rule": "FNT",
+      "fingerprint": "f1bd6cd38de884a958a3edb4805217443616599132494eed322b95c9d333fc1b",
+      "count": 1
+    },
+    {
+      "path": "src/tools/metadata/image_metadata/gui.py",
+      "rule": "FNT",
+      "fingerprint": "f1bd6cd38de884a958a3edb4805217443616599132494eed322b95c9d333fc1b",
+      "count": 2
+    },
+    {
+      "path": "src/tools/metadata/office_metadata/office_meta_data_editor.py",
+      "rule": "FNT",
+      "fingerprint": "2d6e286ba95b2f32dbc635fbf273ecd3b09f8769747b5fcfd5c8dfeaa176ad06",
+      "count": 1
+    },
+    {
+      "path": "src/tools/metadata/office_metadata/office_meta_data_editor.py",
+      "rule": "FNT",
+      "fingerprint": "f1bd6cd38de884a958a3edb4805217443616599132494eed322b95c9d333fc1b",
+      "count": 1
+    },
+    {
+      "path": "src/tools/metadata/office_metadata/office_metadata_gui.py",
+      "rule": "FNT",
+      "fingerprint": "003f815a2249017124e36f7b1ec6a8ef7a8ca12963bbb86b526e4b4b1128e1ac",
+      "count": 1
+    },
+    {
+      "path": "src/tools/metadata/office_metadata/office_metadata_gui.py",
+      "rule": "FNT",
+      "fingerprint": "1c3bd94678180cad4fec171b1696f8ab7912c57f493ee5d4b87cad720445b1dc",
+      "count": 1
+    },
+    {
+      "path": "src/tools/metadata/office_metadata/office_metadata_gui.py",
+      "rule": "FNT",
+      "fingerprint": "23c6aa42ab917d69aa956eea05a9b10bf51b868230808681f4e216e2846714aa",
+      "count": 1
+    },
+    {
+      "path": "src/tools/metadata/office_metadata/office_metadata_gui.py",
+      "rule": "FNT",
+      "fingerprint": "8d3349edbb282da076eeabbbf90a69605447ad0a65e5219c5a10e81b77efec8e",
+      "count": 1
+    },
+    {
+      "path": "src/tools/metadata/office_metadata/office_metadata_gui.py",
+      "rule": "FNT",
+      "fingerprint": "eaebe8ecfc5e9e26d85275bd4a5f952725f55938893b62653bae8b1c62221aea",
+      "count": 1
+    },
+    {
+      "path": "src/tools/network/bookmarks/bookmark_manager_gui.py",
+      "rule": "FNT",
+      "fingerprint": "f1bd6cd38de884a958a3edb4805217443616599132494eed322b95c9d333fc1b",
+      "count": 1
+    },
+    {
+      "path": "src/tools/network/connectivity/network_connectivity.py",
+      "rule": "FNT",
+      "fingerprint": "f1bd6cd38de884a958a3edb4805217443616599132494eed322b95c9d333fc1b",
+      "count": 1
+    },
+    {
+      "path": "src/tools/network/network_connectivity_complex/gui/components/data_visualization.py",
+      "rule": "FNT",
+      "fingerprint": "00249cdfe8934c668b1046030713ce6d48a18a62baac42980a698462d62bac15",
+      "count": 1
+    },
+    {
+      "path": "src/tools/network/network_connectivity_complex/gui/components/data_visualization.py",
+      "rule": "FNT",
+      "fingerprint": "2d438784c60c247bcdc0792085a2b82b1f63ad538f01c4193fb933be361219d8",
+      "count": 1
+    },
+    {
+      "path": "src/tools/network/network_connectivity_complex/gui/components/data_visualization.py",
+      "rule": "FNT",
+      "fingerprint": "c44f20ac9a77d961ffad033cf1557fc3da9399906ecfeab18658447e3cb967ac",
+      "count": 2
+    },
+    {
+      "path": "src/tools/network/network_connectivity_complex/gui/hub.py",
+      "rule": "FNT",
+      "fingerprint": "8d32f542f04b81f7c7b31464c37041f27ad0723f5572580347938708615a1290",
+      "count": 2
+    },
+    {
+      "path": "src/tools/network/scanner/network_scanner.py",
+      "rule": "FNT",
+      "fingerprint": "f1bd6cd38de884a958a3edb4805217443616599132494eed322b95c9d333fc1b",
+      "count": 1
+    },
+    {
+      "path": "src/tools/network/transfer/network_transfer.py",
+      "rule": "FNT",
+      "fingerprint": "23c6aa42ab917d69aa956eea05a9b10bf51b868230808681f4e216e2846714aa",
+      "count": 1
+    },
+    {
+      "path": "src/tools/pdf_tools/dialogs/extraction_parameter_dialogs.py",
+      "rule": "FNT",
+      "fingerprint": "e94161ce5778a48eb9669a060f5d4b1a731a9db4e990dbd358ad07414eb8e050",
+      "count": 1
+    },
+    {
+      "path": "src/tools/pdf_tools/dialogs/parameter_dialogs.py",
+      "rule": "FNT",
+      "fingerprint": "20bce160be29e13962ed08d3528ad06bbf5a4b9a46ac37c7dfd760915786c078",
+      "count": 1
+    },
+    {
+      "path": "src/tools/pdf_tools/dialogs/parameter_dialogs.py",
+      "rule": "FNT",
+      "fingerprint": "230b2e851aa915f7ad0bbeceeb9ecde3ec165636fc5990c3e22d9b17d8a3b869",
+      "count": 2
+    },
+    {
+      "path": "src/tools/pdf_tools/dialogs/parameter_dialogs.py",
+      "rule": "FNT",
+      "fingerprint": "e94161ce5778a48eb9669a060f5d4b1a731a9db4e990dbd358ad07414eb8e050",
+      "count": 3
+    },
+    {
+      "path": "src/tools/pdf_tools/dialogs/parameter_dialogs.py",
+      "rule": "FNT",
+      "fingerprint": "fe64290e85375679d25d9a6943ff7fb73d773f7ded2879d8689465009b024b6d",
+      "count": 2
+    },
+    {
+      "path": "src/tools/pdf_tools/dialogs/security_parameter_dialogs.py",
+      "rule": "FNT",
+      "fingerprint": "20bce160be29e13962ed08d3528ad06bbf5a4b9a46ac37c7dfd760915786c078",
+      "count": 1
+    },
+    {
+      "path": "src/tools/pdf_tools/dialogs/security_parameter_dialogs.py",
+      "rule": "FNT",
+      "fingerprint": "912e5455db29bfff5e4ff064cfb6e48ff2c6835b012da1d6c450c64c0c58c6d3",
+      "count": 1
+    },
+    {
+      "path": "src/tools/pdf_tools/dialogs/security_parameter_dialogs.py",
+      "rule": "FNT",
+      "fingerprint": "e0a7aaeff35922d999272b354ba3e11fa9657dec779af36cc726c17e9e43a30c",
+      "count": 1
+    },
+    {
+      "path": "src/tools/pdf_tools/pdf_conversion/convert_to_docx.py",
+      "rule": "FNT",
+      "fingerprint": "4f2de89c19460919cccf01322a97a2a640b341cb8951042e18e3177ff7673038",
+      "count": 1
+    },
+    {
+      "path": "src/tools/pdf_tools/pdf_conversion/convert_to_docx.py",
+      "rule": "MEN",
+      "fingerprint": "870b31d5b3f90b651f5f8a8473f76dee42961161aacef85e5541df736323b5bd",
+      "count": 1
+    },
+    {
+      "path": "src/tools/pdf_tools/pdf_functional_integration.py",
+      "rule": "FNT",
+      "fingerprint": "e94161ce5778a48eb9669a060f5d4b1a731a9db4e990dbd358ad07414eb8e050",
+      "count": 1
+    },
+    {
+      "path": "src/tools/pdf_tools/widgets/enhanced_pdf_tools_widget.py",
+      "rule": "FNT",
+      "fingerprint": "230b2e851aa915f7ad0bbeceeb9ecde3ec165636fc5990c3e22d9b17d8a3b869",
+      "count": 1
+    },
+    {
+      "path": "src/tools/pdf_tools/widgets/enhanced_pdf_tools_widget.py",
+      "rule": "FNT",
+      "fingerprint": "5690a4113b5982e83711d02719a85c5bed3aa65574fc7b3c5017499bb58f620f",
+      "count": 1
+    },
+    {
+      "path": "src/tools/pdf_tools/widgets/enhanced_pdf_tools_widget.py",
+      "rule": "FNT",
+      "fingerprint": "e94161ce5778a48eb9669a060f5d4b1a731a9db4e990dbd358ad07414eb8e050",
+      "count": 1
+    },
+    {
+      "path": "src/tools/pdf_tools/widgets/enhanced_pdf_tools_widget.py",
+      "rule": "FNT",
+      "fingerprint": "fe64290e85375679d25d9a6943ff7fb73d773f7ded2879d8689465009b024b6d",
+      "count": 1
+    },
+    {
+      "path": "src/tools/privacy/privacy_cleaner/privacy_cleaner.py",
+      "rule": "FNT",
+      "fingerprint": "f1bd6cd38de884a958a3edb4805217443616599132494eed322b95c9d333fc1b",
+      "count": 1
+    },
+    {
+      "path": "src/tools/security/encryption/en_and_decrypt.py",
+      "rule": "FNT",
+      "fingerprint": "f1bd6cd38de884a958a3edb4805217443616599132494eed322b95c9d333fc1b",
+      "count": 1
+    },
+    {
+      "path": "src/tools/security/password_generator/password_generator.py",
+      "rule": "FNT",
+      "fingerprint": "6e50be71649ea3e1adf02deb3d55192b49b0ce13cd32e83d69bbed6a0725a18b",
+      "count": 1
+    },
+    {
+      "path": "src/tools/security/password_generator/password_generator.py",
+      "rule": "FNT",
+      "fingerprint": "8d3349edbb282da076eeabbbf90a69605447ad0a65e5219c5a10e81b77efec8e",
+      "count": 1
+    },
+    {
+      "path": "src/tools/security/password_generator/password_generator.py",
+      "rule": "FNT",
+      "fingerprint": "912e5455db29bfff5e4ff064cfb6e48ff2c6835b012da1d6c450c64c0c58c6d3",
+      "count": 1
+    },
+    {
+      "path": "src/tools/security/security_preferences.py",
+      "rule": "FNT",
+      "fingerprint": "f1bd6cd38de884a958a3edb4805217443616599132494eed322b95c9d333fc1b",
+      "count": 1
+    },
+    {
+      "path": "src/tools/security/security_scanner/security_scanner.py",
+      "rule": "FNT",
+      "fingerprint": "003f815a2249017124e36f7b1ec6a8ef7a8ca12963bbb86b526e4b4b1128e1ac",
+      "count": 1
+    },
+    {
+      "path": "src/tools/security/security_scanner/security_scanner.py",
+      "rule": "FNT",
+      "fingerprint": "1c3bd94678180cad4fec171b1696f8ab7912c57f493ee5d4b87cad720445b1dc",
+      "count": 1
+    },
+    {
+      "path": "src/tools/security/security_scanner/security_scanner.py",
+      "rule": "FNT",
+      "fingerprint": "912e5455db29bfff5e4ff064cfb6e48ff2c6835b012da1d6c450c64c0c58c6d3",
+      "count": 1
+    },
+    {
+      "path": "src/tools/system/diagnostics_monitoring/system_diagnostics_gui.py",
+      "rule": "MEN",
+      "fingerprint": "870b31d5b3f90b651f5f8a8473f76dee42961161aacef85e5541df736323b5bd",
+      "count": 1
+    },
+    {
+      "path": "src/tools/system/diagnostics_monitoring/system_diagnostics_gui.py",
+      "rule": "MEN",
+      "fingerprint": "cc309ed1e7fc0db3b1844c1db58f2841c0272fd4ce6ae6ff8d41931a6950d16f",
+      "count": 1
+    },
+    {
+      "path": "src/tools/system/diagnostics_monitoring/system_diagnostics_gui.py",
+      "rule": "MEN",
+      "fingerprint": "ed0b92834065ac44c50a9e4ccfe9d7e10e7ef23000abfba14f0f1955404ca7ba",
+      "count": 1
+    },
+    {
+      "path": "src/tools/system/enhanced_clipboard/enhanced_clipboard_gui.py",
+      "rule": "FNT",
+      "fingerprint": "f1bd6cd38de884a958a3edb4805217443616599132494eed322b95c9d333fc1b",
+      "count": 1
+    },
+    {
+      "path": "src/tools/system/permissions/permissions_editor.py",
+      "rule": "FNT",
+      "fingerprint": "f1bd6cd38de884a958a3edb4805217443616599132494eed322b95c9d333fc1b",
+      "count": 1
+    },
+    {
+      "path": "src/tools/system/process_monitor/process_monitor.py",
+      "rule": "FNT",
+      "fingerprint": "8d3349edbb282da076eeabbbf90a69605447ad0a65e5219c5a10e81b77efec8e",
+      "count": 1
+    },
+    {
+      "path": "src/tools/system/process_monitor/process_monitor.py",
+      "rule": "FNT",
+      "fingerprint": "912e5455db29bfff5e4ff064cfb6e48ff2c6835b012da1d6c450c64c0c58c6d3",
+      "count": 1
+    },
+    {
+      "path": "src/tools/system/simple_system_info.py",
+      "rule": "FNT",
+      "fingerprint": "003f815a2249017124e36f7b1ec6a8ef7a8ca12963bbb86b526e4b4b1128e1ac",
+      "count": 1
+    },
+    {
+      "path": "src/tools/system/simple_system_info.py",
+      "rule": "FNT",
+      "fingerprint": "1c3bd94678180cad4fec171b1696f8ab7912c57f493ee5d4b87cad720445b1dc",
+      "count": 1
+    },
+    {
+      "path": "src/tools/system/simple_system_info.py",
+      "rule": "FNT",
+      "fingerprint": "6e50be71649ea3e1adf02deb3d55192b49b0ce13cd32e83d69bbed6a0725a18b",
+      "count": 1
+    },
+    {
+      "path": "src/tools/system/simple_system_info.py",
+      "rule": "FNT",
+      "fingerprint": "912e5455db29bfff5e4ff064cfb6e48ff2c6835b012da1d6c450c64c0c58c6d3",
+      "count": 1
+    },
+    {
+      "path": "src/tools/system/software_maintenance/gui/maintenance_hub.py",
+      "rule": "FNT",
+      "fingerprint": "8d3349edbb282da076eeabbbf90a69605447ad0a65e5219c5a10e81b77efec8e",
+      "count": 1
+    },
+    {
+      "path": "src/tools/system/system_cleanup/system_cleanup.py",
+      "rule": "FNT",
+      "fingerprint": "78cd045c7f15b86ddc933147b0c6efa3f4042d811b0f6a84d98f948236849449",
+      "count": 1
+    },
+    {
+      "path": "src/tools/system/system_diagnostics/system_diagnostics_gui.py",
+      "rule": "FNT",
+      "fingerprint": "f1bd6cd38de884a958a3edb4805217443616599132494eed322b95c9d333fc1b",
+      "count": 1
+    }
+  ]
+}

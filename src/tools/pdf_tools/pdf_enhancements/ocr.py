@@ -1,3 +1,4 @@
+from src.rfu.localization import localized_widget as _ui_widget, bind_literal as _ui_bind
 # Import Libraries
 import sys
 import os
@@ -732,8 +733,8 @@ class OcrUI(QtWidgets.QMainWindow):
             )
 
             # Add navigation buttons for batch mode
-            self.prev_button = SecondaryButton("Previous")
-            self.next_button = SecondaryButton("Next")
+            self.prev_button = _ui_widget(SecondaryButton, 'Legacy.sa57b08a480b822a0', 'setText')
+            self.next_button = _ui_widget(SecondaryButton, 'Legacy.s1ff57a29d7c9d11b', 'setText')
             self.prev_button.clicked.connect(self.show_previous_preview)
             self.next_button.clicked.connect(self.show_next_preview)
             self.prev_button.hide()

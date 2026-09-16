@@ -19,7 +19,7 @@ def get_platform_font_family() -> str:
 FACTORY_DEFAULTS: dict = {
     "width": 1000,
     "height": 700,
-    "font_size": 10,
+    "font_size": 14,
     "mode": "last_used",
     "window_x": -1,
     "window_y": -1,

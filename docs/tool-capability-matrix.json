@@ -2,29 +2,33 @@
   "_meta": {
     "schema_version": "1.0",
     "generated_by": "constitution v1.37.0",
-    "tool_count": 35,
-    "note": "Canonical machine-readable tool registry per §12.3. Update on every PR that adds, removes, or renames a tool. All capability compliance fields are boolean: true=compliant, false=non-compliant, null=not-applicable."
+    "tool_count": 36,
+    "note": "Canonical machine-readable tool registry per \u00a712.3. Update on every PR that adds, removes, or renames a tool. All capability compliance fields are boolean: true=compliant, false=non-compliant, null=not-applicable.",
+    "inventory_authority": "Capability matrix inventory; Storage Monitor added at user request.",
+    "shipping_locales": [
+      "en"
+    ]
   },
   "capability_codes": {
-    "TH":   "Theming compliance (tokens, live updates)",
-    "DR":   "Dry-run support before destructive actions",
-    "CP":   "Shared components (buttons, modals, toasts)",
+    "TH": "Theming compliance (tokens, live updates)",
+    "DR": "Dry-run support before destructive actions",
+    "CP": "Shared components (buttons, modals, toasts)",
     "A11Y": "Accessibility compliance",
     "PERF": "UI-thread audit, worker offloading",
-    "ERR":  "Error handling contract",
-    "GRD":  "Guardian registration & fallback",
-    "TEL":  "Telemetry events (load, action, error, perf)",
-    "STR":  "Centralized strings (ui_strings tokens)",
-    "CE":   "Critical Engine tests (if applicable)",
-    "HUB":  "Hub integration & relaunch",
-    "MEN":  "Menu architecture compliance (§7)",
-    "NOM":  "Nomenclature & wording compliance (§7.4)",
-    "FNT":  "Font token compliance",
-    "LYT":  "Layout structure compliance",
-    "WRD":  "Wording & microcopy compliance",
-    "INT":  "UI Interaction Contract compliance (§10)",
-    "OPS":  "Operational Guarantees compliance (Phase 3 — pending §13.2 constitutionalization)",
-    "CI":   "CI rule compliance (§11)",
+    "ERR": "Error handling contract",
+    "GRD": "Guardian registration & fallback",
+    "TEL": "Telemetry events (load, action, error, perf)",
+    "STR": "Centralized strings (ui_strings tokens)",
+    "CE": "Critical Engine tests (if applicable)",
+    "HUB": "Hub integration & relaunch",
+    "MEN": "Menu architecture compliance (\u00a77)",
+    "NOM": "Nomenclature & wording compliance (\u00a77.4)",
+    "FNT": "Font token compliance",
+    "LYT": "Layout structure compliance",
+    "WRD": "Wording & microcopy compliance",
+    "INT": "UI Interaction Contract compliance (\u00a710)",
+    "OPS": "Operational Guarantees compliance (Phase 3 \u2014 pending \u00a713.2 constitutionalization)",
+    "CI": "CI rule compliance (\u00a711)",
     "L10N": "Localization readiness (Future)"
   },
   "tools": [
@@ -40,11 +44,28 @@
       "phase_gate_status": "Phase 2 - not started",
       "critical_engine": false,
       "compliance": {
-        "TH": false, "DR": false, "CP": false, "A11Y": false, "PERF": false,
-        "ERR": false, "GRD": false, "TEL": false, "STR": false, "CE": null,
-        "HUB": false, "MEN": false, "NOM": false, "FNT": false, "LYT": false,
-        "WRD": false, "INT": false, "OPS": false, "CI": false, "L10N": false
-      }
+        "TH": false,
+        "DR": false,
+        "CP": false,
+        "A11Y": false,
+        "PERF": false,
+        "ERR": false,
+        "GRD": false,
+        "TEL": false,
+        "STR": false,
+        "CE": null,
+        "HUB": false,
+        "MEN": false,
+        "NOM": false,
+        "FNT": false,
+        "LYT": false,
+        "WRD": false,
+        "INT": false,
+        "OPS": false,
+        "CI": false,
+        "L10N": false
+      },
+      "aliases": []
     },
     {
       "id": "catalog-files",
@@ -58,17 +79,34 @@
       "phase_gate_status": "Phase 2 - not started",
       "critical_engine": false,
       "compliance": {
-        "TH": false, "DR": false, "CP": false, "A11Y": false, "PERF": false,
-        "ERR": false, "GRD": false, "TEL": false, "STR": false, "CE": null,
-        "HUB": false, "MEN": false, "NOM": false, "FNT": false, "LYT": false,
-        "WRD": false, "INT": false, "OPS": false, "CI": false, "L10N": false
-      }
+        "TH": false,
+        "DR": false,
+        "CP": false,
+        "A11Y": false,
+        "PERF": false,
+        "ERR": false,
+        "GRD": false,
+        "TEL": false,
+        "STR": false,
+        "CE": null,
+        "HUB": false,
+        "MEN": false,
+        "NOM": false,
+        "FNT": false,
+        "LYT": false,
+        "WRD": false,
+        "INT": false,
+        "OPS": false,
+        "CI": false,
+        "L10N": false
+      },
+      "aliases": []
     },
     {
       "id": "rename-files",
       "display_name": "Rename Files",
       "category": "File Operations",
-      "module_path": "src.tools.file_operations.rename",
+      "module_path": "src.tools.file_operations.rename.rename",
       "class_name": "RenameWindow",
       "owner": null,
       "last_reviewed": null,
@@ -76,11 +114,31 @@
       "phase_gate_status": "Phase 2 - not started",
       "critical_engine": false,
       "compliance": {
-        "TH": false, "DR": false, "CP": false, "A11Y": false, "PERF": false,
-        "ERR": false, "GRD": false, "TEL": false, "STR": false, "CE": null,
-        "HUB": false, "MEN": false, "NOM": false, "FNT": false, "LYT": false,
-        "WRD": false, "INT": false, "OPS": false, "CI": false, "L10N": false
-      }
+        "TH": false,
+        "DR": false,
+        "CP": false,
+        "A11Y": false,
+        "PERF": false,
+        "ERR": false,
+        "GRD": false,
+        "TEL": false,
+        "STR": false,
+        "CE": null,
+        "HUB": false,
+        "MEN": false,
+        "NOM": false,
+        "FNT": false,
+        "LYT": false,
+        "WRD": false,
+        "INT": false,
+        "OPS": false,
+        "CI": false,
+        "L10N": false
+      },
+      "aliases": [
+        "Batch Rename",
+        "batch-rename"
+      ]
     },
     {
       "id": "organize-files",
@@ -94,11 +152,31 @@
       "phase_gate_status": "Phase 2 - not started",
       "critical_engine": false,
       "compliance": {
-        "TH": false, "DR": false, "CP": false, "A11Y": false, "PERF": false,
-        "ERR": false, "GRD": false, "TEL": false, "STR": false, "CE": null,
-        "HUB": false, "MEN": false, "NOM": false, "FNT": false, "LYT": false,
-        "WRD": false, "INT": false, "OPS": false, "CI": false, "L10N": false
-      }
+        "TH": false,
+        "DR": false,
+        "CP": false,
+        "A11Y": false,
+        "PERF": false,
+        "ERR": false,
+        "GRD": false,
+        "TEL": false,
+        "STR": false,
+        "CE": null,
+        "HUB": false,
+        "MEN": false,
+        "NOM": false,
+        "FNT": false,
+        "LYT": false,
+        "WRD": false,
+        "INT": false,
+        "OPS": false,
+        "CI": false,
+        "L10N": false
+      },
+      "aliases": [
+        "File Organizer",
+        "file-organizer"
+      ]
     },
     {
       "id": "advanced-folders",
@@ -112,11 +190,28 @@
       "phase_gate_status": "Phase 2 - not started",
       "critical_engine": false,
       "compliance": {
-        "TH": false, "DR": false, "CP": false, "A11Y": false, "PERF": false,
-        "ERR": false, "GRD": false, "TEL": false, "STR": false, "CE": null,
-        "HUB": false, "MEN": false, "NOM": false, "FNT": false, "LYT": false,
-        "WRD": false, "INT": false, "OPS": false, "CI": false, "L10N": false
-      }
+        "TH": false,
+        "DR": false,
+        "CP": false,
+        "A11Y": false,
+        "PERF": false,
+        "ERR": false,
+        "GRD": false,
+        "TEL": false,
+        "STR": false,
+        "CE": null,
+        "HUB": false,
+        "MEN": false,
+        "NOM": false,
+        "FNT": false,
+        "LYT": false,
+        "WRD": false,
+        "INT": false,
+        "OPS": false,
+        "CI": false,
+        "L10N": false
+      },
+      "aliases": []
     },
     {
       "id": "synchronize",
@@ -130,11 +225,31 @@
       "phase_gate_status": "Phase 2 - not started",
       "critical_engine": false,
       "compliance": {
-        "TH": false, "DR": false, "CP": false, "A11Y": false, "PERF": false,
-        "ERR": false, "GRD": false, "TEL": false, "STR": false, "CE": null,
-        "HUB": false, "MEN": false, "NOM": false, "FNT": false, "LYT": false,
-        "WRD": false, "INT": false, "OPS": false, "CI": false, "L10N": false
-      }
+        "TH": false,
+        "DR": false,
+        "CP": false,
+        "A11Y": false,
+        "PERF": false,
+        "ERR": false,
+        "GRD": false,
+        "TEL": false,
+        "STR": false,
+        "CE": null,
+        "HUB": false,
+        "MEN": false,
+        "NOM": false,
+        "FNT": false,
+        "LYT": false,
+        "WRD": false,
+        "INT": false,
+        "OPS": false,
+        "CI": false,
+        "L10N": false
+      },
+      "aliases": [
+        "Synchronization & Backup",
+        "synchronization-backup"
+      ]
     },
     {
       "id": "compress-decompress",
@@ -148,11 +263,31 @@
       "phase_gate_status": "Phase 2 - not started",
       "critical_engine": true,
       "compliance": {
-        "TH": false, "DR": false, "CP": false, "A11Y": false, "PERF": false,
-        "ERR": false, "GRD": false, "TEL": false, "STR": false, "CE": false,
-        "HUB": false, "MEN": false, "NOM": false, "FNT": false, "LYT": false,
-        "WRD": false, "INT": false, "OPS": false, "CI": false, "L10N": false
-      }
+        "TH": false,
+        "DR": false,
+        "CP": false,
+        "A11Y": false,
+        "PERF": false,
+        "ERR": false,
+        "GRD": false,
+        "TEL": false,
+        "STR": false,
+        "CE": false,
+        "HUB": false,
+        "MEN": false,
+        "NOM": false,
+        "FNT": false,
+        "LYT": false,
+        "WRD": false,
+        "INT": false,
+        "OPS": false,
+        "CI": false,
+        "L10N": false
+      },
+      "aliases": [
+        "Compression Tools",
+        "compression-tools"
+      ]
     },
     {
       "id": "split-join-files",
@@ -166,11 +301,31 @@
       "phase_gate_status": "Phase 2 - not started",
       "critical_engine": false,
       "compliance": {
-        "TH": false, "DR": false, "CP": false, "A11Y": false, "PERF": false,
-        "ERR": false, "GRD": false, "TEL": false, "STR": false, "CE": null,
-        "HUB": false, "MEN": false, "NOM": false, "FNT": false, "LYT": false,
-        "WRD": false, "INT": false, "OPS": false, "CI": false, "L10N": false
-      }
+        "TH": false,
+        "DR": false,
+        "CP": false,
+        "A11Y": false,
+        "PERF": false,
+        "ERR": false,
+        "GRD": false,
+        "TEL": false,
+        "STR": false,
+        "CE": null,
+        "HUB": false,
+        "MEN": false,
+        "NOM": false,
+        "FNT": false,
+        "LYT": false,
+        "WRD": false,
+        "INT": false,
+        "OPS": false,
+        "CI": false,
+        "L10N": false
+      },
+      "aliases": [
+        "File Splitter",
+        "file-splitter"
+      ]
     },
     {
       "id": "enhanced-editor",
@@ -184,11 +339,28 @@
       "phase_gate_status": "Phase 2 - not started",
       "critical_engine": false,
       "compliance": {
-        "TH": false, "DR": false, "CP": false, "A11Y": false, "PERF": false,
-        "ERR": false, "GRD": false, "TEL": false, "STR": false, "CE": null,
-        "HUB": false, "MEN": false, "NOM": false, "FNT": false, "LYT": false,
-        "WRD": false, "INT": false, "OPS": false, "CI": false, "L10N": false
-      }
+        "TH": false,
+        "DR": false,
+        "CP": false,
+        "A11Y": false,
+        "PERF": false,
+        "ERR": false,
+        "GRD": false,
+        "TEL": false,
+        "STR": false,
+        "CE": null,
+        "HUB": false,
+        "MEN": false,
+        "NOM": false,
+        "FNT": false,
+        "LYT": false,
+        "WRD": false,
+        "INT": false,
+        "OPS": false,
+        "CI": false,
+        "L10N": false
+      },
+      "aliases": []
     },
     {
       "id": "secure-delete",
@@ -202,17 +374,34 @@
       "phase_gate_status": "Phase 2 - not started",
       "critical_engine": true,
       "compliance": {
-        "TH": false, "DR": false, "CP": false, "A11Y": false, "PERF": false,
-        "ERR": false, "GRD": false, "TEL": false, "STR": false, "CE": false,
-        "HUB": false, "MEN": false, "NOM": false, "FNT": false, "LYT": false,
-        "WRD": false, "INT": false, "OPS": false, "CI": false, "L10N": false
-      }
+        "TH": false,
+        "DR": false,
+        "CP": false,
+        "A11Y": false,
+        "PERF": false,
+        "ERR": false,
+        "GRD": false,
+        "TEL": false,
+        "STR": false,
+        "CE": false,
+        "HUB": false,
+        "MEN": false,
+        "NOM": false,
+        "FNT": false,
+        "LYT": false,
+        "WRD": false,
+        "INT": false,
+        "OPS": false,
+        "CI": false,
+        "L10N": false
+      },
+      "aliases": []
     },
     {
       "id": "size-analyzer",
       "display_name": "Size Analyzer",
       "category": "Analysis",
-      "module_path": "src.tools.analysis.size_analyzer",
+      "module_path": "src.tools.analysis.size_analyzer.size_analyzer",
       "class_name": "SizeAnalyzerGUI",
       "owner": null,
       "last_reviewed": null,
@@ -220,11 +409,28 @@
       "phase_gate_status": "Phase 2 - not started",
       "critical_engine": false,
       "compliance": {
-        "TH": false, "DR": false, "CP": false, "A11Y": false, "PERF": false,
-        "ERR": false, "GRD": false, "TEL": false, "STR": false, "CE": null,
-        "HUB": false, "MEN": false, "NOM": false, "FNT": false, "LYT": false,
-        "WRD": false, "INT": false, "OPS": false, "CI": false, "L10N": false
-      }
+        "TH": false,
+        "DR": false,
+        "CP": false,
+        "A11Y": false,
+        "PERF": false,
+        "ERR": false,
+        "GRD": false,
+        "TEL": false,
+        "STR": false,
+        "CE": null,
+        "HUB": false,
+        "MEN": false,
+        "NOM": false,
+        "FNT": false,
+        "LYT": false,
+        "WRD": false,
+        "INT": false,
+        "OPS": false,
+        "CI": false,
+        "L10N": false
+      },
+      "aliases": []
     },
     {
       "id": "duplicate-finder",
@@ -238,11 +444,28 @@
       "phase_gate_status": "Phase 2 - not started",
       "critical_engine": true,
       "compliance": {
-        "TH": false, "DR": false, "CP": false, "A11Y": false, "PERF": false,
-        "ERR": false, "GRD": false, "TEL": false, "STR": false, "CE": false,
-        "HUB": false, "MEN": false, "NOM": false, "FNT": false, "LYT": false,
-        "WRD": false, "INT": false, "OPS": false, "CI": false, "L10N": false
-      }
+        "TH": false,
+        "DR": false,
+        "CP": false,
+        "A11Y": false,
+        "PERF": false,
+        "ERR": false,
+        "GRD": false,
+        "TEL": false,
+        "STR": false,
+        "CE": false,
+        "HUB": false,
+        "MEN": false,
+        "NOM": false,
+        "FNT": false,
+        "LYT": false,
+        "WRD": false,
+        "INT": false,
+        "OPS": false,
+        "CI": false,
+        "L10N": false
+      },
+      "aliases": []
     },
     {
       "id": "file-checksum",
@@ -256,17 +479,37 @@
       "phase_gate_status": "Phase 2 - not started",
       "critical_engine": false,
       "compliance": {
-        "TH": false, "DR": false, "CP": false, "A11Y": false, "PERF": false,
-        "ERR": false, "GRD": false, "TEL": false, "STR": false, "CE": null,
-        "HUB": false, "MEN": false, "NOM": false, "FNT": false, "LYT": false,
-        "WRD": false, "INT": false, "OPS": false, "CI": false, "L10N": false
-      }
+        "TH": false,
+        "DR": false,
+        "CP": false,
+        "A11Y": false,
+        "PERF": false,
+        "ERR": false,
+        "GRD": false,
+        "TEL": false,
+        "STR": false,
+        "CE": null,
+        "HUB": false,
+        "MEN": false,
+        "NOM": false,
+        "FNT": false,
+        "LYT": false,
+        "WRD": false,
+        "INT": false,
+        "OPS": false,
+        "CI": false,
+        "L10N": false
+      },
+      "aliases": [
+        "Checksum Calculator",
+        "checksum-calculator"
+      ]
     },
     {
       "id": "empty-folders",
       "display_name": "Empty Folders",
       "category": "Analysis",
-      "module_path": "src.tools.analysis.empty_folders",
+      "module_path": "src.tools.analysis.empty_folders.empty_folders",
       "class_name": "EmptyFoldersGUI",
       "owner": null,
       "last_reviewed": null,
@@ -274,11 +517,31 @@
       "phase_gate_status": "Phase 2 - not started",
       "critical_engine": false,
       "compliance": {
-        "TH": false, "DR": false, "CP": false, "A11Y": false, "PERF": false,
-        "ERR": false, "GRD": false, "TEL": false, "STR": false, "CE": null,
-        "HUB": false, "MEN": false, "NOM": false, "FNT": false, "LYT": false,
-        "WRD": false, "INT": false, "OPS": false, "CI": false, "L10N": false
-      }
+        "TH": false,
+        "DR": false,
+        "CP": false,
+        "A11Y": false,
+        "PERF": false,
+        "ERR": false,
+        "GRD": false,
+        "TEL": false,
+        "STR": false,
+        "CE": null,
+        "HUB": false,
+        "MEN": false,
+        "NOM": false,
+        "FNT": false,
+        "LYT": false,
+        "WRD": false,
+        "INT": false,
+        "OPS": false,
+        "CI": false,
+        "L10N": false
+      },
+      "aliases": [
+        "Empty Folders Finder",
+        "empty-folders-finder"
+      ]
     },
     {
       "id": "security-preferences",
@@ -292,11 +555,28 @@
       "phase_gate_status": "Phase 2 - not started",
       "critical_engine": false,
       "compliance": {
-        "TH": false, "DR": false, "CP": false, "A11Y": false, "PERF": false,
-        "ERR": false, "GRD": false, "TEL": false, "STR": false, "CE": null,
-        "HUB": false, "MEN": false, "NOM": false, "FNT": false, "LYT": false,
-        "WRD": false, "INT": false, "OPS": false, "CI": false, "L10N": false
-      }
+        "TH": false,
+        "DR": false,
+        "CP": false,
+        "A11Y": false,
+        "PERF": false,
+        "ERR": false,
+        "GRD": false,
+        "TEL": false,
+        "STR": false,
+        "CE": null,
+        "HUB": false,
+        "MEN": false,
+        "NOM": false,
+        "FNT": false,
+        "LYT": false,
+        "WRD": false,
+        "INT": false,
+        "OPS": false,
+        "CI": false,
+        "L10N": false
+      },
+      "aliases": []
     },
     {
       "id": "encrypt-decrypt",
@@ -310,11 +590,30 @@
       "phase_gate_status": "Phase 2 - not started",
       "critical_engine": true,
       "compliance": {
-        "TH": false, "DR": false, "CP": false, "A11Y": false, "PERF": false,
-        "ERR": false, "GRD": false, "TEL": false, "STR": false, "CE": false,
-        "HUB": false, "MEN": false, "NOM": false, "FNT": false, "LYT": false,
-        "WRD": false, "INT": false, "OPS": false, "CI": false, "L10N": false
-      }
+        "TH": false,
+        "DR": false,
+        "CP": false,
+        "A11Y": false,
+        "PERF": false,
+        "ERR": false,
+        "GRD": false,
+        "TEL": false,
+        "STR": false,
+        "CE": false,
+        "HUB": false,
+        "MEN": false,
+        "NOM": false,
+        "FNT": false,
+        "LYT": false,
+        "WRD": false,
+        "INT": false,
+        "OPS": false,
+        "CI": false,
+        "L10N": false
+      },
+      "aliases": [
+        "Encrypt / Decrypt"
+      ]
     },
     {
       "id": "permissions-editor",
@@ -328,11 +627,28 @@
       "phase_gate_status": "Phase 2 - not started",
       "critical_engine": false,
       "compliance": {
-        "TH": false, "DR": false, "CP": false, "A11Y": false, "PERF": false,
-        "ERR": false, "GRD": false, "TEL": false, "STR": false, "CE": null,
-        "HUB": false, "MEN": false, "NOM": false, "FNT": false, "LYT": false,
-        "WRD": false, "INT": false, "OPS": false, "CI": false, "L10N": false
-      }
+        "TH": false,
+        "DR": false,
+        "CP": false,
+        "A11Y": false,
+        "PERF": false,
+        "ERR": false,
+        "GRD": false,
+        "TEL": false,
+        "STR": false,
+        "CE": null,
+        "HUB": false,
+        "MEN": false,
+        "NOM": false,
+        "FNT": false,
+        "LYT": false,
+        "WRD": false,
+        "INT": false,
+        "OPS": false,
+        "CI": false,
+        "L10N": false
+      },
+      "aliases": []
     },
     {
       "id": "edit-image-metadata",
@@ -346,11 +662,31 @@
       "phase_gate_status": "Phase 2 - not started",
       "critical_engine": false,
       "compliance": {
-        "TH": false, "DR": false, "CP": false, "A11Y": false, "PERF": false,
-        "ERR": false, "GRD": false, "TEL": false, "STR": false, "CE": null,
-        "HUB": false, "MEN": false, "NOM": false, "FNT": false, "LYT": false,
-        "WRD": false, "INT": false, "OPS": false, "CI": false, "L10N": false
-      }
+        "TH": false,
+        "DR": false,
+        "CP": false,
+        "A11Y": false,
+        "PERF": false,
+        "ERR": false,
+        "GRD": false,
+        "TEL": false,
+        "STR": false,
+        "CE": null,
+        "HUB": false,
+        "MEN": false,
+        "NOM": false,
+        "FNT": false,
+        "LYT": false,
+        "WRD": false,
+        "INT": false,
+        "OPS": false,
+        "CI": false,
+        "L10N": false
+      },
+      "aliases": [
+        "Image Metadata Editor",
+        "image-metadata-editor"
+      ]
     },
     {
       "id": "office-metadata-editor",
@@ -364,11 +700,28 @@
       "phase_gate_status": "Phase 2 - not started",
       "critical_engine": false,
       "compliance": {
-        "TH": false, "DR": false, "CP": false, "A11Y": false, "PERF": false,
-        "ERR": false, "GRD": false, "TEL": false, "STR": false, "CE": null,
-        "HUB": false, "MEN": false, "NOM": false, "FNT": false, "LYT": false,
-        "WRD": false, "INT": false, "OPS": false, "CI": false, "L10N": false
-      }
+        "TH": false,
+        "DR": false,
+        "CP": false,
+        "A11Y": false,
+        "PERF": false,
+        "ERR": false,
+        "GRD": false,
+        "TEL": false,
+        "STR": false,
+        "CE": null,
+        "HUB": false,
+        "MEN": false,
+        "NOM": false,
+        "FNT": false,
+        "LYT": false,
+        "WRD": false,
+        "INT": false,
+        "OPS": false,
+        "CI": false,
+        "L10N": false
+      },
+      "aliases": []
     },
     {
       "id": "file-touch",
@@ -382,47 +735,104 @@
       "phase_gate_status": "Phase 2 - not started",
       "critical_engine": false,
       "compliance": {
-        "TH": false, "DR": false, "CP": false, "A11Y": false, "PERF": false,
-        "ERR": false, "GRD": false, "TEL": false, "STR": false, "CE": null,
-        "HUB": false, "MEN": false, "NOM": false, "FNT": false, "LYT": false,
-        "WRD": false, "INT": false, "OPS": false, "CI": false, "L10N": false
-      }
+        "TH": false,
+        "DR": false,
+        "CP": false,
+        "A11Y": false,
+        "PERF": false,
+        "ERR": false,
+        "GRD": false,
+        "TEL": false,
+        "STR": false,
+        "CE": null,
+        "HUB": false,
+        "MEN": false,
+        "NOM": false,
+        "FNT": false,
+        "LYT": false,
+        "WRD": false,
+        "INT": false,
+        "OPS": false,
+        "CI": false,
+        "L10N": false
+      },
+      "aliases": []
     },
     {
       "id": "pdf-utilities",
       "display_name": "PDF Utilities",
       "category": "PDF Tools",
-      "module_path": "src.tools.pdf_tools.pdf_utilities",
-      "class_name": "PDFUtilitiesGUI",
+      "module_path": "src.tools.pdf_tools.widgets.enhanced_pdf_tools_widget",
+      "class_name": "EnhancedPDFToolsWidget",
       "owner": null,
       "last_reviewed": null,
       "reviewer": null,
       "phase_gate_status": "Phase 2 - not started",
       "critical_engine": true,
       "compliance": {
-        "TH": false, "DR": false, "CP": false, "A11Y": false, "PERF": false,
-        "ERR": false, "GRD": false, "TEL": false, "STR": false, "CE": false,
-        "HUB": false, "MEN": false, "NOM": false, "FNT": false, "LYT": false,
-        "WRD": false, "INT": false, "OPS": false, "CI": false, "L10N": false
-      }
+        "TH": false,
+        "DR": false,
+        "CP": false,
+        "A11Y": false,
+        "PERF": false,
+        "ERR": false,
+        "GRD": false,
+        "TEL": false,
+        "STR": false,
+        "CE": false,
+        "HUB": false,
+        "MEN": false,
+        "NOM": false,
+        "FNT": false,
+        "LYT": false,
+        "WRD": false,
+        "INT": false,
+        "OPS": false,
+        "CI": false,
+        "L10N": false
+      },
+      "aliases": [
+        "PDF Tools",
+        "pdf-tools"
+      ]
     },
     {
       "id": "pdf-extract-links",
       "display_name": "Extract Links",
       "category": "PDF Tools",
-      "module_path": "src.tools.pdf_tools.extract_links",
-      "class_name": "ExtractLinksGUI",
+      "module_path": "src.tools.pdf_tools.pdf_content_extraction.extract_links",
+      "class_name": "ExtractLinksUI",
       "owner": null,
       "last_reviewed": null,
       "reviewer": null,
       "phase_gate_status": "Phase 2 - not started",
       "critical_engine": false,
       "compliance": {
-        "TH": false, "DR": false, "CP": false, "A11Y": false, "PERF": false,
-        "ERR": false, "GRD": false, "TEL": false, "STR": false, "CE": null,
-        "HUB": false, "MEN": false, "NOM": false, "FNT": false, "LYT": false,
-        "WRD": false, "INT": false, "OPS": false, "CI": false, "L10N": false
-      }
+        "TH": false,
+        "DR": false,
+        "CP": false,
+        "A11Y": false,
+        "PERF": false,
+        "ERR": false,
+        "GRD": false,
+        "TEL": false,
+        "STR": false,
+        "CE": null,
+        "HUB": false,
+        "MEN": false,
+        "NOM": false,
+        "FNT": false,
+        "LYT": false,
+        "WRD": false,
+        "INT": false,
+        "OPS": false,
+        "CI": false,
+        "L10N": false
+      },
+      "aliases": [
+        "Extract Links"
+      ],
+      "undo_supported": false
     },
     {
       "id": "pdf-page-administration",
@@ -436,17 +846,37 @@
       "phase_gate_status": "Phase 2 - not started",
       "critical_engine": true,
       "compliance": {
-        "TH": false, "DR": false, "CP": false, "A11Y": false, "PERF": false,
-        "ERR": false, "GRD": false, "TEL": false, "STR": false, "CE": false,
-        "HUB": false, "MEN": false, "NOM": false, "FNT": false, "LYT": false,
-        "WRD": false, "INT": false, "OPS": false, "CI": false, "L10N": false
-      }
+        "TH": false,
+        "DR": false,
+        "CP": false,
+        "A11Y": false,
+        "PERF": false,
+        "ERR": false,
+        "GRD": false,
+        "TEL": false,
+        "STR": false,
+        "CE": false,
+        "HUB": false,
+        "MEN": false,
+        "NOM": false,
+        "FNT": false,
+        "LYT": false,
+        "WRD": false,
+        "INT": false,
+        "OPS": false,
+        "CI": false,
+        "L10N": false
+      },
+      "aliases": [
+        "Page Administration"
+      ],
+      "undo_supported": true
     },
     {
       "id": "network-connectivity",
       "display_name": "Network Connectivity",
       "category": "Network",
-      "module_path": "src.tools.network.connectivity",
+      "module_path": "src.tools.network.connectivity.network_connectivity",
       "class_name": "NetworkConnectivityGUI",
       "owner": null,
       "last_reviewed": null,
@@ -454,11 +884,28 @@
       "phase_gate_status": "Phase 2 - not started",
       "critical_engine": false,
       "compliance": {
-        "TH": false, "DR": false, "CP": false, "A11Y": false, "PERF": false,
-        "ERR": false, "GRD": false, "TEL": false, "STR": false, "CE": null,
-        "HUB": false, "MEN": false, "NOM": false, "FNT": false, "LYT": false,
-        "WRD": false, "INT": false, "OPS": false, "CI": false, "L10N": false
-      }
+        "TH": false,
+        "DR": false,
+        "CP": false,
+        "A11Y": false,
+        "PERF": false,
+        "ERR": false,
+        "GRD": false,
+        "TEL": false,
+        "STR": false,
+        "CE": null,
+        "HUB": false,
+        "MEN": false,
+        "NOM": false,
+        "FNT": false,
+        "LYT": false,
+        "WRD": false,
+        "INT": false,
+        "OPS": false,
+        "CI": false,
+        "L10N": false
+      },
+      "aliases": []
     },
     {
       "id": "network-scanner",
@@ -472,11 +919,28 @@
       "phase_gate_status": "Phase 2 - not started",
       "critical_engine": false,
       "compliance": {
-        "TH": false, "DR": false, "CP": false, "A11Y": false, "PERF": false,
-        "ERR": false, "GRD": false, "TEL": false, "STR": false, "CE": null,
-        "HUB": false, "MEN": false, "NOM": false, "FNT": false, "LYT": false,
-        "WRD": false, "INT": false, "OPS": false, "CI": false, "L10N": false
-      }
+        "TH": false,
+        "DR": false,
+        "CP": false,
+        "A11Y": false,
+        "PERF": false,
+        "ERR": false,
+        "GRD": false,
+        "TEL": false,
+        "STR": false,
+        "CE": null,
+        "HUB": false,
+        "MEN": false,
+        "NOM": false,
+        "FNT": false,
+        "LYT": false,
+        "WRD": false,
+        "INT": false,
+        "OPS": false,
+        "CI": false,
+        "L10N": false
+      },
+      "aliases": []
     },
     {
       "id": "network-transfer",
@@ -490,11 +954,28 @@
       "phase_gate_status": "Phase 2 - not started",
       "critical_engine": false,
       "compliance": {
-        "TH": false, "DR": false, "CP": false, "A11Y": false, "PERF": false,
-        "ERR": false, "GRD": false, "TEL": false, "STR": false, "CE": null,
-        "HUB": false, "MEN": false, "NOM": false, "FNT": false, "LYT": false,
-        "WRD": false, "INT": false, "OPS": false, "CI": false, "L10N": false
-      }
+        "TH": false,
+        "DR": false,
+        "CP": false,
+        "A11Y": false,
+        "PERF": false,
+        "ERR": false,
+        "GRD": false,
+        "TEL": false,
+        "STR": false,
+        "CE": null,
+        "HUB": false,
+        "MEN": false,
+        "NOM": false,
+        "FNT": false,
+        "LYT": false,
+        "WRD": false,
+        "INT": false,
+        "OPS": false,
+        "CI": false,
+        "L10N": false
+      },
+      "aliases": []
     },
     {
       "id": "bookmark-manager",
@@ -508,17 +989,34 @@
       "phase_gate_status": "Phase 2 - not started",
       "critical_engine": false,
       "compliance": {
-        "TH": false, "DR": false, "CP": false, "A11Y": false, "PERF": false,
-        "ERR": false, "GRD": false, "TEL": false, "STR": false, "CE": null,
-        "HUB": false, "MEN": false, "NOM": false, "FNT": false, "LYT": false,
-        "WRD": false, "INT": false, "OPS": false, "CI": false, "L10N": false
-      }
+        "TH": false,
+        "DR": false,
+        "CP": false,
+        "A11Y": false,
+        "PERF": false,
+        "ERR": false,
+        "GRD": false,
+        "TEL": false,
+        "STR": false,
+        "CE": null,
+        "HUB": false,
+        "MEN": false,
+        "NOM": false,
+        "FNT": false,
+        "LYT": false,
+        "WRD": false,
+        "INT": false,
+        "OPS": false,
+        "CI": false,
+        "L10N": false
+      },
+      "aliases": []
     },
     {
       "id": "privacy-cleaner",
       "display_name": "Privacy Cleaner",
       "category": "Privacy",
-      "module_path": "src.tools.privacy.privacy_cleaner",
+      "module_path": "src.tools.privacy.privacy_cleaner.privacy_cleaner",
       "class_name": "PrivacyCleanerGUI",
       "owner": null,
       "last_reviewed": null,
@@ -526,11 +1024,28 @@
       "phase_gate_status": "Phase 2 - not started",
       "critical_engine": true,
       "compliance": {
-        "TH": false, "DR": false, "CP": false, "A11Y": false, "PERF": false,
-        "ERR": false, "GRD": false, "TEL": false, "STR": false, "CE": false,
-        "HUB": false, "MEN": false, "NOM": false, "FNT": false, "LYT": false,
-        "WRD": false, "INT": false, "OPS": false, "CI": false, "L10N": false
-      }
+        "TH": false,
+        "DR": false,
+        "CP": false,
+        "A11Y": false,
+        "PERF": false,
+        "ERR": false,
+        "GRD": false,
+        "TEL": false,
+        "STR": false,
+        "CE": false,
+        "HUB": false,
+        "MEN": false,
+        "NOM": false,
+        "FNT": false,
+        "LYT": false,
+        "WRD": false,
+        "INT": false,
+        "OPS": false,
+        "CI": false,
+        "L10N": false
+      },
+      "aliases": []
     },
     {
       "id": "data-anonymizer",
@@ -544,11 +1059,29 @@
       "phase_gate_status": "Phase 2 - not started",
       "critical_engine": true,
       "compliance": {
-        "TH": false, "DR": false, "CP": false, "A11Y": false, "PERF": false,
-        "ERR": false, "GRD": false, "TEL": false, "STR": false, "CE": false,
-        "HUB": false, "MEN": false, "NOM": false, "FNT": false, "LYT": false,
-        "WRD": false, "INT": false, "OPS": false, "CI": false, "L10N": false
-      }
+        "TH": false,
+        "DR": false,
+        "CP": false,
+        "A11Y": false,
+        "PERF": false,
+        "ERR": false,
+        "GRD": false,
+        "TEL": false,
+        "STR": false,
+        "CE": false,
+        "HUB": false,
+        "MEN": false,
+        "NOM": false,
+        "FNT": false,
+        "LYT": false,
+        "WRD": false,
+        "INT": false,
+        "OPS": false,
+        "CI": false,
+        "L10N": false
+      },
+      "aliases": [],
+      "undo_supported": false
     },
     {
       "id": "process-monitor",
@@ -562,17 +1095,34 @@
       "phase_gate_status": "Phase 2 - not started",
       "critical_engine": false,
       "compliance": {
-        "TH": false, "DR": false, "CP": false, "A11Y": false, "PERF": false,
-        "ERR": false, "GRD": false, "TEL": false, "STR": false, "CE": null,
-        "HUB": false, "MEN": false, "NOM": false, "FNT": false, "LYT": false,
-        "WRD": false, "INT": false, "OPS": false, "CI": false, "L10N": false
-      }
+        "TH": false,
+        "DR": false,
+        "CP": false,
+        "A11Y": false,
+        "PERF": false,
+        "ERR": false,
+        "GRD": false,
+        "TEL": false,
+        "STR": false,
+        "CE": null,
+        "HUB": false,
+        "MEN": false,
+        "NOM": false,
+        "FNT": false,
+        "LYT": false,
+        "WRD": false,
+        "INT": false,
+        "OPS": false,
+        "CI": false,
+        "L10N": false
+      },
+      "aliases": []
     },
     {
       "id": "enhanced-clipboard",
       "display_name": "Enhanced Clipboard",
       "category": "System",
-      "module_path": "src.tools.system.enhanced_clipboard",
+      "module_path": "src.tools.system.enhanced_clipboard.enhanced_clipboard_gui",
       "class_name": "EnhancedClipboardGUI",
       "owner": null,
       "last_reviewed": null,
@@ -580,17 +1130,34 @@
       "phase_gate_status": "Phase 2 - not started",
       "critical_engine": false,
       "compliance": {
-        "TH": false, "DR": false, "CP": false, "A11Y": false, "PERF": false,
-        "ERR": false, "GRD": false, "TEL": false, "STR": false, "CE": null,
-        "HUB": false, "MEN": false, "NOM": false, "FNT": false, "LYT": false,
-        "WRD": false, "INT": false, "OPS": false, "CI": false, "L10N": false
-      }
+        "TH": false,
+        "DR": false,
+        "CP": false,
+        "A11Y": false,
+        "PERF": false,
+        "ERR": false,
+        "GRD": false,
+        "TEL": false,
+        "STR": false,
+        "CE": null,
+        "HUB": false,
+        "MEN": false,
+        "NOM": false,
+        "FNT": false,
+        "LYT": false,
+        "WRD": false,
+        "INT": false,
+        "OPS": false,
+        "CI": false,
+        "L10N": false
+      },
+      "aliases": []
     },
     {
       "id": "system-diagnostics",
       "display_name": "System Diagnostics",
       "category": "System",
-      "module_path": "src.tools.system.system_diagnostics",
+      "module_path": "src.tools.system.system_diagnostics.system_diagnostics_gui",
       "class_name": "SystemDiagnosticsGUI",
       "owner": null,
       "last_reviewed": null,
@@ -598,11 +1165,28 @@
       "phase_gate_status": "Phase 2 - not started",
       "critical_engine": false,
       "compliance": {
-        "TH": false, "DR": false, "CP": false, "A11Y": false, "PERF": false,
-        "ERR": false, "GRD": false, "TEL": false, "STR": false, "CE": null,
-        "HUB": false, "MEN": false, "NOM": false, "FNT": false, "LYT": false,
-        "WRD": false, "INT": false, "OPS": false, "CI": false, "L10N": false
-      }
+        "TH": false,
+        "DR": false,
+        "CP": false,
+        "A11Y": false,
+        "PERF": false,
+        "ERR": false,
+        "GRD": false,
+        "TEL": false,
+        "STR": false,
+        "CE": null,
+        "HUB": false,
+        "MEN": false,
+        "NOM": false,
+        "FNT": false,
+        "LYT": false,
+        "WRD": false,
+        "INT": false,
+        "OPS": false,
+        "CI": false,
+        "L10N": false
+      },
+      "aliases": []
     },
     {
       "id": "system-cleanup",
@@ -616,29 +1200,63 @@
       "phase_gate_status": "Phase 2 - not started",
       "critical_engine": false,
       "compliance": {
-        "TH": false, "DR": false, "CP": false, "A11Y": false, "PERF": false,
-        "ERR": false, "GRD": false, "TEL": false, "STR": false, "CE": null,
-        "HUB": false, "MEN": false, "NOM": false, "FNT": false, "LYT": false,
-        "WRD": false, "INT": false, "OPS": false, "CI": false, "L10N": false
-      }
+        "TH": false,
+        "DR": false,
+        "CP": false,
+        "A11Y": false,
+        "PERF": false,
+        "ERR": false,
+        "GRD": false,
+        "TEL": false,
+        "STR": false,
+        "CE": null,
+        "HUB": false,
+        "MEN": false,
+        "NOM": false,
+        "FNT": false,
+        "LYT": false,
+        "WRD": false,
+        "INT": false,
+        "OPS": false,
+        "CI": false,
+        "L10N": false
+      },
+      "aliases": []
     },
     {
       "id": "software-maintenance",
       "display_name": "Software Maintenance",
       "category": "System",
-      "module_path": "src.tools.system.software_maintenance",
-      "class_name": "SoftwareMaintenanceGUI",
+      "module_path": "src.tools.system.software_maintenance.gui.maintenance_hub",
+      "class_name": "SoftwareMaintenanceHub",
       "owner": null,
       "last_reviewed": null,
       "reviewer": null,
       "phase_gate_status": "Phase 2 - not started",
       "critical_engine": false,
       "compliance": {
-        "TH": false, "DR": false, "CP": false, "A11Y": false, "PERF": false,
-        "ERR": false, "GRD": false, "TEL": false, "STR": false, "CE": null,
-        "HUB": false, "MEN": false, "NOM": false, "FNT": false, "LYT": false,
-        "WRD": false, "INT": false, "OPS": false, "CI": false, "L10N": false
-      }
+        "TH": false,
+        "DR": false,
+        "CP": false,
+        "A11Y": false,
+        "PERF": false,
+        "ERR": false,
+        "GRD": false,
+        "TEL": false,
+        "STR": false,
+        "CE": null,
+        "HUB": false,
+        "MEN": false,
+        "NOM": false,
+        "FNT": false,
+        "LYT": false,
+        "WRD": false,
+        "INT": false,
+        "OPS": false,
+        "CI": false,
+        "L10N": false
+      },
+      "aliases": []
     },
     {
       "id": "preference-portability",
@@ -652,11 +1270,67 @@
       "phase_gate_status": "Phase 2 - not started",
       "critical_engine": false,
       "compliance": {
-        "TH": false, "DR": false, "CP": false, "A11Y": false, "PERF": false,
-        "ERR": false, "GRD": false, "TEL": false, "STR": false, "CE": null,
-        "HUB": false, "MEN": false, "NOM": false, "FNT": false, "LYT": false,
-        "WRD": false, "INT": false, "OPS": false, "CI": false, "L10N": false
-      }
+        "TH": false,
+        "DR": false,
+        "CP": false,
+        "A11Y": false,
+        "PERF": false,
+        "ERR": false,
+        "GRD": false,
+        "TEL": false,
+        "STR": false,
+        "CE": null,
+        "HUB": false,
+        "MEN": false,
+        "NOM": false,
+        "FNT": false,
+        "LYT": false,
+        "WRD": false,
+        "INT": false,
+        "OPS": false,
+        "CI": false,
+        "L10N": false
+      },
+      "aliases": []
+    },
+    {
+      "id": "storage-monitor",
+      "display_name": "Storage Monitor",
+      "category": "System",
+      "module_path": "src.tools.system.storage_monitor.gui",
+      "class_name": "StorageMonitorWindow",
+      "owner": null,
+      "last_reviewed": null,
+      "reviewer": null,
+      "phase_gate_status": "Implemented; focused verification",
+      "critical_engine": false,
+      "compliance": {
+        "TH": false,
+        "DR": false,
+        "CP": false,
+        "A11Y": false,
+        "PERF": false,
+        "ERR": false,
+        "GRD": false,
+        "TEL": false,
+        "STR": false,
+        "CE": null,
+        "HUB": false,
+        "MEN": false,
+        "NOM": false,
+        "FNT": false,
+        "LYT": false,
+        "WRD": false,
+        "INT": false,
+        "OPS": false,
+        "CI": false,
+        "L10N": false
+      },
+      "undo_supported": false,
+      "aliases": [
+        "Drive Monitor",
+        "Disk Activity Monitor"
+      ]
     }
   ]
 }

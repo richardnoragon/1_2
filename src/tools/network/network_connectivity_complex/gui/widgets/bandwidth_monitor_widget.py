@@ -1,4 +1,5 @@
 """Bandwidth Monitor Widget for real-time network speed monitoring."""
+from src.rfu.localization import localized_widget as _ui_widget, bind_literal as _ui_bind
 
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional
@@ -53,7 +54,7 @@ class BandwidthStatisticsWidget(QWidget):
         layout.setSpacing(Spacing.MEDIUM_SPACING)
 
         # Current speeds group
-        current_group = QGroupBox("Current Speeds")
+        current_group = _ui_widget(QGroupBox, 'Legacy.s658414a332c076fd', 'setTitle')
         ThemeManager.style_group_box(current_group)
         layout.addWidget(current_group)
 
@@ -61,17 +62,17 @@ class BandwidthStatisticsWidget(QWidget):
         current_layout.setSpacing(Spacing.SMALL_SPACING)
 
         # Download speed
-        self.download_label = QLabel("Download: 0.0 Mbps")
+        self.download_label = _ui_widget(QLabel, 'Legacy.sec47e819986b8adf', 'setText')
         ThemeManager.style_label(self.download_label, is_header=True)
         current_layout.addWidget(self.download_label)
 
         # Upload speed
-        self.upload_label = QLabel("Upload: 0.0 Mbps")
+        self.upload_label = _ui_widget(QLabel, 'Legacy.sfce01f8bb5c235a5', 'setText')
         ThemeManager.style_label(self.upload_label, is_header=True)
         current_layout.addWidget(self.upload_label)
 
         # Statistics group
-        stats_group = QGroupBox("Statistics (Last Hour)")
+        stats_group = _ui_widget(QGroupBox, 'Legacy.s0d0cc4c415f73452', 'setTitle')
         ThemeManager.style_group_box(stats_group)
         layout.addWidget(stats_group)
 
@@ -79,25 +80,25 @@ class BandwidthStatisticsWidget(QWidget):
         stats_layout.setSpacing(Spacing.SMALL_SPACING)
 
         # Average speeds
-        self.avg_download_label = QLabel("Avg Download: 0.0 Mbps")
+        self.avg_download_label = _ui_widget(QLabel, 'Legacy.s2220677ef08370fa', 'setText')
         ThemeManager.style_label(self.avg_download_label)
         stats_layout.addWidget(self.avg_download_label)
 
-        self.avg_upload_label = QLabel("Avg Upload: 0.0 Mbps")
+        self.avg_upload_label = _ui_widget(QLabel, 'Legacy.s3e61390bdaa8786d', 'setText')
         ThemeManager.style_label(self.avg_upload_label)
         stats_layout.addWidget(self.avg_upload_label)
 
         # Peak speeds
-        self.peak_download_label = QLabel("Peak Download: 0.0 Mbps")
+        self.peak_download_label = _ui_widget(QLabel, 'Legacy.scca37641c9166117', 'setText')
         ThemeManager.style_label(self.peak_download_label)
         stats_layout.addWidget(self.peak_download_label)
 
-        self.peak_upload_label = QLabel("Peak Upload: 0.0 Mbps")
+        self.peak_upload_label = _ui_widget(QLabel, 'Legacy.scb2c6767c8d1e382', 'setText')
         ThemeManager.style_label(self.peak_upload_label)
         stats_layout.addWidget(self.peak_upload_label)
 
         # Total data
-        self.total_data_label = QLabel("Total Data: 0.0 GB")
+        self.total_data_label = _ui_widget(QLabel, 'Legacy.s1bbcb2a51b1cfc66', 'setText')
         ThemeManager.style_label(self.total_data_label)
         stats_layout.addWidget(self.total_data_label)
 
@@ -167,7 +168,7 @@ class BandwidthControlPanel(QWidget):
         layout.addWidget(self.interface_selector)
 
         # Monitoring controls
-        controls_group = QGroupBox("Monitoring Controls")
+        controls_group = _ui_widget(QGroupBox, 'Legacy.s965dfd6ea528c7e8', 'setTitle')
         ThemeManager.style_group_box(controls_group)
         layout.addWidget(controls_group)
 
@@ -177,19 +178,19 @@ class BandwidthControlPanel(QWidget):
         # Start/Stop buttons
         button_layout = QHBoxLayout()
 
-        self.start_button = PrimaryButton("Start Monitoring")
-        self.start_button.setAccessibleName("Start bandwidth monitoring")
+        self.start_button = _ui_widget(PrimaryButton, 'Legacy.sa2f859806eb26f9b', 'setText')
+        _ui_bind(self.start_button, 'setAccessibleName', 'Legacy.s125382ff9fdaeb25')
         button_layout.addWidget(self.start_button)
 
-        self.stop_button = SecondaryButton("Stop Monitoring")
-        self.stop_button.setAccessibleName("Stop bandwidth monitoring")
+        self.stop_button = _ui_widget(SecondaryButton, 'Legacy.sb9311d8e1555d334', 'setText')
+        _ui_bind(self.stop_button, 'setAccessibleName', 'Legacy.s93be5a354bb8823c')
         self.stop_button.setEnabled(False)
         button_layout.addWidget(self.stop_button)
 
         controls_layout.addLayout(button_layout)
 
         # Settings group
-        settings_group = QGroupBox("Settings")
+        settings_group = _ui_widget(QGroupBox, 'Legacy.s74a883a037bc227f', 'setTitle')
         ThemeManager.style_group_box(settings_group)
         layout.addWidget(settings_group)
 
@@ -198,12 +199,12 @@ class BandwidthControlPanel(QWidget):
 
         # Monitoring interval
         interval_layout = QHBoxLayout()
-        interval_label = QLabel("Update Interval (ms):")
+        interval_label = _ui_widget(QLabel, 'Legacy.se61918734c23e2ab', 'setText')
         ThemeManager.style_label(interval_label)
         interval_layout.addWidget(interval_label)
 
         self.interval_spinbox = QSpinBox()
-        self.interval_spinbox.setAccessibleName("Update interval in milliseconds")
+        _ui_bind(self.interval_spinbox, 'setAccessibleName', 'Legacy.scdf41b535a95c6f1')
         self.interval_spinbox.setMinimumHeight(44)
         self.interval_spinbox.setRange(100, 10000)
         self.interval_spinbox.setValue(1000)
@@ -214,14 +215,14 @@ class BandwidthControlPanel(QWidget):
         settings_layout.addLayout(interval_layout)
 
         # Enable alerts
-        self.alerts_checkbox = QCheckBox("Enable Speed Alerts")
-        self.alerts_checkbox.setAccessibleName("Enable speed alerts")
+        self.alerts_checkbox = _ui_widget(QCheckBox, 'Legacy.s19d82f57a59892c8', 'setText')
+        _ui_bind(self.alerts_checkbox, 'setAccessibleName', 'Legacy.sd775df7813d3b95e')
         self.alerts_checkbox.setMinimumHeight(44)
         self.alerts_checkbox.setChecked(True)
         settings_layout.addWidget(self.alerts_checkbox)
 
         # Export controls
-        export_group = QGroupBox("Data Export")
+        export_group = _ui_widget(QGroupBox, 'Legacy.sbdcea052a8fb9240', 'setTitle')
         ThemeManager.style_group_box(export_group)
         layout.addWidget(export_group)
 
@@ -230,12 +231,12 @@ class BandwidthControlPanel(QWidget):
 
         # Export format
         format_layout = QHBoxLayout()
-        format_label = QLabel("Format:")
+        format_label = _ui_widget(QLabel, 'Legacy.s9a5649a42cb2fcef', 'setText')
         ThemeManager.style_label(format_label)
         format_layout.addWidget(format_label)
 
         self.format_combo = QComboBox()
-        self.format_combo.setAccessibleName("Export format")
+        _ui_bind(self.format_combo, 'setAccessibleName', 'Legacy.sdf339cb8da14714c')
         self.format_combo.addItems(["CSV", "JSON"])
         ThemeManager.style_input_field(self.format_combo)
         format_layout.addWidget(self.format_combo)
@@ -243,8 +244,8 @@ class BandwidthControlPanel(QWidget):
         export_layout.addLayout(format_layout)
 
         # Export button
-        self.export_button = SecondaryButton("Export Data")
-        self.export_button.setAccessibleName("Export bandwidth data")
+        self.export_button = _ui_widget(SecondaryButton, 'Legacy.s2ed227401538531a', 'setText')
+        _ui_bind(self.export_button, 'setAccessibleName', 'Legacy.s505a072df10b2166')
         export_layout.addWidget(self.export_button)
 
         layout.addStretch()
@@ -366,7 +367,7 @@ class BandwidthMonitorWidget(StandardWindow):
 
         # Tab widget for different views
         self.tab_widget = QTabWidget()
-        self.tab_widget.setAccessibleName("Bandwidth monitor views")
+        _ui_bind(self.tab_widget, 'setAccessibleName', 'Legacy.se8ee317c0154f0b3')
         right_layout.addWidget(self.tab_widget)
 
         # Real-time chart tab

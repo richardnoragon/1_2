@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "exceptions": [
+    {
+      "path": "src/tools/analysis/config/config_analyzer.py",
+      "rule": "FNT",
+      "fingerprint": "e2c082c43d6112050e6e7c3e1485b12e86586f1fce9f9560dbfefc963c03c512",
+      "count": 1,
+      "reason": "CSS in an exported HTML document, not Qt widget typography."
+    },
+    {
+      "path": "src/tools/file_management/advanced_catalog/catalog/catalog.py",
+      "rule": "FNT",
+      "fingerprint": "e2c082c43d6112050e6e7c3e1485b12e86586f1fce9f9560dbfefc963c03c512",
+      "count": 1,
+      "reason": "CSS in an exported HTML document, not Qt widget typography."
+    },
+    {
+      "path": "src/tools/file_management/advanced_catalog/catalog/catalog.py",
+      "rule": "FNT",
+      "fingerprint": "ec46f02e62f36073ca27478157b5136bc88b20eca22b7008f95c0b004919db9b",
+      "count": 1,
+      "reason": "CSS in an exported HTML document, not Qt widget typography."
+    },
+    {
+      "path": "src/tools/file_management/advanced_catalog/catalog_tool.py",
+      "rule": "FNT",
+      "fingerprint": "e2c082c43d6112050e6e7c3e1485b12e86586f1fce9f9560dbfefc963c03c512",
+      "count": 1,
+      "reason": "CSS in an exported HTML document, not Qt widget typography."
+    },
+    {
+      "path": "src/tools/file_management/advanced_catalog/export_engine/html_exporter.py",
+      "rule": "FNT",
+      "fingerprint": "c7907c16b5f412440ffb79389e92fa578553f5c0cff6cf99ea7ce5288405f2c4",
+      "count": 2,
+      "reason": "CSS in an exported HTML document, not Qt widget typography."
+    },
+    {
+      "path": "src/tools/file_management/advanced_catalog/export_engine/html_exporter.py",
+      "rule": "FNT",
+      "fingerprint": "b347eea070b51d51e6ec13f40150aed90347d1eae4a7037c3f332bd35449d590",
+      "count": 1,
+      "reason": "CSS in an exported HTML document, not Qt widget typography."
+    },
+    {
+      "path": "src/tools/file_management/advanced_catalog/export_engine/html_exporter.py",
+      "rule": "FNT",
+      "fingerprint": "9518f90ee40fc5c9ebdbd3fe08c70ff8bf0042fd4ab0d7627bae07ee054a1ae0",
+      "count": 1,
+      "reason": "CSS in an exported HTML document, not Qt widget typography."
+    },
+    {
+      "path": "src/tools/file_management/advanced_catalog/export_engine/html_exporter.py",
+      "rule": "FNT",
+      "fingerprint": "07a63655b2a149e201a99099516e213d4304ea0ee19c132619e69d30294fdd9f",
+      "count": 1,
+      "reason": "CSS in an exported HTML document, not Qt widget typography."
+    },
+    {
+      "path": "src/tools/file_management/advanced_catalog/export_engine/html_exporter.py",
+      "rule": "FNT",
+      "fingerprint": "ec46f02e62f36073ca27478157b5136bc88b20eca22b7008f95c0b004919db9b",
+      "count": 5,
+      "reason": "CSS in an exported HTML document, not Qt widget typography."
+    },
+    {
+      "path": "src/tools/file_management/advanced_catalog/export_engine/html_exporter.py",
+      "rule": "FNT",
+      "fingerprint": "aa661633dfc0a6e230ff8e2f26f2dab4d4b12ebe26c5806847e9cd60a2dbca50",
+      "count": 1,
+      "reason": "CSS in an exported HTML document, not Qt widget typography."
+    },
+    {
+      "path": "src/tools/file_management/advanced_catalog/export_engine/html_exporter.py",
+      "rule": "FNT",
+      "fingerprint": "8d3349edbb282da076eeabbbf90a69605447ad0a65e5219c5a10e81b77efec8e",
+      "count": 1,
+      "reason": "CSS in an exported HTML document, not Qt widget typography."
+    },
+    {
+      "path": "src/tools/file_management/advanced_catalog/export_engine/html_exporter.py",
+      "rule": "FNT",
+      "fingerprint": "d53ef2bba44479d1af8206407ba4456d1ea75d5f416967ace5330e725be0fa6b",
+      "count": 1,
+      "reason": "CSS in an exported HTML document, not Qt widget typography."
+    },
+    {
+      "path": "src/tools/file_management/advanced_catalog/export_engine/html_exporter.py",
+      "rule": "FNT",
+      "fingerprint": "1c3bd94678180cad4fec171b1696f8ab7912c57f493ee5d4b87cad720445b1dc",
+      "count": 1,
+      "reason": "CSS in an exported HTML document, not Qt widget typography."
+    }
+  ]
+}

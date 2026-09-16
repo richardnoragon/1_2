@@ -1,4 +1,6 @@
 """Network Connectivity GUI built for the RFU tool suite."""
+from src.rfu.localization import localized_widget as _ui_widget, bind_literal as _ui_bind
+from src.rfu import font_tokens
 
 import sys
 
@@ -114,11 +116,11 @@ class NetworkConnectivityGUI(StandardWindow):
 
         layout = self.main_layout
 
-        header_label = QLabel("Network Connectivity Tools")
+        header_label = _ui_widget(QLabel, 'Legacy.s45acab8512bdb8a1', 'setText')
         header_label.setStyleSheet(
             """
             QLabel {
-                font-size: 18px;
+
                 font-weight: bold;
                 color: {token('text_primary')};
                 padding: 10px;
@@ -128,20 +130,21 @@ class NetworkConnectivityGUI(StandardWindow):
             }
         """
         )
+        font_tokens.bind(header_label, "font.toolHeader")
         layout.addWidget(header_label)
 
-        tools_group = QGroupBox("Network Analysis Tools")
+        tools_group = _ui_widget(QGroupBox, 'Legacy.sec8ff975cad09591', 'setTitle')
         tools_layout = QVBoxLayout(tools_group)
 
-        bandwidth_group = QGroupBox("Bandwidth Monitor")
+        bandwidth_group = _ui_widget(QGroupBox, 'Legacy.s38923ecfba1269de', 'setTitle')
         bandwidth_layout = QVBoxLayout(bandwidth_group)
 
-        bandwidth_button = PrimaryButton("Start Bandwidth Monitoring")
-        bandwidth_button.setAccessibleName("Start bandwidth monitoring")
+        bandwidth_button = _ui_widget(PrimaryButton, 'Legacy.sa389f5cf3c9cbed3', 'setText')
+        _ui_bind(bandwidth_button, 'setAccessibleName', 'Legacy.s125382ff9fdaeb25')
         bandwidth_button.clicked.connect(self.start_bandwidth_monitor)
         bandwidth_layout.addWidget(bandwidth_button)
 
-        self.bandwidth_status = QLabel("Status: Ready")
+        self.bandwidth_status = _ui_widget(QLabel, 'Legacy.sd2187745dda2b177', 'setText')
         bandwidth_layout.addWidget(self.bandwidth_status)
 
         tools_layout.addWidget(bandwidth_group)
@@ -150,41 +153,41 @@ class NetworkConnectivityGUI(StandardWindow):
         scanner_layout = QVBoxLayout(scanner_group)
 
         target_layout = QHBoxLayout()
-        target_layout.addWidget(QLabel("Target:"))
+        target_layout.addWidget(_ui_widget(QLabel, 'Legacy.s890d34fffcde315c', 'setText'))
         self.target_input = TextInput("Target host", "Enter IP address or hostname")
-        self.target_input.setAccessibleName("Target host for port scan")
+        _ui_bind(self.target_input, 'setAccessibleName', 'Legacy.sfe2d1fcb2414123f')
         target_layout.addWidget(self.target_input)
         scanner_layout.addLayout(target_layout)
 
         port_layout = QHBoxLayout()
-        port_layout.addWidget(QLabel("Port Range:"))
+        port_layout.addWidget(_ui_widget(QLabel, 'Legacy.sc23de10e17c4ca4e', 'setText'))
         self.start_port = QSpinBox()
-        self.start_port.setAccessibleName("Start port number")
+        _ui_bind(self.start_port, 'setAccessibleName', 'Legacy.sf8132b7aed82551d')
         self.start_port.setMinimumHeight(44)
         self.start_port.setRange(1, 65535)
         self.start_port.setValue(1)
         port_layout.addWidget(self.start_port)
-        port_layout.addWidget(QLabel("to"))
+        port_layout.addWidget(_ui_widget(QLabel, 'Legacy.s663ea1bfffe5038f', 'setText'))
         self.end_port = QSpinBox()
-        self.end_port.setAccessibleName("End port number")
+        _ui_bind(self.end_port, 'setAccessibleName', 'Legacy.s30dafb24fa178f45')
         self.end_port.setMinimumHeight(44)
         self.end_port.setRange(1, 65535)
         self.end_port.setValue(1000)
         port_layout.addWidget(self.end_port)
         scanner_layout.addLayout(port_layout)
 
-        scan_button = PrimaryButton("Start Port Scan")
-        scan_button.setAccessibleName("Start port scan")
+        scan_button = _ui_widget(PrimaryButton, 'Legacy.s4ec0ceaea3c853c2', 'setText')
+        _ui_bind(scan_button, 'setAccessibleName', 'Legacy.sd0dafab4d2bbe3fe')
         scan_button.clicked.connect(self.start_port_scan)
         scanner_layout.addWidget(scan_button)
 
         tools_layout.addWidget(scanner_group)
 
-        wifi_group = QGroupBox("WiFi Analyzer")
+        wifi_group = _ui_widget(QGroupBox, 'Legacy.s8ac9131a13d0630a', 'setTitle')
         wifi_layout = QVBoxLayout(wifi_group)
 
-        wifi_button = SecondaryButton("Analyze WiFi Networks")
-        wifi_button.setAccessibleName("Analyze WiFi networks")
+        wifi_button = _ui_widget(SecondaryButton, 'Legacy.s610566bfc5d3f88b', 'setText')
+        _ui_bind(wifi_button, 'setAccessibleName', 'Legacy.s4de6e3001e70ad6e')
         wifi_button.clicked.connect(self.analyze_wifi)
         wifi_layout.addWidget(wifi_button)
 
@@ -192,11 +195,11 @@ class NetworkConnectivityGUI(StandardWindow):
 
         layout.addWidget(tools_group)
 
-        results_group = QGroupBox("Results")
+        results_group = _ui_widget(QGroupBox, 'Legacy.s219c4a6c86a716e9', 'setTitle')
         results_layout = QVBoxLayout(results_group)
 
         self.results_text = QTextEdit()
-        self.results_text.setAccessibleName("Network connectivity scan results")
+        _ui_bind(self.results_text, 'setAccessibleName', 'Legacy.s66c11af910187df0')
         self.results_text.setReadOnly(True)
         self.results_text.setPlainText(RESULTS_READY_TEXT)
         results_layout.addWidget(self.results_text)

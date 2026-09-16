@@ -3,7 +3,9 @@
 This module provides a comprehensive GUI interface for monitoring system
 performance including CPU, memory, and process analysis with real-time charts.
 """
+from src.rfu.localization import localized_widget as _ui_widget, bind_literal as _ui_bind
 
+from src.rfu import font_tokens
 import logging
 import sys
 from datetime import datetime, timedelta
@@ -116,7 +118,7 @@ class PerformanceWidget(QWidget):
     def init_ui(self):
         """Initialize the user interface."""
         try:
-            self.setWindowTitle("Performance Monitor")
+            _ui_bind(self, 'setWindowTitle', 'Legacy.sbb77d93db2d0da43')
             self.setMinimumSize(800, 600)
 
             # Main layout
@@ -165,17 +167,17 @@ class PerformanceWidget(QWidget):
         layout = QHBoxLayout(panel)
 
         # Auto-refresh control
-        self.auto_refresh_cb = QCheckBox("Auto Refresh")
-        self.auto_refresh_cb.setAccessibleName("Auto refresh")
+        self.auto_refresh_cb = _ui_widget(QCheckBox, 'Legacy.s7b36f955808e9f74', 'setText')
+        _ui_bind(self.auto_refresh_cb, 'setAccessibleName', 'Legacy.sc7c026a80acf8742')
         self.auto_refresh_cb.setMinimumHeight(44)
         self.auto_refresh_cb.setChecked(self.auto_refresh)
         self.auto_refresh_cb.toggled.connect(self.toggle_auto_refresh)
         layout.addWidget(self.auto_refresh_cb)
 
         # Refresh interval
-        layout.addWidget(QLabel("Interval (s):"))
+        layout.addWidget(_ui_widget(QLabel, 'Legacy.sa9f4edc07cde07e4', 'setText'))
         self.interval_spin = QSpinBox()
-        self.interval_spin.setAccessibleName("Refresh interval in seconds")
+        _ui_bind(self.interval_spin, 'setAccessibleName', 'Legacy.s29a85213c92392cc')
         self.interval_spin.setMinimumHeight(44)
         self.interval_spin.setRange(1, 60)
         self.interval_spin.setValue(self.update_interval // 1000)
@@ -183,23 +185,23 @@ class PerformanceWidget(QWidget):
         layout.addWidget(self.interval_spin)
 
         # Manual refresh button
-        self.refresh_btn = SecondaryButton("Refresh Now")
-        self.refresh_btn.setAccessibleName("Refresh performance data now")
+        self.refresh_btn = _ui_widget(SecondaryButton, 'Legacy.sc7b4a057f059ca05', 'setText')
+        _ui_bind(self.refresh_btn, 'setAccessibleName', 'Legacy.sfc36f93998b8eaa6')
         self.refresh_btn.clicked.connect(self.manual_refresh)
         layout.addWidget(self.refresh_btn)
 
         layout.addStretch()
 
         # Display options
-        self.per_core_cb = QCheckBox("Show Per-Core CPU")
-        self.per_core_cb.setAccessibleName("Show per-core CPU usage")
+        self.per_core_cb = _ui_widget(QCheckBox, 'Legacy.s20031c4908fdfb01', 'setText')
+        _ui_bind(self.per_core_cb, 'setAccessibleName', 'Legacy.s4a007df849663160')
         self.per_core_cb.setMinimumHeight(44)
         self.per_core_cb.setChecked(self.show_per_core)
         self.per_core_cb.toggled.connect(self.toggle_per_core_display)
         layout.addWidget(self.per_core_cb)
 
-        self.processes_cb = QCheckBox("Show Processes")
-        self.processes_cb.setAccessibleName("Show top processes")
+        self.processes_cb = _ui_widget(QCheckBox, 'Legacy.scc800fb709e5ac1f', 'setText')
+        _ui_bind(self.processes_cb, 'setAccessibleName', 'Legacy.s02e7e6424ed7799a')
         self.processes_cb.setMinimumHeight(44)
         self.processes_cb.setChecked(self.show_processes)
         self.processes_cb.toggled.connect(self.toggle_process_display)
@@ -218,7 +220,7 @@ class PerformanceWidget(QWidget):
 
         # Tab widget for different views
         self.overview_tabs = QTabWidget()
-        self.overview_tabs.setAccessibleName("Performance overview tabs")
+        _ui_bind(self.overview_tabs, 'setAccessibleName', 'Legacy.sc4f068c245dda72d')
         layout.addWidget(self.overview_tabs)
 
         # CPU tab
@@ -245,13 +247,13 @@ class PerformanceWidget(QWidget):
         layout = QVBoxLayout(tab)
 
         # CPU overview
-        cpu_overview = QGroupBox("CPU Overview")
+        cpu_overview = _ui_widget(QGroupBox, 'Legacy.s422c01836fcebced', 'setTitle')
         cpu_layout = QGridLayout(cpu_overview)
 
         # CPU usage display
-        cpu_layout.addWidget(QLabel("CPU Usage:"), 0, 0)
-        self.cpu_usage_label = QLabel("0%")
-        self.cpu_usage_label.setFont(Typography.h2())
+        cpu_layout.addWidget(_ui_widget(QLabel, 'Legacy.s7cb76456e82f39c0', 'setText'), 0, 0)
+        self.cpu_usage_label = _ui_widget(QLabel, 'Legacy.sd9a847a1a79ab448', 'setText')
+        font_tokens.bind(self.cpu_usage_label, "font.title")
         cpu_layout.addWidget(self.cpu_usage_label, 0, 1)
 
         self.cpu_usage_bar = QProgressBar()
@@ -260,31 +262,31 @@ class PerformanceWidget(QWidget):
         cpu_layout.addWidget(self.cpu_usage_bar, 0, 2)
 
         # CPU details
-        cpu_layout.addWidget(QLabel("Cores:"), 1, 0)
-        self.cpu_cores_label = QLabel("N/A")
+        cpu_layout.addWidget(_ui_widget(QLabel, 'Legacy.sbd63495fdc60fe64', 'setText'), 1, 0)
+        self.cpu_cores_label = _ui_widget(QLabel, 'Legacy.se2f79e5b60330bba', 'setText')
         cpu_layout.addWidget(self.cpu_cores_label, 1, 1)
 
-        cpu_layout.addWidget(QLabel("Frequency:"), 2, 0)
-        self.cpu_freq_label = QLabel("N/A")
+        cpu_layout.addWidget(_ui_widget(QLabel, 'Legacy.s318c64475f824843', 'setText'), 2, 0)
+        self.cpu_freq_label = _ui_widget(QLabel, 'Legacy.se2f79e5b60330bba', 'setText')
         cpu_layout.addWidget(self.cpu_freq_label, 2, 1)
 
-        cpu_layout.addWidget(QLabel("Temperature:"), 3, 0)
-        self.cpu_temp_label = QLabel("N/A")
+        cpu_layout.addWidget(_ui_widget(QLabel, 'Legacy.s44bd0a9d177a4c78', 'setText'), 3, 0)
+        self.cpu_temp_label = _ui_widget(QLabel, 'Legacy.se2f79e5b60330bba', 'setText')
         cpu_layout.addWidget(self.cpu_temp_label, 3, 1)
 
         layout.addWidget(cpu_overview)
 
         # Per-core CPU usage
-        self.per_core_group = QGroupBox("Per-Core Usage")
+        self.per_core_group = _ui_widget(QGroupBox, 'Legacy.sd71c50d1ed1dcc8c', 'setTitle')
         self.per_core_layout = QGridLayout(self.per_core_group)
         layout.addWidget(self.per_core_group)
 
         # CPU history chart placeholder
-        cpu_chart_group = QGroupBox("CPU Usage History")
+        cpu_chart_group = _ui_widget(QGroupBox, 'Legacy.se4f2865c338ea9de', 'setTitle')
         cpu_chart_layout = QVBoxLayout(cpu_chart_group)
 
         self.cpu_chart_text = QTextEdit()
-        self.cpu_chart_text.setAccessibleName("CPU usage history chart")
+        _ui_bind(self.cpu_chart_text, 'setAccessibleName', 'Legacy.se5dcb796a3a448ba')
         self.cpu_chart_text.setMaximumHeight(150)
         self.cpu_chart_text.setReadOnly(True)
         cpu_chart_layout.addWidget(self.cpu_chart_text)
@@ -303,13 +305,13 @@ class PerformanceWidget(QWidget):
         layout = QVBoxLayout(tab)
 
         # Memory overview
-        memory_overview = QGroupBox("Memory Overview")
+        memory_overview = _ui_widget(QGroupBox, 'Legacy.s165bd384d170c3e6', 'setTitle')
         memory_layout = QGridLayout(memory_overview)
 
         # Memory usage display
-        memory_layout.addWidget(QLabel("Memory Usage:"), 0, 0)
-        self.memory_usage_label = QLabel("0%")
-        self.memory_usage_label.setFont(Typography.h2())
+        memory_layout.addWidget(_ui_widget(QLabel, 'Legacy.s931c233e518b3723', 'setText'), 0, 0)
+        self.memory_usage_label = _ui_widget(QLabel, 'Legacy.sd9a847a1a79ab448', 'setText')
+        font_tokens.bind(self.memory_usage_label, "font.title")
         memory_layout.addWidget(self.memory_usage_label, 0, 1)
 
         self.memory_usage_bar = QProgressBar()
@@ -318,26 +320,26 @@ class PerformanceWidget(QWidget):
         memory_layout.addWidget(self.memory_usage_bar, 0, 2)
 
         # Memory details
-        memory_layout.addWidget(QLabel("Total:"), 1, 0)
-        self.memory_total_label = QLabel("N/A")
+        memory_layout.addWidget(_ui_widget(QLabel, 'Legacy.s18e872be2359d76e', 'setText'), 1, 0)
+        self.memory_total_label = _ui_widget(QLabel, 'Legacy.se2f79e5b60330bba', 'setText')
         memory_layout.addWidget(self.memory_total_label, 1, 1)
 
-        memory_layout.addWidget(QLabel("Available:"), 2, 0)
-        self.memory_available_label = QLabel("N/A")
+        memory_layout.addWidget(_ui_widget(QLabel, 'Legacy.s72074a8a68367e12', 'setText'), 2, 0)
+        self.memory_available_label = _ui_widget(QLabel, 'Legacy.se2f79e5b60330bba', 'setText')
         memory_layout.addWidget(self.memory_available_label, 2, 1)
 
-        memory_layout.addWidget(QLabel("Used:"), 3, 0)
-        self.memory_used_label = QLabel("N/A")
+        memory_layout.addWidget(_ui_widget(QLabel, 'Legacy.s05b15ffb77764094', 'setText'), 3, 0)
+        self.memory_used_label = _ui_widget(QLabel, 'Legacy.se2f79e5b60330bba', 'setText')
         memory_layout.addWidget(self.memory_used_label, 3, 1)
 
         layout.addWidget(memory_overview)
 
         # Swap information
-        swap_group = QGroupBox("Swap Memory")
+        swap_group = _ui_widget(QGroupBox, 'Legacy.s304548e8f1f73d05', 'setTitle')
         swap_layout = QGridLayout(swap_group)
 
-        swap_layout.addWidget(QLabel("Swap Usage:"), 0, 0)
-        self.swap_usage_label = QLabel("0%")
+        swap_layout.addWidget(_ui_widget(QLabel, 'Legacy.s02e6ffeb78eee676', 'setText'), 0, 0)
+        self.swap_usage_label = _ui_widget(QLabel, 'Legacy.sd9a847a1a79ab448', 'setText')
         swap_layout.addWidget(self.swap_usage_label, 0, 1)
 
         self.swap_usage_bar = QProgressBar()
@@ -345,18 +347,18 @@ class PerformanceWidget(QWidget):
         self.swap_usage_bar.setFormat("%p%")
         swap_layout.addWidget(self.swap_usage_bar, 0, 2)
 
-        swap_layout.addWidget(QLabel("Total:"), 1, 0)
-        self.swap_total_label = QLabel("N/A")
+        swap_layout.addWidget(_ui_widget(QLabel, 'Legacy.s18e872be2359d76e', 'setText'), 1, 0)
+        self.swap_total_label = _ui_widget(QLabel, 'Legacy.se2f79e5b60330bba', 'setText')
         swap_layout.addWidget(self.swap_total_label, 1, 1)
 
         layout.addWidget(swap_group)
 
         # Memory history chart placeholder
-        memory_chart_group = QGroupBox("Memory Usage History")
+        memory_chart_group = _ui_widget(QGroupBox, 'Legacy.s80bf83afa5adaf27', 'setTitle')
         memory_chart_layout = QVBoxLayout(memory_chart_group)
 
         self.memory_chart_text = QTextEdit()
-        self.memory_chart_text.setAccessibleName("Memory usage history chart")
+        _ui_bind(self.memory_chart_text, 'setAccessibleName', 'Legacy.sf7579d9756e3865f')
         self.memory_chart_text.setMaximumHeight(150)
         self.memory_chart_text.setReadOnly(True)
         memory_chart_layout.addWidget(self.memory_chart_text)
@@ -375,33 +377,33 @@ class PerformanceWidget(QWidget):
         layout = QVBoxLayout(tab)
 
         # System overview
-        system_overview = QGroupBox("System Information")
+        system_overview = _ui_widget(QGroupBox, 'Legacy.s8ad54ec1c0dcab4f', 'setTitle')
         system_layout = QGridLayout(system_overview)
 
-        system_layout.addWidget(QLabel("Load Average:"), 0, 0)
-        self.load_avg_label = QLabel("N/A")
+        system_layout.addWidget(_ui_widget(QLabel, 'Legacy.sc07ba68bc73e53a9', 'setText'), 0, 0)
+        self.load_avg_label = _ui_widget(QLabel, 'Legacy.se2f79e5b60330bba', 'setText')
         system_layout.addWidget(self.load_avg_label, 0, 1)
 
-        system_layout.addWidget(QLabel("Uptime:"), 1, 0)
-        self.uptime_label = QLabel("N/A")
+        system_layout.addWidget(_ui_widget(QLabel, 'Legacy.s63a0447e268ab722', 'setText'), 1, 0)
+        self.uptime_label = _ui_widget(QLabel, 'Legacy.se2f79e5b60330bba', 'setText')
         system_layout.addWidget(self.uptime_label, 1, 1)
 
-        system_layout.addWidget(QLabel("Processes:"), 2, 0)
-        self.processes_label = QLabel("N/A")
+        system_layout.addWidget(_ui_widget(QLabel, 'Legacy.sf189e3d8944e8329', 'setText'), 2, 0)
+        self.processes_label = _ui_widget(QLabel, 'Legacy.se2f79e5b60330bba', 'setText')
         system_layout.addWidget(self.processes_label, 2, 1)
 
-        system_layout.addWidget(QLabel("Responsiveness:"), 3, 0)
-        self.responsiveness_label = QLabel("N/A")
+        system_layout.addWidget(_ui_widget(QLabel, 'Legacy.s21cc6c76f4aba4be', 'setText'), 3, 0)
+        self.responsiveness_label = _ui_widget(QLabel, 'Legacy.se2f79e5b60330bba', 'setText')
         system_layout.addWidget(self.responsiveness_label, 3, 1)
 
         layout.addWidget(system_overview)
 
         # Performance metrics
-        metrics_group = QGroupBox("Performance Metrics")
+        metrics_group = _ui_widget(QGroupBox, 'Legacy.sf34186f67a38a598', 'setTitle')
         metrics_layout = QVBoxLayout(metrics_group)
 
         self.metrics_text = QTextEdit()
-        self.metrics_text.setAccessibleName("Performance metrics")
+        _ui_bind(self.metrics_text, 'setAccessibleName', 'Legacy.s5167b9cd755c25c7')
         self.metrics_text.setReadOnly(True)
         metrics_layout.addWidget(self.metrics_text)
 
@@ -419,15 +421,15 @@ class PerformanceWidget(QWidget):
         layout = QVBoxLayout(panel)
 
         # Process information
-        self.process_group = QGroupBox("Top Processes")
+        self.process_group = _ui_widget(QGroupBox, 'Legacy.s060a204fd1490f83', 'setTitle')
         process_layout = QVBoxLayout(self.process_group)
 
         # Process selection
         process_controls = QHBoxLayout()
-        process_controls.addWidget(QLabel("Sort by:"))
+        process_controls.addWidget(_ui_widget(QLabel, 'Legacy.s27ab0062ef43bf40', 'setText'))
 
         self.sort_combo = QComboBox()
-        self.sort_combo.setAccessibleName("Sort processes by")
+        _ui_bind(self.sort_combo, 'setAccessibleName', 'Legacy.s9c23c70ee2138c27')
         self.sort_combo.addItems(["CPU", "Memory"])
         self.sort_combo.currentTextChanged.connect(self.change_process_sort)
         process_controls.addWidget(self.sort_combo)
@@ -437,7 +439,7 @@ class PerformanceWidget(QWidget):
 
         # Process table
         self.process_table = QTableWidget()
-        self.process_table.setAccessibleName("Top processes table")
+        _ui_bind(self.process_table, 'setAccessibleName', 'Legacy.saf7012567ed122e2')
         self.process_table.setColumnCount(5)
         self.process_table.setHorizontalHeaderLabels(
             ["PID", "Name", "CPU %", "Memory %", "Status"]
@@ -462,12 +464,12 @@ class PerformanceWidget(QWidget):
 
         layout = QHBoxLayout(status_bar)
 
-        self.status_label = QLabel("Ready")
+        self.status_label = _ui_widget(QLabel, 'Legacy.s5fa7aac5375c5815', 'setText')
         layout.addWidget(self.status_label)
 
         layout.addStretch()
 
-        self.last_update_label = QLabel("Last update: Never")
+        self.last_update_label = _ui_widget(QLabel, 'Legacy.s7d988f29d384372f', 'setText')
         layout.addWidget(self.last_update_label)
 
         return status_bar

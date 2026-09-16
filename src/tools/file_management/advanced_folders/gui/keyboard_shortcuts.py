@@ -12,6 +12,8 @@ Features:
 - Visual feedback and help system
 - Cross-platform compatibility
 """
+from src.rfu.localization import localized_widget as _ui_widget, bind_literal as _ui_bind
+from src.rfu import font_tokens
 
 import logging
 from typing import Any, Callable, Dict, List, Optional, Tuple
@@ -875,7 +877,7 @@ class KeyboardShortcutsHelpDialog(QDialog):
 
         self.shortcuts_manager = shortcuts_manager
 
-        self.setWindowTitle("Keyboard Shortcuts")
+        _ui_bind(self, 'setWindowTitle', 'Legacy.s59cdaa26dd9dcd4c')
         self.setModal(True)
         self.resize(800, 600)
 
@@ -883,25 +885,26 @@ class KeyboardShortcutsHelpDialog(QDialog):
         self._populate_shortcuts()
 
         # Apply accessibility
-        self.setAccessibleName("Keyboard Shortcuts Help")
-        self.setAccessibleDescription("Display of all available keyboard shortcuts")
+        _ui_bind(self, 'setAccessibleName', 'Legacy.sc3de790a0e6a6529')
+        _ui_bind(self, 'setAccessibleDescription', 'Legacy.s57cb8e662a5ac56e')
 
     def _setup_ui(self):
         """Setup the user interface."""
         layout = QVBoxLayout(self)
 
         # Header
-        header_label = QLabel("Keyboard Shortcuts")
+        header_label = _ui_widget(QLabel, 'Legacy.s59cdaa26dd9dcd4c', 'setText')
         header_label.setStyleSheet(
-            "font-size: 16px; font-weight: bold; margin-bottom: 10px;"
+            " font-weight: bold; margin-bottom: 10px;"
         )
+        font_tokens.bind(header_label, "font.toolHeader")
         layout.addWidget(header_label)
 
         # Search box
         search_layout = QHBoxLayout()
-        search_label = QLabel("Search:")
+        search_label = _ui_widget(QLabel, 'Legacy.sbd689c15b2ca8b8c', 'setText')
         self.search_box = TextInput("Search", "Type to filter shortcuts...")
-        self.search_box.setAccessibleName("Filter shortcuts")
+        _ui_bind(self.search_box, 'setAccessibleName', 'Legacy.s9066acbf6eaa314f')
         self.search_box.textChanged.connect(self._filter_shortcuts)
 
         search_layout.addWidget(search_label)
@@ -910,7 +913,7 @@ class KeyboardShortcutsHelpDialog(QDialog):
 
         # Shortcuts table
         self.shortcuts_table = QTableWidget()
-        self.shortcuts_table.setAccessibleName("Keyboard shortcuts")
+        _ui_bind(self.shortcuts_table, 'setAccessibleName', 'Legacy.se9bef0b0f3c25e6e')
         self.shortcuts_table.setColumnCount(4)
         self.shortcuts_table.setHorizontalHeaderLabels(
             ["Action", "Shortcut", "Context", "Description"]
@@ -932,12 +935,12 @@ class KeyboardShortcutsHelpDialog(QDialog):
         # Buttons
         button_layout = QHBoxLayout()
 
-        reset_button = SecondaryButton("Reset All")
-        reset_button.setAccessibleName("Reset all keyboard shortcuts")
+        reset_button = _ui_widget(SecondaryButton, 'Legacy.se1c518097f23653d', 'setText')
+        _ui_bind(reset_button, 'setAccessibleName', 'Legacy.s8344034b41356c05')
         reset_button.clicked.connect(self._reset_all_shortcuts)
 
-        close_button = PrimaryButton("Close")
-        close_button.setAccessibleName("Close keyboard shortcuts dialog")
+        close_button = _ui_widget(PrimaryButton, 'Legacy.s7d9eb7acb13e2462', 'setText')
+        _ui_bind(close_button, 'setAccessibleName', 'Legacy.secd2e39f1a28d6de')
         close_button.clicked.connect(self.accept)
         close_button.setDefault(True)
 

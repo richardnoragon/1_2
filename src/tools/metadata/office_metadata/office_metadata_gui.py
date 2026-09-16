@@ -6,6 +6,8 @@ operations, including extraction, viewing, editing, and security analysis
 for various office formats. Integrated with the StandardWindow framework
 for consistent UI.
 """
+from src.rfu.localization import localized_widget as _ui_widget, bind_literal as _ui_bind
+from src.rfu import font_tokens
 
 import importlib
 import json
@@ -603,11 +605,11 @@ class OfficeMetadataGUI(StandardWindow):
 
     def create_header(self, layout):
         """Create the header section."""
-        header_label = QLabel("Office Metadata Tools")
+        header_label = _ui_widget(QLabel, 'Legacy.sfedff1fa58d404d6', 'setText')
         header_label.setStyleSheet(
             """
             QLabel {
-                font-size: 20px;
+
                 font-weight: bold;
                 color: {token('text_primary')};
                 padding: 15px;
@@ -622,16 +624,14 @@ class OfficeMetadataGUI(StandardWindow):
             }
         """
         )
+        font_tokens.bind(header_label, "font.toolHeader")
         layout.addWidget(header_label)
 
-        description = QLabel(
-            "Extract, view, edit, and analyze metadata from Office "
-            "documents, PDFs, and more"
-        )
+        description = _ui_widget(QLabel, 'Legacy.s84e8597cbbfe6efe', 'setText')
         description.setStyleSheet(
             """
             QLabel {
-                font-size: 12px;
+
                 color: {token('text_muted')};
                 padding: 5px 15px;
                 background-color: {token('dialog_background')};
@@ -640,6 +640,7 @@ class OfficeMetadataGUI(StandardWindow):
             }
         """
         )
+        font_tokens.bind(description, "font.body")
         layout.addWidget(description)
 
     def create_control_panel(self, layout):
@@ -648,42 +649,42 @@ class OfficeMetadataGUI(StandardWindow):
         control_layout = QHBoxLayout(control_panel)
 
         # File operations group
-        file_group = QGroupBox("File Operations")
+        file_group = _ui_widget(QGroupBox, 'Legacy.sad219f1bf7a6b97a', 'setTitle')
         file_layout = QHBoxLayout(file_group)
 
-        open_button = PrimaryButton("📂 Open File")
+        open_button = _ui_widget(PrimaryButton, 'Legacy.s5efc72ac3e377583', 'setText')
         open_button.clicked.connect(self.open_file)
         file_layout.addWidget(open_button)
 
-        batch_button = SecondaryButton("📁 Batch Process")
+        batch_button = _ui_widget(SecondaryButton, 'Legacy.s6d409980afd30453', 'setText')
         batch_button.clicked.connect(self.batch_process)
         file_layout.addWidget(batch_button)
 
         control_layout.addWidget(file_group)
 
         # Analysis operations group
-        analysis_group = QGroupBox("Analysis & Export")
+        analysis_group = _ui_widget(QGroupBox, 'Legacy.sb2e5aad4d8ba1e59', 'setTitle')
         analysis_layout = QHBoxLayout(analysis_group)
 
-        security_button = SecondaryButton("🔒 Security Scan")
+        security_button = _ui_widget(SecondaryButton, 'Legacy.s97848115c7c915ee', 'setText')
         security_button.clicked.connect(self.security_scan)
         analysis_layout.addWidget(security_button)
 
-        export_button = SecondaryButton("📤 Export Metadata")
+        export_button = _ui_widget(SecondaryButton, 'Legacy.sd6c0a61c04e8af4c', 'setText')
         export_button.clicked.connect(self.export_metadata)
         analysis_layout.addWidget(export_button)
 
-        save_button = SecondaryButton("💾 Save Changes")
+        save_button = _ui_widget(SecondaryButton, 'Legacy.s228afa2a3a0cc787', 'setText')
         save_button.clicked.connect(self.save_metadata)
         analysis_layout.addWidget(save_button)
 
         control_layout.addWidget(analysis_group)
 
         # Status area
-        status_group = QGroupBox("Status")
+        status_group = _ui_widget(QGroupBox, 'Legacy.s920e413c7d411b61', 'setTitle')
         status_layout = QVBoxLayout(status_group)
 
-        self.status_label = QLabel("Ready - Select a file to analyze metadata")
+        self.status_label = _ui_widget(QLabel, 'Legacy.sdeae2fca7d7d827f', 'setText')
         self.status_label.setStyleSheet(
             f"color: {token('text_muted')}; font-style: italic; padding: 5px;"
         )
@@ -703,7 +704,7 @@ class OfficeMetadataGUI(StandardWindow):
                 padding: 10px 16px;
                 border-radius: 6px;
                 font-weight: bold;
-                font-size: 13px;
+
             }}
             QPushButton:hover {{
                 background-color: {hover_color};
@@ -717,7 +718,7 @@ class OfficeMetadataGUI(StandardWindow):
     def create_tab_interface(self, layout):
         """Create the tabbed interface for metadata display."""
         self.tab_widget = QTabWidget()
-        self.tab_widget.setAccessibleName("Metadata tabs")
+        _ui_bind(self.tab_widget, 'setAccessibleName', 'Legacy.s841b0a5c37417183')
         self.tab_widget.setStyleSheet(
             """
             QTabWidget::pane {
@@ -766,7 +767,7 @@ class OfficeMetadataGUI(StandardWindow):
         layout = QVBoxLayout(self.file_info_tab)
 
         self.file_info_table = QTableWidget()
-        self.file_info_table.setAccessibleName("File information table")
+        _ui_bind(self.file_info_table, 'setAccessibleName', 'Legacy.s6493ab9ba8b1b3f2')
         self.file_info_table.setColumnCount(2)
         self.file_info_table.setHorizontalHeaderLabels(["Property", "Value"])
         self.file_info_table.horizontalHeader().setStretchLastSection(True)
@@ -780,7 +781,7 @@ class OfficeMetadataGUI(StandardWindow):
         layout = QVBoxLayout(self.core_props_tab)
 
         self.core_props_table = QTableWidget()
-        self.core_props_table.setAccessibleName("Core properties table")
+        _ui_bind(self.core_props_table, 'setAccessibleName', 'Legacy.s4c3db75292d82a8b')
         self.core_props_table.setColumnCount(2)
         self.core_props_table.setHorizontalHeaderLabels(["Property", "Value"])
         self.core_props_table.horizontalHeader().setStretchLastSection(True)
@@ -797,7 +798,7 @@ class OfficeMetadataGUI(StandardWindow):
         layout = QVBoxLayout(self.app_props_tab)
 
         self.app_props_table = QTableWidget()
-        self.app_props_table.setAccessibleName("Application properties table")
+        _ui_bind(self.app_props_table, 'setAccessibleName', 'Legacy.s6f93be5569d32d31')
         self.app_props_table.setColumnCount(2)
         self.app_props_table.setHorizontalHeaderLabels(["Property", "Value"])
         self.app_props_table.horizontalHeader().setStretchLastSection(True)
@@ -814,9 +815,9 @@ class OfficeMetadataGUI(StandardWindow):
         controls = QWidget()
         controls_layout = QHBoxLayout(controls)
 
-        add_button = SecondaryButton("➕ Add Property")
+        add_button = _ui_widget(SecondaryButton, 'Legacy.s62c6be276b2e2d33', 'setText')
         add_button.clicked.connect(self.add_custom_property)
-        remove_button = SecondaryButton("➖ Remove Property")
+        remove_button = _ui_widget(SecondaryButton, 'Legacy.s0ef11dc8eb7c55f5', 'setText')
         remove_button.clicked.connect(self.remove_custom_property)
 
         controls_layout.addWidget(add_button)
@@ -826,7 +827,7 @@ class OfficeMetadataGUI(StandardWindow):
         layout.addWidget(controls)
 
         self.custom_props_table = QTableWidget()
-        self.custom_props_table.setAccessibleName("Custom properties table")
+        _ui_bind(self.custom_props_table, 'setAccessibleName', 'Legacy.sa0921105b152bc0f')
         self.custom_props_table.setColumnCount(2)
         self.custom_props_table.setHorizontalHeaderLabels(
             ["Property", "Value"]
@@ -846,7 +847,7 @@ class OfficeMetadataGUI(StandardWindow):
 
         # Security analysis results
         self.security_text = QTextEdit()
-        self.security_text.setAccessibleName("Security analysis results")
+        _ui_bind(self.security_text, 'setAccessibleName', 'Legacy.s639e194ec9fa2302')
         self.security_text.setReadOnly(True)
         layout.addWidget(self.security_text)
 
@@ -858,11 +859,12 @@ class OfficeMetadataGUI(StandardWindow):
         layout = QVBoxLayout(self.raw_data_tab)
 
         self.raw_data_text = QTextEdit()
-        self.raw_data_text.setAccessibleName("Raw metadata")
+        _ui_bind(self.raw_data_text, 'setAccessibleName', 'Legacy.saea3f538492eea6c')
         self.raw_data_text.setReadOnly(True)
         self.raw_data_text.setStyleSheet(
-            "font-family: 'Courier New', monospace; font-size: 11px;"
+            " "
         )
+        font_tokens.bind(self.raw_data_text, "font.body")
         layout.addWidget(self.raw_data_text)
 
     def open_file(self, file_path=None):
@@ -1367,7 +1369,7 @@ class OfficeMetadataGUI(StandardWindow):
             ).exec_()
         else:
             msg_box = QMessageBox()
-            msg_box.setWindowTitle("Office Metadata Tools - Help")
+            _ui_bind(msg_box, 'setWindowTitle', 'Legacy.s1ef07ffc40d8ee16')
             msg_box.setTextFormat(Qt.RichText)
             msg_box.setText(help_text)
             msg_box.setStandardButtons(QMessageBox.Ok)

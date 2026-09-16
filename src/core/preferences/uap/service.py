@@ -231,14 +231,8 @@ class UAPService:
         window.resize(width, height)
 
         if _QT_AVAILABLE:
-            font = QFont(font_family, font_size)
-        else:
-            font = None
-
-        if font is not None:
-            window.setFont(font)
-            for widget in window.findChildren(QWidget):
-                widget.setFont(font)
+            from src.rfu.font_tokens import apply_profile
+            apply_profile(window, font_family, font_size)
         else:
             # Non-Qt environment (tests): pass font info directly
             window.setFont(font_family)

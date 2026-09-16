@@ -183,55 +183,19 @@ class SoftwareDeinstaller(MaintenanceToolBase):
         # Filter out empty paths and verify they exist
         return [path for path in paths if path and os.path.exists(path)]
 
+    _PREFERENCE_DEFAULTS = {'create_restore_points': True, 'backup_before_removal': True, 'deep_scan_enabled': True, 'auto_cleanup_leftovers': False}
+
+    def _preference_store(self):
+        from src.core.preferences.legacy_json import LegacyJSONPreferences
+        return LegacyJSONPreferences('software-deinstaller', self._PREFERENCE_DEFAULTS)
+
     def _load_configuration(self):
-        """Load de-installer configuration from file."""
-        config_file = Path(
-            "software_maintenance/config/deinstaller_config.json"
-        )
-
-        if config_file.exists():
-            try:
-                with open(config_file, "r", encoding="utf-8") as f:
-                    config = json.load(f)
-
-                self.create_restore_points = config.get(
-                    "create_restore_points", True
-                )
-                self.backup_before_removal = config.get(
-                    "backup_before_removal", True
-                )
-                self.deep_scan_enabled = config.get("deep_scan_enabled", True)
-                self.auto_cleanup_leftovers = config.get(
-                    "auto_cleanup_leftovers", False
-                )
-
-                self.log_info("De-installer configuration loaded successfully")
-
-            except Exception as e:
-                self.log_warning(
-                    f"Failed to load de-installer configuration: {e}"
-                )
+        values = self._preference_store().load(Path("software_maintenance/config/deinstaller_config.json"))
+        for key, value in values.items():
+            setattr(self, key, value)
 
     def _save_configuration(self):
-        """Save de-installer configuration to file."""
-        config_file = Path(
-            "software_maintenance/config/deinstaller_config.json"
-        )
-        config_file.parent.mkdir(parents=True, exist_ok=True)
-
-        try:
-            config = {
-                "create_restore_points": self.create_restore_points,
-                "backup_before_removal": self.backup_before_removal,
-                "deep_scan_enabled": self.deep_scan_enabled,
-                "auto_cleanup_leftovers": self.auto_cleanup_leftovers,
-            }
-
-            with open(config_file, "w", encoding="utf-8") as f:
-                json.dump(config, f, indent=2, ensure_ascii=False)
-
-        except Exception as e:
-            self.log_error(f"Failed to save de-installer configuration: {e}")
+        self._preference_store().save({key: getattr(self, key) for key in self._PREFERENCE_DEFAULTS})
 
     def _load_uninstall_history(self):
         """Load uninstallation history from file."""

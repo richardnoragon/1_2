@@ -3,7 +3,9 @@ PDF Security Parameter Dialogs - Phase 2.3 Implementation
 User interface dialogs for PDF security operations including encryption,
 digital signatures, and access controls.
 """
+from src.rfu.localization import localized_widget as _ui_widget, bind_literal as _ui_bind
 
+from src.rfu import font_tokens
 import os
 from typing import Optional, Tuple
 
@@ -60,7 +62,7 @@ class BaseSecurityDialog(QDialog):
         # Title label
         self.title_label = QLabel(self.windowTitle())
         self.title_label.setAlignment(Qt.AlignCenter)
-        self.title_label.setFont(Typography.h2())
+        font_tokens.bind(self.title_label, "font.title")
         self.layout.addWidget(self.title_label)
 
         # Main content area
@@ -76,12 +78,12 @@ class BaseSecurityDialog(QDialog):
         button_layout = QHBoxLayout()
         button_layout.addStretch()
 
-        self.ok_button = PrimaryButton("OK")
-        self.ok_button.setAccessibleName("Confirm settings")
+        self.ok_button = _ui_widget(PrimaryButton, 'Legacy.s565339bc4d33d728', 'setText')
+        _ui_bind(self.ok_button, 'setAccessibleName', 'Legacy.s2475563598ab6aef')
         self.ok_button.clicked.connect(self.accept)
 
-        self.cancel_button = SecondaryButton("Cancel")
-        self.cancel_button.setAccessibleName("Cancel and close dialog")
+        self.cancel_button = _ui_widget(SecondaryButton, 'Legacy.s19766ed6ccb2f4a3', 'setText')
+        _ui_bind(self.cancel_button, 'setAccessibleName', 'Legacy.s2a65de1f6fd6cb3d')
         self.cancel_button.clicked.connect(self.reject)
 
         button_layout.addWidget(self.ok_button)
@@ -95,8 +97,8 @@ class BaseSecurityDialog(QDialog):
             f"""
             QDialog {{
                 background-color: {token('surface')};
-                font-family: 'Segoe UI', Arial, sans-serif;
-                font-size: 9pt;
+
+
             }}
             QGroupBox {{
                 font-weight: bold;
@@ -143,6 +145,7 @@ class BaseSecurityDialog(QDialog):
             }}
         """
         )
+        font_tokens.bind(self, "font.body")
 
 
 class PDFEncryptionDialog(BaseSecurityDialog):
@@ -156,7 +159,7 @@ class PDFEncryptionDialog(BaseSecurityDialog):
     def setup_encryption_ui(self):
         """Setup encryption-specific UI"""
         # Password settings group
-        password_group = QGroupBox("Password Settings")
+        password_group = _ui_widget(QGroupBox, 'Legacy.s4fa2cd1f0799c7cd', 'setTitle')
         password_layout = QFormLayout(password_group)
 
         self.user_password_edit = TextInput(
@@ -177,8 +180,8 @@ class PDFEncryptionDialog(BaseSecurityDialog):
         self.owner_password_edit.setEchoMode(QLineEdit.Password)
         password_layout.addRow(self.owner_password_edit)
 
-        self.show_passwords_cb = QCheckBox("Show passwords")
-        self.show_passwords_cb.setAccessibleName("Show passwords")
+        self.show_passwords_cb = _ui_widget(QCheckBox, 'Legacy.s0ab984b46165bf53', 'setText')
+        _ui_bind(self.show_passwords_cb, 'setAccessibleName', 'Legacy.s0ab984b46165bf53')
         self.show_passwords_cb.setMinimumHeight(44)
         self.show_passwords_cb.toggled.connect(self.toggle_password_visibility)
         password_layout.addRow("", self.show_passwords_cb)
@@ -186,11 +189,11 @@ class PDFEncryptionDialog(BaseSecurityDialog):
         self.content_layout.addWidget(password_group)
 
         # Encryption level group
-        encryption_group = QGroupBox("Encryption Level")
+        encryption_group = _ui_widget(QGroupBox, 'Legacy.s302de2d12163fc51', 'setTitle')
         encryption_layout = QVBoxLayout(encryption_group)
 
         self.encryption_combo = QComboBox()
-        self.encryption_combo.setAccessibleName("Encryption level")
+        _ui_bind(self.encryption_combo, 'setAccessibleName', 'Legacy.sc39b5e13b3e25a92')
         self.encryption_combo.setMinimumHeight(44)
         self.encryption_combo.addItems(
             [
@@ -202,67 +205,61 @@ class PDFEncryptionDialog(BaseSecurityDialog):
         )
         encryption_layout.addWidget(self.encryption_combo)
 
-        encryption_info = QLabel(
-            "AES 256-bit provides the highest security and is recommended "
-            "for most applications."
-        )
+        encryption_info = _ui_widget(QLabel, 'Legacy.s9b717209e86e86e2', 'setText')
         encryption_info.setWordWrap(True)
         encryption_info.setStyleSheet(
-            f"color: {token('text_muted')}; font-size: 8pt;"
+            f"color: {token('text_muted')}; "
         )
+        font_tokens.bind(encryption_info, "font.body")
         encryption_layout.addWidget(encryption_info)
 
         self.content_layout.addWidget(encryption_group)
 
         # Permissions group
-        permissions_group = QGroupBox("Document Permissions")
+        permissions_group = _ui_widget(QGroupBox, 'Legacy.s698f69b4ba1ecc91', 'setTitle')
         permissions_layout = QGridLayout(permissions_group)
 
-        self.allow_printing_cb = QCheckBox("Allow printing")
-        self.allow_printing_cb.setAccessibleName("Allow printing")
+        self.allow_printing_cb = _ui_widget(QCheckBox, 'Legacy.s9b5a25cfbfc95847', 'setText')
+        _ui_bind(self.allow_printing_cb, 'setAccessibleName', 'Legacy.s9b5a25cfbfc95847')
         self.allow_printing_cb.setMinimumHeight(44)
         self.allow_printing_cb.setChecked(True)
         permissions_layout.addWidget(self.allow_printing_cb, 0, 0)
 
-        self.allow_modification_cb = QCheckBox("Allow content modification")
-        self.allow_modification_cb.setAccessibleName(
-            "Allow content modification"
-        )
+        self.allow_modification_cb = _ui_widget(QCheckBox, 'Legacy.s47c895ed46219387', 'setText')
+        _ui_bind(self.allow_modification_cb, 'setAccessibleName', 'Legacy.s47c895ed46219387')
         self.allow_modification_cb.setMinimumHeight(44)
         permissions_layout.addWidget(self.allow_modification_cb, 0, 1)
 
-        self.allow_copying_cb = QCheckBox("Allow content copying")
-        self.allow_copying_cb.setAccessibleName("Allow content copying")
+        self.allow_copying_cb = _ui_widget(QCheckBox, 'Legacy.se9813cc8ef2530a2', 'setText')
+        _ui_bind(self.allow_copying_cb, 'setAccessibleName', 'Legacy.se9813cc8ef2530a2')
         self.allow_copying_cb.setMinimumHeight(44)
         permissions_layout.addWidget(self.allow_copying_cb, 1, 0)
 
-        self.allow_annotation_cb = QCheckBox("Allow annotations")
-        self.allow_annotation_cb.setAccessibleName("Allow annotations")
+        self.allow_annotation_cb = _ui_widget(QCheckBox, 'Legacy.s3d29a40c9a4847e7', 'setText')
+        _ui_bind(self.allow_annotation_cb, 'setAccessibleName', 'Legacy.s3d29a40c9a4847e7')
         self.allow_annotation_cb.setMinimumHeight(44)
         self.allow_annotation_cb.setChecked(True)
         permissions_layout.addWidget(self.allow_annotation_cb, 1, 1)
 
-        self.allow_form_filling_cb = QCheckBox("Allow form filling")
-        self.allow_form_filling_cb.setAccessibleName("Allow form filling")
+        self.allow_form_filling_cb = _ui_widget(QCheckBox, 'Legacy.sfd4e8aca6090ab55', 'setText')
+        _ui_bind(self.allow_form_filling_cb, 'setAccessibleName', 'Legacy.sfd4e8aca6090ab55')
         self.allow_form_filling_cb.setMinimumHeight(44)
         self.allow_form_filling_cb.setChecked(True)
         permissions_layout.addWidget(self.allow_form_filling_cb, 2, 0)
 
-        self.allow_text_extraction_cb = QCheckBox("Allow text extraction")
-        self.allow_text_extraction_cb.setAccessibleName(
-            "Allow text extraction"
-        )
+        self.allow_text_extraction_cb = _ui_widget(QCheckBox, 'Legacy.s561ecbd6340d8b8e', 'setText')
+        _ui_bind(self.allow_text_extraction_cb, 'setAccessibleName', 'Legacy.s561ecbd6340d8b8e')
         self.allow_text_extraction_cb.setMinimumHeight(44)
         self.allow_text_extraction_cb.setChecked(True)
         permissions_layout.addWidget(self.allow_text_extraction_cb, 2, 1)
 
-        self.allow_assembly_cb = QCheckBox("Allow document assembly")
-        self.allow_assembly_cb.setAccessibleName("Allow document assembly")
+        self.allow_assembly_cb = _ui_widget(QCheckBox, 'Legacy.s557d1912a19ff85d', 'setText')
+        _ui_bind(self.allow_assembly_cb, 'setAccessibleName', 'Legacy.s557d1912a19ff85d')
         self.allow_assembly_cb.setMinimumHeight(44)
         permissions_layout.addWidget(self.allow_assembly_cb, 3, 0)
 
-        self.allow_hq_print_cb = QCheckBox("Allow high-quality printing")
-        self.allow_hq_print_cb.setAccessibleName("Allow high-quality printing")
+        self.allow_hq_print_cb = _ui_widget(QCheckBox, 'Legacy.s19da39cacc322496', 'setText')
+        _ui_bind(self.allow_hq_print_cb, 'setAccessibleName', 'Legacy.s19da39cacc322496')
         self.allow_hq_print_cb.setMinimumHeight(44)
         self.allow_hq_print_cb.setChecked(True)
         permissions_layout.addWidget(self.allow_hq_print_cb, 3, 1)
@@ -330,10 +327,7 @@ class PDFDecryptionDialog(BaseSecurityDialog):
 
     def setup_decryption_ui(self):
         """Setup decryption-specific UI"""
-        info_label = QLabel(
-            "Enter the password to decrypt the PDF document. "
-            "Try the user password first, then the owner password if needed."
-        )
+        info_label = _ui_widget(QLabel, 'Legacy.s21db81c0ee6e1b33', 'setText')
         info_label.setWordWrap(True)
         info_label.setStyleSheet(
             f"color: {token('text_muted')}; margin-bottom: 15px;"
@@ -341,7 +335,7 @@ class PDFDecryptionDialog(BaseSecurityDialog):
         self.content_layout.addWidget(info_label)
 
         # Password input
-        password_group = QGroupBox("Password")
+        password_group = _ui_widget(QGroupBox, 'Legacy.se7cf3ef4f17c3999', 'setTitle')
         password_layout = QFormLayout(password_group)
 
         self.password_edit = TextInput(
@@ -352,8 +346,8 @@ class PDFDecryptionDialog(BaseSecurityDialog):
         self.password_edit.setEchoMode(QLineEdit.Password)
         password_layout.addRow(self.password_edit)
 
-        self.show_password_cb = QCheckBox("Show password")
-        self.show_password_cb.setAccessibleName("Show password")
+        self.show_password_cb = _ui_widget(QCheckBox, 'Legacy.s6aeaa6a53d09dcad', 'setText')
+        _ui_bind(self.show_password_cb, 'setAccessibleName', 'Legacy.s6aeaa6a53d09dcad')
         self.show_password_cb.setMinimumHeight(44)
         self.show_password_cb.toggled.connect(self.toggle_password_visibility)
         password_layout.addRow("", self.show_password_cb)
@@ -361,15 +355,11 @@ class PDFDecryptionDialog(BaseSecurityDialog):
         self.content_layout.addWidget(password_group)
 
         # Password type hint
-        hint_group = QGroupBox("Password Types")
+        hint_group = _ui_widget(QGroupBox, 'Legacy.s1d330336b8f29485', 'setTitle')
         hint_layout = QVBoxLayout(hint_group)
 
-        user_hint = QLabel(
-            "• User Password: Allows viewing and limited operations"
-        )
-        owner_hint = QLabel(
-            "• Owner Password: Full access to all document features"
-        )
+        user_hint = _ui_widget(QLabel, 'Legacy.s1d8247b6dc78cee2', 'setText')
+        owner_hint = _ui_widget(QLabel, 'Legacy.s3e1f7c7438a933d4', 'setText')
 
         hint_layout.addWidget(user_hint)
         hint_layout.addWidget(owner_hint)
@@ -404,13 +394,13 @@ class PDFDigitalSignatureDialog(BaseSecurityDialog):
         """Setup digital signature UI"""
         # Create tab widget for organization
         tab_widget = QTabWidget()
-        tab_widget.setAccessibleName("Digital signature settings tabs")
+        _ui_bind(tab_widget, 'setAccessibleName', 'Legacy.s24f52582ca8824bf')
 
         # Certificate tab
         cert_tab = QWidget()
         cert_layout = QVBoxLayout(cert_tab)
 
-        cert_group = QGroupBox("Certificate Settings")
+        cert_group = _ui_widget(QGroupBox, 'Legacy.s654c7576f226693b', 'setTitle')
         cert_form = QFormLayout(cert_group)
 
         self.cert_path_edit = TextInput(
@@ -418,8 +408,8 @@ class PDFDigitalSignatureDialog(BaseSecurityDialog):
             "Select certificate file",
             accessible_name="Certificate file path",
         )
-        cert_browse_btn = SecondaryButton("Browse...")
-        cert_browse_btn.setAccessibleName("Browse for certificate file")
+        cert_browse_btn = _ui_widget(SecondaryButton, 'Legacy.sc58a6bd402efb06c', 'setText')
+        _ui_bind(cert_browse_btn, 'setAccessibleName', 'Legacy.s0782eb8dbd434fda')
         cert_browse_btn.clicked.connect(self.browse_certificate)
 
         cert_row = QHBoxLayout()
@@ -432,8 +422,8 @@ class PDFDigitalSignatureDialog(BaseSecurityDialog):
             "Select private key file",
             accessible_name="Private key file path",
         )
-        key_browse_btn = SecondaryButton("Browse...")
-        key_browse_btn.setAccessibleName("Browse for private key file")
+        key_browse_btn = _ui_widget(SecondaryButton, 'Legacy.sc58a6bd402efb06c', 'setText')
+        _ui_bind(key_browse_btn, 'setAccessibleName', 'Legacy.sb4d3c1faee0958fb')
         key_browse_btn.clicked.connect(self.browse_private_key)
 
         key_row = QHBoxLayout()
@@ -456,7 +446,7 @@ class PDFDigitalSignatureDialog(BaseSecurityDialog):
         details_tab = QWidget()
         details_layout = QVBoxLayout(details_tab)
 
-        details_group = QGroupBox("Signature Details")
+        details_group = _ui_widget(QGroupBox, 'Legacy.s90121e5b4a8c520c', 'setTitle')
         details_form = QFormLayout(details_group)
 
         self.reason_edit = TextInput(
@@ -490,11 +480,11 @@ class PDFDigitalSignatureDialog(BaseSecurityDialog):
         details_layout.addWidget(details_group)
 
         # Appearance group
-        appearance_group = QGroupBox("Signature Appearance")
+        appearance_group = _ui_widget(QGroupBox, 'Legacy.s3ace16f61deb82ed', 'setTitle')
         appearance_layout = QVBoxLayout(appearance_group)
 
-        self.visible_cb = QCheckBox("Show signature on document")
-        self.visible_cb.setAccessibleName("Show signature on document")
+        self.visible_cb = _ui_widget(QCheckBox, 'Legacy.s305e83a149c656e5', 'setText')
+        _ui_bind(self.visible_cb, 'setAccessibleName', 'Legacy.s305e83a149c656e5')
         self.visible_cb.setMinimumHeight(44)
         self.visible_cb.setChecked(True)
         appearance_layout.addWidget(self.visible_cb)
@@ -502,28 +492,28 @@ class PDFDigitalSignatureDialog(BaseSecurityDialog):
         position_layout = QFormLayout()
 
         self.x_spin = QSpinBox()
-        self.x_spin.setAccessibleName("Signature X position")
+        _ui_bind(self.x_spin, 'setAccessibleName', 'Legacy.s9ce2f9237161bde8')
         self.x_spin.setMinimumHeight(44)
         self.x_spin.setRange(0, 1000)
         self.x_spin.setValue(100)
         position_layout.addRow("X Position:", self.x_spin)
 
         self.y_spin = QSpinBox()
-        self.y_spin.setAccessibleName("Signature Y position")
+        _ui_bind(self.y_spin, 'setAccessibleName', 'Legacy.s261b7e87dfd15211')
         self.y_spin.setMinimumHeight(44)
         self.y_spin.setRange(0, 1000)
         self.y_spin.setValue(100)
         position_layout.addRow("Y Position:", self.y_spin)
 
         self.width_spin = QSpinBox()
-        self.width_spin.setAccessibleName("Signature width")
+        _ui_bind(self.width_spin, 'setAccessibleName', 'Legacy.sd53c9c874144f37c')
         self.width_spin.setMinimumHeight(44)
         self.width_spin.setRange(50, 500)
         self.width_spin.setValue(100)
         position_layout.addRow("Width:", self.width_spin)
 
         self.height_spin = QSpinBox()
-        self.height_spin.setAccessibleName("Signature height")
+        _ui_bind(self.height_spin, 'setAccessibleName', 'Legacy.sa847d4babec4bde5')
         self.height_spin.setMinimumHeight(44)
         self.height_spin.setRange(25, 200)
         self.height_spin.setValue(50)
@@ -623,17 +613,17 @@ class PDFSecurityInfoDialog(BaseSecurityDialog):
         info_layout = QVBoxLayout(info_widget)
 
         # Encryption status
-        self.encryption_group = QGroupBox("Encryption Status")
+        self.encryption_group = _ui_widget(QGroupBox, 'Legacy.s518e0ffb1cde0eee', 'setTitle')
         self.encryption_layout = QFormLayout(self.encryption_group)
         info_layout.addWidget(self.encryption_group)
 
         # Permissions
-        self.permissions_group = QGroupBox("Document Permissions")
+        self.permissions_group = _ui_widget(QGroupBox, 'Legacy.s698f69b4ba1ecc91', 'setTitle')
         self.permissions_layout = QGridLayout(self.permissions_group)
         info_layout.addWidget(self.permissions_group)
 
         # Signature information
-        self.signature_group = QGroupBox("Digital Signatures")
+        self.signature_group = _ui_widget(QGroupBox, 'Legacy.s35c21f97ac038fb4', 'setTitle')
         self.signature_layout = QVBoxLayout(self.signature_group)
         info_layout.addWidget(self.signature_group)
 
@@ -673,12 +663,12 @@ class PDFSecurityInfoDialog(BaseSecurityDialog):
                 row += 1
         else:
             self.permissions_layout.addWidget(
-                QLabel("No permission information available"), 0, 0, 1, 2
+                _ui_widget(QLabel, 'Legacy.scca525ccebb42438', 'setText'), 0, 0, 1, 2
             )
 
         # Signature information (placeholder)
         self.signature_layout.addWidget(
-            QLabel("Digital signature verification not implemented")
+            _ui_widget(QLabel, 'Legacy.sa3eaa5abaa85fdf3', 'setText')
         )
 
 

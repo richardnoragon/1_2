@@ -602,6 +602,29 @@ class ComponentGuardian(QObject if QT_AVAILABLE else object):
             self.logger.error(msg)
             return False
 
+    def report_degradation(self, component_id: str, operation_name: str) -> bool:
+        """Record a contract failure; widget liveness alone cannot repair it."""
+        info = self._components.get(component_id)
+        if info is None:
+            return False
+        info.record_error(ComponentDegradationError(component_id, "CONTRACT", operation_name))
+        info.state = ComponentState.DEGRADED
+        if self.componentFailed:
+            self.componentFailed.emit(component_id, operation_name)
+        return True
+
+    def confirm_recovery(self, component_id: str) -> bool:
+        """Record recovery only after a tool-specific validation succeeds."""
+        info = self._components.get(component_id)
+        if info is None or info.get_widget() is None:
+            return False
+        info.state = ComponentState.ACTIVE
+        info.recovery_attempts = 0
+        info.error_count = 0
+        if self.componentRecovered:
+            self.componentRecovered.emit(component_id)
+        return True
+
     def get_component_status(self, component_id: str) -> Dict[str, Any]:
         """
         Get comprehensive status information for a component.

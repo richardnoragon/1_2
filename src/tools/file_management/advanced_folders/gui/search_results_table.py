@@ -12,6 +12,8 @@ Features:
 - Export functionality for search results
 - Accessibility compliance with screen readers
 """
+from src.rfu.localization import localized_widget as _ui_widget, bind_literal as _ui_bind
+from src.rfu import font_tokens
 
 import logging
 import operator
@@ -299,11 +301,11 @@ class SearchResultsModel(QAbstractTableModel):
 
         elif role == Qt.FontRole:
             if result_item.selected:
-                font = QFont()
+                font = font_tokens.get("font.body")
                 font.setBold(True)
                 return font
             elif result_item.highlighted:
-                font = QFont()
+                font = font_tokens.get("font.body")
                 font.setItalic(True)
                 return font
 
@@ -580,8 +582,8 @@ class SearchResultsTable(QTableView):
         self.setHorizontalScrollMode(QAbstractItemView.ScrollPerPixel)
 
         # Accessibility
-        self.setAccessibleName("Search Results Table")
-        self.setAccessibleDescription("Table displaying file search results")
+        _ui_bind(self, 'setAccessibleName', 'Legacy.sd7a287e5829e81e9')
+        _ui_bind(self, 'setAccessibleDescription', 'Legacy.see6c70df26774f6e')
 
     def _connect_signals(self):
         """Connect internal signals."""
@@ -807,34 +809,35 @@ class SearchResultsWidget(QWidget):
         # Export button
         self.export_button = QToolButton()
         self.export_button.setText("Export")
-        self.export_button.setToolTip("Export search results")
-        self.export_button.setAccessibleName("Export search results")
+        _ui_bind(self.export_button, 'setToolTip', 'Legacy.se11d4997c00b9f7b')
+        _ui_bind(self.export_button, 'setAccessibleName', 'Legacy.se11d4997c00b9f7b')
         self.export_button.clicked.connect(self._export_results)
         toolbar_layout.addWidget(self.export_button)
 
         # Copy button
         self.copy_button = QToolButton()
         self.copy_button.setText("Copy")
-        self.copy_button.setToolTip("Copy selected items to clipboard")
-        self.copy_button.setAccessibleName("Copy selected results to clipboard")
+        _ui_bind(self.copy_button, 'setToolTip', 'Legacy.s5429803ed1814c67')
+        _ui_bind(self.copy_button, 'setAccessibleName', 'Legacy.s0c8ed6ffbc01d9e9')
         self.copy_button.clicked.connect(self.table.copy_selected_to_clipboard)
         toolbar_layout.addWidget(self.copy_button)
 
         # Select all button
         self.select_all_button = QToolButton()
         self.select_all_button.setText("Select All")
-        self.select_all_button.setToolTip("Select all results")
-        self.select_all_button.setAccessibleName("Select all search results")
+        _ui_bind(self.select_all_button, 'setToolTip', 'Legacy.s38713086808a7bef')
+        _ui_bind(self.select_all_button, 'setAccessibleName', 'Legacy.s530f1483b1f46883')
         self.select_all_button.clicked.connect(self.table.select_all_items)
         toolbar_layout.addWidget(self.select_all_button)
 
         toolbar_layout.addStretch()
 
         # Results count label
-        self.count_label = QLabel("0 results")
+        self.count_label = _ui_widget(QLabel, 'Legacy.sff7009f4a9652ed5', 'setText')
         self.count_label.setStyleSheet(
-            f"QLabel { color: {token('text_muted')}; font-size: 11px; }"
+            f"QLabel {{ color: {token('text_muted')};  }}"
         )
+        font_tokens.bind(self.count_label, "font.body")
         toolbar_layout.addWidget(self.count_label)
 
         parent_layout.addWidget(toolbar_frame)
@@ -853,10 +856,11 @@ class SearchResultsWidget(QWidget):
         status_layout.setContentsMargins(4, 2, 4, 2)
 
         # Selection info
-        self.selection_label = QLabel("No selection")
+        self.selection_label = _ui_widget(QLabel, 'Legacy.s211f6bbe2c56c016', 'setText')
         self.selection_label.setStyleSheet(
-            f"QLabel { color: {token('text_muted')}; font-size: 11px; }"
+            f"QLabel {{ color: {token('text_muted')};  }}"
         )
+        font_tokens.bind(self.selection_label, "font.body")
         status_layout.addWidget(self.selection_label)
 
         status_layout.addStretch()

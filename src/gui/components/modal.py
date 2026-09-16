@@ -15,6 +15,7 @@ from PyQt5.QtWidgets import (
     QVBoxLayout,
 )
 
+from src.rfu import font_tokens
 from src.gui.themes import Typography, token
 
 
@@ -48,12 +49,12 @@ class Modal(QDialog):
         layout.setContentsMargins(24, 24, 24, 16)
 
         title_label = QLabel(title, self)
-        title_label.setFont(Typography.h2())
+        font_tokens.bind(title_label, "font.title")
         title_label.setStyleSheet(f"color: {token('text_primary')};")
         layout.addWidget(title_label)
 
         msg_label = QLabel(message, self)
-        msg_label.setFont(Typography.body())
+        font_tokens.bind(msg_label, "font.body")
         msg_label.setWordWrap(True)
         msg_label.setStyleSheet(f"color: {token('text_secondary')};")
         layout.addWidget(msg_label)
@@ -66,7 +67,7 @@ class Modal(QDialog):
                 QDialogButtonBox.AcceptRole if i == 0 else QDialogButtonBox.RejectRole
             )
             btn = box.addButton(label, role)
-            btn.setFont(Typography.body())
+            font_tokens.bind(btn, "font.body")
             btn.setMinimumHeight(44)
             btn.clicked.connect(
                 lambda _checked, _l=label: setattr(self, "_clicked_label", _l)
@@ -110,13 +111,18 @@ class ConfirmationModal(Modal):
         """Ensure Cancel is focused on open and mapped to reject."""
         from PyQt5.QtWidgets import QDialogButtonBox
 
+        box = self.findChild(QDialogButtonBox)
         for btn in self.findChildren(QPushButton):
             if btn.text() == cancel_text:
+                box.removeButton(btn)
+                box.addButton(btn, QDialogButtonBox.RejectRole)
                 btn.setDefault(True)
                 btn.setFocus()
-                btn.clicked.connect(self.reject)
             elif btn.text() == confirm_text:
+                box.removeButton(btn)
+                box.addButton(btn, QDialogButtonBox.AcceptRole)
                 btn.setDefault(False)
+                btn.setAutoDefault(False)
                 error_color = token("semantic_error")
                 btn.setStyleSheet(
                     f"""
@@ -129,4 +135,3 @@ class ConfirmationModal(Modal):
                     }}
                     """
                 )
-                btn.clicked.connect(self.accept)

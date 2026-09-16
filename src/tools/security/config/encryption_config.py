@@ -70,31 +70,18 @@ class EncryptionConfig:
     def _get_default_config_path(self) -> str:
         """Get default configuration file path."""
         app_data = os.path.expanduser("~/.rfu_hub")
-        os.makedirs(app_data, exist_ok=True)
         return os.path.join(app_data, "encryption_config.json")
 
+    def _preference_store(self):
+        from src.core.preferences.legacy_json import LegacyJSONPreferences
+        return LegacyJSONPreferences("encryption", self.DEFAULT_CONFIG_SCHEMA)
+
     def _load_config(self):
-        """Load configuration from file."""
-        try:
-            if os.path.exists(self.config_path):
-                with open(self.config_path, "r", encoding="utf-8") as f:
-                    self._config = json.load(f)
-            else:
-                # Initialize with default configuration
-                self._config = self.DEFAULT_CONFIG_SCHEMA.copy()
-                self._save_config()
-        except Exception as e:
-            logging.warning(f"Failed to load encryption config: {e}")
-            self._config = self.DEFAULT_CONFIG_SCHEMA.copy()
+        """Import legacy values once; native JSON is retained unchanged."""
+        self._config = self._preference_store().load(self.config_path)
 
     def _save_config(self):
-        """Save configuration to file."""
-        try:
-            os.makedirs(os.path.dirname(self.config_path), exist_ok=True)
-            with open(self.config_path, "w", encoding="utf-8") as f:
-                json.dump(self._config, f, indent=2, ensure_ascii=False)
-        except Exception as e:
-            logging.error(f"Failed to save encryption config: {e}")
+        self._preference_store().save(self._config)
 
     def get_setting(self, key: str, default=None) -> Any:
         """

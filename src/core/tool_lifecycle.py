@@ -51,13 +51,6 @@ def resolve_tool_launch_request(
 ) -> Optional[ToolLaunchRequest]:
     """Resolve a launch request using explicit args or the manifest registry."""
 
-    if module_name and class_name:
-        return ToolLaunchRequest(
-            tool_name=tool_name,
-            module_name=module_name,
-            class_name=class_name,
-        )
-
     manifest = ToolManifestRegistry.lookup(tool_name)
     if manifest:
         return ToolLaunchRequest(
@@ -65,6 +58,13 @@ def resolve_tool_launch_request(
             module_name=manifest.module_path,
             class_name=manifest.class_name,
             manifest=manifest,
+        )
+
+    if module_name and class_name:
+        return ToolLaunchRequest(
+            tool_name=tool_name,
+            module_name=module_name,
+            class_name=class_name,
         )
 
     return None

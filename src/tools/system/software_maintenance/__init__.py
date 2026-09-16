@@ -13,6 +13,7 @@ Features:
 - Real-time progress tracking and status reporting
 - Seamless integration with RFU Hub
 """
+from src.rfu.localization import localized_widget as _ui_widget, bind_literal as _ui_bind
 
 __version__ = "1.0.0"
 __author__ = "Richard's File Utilities"
@@ -34,17 +35,14 @@ except ImportError:
 
         def __init__(self):
             super().__init__()
-            self.setWindowTitle("Software Maintenance - Dependencies Missing")
+            _ui_bind(self, 'setWindowTitle', 'Legacy.sdb9acf8afed7655f')
             self.setGeometry(100, 100, 600, 400)
 
             central_widget = QWidget()
             self.setCentralWidget(central_widget)
             layout = QVBoxLayout(central_widget)
 
-            label = QLabel(
-                "Software Maintenance Toolkit GUI is not available.\n\n"
-                "Missing dependencies detected."
-            )
+            label = _ui_widget(QLabel, 'Legacy.s6cd9fa36afdc305e', 'setText')
             label.setWordWrap(True)
             layout.addWidget(label)
 

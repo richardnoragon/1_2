@@ -10,6 +10,8 @@ A comprehensive system diagnostics tool that provides:
 - Disk health checking
 - Memory analysis
 """
+from src.rfu.localization import localized_widget as _ui_widget, bind_literal as _ui_bind
+from src.rfu import font_tokens
 
 import logging
 import platform
@@ -186,11 +188,11 @@ class SystemDiagnosticsGUI(QMainWindow):
     def init_ui(self):
         """Initialize the user interface."""
         # Create header
-        header_label = QLabel("System Diagnostics & Health Monitor")
+        header_label = _ui_widget(QLabel, 'Legacy.sdefa71bb7589d1cf', 'setText')
         header_label.setStyleSheet(
             f"""
             QLabel {{
-                font-size: 18px;
+
                 font-weight: bold;
                 color: {token('text_primary')};
                 padding: 10px;
@@ -200,11 +202,12 @@ class SystemDiagnosticsGUI(QMainWindow):
             }}
         """
         )
+        font_tokens.bind(header_label, "font.toolHeader")
         self.main_layout.addWidget(header_label)
 
         # Create tab widget for different diagnostic categories
         tab_widget = QTabWidget()
-        tab_widget.setAccessibleName("System diagnostics tabs")
+        _ui_bind(tab_widget, 'setAccessibleName', 'Legacy.s62b1100c4e39910d')
         self.main_layout.addWidget(tab_widget)
 
         # System Info Tab
@@ -228,18 +231,18 @@ class SystemDiagnosticsGUI(QMainWindow):
         tab_widget.addTab(health_tab, "Health Check")
 
         # Quick actions
-        actions_group = QGroupBox("Quick Diagnostic Actions")
+        actions_group = _ui_widget(QGroupBox, 'Legacy.sa121bc954ba36902', 'setTitle')
         actions_layout = QHBoxLayout(actions_group)
 
-        full_scan_btn = PrimaryButton("Full System Scan")
+        full_scan_btn = _ui_widget(PrimaryButton, 'Legacy.s4203890dd48a7393', 'setText')
         full_scan_btn.clicked.connect(self.run_full_scan)
         actions_layout.addWidget(full_scan_btn)
 
-        quick_check_btn = SecondaryButton("Quick Health Check")
+        quick_check_btn = _ui_widget(SecondaryButton, 'Legacy.s58a9c270bda007ef', 'setText')
         quick_check_btn.clicked.connect(self.run_quick_check)
         actions_layout.addWidget(quick_check_btn)
 
-        export_report_btn = SecondaryButton("Export Report")
+        export_report_btn = _ui_widget(SecondaryButton, 'Legacy.s5d55cdba1c779dac', 'setText')
         export_report_btn.clicked.connect(self.export_report)
         actions_layout.addWidget(export_report_btn)
 
@@ -251,16 +254,16 @@ class SystemDiagnosticsGUI(QMainWindow):
         layout = QVBoxLayout(tab)
 
         # System info tree
-        info_group = QGroupBox("System Information")
+        info_group = _ui_widget(QGroupBox, 'Legacy.s8ad54ec1c0dcab4f', 'setTitle')
         info_layout = QVBoxLayout(info_group)
 
         self.system_info_tree = QTreeWidget()
-        self.system_info_tree.setAccessibleName("System information tree")
+        _ui_bind(self.system_info_tree, 'setAccessibleName', 'Legacy.sfece5d52b0d794e4')
         self.system_info_tree.setHeaderLabels(["Property", "Value"])
         info_layout.addWidget(self.system_info_tree)
 
         # Refresh button
-        refresh_info_btn = PrimaryButton("Refresh System Info")
+        refresh_info_btn = _ui_widget(PrimaryButton, 'Legacy.s79178298a6fe31a1', 'setText')
         refresh_info_btn.clicked.connect(self.gather_system_info)
         info_layout.addWidget(refresh_info_btn)
 
@@ -277,18 +280,18 @@ class SystemDiagnosticsGUI(QMainWindow):
         layout = QVBoxLayout(tab)
 
         # Performance controls
-        controls_group = QGroupBox("Performance Monitoring")
+        controls_group = _ui_widget(QGroupBox, 'Legacy.s5a1f381561e71df2', 'setTitle')
         controls_layout = QHBoxLayout(controls_group)
 
-        start_monitor_btn = PrimaryButton("Start Monitoring")
+        start_monitor_btn = _ui_widget(PrimaryButton, 'Legacy.sa2f859806eb26f9b', 'setText')
         start_monitor_btn.clicked.connect(self.start_performance_monitoring)
         controls_layout.addWidget(start_monitor_btn)
 
-        stop_monitor_btn = SecondaryButton("Stop Monitoring")
+        stop_monitor_btn = _ui_widget(SecondaryButton, 'Legacy.sb9311d8e1555d334', 'setText')
         stop_monitor_btn.clicked.connect(self.stop_performance_monitoring)
         controls_layout.addWidget(stop_monitor_btn)
 
-        reset_stats_btn = SecondaryButton("Reset Statistics")
+        reset_stats_btn = _ui_widget(SecondaryButton, 'Legacy.sfd77d9a2d916d712', 'setText')
         reset_stats_btn.clicked.connect(self.reset_performance_stats)
         controls_layout.addWidget(reset_stats_btn)
 
@@ -296,11 +299,11 @@ class SystemDiagnosticsGUI(QMainWindow):
         layout.addWidget(controls_group)
 
         # Performance display
-        performance_group = QGroupBox("Performance Data")
+        performance_group = _ui_widget(QGroupBox, 'Legacy.s0162f734c765ac92', 'setTitle')
         performance_layout = QVBoxLayout(performance_group)
 
         self.performance_text = QTextEdit()
-        self.performance_text.setAccessibleName("Performance monitoring data")
+        _ui_bind(self.performance_text, 'setAccessibleName', 'Legacy.s7b40b884f7030af9')
         self.performance_text.setReadOnly(True)
         self.performance_text.setPlainText(
             "Performance monitoring ready.\n"
@@ -318,25 +321,25 @@ class SystemDiagnosticsGUI(QMainWindow):
         layout = QVBoxLayout(tab)
 
         # Hardware tests
-        tests_group = QGroupBox("Hardware Diagnostic Tests")
+        tests_group = _ui_widget(QGroupBox, 'Legacy.sa7821d5987aaa9ca', 'setTitle')
         tests_layout = QVBoxLayout(tests_group)
 
         # Test buttons
         button_layout = QHBoxLayout()
 
-        cpu_test_btn = PrimaryButton("CPU Test")
+        cpu_test_btn = _ui_widget(PrimaryButton, 'Legacy.s334d84ebf7155e84', 'setText')
         cpu_test_btn.clicked.connect(self.test_cpu)
         button_layout.addWidget(cpu_test_btn)
 
-        memory_test_btn = SecondaryButton("Memory Test")
+        memory_test_btn = _ui_widget(SecondaryButton, 'Legacy.s69c3f95073a2c5a9', 'setText')
         memory_test_btn.clicked.connect(self.test_memory)
         button_layout.addWidget(memory_test_btn)
 
-        disk_test_btn = SecondaryButton("Disk Test")
+        disk_test_btn = _ui_widget(SecondaryButton, 'Legacy.s573761478835f1c1', 'setText')
         disk_test_btn.clicked.connect(self.test_disk)
         button_layout.addWidget(disk_test_btn)
 
-        gpu_test_btn = SecondaryButton("GPU Test")
+        gpu_test_btn = _ui_widget(SecondaryButton, 'Legacy.se5ad4cc5d4defdeb', 'setText')
         gpu_test_btn.clicked.connect(self.test_gpu)
         button_layout.addWidget(gpu_test_btn)
 
@@ -344,7 +347,7 @@ class SystemDiagnosticsGUI(QMainWindow):
 
         # Test results
         self.hardware_results = QTextEdit()
-        self.hardware_results.setAccessibleName("Hardware diagnostic results")
+        _ui_bind(self.hardware_results, 'setAccessibleName', 'Legacy.s9b931088b3a58cb2')
         self.hardware_results.setReadOnly(True)
         self.hardware_results.setPlainText(
             "Hardware diagnostic results will appear here.\n"
@@ -362,25 +365,25 @@ class SystemDiagnosticsGUI(QMainWindow):
         layout = QVBoxLayout(tab)
 
         # Network tests
-        network_group = QGroupBox("Network Diagnostic Tests")
+        network_group = _ui_widget(QGroupBox, 'Legacy.s165530ea78f2eccf', 'setTitle')
         network_layout = QVBoxLayout(network_group)
 
         # Test buttons
         button_layout = QHBoxLayout()
 
-        connectivity_btn = PrimaryButton("Connectivity Test")
+        connectivity_btn = _ui_widget(PrimaryButton, 'Legacy.s066468e8aa2b784e', 'setText')
         connectivity_btn.clicked.connect(self.test_network_connectivity)
         button_layout.addWidget(connectivity_btn)
 
-        speed_test_btn = SecondaryButton("Speed Test")
+        speed_test_btn = _ui_widget(SecondaryButton, 'Legacy.sd23ced7772a783f3', 'setText')
         speed_test_btn.clicked.connect(self.test_network_speed)
         button_layout.addWidget(speed_test_btn)
 
-        dns_test_btn = SecondaryButton("DNS Test")
+        dns_test_btn = _ui_widget(SecondaryButton, 'Legacy.sc98cd1b0370a5f66', 'setText')
         dns_test_btn.clicked.connect(self.test_dns)
         button_layout.addWidget(dns_test_btn)
 
-        latency_test_btn = SecondaryButton("Latency Test")
+        latency_test_btn = _ui_widget(SecondaryButton, 'Legacy.s9d684a1b45034276', 'setText')
         latency_test_btn.clicked.connect(self.test_latency)
         button_layout.addWidget(latency_test_btn)
 
@@ -388,7 +391,7 @@ class SystemDiagnosticsGUI(QMainWindow):
 
         # Network results
         self.network_results = QTextEdit()
-        self.network_results.setAccessibleName("Network diagnostic results")
+        _ui_bind(self.network_results, 'setAccessibleName', 'Legacy.s1afc844f99a06606')
         self.network_results.setReadOnly(True)
         self.network_results.setPlainText(
             "Network diagnostic results will appear here.\n"
@@ -406,21 +409,21 @@ class SystemDiagnosticsGUI(QMainWindow):
         layout = QVBoxLayout(tab)
 
         # Health check controls
-        health_group = QGroupBox("System Health Check")
+        health_group = _ui_widget(QGroupBox, 'Legacy.s969244d51bf6161a', 'setTitle')
         health_layout = QVBoxLayout(health_group)
 
         # Health check buttons
         button_layout = QHBoxLayout()
 
-        full_health_btn = PrimaryButton("Full Health Scan")
+        full_health_btn = _ui_widget(PrimaryButton, 'Legacy.s162c0163e83534ec', 'setText')
         full_health_btn.clicked.connect(self.run_full_health_check)
         button_layout.addWidget(full_health_btn)
 
-        quick_health_btn = SecondaryButton("Quick Health Check")
+        quick_health_btn = _ui_widget(SecondaryButton, 'Legacy.s58a9c270bda007ef', 'setText')
         quick_health_btn.clicked.connect(self.run_quick_health_check)
         button_layout.addWidget(quick_health_btn)
 
-        schedule_btn = SecondaryButton("Schedule Checks")
+        schedule_btn = _ui_widget(SecondaryButton, 'Legacy.sfa32b849512e203d', 'setText')
         schedule_btn.clicked.connect(self.schedule_health_checks)
         button_layout.addWidget(schedule_btn)
 
@@ -428,7 +431,7 @@ class SystemDiagnosticsGUI(QMainWindow):
 
         # Health results
         self.health_results = QTextEdit()
-        self.health_results.setAccessibleName("Health check results")
+        _ui_bind(self.health_results, 'setAccessibleName', 'Legacy.s3a6770c3697a8d25')
         self.health_results.setReadOnly(True)
         self.health_results.setPlainText(
             "System health check results will appear here.\n"

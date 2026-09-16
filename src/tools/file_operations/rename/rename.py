@@ -5,6 +5,9 @@ Simplified Rename Files Tool for Richard's File Utilities
 Relocated under file_operations.rename to align with the
 centralized file operations architecture.
 """
+from src.rfu.localization import localized_widget as _ui_widget, bind_literal as _ui_bind
+from src.gui import menu_surfaces
+from src.rfu import font_tokens
 
 import json
 import os
@@ -89,10 +92,10 @@ except ImportError:
             return None
 
         def _create_exit_action(self, menubar):
-            file_menu = menubar.addMenu("&File")
-            exit_action = QAction("E&xit", self)
+            file_menu = menu_surfaces.add_menu(menubar, '&File')
+            exit_action = _ui_widget(QAction, 'Legacy.s2eb7984c42b97146', 'setText', self)
             exit_action.setShortcut("Ctrl+Q")
-            exit_action.setStatusTip("Close this tool")
+            _ui_bind(exit_action, 'setStatusTip', 'Legacy.sa7a8480fbc4288f1')
             exit_action.triggered.connect(self.close)
             file_menu.addAction(exit_action)
             return exit_action
@@ -115,6 +118,7 @@ class RenameWindow(StandardWindow):
         )
         self.current_directory = ""
         self.selected_files = []
+        self._rename_undo = ()
         self.init_ui()
         self._setup_menu_callbacks()
         self.ensure_exit_action_reference()
@@ -288,11 +292,11 @@ class RenameWindow(StandardWindow):
         layout = self.main_layout
 
         # Create header
-        header_label = QLabel("File Rename Utility")
+        header_label = _ui_widget(QLabel, 'Legacy.s5f55581f0c8d87a9', 'setText')
         header_label.setStyleSheet(
             """
             QLabel {
-                font-size: 18px;
+
                 font-weight: bold;
                 color: {token('text_primary')};
                 padding: 10px;
@@ -302,154 +306,151 @@ class RenameWindow(StandardWindow):
             }
         """
         )
+        font_tokens.bind(header_label, "font.toolHeader")
         layout.addWidget(header_label)
 
         # Create directory selection
-        dir_group = QGroupBox("Directory Selection")
+        dir_group = _ui_widget(QGroupBox, 'Legacy.s30d2d5574cce5ea3', 'setTitle')
         dir_layout = QGridLayout(dir_group)
 
-        dir_layout.addWidget(QLabel("Directory:"), 0, 0)
+        dir_layout.addWidget(_ui_widget(QLabel, 'Legacy.s8b94846044eb0de0', 'setText'), 0, 0)
         self.directory_edit = TextInput("Directory", "Select a directory...")
-        self.directory_edit.setAccessibleName("Directory to rename files in")
+        _ui_bind(self.directory_edit, 'setAccessibleName', 'Legacy.s72eeb3af14bc699d')
         dir_layout.addWidget(self.directory_edit, 0, 1)
 
-        self.browse_button = SecondaryButton("Browse")
-        self.browse_button.setAccessibleName("Browse for directory to rename files in")
+        self.browse_button = _ui_widget(SecondaryButton, 'Legacy.s3227aa9666253f7a', 'setText')
+        _ui_bind(self.browse_button, 'setAccessibleName', 'Legacy.s55a4a57a001cd95e')
         self.browse_button.clicked.connect(self.browse_directory)
         dir_layout.addWidget(self.browse_button, 0, 2)
 
         layout.addWidget(dir_group)
 
         # Create file selection area
-        files_group = QGroupBox("File Selection")
+        files_group = _ui_widget(QGroupBox, 'Legacy.s1eef7fd26962e3d2', 'setTitle')
         files_layout = QVBoxLayout(files_group)
 
         # Available files list
-        files_layout.addWidget(QLabel("Available Files:"))
+        files_layout.addWidget(_ui_widget(QLabel, 'Legacy.s831847e031a26f24', 'setText'))
         self.available_files_list = QListWidget()
-        self.available_files_list.setAccessibleName("Available files list")
+        _ui_bind(self.available_files_list, 'setAccessibleName', 'Legacy.sdd2881425094e81a')
         self.available_files_list.setMaximumHeight(150)
         files_layout.addWidget(self.available_files_list)
 
         # Selection buttons
         selection_layout = QHBoxLayout()
 
-        self.add_button = SecondaryButton("Add Selected →")
-        self.add_button.setAccessibleName("Add selected files to rename list")
+        self.add_button = _ui_widget(SecondaryButton, 'Legacy.sc78a147b59179b48', 'setText')
+        _ui_bind(self.add_button, 'setAccessibleName', 'Legacy.sf57c0fa94afdcec4')
         self.add_button.clicked.connect(self.add_selected_files)
         selection_layout.addWidget(self.add_button)
 
-        self.add_all_button = SecondaryButton("Add All \u2192")
-        self.add_all_button.setAccessibleName("Add all files to rename list")
+        self.add_all_button = _ui_widget(SecondaryButton, 'Legacy.s8b5bded9faec1968', 'setText')
+        _ui_bind(self.add_all_button, 'setAccessibleName', 'Legacy.sf89c3e74184515ac')
         self.add_all_button.clicked.connect(self.add_all_files)
         selection_layout.addWidget(self.add_all_button)
 
-        self.remove_button = SecondaryButton("\u2190 Remove Selected")
-        self.remove_button.setAccessibleName("Remove selected files from rename list")
+        self.remove_button = _ui_widget(SecondaryButton, 'Legacy.s0f8db0108fe749c5', 'setText')
+        _ui_bind(self.remove_button, 'setAccessibleName', 'Legacy.sc9922ef399e6a233')
         self.remove_button.clicked.connect(self.remove_selected_files)
         selection_layout.addWidget(self.remove_button)
 
-        self.clear_button = SecondaryButton("\u2190 Clear All")
-        self.clear_button.setAccessibleName("Clear all files from rename list")
+        self.clear_button = _ui_widget(SecondaryButton, 'Legacy.s9b563883720a6d60', 'setText')
+        _ui_bind(self.clear_button, 'setAccessibleName', 'Legacy.s1561d4d08c3d2989')
         self.clear_button.clicked.connect(self.clear_selected_files)
         selection_layout.addWidget(self.clear_button)
 
         files_layout.addLayout(selection_layout)
 
         # Selected files list
-        files_layout.addWidget(QLabel("Files to Rename:"))
+        files_layout.addWidget(_ui_widget(QLabel, 'Legacy.s4ca844978c7dc9dd', 'setText'))
         self.selected_files_list = QListWidget()
-        self.selected_files_list.setAccessibleName("Files selected for rename")
+        _ui_bind(self.selected_files_list, 'setAccessibleName', 'Legacy.s0e5c35ee8b676500')
         self.selected_files_list.setMaximumHeight(150)
         files_layout.addWidget(self.selected_files_list)
 
         layout.addWidget(files_group)
 
         # Create rename options
-        options_group = QGroupBox("Rename Options")
+        options_group = _ui_widget(QGroupBox, 'Legacy.s39b10e9a29841c96', 'setTitle')
         options_layout = QGridLayout(options_group)
 
         # Create button group for radio buttons
         self.rename_mode_group = QButtonGroup()
 
         # Prefix/Suffix options
-        self.add_prefix_radio = QRadioButton("Add Prefix:")
-        self.add_prefix_radio.setAccessibleName("Rename mode: Add prefix")
+        self.add_prefix_radio = _ui_widget(QRadioButton, 'Legacy.s182a68245f9789e6', 'setText')
+        _ui_bind(self.add_prefix_radio, 'setAccessibleName', 'Legacy.s240cbb1307347567')
         self.add_prefix_radio.setMinimumHeight(44)
         self.add_prefix_radio.setChecked(True)
         self.rename_mode_group.addButton(self.add_prefix_radio)
         options_layout.addWidget(self.add_prefix_radio, 0, 0)
 
         self.prefix_edit = TextInput("Prefix", "Enter prefix text...")
-        self.prefix_edit.setAccessibleName("Prefix text to add")
+        _ui_bind(self.prefix_edit, 'setAccessibleName', 'Legacy.sd97d9b8988afe028')
         options_layout.addWidget(self.prefix_edit, 0, 1)
 
-        self.add_suffix_radio = QRadioButton("Add Suffix:")
-        self.add_suffix_radio.setAccessibleName("Rename mode: Add suffix")
+        self.add_suffix_radio = _ui_widget(QRadioButton, 'Legacy.s6ddf5c79ee1dfa9a', 'setText')
+        _ui_bind(self.add_suffix_radio, 'setAccessibleName', 'Legacy.sd9787dc47c1a07e3')
         self.add_suffix_radio.setMinimumHeight(44)
         self.rename_mode_group.addButton(self.add_suffix_radio)
         options_layout.addWidget(self.add_suffix_radio, 1, 0)
 
         self.suffix_edit = TextInput("Suffix", "Enter suffix text...")
-        self.suffix_edit.setAccessibleName("Suffix text to add")
+        _ui_bind(self.suffix_edit, 'setAccessibleName', 'Legacy.sb0fcda05d0078834')
         options_layout.addWidget(self.suffix_edit, 1, 1)
 
         # Case options
-        self.lowercase_radio = QRadioButton("Convert to lowercase")
-        self.lowercase_radio.setAccessibleName("Rename mode: Convert to lowercase")
+        self.lowercase_radio = _ui_widget(QRadioButton, 'Legacy.sfbb7deb2d599740d', 'setText')
+        _ui_bind(self.lowercase_radio, 'setAccessibleName', 'Legacy.s00ae4f689e971322')
         self.lowercase_radio.setMinimumHeight(44)
         self.rename_mode_group.addButton(self.lowercase_radio)
         options_layout.addWidget(self.lowercase_radio, 2, 0)
 
-        self.uppercase_radio = QRadioButton("Convert to UPPERCASE")
-        self.uppercase_radio.setAccessibleName("Rename mode: Convert to uppercase")
+        self.uppercase_radio = _ui_widget(QRadioButton, 'Legacy.s02ac8ba71d0c9a15', 'setText')
+        _ui_bind(self.uppercase_radio, 'setAccessibleName', 'Legacy.s9059efb6621c59e0')
         self.uppercase_radio.setMinimumHeight(44)
         self.rename_mode_group.addButton(self.uppercase_radio)
         options_layout.addWidget(self.uppercase_radio, 2, 1)
 
         # Replace text
-        self.replace_radio = QRadioButton("Replace text:")
-        self.replace_radio.setAccessibleName("Rename mode: Replace text")
+        self.replace_radio = _ui_widget(QRadioButton, 'Legacy.sd787ee0ab6591e53', 'setText')
+        _ui_bind(self.replace_radio, 'setAccessibleName', 'Legacy.s9fe3082493dc6e19')
         self.replace_radio.setMinimumHeight(44)
         self.rename_mode_group.addButton(self.replace_radio)
         options_layout.addWidget(self.replace_radio, 3, 0)
 
         replace_layout = QHBoxLayout()
         self.find_edit = TextInput("Find", "Find...")
-        self.find_edit.setAccessibleName("Text to find in filename")
-        self.find_edit.setAccessibleDescription(
-            "The exact text to search for in each filename; matching is case-sensitive"
-        )
+        _ui_bind(self.find_edit, 'setAccessibleName', 'Legacy.se0a02dca02f51360')
+        _ui_bind(self.find_edit, 'setAccessibleDescription', 'Legacy.s0ccaa220495e6b18')
         replace_layout.addWidget(self.find_edit)
 
-        replace_layout.addWidget(QLabel("→"))
+        replace_layout.addWidget(_ui_widget(QLabel, 'Legacy.s161660030aa6c9e3', 'setText'))
 
         self.replace_edit = TextInput("Replace", "Replace with...")
-        self.replace_edit.setAccessibleName("Replacement text for filename")
-        self.replace_edit.setAccessibleDescription(
-            "The text to substitute; leave blank to remove the found text"
-        )
+        _ui_bind(self.replace_edit, 'setAccessibleName', 'Legacy.s3ac0bda4a8d1cdfb')
+        _ui_bind(self.replace_edit, 'setAccessibleDescription', 'Legacy.saf09041a90767dd7')
         replace_layout.addWidget(self.replace_edit)
 
         options_layout.addLayout(replace_layout, 3, 1)
 
         # Number sequence
-        self.number_radio = QRadioButton("Add number sequence")
-        self.number_radio.setAccessibleName("Rename mode: Add number sequence")
+        self.number_radio = _ui_widget(QRadioButton, 'Legacy.seb67640ea5cb60b8', 'setText')
+        _ui_bind(self.number_radio, 'setAccessibleName', 'Legacy.sd5ae73aabca628a3')
         self.number_radio.setMinimumHeight(44)
         self.rename_mode_group.addButton(self.number_radio)
         options_layout.addWidget(self.number_radio, 4, 0)
 
         number_layout = QHBoxLayout()
-        number_layout.addWidget(QLabel("Start:"))
+        number_layout.addWidget(_ui_widget(QLabel, 'Legacy.s84cc09ea4cfa63fc', 'setText'))
         self.start_number_edit = TextInput("Start", "1")
-        self.start_number_edit.setAccessibleName("Number sequence start value")
+        _ui_bind(self.start_number_edit, 'setAccessibleName', 'Legacy.sa5e94f21be45b535')
         self.start_number_edit.setMaximumWidth(60)
         number_layout.addWidget(self.start_number_edit)
 
-        number_layout.addWidget(QLabel("Format:"))
+        number_layout.addWidget(_ui_widget(QLabel, 'Legacy.s9a5649a42cb2fcef', 'setText'))
         self.number_format_edit = TextInput("Format", "_{:03d}")
-        self.number_format_edit.setAccessibleName("Number sequence format string")
+        _ui_bind(self.number_format_edit, 'setAccessibleName', 'Legacy.scfbda029995b9209')
         number_layout.addWidget(self.number_format_edit)
 
         options_layout.addLayout(number_layout, 4, 1)
@@ -457,25 +458,25 @@ class RenameWindow(StandardWindow):
         layout.addWidget(options_group)
 
         # Create preview and action area
-        action_group = QGroupBox("Preview and Actions")
+        action_group = _ui_widget(QGroupBox, 'Legacy.sfb9b8f6840f0f91f', 'setTitle')
         action_layout = QVBoxLayout(action_group)
 
         # Preview button
-        self.preview_button = SecondaryButton("Preview Changes")
-        self.preview_button.setAccessibleName("Preview rename changes")
+        self.preview_button = _ui_widget(SecondaryButton, 'Legacy.s7808a60612cdcbda', 'setText')
+        _ui_bind(self.preview_button, 'setAccessibleName', 'Legacy.s378ddcdcf4bc1336')
         self.preview_button.clicked.connect(self.preview_changes)
         action_layout.addWidget(self.preview_button)
 
         # Preview text
         self.preview_text = QTextEdit()
-        self.preview_text.setAccessibleName("Rename preview")
+        _ui_bind(self.preview_text, 'setAccessibleName', 'Legacy.s04da12d0c300cb4b')
         self.preview_text.setMaximumHeight(100)
         self.preview_text.setReadOnly(True)
         action_layout.addWidget(self.preview_text)
 
         # Rename button
-        self.rename_button = PrimaryButton("Apply Rename")
-        self.rename_button.setAccessibleName("Apply rename operation")
+        self.rename_button = _ui_widget(PrimaryButton, 'Legacy.s2a7695ad787a136e', 'setText')
+        _ui_bind(self.rename_button, 'setAccessibleName', 'Legacy.s996e6602d8ae5724')
         self.rename_button.clicked.connect(self.apply_rename)
         self.rename_button.setStyleSheet(
             """
@@ -486,7 +487,7 @@ class RenameWindow(StandardWindow):
                 padding: 10px 20px;
                 border-radius: 4px;
                 font-weight: bold;
-                font-size: 14px;
+
             }
             QPushButton:hover {
                 background-color: {token('semantic_error')};
@@ -496,6 +497,7 @@ class RenameWindow(StandardWindow):
             }
         """
         )
+        font_tokens.bind(self.rename_button, "font.body")
         action_layout.addWidget(self.rename_button)
 
         layout.addWidget(action_group)
@@ -623,76 +625,47 @@ class RenameWindow(StandardWindow):
 
         self.preview_text.setText(preview_text)
 
+    def _rename_task(self):
+        if not hasattr(self, '_background_rename'):
+            from src.gui.background_task import BackgroundTask
+            from PyQt5.QtWidgets import QAbstractButton, QLineEdit
+            controls = self.findChildren(QAbstractButton) + self.findChildren(QLineEdit)
+            self._background_rename = BackgroundTask(self, 'rename-files', self.main_layout, controls)
+        return self._background_rename
+
     def apply_rename(self):
-        """Apply the rename operation."""
+        """Validate the entire proposal before showing a safe-default confirmation."""
         if not self.selected_files:
-            QMessageBox.warning(self, "Warning", NO_FILES_SELECTED_MESSAGE)
             return
+        from src.core.rename_operations import plan_renames
+        directory = self.current_directory
+        pairs = [(name, self.get_new_filename(name, index)) for index, name in enumerate(self.selected_files)]
+        self._rename_task().start('preview', lambda: plan_renames(directory, pairs), self._confirm_rename_plan)
 
-        confirmation_message = (
-            "Are you sure you want to rename "
-            f"{len(self.selected_files)} files?\n\n"
-            "This operation cannot be undone."
-        )
-
-        reply = QMessageBox.question(
-            self,
-            "Confirm Rename",
-            confirmation_message,
-            QMessageBox.Yes | QMessageBox.No,
-            QMessageBox.No,
-        )
-
-        if reply != QMessageBox.Yes:
+    def _confirm_rename_plan(self, plan):
+        from src.gui.components import ConfirmationModal
+        from PyQt5.QtWidgets import QDialog
+        if not plan:
             return
+        summary = '\n'.join(f"{item.source.name} → {item.target.name}" for item in plan[:100])
+        self.preview_text.setPlainText(summary)
+        if ConfirmationModal("Apply Rename", f"Files: {len(plan)}\n{summary}",
+                             confirm_text="Rename", parent=self).exec_() != QDialog.Accepted:
+            return
+        from src.core.rename_operations import execute_renames
+        task = self._rename_task()
+        def completed(result):
+            self._rename_undo, errors = result
+            self.preview_text.setPlainText(f"Renamed: {len(self._rename_undo)}\n" + '\n'.join(errors))
+            self.load_available_files()
+        task.start('rename', lambda: execute_renames(plan, task.cancel), completed)
 
-        # Perform the rename operation
-        success_count = 0
-        error_count = 0
-        errors = []
+    def can_undo(self):
+        return bool(self._rename_undo)
 
-        for i, filename in enumerate(self.selected_files):
-            try:
-                old_path = os.path.join(self.current_directory, filename)
-                new_filename = self.get_new_filename(filename, i)
-                new_path = os.path.join(self.current_directory, new_filename)
-
-                if old_path != new_path:
-                    # Check if target file already exists
-                    if os.path.exists(new_path):
-                        errors.append(f"{filename}: Target file already exists")
-                        error_count += 1
-                        continue
-
-                    os.rename(old_path, new_path)
-                    success_count += 1
-
-            except OSError as error:
-                errors.append(f"{filename}: {error}")
-                error_count += 1
-
-        # Show results
-        if error_count == 0:
-            QMessageBox.information(
-                self,
-                "Rename Complete",
-                f"Successfully renamed {success_count} files.",
-            )
-        else:
-            error_text = "\n".join(errors[:10])  # Show first 10 errors
-            if len(errors) > 10:
-                error_text += f"\n... and {len(errors) - 10} more errors"
-
-            QMessageBox.warning(
-                self,
-                "Rename Results",
-                f"Renamed {success_count} files successfully.\n"
-                f"{error_count} files failed:\n\n{error_text}",
-            )
-
-        # Refresh the file list
-        self.load_available_files()
-        self.preview_text.clear()
+    def undo(self):
+        if self._rename_undo:
+            self._confirm_rename_plan(self._rename_undo)
 
 
 def main():

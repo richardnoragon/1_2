@@ -9,6 +9,8 @@ A comprehensive bookmark management tool that supports:
 - Tag-based organization
 - Cross-platform storage with SQLite
 """
+from src.rfu.localization import localized_widget as _ui_widget, bind_literal as _ui_bind
+from src.rfu import font_tokens
 
 import csv
 import html
@@ -92,7 +94,7 @@ class BookmarkManagerGUI(QMainWindow):
 
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Bookmark Manager - Richard's File Utilities")
+        _ui_bind(self, 'setWindowTitle', 'Legacy.s2f2e51e1a4ebbaf6')
         self.setGeometry(200, 200, 1000, 700)
 
         # Create central widget and main layout
@@ -152,7 +154,7 @@ class BookmarkManagerGUI(QMainWindow):
         header_label.setStyleSheet(
             """
             QLabel {
-                font-size: 18px;
+
                 font-weight: bold;
                 color: {token('text_primary')};
                 padding: 10px;
@@ -162,18 +164,19 @@ class BookmarkManagerGUI(QMainWindow):
             }
         """
         )
+        font_tokens.bind(header_label, "font.toolHeader")
         self.main_layout.addWidget(header_label)
 
         # Create main feature groups
-        features_group = QGroupBox("Bookmark Management Features")
+        features_group = _ui_widget(QGroupBox, 'Legacy.s9497b9ea4c9de195', 'setTitle')
         features_layout = QVBoxLayout(features_group)
 
         # Add bookmark section
-        add_group = QGroupBox("Add New Bookmark")
+        add_group = _ui_widget(QGroupBox, 'Legacy.s568363b07ca242cb', 'setTitle')
         add_layout = QGridLayout(add_group)
 
         # Title input
-        add_layout.addWidget(QLabel("Title:"), 0, 0)
+        add_layout.addWidget(_ui_widget(QLabel, 'Legacy.secd11fd9f6ba3ceb', 'setText'), 0, 0)
         self.title_input = TextInput(
             "Title",
             "Enter bookmark title",
@@ -182,7 +185,7 @@ class BookmarkManagerGUI(QMainWindow):
         add_layout.addWidget(self.title_input, 0, 1)
 
         # URL input
-        add_layout.addWidget(QLabel("URL:"), 1, 0)
+        add_layout.addWidget(_ui_widget(QLabel, 'Legacy.s734fd77b36107c77', 'setText'), 1, 0)
         self.url_input = TextInput(
             "URL",
             "Enter bookmark URL",
@@ -191,7 +194,7 @@ class BookmarkManagerGUI(QMainWindow):
         add_layout.addWidget(self.url_input, 1, 1)
 
         # Category input
-        add_layout.addWidget(QLabel("Category:"), 2, 0)
+        add_layout.addWidget(_ui_widget(QLabel, 'Legacy.sb330d6701b5520fa', 'setText'), 2, 0)
         self.category_input = TextInput(
             "Category",
             "Enter category (optional)",
@@ -200,37 +203,37 @@ class BookmarkManagerGUI(QMainWindow):
         add_layout.addWidget(self.category_input, 2, 1)
 
         # Add button
-        add_button = PrimaryButton("Add Bookmark")
-        add_button.setAccessibleName("Add bookmark")
+        add_button = _ui_widget(PrimaryButton, 'Legacy.s7d02d990babdf216', 'setText')
+        _ui_bind(add_button, 'setAccessibleName', 'Legacy.sb5255f4dadf0e816')
         add_button.clicked.connect(self.add_bookmark)
         add_layout.addWidget(add_button, 3, 0, 1, 2)
 
         features_layout.addWidget(add_group)
 
         # Management tools section
-        tools_group = QGroupBox("Bookmark Tools")
+        tools_group = _ui_widget(QGroupBox, 'Legacy.sf7acf43d41dd23eb', 'setTitle')
         tools_layout = QHBoxLayout(tools_group)
 
         # Import/Export buttons
-        import_button = SecondaryButton("Import Bookmarks")
-        import_button.setAccessibleName("Import bookmarks")
+        import_button = _ui_widget(SecondaryButton, 'Legacy.sa90804d3de46dad3', 'setText')
+        _ui_bind(import_button, 'setAccessibleName', 'Legacy.se39ba79b8f3f9001')
         import_button.clicked.connect(self.import_bookmarks)
         tools_layout.addWidget(import_button)
 
-        export_button = SecondaryButton("Export Bookmarks")
-        export_button.setAccessibleName("Export bookmarks")
+        export_button = _ui_widget(SecondaryButton, 'Legacy.sa37eb7377585c755', 'setText')
+        _ui_bind(export_button, 'setAccessibleName', 'Legacy.sc4e230961250a02f')
         export_button.clicked.connect(self.export_bookmarks)
         tools_layout.addWidget(export_button)
 
         # Search button
-        search_button = SecondaryButton("Search Bookmarks")
-        search_button.setAccessibleName("Search bookmarks")
+        search_button = _ui_widget(SecondaryButton, 'Legacy.sf50214277e586d77', 'setText')
+        _ui_bind(search_button, 'setAccessibleName', 'Legacy.sf7e62e8448fcc316')
         search_button.clicked.connect(self.search_bookmarks)
         tools_layout.addWidget(search_button)
 
         # Organize button
-        organize_button = SecondaryButton("Organize Bookmarks")
-        organize_button.setAccessibleName("Organize bookmarks")
+        organize_button = _ui_widget(SecondaryButton, 'Legacy.s56bc493f4c733405', 'setText')
+        _ui_bind(organize_button, 'setAccessibleName', 'Legacy.s5e475b58d50fb26e')
         organize_button.clicked.connect(self.organize_bookmarks)
         tools_layout.addWidget(organize_button)
 
@@ -239,11 +242,11 @@ class BookmarkManagerGUI(QMainWindow):
         self.main_layout.addWidget(features_group)
 
         # Results area
-        results_group = QGroupBox("Status and Information")
+        results_group = _ui_widget(QGroupBox, 'Legacy.se19b00786afe3197', 'setTitle')
         results_layout = QVBoxLayout(results_group)
 
         self.results_text = QTextEdit()
-        self.results_text.setAccessibleName("Bookmark manager status and information")
+        _ui_bind(self.results_text, 'setAccessibleName', 'Legacy.s59fe03f0243ef3d6')
         self.results_text.setReadOnly(True)
         self.results_text.setPlainText(
             "Bookmark Manager ready. Use the tools above to manage your bookmarks.\n\n"

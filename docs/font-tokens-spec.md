@@ -3,8 +3,8 @@
 **Constitution Reference**: §8.1, §12.1 (FNT)
 **Version**: 1.37.0
 **Added**: 2026-04-25 (harmonization2 Phase 2 — resolves TODO(FONT_TOKENS_SPEC))
-**Status**: Constitutionally complete — see §8.1. CI enforcement gated on
-TODO(FONT_TOKENS_IMPL).
+**Status**: Token API and shared-widget integration implemented. Full tool
+migration remains open; see [implementation status](harmonization2/implementation-status.md).
 
 ---
 
@@ -19,8 +19,7 @@ sizes, or raw Qt font objects outside the token system.
 
 ## 1. Token Taxonomy
 
-All tokens live in `src/rfu/font_tokens.py` (implementation: Phase 2
-deliverable — TODO(FONT_TOKENS_IMPL)).
+All tokens live in `src/rfu/font_tokens.py`.
 
 ### 1.1 Canonical Token Names
 
@@ -35,9 +34,10 @@ deliverable — TODO(FONT_TOKENS_IMPL)).
 | `font.toolHeader` | Tool window title bar / top-level header | 18 pt | Bold |
 | `font.small` | Legal text, keyboard shortcut hints | 11 pt | Normal |
 
-> **Note on "pt" vs "px"**: All sizes above are in Qt logical points scaled at
-> 96 DPI (i.e., `font.body` = `QFont` with `setPointSize(10)` at 96 DPI, not
-> raw pixel values). Actual rendering adapts to OS DPI and accessibility zoom.
+> **Resolved 2026-09-16**: The table governs, as confirmed by the user.
+> `font.body` uses `setPointSizeF(14)`, not 10 points. Qt handles display DPI;
+> accessibility scaling multiplies token sizes relative to the application's
+> initial font size and never reduces a token below its table size.
 
 ---
 
@@ -62,7 +62,7 @@ deliverable — TODO(FONT_TOKENS_IMPL)).
 
 ### 2.3 Accessibility scaling
 
-- Minimum legibility sizes enforced per WCAG 2.1 AA:
+- Project minimum legibility sizes:
   - Body text: ≥ 14 pt (normal weight)
   - Interactive controls: ≥ 14 pt
   - Captions/helper text: ≥ 12 pt (accepted minimum)
@@ -84,9 +84,20 @@ Font tokens participate in the Theming subsystem (TH capability):
 
 ## 4. Deferred Items
 
-- **TODO(FONT_TOKENS_IMPL)**: Implement `src/rfu/font_tokens.py` module with
-  `get(token_name)` → `QFont` and `reload()` functions. Wire to
-  `_on_theme_changed` lifecycle hook. This is a Phase 2 deliverable.
+Implemented APIs: `get(name)` returns a fresh font; `bind(widget, name)` applies
+and maintains a live token; `reload()` refreshes bound widgets. Body-family
+fallbacks are Segoe UI/Arial on Windows, SF Pro Text/Helvetica Neue/Arial on
+macOS, and Noto Sans/DejaVu Sans/Liberation Sans on Linux. Monospace resolution
+falls back to Qt's system fixed font. Legacy `Typography` and `Fonts` calls
+resolve through this module. Shared components and twelve tool modules now use
+live bindings. Remaining raw-font and stylesheet users still require migration.
+`apply_profile(window, family, body_size)` integrates UAP preferences without
+flattening heading/caption sizes. Factory body size is 14; legacy smaller saved
+sizes remain readable in storage but render at the minimum. Application font
+changes use Qt's `fontChanged` signal to update bindings safely.
+
+- **TODO(FONT_TOKENS_IMPL)**: Finish migrating every tool and its appearance
+  lifecycle to the implemented token API. This is a Phase 2 deliverable.
   Until TODO(FONT_TOKENS_IMPL) is resolved:
   - CI MUST NOT fail for raw font usage (FNT non-compliance is tolerated).
   - The FNT capability MUST remain `false` in `docs/tool-capability-matrix.json`

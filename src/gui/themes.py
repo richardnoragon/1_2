@@ -208,10 +208,10 @@ class Fonts:
     MONOSPACE_FAMILY = "Consolas"
 
     # Font sizes
-    TITLE_SIZE = 16
-    HEADER_SIZE = 14
-    BODY_SIZE = 12
-    SMALL_SIZE = 10
+    TITLE_SIZE = 18
+    HEADER_SIZE = 16
+    BODY_SIZE = 14
+    SMALL_SIZE = 12
 
     # Font weights
     NORMAL = QFont.Normal
@@ -220,8 +220,14 @@ class Fonts:
     @classmethod
     def get_font(cls, size=BODY_SIZE, weight=NORMAL, family=DEFAULT_FAMILY):
         """Get a standardized font."""
-        font = QFont(family)
-        font.setPointSize(size)
+        from src.rfu.font_tokens import get
+        role = {cls.TITLE_SIZE: "font.toolHeader", cls.HEADER_SIZE: "font.title",
+                cls.SMALL_SIZE: "font.caption"}.get(size, "font.body")
+        if family == cls.MONOSPACE_FAMILY:
+            role = "font.mono"
+        font = get(role)
+        if family not in {cls.DEFAULT_FAMILY, cls.MONOSPACE_FAMILY}:
+            font.setFamily(family)
         font.setWeight(weight)
         return font
 
@@ -234,60 +240,42 @@ class Fonts:
 class Typography:
     """Spec-compliant typography building blocks (spec §4.2.1).
 
-    All methods return a QFont configured with "Segoe UI" and the correct
-    size / weight.  Use these instead of bare QFont() calls in tool widgets.
-    ``Fonts`` is kept below for backward compatibility.
+    Methods resolve the canonical font tokens with platform fallbacks and zoom.
+    Use font_tokens.bind for widgets that must update while already visible.
+    ``Fonts`` remains a compatibility adapter for older tool code.
     """
 
     _FAMILY = "Segoe UI"
 
     @classmethod
     def h1(cls) -> QFont:
-        """18 pt Bold — primary heading."""
-        f = QFont(cls._FAMILY)
-        f.setPointSize(18)
-        f.setWeight(QFont.Bold)
-        return f
+        from src.rfu.font_tokens import get
+        return get("font.toolHeader")
 
     @classmethod
     def h2(cls) -> QFont:
-        """14 pt Bold — section heading."""
-        f = QFont(cls._FAMILY)
-        f.setPointSize(14)
-        f.setWeight(QFont.Bold)
-        return f
+        from src.rfu.font_tokens import get
+        return get("font.title")
 
     @classmethod
     def h3(cls) -> QFont:
-        """12 pt DemiBold — sub-section heading."""
-        f = QFont(cls._FAMILY)
-        f.setPointSize(12)
-        f.setWeight(QFont.DemiBold)
-        return f
+        from src.rfu.font_tokens import get
+        return get("font.bodyBold")
 
     @classmethod
     def body(cls) -> QFont:
-        """10 pt Regular — body text."""
-        f = QFont(cls._FAMILY)
-        f.setPointSize(10)
-        f.setWeight(QFont.Normal)
-        return f
+        from src.rfu.font_tokens import get
+        return get("font.body")
 
     @classmethod
     def caption(cls) -> QFont:
-        """8 pt Regular — caption / helper text."""
-        f = QFont(cls._FAMILY)
-        f.setPointSize(8)
-        f.setWeight(QFont.Normal)
-        return f
+        from src.rfu.font_tokens import get
+        return get("font.caption")
 
     @classmethod
     def monospace(cls) -> QFont:
-        """9 pt Regular — monospace for log viewers and code widgets."""
-        f = QFont("Consolas")
-        f.setPointSize(9)
-        f.setWeight(QFont.Normal)
-        return f
+        from src.rfu.font_tokens import get
+        return get("font.mono")
 
 
 # ---------------------------------------------------------------------------
@@ -524,7 +512,6 @@ class Styles:
                 border: none;
                 border-radius: 8px;
                 padding: {Spacing.BUTTON_PADDING};
-                font-size: 12px;
                 font-weight: bold;
                 min-width: {Dimensions.BUTTON_MIN_WIDTH}px;
                 min-height: {Dimensions.BUTTON_MIN_HEIGHT}px;
@@ -551,7 +538,6 @@ class Styles:
                 border: none;
                 border-radius: 8px;
                 padding: {Spacing.BUTTON_PADDING};
-                font-size: 12px;
                 font-weight: bold;
                 min-width: {Dimensions.BUTTON_MIN_WIDTH}px;
                 min-height: {Dimensions.BUTTON_MIN_HEIGHT}px;
@@ -574,7 +560,6 @@ class Styles:
                 border-radius: 4px;
                 padding: {Spacing.INPUT_PADDING};
                 color: {Colors.TEXT_PRIMARY};
-                font-size: 12px;
             }}
             QLineEdit:focus, QTextEdit:focus, QPlainTextEdit:focus {{
                 border: 2px solid {Colors.ACCENT};
@@ -591,7 +576,6 @@ class Styles:
         return f"""
             QLabel {{
                 color: {Colors.TEXT_PRIMARY};
-                font-size: 12px;
             }}
         """
 
@@ -601,7 +585,6 @@ class Styles:
         return f"""
             QLabel {{
                 color: {Colors.TEXT_PRIMARY};
-                font-size: 14px;
                 font-weight: bold;
             }}
         """
@@ -847,6 +830,8 @@ class ThemeManager:
     def apply_main_window_theme(window):
         """Apply main window theme to a QMainWindow."""
         window.setStyleSheet(Styles.get_main_window_style())
+        from src.rfu.font_tokens import bind
+        bind(window)
         window.setMinimumSize(
             Dimensions.MAIN_WINDOW_MIN_WIDTH, Dimensions.MAIN_WINDOW_MIN_HEIGHT
         )
@@ -855,6 +840,8 @@ class ThemeManager:
     def apply_utility_window_theme(window):
         """Apply utility window theme to a QDialog or QWidget."""
         window.setStyleSheet(Styles.get_main_window_style())
+        from src.rfu.font_tokens import bind
+        bind(window)
         window.setMinimumSize(
             Dimensions.UTILITY_WINDOW_MIN_WIDTH,
             Dimensions.UTILITY_WINDOW_MIN_HEIGHT,
@@ -864,35 +851,40 @@ class ThemeManager:
     def style_primary_button(button):
         """Apply primary button styling."""
         button.setStyleSheet(Styles.get_primary_button_style())
-        button.setFont(Fonts.get_font(Fonts.BODY_SIZE, Fonts.BOLD))
+        from src.rfu.font_tokens import bind
+        bind(button, "font.bodyBold")
 
     @staticmethod
     def style_secondary_button(button):
         """Apply secondary button styling."""
         button.setStyleSheet(Styles.get_secondary_button_style())
-        button.setFont(Fonts.get_font(Fonts.BODY_SIZE, Fonts.BOLD))
+        from src.rfu.font_tokens import bind
+        bind(button, "font.bodyBold")
 
     @staticmethod
     def style_input_field(widget):
         """Apply input field styling."""
         widget.setStyleSheet(Styles.get_input_field_style())
-        widget.setFont(Fonts.get_font())
+        from src.rfu.font_tokens import bind
+        bind(widget)
 
     @staticmethod
     def style_label(label, is_header=False):
         """Apply label styling."""
+        from src.rfu.font_tokens import bind
         if is_header:
             label.setStyleSheet(Styles.get_header_label_style())
-            label.setFont(Fonts.get_font(Fonts.HEADER_SIZE, Fonts.BOLD))
+            bind(label, "font.toolHeader")
         else:
             label.setStyleSheet(Styles.get_label_style())
-            label.setFont(Fonts.get_font())
+            bind(label)
 
     @staticmethod
     def style_group_box(group_box):
         """Apply group box styling."""
         group_box.setStyleSheet(Styles.get_group_box_style())
-        group_box.setFont(Fonts.get_font(Fonts.BODY_SIZE, Fonts.BOLD))
+        from src.rfu.font_tokens import bind
+        bind(group_box, "font.title")
 
     @staticmethod
     def style_progress_bar(progress_bar):

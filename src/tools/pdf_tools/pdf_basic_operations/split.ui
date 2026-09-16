@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <ui version="4.0">
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">
@@ -9,11 +9,6 @@
     <width>1000</width>
     <height>600</height>
    </rect>
-  </property>
-  <property name="font">
-   <font>
-    <pointsize>12</pointsize>
-   </font>
   </property>
   <property name="windowTitle">
    <string>PDF Splitter</string>
@@ -26,28 +21,24 @@
        <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
          <widget class="QLineEdit" name="inputFileEdit">
-          <property name="font">
-           <font>
-            <pointsize>12</pointsize>
-           </font>
-          </property>
           <property name="placeholderText">
            <string>Select PDF file...</string>
           </property>
           <property name="readOnly">
            <bool>true</bool>
           </property>
+          <property name="rfuLocale_setPlaceholderText" stdset="0">
+           <string notr="true">Legacy.s8d08651f36c55396</string>
+          </property>
          </widget>
         </item>
         <item>
          <widget class="QPushButton" name="browseButton">
-          <property name="font">
-           <font>
-            <pointsize>12</pointsize>
-           </font>
-          </property>
           <property name="text">
            <string>Browse</string>
+          </property>
+          <property name="rfuLocale_setText" stdset="0">
+           <string notr="true">Legacy.s3227aa9666253f7a</string>
           </property>
          </widget>
         </item>
@@ -55,11 +46,6 @@
       </item>
       <item>
        <widget class="QGroupBox" name="splitOptionsGroup">
-        <property name="font">
-         <font>
-          <pointsize>12</pointsize>
-         </font>
-        </property>
         <property name="title">
          <string>Split Options</string>
         </property>
@@ -72,6 +58,9 @@
            <property name="checked">
             <bool>true</bool>
            </property>
+           <property name="rfuLocale_setText" stdset="0">
+            <string notr="true">Legacy.s5a50b77e03069d0f</string>
+           </property>
           </widget>
          </item>
          <item>
@@ -80,6 +69,9 @@
             <widget class="QRadioButton" name="customRangeRadio">
              <property name="text">
               <string>Custom page ranges:</string>
+             </property>
+             <property name="rfuLocale_setText" stdset="0">
+              <string notr="true">Legacy.s85abfee855ca5580</string>
              </property>
             </widget>
            </item>
@@ -91,6 +83,9 @@
              <property name="placeholderText">
               <string>e.g., 1-3,4-6,7-9</string>
              </property>
+             <property name="rfuLocale_setPlaceholderText" stdset="0">
+              <string notr="true">Legacy.sfc28b567e01ad8dc</string>
+             </property>
             </widget>
            </item>
           </layout>
@@ -101,6 +96,9 @@
             <widget class="QRadioButton" name="fixedPagesRadio">
              <property name="text">
               <string>Fixed number of pages:</string>
+             </property>
+             <property name="rfuLocale_setText" stdset="0">
+              <string notr="true">Legacy.sa773f11b36828b5f</string>
              </property>
             </widget>
            </item>
@@ -120,32 +118,31 @@
           </layout>
          </item>
         </layout>
+        <property name="rfuLocale_setTitle" stdset="0">
+         <string notr="true">Legacy.s0a7e1e42ce666e40</string>
+        </property>
        </widget>
       </item>
       <item>
        <widget class="QPushButton" name="splitButton">
-        <property name="font">
-         <font>
-          <pointsize>12</pointsize>
-         </font>
-        </property>
         <property name="text">
          <string>Split PDF</string>
+        </property>
+        <property name="rfuLocale_setText" stdset="0">
+         <string notr="true">Legacy.s4f1b846cb144435e</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QTextEdit" name="outputText">
-        <property name="font">
-         <font>
-          <pointsize>12</pointsize>
-         </font>
-        </property>
         <property name="readOnly">
          <bool>true</bool>
         </property>
         <property name="placeholderText">
          <string>Operation status and results will appear here...</string>
+        </property>
+        <property name="rfuLocale_setPlaceholderText" stdset="0">
+         <string notr="true">Legacy.s3a170a5c58931df1</string>
         </property>
        </widget>
       </item>
@@ -170,6 +167,9 @@
           <property name="text">
            <string>Previous</string>
           </property>
+          <property name="rfuLocale_setText" stdset="0">
+           <string notr="true">Legacy.sa57b08a480b822a0</string>
+          </property>
          </widget>
         </item>
         <item>
@@ -180,12 +180,18 @@
           <property name="alignment">
            <set>Qt::AlignCenter</set>
           </property>
+          <property name="rfuLocale_setText" stdset="0">
+           <string notr="true">Legacy.s3471f557170a112d</string>
+          </property>
          </widget>
         </item>
         <item>
          <widget class="QPushButton" name="nextButton">
           <property name="text">
            <string>Next</string>
+          </property>
+          <property name="rfuLocale_setText" stdset="0">
+           <string notr="true">Legacy.s1ff57a29d7c9d11b</string>
           </property>
          </widget>
         </item>
@@ -208,11 +214,14 @@
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="actionExit"/>
+    <addaction name="actionExit" />
+    <property name="rfuLocale_setTitle" stdset="0">
+     <string notr="true">Legacy.s50009ce1da4d15e1</string>
+    </property>
    </widget>
-   <addaction name="menuFile"/>
+   <addaction name="menuFile" />
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QStatusBar" name="statusbar" />
   <action name="actionExit">
    <property name="text">
     <string>Exit</string>
@@ -220,8 +229,14 @@
    <property name="shortcut">
     <string>Ctrl+Q</string>
    </property>
+   <property name="rfuLocale_setText" stdset="0">
+    <string notr="true">Legacy.sd17d84a604994b72</string>
+   </property>
   </action>
+  <property name="rfuLocale_setWindowTitle" stdset="0">
+   <string notr="true">Legacy.s3172a098f9e0b59e</string>
+  </property>
  </widget>
- <resources/>
- <connections/>
+ <resources />
+ <connections />
 </ui>

@@ -2,6 +2,8 @@
 """
 Simple Duplicate Finder GUI for Richard's File Utilities
 """
+from src.rfu.localization import localized_widget as _ui_widget, bind_literal as _ui_bind
+from src.rfu import font_tokens
 
 import hashlib
 import logging
@@ -228,14 +230,14 @@ class DuplicateFinderApp(StandardWindow):
         """Show help dialog for Duplicate Finder tool."""
         help_text = """
         <h2>Duplicate Finder - Help</h2>
-        
+
         <h3>How to Find Duplicates:</h3>
         <ul>
         <li><b>Select Directory:</b> Choose the folder to scan for duplicates</li>
         <li><b>Start Scan:</b> Begin searching for duplicate files</li>
         <li><b>Review Results:</b> Examine found duplicates in the results list</li>
         </ul>
-        
+
         <h3>Duplicate Detection:</h3>
         <ul>
         <li><b>File Comparison:</b> Uses MD5 checksums for accurate detection</li>
@@ -243,7 +245,7 @@ class DuplicateFinderApp(StandardWindow):
         <li><b>Content Verification:</b> Compares actual file content</li>
         <li><b>Safe Detection:</b> Never modifies original files</li>
         </ul>
-        
+
         <h3>Results Management:</h3>
         <ul>
         <li><b>Group Display:</b> Duplicates grouped by content similarity</li>
@@ -251,7 +253,7 @@ class DuplicateFinderApp(StandardWindow):
         <li><b>Size Details:</b> File sizes and modification dates</li>
         <li><b>Export Options:</b> Save results to file for review</li>
         </ul>
-        
+
         <h3>Best Practices:</h3>
         <ul>
         <li><b>Backup First:</b> Always backup important files before cleanup</li>
@@ -259,7 +261,7 @@ class DuplicateFinderApp(StandardWindow):
         <li><b>Keep Originals:</b> Preserve files in primary locations</li>
         <li><b>Scan Regularly:</b> Periodic scans help maintain organization</li>
         </ul>
-        
+
         <h3>Keyboard Shortcuts:</h3>
         <ul>
         <li><b>Ctrl+Q:</b> Exit application</li>
@@ -304,11 +306,11 @@ class DuplicateFinderApp(StandardWindow):
             layout = QVBoxLayout(central_widget)
 
         # Add header
-        header_label = QLabel("Duplicate File Finder")
+        header_label = _ui_widget(QLabel, 'Legacy.sfba9a040c5d31d24', 'setText')
         header_label.setStyleSheet(
             f"""
             QLabel {{
-                font-size: 18px;
+
                 font-weight: bold;
                 color: {token('text_primary')};
                 padding: 10px;
@@ -318,29 +320,30 @@ class DuplicateFinderApp(StandardWindow):
             }}
         """
         )
+        font_tokens.bind(header_label, "font.toolHeader")
         layout.addWidget(header_label)
 
         # Directory selection
-        dir_group = QGroupBox("Directory Selection")
+        dir_group = _ui_widget(QGroupBox, 'Legacy.s30d2d5574cce5ea3', 'setTitle')
         dir_layout = QVBoxLayout(dir_group)
 
-        select_button = SecondaryButton("Select Directory")
+        select_button = _ui_widget(SecondaryButton, 'Legacy.s220c3fe6289ca828', 'setText')
         select_button.clicked.connect(self.select_directory)
         dir_layout.addWidget(select_button)
 
-        self.dir_label = QLabel("No directory selected")
+        self.dir_label = _ui_widget(QLabel, 'Legacy.sbf355de778591b63', 'setText')
         dir_layout.addWidget(self.dir_label)
 
         layout.addWidget(dir_group)
 
         # Find button
-        find_button = PrimaryButton("Find Duplicates")
+        find_button = _ui_widget(PrimaryButton, 'Legacy.s464e1de43383aadf', 'setText')
         find_button.clicked.connect(self.find_duplicates)
         layout.addWidget(find_button)
 
         # Results
         self.results_list = QListWidget()
-        self.results_list.setAccessibleName("Duplicate files results")
+        _ui_bind(self.results_list, 'setAccessibleName', 'Legacy.s78c341a0d40b5add')
         layout.addWidget(self.results_list)
 
         # Loading indicator (PERF-3a/3b)

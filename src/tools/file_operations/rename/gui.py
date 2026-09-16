@@ -4,6 +4,8 @@ Enhanced File Rename GUI Wrapper
 This module provides a PyQt5 GUI wrapper for the file renaming functionality
 using the utilities logic framework.
 """
+from src.rfu.localization import localized_widget as _ui_widget, bind_literal as _ui_bind
+from src.gui import menu_surfaces
 
 import sys
 from dataclasses import dataclass
@@ -139,7 +141,7 @@ class FileRenameWindow(StandardWindow):
 
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("File Rename Tool - Enhanced")
+        _ui_bind(self, 'setWindowTitle', 'Legacy.se632e3a0880fb972')
         self.setGeometry(100, 100, 1200, 800)
 
         # Initialize components
@@ -185,19 +187,19 @@ class FileRenameWindow(StandardWindow):
         layout = QVBoxLayout(panel)
 
         # File selection group
-        file_group = QGroupBox("File Selection")
+        file_group = _ui_widget(QGroupBox, 'Legacy.s1eef7fd26962e3d2', 'setTitle')
         file_layout = QVBoxLayout(file_group)
 
         # File selection buttons
         btn_layout = QHBoxLayout()
-        self.btn_select_files = QPushButton("Select Files")
-        self.btn_select_files.setAccessibleName("Select files to rename")
+        self.btn_select_files = _ui_widget(QPushButton, 'Legacy.sff52da8b75c1415a', 'setText')
+        _ui_bind(self.btn_select_files, 'setAccessibleName', 'Legacy.s582306e7fa513e63')
         self.btn_select_files.setMinimumHeight(44)
-        self.btn_select_folder = QPushButton("Select Folder")
-        self.btn_select_folder.setAccessibleName("Select folder of files to rename")
+        self.btn_select_folder = _ui_widget(QPushButton, 'Legacy.se597da9c984517f8', 'setText')
+        _ui_bind(self.btn_select_folder, 'setAccessibleName', 'Legacy.s36c788320a6a7305')
         self.btn_select_folder.setMinimumHeight(44)
-        self.btn_clear_files = QPushButton("Clear")
-        self.btn_clear_files.setAccessibleName("Clear selected files")
+        self.btn_clear_files = _ui_widget(QPushButton, 'Legacy.s83b12c2216efb4fd', 'setText')
+        _ui_bind(self.btn_clear_files, 'setAccessibleName', 'Legacy.s91792e6c58ae0c94')
         self.btn_clear_files.setMinimumHeight(44)
 
         btn_layout.addWidget(self.btn_select_files)
@@ -206,19 +208,19 @@ class FileRenameWindow(StandardWindow):
         file_layout.addLayout(btn_layout)
 
         # File count label
-        self.lbl_file_count = QLabel("No files selected")
+        self.lbl_file_count = _ui_widget(QLabel, 'Legacy.s0c4ba345e8af497a', 'setText')
         file_layout.addWidget(self.lbl_file_count)
 
         layout.addWidget(file_group)
 
         # Rename mode group
-        mode_group = QGroupBox("Rename Mode")
+        mode_group = _ui_widget(QGroupBox, 'Legacy.sca6d1819fb4b2a07', 'setTitle')
         mode_layout = QGridLayout(mode_group)
 
         # Mode selection
-        mode_layout.addWidget(QLabel("Mode:"), 0, 0)
+        mode_layout.addWidget(_ui_widget(QLabel, 'Legacy.s7ce1afa3f281b07b', 'setText'), 0, 0)
         self.combo_mode = QComboBox()
-        self.combo_mode.setAccessibleName("Rename mode")
+        _ui_bind(self.combo_mode, 'setAccessibleName', 'Legacy.s02e33d9e4d4013be')
         self.combo_mode.addItems(
             [
                 "prefix",
@@ -241,23 +243,23 @@ class FileRenameWindow(StandardWindow):
         mode_layout.addWidget(self.combo_mode, 0, 1)
 
         # Text input
-        mode_layout.addWidget(QLabel("Text:"), 1, 0)
+        mode_layout.addWidget(_ui_widget(QLabel, 'Legacy.s796961b8f89ef6cd', 'setText'), 1, 0)
         self.edit_text = QLineEdit()
-        self.edit_text.setAccessibleName("Rename text or pattern")
-        self.edit_text.setPlaceholderText("Enter text or pattern")
+        _ui_bind(self.edit_text, 'setAccessibleName', 'Legacy.sc57b4ea341114a4e')
+        _ui_bind(self.edit_text, 'setPlaceholderText', 'Legacy.s70492bd41d6b1eef')
         mode_layout.addWidget(self.edit_text, 1, 1)
 
         # Date format
-        mode_layout.addWidget(QLabel("Date Format:"), 2, 0)
+        mode_layout.addWidget(_ui_widget(QLabel, 'Legacy.sa2c3d2e05607b0e6', 'setText'), 2, 0)
         self.edit_date_format = QLineEdit()
-        self.edit_date_format.setAccessibleName("Date format string")
-        self.edit_date_format.setPlaceholderText("YYYY-MM-DD_HHMMSS")
+        _ui_bind(self.edit_date_format, 'setAccessibleName', 'Legacy.saf189a1d3172f8e4')
+        _ui_bind(self.edit_date_format, 'setPlaceholderText', 'Legacy.sc2e065a67bc0ecbf')
         mode_layout.addWidget(self.edit_date_format, 2, 1)
 
         # Counter start
-        mode_layout.addWidget(QLabel("Start Counter:"), 3, 0)
+        mode_layout.addWidget(_ui_widget(QLabel, 'Legacy.s7143d1d7a7336ae7', 'setText'), 3, 0)
         self.spin_counter = QSpinBox()
-        self.spin_counter.setAccessibleName("Counter start value")
+        _ui_bind(self.spin_counter, 'setAccessibleName', 'Legacy.sbebb40c1f493084f')
         self.spin_counter.setMinimumHeight(44)
         self.spin_counter.setMinimum(1)
         self.spin_counter.setMaximum(9999)
@@ -267,30 +269,30 @@ class FileRenameWindow(StandardWindow):
         layout.addWidget(mode_group)
 
         # Options group
-        options_group = QGroupBox("Options")
+        options_group = _ui_widget(QGroupBox, 'Legacy.sd0db8b5e364b6989', 'setTitle')
         options_layout = QVBoxLayout(options_group)
 
-        self.chk_preview = QCheckBox("Show preview before rename")
-        self.chk_preview.setAccessibleName("Show rename preview")
+        self.chk_preview = _ui_widget(QCheckBox, 'Legacy.s7eee09f9a25b2b5c', 'setText')
+        _ui_bind(self.chk_preview, 'setAccessibleName', 'Legacy.sae64023788829dc3')
         self.chk_preview.setMinimumHeight(44)
         self.chk_preview.setChecked(True)
         options_layout.addWidget(self.chk_preview)
 
-        self.chk_backup = QCheckBox("Create backup before rename")
-        self.chk_backup.setAccessibleName("Create backup before rename")
+        self.chk_backup = _ui_widget(QCheckBox, 'Legacy.s8cc8d8f9fadf60e7', 'setText')
+        _ui_bind(self.chk_backup, 'setAccessibleName', 'Legacy.s8cc8d8f9fadf60e7')
         self.chk_backup.setMinimumHeight(44)
         options_layout.addWidget(self.chk_backup)
 
-        self.chk_recursive = QCheckBox("Include subdirectories")
-        self.chk_recursive.setAccessibleName("Include subdirectories in rename")
+        self.chk_recursive = _ui_widget(QCheckBox, 'Legacy.s7fe3b250ab4b4940', 'setText')
+        _ui_bind(self.chk_recursive, 'setAccessibleName', 'Legacy.sbab1e6b508c03514')
         self.chk_recursive.setMinimumHeight(44)
         options_layout.addWidget(self.chk_recursive)
 
         layout.addWidget(options_group)
 
         # Preview button
-        self.btn_preview = QPushButton("Generate Preview")
-        self.btn_preview.setAccessibleName("Generate rename preview")
+        self.btn_preview = _ui_widget(QPushButton, 'Legacy.s8da3a067a8cc5d09', 'setText')
+        _ui_bind(self.btn_preview, 'setAccessibleName', 'Legacy.s1673bc0277de1db9')
         self.btn_preview.setMinimumHeight(44)
         self.btn_preview.setStyleSheet("QPushButton { font-weight: bold; }")
         layout.addWidget(self.btn_preview)
@@ -305,7 +307,7 @@ class FileRenameWindow(StandardWindow):
 
         # Tab widget for different views
         self.tab_widget = QTabWidget()
-        self.tab_widget.setAccessibleName("Rename preview tabs")
+        _ui_bind(self.tab_widget, 'setAccessibleName', 'Legacy.s13c05d8f6d18fc3c')
         layout.addWidget(self.tab_widget)
 
         # Files tab
@@ -313,9 +315,9 @@ class FileRenameWindow(StandardWindow):
         files_layout = QVBoxLayout(files_tab)
 
         # File list
-        files_layout.addWidget(QLabel("Selected Files:"))
+        files_layout.addWidget(_ui_widget(QLabel, 'Legacy.sa5b10b7bd507a96e', 'setText'))
         self.list_files = QListWidget()
-        self.list_files.setAccessibleName("Selected files for rename")
+        _ui_bind(self.list_files, 'setAccessibleName', 'Legacy.s67ebdcdd5dc43309')
         files_layout.addWidget(self.list_files)
 
         self.tab_widget.addTab(files_tab, "Files")
@@ -325,9 +327,9 @@ class FileRenameWindow(StandardWindow):
         preview_layout = QVBoxLayout(preview_tab)
 
         # Preview table
-        preview_layout.addWidget(QLabel("Rename Preview:"))
+        preview_layout.addWidget(_ui_widget(QLabel, 'Legacy.s1d505c621288091e', 'setText'))
         self.table_preview = QTableWidget()
-        self.table_preview.setAccessibleName("Rename preview table")
+        _ui_bind(self.table_preview, 'setAccessibleName', 'Legacy.sb139eb9a8a1541ab')
         self.table_preview.setColumnCount(4)
         self.table_preview.setHorizontalHeaderLabels(
             ["Original Name", "New Name", "Status", "Path"]
@@ -349,9 +351,9 @@ class FileRenameWindow(StandardWindow):
         results_layout = QVBoxLayout(results_tab)
 
         # Results text
-        results_layout.addWidget(QLabel("Operation Results:"))
+        results_layout.addWidget(_ui_widget(QLabel, 'Legacy.s0f8e2efaa6600366', 'setText'))
         self.text_results = QTextEdit()
-        self.text_results.setAccessibleName("Rename operation results")
+        _ui_bind(self.text_results, 'setAccessibleName', 'Legacy.s632f0d85bbf1b706')
         self.text_results.setReadOnly(True)
         self.text_results.setMaximumHeight(200)
         results_layout.addWidget(self.text_results)
@@ -371,14 +373,14 @@ class FileRenameWindow(StandardWindow):
         layout.addWidget(self.progress_bar)
 
         # Status label
-        self.lbl_status = QLabel("Ready")
+        self.lbl_status = _ui_widget(QLabel, 'Legacy.s5fa7aac5375c5815', 'setText')
         layout.addWidget(self.lbl_status)
 
         # Action buttons
         btn_layout = QHBoxLayout()
 
-        self.btn_rename = QPushButton("Start Rename")
-        self.btn_rename.setAccessibleName("Start rename operation")
+        self.btn_rename = _ui_widget(QPushButton, 'Legacy.sb097eebdde7bd240', 'setText')
+        _ui_bind(self.btn_rename, 'setAccessibleName', 'Legacy.sf563aa222ba05741')
         self.btn_rename.setMinimumHeight(44)
         self.btn_rename.setStyleSheet(
             """
@@ -394,13 +396,13 @@ class FileRenameWindow(StandardWindow):
         """
         )
 
-        self.btn_cancel = QPushButton("Cancel")
-        self.btn_cancel.setAccessibleName("Cancel rename operation")
+        self.btn_cancel = _ui_widget(QPushButton, 'Legacy.s19766ed6ccb2f4a3', 'setText')
+        _ui_bind(self.btn_cancel, 'setAccessibleName', 'Legacy.s587e9d4a8377a77b')
         self.btn_cancel.setMinimumHeight(44)
         self.btn_cancel.setEnabled(False)
 
-        self.btn_reset = QPushButton("Reset")
-        self.btn_reset.setAccessibleName("Reset rename form")
+        self.btn_reset = _ui_widget(QPushButton, 'Legacy.sdaee7606b339f3c3', 'setText')
+        _ui_bind(self.btn_reset, 'setAccessibleName', 'Legacy.s5754456351064909')
         self.btn_reset.setMinimumHeight(44)
 
         btn_layout.addWidget(self.btn_rename)
@@ -771,9 +773,9 @@ class FileRenameWindow(StandardWindow):
         if file_menu is None:
             return None
 
-        exit_action = QAction("E&xit", self)
+        exit_action = _ui_widget(QAction, 'Legacy.s2eb7984c42b97146', 'setText', self)
         exit_action.setShortcut("Ctrl+Q")
-        exit_action.setStatusTip("Close Rename Files")
+        _ui_bind(exit_action, 'setStatusTip', 'Legacy.s909d2d80aa165d77')
         exit_action.triggered.connect(self.close)
         file_menu.addAction(exit_action)
         return exit_action
@@ -785,7 +787,7 @@ class FileRenameWindow(StandardWindow):
             if label == "file":
                 return action.menu()
 
-        return menubar.addMenu("&File")
+        return menu_surfaces.add_menu(menubar, '&File')
 
     @staticmethod
     def _normalize_action_text(label: str) -> str:

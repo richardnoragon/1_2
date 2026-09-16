@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <ui version="4.0">
  <class>OfficeMetadataEditor</class>
  <widget class="QMainWindow" name="OfficeMetadataEditor">
@@ -24,7 +24,7 @@
     background-color: #f0f0f0;
 }
 QLabel {
-    font-size: 12px;
+
     color: #333333;
 }
 QPushButton {
@@ -33,7 +33,7 @@ QPushButton {
     border: none;
     padding: 8px 16px;
     border-radius: 4px;
-    font-size: 12px;
+
 }
 QPushButton:hover {
     background-color: #005a9e;
@@ -78,10 +78,8 @@ QMenuBar::item:selected {
           <property name="text">
            <string>Selected Files:</string>
           </property>
-          <property name="font">
-           <font>
-            <pointsize>12</pointsize>
-           </font>
+          <property name="rfuLocale_setText" stdset="0">
+           <string notr="true">Legacy.sa5b10b7bd507a96e</string>
           </property>
          </widget>
         </item>
@@ -104,10 +102,8 @@ QMenuBar::item:selected {
           <property name="text">
            <string>Metadata Properties:</string>
           </property>
-          <property name="font">
-           <font>
-            <pointsize>12</pointsize>
-           </font>
+          <property name="rfuLocale_setText" stdset="0">
+           <string notr="true">Legacy.s3a9efa7220bb1bf9</string>
           </property>
          </widget>
         </item>
@@ -121,60 +117,52 @@ QMenuBar::item:selected {
             <property name="text">
              <string>Title:</string>
             </property>
-            <property name="font">
-             <font>
-              <pointsize>12</pointsize>
-             </font>
+            <property name="rfuLocale_setText" stdset="0">
+             <string notr="true">Legacy.secd11fd9f6ba3ceb</string>
             </property>
            </widget>
           </item>
           <item row="0" column="1">
-           <widget class="QListView" name="title_ListView"/>
+           <widget class="QListView" name="title_ListView" />
           </item>
           <item row="1" column="0">
            <widget class="QLabel" name="authorLabel">
             <property name="text">
              <string>Author:</string>
             </property>
-            <property name="font">
-             <font>
-              <pointsize>12</pointsize>
-             </font>
+            <property name="rfuLocale_setText" stdset="0">
+             <string notr="true">Legacy.s95a3fc6587c211b7</string>
             </property>
            </widget>
           </item>
           <item row="1" column="1">
-           <widget class="QListView" name="author_ListView"/>
+           <widget class="QListView" name="author_ListView" />
           </item>
           <item row="2" column="0">
            <widget class="QLabel" name="createdLabel">
             <property name="text">
              <string>Created:</string>
             </property>
-            <property name="font">
-             <font>
-              <pointsize>12</pointsize>
-             </font>
+            <property name="rfuLocale_setText" stdset="0">
+             <string notr="true">Legacy.s22d435a3711855db</string>
             </property>
            </widget>
           </item>
           <item row="2" column="1">
-           <widget class="QListView" name="created_ListView"/>
+           <widget class="QListView" name="created_ListView" />
           </item>
           <item row="3" column="0">
            <widget class="QLabel" name="modifiedLabel">
             <property name="text">
              <string>Modified:</string>
             </property>
-            <property name="font">
-             <font>
-              <pointsize>12</pointsize>
-             </font>
+            <property name="rfuLocale_setText" stdset="0">
+             <string notr="true">Legacy.s601c718acaada9b2</string>
             </property>
            </widget>
           </item>
           <item row="3" column="1">
-           <widget class="QListView" name="modified_ListView"/>
+           <widget class="QListView" name="modified_ListView" />
           </item>
          </layout>
         </item>
@@ -208,6 +196,9 @@ QMenuBar::item:selected {
         <property name="text">
          <string>Apply Changes</string>
         </property>
+        <property name="rfuLocale_setText" stdset="0">
+         <string notr="true">Legacy.sd80d0faa58963b92</string>
+        </property>
        </widget>
       </item>
      </layout>
@@ -227,19 +218,25 @@ QMenuBar::item:selected {
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="actionSelect_Files"/>
-    <addaction name="separator"/>
-    <addaction name="actionExit"/>
+    <addaction name="actionSelect_Files" />
+    <addaction name="separator" />
+    <addaction name="actionExit" />
+    <property name="rfuLocale_setTitle" stdset="0">
+     <string notr="true">Legacy.s50009ce1da4d15e1</string>
+    </property>
    </widget>
-   <addaction name="menuFile"/>
+   <addaction name="menuFile" />
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QStatusBar" name="statusbar" />
   <action name="actionSelect_Files">
    <property name="text">
     <string>Select Files...</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+O</string>
+   </property>
+   <property name="rfuLocale_setText" stdset="0">
+    <string notr="true">Legacy.s4fb6a1372204cd5e</string>
    </property>
   </action>
   <action name="actionExit">
@@ -249,8 +246,14 @@ QMenuBar::item:selected {
    <property name="shortcut">
     <string>Alt+F4</string>
    </property>
+   <property name="rfuLocale_setText" stdset="0">
+    <string notr="true">Legacy.sd17d84a604994b72</string>
+   </property>
   </action>
+  <property name="rfuLocale_setWindowTitle" stdset="0">
+   <string notr="true">Legacy.sd857a48512ceb65e</string>
+  </property>
  </widget>
- <resources/>
- <connections/>
+ <resources />
+ <connections />
 </ui>

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <ui version="4.0">
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">
@@ -42,6 +42,9 @@
           <property name="text">
            <string>Add Files</string>
           </property>
+          <property name="rfuLocale_setText" stdset="0">
+           <string notr="true">Legacy.s7e69772d579a9448</string>
+          </property>
          </widget>
         </item>
         <item>
@@ -49,12 +52,18 @@
           <property name="text">
            <string>Remove Selected</string>
           </property>
+          <property name="rfuLocale_setText" stdset="0">
+           <string notr="true">Legacy.s859af8fa198d67ac</string>
+          </property>
          </widget>
         </item>
         <item>
          <widget class="QPushButton" name="mergeButton">
           <property name="text">
            <string>Merge PDFs</string>
+          </property>
+          <property name="rfuLocale_setText" stdset="0">
+           <string notr="true">Legacy.s43d1539b7596aa88</string>
           </property>
          </widget>
         </item>
@@ -81,6 +90,9 @@
           <property name="text">
            <string>Previous</string>
           </property>
+          <property name="rfuLocale_setText" stdset="0">
+           <string notr="true">Legacy.sa57b08a480b822a0</string>
+          </property>
          </widget>
         </item>
         <item>
@@ -91,12 +103,18 @@
           <property name="alignment">
            <set>Qt::AlignCenter</set>
           </property>
+          <property name="rfuLocale_setText" stdset="0">
+           <string notr="true">Legacy.s3471f557170a112d</string>
+          </property>
          </widget>
         </item>
         <item>
          <widget class="QPushButton" name="nextButton">
           <property name="text">
            <string>Next</string>
+          </property>
+          <property name="rfuLocale_setText" stdset="0">
+           <string notr="true">Legacy.s1ff57a29d7c9d11b</string>
           </property>
          </widget>
         </item>
@@ -119,11 +137,14 @@
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="actionExit"/>
+    <addaction name="actionExit" />
+    <property name="rfuLocale_setTitle" stdset="0">
+     <string notr="true">Legacy.s50009ce1da4d15e1</string>
+    </property>
    </widget>
-   <addaction name="menuFile"/>
+   <addaction name="menuFile" />
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QStatusBar" name="statusbar" />
   <action name="actionExit">
    <property name="text">
     <string>Exit</string>
@@ -131,8 +152,14 @@
    <property name="shortcut">
     <string>Ctrl+Q</string>
    </property>
+   <property name="rfuLocale_setText" stdset="0">
+    <string notr="true">Legacy.sd17d84a604994b72</string>
+   </property>
   </action>
+  <property name="rfuLocale_setWindowTitle" stdset="0">
+   <string notr="true">Legacy.s7e0b7e5ff797ef8b</string>
+  </property>
  </widget>
- <resources/>
- <connections/>
+ <resources />
+ <connections />
 </ui>

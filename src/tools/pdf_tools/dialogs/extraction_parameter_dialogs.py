@@ -3,6 +3,8 @@
 PDF Extraction Parameter Dialogs - Phase 2.2 Implementation
 User interface dialogs for PDF extraction operations following established patterns
 """
+from src.rfu.localization import localized_widget as _ui_widget, bind_literal as _ui_bind
+from src.rfu import font_tokens
 
 import logging
 import os
@@ -69,7 +71,7 @@ class PDFExtractionDialogBase(QDialog):
             """
             QDialog {
                 background-color: {token('window_background')};
-                font-family: "Segoe UI", Arial, sans-serif;
+
             }
             QGroupBox {
                 font-weight: bold;
@@ -99,6 +101,7 @@ class PDFExtractionDialogBase(QDialog):
             }
         """
         )
+        font_tokens.bind(self, "font.body")
 
         self.init_ui()
         self.setup_connections()
@@ -151,7 +154,7 @@ class PDFTextExtractionDialog(PDFExtractionDialogBase):
         layout.setSpacing(15)
 
         # Input file section
-        input_group = QGroupBox("Input PDF File")
+        input_group = _ui_widget(QGroupBox, 'Legacy.s22bc9850e3d02875', 'setTitle')
         input_layout = QHBoxLayout(input_group)
 
         self.input_edit = TextInput(
@@ -162,14 +165,14 @@ class PDFTextExtractionDialog(PDFExtractionDialogBase):
         self.input_edit.setReadOnly(True)
         input_layout.addWidget(self.input_edit)
 
-        self.browse_input_btn = SecondaryButton("Browse...")
-        self.browse_input_btn.setAccessibleName("Browse for input PDF file")
+        self.browse_input_btn = _ui_widget(SecondaryButton, 'Legacy.sc58a6bd402efb06c', 'setText')
+        _ui_bind(self.browse_input_btn, 'setAccessibleName', 'Legacy.s6a0c40ebf4735e07')
         input_layout.addWidget(self.browse_input_btn)
 
         layout.addWidget(input_group)
 
         # Output file section
-        output_group = QGroupBox("Output Text File")
+        output_group = _ui_widget(QGroupBox, 'Legacy.s1f255907a60dd154', 'setTitle')
         output_layout = QHBoxLayout(output_group)
 
         self.output_edit = TextInput(
@@ -179,19 +182,19 @@ class PDFTextExtractionDialog(PDFExtractionDialogBase):
         )
         output_layout.addWidget(self.output_edit)
 
-        self.browse_output_btn = SecondaryButton("Browse...")
-        self.browse_output_btn.setAccessibleName("Browse for output file")
+        self.browse_output_btn = _ui_widget(SecondaryButton, 'Legacy.sc58a6bd402efb06c', 'setText')
+        _ui_bind(self.browse_output_btn, 'setAccessibleName', 'Legacy.sfc96835debadaf35')
         output_layout.addWidget(self.browse_output_btn)
 
         layout.addWidget(output_group)
 
         # Extraction options
-        options_group = QGroupBox("Extraction Options")
+        options_group = _ui_widget(QGroupBox, 'Legacy.s58426c87d69b9dc1', 'setTitle')
         options_layout = QFormLayout(options_group)
 
         # Extraction method
         self.method_combo = QComboBox()
-        self.method_combo.setAccessibleName("Text extraction method")
+        _ui_bind(self.method_combo, 'setAccessibleName', 'Legacy.s03d9cd38f08b1a7d')
         self.method_combo.setMinimumHeight(44)
         self.method_combo.addItems(["pdfplumber", "pymupdf"])
         self.method_combo.setCurrentText("pdfplumber")
@@ -199,53 +202,53 @@ class PDFTextExtractionDialog(PDFExtractionDialogBase):
 
         # Page range
         page_range_layout = QHBoxLayout()
-        self.page_range_check = QCheckBox("Specific page range")
-        self.page_range_check.setAccessibleName("Filter by specific page range")
+        self.page_range_check = _ui_widget(QCheckBox, 'Legacy.s500277376e9ea8fc', 'setText')
+        _ui_bind(self.page_range_check, 'setAccessibleName', 'Legacy.sb92076db77e8dd15')
         self.page_range_check.setMinimumHeight(44)
         page_range_layout.addWidget(self.page_range_check)
 
         self.start_page_spin = QSpinBox()
-        self.start_page_spin.setAccessibleName("Start page number")
+        _ui_bind(self.start_page_spin, 'setAccessibleName', 'Legacy.s8cefd6c52d03fe65')
         self.start_page_spin.setMinimumHeight(44)
         self.start_page_spin.setMinimum(1)
         self.start_page_spin.setMaximum(9999)
         self.start_page_spin.setEnabled(False)
-        page_range_layout.addWidget(QLabel("From:"))
+        page_range_layout.addWidget(_ui_widget(QLabel, 'Legacy.sdc45d36f35e84e07', 'setText'))
         page_range_layout.addWidget(self.start_page_spin)
 
         self.end_page_spin = QSpinBox()
-        self.end_page_spin.setAccessibleName("End page number")
+        _ui_bind(self.end_page_spin, 'setAccessibleName', 'Legacy.sf1aa36b86021c1ba')
         self.end_page_spin.setMinimumHeight(44)
         self.end_page_spin.setMinimum(1)
         self.end_page_spin.setMaximum(9999)
         self.end_page_spin.setEnabled(False)
-        page_range_layout.addWidget(QLabel("To:"))
+        page_range_layout.addWidget(_ui_widget(QLabel, 'Legacy.s2b5fc5c94f64250c', 'setText'))
         page_range_layout.addWidget(self.end_page_spin)
 
         page_range_layout.addStretch()
         options_layout.addRow(page_range_layout)
 
         # Include formatting
-        self.formatting_check = QCheckBox("Preserve text formatting")
-        self.formatting_check.setAccessibleName("Preserve text formatting")
+        self.formatting_check = _ui_widget(QCheckBox, 'Legacy.s0d31c0796a39ca16', 'setText')
+        _ui_bind(self.formatting_check, 'setAccessibleName', 'Legacy.s0d31c0796a39ca16')
         self.formatting_check.setMinimumHeight(44)
         options_layout.addRow("Formatting:", self.formatting_check)
 
         layout.addWidget(options_group)
 
         # Preview section
-        preview_group = QGroupBox("Preview")
+        preview_group = _ui_widget(QGroupBox, 'Legacy.s324b134f57c70c72', 'setTitle')
         preview_layout = QVBoxLayout(preview_group)
 
         self.preview_text = QPlainTextEdit()
-        self.preview_text.setAccessibleName("Text extraction preview")
+        _ui_bind(self.preview_text, 'setAccessibleName', 'Legacy.s5f55425378a6910b')
         self.preview_text.setMaximumHeight(100)
-        self.preview_text.setPlaceholderText("Text preview will appear here...")
+        _ui_bind(self.preview_text, 'setPlaceholderText', 'Legacy.s947db4c831f3a16c')
         self.preview_text.setReadOnly(True)
         preview_layout.addWidget(self.preview_text)
 
-        self.preview_btn = SecondaryButton("Preview Text")
-        self.preview_btn.setAccessibleName("Preview text extraction")
+        self.preview_btn = _ui_widget(SecondaryButton, 'Legacy.sd486e2c6718ba223', 'setText')
+        _ui_bind(self.preview_btn, 'setAccessibleName', 'Legacy.s32387aa545e2e282')
         self.preview_btn.setEnabled(False)
         preview_layout.addWidget(self.preview_btn)
 
@@ -255,12 +258,12 @@ class PDFTextExtractionDialog(PDFExtractionDialogBase):
         button_layout = QHBoxLayout()
         button_layout.addStretch()
 
-        self.cancel_btn = SecondaryButton("Cancel")
-        self.cancel_btn.setAccessibleName("Cancel text extraction")
+        self.cancel_btn = _ui_widget(SecondaryButton, 'Legacy.s19766ed6ccb2f4a3', 'setText')
+        _ui_bind(self.cancel_btn, 'setAccessibleName', 'Legacy.sd832d706f7175c10')
         button_layout.addWidget(self.cancel_btn)
 
-        self.extract_btn = PrimaryButton("Extract Text")
-        self.extract_btn.setAccessibleName("Extract text from PDF")
+        self.extract_btn = _ui_widget(PrimaryButton, 'Legacy.s9ab5926ba4cd7a39', 'setText')
+        _ui_bind(self.extract_btn, 'setAccessibleName', 'Legacy.sb659675ab4773bbb')
         self.extract_btn.setEnabled(False)
         button_layout.addWidget(self.extract_btn)
 
@@ -359,7 +362,7 @@ class PDFImageExtractionDialog(PDFExtractionDialogBase):
         layout.setSpacing(15)
 
         # Input file section
-        input_group = QGroupBox("Input PDF File")
+        input_group = _ui_widget(QGroupBox, 'Legacy.s22bc9850e3d02875', 'setTitle')
         input_layout = QHBoxLayout(input_group)
 
         self.input_edit = TextInput(
@@ -370,14 +373,14 @@ class PDFImageExtractionDialog(PDFExtractionDialogBase):
         self.input_edit.setReadOnly(True)
         input_layout.addWidget(self.input_edit)
 
-        self.browse_input_btn = SecondaryButton("Browse...")
-        self.browse_input_btn.setAccessibleName("Browse for input PDF file")
+        self.browse_input_btn = _ui_widget(SecondaryButton, 'Legacy.sc58a6bd402efb06c', 'setText')
+        _ui_bind(self.browse_input_btn, 'setAccessibleName', 'Legacy.s6a0c40ebf4735e07')
         input_layout.addWidget(self.browse_input_btn)
 
         layout.addWidget(input_group)
 
         # Output directory section
-        output_group = QGroupBox("Output Directory")
+        output_group = _ui_widget(QGroupBox, 'Legacy.s2d8842920b678b49', 'setTitle')
         output_layout = QHBoxLayout(output_group)
 
         self.output_edit = TextInput(
@@ -387,19 +390,19 @@ class PDFImageExtractionDialog(PDFExtractionDialogBase):
         )
         output_layout.addWidget(self.output_edit)
 
-        self.browse_output_btn = SecondaryButton("Browse...")
-        self.browse_output_btn.setAccessibleName("Browse for output directory")
+        self.browse_output_btn = _ui_widget(SecondaryButton, 'Legacy.sc58a6bd402efb06c', 'setText')
+        _ui_bind(self.browse_output_btn, 'setAccessibleName', 'Legacy.s9f20baa3d056c434')
         output_layout.addWidget(self.browse_output_btn)
 
         layout.addWidget(output_group)
 
         # Extraction options
-        options_group = QGroupBox("Image Extraction Options")
+        options_group = _ui_widget(QGroupBox, 'Legacy.s4983b0aa01cecd3c', 'setTitle')
         options_layout = QFormLayout(options_group)
 
         # Image format
         self.format_combo = QComboBox()
-        self.format_combo.setAccessibleName("Image output format")
+        _ui_bind(self.format_combo, 'setAccessibleName', 'Legacy.s5cbac26f26346506')
         self.format_combo.setMinimumHeight(44)
         self.format_combo.addItems(["png", "jpg", "bmp", "tiff"])
         self.format_combo.setCurrentText("png")
@@ -409,21 +412,21 @@ class PDFImageExtractionDialog(PDFExtractionDialogBase):
         size_layout = QHBoxLayout()
 
         self.min_width_spin = QSpinBox()
-        self.min_width_spin.setAccessibleName("Minimum image width in pixels")
+        _ui_bind(self.min_width_spin, 'setAccessibleName', 'Legacy.sdadef8ae58c13b81')
         self.min_width_spin.setMinimumHeight(44)
         self.min_width_spin.setMinimum(1)
         self.min_width_spin.setMaximum(9999)
         self.min_width_spin.setValue(100)
-        size_layout.addWidget(QLabel("Width:"))
+        size_layout.addWidget(_ui_widget(QLabel, 'Legacy.s70071bce279eb5a9', 'setText'))
         size_layout.addWidget(self.min_width_spin)
 
         self.min_height_spin = QSpinBox()
-        self.min_height_spin.setAccessibleName("Minimum image height in pixels")
+        _ui_bind(self.min_height_spin, 'setAccessibleName', 'Legacy.sbe3d00b05b387bd8')
         self.min_height_spin.setMinimumHeight(44)
         self.min_height_spin.setMinimum(1)
         self.min_height_spin.setMaximum(9999)
         self.min_height_spin.setValue(100)
-        size_layout.addWidget(QLabel("Height:"))
+        size_layout.addWidget(_ui_widget(QLabel, 'Legacy.s537f68695dfe0efd', 'setText'))
         size_layout.addWidget(self.min_height_spin)
 
         size_layout.addStretch()
@@ -431,27 +434,27 @@ class PDFImageExtractionDialog(PDFExtractionDialogBase):
 
         # Page range
         page_range_layout = QHBoxLayout()
-        self.page_range_check = QCheckBox("Specific page range")
-        self.page_range_check.setAccessibleName("Filter by specific page range")
+        self.page_range_check = _ui_widget(QCheckBox, 'Legacy.s500277376e9ea8fc', 'setText')
+        _ui_bind(self.page_range_check, 'setAccessibleName', 'Legacy.sb92076db77e8dd15')
         self.page_range_check.setMinimumHeight(44)
         page_range_layout.addWidget(self.page_range_check)
 
         self.start_page_spin = QSpinBox()
-        self.start_page_spin.setAccessibleName("Start page number")
+        _ui_bind(self.start_page_spin, 'setAccessibleName', 'Legacy.s8cefd6c52d03fe65')
         self.start_page_spin.setMinimumHeight(44)
         self.start_page_spin.setMinimum(1)
         self.start_page_spin.setMaximum(9999)
         self.start_page_spin.setEnabled(False)
-        page_range_layout.addWidget(QLabel("From:"))
+        page_range_layout.addWidget(_ui_widget(QLabel, 'Legacy.sdc45d36f35e84e07', 'setText'))
         page_range_layout.addWidget(self.start_page_spin)
 
         self.end_page_spin = QSpinBox()
-        self.end_page_spin.setAccessibleName("End page number")
+        _ui_bind(self.end_page_spin, 'setAccessibleName', 'Legacy.sf1aa36b86021c1ba')
         self.end_page_spin.setMinimumHeight(44)
         self.end_page_spin.setMinimum(1)
         self.end_page_spin.setMaximum(9999)
         self.end_page_spin.setEnabled(False)
-        page_range_layout.addWidget(QLabel("To:"))
+        page_range_layout.addWidget(_ui_widget(QLabel, 'Legacy.s2b5fc5c94f64250c', 'setText'))
         page_range_layout.addWidget(self.end_page_spin)
 
         page_range_layout.addStretch()
@@ -460,15 +463,15 @@ class PDFImageExtractionDialog(PDFExtractionDialogBase):
         layout.addWidget(options_group)
 
         # Preview section
-        preview_group = QGroupBox("Image Count Preview")
+        preview_group = _ui_widget(QGroupBox, 'Legacy.sd04fb70f2c2822fd', 'setTitle')
         preview_layout = QVBoxLayout(preview_group)
 
-        self.image_count_label = QLabel("Select a PDF file to see image count")
+        self.image_count_label = _ui_widget(QLabel, 'Legacy.sd4947438507c15a8', 'setText')
         self.image_count_label.setAlignment(Qt.AlignCenter)
         preview_layout.addWidget(self.image_count_label)
 
-        self.scan_btn = SecondaryButton("Scan for Images")
-        self.scan_btn.setAccessibleName("Scan PDF for images")
+        self.scan_btn = _ui_widget(SecondaryButton, 'Legacy.sa8dd28d4c0d58b26', 'setText')
+        _ui_bind(self.scan_btn, 'setAccessibleName', 'Legacy.s52d4014c70345d7e')
         self.scan_btn.setEnabled(False)
         preview_layout.addWidget(self.scan_btn)
 
@@ -478,12 +481,12 @@ class PDFImageExtractionDialog(PDFExtractionDialogBase):
         button_layout = QHBoxLayout()
         button_layout.addStretch()
 
-        self.cancel_btn = SecondaryButton("Cancel")
-        self.cancel_btn.setAccessibleName("Cancel image extraction")
+        self.cancel_btn = _ui_widget(SecondaryButton, 'Legacy.s19766ed6ccb2f4a3', 'setText')
+        _ui_bind(self.cancel_btn, 'setAccessibleName', 'Legacy.s3e46bf3320176bd1')
         button_layout.addWidget(self.cancel_btn)
 
-        self.extract_btn = PrimaryButton("Extract Images")
-        self.extract_btn.setAccessibleName("Extract images from PDF")
+        self.extract_btn = _ui_widget(PrimaryButton, 'Legacy.s6a8eaf282cf29e30', 'setText')
+        _ui_bind(self.extract_btn, 'setAccessibleName', 'Legacy.s6b780c804b624b10')
         self.extract_btn.setEnabled(False)
         button_layout.addWidget(self.extract_btn)
 
@@ -588,7 +591,7 @@ class PDFMetadataExtractionDialog(PDFExtractionDialogBase):
         layout.setSpacing(15)
 
         # Input file section
-        input_group = QGroupBox("Input PDF File")
+        input_group = _ui_widget(QGroupBox, 'Legacy.s22bc9850e3d02875', 'setTitle')
         input_layout = QHBoxLayout(input_group)
 
         self.input_edit = TextInput(
@@ -599,14 +602,14 @@ class PDFMetadataExtractionDialog(PDFExtractionDialogBase):
         self.input_edit.setReadOnly(True)
         input_layout.addWidget(self.input_edit)
 
-        self.browse_input_btn = SecondaryButton("Browse...")
-        self.browse_input_btn.setAccessibleName("Browse for input PDF file")
+        self.browse_input_btn = _ui_widget(SecondaryButton, 'Legacy.sc58a6bd402efb06c', 'setText')
+        _ui_bind(self.browse_input_btn, 'setAccessibleName', 'Legacy.s6a0c40ebf4735e07')
         input_layout.addWidget(self.browse_input_btn)
 
         layout.addWidget(input_group)
 
         # Output file section
-        output_group = QGroupBox("Output Metadata File")
+        output_group = _ui_widget(QGroupBox, 'Legacy.s2d3a2aa2191a98de', 'setTitle')
         output_layout = QHBoxLayout(output_group)
 
         self.output_edit = TextInput(
@@ -616,19 +619,19 @@ class PDFMetadataExtractionDialog(PDFExtractionDialogBase):
         )
         output_layout.addWidget(self.output_edit)
 
-        self.browse_output_btn = SecondaryButton("Browse...")
-        self.browse_output_btn.setAccessibleName("Browse for output file")
+        self.browse_output_btn = _ui_widget(SecondaryButton, 'Legacy.sc58a6bd402efb06c', 'setText')
+        _ui_bind(self.browse_output_btn, 'setAccessibleName', 'Legacy.sfc96835debadaf35')
         output_layout.addWidget(self.browse_output_btn)
 
         layout.addWidget(output_group)
 
         # Extraction options
-        options_group = QGroupBox("Metadata Extraction Options")
+        options_group = _ui_widget(QGroupBox, 'Legacy.s8acd4d5d395cfab8', 'setTitle')
         options_layout = QFormLayout(options_group)
 
         # Include extended metadata
-        self.extended_check = QCheckBox("Include extended XMP metadata")
-        self.extended_check.setAccessibleName("Include extended XMP metadata")
+        self.extended_check = _ui_widget(QCheckBox, 'Legacy.s1b0c8642c563509a', 'setText')
+        _ui_bind(self.extended_check, 'setAccessibleName', 'Legacy.s1b0c8642c563509a')
         self.extended_check.setMinimumHeight(44)
         self.extended_check.setChecked(True)
         options_layout.addRow("Extended Info:", self.extended_check)
@@ -636,18 +639,18 @@ class PDFMetadataExtractionDialog(PDFExtractionDialogBase):
         layout.addWidget(options_group)
 
         # Preview section
-        preview_group = QGroupBox("Metadata Preview")
+        preview_group = _ui_widget(QGroupBox, 'Legacy.s3f2d7cffe4978503', 'setTitle')
         preview_layout = QVBoxLayout(preview_group)
 
         self.preview_text = QPlainTextEdit()
-        self.preview_text.setAccessibleName("Metadata extraction preview")
+        _ui_bind(self.preview_text, 'setAccessibleName', 'Legacy.s6c071a26b022dbea')
         self.preview_text.setMaximumHeight(150)
-        self.preview_text.setPlaceholderText("Metadata preview will appear here...")
+        _ui_bind(self.preview_text, 'setPlaceholderText', 'Legacy.s491c415ecb7311f4')
         self.preview_text.setReadOnly(True)
         preview_layout.addWidget(self.preview_text)
 
-        self.preview_btn = SecondaryButton("Preview Metadata")
-        self.preview_btn.setAccessibleName("Preview metadata extraction")
+        self.preview_btn = _ui_widget(SecondaryButton, 'Legacy.s9e297cc8f9ca7c57', 'setText')
+        _ui_bind(self.preview_btn, 'setAccessibleName', 'Legacy.s491a85faff677129')
         self.preview_btn.setEnabled(False)
         preview_layout.addWidget(self.preview_btn)
 
@@ -657,12 +660,12 @@ class PDFMetadataExtractionDialog(PDFExtractionDialogBase):
         button_layout = QHBoxLayout()
         button_layout.addStretch()
 
-        self.cancel_btn = SecondaryButton("Cancel")
-        self.cancel_btn.setAccessibleName("Cancel metadata extraction")
+        self.cancel_btn = _ui_widget(SecondaryButton, 'Legacy.s19766ed6ccb2f4a3', 'setText')
+        _ui_bind(self.cancel_btn, 'setAccessibleName', 'Legacy.s2f6b0e043db428eb')
         button_layout.addWidget(self.cancel_btn)
 
-        self.extract_btn = PrimaryButton("Extract Metadata")
-        self.extract_btn.setAccessibleName("Extract metadata from PDF")
+        self.extract_btn = _ui_widget(PrimaryButton, 'Legacy.s24051b380a89f902', 'setText')
+        _ui_bind(self.extract_btn, 'setAccessibleName', 'Legacy.se2dda45c71a1626b')
         self.extract_btn.setEnabled(False)
         button_layout.addWidget(self.extract_btn)
 
@@ -749,7 +752,7 @@ class PDFTableExtractionDialog(PDFExtractionDialogBase):
         layout.setSpacing(15)
 
         # Input file section
-        input_group = QGroupBox("Input PDF File")
+        input_group = _ui_widget(QGroupBox, 'Legacy.s22bc9850e3d02875', 'setTitle')
         input_layout = QHBoxLayout(input_group)
 
         self.input_edit = TextInput(
@@ -760,14 +763,14 @@ class PDFTableExtractionDialog(PDFExtractionDialogBase):
         self.input_edit.setReadOnly(True)
         input_layout.addWidget(self.input_edit)
 
-        self.browse_input_btn = SecondaryButton("Browse...")
-        self.browse_input_btn.setAccessibleName("Browse for input PDF file")
+        self.browse_input_btn = _ui_widget(SecondaryButton, 'Legacy.sc58a6bd402efb06c', 'setText')
+        _ui_bind(self.browse_input_btn, 'setAccessibleName', 'Legacy.s6a0c40ebf4735e07')
         input_layout.addWidget(self.browse_input_btn)
 
         layout.addWidget(input_group)
 
         # Output directory section
-        output_group = QGroupBox("Output Directory")
+        output_group = _ui_widget(QGroupBox, 'Legacy.s2d8842920b678b49', 'setTitle')
         output_layout = QHBoxLayout(output_group)
 
         self.output_edit = TextInput(
@@ -777,30 +780,30 @@ class PDFTableExtractionDialog(PDFExtractionDialogBase):
         )
         output_layout.addWidget(self.output_edit)
 
-        self.browse_output_btn = SecondaryButton("Browse...")
-        self.browse_output_btn.setAccessibleName("Browse for output directory")
+        self.browse_output_btn = _ui_widget(SecondaryButton, 'Legacy.sc58a6bd402efb06c', 'setText')
+        _ui_bind(self.browse_output_btn, 'setAccessibleName', 'Legacy.s9f20baa3d056c434')
         output_layout.addWidget(self.browse_output_btn)
 
         layout.addWidget(output_group)
 
         # Extraction options
-        options_group = QGroupBox("Table Extraction Options")
+        options_group = _ui_widget(QGroupBox, 'Legacy.s2c51c555b216e268', 'setTitle')
         options_layout = QFormLayout(options_group)
 
         # Extraction method
         self.method_combo = QComboBox()
-        self.method_combo.setAccessibleName("Table extraction method")
+        _ui_bind(self.method_combo, 'setAccessibleName', 'Legacy.s1c016908eacba70e')
         self.method_combo.setMinimumHeight(44)
         self.method_combo.addItems(["camelot", "pdfplumber"])
         self.method_combo.setCurrentText("camelot")
         options_layout.addRow("Extraction Method:", self.method_combo)
 
         # Camelot-specific options
-        self.camelot_group = QGroupBox("Camelot Options")
+        self.camelot_group = _ui_widget(QGroupBox, 'Legacy.seebd1cae89de5001', 'setTitle')
         camelot_layout = QFormLayout(self.camelot_group)
 
         self.flavor_combo = QComboBox()
-        self.flavor_combo.setAccessibleName("Camelot table detection flavor")
+        _ui_bind(self.flavor_combo, 'setAccessibleName', 'Legacy.seedbbc5942c03de2')
         self.flavor_combo.setMinimumHeight(44)
         self.flavor_combo.addItems(["lattice", "stream"])
         self.flavor_combo.setCurrentText("lattice")
@@ -810,27 +813,27 @@ class PDFTableExtractionDialog(PDFExtractionDialogBase):
 
         # Page range
         page_range_layout = QHBoxLayout()
-        self.page_range_check = QCheckBox("Specific page range")
-        self.page_range_check.setAccessibleName("Filter by specific page range")
+        self.page_range_check = _ui_widget(QCheckBox, 'Legacy.s500277376e9ea8fc', 'setText')
+        _ui_bind(self.page_range_check, 'setAccessibleName', 'Legacy.sb92076db77e8dd15')
         self.page_range_check.setMinimumHeight(44)
         page_range_layout.addWidget(self.page_range_check)
 
         self.start_page_spin = QSpinBox()
-        self.start_page_spin.setAccessibleName("Start page number")
+        _ui_bind(self.start_page_spin, 'setAccessibleName', 'Legacy.s8cefd6c52d03fe65')
         self.start_page_spin.setMinimumHeight(44)
         self.start_page_spin.setMinimum(1)
         self.start_page_spin.setMaximum(9999)
         self.start_page_spin.setEnabled(False)
-        page_range_layout.addWidget(QLabel("From:"))
+        page_range_layout.addWidget(_ui_widget(QLabel, 'Legacy.sdc45d36f35e84e07', 'setText'))
         page_range_layout.addWidget(self.start_page_spin)
 
         self.end_page_spin = QSpinBox()
-        self.end_page_spin.setAccessibleName("End page number")
+        _ui_bind(self.end_page_spin, 'setAccessibleName', 'Legacy.sf1aa36b86021c1ba')
         self.end_page_spin.setMinimumHeight(44)
         self.end_page_spin.setMinimum(1)
         self.end_page_spin.setMaximum(9999)
         self.end_page_spin.setEnabled(False)
-        page_range_layout.addWidget(QLabel("To:"))
+        page_range_layout.addWidget(_ui_widget(QLabel, 'Legacy.s2b5fc5c94f64250c', 'setText'))
         page_range_layout.addWidget(self.end_page_spin)
 
         page_range_layout.addStretch()
@@ -839,15 +842,15 @@ class PDFTableExtractionDialog(PDFExtractionDialogBase):
         layout.addWidget(options_group)
 
         # Preview section
-        preview_group = QGroupBox("Table Count Preview")
+        preview_group = _ui_widget(QGroupBox, 'Legacy.s0f9061fb517ec129', 'setTitle')
         preview_layout = QVBoxLayout(preview_group)
 
-        self.table_count_label = QLabel("Select a PDF file to see table count")
+        self.table_count_label = _ui_widget(QLabel, 'Legacy.sb0bc4469609d6597', 'setText')
         self.table_count_label.setAlignment(Qt.AlignCenter)
         preview_layout.addWidget(self.table_count_label)
 
-        self.scan_btn = SecondaryButton("Scan for Tables")
-        self.scan_btn.setAccessibleName("Scan PDF for tables")
+        self.scan_btn = _ui_widget(SecondaryButton, 'Legacy.s5e41742d2bfa53d8', 'setText')
+        _ui_bind(self.scan_btn, 'setAccessibleName', 'Legacy.s978b949b5323d05c')
         self.scan_btn.setEnabled(False)
         preview_layout.addWidget(self.scan_btn)
 
@@ -857,12 +860,12 @@ class PDFTableExtractionDialog(PDFExtractionDialogBase):
         button_layout = QHBoxLayout()
         button_layout.addStretch()
 
-        self.cancel_btn = SecondaryButton("Cancel")
-        self.cancel_btn.setAccessibleName("Cancel table extraction")
+        self.cancel_btn = _ui_widget(SecondaryButton, 'Legacy.s19766ed6ccb2f4a3', 'setText')
+        _ui_bind(self.cancel_btn, 'setAccessibleName', 'Legacy.s20808208e3832733')
         button_layout.addWidget(self.cancel_btn)
 
-        self.extract_btn = PrimaryButton("Extract Tables")
-        self.extract_btn.setAccessibleName("Extract tables from PDF")
+        self.extract_btn = _ui_widget(PrimaryButton, 'Legacy.se28f43c9fd4036b1', 'setText')
+        _ui_bind(self.extract_btn, 'setAccessibleName', 'Legacy.sf1a569f7d44b120a')
         self.extract_btn.setEnabled(False)
         button_layout.addWidget(self.extract_btn)
 
@@ -969,7 +972,7 @@ class PDFLinkExtractionDialog(PDFExtractionDialogBase):
         layout.setSpacing(15)
 
         # Input file section
-        input_group = QGroupBox("Input PDF File")
+        input_group = _ui_widget(QGroupBox, 'Legacy.s22bc9850e3d02875', 'setTitle')
         input_layout = QHBoxLayout(input_group)
 
         self.input_edit = TextInput(
@@ -980,14 +983,14 @@ class PDFLinkExtractionDialog(PDFExtractionDialogBase):
         self.input_edit.setReadOnly(True)
         input_layout.addWidget(self.input_edit)
 
-        self.browse_input_btn = SecondaryButton("Browse...")
-        self.browse_input_btn.setAccessibleName("Browse for input PDF file")
+        self.browse_input_btn = _ui_widget(SecondaryButton, 'Legacy.sc58a6bd402efb06c', 'setText')
+        _ui_bind(self.browse_input_btn, 'setAccessibleName', 'Legacy.s6a0c40ebf4735e07')
         input_layout.addWidget(self.browse_input_btn)
 
         layout.addWidget(input_group)
 
         # Output file section
-        output_group = QGroupBox("Output Links File")
+        output_group = _ui_widget(QGroupBox, 'Legacy.sdf0565b5501bb4f9', 'setTitle')
         output_layout = QHBoxLayout(output_group)
 
         self.output_edit = TextInput(
@@ -997,46 +1000,46 @@ class PDFLinkExtractionDialog(PDFExtractionDialogBase):
         )
         output_layout.addWidget(self.output_edit)
 
-        self.browse_output_btn = SecondaryButton("Browse...")
-        self.browse_output_btn.setAccessibleName("Browse for output file")
+        self.browse_output_btn = _ui_widget(SecondaryButton, 'Legacy.sc58a6bd402efb06c', 'setText')
+        _ui_bind(self.browse_output_btn, 'setAccessibleName', 'Legacy.sfc96835debadaf35')
         output_layout.addWidget(self.browse_output_btn)
 
         layout.addWidget(output_group)
 
         # Extraction options
-        options_group = QGroupBox("Link Extraction Options")
+        options_group = _ui_widget(QGroupBox, 'Legacy.sbe72fb6312430196', 'setTitle')
         options_layout = QFormLayout(options_group)
 
         # Include internal links
-        self.internal_links_check = QCheckBox("Include internal document links")
-        self.internal_links_check.setAccessibleName("Include internal document links")
+        self.internal_links_check = _ui_widget(QCheckBox, 'Legacy.s542e9eab9b7caacf', 'setText')
+        _ui_bind(self.internal_links_check, 'setAccessibleName', 'Legacy.s542e9eab9b7caacf')
         self.internal_links_check.setMinimumHeight(44)
         self.internal_links_check.setChecked(True)
         options_layout.addRow("Internal Links:", self.internal_links_check)
 
         # Page range
         page_range_layout = QHBoxLayout()
-        self.page_range_check = QCheckBox("Specific page range")
-        self.page_range_check.setAccessibleName("Filter by specific page range")
+        self.page_range_check = _ui_widget(QCheckBox, 'Legacy.s500277376e9ea8fc', 'setText')
+        _ui_bind(self.page_range_check, 'setAccessibleName', 'Legacy.sb92076db77e8dd15')
         self.page_range_check.setMinimumHeight(44)
         page_range_layout.addWidget(self.page_range_check)
 
         self.start_page_spin = QSpinBox()
-        self.start_page_spin.setAccessibleName("Start page number")
+        _ui_bind(self.start_page_spin, 'setAccessibleName', 'Legacy.s8cefd6c52d03fe65')
         self.start_page_spin.setMinimumHeight(44)
         self.start_page_spin.setMinimum(1)
         self.start_page_spin.setMaximum(9999)
         self.start_page_spin.setEnabled(False)
-        page_range_layout.addWidget(QLabel("From:"))
+        page_range_layout.addWidget(_ui_widget(QLabel, 'Legacy.sdc45d36f35e84e07', 'setText'))
         page_range_layout.addWidget(self.start_page_spin)
 
         self.end_page_spin = QSpinBox()
-        self.end_page_spin.setAccessibleName("End page number")
+        _ui_bind(self.end_page_spin, 'setAccessibleName', 'Legacy.sf1aa36b86021c1ba')
         self.end_page_spin.setMinimumHeight(44)
         self.end_page_spin.setMinimum(1)
         self.end_page_spin.setMaximum(9999)
         self.end_page_spin.setEnabled(False)
-        page_range_layout.addWidget(QLabel("To:"))
+        page_range_layout.addWidget(_ui_widget(QLabel, 'Legacy.s2b5fc5c94f64250c', 'setText'))
         page_range_layout.addWidget(self.end_page_spin)
 
         page_range_layout.addStretch()
@@ -1045,18 +1048,18 @@ class PDFLinkExtractionDialog(PDFExtractionDialogBase):
         layout.addWidget(options_group)
 
         # Preview section
-        preview_group = QGroupBox("Links Preview")
+        preview_group = _ui_widget(QGroupBox, 'Legacy.s2428b7a70078e3d4', 'setTitle')
         preview_layout = QVBoxLayout(preview_group)
 
         self.preview_text = QPlainTextEdit()
-        self.preview_text.setAccessibleName("Links extraction preview")
+        _ui_bind(self.preview_text, 'setAccessibleName', 'Legacy.s9c80ca9d598cefe9')
         self.preview_text.setMaximumHeight(120)
-        self.preview_text.setPlaceholderText("Links preview will appear here...")
+        _ui_bind(self.preview_text, 'setPlaceholderText', 'Legacy.s2de93c9798c52a70')
         self.preview_text.setReadOnly(True)
         preview_layout.addWidget(self.preview_text)
 
-        self.preview_btn = SecondaryButton("Preview Links")
-        self.preview_btn.setAccessibleName("Preview links extraction")
+        self.preview_btn = _ui_widget(SecondaryButton, 'Legacy.s990c20eb1ae9ecc5', 'setText')
+        _ui_bind(self.preview_btn, 'setAccessibleName', 'Legacy.se36acb856002f5e5')
         self.preview_btn.setEnabled(False)
         preview_layout.addWidget(self.preview_btn)
 
@@ -1066,12 +1069,12 @@ class PDFLinkExtractionDialog(PDFExtractionDialogBase):
         button_layout = QHBoxLayout()
         button_layout.addStretch()
 
-        self.cancel_btn = SecondaryButton("Cancel")
-        self.cancel_btn.setAccessibleName("Cancel links extraction")
+        self.cancel_btn = _ui_widget(SecondaryButton, 'Legacy.s19766ed6ccb2f4a3', 'setText')
+        _ui_bind(self.cancel_btn, 'setAccessibleName', 'Legacy.s838ee2ef3c7d809e')
         button_layout.addWidget(self.cancel_btn)
 
-        self.extract_btn = PrimaryButton("Extract Links")
-        self.extract_btn.setAccessibleName("Extract links from PDF")
+        self.extract_btn = _ui_widget(PrimaryButton, 'Legacy.s02bbd8b6de889b96', 'setText')
+        _ui_bind(self.extract_btn, 'setAccessibleName', 'Legacy.sb8db2bd817769cd9')
         self.extract_btn.setEnabled(False)
         button_layout.addWidget(self.extract_btn)
 

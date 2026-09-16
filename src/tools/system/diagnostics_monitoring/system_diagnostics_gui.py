@@ -6,7 +6,10 @@ This module provides a unified interface for all system diagnostic tools,
 integrating disk health, performance monitoring, battery health, and
 filesystem integrity checks.
 """
+from src.rfu.localization import localized_widget as _ui_widget, bind_literal as _ui_bind
+from src.gui import menu_surfaces
 
+from src.rfu import font_tokens
 import logging
 import os
 import sys
@@ -185,7 +188,7 @@ class SystemDiagnosticsGUI(QMainWindow):
         """Initialize the user interface."""
         try:
             # Window setup
-            self.setWindowTitle("System Diagnostics - Richard's File Utilities")
+            _ui_bind(self, 'setWindowTitle', 'Legacy.sef1ca2f70e3bd3d1')
             self.setMinimumSize(1000, 700)
             self.resize(1200, 800)
 
@@ -207,7 +210,7 @@ class SystemDiagnosticsGUI(QMainWindow):
 
             # Main content area with tabs
             self.tab_widget = QTabWidget()
-            self.tab_widget.setAccessibleName("Diagnostics tabs")
+            _ui_bind(self.tab_widget, 'setAccessibleName', 'Legacy.s1dae8e902f4997d5')
             main_layout.addWidget(self.tab_widget)
 
             # Create tabs
@@ -233,41 +236,41 @@ class SystemDiagnosticsGUI(QMainWindow):
             menubar = self.menuBar()
 
             # File menu
-            file_menu = menubar.addMenu("File")
+            file_menu = menu_surfaces.add_menu(menubar, 'File')
 
-            export_action = QAction("Export Report", self)
+            export_action = _ui_widget(QAction, 'Legacy.s5d55cdba1c779dac', 'setText', self)
             export_action.triggered.connect(self.export_diagnostic_report)
             file_menu.addAction(export_action)
 
             file_menu.addSeparator()
 
-            exit_action = QAction("Exit", self)
+            exit_action = _ui_widget(QAction, 'Legacy.sd17d84a604994b72', 'setText', self)
             exit_action.setShortcut("Ctrl+Q")
             exit_action.triggered.connect(self.close)
             file_menu.addAction(exit_action)
 
             # Tools menu
-            tools_menu = menubar.addMenu("Tools")
+            tools_menu = menu_surfaces.add_menu(menubar, 'Tools')
 
-            start_monitoring_action = QAction("Start Monitoring", self)
+            start_monitoring_action = _ui_widget(QAction, 'Legacy.sa2f859806eb26f9b', 'setText', self)
             start_monitoring_action.triggered.connect(self.start_monitoring)
             tools_menu.addAction(start_monitoring_action)
 
-            stop_monitoring_action = QAction("Stop Monitoring", self)
+            stop_monitoring_action = _ui_widget(QAction, 'Legacy.sb9311d8e1555d334', 'setText', self)
             stop_monitoring_action.triggered.connect(self.stop_monitoring)
             tools_menu.addAction(stop_monitoring_action)
 
             tools_menu.addSeparator()
 
-            refresh_action = QAction("Refresh All", self)
+            refresh_action = _ui_widget(QAction, 'Legacy.se0463641297da021', 'setText', self)
             refresh_action.setShortcut("F5")
             refresh_action.triggered.connect(self.refresh_all_data)
             tools_menu.addAction(refresh_action)
 
             # Help menu
-            help_menu = menubar.addMenu("Help")
+            help_menu = menu_surfaces.add_menu(menubar, 'Help')
 
-            about_action = QAction("About", self)
+            about_action = _ui_widget(QAction, 'Legacy.s4efca0d10c5feb8e', 'setText', self)
             about_action.triggered.connect(self.show_about_dialog)
             help_menu.addAction(about_action)
 
@@ -288,13 +291,11 @@ class SystemDiagnosticsGUI(QMainWindow):
             # Title and description
             title_layout = QVBoxLayout()
 
-            title_label = QLabel("System Diagnostics & Monitoring")
-            title_label.setFont(Typography.h1())
+            title_label = _ui_widget(QLabel, 'Legacy.sf7cc7e1713bf9fe5', 'setText')
+            font_tokens.bind(title_label, "font.toolHeader")
             title_layout.addWidget(title_label)
 
-            desc_label = QLabel(
-                "Comprehensive system health monitoring and diagnostics"
-            )
+            desc_label = _ui_widget(QLabel, 'Legacy.s951be5eb956f6cce', 'setText')
             desc_label.setStyleSheet(f"color: {token('text_muted')};")
             title_layout.addWidget(desc_label)
 
@@ -330,7 +331,7 @@ class SystemDiagnosticsGUI(QMainWindow):
             layout = QVBoxLayout(overview_widget)
 
             # System summary section
-            summary_group = QGroupBox("System Summary")
+            summary_group = _ui_widget(QGroupBox, 'Legacy.s60e772f8da501b31', 'setTitle')
             summary_layout = QGridLayout(summary_group)
 
             # System info labels
@@ -346,7 +347,7 @@ class SystemDiagnosticsGUI(QMainWindow):
 
             for i, (label_text, key) in enumerate(info_items):
                 label = QLabel(label_text)
-                value_label = QLabel("Loading...")
+                value_label = _ui_widget(QLabel, 'Legacy.s47d2a515ef2f05b8', 'setText')
                 self.system_info_labels[key] = value_label
 
                 summary_layout.addWidget(label, i, 0)
@@ -355,7 +356,7 @@ class SystemDiagnosticsGUI(QMainWindow):
             layout.addWidget(summary_group)
 
             # Health status section
-            health_group = QGroupBox("Health Status")
+            health_group = _ui_widget(QGroupBox, 'Legacy.s97b7a73d47fd543e', 'setTitle')
             health_layout = QGridLayout(health_group)
 
             # Health indicators
@@ -380,11 +381,11 @@ class SystemDiagnosticsGUI(QMainWindow):
             layout.addWidget(health_group)
 
             # Recent alerts section
-            alerts_group = QGroupBox("Recent Alerts")
+            alerts_group = _ui_widget(QGroupBox, 'Legacy.sa0c9797e9ad158a9', 'setTitle')
             alerts_layout = QVBoxLayout(alerts_group)
 
             self.alerts_text = QTextEdit()
-            self.alerts_text.setAccessibleName("Recent alerts")
+            _ui_bind(self.alerts_text, 'setAccessibleName', 'Legacy.s4411d077d4b7e7fd')
             self.alerts_text.setMaximumHeight(150)
             self.alerts_text.setReadOnly(True)
             self.alerts_text.setPlainText("No alerts at this time.")
@@ -474,11 +475,11 @@ class SystemDiagnosticsGUI(QMainWindow):
             layout = QVBoxLayout(system_widget)
 
             # System information display
-            info_group = QGroupBox("Detailed System Information")
+            info_group = _ui_widget(QGroupBox, 'Legacy.s41be6318f8660519', 'setTitle')
             info_layout = QVBoxLayout(info_group)
 
             self.system_info_text = QTextEdit()
-            self.system_info_text.setAccessibleName("Detailed system information")
+            _ui_bind(self.system_info_text, 'setAccessibleName', 'Legacy.s93ec3f7848ed571d')
             self.system_info_text.setReadOnly(True)
             self.system_info_text.setPlainText("Loading system information...")
             info_layout.addWidget(self.system_info_text)
@@ -486,7 +487,7 @@ class SystemDiagnosticsGUI(QMainWindow):
             layout.addWidget(info_group)
 
             # Diagnostic tools section
-            tools_group = QGroupBox("Diagnostic Tools")
+            tools_group = _ui_widget(QGroupBox, 'Legacy.s983fda0668e4e990', 'setTitle')
             tools_layout = QGridLayout(tools_group)
 
             # Tool buttons
@@ -526,7 +527,7 @@ class SystemDiagnosticsGUI(QMainWindow):
 
             # Title
             title_label = QLabel(title)
-            title_label.setFont(Typography.h2())
+            font_tokens.bind(title_label, "font.title")
             title_label.setAlignment(Qt.AlignCenter)
             layout.addWidget(title_label)
 
@@ -552,15 +553,15 @@ class SystemDiagnosticsGUI(QMainWindow):
             self.setStatusBar(self.status_bar)
 
             # Status message
-            self.status_label = QLabel("Ready")
+            self.status_label = _ui_widget(QLabel, 'Legacy.s5fa7aac5375c5815', 'setText')
             self.status_bar.addWidget(self.status_label)
 
             # Monitoring indicator
-            self.monitoring_label = QLabel("Monitoring: Stopped")
+            self.monitoring_label = _ui_widget(QLabel, 'Legacy.s1dc3c4f299b939ba', 'setText')
             self.status_bar.addPermanentWidget(self.monitoring_label)
 
             # Last update time
-            self.last_update_label = QLabel("Last Update: Never")
+            self.last_update_label = _ui_widget(QLabel, 'Legacy.s3d845889d70e289c', 'setText')
             self.status_bar.addPermanentWidget(self.last_update_label)
 
         except Exception as e:

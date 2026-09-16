@@ -6,6 +6,8 @@ launch Security Preferences without import errors, even if the full-featured
 implementation isn't present. It follows the StandardWindow pattern used across
 the suite and can be expanded later.
 """
+from src.rfu.localization import localized_widget as _ui_widget, bind_literal as _ui_bind
+from src.rfu import font_tokens
 
 import sys
 
@@ -38,17 +40,17 @@ class SecurityPreferencesGUI(QMainWindow):
 
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Security Preferences - Richard's File Utilities")
+        _ui_bind(self, 'setWindowTitle', 'Legacy.se060c6c6c7f0e784')
         self.setGeometry(120, 120, 800, 600)
         central = QWidget()
         self.setCentralWidget(central)
         layout = QVBoxLayout(central)
 
-        header = QLabel("Security Preferences")
+        header = _ui_widget(QLabel, 'Legacy.s647b47387f78391d', 'setText')
         header.setStyleSheet(
             """
             QLabel {
-                font-size: 18px;
+
                 font-weight: bold;
                 color: {token('text_primary')};
                 padding: 10px;
@@ -58,24 +60,20 @@ class SecurityPreferencesGUI(QMainWindow):
             }
             """
         )
+        font_tokens.bind(header, "font.toolHeader")
         layout.addWidget(header)
 
-        desc = QLabel(
-            "This is a lightweight Security Preferences panel.\n\n"
-            "It exists to ensure the Security tab launches without errors.\n"
-            "A fuller implementation can add tabs for: Encryption, Directory\n"
-            "Security, Access Control, and Audit settings."
-        )
+        desc = _ui_widget(QLabel, 'Legacy.scc0e07a5304390f0', 'setText')
         desc.setWordWrap(True)
         layout.addWidget(desc)
 
-        test_btn = PrimaryButton("Run Security Self-Check")
-        test_btn.setAccessibleName("Run security self-check")
+        test_btn = _ui_widget(PrimaryButton, 'Legacy.sb1d5c733d944cf75', 'setText')
+        _ui_bind(test_btn, 'setAccessibleName', 'Legacy.sa72053bbb58d1412')
         test_btn.clicked.connect(self._run_self_check)
         layout.addWidget(test_btn)
 
-        help_btn = SecondaryButton("Show Help")
-        help_btn.setAccessibleName("Show security help")
+        help_btn = _ui_widget(SecondaryButton, 'Legacy.s221c1dad35dc247f', 'setText')
+        _ui_bind(help_btn, 'setAccessibleName', 'Legacy.sb4a26106054defc8')
         help_btn.clicked.connect(self._show_help)
         layout.addWidget(help_btn)
 

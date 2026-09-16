@@ -8,8 +8,9 @@ All colors resolved via token(); all fonts via Typography.
 import logging
 
 from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtWidgets import QPushButton
+from PyQt5.QtWidgets import QPushButton, QWidget
 
+from src.rfu import font_tokens
 from src.gui.themes import Typography, token
 
 _log = logging.getLogger("RFU.components.buttons")
@@ -24,8 +25,10 @@ class PrimaryButton(QPushButton):
     """
 
     def __init__(self, text: str = "", parent=None):
+        if isinstance(text, QWidget) and parent is None:
+            parent, text = text, ""
         super().__init__(text, parent)
-        self.setFont(Typography.body())
+        font_tokens.bind(self, "font.body")
         self.setAccessibleName(text or "Primary action")
         self.setMinimumSize(120, 44)
         self._apply_style()
@@ -71,8 +74,10 @@ class SecondaryButton(QPushButton):
     """Visually de-emphasized secondary action (spec §5.2)."""
 
     def __init__(self, text: str = "", parent=None):
+        if isinstance(text, QWidget) and parent is None:
+            parent, text = text, ""
         super().__init__(text, parent)
-        self.setFont(Typography.body())
+        font_tokens.bind(self, "font.body")
         self.setAccessibleName(text or "Secondary action")
         self.setMinimumSize(120, 44)
         self._apply_style()
@@ -112,6 +117,8 @@ class DestructiveButton(PrimaryButton):
     action_confirmed = pyqtSignal()
 
     def __init__(self, text: str = "", parent=None):
+        if isinstance(text, QWidget) and parent is None:
+            parent, text = text, ""
         super().__init__(text, parent)
         self._confirm_callback = None
         self.setAccessibleName(text or "Destructive action")

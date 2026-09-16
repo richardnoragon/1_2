@@ -5,6 +5,8 @@ This module provides a comprehensive GUI wrapper for image metadata operations,
 using the enhanced utilities logic while maintaining compatibility with the
 existing tools interface.
 """
+from src.rfu.localization import localized_widget as _ui_widget, bind_literal as _ui_bind
+from src.rfu import font_tokens
 
 import logging
 import os
@@ -251,23 +253,11 @@ class ImageMetadataEditorGUI(StandardWindow):
         return hasattr(self, "metadata_tabs") and self.metadata_tabs is not None
 
     def degraded_fallback(self) -> None:
-        """Show a minimal error state when the component fails to load."""
-        try:
-            if Modal:
-                Modal(
-                    _IMStrings.TITLE,
-                    _IMStrings.ERR_INIT_FAILED,
-                    ["OK"],
-                    self,
-                ).exec_()
-            else:
-                QMessageBox.warning(
-                    self,
-                    _IMStrings.TITLE,
-                    _IMStrings.ERR_INIT_FAILED,
-                )
-        except Exception:
-            pass
+        """Disable editing immediately without blocking Guardian recovery."""
+        self.statusBar().showMessage(_IMStrings.ERR_INIT_FAILED)
+        body = self.centralWidget()
+        if body is not None:
+            body.setEnabled(False)
 
     def _setup_menu_callbacks(self):
         """Setup tool-specific menu callbacks."""
@@ -330,7 +320,7 @@ class ImageMetadataEditorGUI(StandardWindow):
         layout = QVBoxLayout(panel)
 
         # File selection group
-        file_group = QGroupBox("File Selection")
+        file_group = _ui_widget(QGroupBox, 'Legacy.s1eef7fd26962e3d2', 'setTitle')
         file_layout = QVBoxLayout(file_group)
 
         # Browse button
@@ -341,20 +331,20 @@ class ImageMetadataEditorGUI(StandardWindow):
 
         # File list
         self.file_list = QTreeWidget()
-        self.file_list.setAccessibleName("Image files list")
+        _ui_bind(self.file_list, 'setAccessibleName', 'Legacy.s83a04e214a1c917a')
         self.file_list.setHeaderLabels(["Files", "Status"])
         self.file_list.itemClicked.connect(self._on_file_selected)
         file_layout.addWidget(self.file_list)
 
         # File info
-        self.file_info_label = QLabel("No file selected")
+        self.file_info_label = _ui_widget(QLabel, 'Legacy.s26bfbd5c83f90db3', 'setText')
         self.file_info_label.setWordWrap(True)
         file_layout.addWidget(self.file_info_label)
 
         layout.addWidget(file_group)
 
         # Quick actions group
-        actions_group = QGroupBox("Quick Actions")
+        actions_group = _ui_widget(QGroupBox, 'Legacy.s2cc2b6f7f200e65c', 'setTitle')
         actions_layout = QVBoxLayout(actions_group)
 
         _SB2 = SecondaryButton if SecondaryButton else QPushButton
@@ -378,7 +368,7 @@ class ImageMetadataEditorGUI(StandardWindow):
 
         # Create tab widget for different metadata types
         self.metadata_tabs = QTabWidget()
-        self.metadata_tabs.setAccessibleName("Metadata tabs")
+        _ui_bind(self.metadata_tabs, 'setAccessibleName', 'Legacy.s841b0a5c37417183')
 
         # EXIF tab
         self.exif_tab = self._create_exif_tab()
@@ -401,7 +391,7 @@ class ImageMetadataEditorGUI(StandardWindow):
         layout = QVBoxLayout(tab)
 
         # Common EXIF fields
-        exif_group = QGroupBox("Common EXIF Fields")
+        exif_group = _ui_widget(QGroupBox, 'Legacy.s3af0d2112ea2148c', 'setTitle')
         exif_layout = QGridLayout(exif_group)
 
         # Create editable fields for common EXIF data
@@ -432,7 +422,7 @@ class ImageMetadataEditorGUI(StandardWindow):
         layout.addWidget(exif_group)
 
         # GPS data group
-        gps_group = QGroupBox("GPS Information")
+        gps_group = _ui_widget(QGroupBox, 'Legacy.s8fc0fcd2dc9e511c', 'setTitle')
         gps_layout = QGridLayout(gps_group)
 
         # GPS fields
@@ -464,7 +454,7 @@ class ImageMetadataEditorGUI(StandardWindow):
         layout = QVBoxLayout(tab)
 
         # Basic image properties
-        info_group = QGroupBox("Image Properties")
+        info_group = _ui_widget(QGroupBox, 'Legacy.sc6ef3f7b1e38a6ee', 'setTitle')
         info_layout = QGridLayout(info_group)
 
         self.info_labels = {}
@@ -480,8 +470,8 @@ class ImageMetadataEditorGUI(StandardWindow):
 
         for i, (field, label) in enumerate(info_fields):
             label_widget = QLabel(f"{label}:")
-            value_widget = QLabel("N/A")
-            value_widget.setStyleSheet(f"QLabel { color: {token('text_primary')}; }")
+            value_widget = _ui_widget(QLabel, 'Legacy.se2f79e5b60330bba', 'setText')
+            value_widget.setStyleSheet(f"QLabel {{ color: {token('text_primary')}; }}")
 
             self.info_labels[field] = value_widget
 
@@ -501,7 +491,7 @@ class ImageMetadataEditorGUI(StandardWindow):
 
         # Raw data display
         self.raw_data_text = QTextEdit()
-        self.raw_data_text.setAccessibleName("Raw metadata")
+        _ui_bind(self.raw_data_text, 'setAccessibleName', 'Legacy.saea3f538492eea6c')
         self.raw_data_text.setReadOnly(True)
         self.raw_data_text.setFont(self._get_monospace_font())
         layout.addWidget(self.raw_data_text)
@@ -510,7 +500,7 @@ class ImageMetadataEditorGUI(StandardWindow):
 
     def _create_progress_section(self, parent_layout):
         """Create the progress monitoring section."""
-        progress_group = QGroupBox("Operation Progress")
+        progress_group = _ui_widget(QGroupBox, 'Legacy.s9ece66e0d30cdbcc', 'setTitle')
         progress_layout = QVBoxLayout(progress_group)
 
         # Progress bar
@@ -519,9 +509,9 @@ class ImageMetadataEditorGUI(StandardWindow):
         progress_layout.addWidget(self.progress_bar)
 
         # Status label
-        self.status_label = QLabel("Ready")
+        self.status_label = _ui_widget(QLabel, 'Legacy.s5fa7aac5375c5815', 'setText')
         self.status_label.setStyleSheet(
-            f"QLabel { color: {token('semantic_success')}; }"
+            f"QLabel {{ color: {token('semantic_success')}; }}"
         )
         progress_layout.addWidget(self.status_label)
 
@@ -565,7 +555,7 @@ class ImageMetadataEditorGUI(StandardWindow):
             header.setStyleSheet(
                 """
                 QLabel {
-                    font-size: 18px;
+
                     font-weight: bold;
                     color: {token('text_primary')};
                     padding: 10px;
@@ -575,18 +565,20 @@ class ImageMetadataEditorGUI(StandardWindow):
                 }
             """
             )
+            font_tokens.bind(header, "font.toolHeader")
         else:
             # Basic styling for fallback
             header.setStyleSheet(
                 """
                 QLabel {
-                    font-size: 18px;
+
                     font-weight: bold;
                     padding: 10px;
                     margin-bottom: 10px;
                 }
             """
             )
+            font_tokens.bind(header, "font.toolHeader")
         return header
 
     def _get_monospace_font(self):

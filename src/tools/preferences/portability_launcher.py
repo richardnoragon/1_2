@@ -1,6 +1,7 @@
 """GUI front-end for preference portability operations."""
 
 from __future__ import annotations
+from src.rfu.localization import localized_widget as _ui_widget, bind_literal as _ui_bind
 
 import logging
 from pathlib import Path
@@ -164,12 +165,12 @@ class PreferencePortabilityGUI(QMainWindow):
         layout.setContentsMargins(12, 12, 12, 12)
         layout.setSpacing(12)
 
-        header = QLabel("Manage preference export/import operations from the hub.")
+        header = _ui_widget(QLabel, 'Legacy.s741b066f43a3ad35', 'setText')
         header.setWordWrap(True)
         layout.addWidget(header)
 
         self.tabs = QTabWidget()
-        self.tabs.setAccessibleName("Import/Export tabs")
+        _ui_bind(self.tabs, 'setAccessibleName', 'Legacy.s748a664d59760434')
         layout.addWidget(self.tabs)
 
         self._build_export_tab()
@@ -186,13 +187,13 @@ class PreferencePortabilityGUI(QMainWindow):
         form = QFormLayout()
 
         self.export_user_edit = QLineEdit()
-        self.export_user_edit.setAccessibleName("Export user identifier")
-        self.export_user_edit.setPlaceholderText("User identifier (required)")
+        _ui_bind(self.export_user_edit, 'setAccessibleName', 'Legacy.s034c7004f4ec44f7')
+        _ui_bind(self.export_user_edit, 'setPlaceholderText', 'Legacy.sc33b8b47c4c81c61')
         form.addRow("User ID", self.export_user_edit)
 
         self.export_dest_edit = QLineEdit()
-        self.export_dest_edit.setAccessibleName("Export destination directory")
-        self.export_dest_edit.setPlaceholderText("Destination directory (optional)")
+        _ui_bind(self.export_dest_edit, 'setAccessibleName', 'Legacy.se4423cbe8e495daf')
+        _ui_bind(self.export_dest_edit, 'setPlaceholderText', 'Legacy.s7b3b565a2609e3c2')
         _SB = SecondaryButton if SecondaryButton else QPushButton
         dest_button = _SB("Browse…")
         dest_button.clicked.connect(self._browse_export_destination)
@@ -200,37 +201,29 @@ class PreferencePortabilityGUI(QMainWindow):
         form.addRow("Destination", dest_row)
 
         self.export_categories_edit = QLineEdit()
-        self.export_categories_edit.setAccessibleName("Export categories filter")
-        self.export_categories_edit.setPlaceholderText(
-            "Comma separated categories (optional)"
-        )
+        _ui_bind(self.export_categories_edit, 'setAccessibleName', 'Legacy.s38d57fecbc138352')
+        _ui_bind(self.export_categories_edit, 'setPlaceholderText', 'Legacy.sea67ae230c8318fe')
         form.addRow("Categories", self.export_categories_edit)
 
-        self.export_skip_encrypted = QCheckBox("Skip encrypted rows")
-        self.export_skip_encrypted.setAccessibleName("Skip encrypted rows")
-        self.export_skip_encrypted.setAccessibleDescription(
-            "Rows with encrypted content will not be included in the exported file"
-        )
+        self.export_skip_encrypted = _ui_widget(QCheckBox, 'Legacy.sc373c3f7d4d8fa46', 'setText')
+        _ui_bind(self.export_skip_encrypted, 'setAccessibleName', 'Legacy.sc373c3f7d4d8fa46')
+        _ui_bind(self.export_skip_encrypted, 'setAccessibleDescription', 'Legacy.s1823bf192cbea9e0')
         self.export_skip_encrypted.setMinimumHeight(44)
         form.addRow("Encrypted", self.export_skip_encrypted)
 
-        self.export_encrypt = QCheckBox("Encrypt exported payload")
-        self.export_encrypt.setAccessibleName("Encrypt exported payload")
-        self.export_encrypt.setAccessibleDescription(
-            "Encrypts the export file with a passphrase; enter the passphrase in the field below"
-        )
+        self.export_encrypt = _ui_widget(QCheckBox, 'Legacy.sf0a296dfca6bb3c1', 'setText')
+        _ui_bind(self.export_encrypt, 'setAccessibleName', 'Legacy.sf0a296dfca6bb3c1')
+        _ui_bind(self.export_encrypt, 'setAccessibleDescription', 'Legacy.s1052038660a67c07')
         self.export_encrypt.setMinimumHeight(44)
         self.export_encrypt.toggled.connect(self._on_export_encrypt_toggled)
         if not AES_AVAILABLE:
             self.export_encrypt.setEnabled(False)
-            self.export_encrypt.setToolTip("Install pyAesCrypt to enable encryption")
+            _ui_bind(self.export_encrypt, 'setToolTip', 'Legacy.sedc0697dfc725d75')
         form.addRow("Encryption", self.export_encrypt)
 
         self.export_passphrase_edit = QLineEdit()
-        self.export_passphrase_edit.setAccessibleName("Export passphrase")
-        self.export_passphrase_edit.setAccessibleDescription(
-            "Required when Encrypt exported payload is enabled"
-        )
+        _ui_bind(self.export_passphrase_edit, 'setAccessibleName', 'Legacy.s6a1eb28c568d938b')
+        _ui_bind(self.export_passphrase_edit, 'setAccessibleDescription', 'Legacy.s8b5f86bd9a4d3b0c')
         self.export_passphrase_edit.setEchoMode(QLineEdit.Password)
         self.export_passphrase_edit.setEnabled(False)
         form.addRow("Passphrase", self.export_passphrase_edit)
@@ -247,9 +240,7 @@ class PreferencePortabilityGUI(QMainWindow):
         tab_layout.addStretch(1)
 
         if not AES_AVAILABLE:
-            warning = QLabel(
-                "AES encryption unavailable: install pyAesCrypt to enable it."
-            )
+            warning = _ui_widget(QLabel, 'Legacy.s975556f605d060c4', 'setText')
             warning.setStyleSheet(f"color: {token('semantic_warning')};")
             warning.setWordWrap(True)
             tab_layout.addWidget(warning)
@@ -265,8 +256,8 @@ class PreferencePortabilityGUI(QMainWindow):
         form = QFormLayout()
 
         self.import_source_edit = QLineEdit()
-        self.import_source_edit.setAccessibleName("Import source file path")
-        self.import_source_edit.setPlaceholderText("Export file path (required)")
+        _ui_bind(self.import_source_edit, 'setAccessibleName', 'Legacy.saedb82f10406682d')
+        _ui_bind(self.import_source_edit, 'setPlaceholderText', 'Legacy.sc32207e16ea296dc')
         _SB2 = SecondaryButton if SecondaryButton else QPushButton
         source_button = _SB2("Browse…")
         source_button.clicked.connect(self._browse_import_source)
@@ -277,37 +268,29 @@ class PreferencePortabilityGUI(QMainWindow):
         form.addRow("Source", source_row)
 
         self.import_target_user_edit = QLineEdit()
-        self.import_target_user_edit.setAccessibleName("Import target user")
-        self.import_target_user_edit.setPlaceholderText("Override user (optional)")
+        _ui_bind(self.import_target_user_edit, 'setAccessibleName', 'Legacy.s2961f1b67e487a08')
+        _ui_bind(self.import_target_user_edit, 'setPlaceholderText', 'Legacy.s85a6068979d2a6e2')
         form.addRow("Target User", self.import_target_user_edit)
 
-        self.import_allow_overwrite = QCheckBox("Allow overwriting existing values")
-        self.import_allow_overwrite.setAccessibleName(
-            "Allow overwriting existing values"
-        )
-        self.import_allow_overwrite.setAccessibleDescription(
-            "Existing settings with matching keys will be replaced by imported values"
-        )
+        self.import_allow_overwrite = _ui_widget(QCheckBox, 'Legacy.sbaa451f19f4d9007', 'setText')
+        _ui_bind(self.import_allow_overwrite, 'setAccessibleName', 'Legacy.sbaa451f19f4d9007')
+        _ui_bind(self.import_allow_overwrite, 'setAccessibleDescription', 'Legacy.sc882caceacea5d49')
         self.import_allow_overwrite.setMinimumHeight(44)
         form.addRow("Overwrite", self.import_allow_overwrite)
 
-        self.import_decrypt = QCheckBox("Decrypt payload with passphrase")
-        self.import_decrypt.setAccessibleName("Decrypt payload with passphrase")
-        self.import_decrypt.setAccessibleDescription(
-            "Must be enabled if the export file was created with encryption"
-        )
+        self.import_decrypt = _ui_widget(QCheckBox, 'Legacy.s18ea3db2651726c0', 'setText')
+        _ui_bind(self.import_decrypt, 'setAccessibleName', 'Legacy.s18ea3db2651726c0')
+        _ui_bind(self.import_decrypt, 'setAccessibleDescription', 'Legacy.s71258f317fcc0cb7')
         self.import_decrypt.setMinimumHeight(44)
         self.import_decrypt.toggled.connect(self._on_import_decrypt_toggled)
         if not AES_AVAILABLE:
             self.import_decrypt.setEnabled(False)
-            self.import_decrypt.setToolTip("Install pyAesCrypt to enable decryption")
+            _ui_bind(self.import_decrypt, 'setToolTip', 'Legacy.s27af6bcaa6238928')
         form.addRow("Decryption", self.import_decrypt)
 
         self.import_passphrase_edit = QLineEdit()
-        self.import_passphrase_edit.setAccessibleName("Import passphrase")
-        self.import_passphrase_edit.setAccessibleDescription(
-            "Enter the passphrase that was used when the export file was created"
-        )
+        _ui_bind(self.import_passphrase_edit, 'setAccessibleName', 'Legacy.s16b0f98bfb32173d')
+        _ui_bind(self.import_passphrase_edit, 'setAccessibleDescription', 'Legacy.s86a511f92d78268b')
         self.import_passphrase_edit.setEchoMode(QLineEdit.Password)
         self.import_passphrase_edit.setEnabled(False)
         form.addRow("Passphrase", self.import_passphrase_edit)
@@ -324,9 +307,7 @@ class PreferencePortabilityGUI(QMainWindow):
         tab_layout.addStretch(1)
 
         if not AES_AVAILABLE:
-            warning = QLabel(
-                "AES decryption unavailable: install pyAesCrypt to enable it."
-            )
+            warning = _ui_widget(QLabel, 'Legacy.sfb4f4e73bcb2bb43', 'setText')
             warning.setStyleSheet(f"color: {token('semantic_warning')};")
             warning.setWordWrap(True)
             tab_layout.addWidget(warning)

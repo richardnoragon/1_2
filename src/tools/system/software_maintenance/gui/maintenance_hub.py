@@ -4,7 +4,9 @@ This module provides the main graphical user interface for the Software
 Maintenance Toolkit, integrating the Software Updater and De-Installer
 with comprehensive progress tracking and user interaction.
 """
+from src.rfu.localization import localized_widget as _ui_widget, bind_literal as _ui_bind
 
+from src.rfu import font_tokens
 import csv
 import json
 import logging
@@ -511,7 +513,7 @@ class SoftwareMaintenanceHub(StandardWindow):
         layout.addLayout(header_layout)
         # Main content area with tabs
         self.tab_widget = QTabWidget()
-        self.tab_widget.setAccessibleName("Software maintenance tabs")
+        _ui_bind(self.tab_widget, 'setAccessibleName', 'Legacy.sde22939aad6b4011')
         layout.addWidget(self.tab_widget)
         # Create tabs
         self.create_updater_tab()
@@ -546,11 +548,11 @@ class SoftwareMaintenanceHub(StandardWindow):
         self.progress_bar.setVisible(False)
         status_layout.addWidget(self.progress_bar)
         # Status label
-        self.status_label = QLabel("Ready")
+        self.status_label = _ui_widget(QLabel, 'Legacy.s5fa7aac5375c5815', 'setText')
         status_layout.addWidget(self.status_label)
         status_layout.addStretch()
         # Statistics
-        self.stats_label = QLabel("Software: 0 | Updates: 0")
+        self.stats_label = _ui_widget(QLabel, 'Legacy.sdca032225a65a8a2', 'setText')
         status_layout.addWidget(self.stats_label)
         return status_layout
 
@@ -578,7 +580,7 @@ class SoftwareMaintenanceHub(StandardWindow):
         software_group = self.create_group_box("Installed Software")
         software_layout = QVBoxLayout(software_group)
         self.software_list = QListWidget()
-        self.software_list.setAccessibleName("Installed software list")
+        _ui_bind(self.software_list, 'setAccessibleName', 'Legacy.s5d5716995905a309')
         self.software_list.itemChanged.connect(self.on_software_selection_changed)
         software_layout.addWidget(self.software_list)
         content_splitter.addWidget(software_group)
@@ -586,7 +588,7 @@ class SoftwareMaintenanceHub(StandardWindow):
         updates_group = self.create_group_box("Available Updates")
         updates_layout = QVBoxLayout(updates_group)
         self.updates_table = QTableWidget()
-        self.updates_table.setAccessibleName("Available software updates table")
+        _ui_bind(self.updates_table, 'setAccessibleName', 'Legacy.s278e7f449190b323')
         self.updates_table.setColumnCount(4)
         self.updates_table.setHorizontalHeaderLabels(
             ["Software", "Current", "Available", "Source"]
@@ -594,9 +596,9 @@ class SoftwareMaintenanceHub(StandardWindow):
         updates_layout.addWidget(self.updates_table)
         # Update details
         self.update_details = QTextEdit()
-        self.update_details.setAccessibleName("Update changelog details")
+        _ui_bind(self.update_details, 'setAccessibleName', 'Legacy.s3779f3d01d75d0d8')
         self.update_details.setMaximumHeight(150)
-        self.update_details.setPlaceholderText("Select an update to view changelog...")
+        _ui_bind(self.update_details, 'setPlaceholderText', 'Legacy.sc2a8393dc36bbeec')
         updates_layout.addWidget(self.update_details)
         content_splitter.addWidget(updates_group)
         content_splitter.setSizes([400, 600])
@@ -632,13 +634,13 @@ class SoftwareMaintenanceHub(StandardWindow):
         removal_group = self.create_group_box("Software for Removal")
         removal_layout = QVBoxLayout(removal_group)
         self.removal_list = QListWidget()
-        self.removal_list.setAccessibleName("Software for removal list")
+        _ui_bind(self.removal_list, 'setAccessibleName', 'Legacy.s57476c1a14a949f5')
         self.removal_list.itemChanged.connect(self.on_removal_selection_changed)
         removal_layout.addWidget(self.removal_list)
         # Space analysis
         space_group = self.create_group_box("Space Analysis")
         space_layout = QVBoxLayout(space_group)
-        self.space_label = QLabel("Select software to see space recovery estimate")
+        self.space_label = _ui_widget(QLabel, 'Legacy.s13ff585b7d6469af', 'setText')
         space_layout.addWidget(self.space_label)
         removal_layout.addWidget(space_group)
         content_splitter.addWidget(removal_group)
@@ -646,10 +648,8 @@ class SoftwareMaintenanceHub(StandardWindow):
         analysis_group = self.create_group_box("Removal Analysis")
         analysis_layout = QVBoxLayout(analysis_group)
         self.analysis_details = QTextEdit()
-        self.analysis_details.setAccessibleName("Software removal analysis")
-        self.analysis_details.setPlaceholderText(
-            "Select software to view removal analysis..."
-        )
+        _ui_bind(self.analysis_details, 'setAccessibleName', 'Legacy.s1c74b90eeae77756')
+        _ui_bind(self.analysis_details, 'setPlaceholderText', 'Legacy.s38062cf03e819026')
         analysis_layout.addWidget(self.analysis_details)
         content_splitter.addWidget(analysis_group)
         content_splitter.setSizes([400, 600])
@@ -661,76 +661,62 @@ class SoftwareMaintenanceHub(StandardWindow):
         settings_widget = QWidget()
         layout = QVBoxLayout(settings_widget)
         # Updater settings
-        updater_group = QGroupBox("Updater Settings")
+        updater_group = _ui_widget(QGroupBox, 'Legacy.s9339c5bdd141452c', 'setTitle')
         updater_layout = QGridLayout(updater_group)
-        self.auto_check_cb = QCheckBox("Enable automatic update checking")
-        self.auto_check_cb.setAccessibleName("Enable automatic update checking")
+        self.auto_check_cb = _ui_widget(QCheckBox, 'Legacy.s012039a0475fe3d1', 'setText')
+        _ui_bind(self.auto_check_cb, 'setAccessibleName', 'Legacy.s012039a0475fe3d1')
         self.auto_check_cb.setMinimumHeight(44)
         updater_layout.addWidget(self.auto_check_cb, 0, 0, 1, 2)
-        updater_layout.addWidget(QLabel("Check interval (hours):"), 1, 0)
+        updater_layout.addWidget(_ui_widget(QLabel, 'Legacy.s8dc31033ffb65312', 'setText'), 1, 0)
         self.check_interval_spin = QSpinBox()
-        self.check_interval_spin.setAccessibleName("Update check interval in hours")
-        self.check_interval_spin.setAccessibleDescription(
-            "Sets how frequently the system checks for updates, 1 to 168 hours"
-        )
+        _ui_bind(self.check_interval_spin, 'setAccessibleName', 'Legacy.s96a8aa213bcd17b2')
+        _ui_bind(self.check_interval_spin, 'setAccessibleDescription', 'Legacy.s99e707e02e1d842c')
         self.check_interval_spin.setMinimumHeight(44)
         self.check_interval_spin.setRange(1, 168)  # 1 hour to 1 week
         self.check_interval_spin.setValue(24)
         updater_layout.addWidget(self.check_interval_spin, 1, 1)
-        self.auto_security_cb = QCheckBox("Auto-install security updates")
-        self.auto_security_cb.setAccessibleName("Auto-install security updates")
-        self.auto_security_cb.setAccessibleDescription(
-            "Security updates will be installed automatically without manual approval"
-        )
+        self.auto_security_cb = _ui_widget(QCheckBox, 'Legacy.sc60bd6d2542d6902', 'setText')
+        _ui_bind(self.auto_security_cb, 'setAccessibleName', 'Legacy.sc60bd6d2542d6902')
+        _ui_bind(self.auto_security_cb, 'setAccessibleDescription', 'Legacy.s10825e38ab67de6a')
         self.auto_security_cb.setMinimumHeight(44)
         updater_layout.addWidget(self.auto_security_cb, 2, 0, 1, 2)
-        self.create_restore_points_cb = QCheckBox(
-            "Create restore points before updates"
-        )
-        self.create_restore_points_cb.setAccessibleName(
-            "Create restore points before updates"
-        )
-        self.create_restore_points_cb.setAccessibleDescription(
-            "Creates a Windows system restore point before each installation"
-        )
+        self.create_restore_points_cb = _ui_widget(QCheckBox, 'Legacy.s3ebcf43f5453e2ae', 'setText')
+        _ui_bind(self.create_restore_points_cb, 'setAccessibleName', 'Legacy.s3ebcf43f5453e2ae')
+        _ui_bind(self.create_restore_points_cb, 'setAccessibleDescription', 'Legacy.sfc5a0fee99de816f')
         self.create_restore_points_cb.setMinimumHeight(44)
         updater_layout.addWidget(self.create_restore_points_cb, 3, 0, 1, 2)
         layout.addWidget(updater_group)
         # De-installer settings
-        deinstaller_group = QGroupBox("De-Installer Settings")
+        deinstaller_group = _ui_widget(QGroupBox, 'Legacy.s07e496451b489054', 'setTitle')
         deinstaller_layout = QGridLayout(deinstaller_group)
-        self.backup_before_removal_cb = QCheckBox("Create backups before removal")
-        self.backup_before_removal_cb.setAccessibleName("Create backups before removal")
-        self.backup_before_removal_cb.setAccessibleDescription(
-            "Saves a copy of installation data before the software is removed"
-        )
+        self.backup_before_removal_cb = _ui_widget(QCheckBox, 'Legacy.s0f8eff181978f40e', 'setText')
+        _ui_bind(self.backup_before_removal_cb, 'setAccessibleName', 'Legacy.s0f8eff181978f40e')
+        _ui_bind(self.backup_before_removal_cb, 'setAccessibleDescription', 'Legacy.s981cac40c4f9d6b7')
         self.backup_before_removal_cb.setMinimumHeight(44)
         deinstaller_layout.addWidget(self.backup_before_removal_cb, 0, 0, 1, 2)
-        self.deep_scan_cb = QCheckBox("Enable deep system scanning")
-        self.deep_scan_cb.setAccessibleName("Enable deep system scanning")
-        self.deep_scan_cb.setAccessibleDescription(
-            "Scans additional registry locations and file paths; takes longer to complete"
-        )
+        self.deep_scan_cb = _ui_widget(QCheckBox, 'Legacy.s392f8acc80e7f48a', 'setText')
+        _ui_bind(self.deep_scan_cb, 'setAccessibleName', 'Legacy.s392f8acc80e7f48a')
+        _ui_bind(self.deep_scan_cb, 'setAccessibleDescription', 'Legacy.s8ad3f999a6671354')
         self.deep_scan_cb.setMinimumHeight(44)
         deinstaller_layout.addWidget(self.deep_scan_cb, 1, 0, 1, 2)
-        self.auto_cleanup_cb = QCheckBox("Automatically clean up leftovers")
-        self.auto_cleanup_cb.setAccessibleName("Automatically clean up leftovers")
+        self.auto_cleanup_cb = _ui_widget(QCheckBox, 'Legacy.s1888c217e5c8d47f', 'setText')
+        _ui_bind(self.auto_cleanup_cb, 'setAccessibleName', 'Legacy.s1888c217e5c8d47f')
         self.auto_cleanup_cb.setMinimumHeight(44)
         deinstaller_layout.addWidget(self.auto_cleanup_cb, 2, 0, 1, 2)
         layout.addWidget(deinstaller_group)
         # Security settings
-        security_group = QGroupBox("Security Settings")
+        security_group = _ui_widget(QGroupBox, 'Legacy.s170ded248de8b540', 'setTitle')
         security_layout = QGridLayout(security_group)
-        security_layout.addWidget(QLabel("Backup retention (days):"), 0, 0)
+        security_layout.addWidget(_ui_widget(QLabel, 'Legacy.s8c1441b7fbe7a90b', 'setText'), 0, 0)
         self.backup_retention_spin = QSpinBox()
-        self.backup_retention_spin.setAccessibleName("Backup retention in days")
+        _ui_bind(self.backup_retention_spin, 'setAccessibleName', 'Legacy.sb2c5f497d20f3526')
         self.backup_retention_spin.setMinimumHeight(44)
         self.backup_retention_spin.setRange(1, 365)
         self.backup_retention_spin.setValue(30)
         security_layout.addWidget(self.backup_retention_spin, 0, 1)
-        security_layout.addWidget(QLabel("Max backup size (GB):"), 1, 0)
+        security_layout.addWidget(_ui_widget(QLabel, 'Legacy.sc91c619555c0624d', 'setText'), 1, 0)
         self.max_backup_size_spin = QSpinBox()
-        self.max_backup_size_spin.setAccessibleName("Maximum backup size in gigabytes")
+        _ui_bind(self.max_backup_size_spin, 'setAccessibleName', 'Legacy.s5a98d975bd7d3eee')
         self.max_backup_size_spin.setMinimumHeight(44)
         self.max_backup_size_spin.setRange(1, 100)
         self.max_backup_size_spin.setValue(10)
@@ -750,9 +736,9 @@ class SoftwareMaintenanceHub(StandardWindow):
         layout = QVBoxLayout(logs_widget)
         # Log controls
         log_controls = QHBoxLayout()
-        log_controls.addWidget(QLabel("Log Level:"))
+        log_controls.addWidget(_ui_widget(QLabel, 'Legacy.sb4bf93b6cff36612', 'setText'))
         self.log_level_combo = QComboBox()
-        self.log_level_combo.setAccessibleName("Log level filter")
+        _ui_bind(self.log_level_combo, 'setAccessibleName', 'Legacy.s9d627b6f2893cc11')
         self.log_level_combo.addItems(["All", "Info", "Warning", "Error"])
         log_controls.addWidget(self.log_level_combo)
         log_controls.addStretch()
@@ -766,9 +752,9 @@ class SoftwareMaintenanceHub(StandardWindow):
         layout.addLayout(log_controls)
         # Log display
         self.log_display = QTextEdit()
-        self.log_display.setAccessibleName("Maintenance operation log")
+        _ui_bind(self.log_display, 'setAccessibleName', 'Legacy.sa088b13798911e86')
         self.log_display.setReadOnly(True)
-        self.log_display.setFont(Typography.body())
+        font_tokens.bind(self.log_display, "font.body")
         layout.addWidget(self.log_display)
         self.tab_widget.addTab(logs_widget, "Logs")
 
@@ -798,7 +784,7 @@ class SoftwareMaintenanceHub(StandardWindow):
                 color: white;
                 padding: 8px 16px;
                 text-align: center;
-                font-size: 12px;
+
                 border-radius: 4px;
             }
             QPushButton:hover {
@@ -826,6 +812,7 @@ class SoftwareMaintenanceHub(StandardWindow):
             }
         """
         )
+        font_tokens.bind(self, "font.body")
 
     def quick_scan(self):
         """Perform a quick scan of software and updates."""

@@ -6,6 +6,7 @@ This module provides a comprehensive system cleanup interface that integrates
 with the existing diagnostics framework while providing
 cleanup-specific functionality.
 """
+from src.rfu.localization import localized_widget as _ui_widget, bind_literal as _ui_bind
 
 import logging
 import sys
@@ -139,7 +140,7 @@ class SystemCleanupGUI(SystemDiagnosticsGUI):
         """Customize the interface for cleanup operations."""
         try:
             # Update window title
-            self.setWindowTitle("System Cleanup - Richard's File Utilities")
+            _ui_bind(self, 'setWindowTitle', 'Legacy.sdd6c5b5c5c1e05e3')
 
             # If we have the comprehensive GUI, customize it
             if hasattr(self, "tab_widget") and self.tab_widget:
@@ -155,28 +156,24 @@ class SystemCleanupGUI(SystemDiagnosticsGUI):
             layout = QVBoxLayout(cleanup_widget)
 
             # Header
-            header_label = QLabel("System Cleanup Tools")
-            header_font = QFont()
-            header_font.setPointSize(14)
-            header_font.setBold(True)
-            header_label.setFont(header_font)
+            header_label = _ui_widget(QLabel, 'Legacy.se92d14ef27a3bbe0', 'setText')
+            from src.rfu import font_tokens
+            font_tokens.bind(header_label, "font.toolHeader")
             layout.addWidget(header_label)
 
             # Quick cleanup section
-            quick_group = QGroupBox("Quick Cleanup")
+            quick_group = _ui_widget(QGroupBox, 'Legacy.s270063748263af39', 'setTitle')
             quick_layout = QVBoxLayout(quick_group)
 
             # Temporary files cleanup
             if "temp_files" in self.cleanup_tools:
-                temp_button = PrimaryButton("Clean Temporary Files")
-                temp_button.setAccessibleName("Clean Temporary Files")
+                temp_button = _ui_widget(PrimaryButton, 'Legacy.s5a6234a76dfd6394', 'setText')
+                _ui_bind(temp_button, 'setAccessibleName', 'Legacy.s5a6234a76dfd6394')
                 temp_button.clicked.connect(self.run_temp_cleanup)
                 quick_layout.addWidget(temp_button)
 
             # Placeholder for other tools
-            placeholder_label = QLabel(
-                "Additional cleanup tools will be available in future updates"
-            )
+            placeholder_label = _ui_widget(QLabel, 'Legacy.s3bdbe35c2e739de6', 'setText')
             placeholder_label.setStyleSheet(
                 f"color: {token('text_muted')}; font-style: italic; margin: 10px;"  # noqa: E501
             )
@@ -185,14 +182,14 @@ class SystemCleanupGUI(SystemDiagnosticsGUI):
             layout.addWidget(quick_group)
 
             # Results area
-            results_group = QGroupBox("Cleanup Results")
+            results_group = _ui_widget(QGroupBox, 'Legacy.se7de6de11d526250', 'setTitle')
             results_layout = QVBoxLayout(results_group)
 
             self.results_text = QTextEdit()
             self.results_text.setReadOnly(True)
             self.results_text.setMaximumHeight(200)
             self.results_text.setPlainText("No cleanup operations performed yet.")
-            self.results_text.setAccessibleName("Cleanup results")
+            _ui_bind(self.results_text, 'setAccessibleName', 'Legacy.s5452678eaa131365')
             results_layout.addWidget(self.results_text)
 
             layout.addWidget(results_group)

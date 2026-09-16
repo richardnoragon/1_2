@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <ui version="4.0">
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">
@@ -21,28 +21,24 @@
        <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
          <widget class="QLineEdit" name="inputFileEdit">
-          <property name="font">
-           <font>
-            <pointsize>12</pointsize>
-           </font>
-          </property>
           <property name="placeholderText">
            <string>Select file(s) or folder...</string>
           </property>
           <property name="readOnly">
            <bool>true</bool>
           </property>
+          <property name="rfuLocale_setPlaceholderText" stdset="0">
+           <string notr="true">Legacy.s085593ea0e434e26</string>
+          </property>
          </widget>
         </item>
         <item>
          <widget class="QPushButton" name="browseButton">
-          <property name="font">
-           <font>
-            <pointsize>12</pointsize>
-           </font>
-          </property>
           <property name="text">
            <string>Browse</string>
+          </property>
+          <property name="rfuLocale_setText" stdset="0">
+           <string notr="true">Legacy.s3227aa9666253f7a</string>
           </property>
          </widget>
         </item>
@@ -50,13 +46,11 @@
       </item>
       <item>
        <widget class="QCheckBox" name="batchModeCheckbox">
-        <property name="font">
-         <font>
-          <pointsize>12</pointsize>
-         </font>
-        </property>
         <property name="text">
          <string>Batch Mode (Process multiple files or folder)</string>
+        </property>
+        <property name="rfuLocale_setText" stdset="0">
+         <string notr="true">Legacy.s86e5aa6c133a6e6f</string>
         </property>
        </widget>
       </item>
@@ -64,23 +58,16 @@
        <layout class="QFormLayout" name="formLayout">
         <item row="0" column="0">
          <widget class="QLabel" name="ownerPassLabel">
-          <property name="font">
-           <font>
-            <pointsize>12</pointsize>
-           </font>
-          </property>
           <property name="text">
            <string>Owner Password:</string>
+          </property>
+          <property name="rfuLocale_setText" stdset="0">
+           <string notr="true">Legacy.s7ecb2d581a5eab00</string>
           </property>
          </widget>
         </item>
         <item row="0" column="1">
          <widget class="QLineEdit" name="ownerPassEdit">
-          <property name="font">
-           <font>
-            <pointsize>12</pointsize>
-           </font>
-          </property>
           <property name="echoMode">
            <enum>QLineEdit::Password</enum>
           </property>
@@ -88,23 +75,16 @@
         </item>
         <item row="1" column="0">
          <widget class="QLabel" name="userPassLabel">
-          <property name="font">
-           <font>
-            <pointsize>12</pointsize>
-           </font>
-          </property>
           <property name="text">
            <string>User Password:</string>
+          </property>
+          <property name="rfuLocale_setText" stdset="0">
+           <string notr="true">Legacy.s1c3bc7f43b1a59c2</string>
           </property>
          </widget>
         </item>
         <item row="1" column="1">
          <widget class="QLineEdit" name="userPassEdit">
-          <property name="font">
-           <font>
-            <pointsize>12</pointsize>
-           </font>
-          </property>
           <property name="echoMode">
            <enum>QLineEdit::Password</enum>
           </property>
@@ -114,11 +94,6 @@
       </item>
       <item>
        <widget class="QGroupBox" name="permissionsGroup">
-        <property name="font">
-         <font>
-          <pointsize>12</pointsize>
-         </font>
-        </property>
         <property name="title">
          <string>Permissions</string>
         </property>
@@ -131,6 +106,9 @@
            <property name="checked">
             <bool>true</bool>
            </property>
+           <property name="rfuLocale_setText" stdset="0">
+            <string notr="true">Legacy.s07c486ad8d74e90d</string>
+           </property>
           </widget>
          </item>
          <item>
@@ -140,6 +118,9 @@
            </property>
            <property name="checked">
             <bool>true</bool>
+           </property>
+           <property name="rfuLocale_setText" stdset="0">
+            <string notr="true">Legacy.sa5de81cb6e4007d6</string>
            </property>
           </widget>
          </item>
@@ -151,6 +132,9 @@
            <property name="checked">
             <bool>true</bool>
            </property>
+           <property name="rfuLocale_setText" stdset="0">
+            <string notr="true">Legacy.s286b6c4aeeac8b7f</string>
+           </property>
           </widget>
          </item>
          <item>
@@ -161,35 +145,37 @@
            <property name="checked">
             <bool>true</bool>
            </property>
+           <property name="rfuLocale_setText" stdset="0">
+            <string notr="true">Legacy.sc9c96fc2fd88c545</string>
+           </property>
           </widget>
          </item>
         </layout>
+        <property name="rfuLocale_setTitle" stdset="0">
+         <string notr="true">Legacy.sabccc78cc93c0793</string>
+        </property>
        </widget>
       </item>
       <item>
        <widget class="QPushButton" name="encryptButton">
-        <property name="font">
-         <font>
-          <pointsize>12</pointsize>
-         </font>
-        </property>
         <property name="text">
          <string>Encrypt PDF</string>
+        </property>
+        <property name="rfuLocale_setText" stdset="0">
+         <string notr="true">Legacy.s52da3e0745fe6349</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QTextEdit" name="outputText">
-        <property name="font">
-         <font>
-          <pointsize>12</pointsize>
-         </font>
-        </property>
         <property name="readOnly">
          <bool>true</bool>
         </property>
         <property name="placeholderText">
          <string>Operation status and results will appear here...</string>
+        </property>
+        <property name="rfuLocale_setPlaceholderText" stdset="0">
+         <string notr="true">Legacy.s3a170a5c58931df1</string>
         </property>
        </widget>
       </item>
@@ -214,6 +200,9 @@
           <property name="text">
            <string>Previous</string>
           </property>
+          <property name="rfuLocale_setText" stdset="0">
+           <string notr="true">Legacy.sa57b08a480b822a0</string>
+          </property>
          </widget>
         </item>
         <item>
@@ -224,12 +213,18 @@
           <property name="alignment">
            <set>Qt::AlignCenter</set>
           </property>
+          <property name="rfuLocale_setText" stdset="0">
+           <string notr="true">Legacy.s3471f557170a112d</string>
+          </property>
          </widget>
         </item>
         <item>
          <widget class="QPushButton" name="nextButton">
           <property name="text">
            <string>Next</string>
+          </property>
+          <property name="rfuLocale_setText" stdset="0">
+           <string notr="true">Legacy.s1ff57a29d7c9d11b</string>
           </property>
          </widget>
         </item>
@@ -252,11 +247,14 @@
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="actionExit"/>
+    <addaction name="actionExit" />
+    <property name="rfuLocale_setTitle" stdset="0">
+     <string notr="true">Legacy.s50009ce1da4d15e1</string>
+    </property>
    </widget>
-   <addaction name="menuFile"/>
+   <addaction name="menuFile" />
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QStatusBar" name="statusbar" />
   <action name="actionExit">
    <property name="text">
     <string>Exit</string>
@@ -264,8 +262,14 @@
    <property name="shortcut">
     <string>Ctrl+Q</string>
    </property>
+   <property name="rfuLocale_setText" stdset="0">
+    <string notr="true">Legacy.sd17d84a604994b72</string>
+   </property>
   </action>
+  <property name="rfuLocale_setWindowTitle" stdset="0">
+   <string notr="true">Legacy.s2560f8a8fdcfca2c</string>
+  </property>
  </widget>
- <resources/>
- <connections/>
+ <resources />
+ <connections />
 </ui>

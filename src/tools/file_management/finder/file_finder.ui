@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <ui version="4.0">
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">
@@ -16,7 +16,7 @@
   <property name="styleSheet">
    <string notr="true">QMainWindow {
     background-color: #f5f5f5;
-    font-size: 12pt;
+
 }
 QPushButton {
     background-color: #4285f4;
@@ -25,7 +25,7 @@ QPushButton {
     border-radius: 4px;
     padding: 6px 12px;
     min-height: 24px;
-    font-size: 12pt;
+
 }
 QPushButton:hover {
     background-color: #3275e4;
@@ -37,11 +37,11 @@ QListView, QTableView {
     border: 1px solid #dcdcdc;
     border-radius: 4px;
     background-color: white;
-    font-size: 12pt;
+
 }
 QCheckBox, QRadioButton {
     spacing: 8px;
-    font-size: 12pt;
+
 }
 QGroupBox {
     border: 1px solid #dcdcdc;
@@ -49,7 +49,7 @@ QGroupBox {
     margin-top: 1ex;
     padding-top: 1ex;
     background-color: #ffffff;
-    font-size: 12pt;
+
 }
 QGroupBox::title {
     subcontrol-origin: margin;
@@ -57,13 +57,13 @@ QGroupBox::title {
     padding: 0 5px;
 }
 QLabel {
-    font-size: 12pt;
+
 }
 QLineEdit {
-    font-size: 12pt;
+
 }
 QDateEdit {
-    font-size: 12pt;
+
 }</string>
   </property>
   <widget class="QWidget" name="centralwidget">
@@ -90,10 +90,8 @@ QDateEdit {
         <property name="text">
          <string>Select Directory:</string>
         </property>
-        <property name="font">
-         <font>
-          <pointsize>12</pointsize>
-         </font>
+        <property name="rfuLocale_setText" stdset="0">
+         <string notr="true">Legacy.s6bce7f7fcd0eacc0</string>
         </property>
        </widget>
       </item>
@@ -105,10 +103,8 @@ QDateEdit {
         <property name="placeholderText">
          <string>No directory selected</string>
         </property>
-        <property name="font">
-         <font>
-          <pointsize>12</pointsize>
-         </font>
+        <property name="rfuLocale_setPlaceholderText" stdset="0">
+         <string notr="true">Legacy.sbf355de778591b63</string>
         </property>
        </widget>
       </item>
@@ -122,10 +118,8 @@ QDateEdit {
           <normaloff>icons/folder.png</normaloff>icons/folder.png
          </iconset>
         </property>
-        <property name="font">
-         <font>
-          <pointsize>12</pointsize>
-         </font>
+        <property name="rfuLocale_setText" stdset="0">
+         <string notr="true">Legacy.sc58a6bd402efb06c</string>
         </property>
        </widget>
       </item>
@@ -135,11 +129,6 @@ QDateEdit {
      <widget class="QGroupBox" name="filesGroupBox">
       <property name="title">
        <string>Found Files</string>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>12</pointsize>
-       </font>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
        <property name="spacing">
@@ -168,25 +157,21 @@ QDateEdit {
          <property name="toolTip">
           <string>Double-click to open a file</string>
          </property>
-         <property name="font">
-          <font>
-           <pointsize>12</pointsize>
-          </font>
+         <property name="rfuLocale_setToolTip" stdset="0">
+          <string notr="true">Legacy.s50845357cc021920</string>
          </property>
         </widget>
        </item>
       </layout>
+      <property name="rfuLocale_setTitle" stdset="0">
+       <string notr="true">Legacy.s283fec8df5ded8e2</string>
+      </property>
      </widget>
     </item>
     <item row="1" column="1">
      <widget class="QGroupBox" name="metaInfoGroupBox">
       <property name="title">
        <string>File Metadata</string>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>12</pointsize>
-       </font>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <property name="spacing">
@@ -215,25 +200,21 @@ QDateEdit {
          <property name="toolTip">
           <string>Metadata information of the selected file</string>
          </property>
-         <property name="font">
-          <font>
-           <pointsize>12</pointsize>
-          </font>
+         <property name="rfuLocale_setToolTip" stdset="0">
+          <string notr="true">Legacy.sb40e19e9fa075807</string>
          </property>
         </widget>
        </item>
       </layout>
+      <property name="rfuLocale_setTitle" stdset="0">
+       <string notr="true">Legacy.s6c3893e88971f030</string>
+      </property>
      </widget>
     </item>
     <item row="2" column="0" colspan="2">
      <widget class="QGroupBox" name="searchOptionsGroupBox">
       <property name="title">
        <string>Search Options</string>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>12</pointsize>
-       </font>
       </property>
       <layout class="QGridLayout" name="gridLayout_2">
        <property name="leftMargin">
@@ -253,15 +234,11 @@ QDateEdit {
        </property>
        <item row="0" column="0" colspan="3">
         <widget class="QLabel" name="dateFilterLabel">
-         <property name="font">
-          <font>
-           <weight>75</weight>
-           <bold>true</bold>
-           <pointsize>12</pointsize>
-          </font>
-         </property>
          <property name="text">
           <string>Date Filter Options:</string>
+         </property>
+         <property name="rfuLocale_setText" stdset="0">
+          <string notr="true">Legacy.s5609f37f2628b1c8</string>
          </property>
         </widget>
        </item>
@@ -273,10 +250,11 @@ QDateEdit {
          <property name="toolTip">
           <string>Filter by creation date</string>
          </property>
-         <property name="font">
-          <font>
-           <pointsize>12</pointsize>
-          </font>
+         <property name="rfuLocale_setText" stdset="0">
+          <string notr="true">Legacy.sd70b9e24bca26b40</string>
+         </property>
+         <property name="rfuLocale_setToolTip" stdset="0">
+          <string notr="true">Legacy.s53ca10dfe9b68651</string>
          </property>
         </widget>
        </item>
@@ -288,10 +266,11 @@ QDateEdit {
          <property name="toolTip">
           <string>Filter by modification date</string>
          </property>
-         <property name="font">
-          <font>
-           <pointsize>12</pointsize>
-          </font>
+         <property name="rfuLocale_setText" stdset="0">
+          <string notr="true">Legacy.se8ce5dcaf408935f</string>
+         </property>
+         <property name="rfuLocale_setToolTip" stdset="0">
+          <string notr="true">Legacy.sa4da4c0382307f71</string>
          </property>
         </widget>
        </item>
@@ -306,10 +285,11 @@ QDateEdit {
          <property name="checked">
           <bool>true</bool>
          </property>
-         <property name="font">
-          <font>
-           <pointsize>12</pointsize>
-          </font>
+         <property name="rfuLocale_setText" stdset="0">
+          <string notr="true">Legacy.s016a3ab901bfba7b</string>
+         </property>
+         <property name="rfuLocale_setToolTip" stdset="0">
+          <string notr="true">Legacy.sfd08f2220066cda9</string>
          </property>
         </widget>
        </item>
@@ -326,10 +306,8 @@ QDateEdit {
            <property name="text">
             <string>From Date:</string>
            </property>
-           <property name="font">
-            <font>
-             <pointsize>12</pointsize>
-            </font>
+           <property name="rfuLocale_setText" stdset="0">
+            <string notr="true">Legacy.s18b23a67b6e60a58</string>
            </property>
           </widget>
          </item>
@@ -344,10 +322,8 @@ QDateEdit {
            <property name="toolTip">
             <string>Start date for filtering</string>
            </property>
-           <property name="font">
-            <font>
-             <pointsize>12</pointsize>
-            </font>
+           <property name="rfuLocale_setToolTip" stdset="0">
+            <string notr="true">Legacy.s7af44cd9143fb48e</string>
            </property>
           </widget>
          </item>
@@ -356,10 +332,8 @@ QDateEdit {
            <property name="text">
             <string>Till Date:</string>
            </property>
-           <property name="font">
-            <font>
-             <pointsize>12</pointsize>
-            </font>
+           <property name="rfuLocale_setText" stdset="0">
+            <string notr="true">Legacy.s04cb90efc053aa0b</string>
            </property>
           </widget>
          </item>
@@ -374,10 +348,8 @@ QDateEdit {
            <property name="toolTip">
             <string>End date for filtering</string>
            </property>
-           <property name="font">
-            <font>
-             <pointsize>12</pointsize>
-            </font>
+           <property name="rfuLocale_setToolTip" stdset="0">
+            <string notr="true">Legacy.sa863a7e7076dd85a</string>
            </property>
           </widget>
          </item>
@@ -387,15 +359,11 @@ QDateEdit {
         <layout class="QVBoxLayout" name="verticalLayout_3">
          <item>
           <widget class="QLabel" name="contentSearchLabel">
-           <property name="font">
-            <font>
-             <weight>75</weight>
-             <bold>true</bold>
-             <pointsize>12</pointsize>
-            </font>
-           </property>
            <property name="text">
             <string>Content Search:</string>
+           </property>
+           <property name="rfuLocale_setText" stdset="0">
+            <string notr="true">Legacy.s4f65f9a57466eff5</string>
            </property>
           </widget>
          </item>
@@ -407,24 +375,21 @@ QDateEdit {
            <property name="toolTip">
             <string>Enter text to search within files</string>
            </property>
-           <property name="font">
-            <font>
-             <pointsize>12</pointsize>
-            </font>
+           <property name="rfuLocale_setPlaceholderText" stdset="0">
+            <string notr="true">Legacy.s5edc507f7c83ddd9</string>
+           </property>
+           <property name="rfuLocale_setToolTip" stdset="0">
+            <string notr="true">Legacy.s80e6796e4bc1114a</string>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QLabel" name="fileTypeLabel">
-           <property name="font">
-            <font>
-             <weight>75</weight>
-             <bold>true</bold>
-             <pointsize>12</pointsize>
-            </font>
-           </property>
            <property name="text">
             <string>File Type:</string>
+           </property>
+           <property name="rfuLocale_setText" stdset="0">
+            <string notr="true">Legacy.s90dd10e0b50f212f</string>
            </property>
           </widget>
          </item>
@@ -436,10 +401,11 @@ QDateEdit {
            <property name="toolTip">
             <string>Search for Office files (PowerPoint)</string>
            </property>
-           <property name="font">
-            <font>
-             <pointsize>12</pointsize>
-            </font>
+           <property name="rfuLocale_setText" stdset="0">
+            <string notr="true">Legacy.s24f65927c54d227a</string>
+           </property>
+           <property name="rfuLocale_setToolTip" stdset="0">
+            <string notr="true">Legacy.sf3f3e68f7bfed40b</string>
            </property>
           </widget>
          </item>
@@ -451,10 +417,11 @@ QDateEdit {
            <property name="toolTip">
             <string>Search for media files</string>
            </property>
-           <property name="font">
-            <font>
-             <pointsize>12</pointsize>
-            </font>
+           <property name="rfuLocale_setText" stdset="0">
+            <string notr="true">Legacy.s3c6110b3990228c9</string>
+           </property>
+           <property name="rfuLocale_setToolTip" stdset="0">
+            <string notr="true">Legacy.s7fce8aaa210ec463</string>
            </property>
           </widget>
          </item>
@@ -469,10 +436,11 @@ QDateEdit {
            <property name="checked">
             <bool>true</bool>
            </property>
-           <property name="font">
-            <font>
-             <pointsize>12</pointsize>
-            </font>
+           <property name="rfuLocale_setText" stdset="0">
+            <string notr="true">Legacy.sc4939c3f7df96847</string>
+           </property>
+           <property name="rfuLocale_setToolTip" stdset="0">
+            <string notr="true">Legacy.s85f6c40a6d492ee3</string>
            </property>
           </widget>
          </item>
@@ -512,10 +480,11 @@ QDateEdit {
            <property name="toolTip">
             <string>Start searching for files</string>
            </property>
-           <property name="font">
-            <font>
-             <pointsize>12</pointsize>
-            </font>
+           <property name="rfuLocale_setText" stdset="0">
+            <string notr="true">Legacy.s5a5bc0c4ce6ead65</string>
+           </property>
+           <property name="rfuLocale_setToolTip" stdset="0">
+            <string notr="true">Legacy.s784be691054abaeb</string>
            </property>
           </widget>
          </item>
@@ -535,6 +504,9 @@ QDateEdit {
         </layout>
        </item>
       </layout>
+      <property name="rfuLocale_setTitle" stdset="0">
+       <string notr="true">Legacy.sc7c2c69c84009fed</string>
+      </property>
      </widget>
     </item>
    </layout>
@@ -552,16 +524,14 @@ QDateEdit {
     <property name="title">
      <string>File</string>
     </property>
-    <property name="font">
-     <font>
-      <pointsize>12</pointsize>
-     </font>
+    <addaction name="actionexit" />
+    <property name="rfuLocale_setTitle" stdset="0">
+     <string notr="true">Legacy.s50009ce1da4d15e1</string>
     </property>
-    <addaction name="actionexit"/>
    </widget>
-   <addaction name="menuFile"/>
+   <addaction name="menuFile" />
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QStatusBar" name="statusbar" />
   <action name="actionexit">
    <property name="text">
     <string>Exit</string>
@@ -569,13 +539,14 @@ QDateEdit {
    <property name="shortcut">
     <string>Ctrl+Q</string>
    </property>
-   <property name="font">
-    <font>
-     <pointsize>12</pointsize>
-    </font>
+   <property name="rfuLocale_setText" stdset="0">
+    <string notr="true">Legacy.sd17d84a604994b72</string>
    </property>
   </action>
+  <property name="rfuLocale_setWindowTitle" stdset="0">
+   <string notr="true">Legacy.s6f6e552fa045bf84</string>
+  </property>
  </widget>
- <resources/>
- <connections/>
+ <resources />
+ <connections />
 </ui>
