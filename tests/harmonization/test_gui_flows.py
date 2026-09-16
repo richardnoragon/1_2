@@ -1,4 +1,5 @@
 import time
+from threading import Event
 
 from PyQt5.QtCore import QTimer
 from PyQt5.QtTest import QTest
@@ -43,17 +44,26 @@ def test_worker_keeps_ui_responsive_and_close_cancels(qapp):
     timer = QTimer()
     timer.timeout.connect(lambda: heartbeats.append(time.monotonic()))
     timer.start(10)
+    started, finished = Event(), Event()
     def work():
-        dialog._cancel.wait(0.3)
+        started.set()
+        dialog._cancel.wait(5)
+        finished.set()
         return []
-    dialog._start(work, dialog._inspected)
-    QTest.qWait(60)
-    assert len(heartbeats) >= 2
-    dialog.close()
-    assert dialog._cancel.is_set()
-    wait_until(qapp, lambda: dialog._job is None)
-    assert not dialog.isVisible()
-    timer.stop()
+    try:
+        dialog._start(work, dialog._inspected)
+        # Native window managers may coalesce timer ticks during first paint.
+        # Require actual GUI events while the worker is demonstrably still active.
+        wait_until(qapp, lambda: started.is_set() and len(heartbeats) >= 2)
+        assert not finished.is_set() and dialog._job is not None
+        dialog.close()
+        assert dialog._cancel.is_set()
+        wait_until(qapp, lambda: dialog._job is None)
+        assert not dialog.isVisible()
+    finally:
+        dialog._cancel.set()
+        timer.stop()
+        dialog.close()
 
 
 def test_undo_history_tracks_real_stack(qapp, monkeypatch):
