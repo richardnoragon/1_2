@@ -22,7 +22,7 @@ ROOT = Path(__file__).resolve().parents[2]
 def findings(root=ROOT):
     result = []
     catalogue_path = root / 'src/rfu/legacy_strings.json'
-    catalogue = json.loads(catalogue_path.read_text()) if catalogue_path.exists() else {}
+    catalogue = json.loads(catalogue_path.read_text(encoding="utf-8")) if catalogue_path.exists() else {}
     for path in sorted((root / "src/tools").rglob("*.py")):
         source = path.read_text(encoding="utf-8-sig")
         relative = path.relative_to(root).as_posix()
@@ -79,7 +79,7 @@ def main():
     current = counts(items)
     rows = [{"path": path, "rule": code, "fingerprint": fingerprint, "count": count}
             for (path, code, fingerprint), count in sorted(current.items())]
-    exceptions = json.loads((ROOT / "docs/harmonization2/static-exceptions.json").read_text())
+    exceptions = json.loads((ROOT / "docs/harmonization2/static-exceptions.json").read_text(encoding="utf-8"))
     allowed = {(row["path"], row["rule"], row["fingerprint"]): row["count"] for row in exceptions["exceptions"]}
     expired = [key for key, count in allowed.items() if current.get(key, 0) != count]
     if expired:
@@ -90,7 +90,7 @@ def main():
               "document_style_exceptions": sum(allowed.values()), "expired_exceptions": expired,
               "findings": rows}
     if args.report:
-        args.report.write_text(json.dumps(report, indent=2) + "\n")
+        args.report.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
     for row in regressions:
         print(f"{row['path']}: {row['rule']} increased to {row['count']}")
     print(f"Harmonization: {len(regressions)} UI violations; {sum(allowed.values())} reviewed document-style findings")
