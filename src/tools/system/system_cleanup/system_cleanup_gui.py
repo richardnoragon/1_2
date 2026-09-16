@@ -6,6 +6,7 @@ This module provides a comprehensive system cleanup interface that inherits
 from SystemDiagnosticsGUI and integrates all available cleanup tools with
 safety features and progress tracking.
 """
+from src.rfu.localization import localized_widget as _ui_widget, bind_literal as _ui_bind
 
 import logging
 from typing import Any, Dict
@@ -638,7 +639,7 @@ class SystemCleanupGUI(SystemDiagnosticsGUI):
             self.quick_results_text.setPlainText(
                 _SystemCleanupStrings.TEXT_ESTIMATE_PROMPT
             )
-            self.quick_results_text.setAccessibleName("Quick cleanup estimate results")
+            _ui_bind(self.quick_results_text, 'setAccessibleName', 'Legacy.s4ee64703be0007be')
             results_layout.addWidget(self.quick_results_text)
 
             layout.addWidget(results_group)
@@ -718,15 +719,9 @@ class SystemCleanupGUI(SystemDiagnosticsGUI):
         self.temp_age_spinbox = QSpinBox()
         self.temp_age_spinbox.setRange(0, 365)
         self.temp_age_spinbox.setValue(0)
-        self.temp_age_spinbox.setToolTip(
-            "0 = delete all temp files, >0 = only delete files older than specified days"  # noqa: E501
-        )
-        self.temp_age_spinbox.setAccessibleName(
-            "Minimum age in days for temp files to delete"
-        )
-        self.temp_age_spinbox.setAccessibleDescription(
-            "0 = delete all temp files; >0 = only delete files older than specified days"  # noqa: E501
-        )
+        _ui_bind(self.temp_age_spinbox, 'setToolTip', 'Legacy.s684c8f60711cd2f3')
+        _ui_bind(self.temp_age_spinbox, 'setAccessibleName', 'Legacy.s4d35da74dbb6744c')
+        _ui_bind(self.temp_age_spinbox, 'setAccessibleDescription', 'Legacy.s9cf140aec889b94b')
         self.temp_age_spinbox.setMinimumHeight(44)  # A11Y-8c
         temp_layout.addWidget(self.temp_age_spinbox, 0, 1)
 
@@ -735,54 +730,36 @@ class SystemCleanupGUI(SystemDiagnosticsGUI):
         self.temp_size_spinbox = QSpinBox()
         self.temp_size_spinbox.setRange(0, 1000)
         self.temp_size_spinbox.setValue(0)
-        self.temp_size_spinbox.setToolTip(
-            "0 = delete all sizes, >0 = only delete files larger than specified MB"  # noqa: E501
-        )
-        self.temp_size_spinbox.setAccessibleName(
-            "Minimum file size in megabytes for temp files to delete"
-        )
-        self.temp_size_spinbox.setAccessibleDescription(
-            "0 = delete all file sizes; >0 = only delete files larger than specified megabytes"  # noqa: E501
-        )
+        _ui_bind(self.temp_size_spinbox, 'setToolTip', 'Legacy.s87e7867108257820')
+        _ui_bind(self.temp_size_spinbox, 'setAccessibleName', 'Legacy.s11a2b3b06581a011')
+        _ui_bind(self.temp_size_spinbox, 'setAccessibleDescription', 'Legacy.s78fbdf39977bbf3b')
         self.temp_size_spinbox.setMinimumHeight(44)  # A11Y-8c
         temp_layout.addWidget(self.temp_size_spinbox, 1, 1)
 
         # Include system temp
         self.temp_system_checkbox = QCheckBox(_SystemCleanupStrings.CHK_TEMP_SYSTEM)
         self.temp_system_checkbox.setChecked(True)
-        self.temp_system_checkbox.setToolTip(
-            "Include Windows system temp directories (may require admin privileges)"  # noqa: E501
-        )
-        self.temp_system_checkbox.setAccessibleName("Include system temp directories")
-        self.temp_system_checkbox.setAccessibleDescription(
-            "May require administrator privileges to access Windows system directories"  # noqa: E501
-        )
+        _ui_bind(self.temp_system_checkbox, 'setToolTip', 'Legacy.se360684b54691b09')
+        _ui_bind(self.temp_system_checkbox, 'setAccessibleName', 'Legacy.s08b5a571a607fcc1')
+        _ui_bind(self.temp_system_checkbox, 'setAccessibleDescription', 'Legacy.seaf5f99db9f8d9c0')
         self.temp_system_checkbox.setMinimumHeight(44)  # A11Y-8c
         temp_layout.addWidget(self.temp_system_checkbox, 2, 0, 1, 2)
 
         # Create backup
         self.temp_backup_checkbox = QCheckBox(_SystemCleanupStrings.CHK_TEMP_BACKUP)
         self.temp_backup_checkbox.setChecked(False)
-        self.temp_backup_checkbox.setToolTip(
-            "Create backup of files before deletion (uses additional disk space)"  # noqa: E501
-        )
-        self.temp_backup_checkbox.setAccessibleName("Create backup before deletion")
-        self.temp_backup_checkbox.setAccessibleDescription(
-            "Copies files to a backup location before deleting; uses additional disk space"  # noqa: E501
-        )
+        _ui_bind(self.temp_backup_checkbox, 'setToolTip', 'Legacy.s482d6f5843a7bbd3')
+        _ui_bind(self.temp_backup_checkbox, 'setAccessibleName', 'Legacy.sb7a668841586bb19')
+        _ui_bind(self.temp_backup_checkbox, 'setAccessibleDescription', 'Legacy.s67f902d69bec3d8a')
         self.temp_backup_checkbox.setMinimumHeight(44)  # A11Y-8c
         temp_layout.addWidget(self.temp_backup_checkbox, 3, 0, 1, 2)
 
         # Secure delete
         self.temp_secure_checkbox = QCheckBox(_SystemCleanupStrings.CHK_TEMP_SECURE)
         self.temp_secure_checkbox.setChecked(False)
-        self.temp_secure_checkbox.setToolTip(
-            "Securely overwrite file data before deletion (slower but more secure)"  # noqa: E501
-        )
-        self.temp_secure_checkbox.setAccessibleName("Secure deletion overwrite")
-        self.temp_secure_checkbox.setAccessibleDescription(
-            "Overwrites file data before deletion to prevent recovery; significantly slower than standard deletion"  # noqa: E501
-        )
+        _ui_bind(self.temp_secure_checkbox, 'setToolTip', 'Legacy.sddae228b455f1dcb')
+        _ui_bind(self.temp_secure_checkbox, 'setAccessibleName', 'Legacy.s406fe454b5ed7915')
+        _ui_bind(self.temp_secure_checkbox, 'setAccessibleDescription', 'Legacy.s1e43b69ba913440a')
         self.temp_secure_checkbox.setMinimumHeight(44)  # A11Y-8c
         temp_layout.addWidget(self.temp_secure_checkbox, 4, 0, 1, 2)
 
@@ -903,7 +880,7 @@ class SystemCleanupGUI(SystemDiagnosticsGUI):
             self.system_info_text = QTextEdit()
             self.system_info_text.setReadOnly(True)
             self.system_info_text.setMaximumHeight(200)
-            self.system_info_text.setAccessibleName("System information")
+            _ui_bind(self.system_info_text, 'setAccessibleName', 'Legacy.sb120922cdf69ede3')
             self.update_system_info_display()
             system_layout.addWidget(self.system_info_text)
 
@@ -975,7 +952,7 @@ class SystemCleanupGUI(SystemDiagnosticsGUI):
             self.results_text = QTextEdit()
             self.results_text.setReadOnly(True)
             self.results_text.setPlainText(_SystemCleanupStrings.TEXT_NO_RESULTS)
-            self.results_text.setAccessibleName("Cleanup results report")
+            _ui_bind(self.results_text, 'setAccessibleName', 'Legacy.s0bb30ee51e257071')
             results_layout.addWidget(self.results_text)
 
             # Export results button

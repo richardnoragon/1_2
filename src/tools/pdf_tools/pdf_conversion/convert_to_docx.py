@@ -1,3 +1,6 @@
+from src.rfu.localization import localized_widget as _ui_widget, bind_literal as _ui_bind
+from src.rfu import font_tokens
+from src.gui import menu_surfaces
 # Import Libraries
 import os
 import sys
@@ -114,25 +117,25 @@ class ConvertWindow(QMainWindow):
 
     def initUI(self):
         try:
-            self.setWindowTitle("PDF to DOCX Converter")
+            _ui_bind(self, 'setWindowTitle', 'Legacy.s0da0b23bb334b093')
             self.setGeometry(100, 100, 600, 400)
 
             # Set font for the entire application
             app_font = (
-                QtGui.QFont()
+                font_tokens.get("font.body")
             )  # noqa: TH-3  application-wide font set once at startup; not per-widget theme
-            app_font.setPointSize(12)
+
             QApplication.setFont(app_font)
 
             # Create menu bar
             menubar = self.menuBar()
-            file_menu = menubar.addMenu("File")
+            file_menu = menu_surfaces.add_menu(menubar, 'File')
 
             # Create actions
-            open_action = QAction("Open PDF", self)
+            open_action = _ui_widget(QAction, 'Legacy.s5b1034791ef9c5d9', 'setText', self)
             open_action.triggered.connect(self.select_pdf)
 
-            exit_action = QAction("Exit", self)
+            exit_action = _ui_widget(QAction, 'Legacy.sd17d84a604994b72', 'setText', self)
             exit_action.triggered.connect(self.close)
 
             # Add actions to menu
@@ -148,10 +151,10 @@ class ConvertWindow(QMainWindow):
             layout = QtWidgets.QVBoxLayout(central_widget)
 
             # Add widgets
-            self.status_label = QtWidgets.QLabel("Select a PDF file to convert")
+            self.status_label = _ui_widget(QtWidgets.QLabel, 'Legacy.s89899aa20a00619d', 'setText')
             layout.addWidget(self.status_label)
 
-            select_button = SecondaryButton("Select PDF")
+            select_button = _ui_widget(SecondaryButton, 'Legacy.s73e9910c56aa8c2e', 'setText')
             select_button.clicked.connect(self.select_pdf)
             layout.addWidget(select_button)
 

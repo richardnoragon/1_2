@@ -16,6 +16,8 @@ Features:
 Author: RFU Development Team
 Version: 1.0.0
 """
+from src.rfu.localization import localized_widget as _ui_widget, bind_literal as _ui_bind
+from src.rfu import font_tokens
 
 import logging
 import os
@@ -219,7 +221,7 @@ class DirectoryBrowserWidget(QWidget):
 
     def _create_header(self):
         """Create the header section with path input and controls."""
-        header_group = QGroupBox("Directory Selection")
+        header_group = _ui_widget(QGroupBox, 'Legacy.s30d2d5574cce5ea3', 'setTitle')
         header_group.setStyleSheet(Styles.GROUP_BOX_STYLE)
         header_group.setMaximumHeight(120)
 
@@ -247,7 +249,7 @@ class DirectoryBrowserWidget(QWidget):
         self.browse_button.clicked.connect(self._browse_directory)
         buttons_layout.addWidget(self.browse_button)
 
-        self.validate_button = SecondaryButton("✓ Validate")
+        self.validate_button = _ui_widget(SecondaryButton, 'Legacy.sc5dc2be72f2a7044', 'setText')
         self.validate_button.clicked.connect(self._validate_current_path)
         buttons_layout.addWidget(self.validate_button)
 
@@ -283,7 +285,7 @@ class DirectoryBrowserWidget(QWidget):
 
     def _create_tree_browser(self):
         """Create the directory tree browser."""
-        tree_group = QGroupBox("Directory Browser")
+        tree_group = _ui_widget(QGroupBox, 'Legacy.s1858f6ccbc7787e8', 'setTitle')
         tree_group.setStyleSheet(Styles.GROUP_BOX_STYLE)
 
         layout = QVBoxLayout(tree_group)
@@ -309,17 +311,17 @@ class DirectoryBrowserWidget(QWidget):
                 selection-background-color: {Colors.BACKGROUND_SELECTED};
                 outline: none;
             }}
-            
+
             QTreeView::item {{
                 padding: 4px 8px;
                 border-bottom: 1px solid {Colors.BORDER_LIGHT};
             }}
-            
+
             QTreeView::item:selected {{
                 background-color: {Colors.BACKGROUND_SELECTED};
                 color: {Colors.TEXT_PRIMARY};
             }}
-            
+
             QTreeView::item:hover:!selected {{
                 background-color: {Colors.BACKGROUND_HOVER};
             }}
@@ -332,7 +334,7 @@ class DirectoryBrowserWidget(QWidget):
 
     def _create_selected_list(self):
         """Create the selected directories list."""
-        list_group = QGroupBox("Selected Directories")
+        list_group = _ui_widget(QGroupBox, 'Legacy.s6af7276c46eaf5c8', 'setTitle')
         list_group.setStyleSheet(Styles.GROUP_BOX_STYLE)
 
         layout = QVBoxLayout(list_group)
@@ -344,7 +346,7 @@ class DirectoryBrowserWidget(QWidget):
         self.selected_list.setStyleSheet(Styles.LIST_WIDGET_STYLE)
         self.selected_list.setSelectionMode(QListWidget.ExtendedSelection)
         self.selected_list.setMinimumHeight(200)
-        self.selected_list.setAccessibleName("Selected directories")
+        _ui_bind(self.selected_list, 'setAccessibleName', 'Legacy.s8137428a9969234f')
         layout.addWidget(self.selected_list)
 
         # List control buttons
@@ -355,7 +357,7 @@ class DirectoryBrowserWidget(QWidget):
         self.remove_button.setEnabled(False)
         list_buttons_layout.addWidget(self.remove_button)
 
-        clear_button = SecondaryButton("Clear All")
+        clear_button = _ui_widget(SecondaryButton, 'Legacy.sddceb7adfdb8816e', 'setText')
         clear_button.clicked.connect(self._clear_all_directories)
         list_buttons_layout.addWidget(clear_button)
 
@@ -363,10 +365,11 @@ class DirectoryBrowserWidget(QWidget):
         layout.addLayout(list_buttons_layout)
 
         # Directory count label
-        self.count_label = QLabel("0 directories selected")
+        self.count_label = _ui_widget(QLabel, 'Legacy.sf6d9c91d506bf099', 'setText')
         self.count_label.setStyleSheet(
-            f"color: {Colors.TEXT_SECONDARY}; font-size: 9pt;"
+            f"color: {Colors.TEXT_SECONDARY}; "
         )
+        font_tokens.bind(self.count_label, "font.body")
         layout.addWidget(self.count_label)
 
         return list_group
@@ -382,7 +385,7 @@ class DirectoryBrowserWidget(QWidget):
         layout.setContentsMargins(10, 5, 10, 5)
 
         # Status label
-        self.status_label = QLabel("Ready to select directories")
+        self.status_label = _ui_widget(QLabel, 'Legacy.s9e75dadea64f4b77', 'setText')
         self.status_label.setFont(Fonts.label_font())
         self.status_label.setStyleSheet(f"color: {Colors.TEXT_SECONDARY};")
         self.status_label.setVisible(False)  # replaced by ToastNotification
@@ -460,33 +463,27 @@ class DirectoryBrowserWidget(QWidget):
     def _setup_accessibility(self):
         """Setup accessibility features."""
         # Set accessible names and descriptions
-        self.setAccessibleName("Directory Browser Widget")
-        self.setAccessibleDescription(
-            "Browse and select directories for folder configuration"
-        )
+        _ui_bind(self, 'setAccessibleName', 'Legacy.sf257f6b403d10328')
+        _ui_bind(self, 'setAccessibleDescription', 'Legacy.sa88c5cdf57718450')
 
         if self.directory_tree:
-            self.directory_tree.setAccessibleName("Directory Tree Browser")
-            self.directory_tree.setAccessibleDescription(
-                "Browse file system directories"
-            )
+            _ui_bind(self.directory_tree, 'setAccessibleName', 'Legacy.sa253a2a7702d956f')
+            _ui_bind(self.directory_tree, 'setAccessibleDescription', 'Legacy.s4d29769a4ebd235e')
 
         if self.selected_list:
-            self.selected_list.setAccessibleName("Selected Directories List")
-            self.selected_list.setAccessibleDescription(
-                "List of selected directories for configuration"
-            )
+            _ui_bind(self.selected_list, 'setAccessibleName', 'Legacy.sc4a27bcf73041d15')
+            _ui_bind(self.selected_list, 'setAccessibleDescription', 'Legacy.s91d9539afc728996')
 
         if self.path_edit:
-            self.path_edit.setAccessibleName("Directory Path Input")
-            self.path_edit.setAccessibleDescription("Enter directory path manually")
+            _ui_bind(self.path_edit, 'setAccessibleName', 'Legacy.sb5a377572fde8bde')
+            _ui_bind(self.path_edit, 'setAccessibleDescription', 'Legacy.s6752e3e5454d7dbf')
 
     def _browse_directory(self):
         """Open directory browse dialog."""
         dialog = QFileDialog(self)
         dialog.setFileMode(QFileDialog.Directory)
         dialog.setOption(QFileDialog.ShowDirsOnly, True)
-        dialog.setWindowTitle("Select Directory")
+        _ui_bind(dialog, 'setWindowTitle', 'Legacy.s220c3fe6289ca828')
 
         # Set starting directory
         current_path = self.path_edit.text().strip()

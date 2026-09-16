@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <ui version="4.0">
  <class>Catalog</class>
  <widget class="QMainWindow" name="Catalog">
@@ -32,7 +32,7 @@
         border-radius: 4px;
         min-width: 120px;
         min-height: 32px;
-        font-size: 12px;
+
     }
     QPushButton:hover {
         background-color: #1976D2;
@@ -40,14 +40,14 @@
     QPushButton#catalogPushButton {
         background-color: #4CAF50;
         font-weight: bold;
-        font-size: 12px;
+
     }
     QPushButton#catalogPushButton:hover {
         background-color: #388E3C;
     }
     QCheckBox {
         color: #333333;
-        font-size: 12px;
+
         padding: 5px;
     }
     QCheckBox::indicator {
@@ -59,7 +59,7 @@
         border: 1px solid #ddd;
         border-radius: 4px;
         padding: 4px;
-        font-size: 12px;
+
     }
     QGroupBox {
         font-weight: bold;
@@ -68,20 +68,15 @@
         border-radius: 4px;
         margin-top: 12px;
         padding-top: 24px;
-        font-size: 12px;
+
     }
     QLabel {
         color: #333333;
-        font-size: 12px;
+
     }
    </string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <property name="font">
-    <font>
-     <pointsize>12</pointsize>
-    </font>
-   </property>
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout">
@@ -89,11 +84,6 @@
        <widget class="QGroupBox" name="files_group">
         <property name="title">
          <string>Files in Directory</string>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>12</pointsize>
-         </font>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_2">
          <item>
@@ -104,10 +94,8 @@
            <property name="icon">
             <iconset>icons/folder.png</iconset>
            </property>
-           <property name="font">
-            <font>
-             <pointsize>12</pointsize>
-            </font>
+           <property name="rfuLocale_setText" stdset="0">
+            <string notr="true">Legacy.se597da9c984517f8</string>
            </property>
           </widget>
          </item>
@@ -119,10 +107,8 @@
            <property name="wordWrap">
             <bool>true</bool>
            </property>
-           <property name="font">
-            <font>
-             <pointsize>12</pointsize>
-            </font>
+           <property name="rfuLocale_setText" stdset="0">
+            <string notr="true">Legacy.sd987e033568e0872</string>
            </property>
           </widget>
          </item>
@@ -134,25 +120,18 @@
            <property name="selectionMode">
             <enum>QAbstractItemView::ExtendedSelection</enum>
            </property>
-           <property name="font">
-            <font>
-             <pointsize>12</pointsize>
-            </font>
-           </property>
           </widget>
          </item>
         </layout>
+        <property name="rfuLocale_setTitle" stdset="0">
+         <string notr="true">Legacy.sc07168e952f07f90</string>
+        </property>
        </widget>
       </item>
       <item>
        <widget class="QGroupBox" name="options_group">
         <property name="title">
          <string>Catalog Options</string>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>12</pointsize>
-         </font>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_3">
          <item>
@@ -163,10 +142,11 @@
            <property name="toolTip">
             <string>Include all files from subfolders in the catalog</string>
            </property>
-           <property name="font">
-            <font>
-             <pointsize>12</pointsize>
-            </font>
+           <property name="rfuLocale_setText" stdset="0">
+            <string notr="true">Legacy.s7230bfd57ef44b38</string>
+           </property>
+           <property name="rfuLocale_setToolTip" stdset="0">
+            <string notr="true">Legacy.sa0e6943f5cab3118</string>
            </property>
           </widget>
          </item>
@@ -178,10 +158,11 @@
            <property name="toolTip">
             <string>Compare file contents to find duplicates</string>
            </property>
-           <property name="font">
-            <font>
-             <pointsize>12</pointsize>
-            </font>
+           <property name="rfuLocale_setText" stdset="0">
+            <string notr="true">Legacy.s918aaf4198ccbab8</string>
+           </property>
+           <property name="rfuLocale_setToolTip" stdset="0">
+            <string notr="true">Legacy.s1b1b485de52a591a</string>
            </property>
           </widget>
          </item>
@@ -193,10 +174,11 @@
            <property name="toolTip">
             <string>Include file sizes in the catalog</string>
            </property>
-           <property name="font">
-            <font>
-             <pointsize>12</pointsize>
-            </font>
+           <property name="rfuLocale_setText" stdset="0">
+            <string notr="true">Legacy.s8f9cb5669d67f4bf</string>
+           </property>
+           <property name="rfuLocale_setToolTip" stdset="0">
+            <string notr="true">Legacy.s946b59ff137ab735</string>
            </property>
           </widget>
          </item>
@@ -208,10 +190,11 @@
            <property name="toolTip">
             <string>Include file modification dates in the catalog</string>
            </property>
-           <property name="font">
-            <font>
-             <pointsize>12</pointsize>
-            </font>
+           <property name="rfuLocale_setText" stdset="0">
+            <string notr="true">Legacy.s5f653698d7cc9024</string>
+           </property>
+           <property name="rfuLocale_setToolTip" stdset="0">
+            <string notr="true">Legacy.s350797e77da38157</string>
            </property>
           </widget>
          </item>
@@ -220,19 +203,9 @@
            <property name="title">
             <string>Sorting</string>
            </property>
-           <property name="font">
-            <font>
-             <pointsize>12</pointsize>
-            </font>
-           </property>
            <layout class="QHBoxLayout" name="horizontalLayout_2">
             <item>
              <widget class="QComboBox" name="sortByComboBox">
-              <property name="font">
-               <font>
-                <pointsize>12</pointsize>
-               </font>
-              </property>
               <property name="toolTip">
                <string>Select sorting field</string>
               </property>
@@ -246,15 +219,13 @@
                 <string>File Type</string>
                </property>
               </item>
+              <property name="rfuLocale_setToolTip" stdset="0">
+               <string notr="true">Legacy.s8e97a3a9a072b22d</string>
+              </property>
              </widget>
             </item>
             <item>
              <widget class="QComboBox" name="sortOrderComboBox">
-              <property name="font">
-               <font>
-                <pointsize>12</pointsize>
-               </font>
-              </property>
               <property name="toolTip">
                <string>Select sort order</string>
               </property>
@@ -268,9 +239,15 @@
                 <string>Descending</string>
                </property>
               </item>
+              <property name="rfuLocale_setToolTip" stdset="0">
+               <string notr="true">Legacy.sf512e919d328214d</string>
+              </property>
              </widget>
             </item>
            </layout>
+           <property name="rfuLocale_setTitle" stdset="0">
+            <string notr="true">Legacy.scb24f7d40a81b189</string>
+           </property>
           </widget>
          </item>
          <item>
@@ -294,14 +271,15 @@
            <property name="icon">
             <iconset>icons/catalog.png</iconset>
            </property>
-           <property name="font">
-            <font>
-             <pointsize>12</pointsize>
-            </font>
+           <property name="rfuLocale_setText" stdset="0">
+            <string notr="true">Legacy.sb07b8556f6531a91</string>
            </property>
           </widget>
          </item>
         </layout>
+        <property name="rfuLocale_setTitle" stdset="0">
+         <string notr="true">Legacy.sc5a975c027679eeb</string>
+        </property>
        </widget>
       </item>
      </layout>
@@ -314,10 +292,8 @@
       <property name="alignment">
        <set>Qt::AlignCenter</set>
       </property>
-      <property name="font">
-       <font>
-        <pointsize>12</pointsize>
-       </font>
+      <property name="rfuLocale_setText" stdset="0">
+       <string notr="true">Legacy.s5fa7aac5375c5815</string>
       </property>
      </widget>
     </item>
@@ -332,34 +308,22 @@
      <height>21</height>
     </rect>
    </property>
-   <property name="font">
-    <font>
-     <pointsize>12</pointsize>
-    </font>
-   </property>
    <widget class="QMenu" name="menuFile">
     <property name="title">
      <string>File</string>
     </property>
-    <property name="font">
-     <font>
-      <pointsize>12</pointsize>
-     </font>
+    <addaction name="actionselect" />
+    <addaction name="separator" />
+    <addaction name="actionopen_catalog" />
+    <addaction name="separator" />
+    <addaction name="actionexit" />
+    <property name="rfuLocale_setTitle" stdset="0">
+     <string notr="true">Legacy.s50009ce1da4d15e1</string>
     </property>
-    <addaction name="actionselect"/>
-    <addaction name="separator"/>
-    <addaction name="actionopen_catalog"/>
-    <addaction name="separator"/>
-    <addaction name="actionexit"/>
    </widget>
-   <addaction name="menuFile"/>
+   <addaction name="menuFile" />
   </widget>
   <widget class="QStatusBar" name="statusbar">
-   <property name="font">
-    <font>
-     <pointsize>12</pointsize>
-    </font>
-   </property>
   </widget>
   <action name="actionselect">
    <property name="text">
@@ -368,10 +332,8 @@
    <property name="shortcut">
     <string>Ctrl+O</string>
    </property>
-   <property name="font">
-    <font>
-     <pointsize>12</pointsize>
-    </font>
+   <property name="rfuLocale_setText" stdset="0">
+    <string notr="true">Legacy.s18c119ce08776ea9</string>
    </property>
   </action>
   <action name="actionexit">
@@ -381,10 +343,8 @@
    <property name="shortcut">
     <string>Alt+F4</string>
    </property>
-   <property name="font">
-    <font>
-     <pointsize>12</pointsize>
-    </font>
+   <property name="rfuLocale_setText" stdset="0">
+    <string notr="true">Legacy.sd17d84a604994b72</string>
    </property>
   </action>
   <action name="actionopen_catalog">
@@ -394,13 +354,14 @@
    <property name="shortcut">
     <string>Ctrl+L</string>
    </property>
-   <property name="font">
-    <font>
-     <pointsize>12</pointsize>
-    </font>
+   <property name="rfuLocale_setText" stdset="0">
+    <string notr="true">Legacy.se98680b6ab898d30</string>
    </property>
   </action>
+  <property name="rfuLocale_setWindowTitle" stdset="0">
+   <string notr="true">Legacy.s9956f3dc23e55d5e</string>
+  </property>
  </widget>
- <resources/>
- <connections/>
+ <resources />
+ <connections />
 </ui>

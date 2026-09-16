@@ -6,6 +6,8 @@ including standardized File, Edit, View, Tools, and Help menus with proper
 keyboard shortcuts and platform-specific design guidelines.
 """
 
+from src.rfu.localization import tr, bind_text
+
 import os
 import sys
 import webbrowser
@@ -87,6 +89,9 @@ class MenuManager:
 
         self._create_help_menu()
 
+        from src.gui.menu_registry import MenuRegistry
+        self.parent_window.menu_registry = MenuRegistry(self.parent_window)
+
         return self.menubar
 
     def _apply_menubar_styling(self):
@@ -98,26 +103,24 @@ class MenuManager:
                 color: {Colors.TEXT_PRIMARY};
                 border-bottom: 1px solid {Colors.TEXT_DISABLED};
                 padding: 2px;
-                font-family: {Fonts.DEFAULT_FAMILY};
-                font-size: {Fonts.BODY_SIZE}pt;
             }}
-            
+
             QMenuBar::item {{
                 background-color: transparent;
                 padding: 6px 12px;
                 margin: 0px;
                 border-radius: 4px;
             }}
-            
+
             QMenuBar::item:selected {{
                 background-color: {Colors.PRIMARY};
                 color: {token('text_on_primary')};
             }}
-            
+
             QMenuBar::item:pressed {{
                 background-color: {Colors.BUTTON_PRIMARY_PRESSED};
             }}
-            
+
             QMenu {{
                 background-color: {Colors.BACKGROUND};
                 color: {Colors.TEXT_PRIMARY};
@@ -126,35 +129,35 @@ class MenuManager:
                 padding: 2px;
                 margin: 0px;
             }}
-            
+
             QMenu::item {{
                 background-color: transparent;
                 padding: 8px 24px 8px 32px;
                 margin: 1px;
                 border-radius: 3px;
             }}
-            
+
             QMenu::item:selected {{
                 background-color: {Colors.PRIMARY};
                 color: {token('text_on_primary')};
             }}
-            
+
             QMenu::item:disabled {{
                 color: {Colors.TEXT_DISABLED};
             }}
-            
+
             QMenu::separator {{
                 height: 1px;
                 background-color: {Colors.TEXT_DISABLED};
                 margin: 4px 8px;
             }}
-            
+
             QMenu::indicator {{
                 width: 16px;
                 height: 16px;
                 left: 8px;
             }}
-            
+
             QMenu::indicator:checked {{
                 image: url(:/icons/check.png);
             }}
@@ -163,12 +166,12 @@ class MenuManager:
 
     def _create_file_menu(self, window_type: str):
         """Create the File menu with standard actions."""
-        self.file_menu = self.menubar.addMenu("&File")
+        self.file_menu = self.menubar.addMenu(tr("Menu.FILE"))
 
         if window_type == "main":
             # New actions for main window
             new_action = self._create_action(
-                "&New Project...",
+                tr("MenuLabels.NEW_PROJECT"),
                 "Ctrl+N",
                 "Create a new project",
                 callback=self._get_callback("new_project"),
@@ -176,14 +179,14 @@ class MenuManager:
             self.file_menu.addAction(new_action)
 
             # Recent files submenu
-            recent_menu = self.file_menu.addMenu("Recent &Files")
+            recent_menu = self.file_menu.addMenu(tr("MenuLabels.RECENT_FILES"))
             self._populate_recent_files_menu(recent_menu)
 
             self.file_menu.addSeparator()
 
         # Open action (all windows)
         open_action = self._create_action(
-            "&Open...",
+            tr("MenuLabels.OPEN"),
             "Ctrl+O",
             "Open a file or project",
             callback=self._get_callback("open_file"),
@@ -194,7 +197,7 @@ class MenuManager:
         # Save actions (for applicable windows)
         if window_type in ["main", "utility"]:
             save_action = self._create_action(
-                "&Save",
+                tr("MenuLabels.SAVE"),
                 "Ctrl+S",
                 "Save current work",
                 callback=self._get_callback("save"),
@@ -203,7 +206,7 @@ class MenuManager:
             self.file_menu.addAction(save_action)
 
             save_as_action = self._create_action(
-                "Save &As...",
+                tr("MenuLabels.SAVE_AS"),
                 "Ctrl+Shift+S",
                 "Save with a new name",
                 callback=self._get_callback("save_as"),
@@ -215,7 +218,7 @@ class MenuManager:
 
             # Export/Import
             export_action = self._create_action(
-                "&Export...",
+                tr("MenuLabels.EXPORT"),
                 "Ctrl+E",
                 "Export data",
                 callback=self._get_callback("export"),
@@ -224,7 +227,7 @@ class MenuManager:
             self.file_menu.addAction(export_action)
 
             import_action = self._create_action(
-                "&Import...",
+                tr("MenuLabels.IMPORT"),
                 "Ctrl+I",
                 "Import data",
                 callback=self._get_callback("import"),
@@ -236,7 +239,7 @@ class MenuManager:
 
         # Preferences/Settings
         preferences_action = self._create_action(
-            "Pr&eferences...",
+            tr("MenuLabels.PREFERENCES"),
             "Ctrl+,",
             "Open application preferences",
             callback=self._get_callback("show_preferences"),
@@ -248,7 +251,7 @@ class MenuManager:
 
         # Exit action (standard Ctrl+Q)
         exit_action = self._create_action(
-            "E&xit",
+            tr("MenuLabels.EXIT"),
             "Ctrl+Q",
             "Exit the application",
             callback=self._exit_application,
@@ -258,11 +261,11 @@ class MenuManager:
 
     def _create_edit_menu(self):
         """Create the Edit menu with standard actions."""
-        self.edit_menu = self.menubar.addMenu("&Edit")
+        self.edit_menu = self.menubar.addMenu(tr("Menu.EDIT"))
 
         # Standard edit actions
         undo_action = self._create_action(
-            "&Undo",
+            tr("MenuLabels.UNDO"),
             "Ctrl+Z",
             "Undo last action",
             callback=self._get_callback("undo"),
@@ -270,7 +273,7 @@ class MenuManager:
         self.edit_menu.addAction(undo_action)
 
         redo_action = self._create_action(
-            "&Redo",
+            tr("MenuLabels.REDO"),
             "Ctrl+Y",
             "Redo last undone action",
             callback=self._get_callback("redo"),
@@ -281,7 +284,7 @@ class MenuManager:
 
         # Clipboard actions
         cut_action = self._create_action(
-            "Cu&t",
+            tr("MenuLabels.CUT"),
             "Ctrl+X",
             "Cut selection to clipboard",
             callback=self._get_callback("cut"),
@@ -289,7 +292,7 @@ class MenuManager:
         self.edit_menu.addAction(cut_action)
 
         copy_action = self._create_action(
-            "&Copy",
+            tr("MenuLabels.COPY"),
             "Ctrl+C",
             "Copy selection to clipboard",
             callback=self._get_callback("copy"),
@@ -297,7 +300,7 @@ class MenuManager:
         self.edit_menu.addAction(copy_action)
 
         paste_action = self._create_action(
-            "&Paste",
+            tr("MenuLabels.PASTE"),
             "Ctrl+V",
             "Paste from clipboard",
             callback=self._get_callback("paste"),
@@ -308,7 +311,7 @@ class MenuManager:
 
         # Selection actions
         select_all_action = self._create_action(
-            "Select &All",
+            tr("MenuLabels.SELECT_ALL"),
             "Ctrl+A",
             "Select all items",
             callback=self._get_callback("select_all"),
@@ -319,7 +322,7 @@ class MenuManager:
         self.edit_menu.addSeparator()
 
         find_action = self._create_action(
-            "&Find...",
+            tr("MenuLabels.FIND"),
             "Ctrl+F",
             "Find text or items",
             callback=self._get_callback("find"),
@@ -327,8 +330,8 @@ class MenuManager:
         self.edit_menu.addAction(find_action)
 
         replace_action = self._create_action(
-            "&Replace...",
-            "Ctrl+H",
+            tr("MenuLabels.REPLACE"),
+            "Ctrl+Shift+H",
             "Find and replace text",
             callback=self._get_callback("replace"),
         )
@@ -336,11 +339,11 @@ class MenuManager:
 
     def _create_view_menu(self):
         """Create the View menu with standard actions."""
-        self.view_menu = self.menubar.addMenu("&View")
+        self.view_menu = self.menubar.addMenu(tr("Menu.VIEW"))
 
         # Zoom actions
         zoom_in_action = self._create_action(
-            "Zoom &In",
+            tr("MenuLabels.ZOOM_IN"),
             "Ctrl++",
             "Increase zoom level",
             callback=self._get_callback("zoom_in"),
@@ -348,7 +351,7 @@ class MenuManager:
         self.view_menu.addAction(zoom_in_action)
 
         zoom_out_action = self._create_action(
-            "Zoom &Out",
+            tr("MenuLabels.ZOOM_OUT"),
             "Ctrl+-",
             "Decrease zoom level",
             callback=self._get_callback("zoom_out"),
@@ -356,7 +359,7 @@ class MenuManager:
         self.view_menu.addAction(zoom_out_action)
 
         zoom_reset_action = self._create_action(
-            "Reset &Zoom",
+            tr("MenuLabels.RESET_ZOOM"),
             "Ctrl+0",
             "Reset zoom to default",
             callback=self._get_callback("zoom_reset"),
@@ -366,13 +369,13 @@ class MenuManager:
         self.view_menu.addSeparator()
 
         # Theme submenu
-        theme_menu = self.view_menu.addMenu("&Theme")
+        theme_menu = self.view_menu.addMenu(tr("MenuLabels.THEME"))
 
         # Theme actions with radio button behavior
         theme_group = QActionGroup(self.parent_window)
 
         light_theme_action = self._create_action(
-            "&Light Theme",
+            tr("MenuLabels.LIGHT_THEME"),
             "",
             "Switch to light theme",
             callback=lambda: self._set_theme("light"),
@@ -382,7 +385,7 @@ class MenuManager:
         theme_menu.addAction(light_theme_action)
 
         dark_theme_action = self._create_action(
-            "&Dark Theme",
+            tr("MenuLabels.DARK_THEME"),
             "",
             "Switch to dark theme",
             callback=lambda: self._set_theme("dark"),
@@ -402,7 +405,7 @@ class MenuManager:
 
         # Fullscreen toggle
         fullscreen_action = self._create_action(
-            "&Fullscreen",
+            tr("MenuLabels.FULLSCREEN"),
             "F11",
             "Toggle fullscreen mode",
             callback=self._toggle_fullscreen,
@@ -412,7 +415,7 @@ class MenuManager:
 
         # Always on top toggle
         always_on_top_action = self._create_action(
-            "Always on &Top",
+            tr("MenuLabels.ALWAYS_ON_TOP"),
             "",
             "Keep window always on top",
             callback=self._toggle_always_on_top,
@@ -424,7 +427,7 @@ class MenuManager:
 
         # UAP: Font picker (T038)
         font_picker_action = self._create_action(
-            "&Font...",
+            tr("MenuLabels.FONT"),
             "",
             "Change application font",
             callback=self._show_font_picker,
@@ -434,7 +437,7 @@ class MenuManager:
 
         # UAP: Working directory picker (T038)
         dir_picker_action = self._create_action(
-            "&Working Directory...",
+            tr("MenuLabels.WORKING_DIRECTORY"),
             "",
             "Change working directory",
             callback=self._show_directory_picker,
@@ -446,7 +449,7 @@ class MenuManager:
 
         # Refresh action
         refresh_action = self._create_action(
-            "&Refresh",
+            tr("MenuLabels.REFRESH"),
             "F5",
             "Refresh current view",
             callback=self._get_callback("refresh"),
@@ -455,11 +458,11 @@ class MenuManager:
 
     def _create_tools_menu(self):
         """Create the Tools menu with standard actions."""
-        self.tools_menu = self.menubar.addMenu("&Tools")
+        self.tools_menu = self.menubar.addMenu(tr("Menu.TOOLS"))
 
         # Tool-specific actions (to be customized by individual tools)
         options_action = self._create_action(
-            "&Options...",
+            tr("MenuLabels.OPTIONS"),
             "",
             "Configure tool options",
             callback=self._get_callback("show_options"),
@@ -470,7 +473,7 @@ class MenuManager:
 
         # Common utility actions
         log_viewer_action = self._create_action(
-            "&Log Viewer...",
+            tr("MenuLabels.LOG_VIEWER"),
             "",
             "View application logs",
             callback=self._show_log_viewer,
@@ -478,7 +481,7 @@ class MenuManager:
         self.tools_menu.addAction(log_viewer_action)
 
         performance_action = self._create_action(
-            "&Performance Monitor...",
+            tr("MenuLabels.PERFORMANCE_MONITOR"),
             "",
             "Monitor application performance",
             callback=self._get_callback("show_performance"),
@@ -489,7 +492,7 @@ class MenuManager:
 
         # Reset/Clear actions
         reset_settings_action = self._create_action(
-            "&Reset Settings...",
+            tr("MenuLabels.RESET_PREFERENCES"),
             "",
             "Reset application settings to defaults",
             callback=self._reset_settings,
@@ -498,11 +501,11 @@ class MenuManager:
 
     def _create_help_menu(self):
         """Create the Help menu with standard actions."""
-        self.help_menu = self.menubar.addMenu("&Help")
+        self.help_menu = self.menubar.addMenu(tr("Menu.HELP"))
 
         # Documentation actions
         user_guide_action = self._create_action(
-            "&User Guide",
+            tr("MenuLabels.USER_GUIDE"),
             "F1",
             "Open user documentation",
             callback=self._show_user_guide,
@@ -510,7 +513,7 @@ class MenuManager:
         self.help_menu.addAction(user_guide_action)
 
         keyboard_shortcuts_action = self._create_action(
-            "&Keyboard Shortcuts...",
+            tr("MenuLabels.KEYBOARD_SHORTCUTS"),
             "Ctrl+?",
             "View keyboard shortcuts",
             callback=self._show_keyboard_shortcuts,
@@ -521,7 +524,7 @@ class MenuManager:
 
         # Online resources
         website_action = self._create_action(
-            "Visit &Website",
+            tr("MenuLabels.VISIT_WEBSITE"),
             "",
             "Open official website",
             callback=lambda: webbrowser.open("https://github.com/richardnoragon"),
@@ -529,7 +532,7 @@ class MenuManager:
         self.help_menu.addAction(website_action)
 
         report_bug_action = self._create_action(
-            "&Report Bug...",
+            tr("MenuLabels.REPORT_BUG"),
             "",
             "Report a bug or issue",
             callback=lambda: webbrowser.open(
@@ -542,7 +545,7 @@ class MenuManager:
 
         # System info and about
         system_info_action = self._create_action(
-            "System &Information...",
+            tr("MenuLabels.SYSTEM_INFORMATION"),
             "",
             "View system information",
             callback=self._show_system_info,
@@ -550,7 +553,7 @@ class MenuManager:
         self.help_menu.addAction(system_info_action)
 
         check_updates_action = self._create_action(
-            "Check for &Updates...",
+            tr("MenuLabels.CHECK_FOR_UPDATES"),
             "",
             "Check for application updates",
             callback=self._check_for_updates,
@@ -561,7 +564,7 @@ class MenuManager:
 
         # About dialog
         about_action = self._create_action(
-            "&About...",
+            tr("MenuLabels.ABOUT"),
             "",
             "About this application",
             callback=self._show_about_dialog,
@@ -580,6 +583,7 @@ class MenuManager:
     ) -> QAction:
         """Create a standardized menu action."""
         action = QAction(text, self.parent_window)
+        bind_text(action, "setText", text)
 
         if action_id:
             action.setObjectName(action_id)
@@ -592,6 +596,8 @@ class MenuManager:
             action.setToolTip(tooltip)
 
         if callback:
+            if hasattr(callback, "command_name"):
+                action.setProperty("toolCommand", callback.command_name)
             action.triggered.connect(callback)
 
         if checkable:
@@ -600,10 +606,18 @@ class MenuManager:
         return action
 
     def _get_callback(self, action_name: str) -> Callable:
-        """Get callback function for an action, with fallback."""
-        return self.callbacks.get(
-            action_name, lambda: self._default_action(action_name)
-        )
+        """Resolve on activation so callbacks registered after setup work."""
+        def invoke():
+            dispatcher = getattr(self.parent_window, "command_dispatcher", None)
+            if dispatcher is not None:
+                return dispatcher.invoke(action_name)
+            callback = self.callbacks.get(action_name)
+            if callback is not None:
+                return callback()
+            return self._default_action(action_name)
+
+        invoke.command_name = action_name
+        return invoke
 
     def _default_action(self, action_name: str):
         """Default action handler for unimplemented features."""
@@ -886,7 +900,7 @@ class HelpDialog(QDialog):
         <h3>Getting Started</h3>
         <p>Welcome to Richard's File Utilities! This comprehensive toolkit provides
         various file management, analysis, and security tools.</p>
-        
+
         <h3>Menu Overview</h3>
         <ul>
         <li><b>File Menu:</b> File operations, preferences, and exit</li>
@@ -895,7 +909,7 @@ class HelpDialog(QDialog):
         <li><b>Tools Menu:</b> Tool-specific options and utilities</li>
         <li><b>Help Menu:</b> Documentation and support</li>
         </ul>
-        
+
         <h3>Keyboard Shortcuts</h3>
         <ul>
         <li><b>Ctrl+N:</b> New project</li>
@@ -906,7 +920,7 @@ class HelpDialog(QDialog):
         <li><b>F5:</b> Refresh</li>
         <li><b>F11:</b> Toggle fullscreen</li>
         </ul>
-        
+
         <h3>Support</h3>
         <p>For additional help, visit our website or report issues through the Help menu.</p>
         """
@@ -941,7 +955,7 @@ class KeyboardShortcutsDialog(QDialog):
         shortcuts_text.setHtml(
             """
         <h2>Keyboard Shortcuts</h2>
-        
+
         <h3>File Operations</h3>
         <table border="1" cellpadding="5">
         <tr><td><b>Ctrl+N</b></td><td>New project</td></tr>
@@ -951,7 +965,7 @@ class KeyboardShortcutsDialog(QDialog):
         <tr><td><b>Ctrl+P</b></td><td>Print</td></tr>
         <tr><td><b>Ctrl+Q</b></td><td>Exit</td></tr>
         </table>
-        
+
         <h3>Edit Operations</h3>
         <table border="1" cellpadding="5">
         <tr><td><b>Ctrl+Z</b></td><td>Undo</td></tr>
@@ -961,9 +975,9 @@ class KeyboardShortcutsDialog(QDialog):
         <tr><td><b>Ctrl+V</b></td><td>Paste</td></tr>
         <tr><td><b>Ctrl+A</b></td><td>Select All</td></tr>
         <tr><td><b>Ctrl+F</b></td><td>Find</td></tr>
-        <tr><td><b>Ctrl+H</b></td><td>Replace</td></tr>
+        <tr><td><b>Ctrl+Shift+H</b></td><td>Replace</td></tr>
         </table>
-        
+
         <h3>View Operations</h3>
         <table border="1" cellpadding="5">
         <tr><td><b>Ctrl++</b></td><td>Zoom In</td></tr>
@@ -972,7 +986,7 @@ class KeyboardShortcutsDialog(QDialog):
         <tr><td><b>F11</b></td><td>Fullscreen</td></tr>
         <tr><td><b>F5</b></td><td>Refresh</td></tr>
         </table>
-        
+
         <h3>Help</h3>
         <table border="1" cellpadding="5">
         <tr><td><b>F1</b></td><td>User Guide</td></tr>
@@ -1013,7 +1027,7 @@ class SystemInfoDialog(QDialog):
 
         info_html = f"""
         <h2>System Information</h2>
-        
+
         <h3>Application</h3>
         <table border="1" cellpadding="5">
         <tr><td><b>Name:</b></td><td>Richard's File Utilities</td></tr>
@@ -1021,7 +1035,7 @@ class SystemInfoDialog(QDialog):
         <tr><td><b>Qt Version:</b></td><td>{PyQt5.QtCore.QT_VERSION_STR}</td></tr>
         <tr><td><b>PyQt Version:</b></td><td>{PyQt5.QtCore.PYQT_VERSION_STR}</td></tr>
         </table>
-        
+
         <h3>System</h3>
         <table border="1" cellpadding="5">
         <tr><td><b>OS:</b></td><td>{platform.system()} {platform.release()}</td></tr>

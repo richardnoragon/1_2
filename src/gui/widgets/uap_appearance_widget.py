@@ -118,7 +118,7 @@ class UAPAppearanceWidget(QWidget):
         self.font_family_combo.addItems(db.families())
         self.font_family_combo.setAccessibleName("Font family selector")
         self.font_size_spin = QSpinBox()
-        self.font_size_spin.setRange(6, 32)
+        self.font_size_spin.setRange(14, 32)
         self.font_size_spin.setAccessibleName("Font size selector")
         font_form.addRow("Family:", self.font_family_combo)
         font_form.addRow("Size:", self.font_size_spin)

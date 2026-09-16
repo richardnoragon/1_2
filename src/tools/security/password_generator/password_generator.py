@@ -3,6 +3,8 @@
 Simple Password Generator Tool for Richard's File Utilities
 A simple password generator with customizable options.
 """
+from src.rfu.localization import localized_widget as _ui_widget, bind_literal as _ui_bind
+from src.rfu import font_tokens
 import logging
 import random
 import secrets
@@ -125,7 +127,7 @@ class SimplePasswordGeneratorGUI(QMainWindow):
             f"""
             QMainWindow {{
                 background-color: {token('surface')};
-                font-family: 'Segoe UI', Arial, sans-serif;
+
             }}
             QGroupBox {{
                 font-weight: bold;
@@ -144,7 +146,7 @@ class SimplePasswordGeneratorGUI(QMainWindow):
                 color: white;
                 border: none;
                 padding: 8px 16px;
-                font-size: 14px;
+
                 border-radius: 4px;
                 font-weight: bold;
             }}
@@ -158,10 +160,11 @@ class SimplePasswordGeneratorGUI(QMainWindow):
                 border: 1px solid {token('border')};
                 border-radius: 4px;
                 padding: 8px;
-                font-size: 12px;
+
             }}
         """
         )
+        font_tokens.bind(self, "font.body")
 
     def _on_theme_changed(self, variant: str) -> None:
         """Re-apply token-based stylesheets when the active theme variant changes."""
@@ -190,93 +193,87 @@ class SimplePasswordGeneratorGUI(QMainWindow):
         self.setCentralWidget(central_widget)
         layout = QVBoxLayout(central_widget)
         # Title
-        title = QLabel("🔑 Password Generator")
+        title = _ui_widget(QLabel, 'Legacy.s767f200fbf9fb0dd', 'setText')
         title.setAlignment(Qt.AlignCenter)
-        title.setFont(Typography.h1())
+        font_tokens.bind(title, "font.toolHeader")
         layout.addWidget(title)
         # Options group
-        options_group = QGroupBox("Password Options")
+        options_group = _ui_widget(QGroupBox, 'Legacy.s9f9b77d54330a567', 'setTitle')
         options_layout = QGridLayout(options_group)
         # Length
-        options_layout.addWidget(QLabel("Length:"), 0, 0)
+        options_layout.addWidget(_ui_widget(QLabel, 'Legacy.sa204645926ef16fa', 'setText'), 0, 0)
         self.length_spin = QSpinBox()
-        self.length_spin.setAccessibleName("Password length")
-        self.length_spin.setAccessibleDescription(
-            "Number of characters in each generated password, 4 to 128"
-        )
+        _ui_bind(self.length_spin, 'setAccessibleName', 'Legacy.se874dbcb75bfa39e')
+        _ui_bind(self.length_spin, 'setAccessibleDescription', 'Legacy.s5a5ec50cd668413e')
         self.length_spin.setMinimumHeight(44)
         self.length_spin.setRange(4, 128)
         self.length_spin.setValue(16)
         options_layout.addWidget(self.length_spin, 0, 1)
         # Character options
-        self.include_uppercase = QCheckBox("Include Uppercase (A-Z)")
+        self.include_uppercase = _ui_widget(QCheckBox, 'Legacy.sd4e60c3e5c81a1a3', 'setText')
         self.include_uppercase.setChecked(True)
-        self.include_uppercase.setAccessibleName("Include uppercase letters")
+        _ui_bind(self.include_uppercase, 'setAccessibleName', 'Legacy.se10c889ad0d12408')
         self.include_uppercase.setMinimumHeight(44)
         options_layout.addWidget(self.include_uppercase, 1, 0, 1, 2)
-        self.include_lowercase = QCheckBox("Include Lowercase (a-z)")
+        self.include_lowercase = _ui_widget(QCheckBox, 'Legacy.sfa5ae490c60268cb', 'setText')
         self.include_lowercase.setChecked(True)
-        self.include_lowercase.setAccessibleName("Include lowercase letters")
+        _ui_bind(self.include_lowercase, 'setAccessibleName', 'Legacy.s9220b9fe5c9c87da')
         self.include_lowercase.setMinimumHeight(44)
         options_layout.addWidget(self.include_lowercase, 2, 0, 1, 2)
-        self.include_numbers = QCheckBox("Include Numbers (0-9)")
+        self.include_numbers = _ui_widget(QCheckBox, 'Legacy.s006fa4e7d43f8435', 'setText')
         self.include_numbers.setChecked(True)
-        self.include_numbers.setAccessibleName("Include numbers")
+        _ui_bind(self.include_numbers, 'setAccessibleName', 'Legacy.s5299372253ea542c')
         self.include_numbers.setMinimumHeight(44)
         options_layout.addWidget(self.include_numbers, 3, 0, 1, 2)
-        self.include_symbols = QCheckBox("Include Symbols (!@#$%^&*)")
+        self.include_symbols = _ui_widget(QCheckBox, 'Legacy.se4ce2b3b891ad7bb', 'setText')
         self.include_symbols.setChecked(True)
-        self.include_symbols.setAccessibleName("Include symbols")
+        _ui_bind(self.include_symbols, 'setAccessibleName', 'Legacy.s2bdfaff0164a350e')
         self.include_symbols.setMinimumHeight(44)
         options_layout.addWidget(self.include_symbols, 4, 0, 1, 2)
-        self.exclude_ambiguous = QCheckBox("Exclude Ambiguous (0, O, l, 1, I)")
+        self.exclude_ambiguous = _ui_widget(QCheckBox, 'Legacy.s1bb911cf21da0342', 'setText')
         self.exclude_ambiguous.setChecked(True)
-        self.exclude_ambiguous.setAccessibleName("Exclude ambiguous characters")
-        self.exclude_ambiguous.setAccessibleDescription(
-            "Removes characters that look similar in some fonts: 0, O, l, 1, I"
-        )
+        _ui_bind(self.exclude_ambiguous, 'setAccessibleName', 'Legacy.sfcda42ea51550762')
+        _ui_bind(self.exclude_ambiguous, 'setAccessibleDescription', 'Legacy.sb792d6affdce3ba1')
         self.exclude_ambiguous.setMinimumHeight(44)
         options_layout.addWidget(self.exclude_ambiguous, 5, 0, 1, 2)
         layout.addWidget(options_group)
         # Generate button
-        self.generate_btn = PrimaryButton("🎲 Generate Password")
+        self.generate_btn = _ui_widget(PrimaryButton, 'Legacy.s30a8455cc02489aa', 'setText')
         self.generate_btn.clicked.connect(self.generate_password)
         layout.addWidget(self.generate_btn)
         # Generated password display
-        password_group = QGroupBox("Generated Password")
+        password_group = _ui_widget(QGroupBox, 'Legacy.sc3a45297ba2fd984', 'setTitle')
         password_layout = QVBoxLayout(password_group)
         self.password_display = TextInput("Generated password")
-        self.password_display.setAccessibleName("Generated password")
+        _ui_bind(self.password_display, 'setAccessibleName', 'Legacy.s78461854cddb95a5')
         self.password_display.setReadOnly(True)
         password_layout.addWidget(self.password_display)
         # Copy button
-        self.copy_btn = SecondaryButton("📋 Copy to Clipboard")
+        self.copy_btn = _ui_widget(SecondaryButton, 'Legacy.s1f1e255c45fe0a35', 'setText')
         self.copy_btn.clicked.connect(self.copy_password)
         password_layout.addWidget(self.copy_btn)
         layout.addWidget(password_group)
         # Multiple passwords
-        multiple_group = QGroupBox("Generate Multiple Passwords")
+        multiple_group = _ui_widget(QGroupBox, 'Legacy.s467e90e12ff48797', 'setTitle')
         multiple_layout = QVBoxLayout(multiple_group)
         count_layout = QHBoxLayout()
-        count_layout.addWidget(QLabel("Count:"))
+        count_layout.addWidget(_ui_widget(QLabel, 'Legacy.sf4abb19a65362e68', 'setText'))
         self.count_spin = QSpinBox()
-        self.count_spin.setAccessibleName("Number of passwords to generate")
-        self.count_spin.setAccessibleDescription(
-            "How many separate passwords to generate at once, 1 to 50"
-        )
+        _ui_bind(self.count_spin, 'setAccessibleName', 'Legacy.sb278aeed8f04b931')
+        _ui_bind(self.count_spin, 'setAccessibleDescription', 'Legacy.s40a759caa2ba21da')
         self.count_spin.setMinimumHeight(44)
         self.count_spin.setRange(1, 50)
         self.count_spin.setValue(5)
         count_layout.addWidget(self.count_spin)
         count_layout.addStretch()
         multiple_layout.addLayout(count_layout)
-        self.generate_multiple_btn = SecondaryButton("🎲 Generate Multiple")
+        self.generate_multiple_btn = _ui_widget(SecondaryButton, 'Legacy.s0ede17fd173d00a1', 'setText')
         self.generate_multiple_btn.clicked.connect(self.generate_multiple_passwords)
         multiple_layout.addWidget(self.generate_multiple_btn)
         self.multiple_display = QTextEdit()
-        self.multiple_display.setAccessibleName("Multiple generated passwords")
+        _ui_bind(self.multiple_display, 'setAccessibleName', 'Legacy.s7b632d4416727258')
         self.multiple_display.setMaximumHeight(150)
-        self.multiple_display.setFont(Typography.body())
+        font_tokens.bind(self.multiple_display, "font.body")
         multiple_layout.addWidget(self.multiple_display)
         layout.addWidget(multiple_group)
         # Generate initial password

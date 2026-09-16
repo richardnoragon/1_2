@@ -14,6 +14,7 @@ Features:
 - Plugin architecture for extensibility
 - Integration with StandardWindow for consistent UI
 """
+from src.rfu.localization import localized_widget as _ui_widget, bind_literal as _ui_bind
 
 import codecs
 import json
@@ -390,7 +391,7 @@ class SearchDialog(QDialog):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setWindowTitle("Find and Replace")
+        _ui_bind(self, 'setWindowTitle', 'Legacy.sb9457d9cacab550a')
         self.setModal(False)
         self.resize(400, 200)
         self.setup_ui()
@@ -400,33 +401,33 @@ class SearchDialog(QDialog):
         layout = QVBoxLayout(self)
 
         # Search section
-        search_group = QGroupBox("Find")
+        search_group = _ui_widget(QGroupBox, 'Legacy.s822b2ae4542bc74b', 'setTitle')
         search_layout = QFormLayout(search_group)
 
         self.search_edit = TextInput("Find")
-        self.search_edit.setAccessibleName("Search text")
+        _ui_bind(self.search_edit, 'setAccessibleName', 'Legacy.s38d268a10995c7d9')
         search_layout.addRow("Find:", self.search_edit)
 
         # Replace section
         self.replace_edit = TextInput("Replace")
-        self.replace_edit.setAccessibleName("Replacement text")
+        _ui_bind(self.replace_edit, 'setAccessibleName', 'Legacy.s4e1e7057c9d39ce5')
         search_layout.addRow("Replace:", self.replace_edit)
 
         # Options
-        options_group = QGroupBox("Options")
+        options_group = _ui_widget(QGroupBox, 'Legacy.sd0db8b5e364b6989', 'setTitle')
         options_layout = QVBoxLayout(options_group)
 
-        self.case_sensitive_cb = QCheckBox("Case sensitive")
-        self.case_sensitive_cb.setAccessibleName("Case sensitive search")
+        self.case_sensitive_cb = _ui_widget(QCheckBox, 'Legacy.se124ba47cb3f7cda', 'setText')
+        _ui_bind(self.case_sensitive_cb, 'setAccessibleName', 'Legacy.s0b4619acd29cb6c4')
         self.case_sensitive_cb.setMinimumHeight(44)
-        self.whole_words_cb = QCheckBox("Whole words only")
-        self.whole_words_cb.setAccessibleName("Whole words only search")
+        self.whole_words_cb = _ui_widget(QCheckBox, 'Legacy.se4f22f8999e3f46d', 'setText')
+        _ui_bind(self.whole_words_cb, 'setAccessibleName', 'Legacy.s1e514777bcd32551')
         self.whole_words_cb.setMinimumHeight(44)
-        self.use_regex_cb = QCheckBox("Use regular expressions")
-        self.use_regex_cb.setAccessibleName("Use regular expressions in search")
+        self.use_regex_cb = _ui_widget(QCheckBox, 'Legacy.sc0518790e25c46eb', 'setText')
+        _ui_bind(self.use_regex_cb, 'setAccessibleName', 'Legacy.s43a0ef39b5f614d6')
         self.use_regex_cb.setMinimumHeight(44)
-        self.wrap_around_cb = QCheckBox("Wrap around")
-        self.wrap_around_cb.setAccessibleName("Wrap around search")
+        self.wrap_around_cb = _ui_widget(QCheckBox, 'Legacy.s9d11339444a7ba0a', 'setText')
+        _ui_bind(self.wrap_around_cb, 'setAccessibleName', 'Legacy.s9bca3c03c7acb0f5')
         self.wrap_around_cb.setMinimumHeight(44)
         self.wrap_around_cb.setChecked(True)
 
@@ -437,16 +438,16 @@ class SearchDialog(QDialog):
 
         # Buttons
         button_layout = QHBoxLayout()
-        self.find_next_btn = PrimaryButton("Find Next")
-        self.find_next_btn.setAccessibleName("Find next match")
-        self.find_prev_btn = SecondaryButton("Find Previous")
-        self.find_prev_btn.setAccessibleName("Find previous match")
-        self.replace_btn = SecondaryButton("Replace")
-        self.replace_btn.setAccessibleName("Replace current match")
-        self.replace_all_btn = SecondaryButton("Replace All")
-        self.replace_all_btn.setAccessibleName("Replace all matches")
-        self.close_btn = SecondaryButton("Close")
-        self.close_btn.setAccessibleName("Close search dialog")
+        self.find_next_btn = _ui_widget(PrimaryButton, 'Legacy.s664d6cdf0494d6e5', 'setText')
+        _ui_bind(self.find_next_btn, 'setAccessibleName', 'Legacy.sd201f9dd6034209e')
+        self.find_prev_btn = _ui_widget(SecondaryButton, 'Legacy.sbf0e5179cb962af6', 'setText')
+        _ui_bind(self.find_prev_btn, 'setAccessibleName', 'Legacy.s6977a6717ef6cf0c')
+        self.replace_btn = _ui_widget(SecondaryButton, 'Legacy.s95e154398a4bc009', 'setText')
+        _ui_bind(self.replace_btn, 'setAccessibleName', 'Legacy.s550f205b98e6a52e')
+        self.replace_all_btn = _ui_widget(SecondaryButton, 'Legacy.s4bcc68df375ab246', 'setText')
+        _ui_bind(self.replace_all_btn, 'setAccessibleName', 'Legacy.s2ec381f7bedab458')
+        self.close_btn = _ui_widget(SecondaryButton, 'Legacy.s7d9eb7acb13e2462', 'setText')
+        _ui_bind(self.close_btn, 'setAccessibleName', 'Legacy.sb01ea1b755c49640')
 
         button_layout.addWidget(self.find_next_btn)
         button_layout.addWidget(self.find_prev_btn)
@@ -497,11 +498,11 @@ class TextEditor(QPlainTextEdit):
 
     def apply_settings(self):
         """Apply editor settings."""
-        font = QFont(
-            self.settings.font_family, self.settings.font_size
-        )  # noqa: TH-3  user-configurable editor font
-        font.setFixedPitch(True)
-        self.setFont(font)
+        from src.rfu import font_tokens
+        self.setProperty("rfuFontFamily", self.settings.font_family)
+        self.setProperty("rfuFontScale", max(1.0, self.settings.font_size / 13))
+        font_tokens.bind(self, "font.mono")
+        font = self.font()
 
         self.setTabStopWidth(self.settings.tab_width * QFontMetrics(font).width(" "))
         self.setLineWrapMode(
@@ -640,7 +641,7 @@ class EnhancedEditor(StandardWindow):
             )
         except TypeError:
             super().__init__()
-            self.setWindowTitle("Enhanced Editor - Richard's File Utilities")
+            _ui_bind(self, 'setWindowTitle', 'Legacy.se723d16888729619')
 
         # Initialize components
         self.document_manager = DocumentManager()
@@ -699,22 +700,22 @@ class EnhancedEditor(StandardWindow):
         layout = QVBoxLayout(panel)
 
         # Document outline
-        outline_group = QGroupBox("Document Outline")
+        outline_group = _ui_widget(QGroupBox, 'Legacy.s996a824d95c2f544', 'setTitle')
         outline_layout = QVBoxLayout(outline_group)
 
         self.outline_tree = QTreeWidget()
-        self.outline_tree.setAccessibleName("Document structure outline")
+        _ui_bind(self.outline_tree, 'setAccessibleName', 'Legacy.s45824bf30c0c676d')
         self.outline_tree.setHeaderLabel("Structure")
         outline_layout.addWidget(self.outline_tree)
 
         layout.addWidget(outline_group)
 
         # Recent files
-        recent_group = QGroupBox("Recent Files")
+        recent_group = _ui_widget(QGroupBox, 'Legacy.s7b156e50d0431c73', 'setTitle')
         recent_layout = QVBoxLayout(recent_group)
 
         self.recent_list = QListWidget()
-        self.recent_list.setAccessibleName("Recent files list")
+        _ui_bind(self.recent_list, 'setAccessibleName', 'Legacy.sedc24d941857af13')
         self.recent_list.itemDoubleClicked.connect(self.open_recent_file)
         recent_layout.addWidget(self.recent_list)
 
@@ -729,7 +730,7 @@ class EnhancedEditor(StandardWindow):
 
         # Tab widget for multiple documents
         self.tab_widget = QTabWidget()
-        self.tab_widget.setAccessibleName("Open document tabs")
+        _ui_bind(self.tab_widget, 'setAccessibleName', 'Legacy.s1e40a0775c6091a7')
         self.tab_widget.setTabsClosable(True)
         self.tab_widget.setMovable(True)
         self.tab_widget.tabCloseRequested.connect(self.close_document_tab)
@@ -745,67 +746,67 @@ class EnhancedEditor(StandardWindow):
         layout = QVBoxLayout(panel)
 
         # File finder tools
-        finder_group = QGroupBox("File Finder")
+        finder_group = _ui_widget(QGroupBox, 'Legacy.s6f6e552fa045bf84', 'setTitle')
         finder_layout = QVBoxLayout(finder_group)
 
         pattern_layout = QHBoxLayout()
-        pattern_layout.addWidget(QLabel("Pattern:"))
+        pattern_layout.addWidget(_ui_widget(QLabel, 'Legacy.s50625632208924ee', 'setText'))
         self.file_search_pattern = TextInput("Pattern", "*.py")
-        self.file_search_pattern.setAccessibleName("File search pattern")
+        _ui_bind(self.file_search_pattern, 'setAccessibleName', 'Legacy.s5186d3eba4b288b2')
         pattern_layout.addWidget(self.file_search_pattern)
         finder_layout.addLayout(pattern_layout)
 
         directory_layout = QHBoxLayout()
-        directory_layout.addWidget(QLabel("Directory:"))
+        directory_layout.addWidget(_ui_widget(QLabel, 'Legacy.s8b94846044eb0de0', 'setText'))
         self.file_search_directory = TextInput("Directory")
-        self.file_search_directory.setAccessibleName("File search directory")
+        _ui_bind(self.file_search_directory, 'setAccessibleName', 'Legacy.s09ab44a274eafd53')
         self.file_search_directory.setText(str(Path.cwd()))
         directory_layout.addWidget(self.file_search_directory)
-        browse_button = SecondaryButton("Browse")
-        browse_button.setAccessibleName("Browse for file search directory")
+        browse_button = _ui_widget(SecondaryButton, 'Legacy.s3227aa9666253f7a', 'setText')
+        _ui_bind(browse_button, 'setAccessibleName', 'Legacy.sb05c6852f80f294d')
         browse_button.clicked.connect(self.choose_file_search_directory)
         directory_layout.addWidget(browse_button)
         finder_layout.addLayout(directory_layout)
 
         options_layout = QHBoxLayout()
-        self.file_search_recursive = QCheckBox("Recursive")
-        self.file_search_recursive.setAccessibleName("Search files recursively")
+        self.file_search_recursive = _ui_widget(QCheckBox, 'Legacy.s6e7bc12c5b82601b', 'setText')
+        _ui_bind(self.file_search_recursive, 'setAccessibleName', 'Legacy.saf54b64997033bae')
         self.file_search_recursive.setMinimumHeight(44)
         self.file_search_recursive.setChecked(True)
         options_layout.addWidget(self.file_search_recursive)
         finder_layout.addLayout(options_layout)
 
-        self.file_search_button = PrimaryButton("Search Files")
-        self.file_search_button.setAccessibleName("Search for files")
+        self.file_search_button = _ui_widget(PrimaryButton, 'Legacy.s5a5bc0c4ce6ead65', 'setText')
+        _ui_bind(self.file_search_button, 'setAccessibleName', 'Legacy.s884cfdf82cea46e3')
         self.file_search_button.clicked.connect(self.perform_file_search)
         finder_layout.addWidget(self.file_search_button)
 
         self.file_search_results = QListWidget()
-        self.file_search_results.setAccessibleName("File search results")
+        _ui_bind(self.file_search_results, 'setAccessibleName', 'Legacy.s2acd3bd9a0102242')
         self.file_search_results.itemDoubleClicked.connect(self.open_file_from_search)
         finder_layout.addWidget(self.file_search_results)
 
         layout.addWidget(finder_group)
 
         # Search results
-        search_group = QGroupBox("Search Results")
+        search_group = _ui_widget(QGroupBox, 'Legacy.s39414102545e7861', 'setTitle')
         search_layout = QVBoxLayout(search_group)
 
         self.search_results = QListWidget()
-        self.search_results.setAccessibleName("Text search results")
+        _ui_bind(self.search_results, 'setAccessibleName', 'Legacy.s8c41d54c7fcfa74a')
         self.search_results.itemDoubleClicked.connect(self.goto_search_result)
         search_layout.addWidget(self.search_results)
 
         layout.addWidget(search_group)
 
         # Document properties
-        props_group = QGroupBox("Document Properties")
+        props_group = _ui_widget(QGroupBox, 'Legacy.s96ba7dd7b05756a0', 'setTitle')
         props_layout = QFormLayout(props_group)
 
-        self.encoding_label = QLabel("UTF-8")
-        self.line_ending_label = QLabel("LF")
-        self.doc_type_label = QLabel("Text")
-        self.file_size_label = QLabel("0 bytes")
+        self.encoding_label = _ui_widget(QLabel, 'Legacy.s3ad3031f5503a440', 'setText')
+        self.line_ending_label = _ui_widget(QLabel, 'Legacy.s53a36375dcfbda8e', 'setText')
+        self.doc_type_label = _ui_widget(QLabel, 'Legacy.s71988c4d8e0803ba', 'setText')
+        self.file_size_label = _ui_widget(QLabel, 'Legacy.saba08d721444400f', 'setText')
 
         props_layout.addRow("Encoding:", self.encoding_label)
         props_layout.addRow("Line Ending:", self.line_ending_label)
@@ -1602,7 +1603,7 @@ class EnhancedEditor(StandardWindow):
         # Show statistics dialog
         stats_text = f"""
         Text Statistics:
-        
+
         Characters: {char_count:,}
         Characters (no spaces): {char_count_no_spaces:,}
         Words: {word_count:,}
@@ -1673,7 +1674,12 @@ class EnhancedEditor(StandardWindow):
 
     def load_settings(self):
         """Load application settings."""
-        settings = QSettings("RFU", "EnhancedEditor")
+        from PyQt5.QtCore import QByteArray
+        from src.core.preferences.qt_adapter import DeclaredSettings
+        fields = {key: getattr(self.settings, key) for key in (
+            "font_family", "font_size", "tab_width", "use_spaces", "word_wrap", "line_numbers", "syntax_highlighting")}
+        fields.update(recent_files=[], geometry=QByteArray())
+        settings = DeclaredSettings("enhanced-editor", fields, "EnhancedEditor")
 
         # Load editor settings
         self.settings.font_family = settings.value(
@@ -1712,7 +1718,12 @@ class EnhancedEditor(StandardWindow):
 
     def save_settings(self):
         """Save application settings."""
-        settings = QSettings("RFU", "EnhancedEditor")
+        from PyQt5.QtCore import QByteArray
+        from src.core.preferences.qt_adapter import DeclaredSettings
+        fields = {key: getattr(self.settings, key) for key in (
+            "font_family", "font_size", "tab_width", "use_spaces", "word_wrap", "line_numbers", "syntax_highlighting")}
+        fields.update(recent_files=[], geometry=QByteArray())
+        settings = DeclaredSettings("enhanced-editor", fields, "EnhancedEditor")
 
         # Save editor settings
         settings.setValue("font_family", self.settings.font_family)
@@ -1788,7 +1799,7 @@ class PreferencesDialog(QDialog):
     def __init__(self, parent=None, settings: EditorSettings = None):
         super().__init__(parent)
         self.settings = settings or EditorSettings()
-        self.setWindowTitle("Enhanced Editor Preferences")
+        _ui_bind(self, 'setWindowTitle', 'Legacy.s9ca8e0c6027541df')
         self.setModal(True)
         self.resize(500, 400)
         self.setup_ui()
@@ -1800,7 +1811,7 @@ class PreferencesDialog(QDialog):
 
         # Create tab widget for different categories
         tab_widget = QTabWidget()
-        tab_widget.setAccessibleName("Preferences categories")
+        _ui_bind(tab_widget, 'setAccessibleName', 'Legacy.sd9492e81e01de9ca')
         layout.addWidget(tab_widget)
 
         # Editor tab
@@ -1827,11 +1838,11 @@ class PreferencesDialog(QDialog):
         layout = QFormLayout(tab)
 
         # Font settings
-        font_group = QGroupBox("Font")
+        font_group = _ui_widget(QGroupBox, 'Legacy.s64d0b3adcd2dbe33', 'setTitle')
         font_layout = QFormLayout(font_group)
 
         self.font_family_combo = QComboBox()
-        self.font_family_combo.setAccessibleName("Editor font family")
+        _ui_bind(self.font_family_combo, 'setAccessibleName', 'Legacy.s727bbcbc988f2366')
         font_db = QFontDatabase()
         for family in font_db.families():
             if font_db.isFixedPitch(family):
@@ -1839,7 +1850,7 @@ class PreferencesDialog(QDialog):
         font_layout.addRow("Font Family:", self.font_family_combo)
 
         self.font_size_spin = QSpinBox()
-        self.font_size_spin.setAccessibleName("Editor font size")
+        _ui_bind(self.font_size_spin, 'setAccessibleName', 'Legacy.s3e39f3e3b7a6ca53')
         self.font_size_spin.setMinimumHeight(44)
         self.font_size_spin.setRange(6, 72)
         font_layout.addRow("Font Size:", self.font_size_spin)
@@ -1847,22 +1858,22 @@ class PreferencesDialog(QDialog):
         layout.addWidget(font_group)
 
         # Indentation settings
-        indent_group = QGroupBox("Indentation")
+        indent_group = _ui_widget(QGroupBox, 'Legacy.s6b9f714aeabbfb15', 'setTitle')
         indent_layout = QFormLayout(indent_group)
 
         self.tab_width_spin = QSpinBox()
-        self.tab_width_spin.setAccessibleName("Tab width in spaces")
+        _ui_bind(self.tab_width_spin, 'setAccessibleName', 'Legacy.saa832561b8681f52')
         self.tab_width_spin.setMinimumHeight(44)
         self.tab_width_spin.setRange(1, 16)
         indent_layout.addRow("Tab Width:", self.tab_width_spin)
 
-        self.use_spaces_check = QCheckBox("Use spaces instead of tabs")
-        self.use_spaces_check.setAccessibleName("Use spaces instead of tabs")
+        self.use_spaces_check = _ui_widget(QCheckBox, 'Legacy.s1a1fe3eccc59aca6', 'setText')
+        _ui_bind(self.use_spaces_check, 'setAccessibleName', 'Legacy.s1a1fe3eccc59aca6')
         self.use_spaces_check.setMinimumHeight(44)
         indent_layout.addRow(self.use_spaces_check)
 
-        self.auto_indent_check = QCheckBox("Auto-indent new lines")
-        self.auto_indent_check.setAccessibleName("Auto-indent new lines")
+        self.auto_indent_check = _ui_widget(QCheckBox, 'Legacy.se05ce723118548aa', 'setText')
+        _ui_bind(self.auto_indent_check, 'setAccessibleName', 'Legacy.se05ce723118548aa')
         self.auto_indent_check.setMinimumHeight(44)
         indent_layout.addRow(self.auto_indent_check)
 
@@ -1876,32 +1887,32 @@ class PreferencesDialog(QDialog):
         layout = QFormLayout(tab)
 
         # Display settings
-        display_group = QGroupBox("Display")
+        display_group = _ui_widget(QGroupBox, 'Legacy.s34e108c0896d0158', 'setTitle')
         display_layout = QVBoxLayout(display_group)
 
-        self.word_wrap_check = QCheckBox("Word wrap")
-        self.word_wrap_check.setAccessibleName("Word wrap")
+        self.word_wrap_check = _ui_widget(QCheckBox, 'Legacy.s9e210f34e7ad6615', 'setText')
+        _ui_bind(self.word_wrap_check, 'setAccessibleName', 'Legacy.s9e210f34e7ad6615')
         self.word_wrap_check.setMinimumHeight(44)
         display_layout.addWidget(self.word_wrap_check)
 
-        self.line_numbers_check = QCheckBox("Show line numbers")
-        self.line_numbers_check.setAccessibleName("Show line numbers")
+        self.line_numbers_check = _ui_widget(QCheckBox, 'Legacy.sd03262ba19b05a7d', 'setText')
+        _ui_bind(self.line_numbers_check, 'setAccessibleName', 'Legacy.sd03262ba19b05a7d')
         self.line_numbers_check.setMinimumHeight(44)
         display_layout.addWidget(self.line_numbers_check)
 
-        self.show_whitespace_check = QCheckBox("Show whitespace")
-        self.show_whitespace_check.setAccessibleName("Show whitespace characters")
+        self.show_whitespace_check = _ui_widget(QCheckBox, 'Legacy.s320787fcbfc42696', 'setText')
+        _ui_bind(self.show_whitespace_check, 'setAccessibleName', 'Legacy.sc156fc2e8b463b5d')
         self.show_whitespace_check.setMinimumHeight(44)
         display_layout.addWidget(self.show_whitespace_check)
 
         layout.addWidget(display_group)
 
         # Syntax highlighting
-        syntax_group = QGroupBox("Syntax Highlighting")
+        syntax_group = _ui_widget(QGroupBox, 'Legacy.se0194dd4195c576e', 'setTitle')
         syntax_layout = QVBoxLayout(syntax_group)
 
-        self.syntax_highlighting_check = QCheckBox("Enable syntax highlighting")
-        self.syntax_highlighting_check.setAccessibleName("Enable syntax highlighting")
+        self.syntax_highlighting_check = _ui_widget(QCheckBox, 'Legacy.s7a733a4023f7db9f', 'setText')
+        _ui_bind(self.syntax_highlighting_check, 'setAccessibleName', 'Legacy.s7a733a4023f7db9f')
         self.syntax_highlighting_check.setMinimumHeight(44)
         syntax_layout.addWidget(self.syntax_highlighting_check)
 
@@ -1915,7 +1926,7 @@ class PreferencesDialog(QDialog):
         layout = QFormLayout(tab)
 
         # Advanced settings placeholder
-        info_label = QLabel("Advanced settings will be available in future versions.")
+        info_label = _ui_widget(QLabel, 'Legacy.s4eb8b59da83a9492', 'setText')
         layout.addWidget(info_label)
 
         return tab

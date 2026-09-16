@@ -4,6 +4,7 @@ Enhanced Network Tools GUI Wrapper
 This module provides a comprehensive PyQt5 GUI wrapper for all network tools
 using the utilities logic framework.
 """
+from src.rfu.localization import localized_widget as _ui_widget, bind_literal as _ui_bind
 
 import ipaddress
 import logging
@@ -482,7 +483,7 @@ class NetworkToolsWindow(StandardWindow):
 
         # Create tab widget for different tools
         self.tab_widget = QTabWidget()
-        self.tab_widget.setAccessibleName("Network tools tabs")
+        _ui_bind(self.tab_widget, 'setAccessibleName', 'Legacy.s2416e47b9515b7ab')
         main_layout.addWidget(self.tab_widget)
 
         # Create tabs
@@ -507,65 +508,57 @@ class NetworkToolsWindow(StandardWindow):
         config_panel.setMaximumWidth(350)
 
         # Target configuration
-        target_group = QGroupBox("Target Configuration")
+        target_group = _ui_widget(QGroupBox, 'Legacy.sf1488e5474179293', 'setTitle')
         target_layout = QGridLayout(target_group)
 
-        target_layout.addWidget(QLabel("Target:"), 0, 0)
+        target_layout.addWidget(_ui_widget(QLabel, 'Legacy.s890d34fffcde315c', 'setText'), 0, 0)
         self.edit_target = QLineEdit()
-        self.edit_target.setAccessibleName("Scan target hostname or IP")
-        self.edit_target.setPlaceholderText("192.168.1.1 or example.com")
+        _ui_bind(self.edit_target, 'setAccessibleName', 'Legacy.s3e04ed907ad4dfe0')
+        _ui_bind(self.edit_target, 'setPlaceholderText', 'Legacy.s35a4c86aca3e6491')
         target_layout.addWidget(self.edit_target, 0, 1)
 
-        target_layout.addWidget(QLabel("Ports:"), 1, 0)
+        target_layout.addWidget(_ui_widget(QLabel, 'Legacy.s57cc3a094b97feb0', 'setText'), 1, 0)
         self.edit_ports = QLineEdit()
-        self.edit_ports.setAccessibleName("Ports to scan")
-        self.edit_ports.setAccessibleDescription(
-            "Comma-separated port numbers or ranges, e.g. 22,80,443"
-        )
+        _ui_bind(self.edit_ports, 'setAccessibleName', 'Legacy.se67c8404565601f0')
+        _ui_bind(self.edit_ports, 'setAccessibleDescription', 'Legacy.s2a16575f9eb339ee')
         self.edit_ports.setText("22,80,443,21,25,53,110,143,993,995,3389,5900")
         target_layout.addWidget(self.edit_ports, 1, 1)
 
-        target_layout.addWidget(QLabel("Scan Type:"), 2, 0)
+        target_layout.addWidget(_ui_widget(QLabel, 'Legacy.s7c5499f8e961102e', 'setText'), 2, 0)
         self.combo_scan_type = QComboBox()
-        self.combo_scan_type.setAccessibleName("Scan type")
+        _ui_bind(self.combo_scan_type, 'setAccessibleName', 'Legacy.se317806114c1edbc')
         self.combo_scan_type.addItems(["TCP Connect", "TCP SYN", "UDP"])
         target_layout.addWidget(self.combo_scan_type, 2, 1)
 
         config_layout.addWidget(target_group)
 
         # Options
-        options_group = QGroupBox("Options")
+        options_group = _ui_widget(QGroupBox, 'Legacy.sd0db8b5e364b6989', 'setTitle')
         options_layout = QVBoxLayout(options_group)
 
-        self.chk_service_detection = QCheckBox("Service Detection")
-        self.chk_service_detection.setAccessibleName("Enable service detection")
-        self.chk_service_detection.setAccessibleDescription(
-            "Identifies the software or service name running on each open port"
-        )
+        self.chk_service_detection = _ui_widget(QCheckBox, 'Legacy.sf55a764546dfe1a4', 'setText')
+        _ui_bind(self.chk_service_detection, 'setAccessibleName', 'Legacy.s48a3d28c92e0a9a9')
+        _ui_bind(self.chk_service_detection, 'setAccessibleDescription', 'Legacy.sfd649117b6e764ec')
         self.chk_service_detection.setMinimumHeight(44)
         self.chk_service_detection.setChecked(True)
         options_layout.addWidget(self.chk_service_detection)
 
-        self.chk_banner_grab = QCheckBox("Banner Grabbing")
-        self.chk_banner_grab.setAccessibleName("Enable banner grabbing")
-        self.chk_banner_grab.setAccessibleDescription(
-            "Retrieves version banners from open ports; scan takes longer"
-        )
+        self.chk_banner_grab = _ui_widget(QCheckBox, 'Legacy.se9657f64691376dd', 'setText')
+        _ui_bind(self.chk_banner_grab, 'setAccessibleName', 'Legacy.se8df6d4d9ac16023')
+        _ui_bind(self.chk_banner_grab, 'setAccessibleDescription', 'Legacy.s90573d6da4a04145')
         self.chk_banner_grab.setMinimumHeight(44)
         options_layout.addWidget(self.chk_banner_grab)
 
-        self.chk_stealth_mode = QCheckBox("Stealth Mode")
-        self.chk_stealth_mode.setAccessibleName("Enable stealth mode")
-        self.chk_stealth_mode.setAccessibleDescription(
-            "Reduces scan speed to minimize detection by intrusion prevention systems"
-        )
+        self.chk_stealth_mode = _ui_widget(QCheckBox, 'Legacy.s9eeec5fef8dd985b', 'setText')
+        _ui_bind(self.chk_stealth_mode, 'setAccessibleName', 'Legacy.s2088f8a23433bb6b')
+        _ui_bind(self.chk_stealth_mode, 'setAccessibleDescription', 'Legacy.s20c84afde6650751')
         self.chk_stealth_mode.setMinimumHeight(44)
         options_layout.addWidget(self.chk_stealth_mode)
 
         config_layout.addWidget(options_group)
 
         # Scan button
-        self.btn_start_scan = PrimaryButton("Start Port Scan")
+        self.btn_start_scan = _ui_widget(PrimaryButton, 'Legacy.s4ec0ceaea3c853c2', 'setText')
         config_layout.addWidget(self.btn_start_scan)
 
         config_layout.addStretch()
@@ -575,11 +568,11 @@ class NetworkToolsWindow(StandardWindow):
         results_panel = QWidget()
         results_layout = QVBoxLayout(results_panel)
 
-        results_layout.addWidget(QLabel("Scan Results:"))
+        results_layout.addWidget(_ui_widget(QLabel, 'Legacy.sf05abd58eb52252a', 'setText'))
 
         # Results table
         self.table_scan_results = QTableWidget()
-        self.table_scan_results.setAccessibleName("Port scan results table")
+        _ui_bind(self.table_scan_results, 'setAccessibleName', 'Legacy.s92d56c9b20a2fae2')
         self.table_scan_results.setColumnCount(5)
         self.table_scan_results.setHorizontalHeaderLabels(
             ["Target", "Port", "State", "Service", "Banner"]
@@ -609,31 +602,27 @@ class NetworkToolsWindow(StandardWindow):
         config_panel = QWidget()
         config_layout = QHBoxLayout(config_panel)
 
-        config_layout.addWidget(QLabel("Monitor Duration (seconds):"))
+        config_layout.addWidget(_ui_widget(QLabel, 'Legacy.s0e0eb5c0ebcacb31', 'setText'))
         self.spin_duration = QSpinBox()
-        self.spin_duration.setAccessibleName("Monitor duration in seconds")
-        self.spin_duration.setAccessibleDescription(
-            "Total time to monitor network traffic, 10 to 3600 seconds"
-        )
+        _ui_bind(self.spin_duration, 'setAccessibleName', 'Legacy.s8b3eb54f8c396022')
+        _ui_bind(self.spin_duration, 'setAccessibleDescription', 'Legacy.se27e5e8063bc2fea')
         self.spin_duration.setMinimumHeight(44)
         self.spin_duration.setMinimum(10)
         self.spin_duration.setMaximum(3600)
         self.spin_duration.setValue(60)
         config_layout.addWidget(self.spin_duration)
 
-        config_layout.addWidget(QLabel("Update Interval (seconds):"))
+        config_layout.addWidget(_ui_widget(QLabel, 'Legacy.s620c84c402244f14', 'setText'))
         self.spin_interval = QSpinBox()
-        self.spin_interval.setAccessibleName("Update interval in seconds")
-        self.spin_interval.setAccessibleDescription(
-            "How often to sample network statistics within the monitor duration"
-        )
+        _ui_bind(self.spin_interval, 'setAccessibleName', 'Legacy.s4d141f97bfdc5afc')
+        _ui_bind(self.spin_interval, 'setAccessibleDescription', 'Legacy.sd34e06b561feca2c')
         self.spin_interval.setMinimumHeight(44)
         self.spin_interval.setMinimum(1)
         self.spin_interval.setMaximum(60)
         self.spin_interval.setValue(1)
         config_layout.addWidget(self.spin_interval)
 
-        self.btn_start_monitor = PrimaryButton("Start Monitoring")
+        self.btn_start_monitor = _ui_widget(PrimaryButton, 'Legacy.sa2f859806eb26f9b', 'setText')
         config_layout.addWidget(self.btn_start_monitor)
 
         config_layout.addStretch()
@@ -643,14 +632,14 @@ class NetworkToolsWindow(StandardWindow):
         stats_panel = QWidget()
         stats_layout = QGridLayout(stats_panel)
 
-        stats_layout.addWidget(QLabel("Download Speed:"), 0, 0)
+        stats_layout.addWidget(_ui_widget(QLabel, 'Legacy.s4e3562116bb64636', 'setText'), 0, 0)
         self.lbl_download_speed = QLabel(DEFAULT_SPEED_LABEL)
         self.lbl_download_speed.setStyleSheet(
             f"font-weight: bold; color: {token('semantic_success')};"
         )
         stats_layout.addWidget(self.lbl_download_speed, 0, 1)
 
-        stats_layout.addWidget(QLabel("Upload Speed:"), 1, 0)
+        stats_layout.addWidget(_ui_widget(QLabel, 'Legacy.sabed73a9b6d1f994', 'setText'), 1, 0)
         self.lbl_upload_speed = QLabel(DEFAULT_SPEED_LABEL)
         self.lbl_upload_speed.setStyleSheet(
             f"font-weight: bold; color: {token('semantic_warning')};"
@@ -660,9 +649,9 @@ class NetworkToolsWindow(StandardWindow):
         layout.addWidget(stats_panel)
 
         # Data log
-        layout.addWidget(QLabel("Bandwidth Log:"))
+        layout.addWidget(_ui_widget(QLabel, 'Legacy.sacddffcb1ad51fb3', 'setText'))
         self.text_bandwidth_log = QTextEdit()
-        self.text_bandwidth_log.setAccessibleName("Bandwidth monitoring log")
+        _ui_bind(self.text_bandwidth_log, 'setAccessibleName', 'Legacy.s5db69d2e72ac38f2')
         self.text_bandwidth_log.setMaximumHeight(200)
         self.text_bandwidth_log.setReadOnly(True)
         layout.addWidget(self.text_bandwidth_log)
@@ -679,23 +668,23 @@ class NetworkToolsWindow(StandardWindow):
         config_panel = QWidget()
         config_layout = QHBoxLayout(config_panel)
 
-        config_layout.addWidget(QLabel("Network:"))
+        config_layout.addWidget(_ui_widget(QLabel, 'Legacy.s76011314cc1f2ee6', 'setText'))
         self.edit_network = QLineEdit()
-        self.edit_network.setAccessibleName("Network range to discover")
+        _ui_bind(self.edit_network, 'setAccessibleName', 'Legacy.sb277b34e3183fba4')
         self.edit_network.setText("192.168.1.0/24")
-        self.edit_network.setPlaceholderText("192.168.1.0/24")
+        _ui_bind(self.edit_network, 'setPlaceholderText', 'Legacy.sd01a825c13311b46')
         config_layout.addWidget(self.edit_network)
 
-        self.btn_discover = PrimaryButton("Discover Hosts")
+        self.btn_discover = _ui_widget(PrimaryButton, 'Legacy.sb272c4e5c1d1ca1d', 'setText')
         config_layout.addWidget(self.btn_discover)
 
         config_layout.addStretch()
         layout.addWidget(config_panel)
 
         # Results table
-        layout.addWidget(QLabel("Discovered Hosts:"))
+        layout.addWidget(_ui_widget(QLabel, 'Legacy.saf84e7f193ae9b65', 'setText'))
         self.table_hosts = QTableWidget()
-        self.table_hosts.setAccessibleName("Discovered network hosts table")
+        _ui_bind(self.table_hosts, 'setAccessibleName', 'Legacy.s325d7fc58e8ebb6f')
         self.table_hosts.setColumnCount(4)
         self.table_hosts.setHorizontalHeaderLabels(
             ["IP Address", "Hostname", "Status", "Response Time (ms)"]
@@ -722,22 +711,22 @@ class NetworkToolsWindow(StandardWindow):
         config_panel = QWidget()
         config_layout = QVBoxLayout(config_panel)
 
-        config_layout.addWidget(QLabel("Test Targets:"))
+        config_layout.addWidget(_ui_widget(QLabel, 'Legacy.sbe96f54d225b1a48', 'setText'))
         self.text_targets = QTextEdit()
-        self.text_targets.setAccessibleName("Connectivity test targets")
+        _ui_bind(self.text_targets, 'setAccessibleName', 'Legacy.sa70933e75ba37f69')
         self.text_targets.setMaximumHeight(100)
         self.text_targets.setText("8.8.8.8\ngoogle.com\nbing.com\ncloudflare.com")
         config_layout.addWidget(self.text_targets)
 
-        self.btn_test_connectivity = PrimaryButton("Test Connectivity")
+        self.btn_test_connectivity = _ui_widget(PrimaryButton, 'Legacy.sebf0f1e9ae77aa3e', 'setText')
         config_layout.addWidget(self.btn_test_connectivity)
 
         layout.addWidget(config_panel)
 
         # Results table
-        layout.addWidget(QLabel("Connectivity Results:"))
+        layout.addWidget(_ui_widget(QLabel, 'Legacy.s8f801f4f84a55efe', 'setText'))
         self.table_connectivity = QTableWidget()
-        self.table_connectivity.setAccessibleName("Connectivity test results table")
+        _ui_bind(self.table_connectivity, 'setAccessibleName', 'Legacy.s1bb1c3cd37321068')
         self.table_connectivity.setColumnCount(4)
         self.table_connectivity.setHorizontalHeaderLabels(
             ["Target", "Reachable", "Response Time (ms)", "Error"]
@@ -764,11 +753,11 @@ class NetworkToolsWindow(StandardWindow):
         config_panel = QWidget()
         config_layout = QHBoxLayout(config_panel)
 
-        self.btn_scan_wifi = PrimaryButton("Scan WiFi Networks")
+        self.btn_scan_wifi = _ui_widget(PrimaryButton, 'Legacy.s877e25f73ba55b5e', 'setText')
         config_layout.addWidget(self.btn_scan_wifi)
 
-        self.chk_show_hidden = QCheckBox("Show Hidden Networks")
-        self.chk_show_hidden.setAccessibleName("Show hidden WiFi networks")
+        self.chk_show_hidden = _ui_widget(QCheckBox, 'Legacy.s07ff829921c4e1ae', 'setText')
+        _ui_bind(self.chk_show_hidden, 'setAccessibleName', 'Legacy.s7c57e7b4627fccb1')
         self.chk_show_hidden.setMinimumHeight(44)
         config_layout.addWidget(self.chk_show_hidden)
 
@@ -776,9 +765,9 @@ class NetworkToolsWindow(StandardWindow):
         layout.addWidget(config_panel)
 
         # Results table
-        layout.addWidget(QLabel("WiFi Networks:"))
+        layout.addWidget(_ui_widget(QLabel, 'Legacy.s98196611eb10d4ba', 'setText'))
         self.table_wifi = QTableWidget()
-        self.table_wifi.setAccessibleName("WiFi networks table")
+        _ui_bind(self.table_wifi, 'setAccessibleName', 'Legacy.s3216945bbba11765')
         self.table_wifi.setColumnCount(3)
         self.table_wifi.setHorizontalHeaderLabels(
             ["SSID", "Signal Strength", "Security"]
@@ -806,18 +795,18 @@ class NetworkToolsWindow(StandardWindow):
         layout.addWidget(self.progress_bar)
 
         # Status label
-        self.lbl_status = QLabel("Ready")
+        self.lbl_status = _ui_widget(QLabel, 'Legacy.s5fa7aac5375c5815', 'setText')
         layout.addWidget(self.lbl_status)
 
         # Action buttons
         btn_layout = QHBoxLayout()
 
-        self.btn_cancel = SecondaryButton("Cancel Operation")
+        self.btn_cancel = _ui_widget(SecondaryButton, 'Legacy.s8c5701a834c26f05', 'setText')
         self.btn_cancel.setEnabled(False)
 
-        self.btn_export = SecondaryButton("Export Results")
+        self.btn_export = _ui_widget(SecondaryButton, 'Legacy.s97df6c79050ddf07', 'setText')
 
-        self.btn_clear = SecondaryButton("Clear Results")
+        self.btn_clear = _ui_widget(SecondaryButton, 'Legacy.s6b46cb7814332a7a', 'setText')
 
         btn_layout.addWidget(self.btn_cancel)
         btn_layout.addWidget(self.btn_export)

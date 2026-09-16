@@ -4,6 +4,8 @@ Enhanced Encrypt/Decrypt Tool for Richard's File Utilities
 
 A comprehensive encrypt/decrypt utility with menu integration and essential functionality.
 """
+from src.rfu.localization import localized_widget as _ui_widget, bind_literal as _ui_bind
+from src.rfu import font_tokens
 
 import hashlib
 import logging
@@ -232,11 +234,11 @@ class EnAndDecryptGUI(StandardWindow):
         """Show comprehensive help for Encrypt/Decrypt tool."""
         help_text = """
         <h2>Encrypt/Decrypt Tool - Comprehensive Guide</h2>
-        
+
         <h3>🔒 Overview</h3>
-        <p>The Encrypt/Decrypt tool provides secure file encryption and decryption capabilities 
+        <p>The Encrypt/Decrypt tool provides secure file encryption and decryption capabilities
         for protecting sensitive data using industry-standard encryption algorithms.</p>
-        
+
         <h3>🚀 Key Features</h3>
         <ul>
             <li><b>File Encryption</b>: Secure individual files with strong encryption</li>
@@ -246,7 +248,7 @@ class EnAndDecryptGUI(StandardWindow):
             <li><b>Integrity Verification</b>: HMAC validation for tamper detection</li>
             <li><b>Password Security</b>: Secure password handling and storage</li>
         </ul>
-        
+
         <h3>🔐 Encryption Process</h3>
         <ol>
             <li><b>File Selection</b>: Choose files to encrypt using the file browser</li>
@@ -256,7 +258,7 @@ class EnAndDecryptGUI(StandardWindow):
             <li><b>Encryption</b>: Files are encrypted with authenticated encryption</li>
             <li><b>Output</b>: Encrypted files saved with .enc extension</li>
         </ol>
-        
+
         <h3>🔓 Decryption Process</h3>
         <ol>
             <li><b>Encrypted File Selection</b>: Choose .enc files to decrypt</li>
@@ -265,7 +267,7 @@ class EnAndDecryptGUI(StandardWindow):
             <li><b>Decryption</b>: Files are decrypted and restored to original format</li>
             <li><b>Validation</b>: HMAC verification ensures file authenticity</li>
         </ol>
-        
+
         <h3>🛡️ Security Features</h3>
         <ul>
             <li><b>AES-256-GCM</b>: Military-grade encryption with authentication</li>
@@ -274,7 +276,7 @@ class EnAndDecryptGUI(StandardWindow):
             <li><b>Memory Protection</b>: Secure handling of sensitive data in memory</li>
             <li><b>File Overwriting</b>: Optional secure deletion of original files</li>
         </ul>
-        
+
         <h3>💡 Best Practices</h3>
         <ul>
             <li><b>Strong Passwords</b>: Use passwords with 12+ characters, mixed case, numbers, symbols</li>
@@ -284,7 +286,7 @@ class EnAndDecryptGUI(StandardWindow):
             <li><b>File Verification</b>: Test decryption before deleting original files</li>
             <li><b>Regular Updates</b>: Keep encryption software updated for security patches</li>
         </ul>
-        
+
         <h3>⚠️ Security Warnings</h3>
         <ul>
             <li><b>Password Loss</b>: Lost passwords mean permanently inaccessible files</li>
@@ -292,7 +294,7 @@ class EnAndDecryptGUI(StandardWindow):
             <li><b>File Corruption</b>: Damaged encrypted files cannot be recovered</li>
             <li><b>Side Channels</b>: Avoid encryption on compromised systems</li>
         </ul>
-        
+
         <h3>🔧 Advanced Options</h3>
         <ul>
             <li><b>Compression</b>: Optional file compression before encryption</li>
@@ -300,7 +302,7 @@ class EnAndDecryptGUI(StandardWindow):
             <li><b>Key Files</b>: Use key files in addition to passwords</li>
             <li><b>Secure Delete</b>: Overwrite original files after encryption</li>
         </ul>
-        
+
         <h3>📊 Supported Formats</h3>
         <ul>
             <li><b>All File Types</b>: Encrypts any file format</li>
@@ -308,7 +310,7 @@ class EnAndDecryptGUI(StandardWindow):
             <li><b>Document Types</b>: Office documents, PDFs, images</li>
             <li><b>Media Files</b>: Audio, video, and image files</li>
         </ul>
-        
+
         <h3>🆘 Troubleshooting</h3>
         <ul>
             <li><b>Decryption Fails</b>: Verify password, check file integrity</li>
@@ -316,13 +318,13 @@ class EnAndDecryptGUI(StandardWindow):
             <li><b>Memory Issues</b>: Close other applications for large file operations</li>
             <li><b>Permission Errors</b>: Ensure write access to output directory</li>
         </ul>
-        
-        <p><b>Note:</b> This tool requires additional cryptographic libraries for full functionality. 
+
+        <p><b>Note:</b> This tool requires additional cryptographic libraries for full functionality.
         Install cryptography or PyCryptodome for complete encryption capabilities.</p>
         """
 
         msg_box = QMessageBox()
-        msg_box.setWindowTitle("Encrypt/Decrypt Tool - Help")
+        _ui_bind(msg_box, 'setWindowTitle', 'Legacy.s3d069e5c18e3f63b')
         msg_box.setTextFormat(1)  # Rich text format
         msg_box.setText(help_text)
         msg_box.setStandardButtons(QMessageBox.Ok)
@@ -371,11 +373,11 @@ class EnAndDecryptGUI(StandardWindow):
             layout = QVBoxLayout(central_widget)
 
         # Add header
-        header_label = QLabel("Encrypt/Decrypt")
+        header_label = _ui_widget(QLabel, 'Legacy.se725636d3fbe3fba', 'setText')
         header_label.setStyleSheet(
             """
             QLabel {
-                font-size: 18px;
+
                 font-weight: bold;
                 color: {token('text_primary')};
                 padding: 10px;
@@ -385,10 +387,11 @@ class EnAndDecryptGUI(StandardWindow):
             }
         """
         )
+        font_tokens.bind(header_label, "font.toolHeader")
         layout.addWidget(header_label)
 
         # Add file selection group
-        file_group = QGroupBox("File Selection")
+        file_group = _ui_widget(QGroupBox, 'Legacy.s1eef7fd26962e3d2', 'setTitle')
         file_layout = QVBoxLayout(file_group)
 
         # File selection buttons
@@ -407,50 +410,41 @@ class EnAndDecryptGUI(StandardWindow):
 
         # Selected files list
         self.files_list = QListWidget()
-        self.files_list.setAccessibleName("Files to process")
+        _ui_bind(self.files_list, 'setAccessibleName', 'Legacy.s6151f9a4a84d2409')
         self.files_list.setMaximumHeight(100)
-        file_layout.addWidget(QLabel("Selected Files:"))
+        file_layout.addWidget(_ui_widget(QLabel, 'Legacy.sa5b10b7bd507a96e', 'setText'))
         file_layout.addWidget(self.files_list)
 
         layout.addWidget(file_group)
 
         # Add security options
-        security_group = QGroupBox("Security Options")
+        security_group = _ui_widget(QGroupBox, 'Legacy.sb760c7368014335a', 'setTitle')
         security_layout = QVBoxLayout(security_group)
 
         self.password_edit = TextInput("Password", "Enter password...")
-        self.password_edit.setAccessibleName("Encryption password")
-        self.password_edit.setAccessibleDescription(
-            "Password used to encrypt or decrypt files; minimum 8 characters recommended"
-        )
+        _ui_bind(self.password_edit, 'setAccessibleName', 'Legacy.sb9857fcc25106b3f')
+        _ui_bind(self.password_edit, 'setAccessibleDescription', 'Legacy.s1b46f1c067ddd671')
         self.password_edit.setEchoMode(2)
         security_layout.addWidget(self.password_edit)
 
         # Dry run option — must appear before action buttons (spec §5.2)
-        self.dry_run_checkbox = QCheckBox(
-            "🔍 Dry Run (Preview Only — No Files Will Be Encrypted/Decrypted)"
-        )
-        self.dry_run_checkbox.setAccessibleName("Dry run preview mode")
-        self.dry_run_checkbox.setAccessibleDescription(
-            "Shows which files would be processed without making any changes"
-        )
+        self.dry_run_checkbox = _ui_widget(QCheckBox, 'Legacy.s2ede5ff276584694', 'setText')
+        _ui_bind(self.dry_run_checkbox, 'setAccessibleName', 'Legacy.s9a07d10ecb8bf47a')
+        _ui_bind(self.dry_run_checkbox, 'setAccessibleDescription', 'Legacy.sff4479cc198e040a')
         self.dry_run_checkbox.setMinimumHeight(44)
-        self.dry_run_checkbox.setToolTip(
-            "When checked, shows which files WOULD be processed without "
-            "actually encrypting or decrypting anything"
-        )
+        _ui_bind(self.dry_run_checkbox, 'setToolTip', 'Legacy.sa740d5bbb8e52e3d')
         security_layout.addWidget(self.dry_run_checkbox)
 
         layout.addWidget(security_group)
 
         # Add progress section
-        progress_group = QGroupBox("Progress")
+        progress_group = _ui_widget(QGroupBox, 'Legacy.s4664827f8e890192', 'setTitle')
         progress_layout = QVBoxLayout(progress_group)
 
         self.progress_bar = LoadingIndicator(parent=self, message="Processing...")
         progress_layout.addWidget(self.progress_bar)
 
-        self.status_label = QLabel("Ready - Select files to encrypt or decrypt")
+        self.status_label = _ui_widget(QLabel, 'Legacy.sb4527ac743fdb1d4', 'setText')
         self.status_label.setStyleSheet(f"padding: 10px; color: {token('text_muted')};")
         progress_layout.addWidget(self.status_label)
 

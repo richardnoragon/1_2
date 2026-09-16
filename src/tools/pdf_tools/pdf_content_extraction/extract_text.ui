@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <ui version="4.0">
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">
@@ -9,11 +9,6 @@
     <width>1000</width>
     <height>600</height>
    </rect>
-  </property>
-  <property name="font">
-   <font>
-    <pointsize>12</pointsize>
-   </font>
   </property>
   <property name="windowTitle">
    <string>PDF Text Extractor</string>
@@ -29,15 +24,21 @@
           <property name="text">
            <string>Input PDF File:</string>
           </property>
+          <property name="rfuLocale_setText" stdset="0">
+           <string notr="true">Legacy.se37edfe83329c992</string>
+          </property>
          </widget>
         </item>
         <item row="0" column="1">
-         <widget class="QLineEdit" name="inputFileLineEdit"/>
+         <widget class="QLineEdit" name="inputFileLineEdit" />
         </item>
         <item row="0" column="2">
          <widget class="QPushButton" name="browseInputButton">
           <property name="text">
            <string>Browse...</string>
+          </property>
+          <property name="rfuLocale_setText" stdset="0">
+           <string notr="true">Legacy.sc58a6bd402efb06c</string>
           </property>
          </widget>
         </item>
@@ -46,15 +47,21 @@
           <property name="text">
            <string>Output File:</string>
           </property>
+          <property name="rfuLocale_setText" stdset="0">
+           <string notr="true">Legacy.sb20feaf128a2aa6d</string>
+          </property>
          </widget>
         </item>
         <item row="1" column="1">
-         <widget class="QLineEdit" name="outputFileLineEdit"/>
+         <widget class="QLineEdit" name="outputFileLineEdit" />
         </item>
         <item row="1" column="2">
          <widget class="QPushButton" name="browseOutputButton">
           <property name="text">
            <string>Browse...</string>
+          </property>
+          <property name="rfuLocale_setText" stdset="0">
+           <string notr="true">Legacy.sc58a6bd402efb06c</string>
           </property>
          </widget>
         </item>
@@ -63,12 +70,18 @@
           <property name="text">
            <string>Pages (empty for all):</string>
           </property>
+          <property name="rfuLocale_setText" stdset="0">
+           <string notr="true">Legacy.s581bc08ba16a5c3c</string>
+          </property>
          </widget>
         </item>
         <item row="2" column="1">
          <widget class="QLineEdit" name="pagesLineEdit">
           <property name="placeholderText">
            <string>e.g., 1 2 3 or leave empty for all pages</string>
+          </property>
+          <property name="rfuLocale_setPlaceholderText" stdset="0">
+           <string notr="true">Legacy.s76e74fe75789c497</string>
           </property>
          </widget>
         </item>
@@ -78,6 +91,9 @@
        <widget class="QCheckBox" name="byPageCheckBox">
         <property name="text">
          <string>Extract text by page (separate files)</string>
+        </property>
+        <property name="rfuLocale_setText" stdset="0">
+         <string notr="true">Legacy.s5715c30707224e36</string>
         </property>
        </widget>
       </item>
@@ -114,6 +130,9 @@
           <property name="text">
            <string>Extract Text</string>
           </property>
+          <property name="rfuLocale_setText" stdset="0">
+           <string notr="true">Legacy.s9ab5926ba4cd7a39</string>
+          </property>
          </widget>
         </item>
        </layout>
@@ -139,6 +158,9 @@
           <property name="text">
            <string>Previous</string>
           </property>
+          <property name="rfuLocale_setText" stdset="0">
+           <string notr="true">Legacy.sa57b08a480b822a0</string>
+          </property>
          </widget>
         </item>
         <item>
@@ -149,12 +171,18 @@
           <property name="alignment">
            <set>Qt::AlignCenter</set>
           </property>
+          <property name="rfuLocale_setText" stdset="0">
+           <string notr="true">Legacy.s3471f557170a112d</string>
+          </property>
          </widget>
         </item>
         <item>
          <widget class="QPushButton" name="nextButton">
           <property name="text">
            <string>Next</string>
+          </property>
+          <property name="rfuLocale_setText" stdset="0">
+           <string notr="true">Legacy.s1ff57a29d7c9d11b</string>
           </property>
          </widget>
         </item>
@@ -177,11 +205,14 @@
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="actionExit"/>
+    <addaction name="actionExit" />
+    <property name="rfuLocale_setTitle" stdset="0">
+     <string notr="true">Legacy.s50009ce1da4d15e1</string>
+    </property>
    </widget>
-   <addaction name="menuFile"/>
+   <addaction name="menuFile" />
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QStatusBar" name="statusbar" />
   <action name="actionExit">
    <property name="text">
     <string>Exit</string>
@@ -189,9 +220,15 @@
    <property name="shortcut">
     <string>Ctrl+Q</string>
    </property>
+   <property name="rfuLocale_setText" stdset="0">
+    <string notr="true">Legacy.sd17d84a604994b72</string>
+   </property>
   </action>
+  <property name="rfuLocale_setWindowTitle" stdset="0">
+   <string notr="true">Legacy.s0620e10a5c25bf29</string>
+  </property>
  </widget>
- <resources/>
+ <resources />
  <connections>
   <connection>
    <sender>actionExit</sender>

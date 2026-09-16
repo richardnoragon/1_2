@@ -14,6 +14,7 @@ accessibility support, and professional styling.
 Author: RFU Development Team
 Version: 1.0.0
 """
+from src.rfu.localization import localized_widget as _ui_widget, bind_literal as _ui_bind
 
 import logging
 from pathlib import Path
@@ -257,7 +258,7 @@ class GeneralConfigTab(BaseConfigTab):
 
     def _create_basic_info_section(self):
         """Create the basic information section."""
-        group = QGroupBox("Basic Information")
+        group = _ui_widget(QGroupBox, 'Legacy.sd094b334d8099b1e', 'setTitle')
         group.setStyleSheet(Styles.GROUP_BOX_STYLE)
 
         layout = QGridLayout(group)
@@ -279,14 +280,12 @@ class GeneralConfigTab(BaseConfigTab):
         layout.addWidget(self.name_edit, 0, 0, 1, 2)
 
         # Description
-        layout.addWidget(QLabel("Description:"), 1, 0, Qt.AlignTop)
+        layout.addWidget(_ui_widget(QLabel, 'Legacy.s0cf2814604b4c9ad', 'setText'), 1, 0, Qt.AlignTop)
         self.description_edit = QTextEdit()
-        self.description_edit.setPlaceholderText(
-            "Optional description for this folder configuration"
-        )
+        _ui_bind(self.description_edit, 'setPlaceholderText', 'Legacy.s25bb43f0cbb98d0f')
         self.description_edit.setMaximumHeight(80)
         self.description_edit.setStyleSheet(Styles.INPUT_FIELD_STYLE)
-        self.description_edit.setAccessibleName("Folder configuration description")
+        _ui_bind(self.description_edit, 'setAccessibleName', 'Legacy.secb23c94b16ceb31')
         self.description_edit.textChanged.connect(self._emit_data_changed)
         layout.addWidget(self.description_edit, 1, 1)
 
@@ -297,7 +296,7 @@ class GeneralConfigTab(BaseConfigTab):
 
     def _create_directories_section(self):
         """Create the directories management section."""
-        group = QGroupBox("Target Directories")
+        group = _ui_widget(QGroupBox, 'Legacy.s64c9a4190cb96231', 'setTitle')
         group.setStyleSheet(Styles.GROUP_BOX_STYLE)
 
         layout = QVBoxLayout(group)
@@ -305,10 +304,7 @@ class GeneralConfigTab(BaseConfigTab):
         layout.setSpacing(Layout.ITEM_SPACING)
 
         # Description label
-        desc_label = QLabel(
-            "Select directories to include in this folder configuration. "
-            "Files from all selected directories will be aggregated and searchable."
-        )
+        desc_label = _ui_widget(QLabel, 'Legacy.sf7acc1742e562a2d', 'setText')
         desc_label.setWordWrap(True)
         desc_label.setStyleSheet(
             f"color: {Colors.TEXT_SECONDARY}; margin-bottom: 10px;"
@@ -323,7 +319,7 @@ class GeneralConfigTab(BaseConfigTab):
         self.directories_list.setStyleSheet(Styles.LIST_WIDGET_STYLE)
         self.directories_list.setMinimumHeight(150)
         self.directories_list.setSelectionMode(QListWidget.ExtendedSelection)
-        self.directories_list.setAccessibleName("Target directories")
+        _ui_bind(self.directories_list, 'setAccessibleName', 'Legacy.s03259fefb2f8f211')
         list_layout.addWidget(self.directories_list)
 
         # Control buttons
@@ -334,7 +330,7 @@ class GeneralConfigTab(BaseConfigTab):
         self.add_directory_btn.clicked.connect(self._add_directory)
         buttons_layout.addWidget(self.add_directory_btn)
 
-        self.browse_directory_btn = SecondaryButton("📁 Browse")
+        self.browse_directory_btn = _ui_widget(SecondaryButton, 'Legacy.s164ea737a236749b', 'setText')
         self.browse_directory_btn.clicked.connect(self._browse_directory)
         buttons_layout.addWidget(self.browse_directory_btn)
 
@@ -357,7 +353,7 @@ class GeneralConfigTab(BaseConfigTab):
 
     def _create_options_section(self):
         """Create the folder options section."""
-        group = QGroupBox("Folder Options")
+        group = _ui_widget(QGroupBox, 'Legacy.s3bd6f324c537f6ab', 'setTitle')
         group.setStyleSheet(Styles.GROUP_BOX_STYLE)
 
         layout = QVBoxLayout(group)
@@ -365,32 +361,32 @@ class GeneralConfigTab(BaseConfigTab):
         layout.setSpacing(Layout.ITEM_SPACING)
 
         # Create checkboxes
-        self.include_subdirs_cb = QCheckBox("Include subdirectories")
+        self.include_subdirs_cb = _ui_widget(QCheckBox, 'Legacy.s7fe3b250ab4b4940', 'setText')
         self.include_subdirs_cb.setChecked(True)
         self.include_subdirs_cb.setStyleSheet(Styles.CHECKBOX_STYLE)
-        self.include_subdirs_cb.setAccessibleName("Include subdirectories")
+        _ui_bind(self.include_subdirs_cb, 'setAccessibleName', 'Legacy.s7fe3b250ab4b4940')
         self.include_subdirs_cb.setMinimumHeight(44)  # A11Y-8c
         self.include_subdirs_cb.stateChanged.connect(self._emit_data_changed)
         layout.addWidget(self.include_subdirs_cb)
 
-        self.follow_symlinks_cb = QCheckBox("Follow symbolic links")
+        self.follow_symlinks_cb = _ui_widget(QCheckBox, 'Legacy.s0d9c8c49befb0764', 'setText')
         self.follow_symlinks_cb.setStyleSheet(Styles.CHECKBOX_STYLE)
-        self.follow_symlinks_cb.setAccessibleName("Follow symbolic links")
+        _ui_bind(self.follow_symlinks_cb, 'setAccessibleName', 'Legacy.s0d9c8c49befb0764')
         self.follow_symlinks_cb.setMinimumHeight(44)  # A11Y-8c
         self.follow_symlinks_cb.stateChanged.connect(self._emit_data_changed)
         layout.addWidget(self.follow_symlinks_cb)
 
-        self.include_hidden_cb = QCheckBox("Include hidden files")
+        self.include_hidden_cb = _ui_widget(QCheckBox, 'Legacy.sb7df2de4db3d21a7', 'setText')
         self.include_hidden_cb.setStyleSheet(Styles.CHECKBOX_STYLE)
-        self.include_hidden_cb.setAccessibleName("Include hidden files")
+        _ui_bind(self.include_hidden_cb, 'setAccessibleName', 'Legacy.sb7df2de4db3d21a7')
         self.include_hidden_cb.setMinimumHeight(44)  # A11Y-8c
         self.include_hidden_cb.stateChanged.connect(self._emit_data_changed)
         layout.addWidget(self.include_hidden_cb)
 
-        self.monitor_changes_cb = QCheckBox("Monitor for file changes")
+        self.monitor_changes_cb = _ui_widget(QCheckBox, 'Legacy.s11942846032ebbdf', 'setText')
         self.monitor_changes_cb.setChecked(True)
         self.monitor_changes_cb.setStyleSheet(Styles.CHECKBOX_STYLE)
-        self.monitor_changes_cb.setAccessibleName("Monitor for file changes")
+        _ui_bind(self.monitor_changes_cb, 'setAccessibleName', 'Legacy.s11942846032ebbdf')
         self.monitor_changes_cb.setMinimumHeight(44)  # A11Y-8c
         self.monitor_changes_cb.stateChanged.connect(self._emit_data_changed)
         layout.addWidget(self.monitor_changes_cb)
@@ -593,7 +589,7 @@ class SearchConfigTab(BaseConfigTab):
         layout = self.layout()
 
         # Placeholder for search configuration
-        placeholder_label = QLabel("Search Configuration Tab")
+        placeholder_label = _ui_widget(QLabel, 'Legacy.s3539abd116c0f831', 'setText')
         placeholder_label.setAlignment(Qt.AlignCenter)
         placeholder_label.setFont(Fonts.heading_font())
         placeholder_label.setStyleSheet(
@@ -625,7 +621,7 @@ class FiltersConfigTab(BaseConfigTab):
         layout = self.layout()
 
         # Placeholder for filters configuration
-        placeholder_label = QLabel("File Type Filters Tab")
+        placeholder_label = _ui_widget(QLabel, 'Legacy.s73f69ee14fbc89db', 'setText')
         placeholder_label.setAlignment(Qt.AlignCenter)
         placeholder_label.setFont(Fonts.heading_font())
         placeholder_label.setStyleSheet(
@@ -657,7 +653,7 @@ class DisplayConfigTab(BaseConfigTab):
         layout = self.layout()
 
         # Placeholder for display configuration
-        placeholder_label = QLabel("Display Options Tab")
+        placeholder_label = _ui_widget(QLabel, 'Legacy.s46aaaf0b7949e5b5', 'setText')
         placeholder_label.setAlignment(Qt.AlignCenter)
         placeholder_label.setFont(Fonts.heading_font())
         placeholder_label.setStyleSheet(
@@ -678,7 +674,7 @@ if __name__ == "__main__":
 
     # Create test tab widget
     tab_widget = QTabWidget()
-    tab_widget.setAccessibleName("Configuration tabs")
+    _ui_bind(tab_widget, 'setAccessibleName', 'Legacy.s43bf3a65b21a189d')
 
     # Add tabs
     general_tab = GeneralConfigTab()

@@ -1,4 +1,6 @@
 """Data visualization components for network connectivity tools."""
+from src.rfu.localization import localized_widget as _ui_widget, bind_literal as _ui_bind
+from src.rfu import font_tokens
 
 import time
 from collections import deque
@@ -165,9 +167,7 @@ class RealTimeChart(QWidget):
         if self.title:
             painter.setPen(QPen(QColor(Colors.TEXT_PRIMARY)))
             painter.setFont(
-                QFont(
-                    Fonts.DEFAULT_FAMILY, Fonts.HEADER_SIZE, Fonts.BOLD
-                )  # noqa: TH-3  uses Fonts class (theme-aware family)
+                font_tokens.get("font.toolHeader")  # noqa: TH-3  uses Fonts class (theme-aware family)
             )
             title_rect = rect.adjusted(0, 0, 0, -rect.height() + 30)
             painter.drawText(title_rect, Qt.AlignCenter, self.title)
@@ -212,7 +212,7 @@ class RealTimeChart(QWidget):
 
         # Y-axis labels
         painter.setFont(
-            QFont(Fonts.DEFAULT_FAMILY, Fonts.SMALL_SIZE)
+            font_tokens.get("font.caption")
         )  # noqa: TH-3  uses Fonts class (theme-aware family)
         for i in range(6):
             y = rect.bottom() - (rect.height() * i / 5)
@@ -258,7 +258,7 @@ class RealTimeChart(QWidget):
         legend_y = rect.top() + 50
 
         painter.setFont(
-            QFont(Fonts.DEFAULT_FAMILY, Fonts.SMALL_SIZE)
+            font_tokens.get("font.caption")
         )  # noqa: TH-3  uses Fonts class (theme-aware family)
 
         for i, (series_name, color) in enumerate(self.colors.items()):
@@ -314,7 +314,7 @@ class ProgressIndicator(QWidget):
         status_layout = QHBoxLayout()
 
         # Status label
-        self.status_label = QLabel("Ready")
+        self.status_label = _ui_widget(QLabel, 'Legacy.s5fa7aac5375c5815', 'setText')
         ThemeManager.style_label(self.status_label)
         status_layout.addWidget(self.status_label)
 
@@ -338,7 +338,7 @@ class ProgressIndicator(QWidget):
         details_layout.addStretch()
 
         # Percentage label
-        self.percentage_label = QLabel("0%")
+        self.percentage_label = _ui_widget(QLabel, 'Legacy.sd9a847a1a79ab448', 'setText')
         ThemeManager.style_label(self.percentage_label)
         details_layout.addWidget(self.percentage_label)
 
@@ -416,14 +416,14 @@ class StatusIndicator(QWidget):
         layout.setSpacing(Spacing.SMALL_SPACING)
 
         # Status dot
-        self.status_dot = QLabel("●")
+        self.status_dot = _ui_widget(QLabel, 'Legacy.s5f9e6a3696c4a7c2', 'setText')
         self.status_dot.setFont(
-            QFont(Fonts.DEFAULT_FAMILY, 16)
+            font_tokens.get("font.title")
         )  # noqa: TH-3  uses Fonts family; size 16 not in Typography scale
         layout.addWidget(self.status_dot)
 
         # Status text
-        self.status_text = QLabel("Ready")
+        self.status_text = _ui_widget(QLabel, 'Legacy.s5fa7aac5375c5815', 'setText')
         ThemeManager.style_label(self.status_text)
         layout.addWidget(self.status_text)
 

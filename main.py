@@ -1508,7 +1508,7 @@ try:
 
                 # Record interface selection event
                 query = """
-                    INSERT OR REPLACE INTO interface_usage 
+                    INSERT OR REPLACE INTO interface_usage
                     (selection_date, interface_mode, remember_choice, session_id)
                     VALUES (datetime('now'), ?, ?, ?)
                 """
@@ -1893,8 +1893,18 @@ try:
                     menubar.removeAction(action)
                     break
 
-            # Add interface menu
-            interface_menu = menubar.addMenu("&Interface")
+            # Interface choices belong to View, never a new top-level category.
+            registry = getattr(self, "menu_registry", None)
+            view_menu = registry.menus["View"] if registry else next((action.menu() for action in menubar.actions()
+                              if action.text().replace("&", "").lower() == "view"), None)
+            if view_menu is None:
+                from src.rfu.localization import tr
+                view_menu = menubar.addMenu(tr("Menu.VIEW"))
+            for action in list(view_menu.actions()):
+                if action.objectName() == "interface-options":
+                    view_menu.removeAction(action)
+            interface_menu = view_menu.addMenu("&Interface")
+            interface_menu.menuAction().setObjectName("interface-options")
 
             # Current mode indicator (disabled, just shows status)
             current_mode_action = interface_menu.addAction(
@@ -1939,40 +1949,20 @@ try:
                 event.accept()  # Close anyway
 
         def launch_tool(self, tool_name, module_name=None, class_name=None):
-            """Enhanced tool launch with tracking and proper instantiation."""
+            """Resolve every launcher through the canonical tool inventory."""
+            from src.gui.tool_catalogue import launch_registered_tool
+            from src.rfu.localization import tr
             try:
-                self._track_tool_launch(tool_name)
-
-                launch_request = resolve_tool_launch_request(
-                    tool_name,
-                    module_name,
-                    class_name,
-                )
-                if launch_request is not None:
-                    module_name = launch_request.module_name
-                    class_name = launch_request.class_name
-
-                if self._handle_existing_window(tool_name):
-                    return
-
-                if not self._validate_tool_parameters(
-                    tool_name, module_name, class_name
-                ):
-                    return
-
-                tool_class = self._import_tool_class(tool_name, module_name, class_name)
-                if not tool_class:
-                    return
-
-                self._create_and_show_tool(tool_name, tool_class)
-
-            except Exception as e:
-                QMessageBox.critical(
-                    self,
-                    "Critical Error",
-                    f"Unexpected error launching {tool_name}:\n\n{e}",
-                )
-                self.logger.error(f"Critical error in launch_tool for {tool_name}: {e}")
+                launched = launch_registered_tool(self, tool_name)
+                if launched:
+                    self._track_tool_launch(tool_name)
+                    self._track_tool_usage_in_db(tool_name)
+                    self.opened_windows.update(getattr(self, "_catalogue_windows", {}))
+                return launched
+            except Exception:
+                self.logger.exception("Tool launch failed: %s", tool_name)
+                QMessageBox.warning(self, tool_name, tr("ToolCatalogue.UNAVAILABLE"))
+                return False
 
         def _track_tool_launch(self, tool_name):
             """Track tool launch statistics."""
@@ -2115,7 +2105,7 @@ try:
                     return
 
                 query = """
-                    INSERT INTO tool_usage 
+                    INSERT INTO tool_usage
                     (tool_name, launch_time, interface_mode, session_id)
                     VALUES (?, datetime('now'), ?, ?)
                 """
@@ -2144,10 +2134,11 @@ try:
             # Add title
             title_label = QLabel(APP_NAME)
             title_label.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+            from src.rfu import font_tokens
+            font_tokens.bind(title_label, "font.toolHeader")
             title_label.setStyleSheet(
                 """
-                font-size: 28px; 
-                font-weight: bold; 
+                font-weight: bold;
                 padding: 20px;
                 color: #2c3e50;
                 background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
@@ -2162,223 +2153,11 @@ try:
             self.tab_widget = AlphabeticalTabWidget()
             main_layout.addWidget(self.tab_widget)
 
-            # File Management Tools
-            file_mgmt_tab = self.create_tool_category_tab(
-                [
-                    (
-                        "File Finder",
-                        "Search and find files based on various criteria",
-                        self.open_file_finder,
-                    ),
-                    (
-                        "Catalog Files",
-                        "Create and manage file catalogs",
-                        self.open_catalog,
-                    ),
-                    (
-                        "Rename Files",
-                        "Batch rename files and folders",
-                        self.open_rename,
-                    ),
-                    (
-                        "Organize Files",
-                        "Automatically organize files by type/date",
-                        self.open_organize,
-                    ),
-                    (
-                        "Advanced Folders",
-                        "Configure smart folder monitoring and search",
-                        self.open_advanced_folders,
-                    ),
-                    (
-                        "Synchronize",
-                        "Synchronize directories",
-                        self.open_sync,
-                    ),
-                ]
-            )
-            self._register_tab(file_mgmt_tab, "File Management")
-
-            # File Operations Tools
-            file_ops_tab = self.create_tool_category_tab(
-                [
-                    (
-                        "Compress/Decompress",
-                        "Archive and extract files",
-                        self.open_compress,
-                    ),
-                    (
-                        "Split/Join Files",
-                        "Split large files or join parts",
-                        self.open_file_splitter,
-                    ),
-                    (
-                        "Enhanced Editor",
-                        "Advanced text editor with syntax highlighting",
-                        self.open_enhanced_editor,
-                    ),
-                ]
-            )
-            self._register_tab(file_ops_tab, "File Operations")
-
-            # Analysis Tools
-            analysis_tab = self.create_tool_category_tab(
-                [
-                    (
-                        "Size Analyzer",
-                        "Analyze disk space usage",
-                        self.open_size_analyzer,
-                    ),
-                    (
-                        "Duplicate Finder",
-                        "Find and remove duplicate files",
-                        self.open_duplicate_finder,
-                    ),
-                    (
-                        "File Checksum",
-                        "Calculate and verify checksums",
-                        self.open_checksum,
-                    ),
-                    (
-                        "Empty Folders",
-                        "Find and clean empty folders",
-                        self.open_empty_folders,
-                    ),
-                ]
-            )
-            self._register_tab(analysis_tab, "Analysis")
-
-            # Security Tools
-            security_tab = self.create_tool_category_tab(
-                [
-                    (
-                        "Security Preferences",
-                        "Configure comprehensive security settings",
-                        self.open_security_preferences,
-                    ),
-                    (
-                        "Encrypt/Decrypt",
-                        "Secure file encryption and decryption",
-                        self.open_encrypt_decrypt,
-                    ),
-                    (
-                        "Secure Delete",
-                        "Permanently delete sensitive files",
-                        self.open_secure_delete,
-                    ),
-                    (
-                        "Permissions Editor",
-                        "Manage file and folder permissions",
-                        self.open_permissions,
-                    ),
-                ]
-            )
-            self._register_tab(security_tab, "Security")
-
-            # Metadata Tools
-            metadata_tab = self.create_tool_category_tab(
-                [
-                    (
-                        "Edit Image Metadata",
-                        "View and edit image metadata",
-                        self.open_image_metadata,
-                    ),
-                    (
-                        "Office Metadata Editor",
-                        "Edit document metadata",
-                        self.open_office_metadata,
-                    ),
-                    ("File Touch", "Modify file timestamps", self.open_file_touch),
-                ]
-            )
-            self._register_tab(metadata_tab, "Metadata")
-
-            # PDF Tools
-            self._pdf_tools_tab_placeholder = self.create_pdf_tools_placeholder_tab()
-            self._pdf_tools_tab_loaded = False
-            pdf_tab = self._pdf_tools_tab_placeholder
-            self._register_tab(pdf_tab, "PDF Tools")
-
-            # Network Tools
-            network_tab = self.create_tool_category_tab(
-                [
-                    (
-                        "Network Connectivity",
-                        "Check network connectivity and diagnostics",
-                        self.open_network_connectivity,
-                    ),
-                    (
-                        "Network Scanner",
-                        "Scan network for devices and services",
-                        self.open_network_scanner,
-                    ),
-                    (
-                        "Network Transfer",
-                        "Transfer files and configurations between RFU clients",
-                        self.open_network_transfer,
-                    ),
-                    (
-                        "Bookmark Manager",
-                        "Cross-platform bookmark keeper/editor/importer",
-                        self.open_bookmark_manager,
-                    ),
-                ]
-            )
-            self._register_tab(network_tab, "Network Tools")
-
-            # Privacy Tools
-            privacy_tab = self.create_tool_category_tab(
-                [
-                    (
-                        "Privacy Cleaner",
-                        "Clean privacy-sensitive data",
-                        self.open_privacy_cleaner,
-                    ),
-                    (
-                        "Data Anonymizer",
-                        "Anonymize sensitive file data",
-                        self.open_data_anonymizer,
-                    ),
-                ]
-            )
-            self._register_tab(privacy_tab, "Privacy Tools")
-
-            # System Tools
-            system_tab = self.create_tool_category_tab(
-                [
-                    (
-                        "Enhanced Clipboard",
-                        "Advanced clipboard management",
-                        self.open_enhanced_clipboard,
-                    ),
-                    (
-                        "Process Monitor",
-                        "Monitor running processes and resource usage",
-                        self.open_process_monitor,
-                    ),
-                    (
-                        "System Diagnostics",
-                        "Comprehensive system analysis",
-                        self.open_system_diagnostics,
-                    ),
-                    (
-                        "System Cleanup",
-                        "Clean temporary and unnecessary files",
-                        self.open_system_cleanup,
-                    ),
-                    (
-                        "Software Maintenance",
-                        "Update and maintain installed software",
-                        self.open_software_maintenance,
-                    ),
-                    (
-                        "Preference Portability",
-                        "Export and import preference payloads",
-                        self.open_preference_portability,
-                    ),
-                ]
-            )
-            self._register_tab(system_tab, "System Tools")
+            from src.gui.tool_catalogue import ToolCatalogue
+            from src.rfu.localization import tr
+            self.tool_catalogue = ToolCatalogue(self)
+            self._register_tab(self.tool_catalogue, tr("ToolCatalogue.TITLE"))
+            self._pdf_tools_tab_loaded = True
 
             self.tab_widget.currentChanged.connect(self._on_tab_changed)
 
@@ -2559,26 +2338,16 @@ try:
 
         def create_menu_bar(self):
             """Create the application menu bar."""
-            menubar = self.menuBar()
-
-            # File menu
-            file_menu = menubar.addMenu("&File")
-            file_menu.addAction("&New Project", self.new_project)
-            file_menu.addAction("&Open...", self.open_file)
-            file_menu.addSeparator()
-            file_menu.addAction("&Save Project", self.save_project)
-            file_menu.addAction("Save Project &As...", self.save_project_as)
-            file_menu.addSeparator()
-            file_menu.addAction("E&xit", self.close)
-
-            # Tools menu
-            tools_menu = menubar.addMenu("&Tools")
-            tools_menu.addAction("&Preferences...", self.show_main_preferences)
-            tools_menu.addAction("&Refresh Tool List", self.refresh_tool_list)
-
-            # Help menu
-            help_menu = menubar.addMenu("&Help")
-            help_menu.addAction("&About", self.show_about_dialog)
+            from src.simple_menu_manager import SimpleMenuManager
+            self.menu_manager = SimpleMenuManager(self)
+            self.menu_manager.create_menubar()
+            for name, callback in {
+                "new_project": self.new_project, "open_file": self.open_file,
+                "save_file": self.save_project, "save_as": self.save_project_as,
+                "preferences": self.show_main_preferences,
+                "refresh": self.refresh_tool_list, "about": self.show_about_dialog,
+            }.items():
+                self.menu_manager.register_callback(name, callback)
 
         # File Management Tool Launch Methods
         def open_file_finder(self):

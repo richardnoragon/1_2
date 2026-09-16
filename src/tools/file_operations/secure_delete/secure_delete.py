@@ -5,6 +5,8 @@ Enhanced Secure Delete Tool for Richard's File Utilities
 A comprehensive secure delete utility with menu integration and military-grade secure deletion.
 Implements DoD 5220.22-M, Gutmann Method, and cryptographic overwrite patterns.
 """
+from src.rfu.localization import localized_widget as _ui_widget, bind_literal as _ui_bind
+from src.rfu import font_tokens
 
 import hashlib
 import logging
@@ -696,11 +698,11 @@ class SecureDeleteGUI(StandardWindow):
         """Show comprehensive help for Secure Delete tool."""
         help_text = """
         <h2>Secure Delete Tool - Comprehensive Guide</h2>
-        
+
         <h3>🗑️ Overview</h3>
-        <p>The Secure Delete tool provides military-grade file deletion capabilities that 
+        <p>The Secure Delete tool provides military-grade file deletion capabilities that
         prevent data recovery by overwriting files multiple times with random data patterns.</p>
-        
+
         <h3>🚀 Key Features</h3>
         <ul>
             <li><b>Multiple Pass Deletion</b>: 1-35 overwrite passes for maximum security</li>
@@ -710,7 +712,7 @@ class SecureDeleteGUI(StandardWindow):
             <li><b>Free Space Wiping</b>: Clean unallocated disk space</li>
             <li><b>Verification</b>: Optional verification of deletion success</li>
         </ul>
-        
+
         <h3>🔒 Deletion Methods</h3>
         <ul>
             <li><b>Single Pass</b>: Quick deletion with one random overwrite</li>
@@ -719,7 +721,7 @@ class SecureDeleteGUI(StandardWindow):
             <li><b>Random Pattern</b>: Multiple passes with cryptographic random data</li>
             <li><b>Custom Pattern</b>: User-defined overwrite patterns</li>
         </ul>
-        
+
         <h3>⚠️ Important Warnings</h3>
         <ul>
             <li><b>Permanent Deletion</b>: Securely deleted files CANNOT be recovered</li>
@@ -728,8 +730,8 @@ class SecureDeleteGUI(StandardWindow):
             <li><b>Backup Considerations</b>: Files may exist in backups elsewhere</li>
             <li><b>System Files</b>: Never delete critical system files</li>
         </ul>
-        
-        <p><b>Note:</b> This tool provides a foundation for secure deletion. Full implementation 
+
+        <p><b>Note:</b> This tool provides a foundation for secure deletion. Full implementation
         requires system-level integration and may need additional libraries for optimal security.</p>
         """
 
@@ -737,7 +739,7 @@ class SecureDeleteGUI(StandardWindow):
             Modal("Secure Delete Tool - Help", help_text, ["OK"], parent=self).exec_()
         else:
             msg_box = QMessageBox()
-            msg_box.setWindowTitle("Secure Delete Tool - Help")
+            _ui_bind(msg_box, 'setWindowTitle', 'Legacy.sdd9c04de56e60646')
             msg_box.setTextFormat(1)  # Rich text format
             msg_box.setText(help_text)
             msg_box.setStandardButtons(QMessageBox.Ok)
@@ -785,11 +787,11 @@ class SecureDeleteGUI(StandardWindow):
             layout = QVBoxLayout(central_widget)
 
         # Add header
-        header_label = QLabel("Secure Delete")
+        header_label = _ui_widget(QLabel, 'Legacy.s4e58f5daf4a42190', 'setText')
         header_label.setStyleSheet(
             """
             QLabel {
-                font-size: 18px;
+
                 font-weight: bold;
                 color: {token('text_primary')};
                 padding: 10px;
@@ -799,10 +801,11 @@ class SecureDeleteGUI(StandardWindow):
             }
         """
         )
+        font_tokens.bind(header_label, "font.toolHeader")
         layout.addWidget(header_label)
 
         # Add file selection group
-        file_group = QGroupBox("File/Directory Selection")
+        file_group = _ui_widget(QGroupBox, 'Legacy.s9eeccf894b023062', 'setTitle')
         file_layout = QVBoxLayout(file_group)
 
         # Selection buttons
@@ -822,25 +825,23 @@ class SecureDeleteGUI(StandardWindow):
 
         # Selected files list
         self.files_list = QListWidget()
-        self.files_list.setAccessibleName("Files to delete")
+        _ui_bind(self.files_list, 'setAccessibleName', 'Legacy.sa24e25f381e65223')
         self.files_list.setMaximumHeight(120)
-        file_layout.addWidget(QLabel("Selected Items:"))
+        file_layout.addWidget(_ui_widget(QLabel, 'Legacy.sfde0eecd8fde1c09', 'setText'))
         file_layout.addWidget(self.files_list)
 
         layout.addWidget(file_group)
 
         # Add security options
-        security_group = QGroupBox("Deletion Method")
+        security_group = _ui_widget(QGroupBox, 'Legacy.s01175bc59247161e', 'setTitle')
         security_layout = QVBoxLayout(security_group)
 
         # Deletion method selection
         method_layout = QHBoxLayout()
-        method_layout.addWidget(QLabel("Method:"))
+        method_layout.addWidget(_ui_widget(QLabel, 'Legacy.s9e943b1e112b5ede', 'setText'))
         self.method_combo = QComboBox()
-        self.method_combo.setAccessibleName("Deletion method")
-        self.method_combo.setAccessibleDescription(
-            "DoD 5220.22-M (7-pass) is most secure; random single-pass is fastest"
-        )
+        _ui_bind(self.method_combo, 'setAccessibleName', 'Legacy.s44a391e425b19bd2')
+        _ui_bind(self.method_combo, 'setAccessibleDescription', 'Legacy.sd0b8004e3076304c')
         self.method_combo.addItems(
             [
                 SINGLE_PASS_METHOD,
@@ -855,43 +856,33 @@ class SecureDeleteGUI(StandardWindow):
         security_layout.addLayout(method_layout)
 
         # Verification option
-        self.verify_deletion = QCheckBox("Verify deletion (recommended)")
+        self.verify_deletion = _ui_widget(QCheckBox, 'Legacy.sb6057c3313ed0b85', 'setText')
         self.verify_deletion.setChecked(True)
-        self.verify_deletion.setAccessibleName("Verify deletion")
-        self.verify_deletion.setAccessibleDescription(
-            "Reads back overwritten data to confirm the original content cannot be recovered"
-        )
+        _ui_bind(self.verify_deletion, 'setAccessibleName', 'Legacy.s76bbbabd177be827')
+        _ui_bind(self.verify_deletion, 'setAccessibleDescription', 'Legacy.sd60bbff34567bd59')
         self.verify_deletion.setMinimumHeight(44)
         security_layout.addWidget(self.verify_deletion)
 
         # Dry run option
-        self.dry_run_checkbox = QCheckBox(
-            "\U0001f50d Dry Run (Preview Only \u2014 No Files Will Be Deleted)"
-        )
-        self.dry_run_checkbox.setAccessibleName("Dry run preview mode")
-        self.dry_run_checkbox.setAccessibleDescription(
-            "Shows which files would be deleted without actually removing any files"
-        )
+        self.dry_run_checkbox = _ui_widget(QCheckBox, 'Legacy.s0af8f8b5c77641f7', 'setText')
+        _ui_bind(self.dry_run_checkbox, 'setAccessibleName', 'Legacy.s9a07d10ecb8bf47a')
+        _ui_bind(self.dry_run_checkbox, 'setAccessibleDescription', 'Legacy.s6693b0a7b60ff4ed')
+        self.dry_run_checkbox.setChecked(True)
         self.dry_run_checkbox.setMinimumHeight(44)
-        self.dry_run_checkbox.setToolTip(
-            "When checked, shows which files WOULD be deleted without "
-            "actually deleting anything"
-        )
+        _ui_bind(self.dry_run_checkbox, 'setToolTip', 'Legacy.sdabf450a88437ff5')
         security_layout.addWidget(self.dry_run_checkbox)
 
         layout.addWidget(security_group)
 
         # Add progress section
-        progress_group = QGroupBox("Progress")
+        progress_group = _ui_widget(QGroupBox, 'Legacy.s4664827f8e890192', 'setTitle')
         progress_layout = QVBoxLayout(progress_group)
 
         self.progress_bar = QProgressBar()
         self.progress_bar.setVisible(False)
         progress_layout.addWidget(self.progress_bar)
 
-        self.status_label = QLabel(
-            "Ready - Select files or directories to securely delete"
-        )
+        self.status_label = _ui_widget(QLabel, 'Legacy.sb935f5ff589dd043', 'setText')
         self.status_label.setStyleSheet(f"padding: 10px; color: {token('text_muted')};")
         progress_layout.addWidget(self.status_label)
 
@@ -905,8 +896,8 @@ class SecureDeleteGUI(StandardWindow):
             self.delete_button.set_confirmation_callback(self._confirm_secure_delete)
             self.delete_button.action_confirmed.connect(self._execute_secure_delete)
         else:
-            self.delete_button = QPushButton("🗑️ Secure Delete")
-            self.delete_button.setAccessibleName("Secure delete selected files")
+            self.delete_button = _ui_widget(QPushButton, 'Legacy.sc43fea12a4202e80', 'setText')
+            _ui_bind(self.delete_button, 'setAccessibleName', 'Legacy.sa68b7c47f7880c04')
             self.delete_button.setMinimumHeight(44)
             self.delete_button.clicked.connect(self.secure_delete)
         action_layout.addWidget(self.delete_button)
@@ -943,101 +934,58 @@ class SecureDeleteGUI(StandardWindow):
             self.selected_files = [folder]
             self.status_label.setText("Selected folder for secure deletion")
 
-    def secure_delete(self):
-        """Perform secure deletion."""
-        if not self.selected_files:
-            QMessageBox.warning(
-                self, "Warning", "Please select files or folders first."
-            )
-            return
-
-        method_text = self.method_combo.currentText()
-        verify = self.verify_deletion.isChecked()
-
-        # Map GUI method text to enum
-        method_map = {
+    def _selected_deletion_method(self):
+        return {
             SINGLE_PASS_METHOD: DeletionMethod.SINGLE_PASS,
             DOD_5220_22_M_METHOD: DeletionMethod.DOD_5220_22_M,
             RANDOM_PATTERN_METHOD: DeletionMethod.RANDOM_PATTERN,
             GUTMANN_METHOD: DeletionMethod.GUTMANN_METHOD,
             CUSTOM_PATTERN_METHOD: DeletionMethod.CUSTOM_PATTERN,
-        }
+        }.get(self.method_combo.currentText(), DeletionMethod.DOD_5220_22_M)
 
-        method = method_map.get(method_text, DeletionMethod.DOD_5220_22_M)
+    def _confirm_secure_delete(self):
+        if not self.selected_files:
+            QMessageBox.warning(self, "Secure Delete", "Select files before continuing.")
+            return False
+        summary = (f"Selected items: {len(self.selected_files)}\n"
+                   f"Method: {self.method_combo.currentText()}\n"
+                   + "\n".join(str(path) for path in self.selected_files[:100]))
+        if self.dry_run_checkbox.isChecked():
+            QMessageBox.information(self, "Dry Run Preview", "No files will be changed.\n" + summary)
+            return False
+        from PyQt5.QtWidgets import QDialog
+        return ConfirmationModal("Confirm Secure Delete", summary + "\nThis permanently deletes data and cannot be undone.",
+                                 confirm_text="Delete Permanently", parent=self).exec_() == QDialog.Accepted
 
-        # Confirmation dialog with strong warning
-        reply = QMessageBox.critical(
-            self,
-            "⚠️ SECURE DELETE CONFIRMATION",
-            f"WARNING: This will PERMANENTLY DELETE the selected items!\n\n"
-            f"Items to delete: {len(self.selected_files)}\n"
-            f"Method: {method_text}\n"
-            f"Verification: {'Enabled' if verify else 'Disabled'}\n\n"
-            f"This action CANNOT be undone!\n\n"
-            f"Are you absolutely sure you want to continue?",
-            QMessageBox.Yes | QMessageBox.No,
-            QMessageBox.No,
-        )
+    def _execute_secure_delete(self):
+        self._perform_secure_deletion(self._selected_deletion_method(), self.verify_deletion.isChecked())
 
-        if reply == QMessageBox.Yes:
-            if hasattr(self, "dry_run_checkbox") and self.dry_run_checkbox.isChecked():
-                items_text = "\n".join(
-                    f"  \u2022 {os.path.basename(f)}" for f in self.selected_files
-                )
-                QMessageBox.information(
-                    self,
-                    "Dry Run Preview",
-                    f"DRY RUN \u2014 No files will be deleted.\n\n"
-                    f"The following {len(self.selected_files)} item(s) WOULD be "
-                    f"securely deleted:\n{items_text}\n\n"
-                    f"Method: {method_text}\n"
-                    f"Verification: {'Enabled' if verify else 'Disabled'}",
-                )
-            else:
-                # Start actual secure deletion
-                self._perform_secure_deletion(method, verify)
+    def secure_delete(self):
+        if self._confirm_secure_delete():
+            self._execute_secure_delete()
 
     def _perform_secure_deletion(self, method: DeletionMethod, verify: bool):
-        """Perform the actual secure deletion operation."""
-        # Disable UI during operation
-        self.delete_button.setEnabled(False)
-        self.select_files_button.setEnabled(False)
-        self.select_folder_button.setEnabled(False)
+        from src.gui.background_task import BackgroundTask
+        from PyQt5.QtCore import QObject, pyqtSignal
+        if not hasattr(self, '_deletion_task'):
+            class Progress(QObject):
+                changed = pyqtSignal(int, str)
+            self._deletion_progress_signals = Progress(self)
+            self._deletion_progress_signals.changed.connect(self._deletion_progress)
+            layout = getattr(self, 'main_layout', None) or self.centralWidget().layout()
+            self._deletion_task = BackgroundTask(self, 'secure-delete', layout,
+                [self.delete_button, self.select_files_button, self.select_folder_button,
+                 self.clear_button, self.method_combo, self.verify_deletion, self.dry_run_checkbox])
+        engine = SecureDeleteEngine(self._deletion_progress_signals.changed.emit)
+        self._deletion_task.cancel_callback = engine.cancel
+        files = list(self.selected_files)
         self.progress_bar.setVisible(True)
-        self.progress_bar.setValue(0)
+        self._deletion_task.start('delete', lambda: engine.secure_delete_files(files, method, verify),
+                                  self._handle_deletion_result)
 
-        # Create progress callback
-        def progress_callback(percentage: int, message: str):
-            self.progress_bar.setValue(percentage)
-            self.status_label.setText(message)
-            QApplication.processEvents()  # Update GUI
-
-        # Create and configure the deletion engine
-        engine = SecureDeleteEngine(progress_callback)
-
-        # Start deletion in a separate thread to keep GUI responsive
-        def deletion_worker():
-            try:
-                result = engine.secure_delete_files(self.selected_files, method, verify)
-
-                # Update GUI with results (use QTimer to run on main thread)
-                from PyQt5.QtCore import QTimer
-
-                QTimer.singleShot(0, lambda: self._handle_deletion_result(result))
-
-            except (
-                Exception
-            ) as e:  # ERR: non-fatal — surfaced via SecureDeleteResult; reported in _handle_deletion_result
-                error_result = SecureDeleteResult(
-                    success=False,
-                    message=f"Unexpected error: {str(e)}",
-                    errors=[str(e)],
-                )
-                QTimer.singleShot(0, lambda: self._handle_deletion_result(error_result))
-
-        # Start the deletion thread
-        deletion_thread = threading.Thread(target=deletion_worker, daemon=True)
-        deletion_thread.start()
+    def _deletion_progress(self, percentage, message):
+        self.progress_bar.setValue(percentage)
+        self.status_label.setText(message)
 
     def _handle_deletion_result(self, result: SecureDeleteResult):
         """Handle the completion of secure deletion operation."""

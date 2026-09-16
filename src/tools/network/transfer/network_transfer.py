@@ -16,6 +16,8 @@ Security Features:
 - Secure authentication tokens
 - TOCTOU (Time-of-Check Time-of-Use) vulnerability prevention
 """
+from src.rfu.localization import localized_widget as _ui_widget, bind_literal as _ui_bind
+from src.rfu import font_tokens
 
 import base64
 import hashlib
@@ -925,7 +927,7 @@ class NetworkTransferGUI(StandardWindow):
     def __init__(self):
         if StandardWindow is QMainWindow:
             super().__init__()
-            self.setWindowTitle("Network Transfer - Richard's File Utilities")
+            _ui_bind(self, 'setWindowTitle', 'Legacy.s9f1d945bdfa6f1d5')
             self.resize(900, 700)
 
             central_widget = QWidget()
@@ -1071,7 +1073,7 @@ class NetworkTransferGUI(StandardWindow):
 
         # Create tab widget
         self.tab_widget = QTabWidget()
-        self.tab_widget.setAccessibleName("Network transfer tabs")
+        _ui_bind(self.tab_widget, 'setAccessibleName', 'Legacy.s8daad96f20b0994a')
         layout.addWidget(self.tab_widget)
         self._create_all_tabs()
 
@@ -1080,11 +1082,11 @@ class NetworkTransferGUI(StandardWindow):
 
     def _create_header(self, layout: QVBoxLayout) -> None:
         """Create and add header label to layout"""
-        header_label = QLabel("Network Transfer Tool")
+        header_label = _ui_widget(QLabel, 'Legacy.se66870a5d9d36916', 'setText')
         header_label.setStyleSheet(
             """
             QLabel {
-                font-size: 20px;
+
                 font-weight: bold;
                 color: {token('text_primary')};
                 padding: 15px;
@@ -1094,6 +1096,7 @@ class NetworkTransferGUI(StandardWindow):
             }
         """
         )
+        font_tokens.bind(header_label, "font.toolHeader")
         layout.addWidget(header_label)
 
     def _create_all_tabs(self) -> None:
@@ -1118,7 +1121,7 @@ class NetworkTransferGUI(StandardWindow):
         status_widget = QWidget()
         status_layout = QHBoxLayout(status_widget)
 
-        self.status_label = QLabel("Ready for transfers")
+        self.status_label = _ui_widget(QLabel, 'Legacy.sa35520da322d6c37', 'setText')
         status_layout.addWidget(self.status_label)
 
         self.progress_bar = LoadingIndicator(parent=self, message="Working...")
@@ -1133,7 +1136,7 @@ class NetworkTransferGUI(StandardWindow):
         layout = QVBoxLayout(send_widget)
 
         # Target configuration
-        target_group = QGroupBox("Transfer Target")
+        target_group = _ui_widget(QGroupBox, 'Legacy.s0e441d331dc572ba', 'setTitle')
         target_layout = QFormLayout(target_group)
 
         self.target_host = TextInput(
@@ -1144,7 +1147,7 @@ class NetworkTransferGUI(StandardWindow):
         target_layout.addRow(self.target_host)
 
         self.target_port = QSpinBox()
-        self.target_port.setAccessibleName("Transfer target port")
+        _ui_bind(self.target_port, 'setAccessibleName', 'Legacy.s90be601cc6cffbee')
         self.target_port.setMinimumHeight(44)
         self.target_port.setRange(1024, 65535)
         self.target_port.setValue(12000)
@@ -1153,53 +1156,45 @@ class NetworkTransferGUI(StandardWindow):
         layout.addWidget(target_group)
 
         # Transfer type selection
-        type_group = QGroupBox("Transfer Type")
+        type_group = _ui_widget(QGroupBox, 'Legacy.sae696f131faf3214', 'setTitle')
         type_layout = QVBoxLayout(type_group)
 
         # Settings/Preferences transfer
         settings_layout = QHBoxLayout()
-        self.transfer_settings_btn = SecondaryButton(
-            "Transfer Settings & Preferences"
-        )
-        self.transfer_settings_btn.setAccessibleName(
-            "Transfer settings and preferences to target"
-        )
+        self.transfer_settings_btn = _ui_widget(SecondaryButton, 'Legacy.s7e2aa41071532106', 'setText')
+        _ui_bind(self.transfer_settings_btn, 'setAccessibleName', 'Legacy.sa147195e86d105c2')
         self.transfer_settings_btn.clicked.connect(self.transfer_settings)
         settings_layout.addWidget(self.transfer_settings_btn)
 
-        self.include_backups = QCheckBox("Include backup configurations")
-        self.include_backups.setAccessibleName(
-            "Include backup configurations in transfer"
-        )
+        self.include_backups = _ui_widget(QCheckBox, 'Legacy.se92bcee436521ed1', 'setText')
+        _ui_bind(self.include_backups, 'setAccessibleName', 'Legacy.s39fed0011b924884')
         self.include_backups.setMinimumHeight(44)
         settings_layout.addWidget(self.include_backups)
         type_layout.addLayout(settings_layout)
 
         # File selection
         files_layout = QHBoxLayout()
-        self.select_files_btn = SecondaryButton("Select Files to Transfer")
-        self.select_files_btn.setAccessibleName("Select files to transfer")
+        self.select_files_btn = _ui_widget(SecondaryButton, 'Legacy.s708819d989799e90', 'setText')
+        _ui_bind(self.select_files_btn, 'setAccessibleName', 'Legacy.s4a983da9c7880daa')
         self.select_files_btn.clicked.connect(self.select_files)
         files_layout.addWidget(self.select_files_btn)
 
-        self.select_folder_btn = SecondaryButton("Select Folder")
-        self.select_folder_btn.setAccessibleName("Select folder to transfer")
+        self.select_folder_btn = _ui_widget(SecondaryButton, 'Legacy.se597da9c984517f8', 'setText')
+        _ui_bind(self.select_folder_btn, 'setAccessibleName', 'Legacy.sbca7117cf36a3993')
         self.select_folder_btn.clicked.connect(self.select_folder)
         files_layout.addWidget(self.select_folder_btn)
         type_layout.addLayout(files_layout)
 
         # Collection selection
         collection_layout = QHBoxLayout()
-        collection_layout.addWidget(QLabel("File Collection:"))
+        collection_layout.addWidget(_ui_widget(QLabel, 'Legacy.s46bc319350052161', 'setText'))
 
         self.collection_combo = QComboBox()
-        self.collection_combo.setAccessibleName("File collection to transfer")
+        _ui_bind(self.collection_combo, 'setAccessibleName', 'Legacy.s0fa968aa421ca64d')
         collection_layout.addWidget(self.collection_combo)
 
-        self.transfer_collection_btn = SecondaryButton("Transfer Collection")
-        self.transfer_collection_btn.setAccessibleName(
-            "Transfer selected file collection"
-        )
+        self.transfer_collection_btn = _ui_widget(SecondaryButton, 'Legacy.sb72ed943cb5f9efd', 'setText')
+        _ui_bind(self.transfer_collection_btn, 'setAccessibleName', 'Legacy.sbc22adb9b8a48d2f')
         self.transfer_collection_btn.clicked.connect(self.transfer_collection)
         collection_layout.addWidget(self.transfer_collection_btn)
         type_layout.addLayout(collection_layout)
@@ -1207,21 +1202,21 @@ class NetworkTransferGUI(StandardWindow):
         layout.addWidget(type_group)
 
         # Selected files display
-        files_group = QGroupBox("Selected Files")
+        files_group = _ui_widget(QGroupBox, 'Legacy.se502c676e7a30abc', 'setTitle')
         files_layout = QVBoxLayout(files_group)
 
         self.selected_files_list = QListWidget()
-        self.selected_files_list.setAccessibleName("Selected files for transfer")
+        _ui_bind(self.selected_files_list, 'setAccessibleName', 'Legacy.s3fd1912208eb4dcb')
         files_layout.addWidget(self.selected_files_list)
 
         files_buttons = QHBoxLayout()
-        self.clear_files_btn = SecondaryButton("Clear Selection")
-        self.clear_files_btn.setAccessibleName("Clear file selection")
+        self.clear_files_btn = _ui_widget(SecondaryButton, 'Legacy.sc52ff5ea803d5775', 'setText')
+        _ui_bind(self.clear_files_btn, 'setAccessibleName', 'Legacy.sa95500ff1f838fe6')
         self.clear_files_btn.clicked.connect(self.clear_selected_files)
         files_buttons.addWidget(self.clear_files_btn)
 
-        self.send_files_btn = PrimaryButton("Send Selected Files")
-        self.send_files_btn.setAccessibleName("Send selected files to target")
+        self.send_files_btn = _ui_widget(PrimaryButton, 'Legacy.s17590af43d0deb6e', 'setText')
+        _ui_bind(self.send_files_btn, 'setAccessibleName', 'Legacy.s48bafa8fda942e47')
         self.send_files_btn.clicked.connect(self.send_selected_files)
         self.send_files_btn.setStyleSheet(
             """
@@ -1251,11 +1246,11 @@ class NetworkTransferGUI(StandardWindow):
         layout = QVBoxLayout(receive_widget)
 
         # Server configuration
-        server_group = QGroupBox("Transfer Server")
+        server_group = _ui_widget(QGroupBox, 'Legacy.s8cb4b3c27a51221d', 'setTitle')
         server_layout = QFormLayout(server_group)
 
         self.listen_port = QSpinBox()
-        self.listen_port.setAccessibleName("Transfer server listen port")
+        _ui_bind(self.listen_port, 'setAccessibleName', 'Legacy.sff003b60c19fae75')
         self.listen_port.setMinimumHeight(44)
         self.listen_port.setRange(1024, 65535)
         self.listen_port.setValue(12000)
@@ -1268,8 +1263,8 @@ class NetworkTransferGUI(StandardWindow):
         )
         server_layout.addRow(self.receive_path)
 
-        path_btn = SecondaryButton("Browse")
-        path_btn.setAccessibleName("Browse for receive path")
+        path_btn = _ui_widget(SecondaryButton, 'Legacy.s3227aa9666253f7a', 'setText')
+        _ui_bind(path_btn, 'setAccessibleName', 'Legacy.sb2fdccf51e25f429')
         path_btn.clicked.connect(self.browse_receive_path)
         server_layout.addRow(path_btn)
 
@@ -1278,8 +1273,8 @@ class NetworkTransferGUI(StandardWindow):
         # Server controls
         controls_layout = QHBoxLayout()
 
-        self.start_server_btn = SecondaryButton("Start Transfer Server")
-        self.start_server_btn.setAccessibleName("Start transfer server")
+        self.start_server_btn = _ui_widget(SecondaryButton, 'Legacy.s419e4d1cdb0bcaeb', 'setText')
+        _ui_bind(self.start_server_btn, 'setAccessibleName', 'Legacy.s27c76e2661a116a5')
         self.start_server_btn.clicked.connect(self.start_transfer_server)
         self.start_server_btn.setStyleSheet(
             """
@@ -1298,8 +1293,8 @@ class NetworkTransferGUI(StandardWindow):
         )
         controls_layout.addWidget(self.start_server_btn)
 
-        self.stop_server_btn = SecondaryButton("Stop Server")
-        self.stop_server_btn.setAccessibleName("Stop transfer server")
+        self.stop_server_btn = _ui_widget(SecondaryButton, 'Legacy.scb7c1e8dc21e5983', 'setText')
+        _ui_bind(self.stop_server_btn, 'setAccessibleName', 'Legacy.sb8ed4d16305940a6')
         self.stop_server_btn.clicked.connect(self.stop_transfer_server)
         self.stop_server_btn.setEnabled(False)
         controls_layout.addWidget(self.stop_server_btn)
@@ -1307,17 +1302,17 @@ class NetworkTransferGUI(StandardWindow):
         layout.addLayout(controls_layout)
 
         # Server status and log
-        status_group = QGroupBox("Server Status & Transfer Log")
+        status_group = _ui_widget(QGroupBox, 'Legacy.sf8378c6299789b8d', 'setTitle')
         status_layout = QVBoxLayout(status_group)
 
-        self.server_status = QLabel("Server stopped")
+        self.server_status = _ui_widget(QLabel, 'Legacy.s4c906946c7f419d2', 'setText')
         self.server_status.setStyleSheet(
             f"font-weight: bold; color: {token('semantic_error')};"
         )
         status_layout.addWidget(self.server_status)
 
         self.transfer_log = QTextEdit()
-        self.transfer_log.setAccessibleName("Transfer server log")
+        _ui_bind(self.transfer_log, 'setAccessibleName', 'Legacy.s404ce774be7d6bfe')
         self.transfer_log.setReadOnly(True)
         self.transfer_log.setMaximumHeight(200)
         status_layout.addWidget(self.transfer_log)
@@ -1325,11 +1320,11 @@ class NetworkTransferGUI(StandardWindow):
         layout.addWidget(status_group)
 
         # Received files list
-        received_group = QGroupBox("Received Files")
+        received_group = _ui_widget(QGroupBox, 'Legacy.s0499234c9f6bee9e', 'setTitle')
         received_layout = QVBoxLayout(received_group)
 
         self.received_files_list = QListWidget()
-        self.received_files_list.setAccessibleName("Received files list")
+        _ui_bind(self.received_files_list, 'setAccessibleName', 'Legacy.s398e7b030865d378')
         received_layout.addWidget(self.received_files_list)
 
         self.tab_widget.addTab(receive_widget, "Receive")
@@ -1340,12 +1335,12 @@ class NetworkTransferGUI(StandardWindow):
         layout = QVBoxLayout(collections_widget)
 
         # Collections management
-        management_group = QGroupBox("File Collections Management")
+        management_group = _ui_widget(QGroupBox, 'Legacy.s57d86776fb70fd4b', 'setTitle')
         management_layout = QVBoxLayout(management_group)
 
         # Create new collection
         create_layout = QHBoxLayout()
-        create_layout.addWidget(QLabel("Collection Name:"))
+        create_layout.addWidget(_ui_widget(QLabel, 'Legacy.sa547717eeba951df', 'setText'))
 
         self.new_collection_name = TextInput(
             "Collection Name",
@@ -1354,8 +1349,8 @@ class NetworkTransferGUI(StandardWindow):
         )
         create_layout.addWidget(self.new_collection_name)
 
-        self.create_collection_btn = SecondaryButton("Create Collection")
-        self.create_collection_btn.setAccessibleName("Create new file collection")
+        self.create_collection_btn = _ui_widget(SecondaryButton, 'Legacy.s6ea3cd78aca1eaec', 'setText')
+        _ui_bind(self.create_collection_btn, 'setAccessibleName', 'Legacy.sb439bdb6c245958c')
         self.create_collection_btn.clicked.connect(self.create_collection)
         create_layout.addWidget(self.create_collection_btn)
 
@@ -1363,20 +1358,20 @@ class NetworkTransferGUI(StandardWindow):
 
         # Collections list
         self.collections_list = QListWidget()
-        self.collections_list.setAccessibleName("File collections list")
+        _ui_bind(self.collections_list, 'setAccessibleName', 'Legacy.sdd4416bb022a9459')
         self.collections_list.itemClicked.connect(self.load_collection_details)
         management_layout.addWidget(self.collections_list)
 
         # Collection actions
         actions_layout = QHBoxLayout()
 
-        self.edit_collection_btn = SecondaryButton("Edit Collection")
-        self.edit_collection_btn.setAccessibleName("Edit selected collection")
+        self.edit_collection_btn = _ui_widget(SecondaryButton, 'Legacy.s478c604d8e48dc3f', 'setText')
+        _ui_bind(self.edit_collection_btn, 'setAccessibleName', 'Legacy.sedee6c9990fbb4a8')
         self.edit_collection_btn.clicked.connect(self.edit_collection)
         actions_layout.addWidget(self.edit_collection_btn)
 
-        self.delete_collection_btn = SecondaryButton("Delete Collection")
-        self.delete_collection_btn.setAccessibleName("Delete selected collection")
+        self.delete_collection_btn = _ui_widget(SecondaryButton, 'Legacy.s771b2f466082ce88', 'setText')
+        _ui_bind(self.delete_collection_btn, 'setAccessibleName', 'Legacy.scb472b994cf9ccd1')
         self.delete_collection_btn.clicked.connect(self.delete_collection)
         actions_layout.addWidget(self.delete_collection_btn)
 
@@ -1384,24 +1379,22 @@ class NetworkTransferGUI(StandardWindow):
         layout.addWidget(management_group)
 
         # Collection details
-        details_group = QGroupBox("Collection Details")
+        details_group = _ui_widget(QGroupBox, 'Legacy.s32cae471d251c17b', 'setTitle')
         details_layout = QVBoxLayout(details_group)
 
         self.collection_files_list = QListWidget()
-        self.collection_files_list.setAccessibleName("Collection files list")
+        _ui_bind(self.collection_files_list, 'setAccessibleName', 'Legacy.s6a0dfda49c25a6f5')
         details_layout.addWidget(self.collection_files_list)
 
         files_actions = QHBoxLayout()
 
-        self.add_files_to_collection_btn = SecondaryButton("Add Files")
-        self.add_files_to_collection_btn.setAccessibleName("Add files to collection")
+        self.add_files_to_collection_btn = _ui_widget(SecondaryButton, 'Legacy.s7e69772d579a9448', 'setText')
+        _ui_bind(self.add_files_to_collection_btn, 'setAccessibleName', 'Legacy.sb6674aaa4dd11aeb')
         self.add_files_to_collection_btn.clicked.connect(self.add_files_to_collection)
         files_actions.addWidget(self.add_files_to_collection_btn)
 
-        self.remove_file_from_collection_btn = SecondaryButton("Remove Selected")
-        self.remove_file_from_collection_btn.setAccessibleName(
-            "Remove selected file from collection"
-        )
+        self.remove_file_from_collection_btn = _ui_widget(SecondaryButton, 'Legacy.s859af8fa198d67ac', 'setText')
+        _ui_bind(self.remove_file_from_collection_btn, 'setAccessibleName', 'Legacy.saeb253063a5b087d')
         self.remove_file_from_collection_btn.clicked.connect(
             self.remove_file_from_collection
         )
@@ -1420,13 +1413,13 @@ class NetworkTransferGUI(StandardWindow):
         # History controls
         controls_layout = QHBoxLayout()
 
-        self.refresh_history_btn = SecondaryButton("Refresh History")
-        self.refresh_history_btn.setAccessibleName("Refresh transfer history")
+        self.refresh_history_btn = _ui_widget(SecondaryButton, 'Legacy.s07f5ce3695c30e79', 'setText')
+        _ui_bind(self.refresh_history_btn, 'setAccessibleName', 'Legacy.s4375bb393ce7414f')
         self.refresh_history_btn.clicked.connect(self.load_transfer_history)
         controls_layout.addWidget(self.refresh_history_btn)
 
-        self.clear_history_btn = SecondaryButton("Clear History")
-        self.clear_history_btn.setAccessibleName("Clear transfer history")
+        self.clear_history_btn = _ui_widget(SecondaryButton, 'Legacy.s9768be40e9310726', 'setText')
+        _ui_bind(self.clear_history_btn, 'setAccessibleName', 'Legacy.s3bc11d77fbe6642a')
         self.clear_history_btn.clicked.connect(self.clear_transfer_history)
         controls_layout.addWidget(self.clear_history_btn)
 
@@ -1435,7 +1428,7 @@ class NetworkTransferGUI(StandardWindow):
 
         # History table
         self.history_table = QTableWidget()
-        self.history_table.setAccessibleName("Transfer history table")
+        _ui_bind(self.history_table, 'setAccessibleName', 'Legacy.scb0c7b6d6cc6ff6c')
         self.history_table.setColumnCount(7)
         self.history_table.setHorizontalHeaderLabels(
             [
@@ -2162,7 +2155,7 @@ class NetworkTransferGUI(StandardWindow):
         try:
             self.db_manager.execute_query(
                 """
-                INSERT OR REPLACE INTO file_collections 
+                INSERT OR REPLACE INTO file_collections
                 (name, description, files, created_date, last_modified)
                 VALUES (?, ?, ?, ?, ?)
             """,
@@ -2281,7 +2274,7 @@ class NetworkTransferGUI(StandardWindow):
                 """
                 SELECT timestamp, transfer_type, direction, remote_host,
                        file_count, total_size, status
-                FROM transfer_history 
+                FROM transfer_history
                 ORDER BY timestamp DESC
                 LIMIT 100
             """
@@ -2350,7 +2343,7 @@ class NetworkTransferGUI(StandardWindow):
 
             self.db_manager.execute_query(
                 """
-                INSERT INTO transfer_history 
+                INSERT INTO transfer_history
                 (timestamp, transfer_type, direction, remote_host, file_count, total_size, status)
                 VALUES (?, ?, ?, ?, ?, ?, ?)
             """,

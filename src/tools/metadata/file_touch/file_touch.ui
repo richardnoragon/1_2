@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <ui version="4.0">
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">
@@ -22,12 +22,18 @@
         <property name="placeholderText">
          <string>Drag and drop a file here or use Browse...</string>
         </property>
+        <property name="rfuLocale_setPlaceholderText" stdset="0">
+         <string notr="true">Legacy.sda046c9f27bcb4b9</string>
+        </property>
        </widget>
       </item>
       <item>
        <widget class="QPushButton" name="browseButton">
         <property name="text">
          <string>Browse...</string>
+        </property>
+        <property name="rfuLocale_setText" stdset="0">
+         <string notr="true">Legacy.sc58a6bd402efb06c</string>
         </property>
        </widget>
       </item>
@@ -44,32 +50,44 @@
          <property name="text">
           <string>Access Time:</string>
          </property>
+         <property name="rfuLocale_setText" stdset="0">
+          <string notr="true">Legacy.s743ab27ba90309fb</string>
+         </property>
         </widget>
        </item>
        <item row="0" column="1">
-        <widget class="QDateTimeEdit" name="accessTimeEdit"/>
+        <widget class="QDateTimeEdit" name="accessTimeEdit" />
        </item>
        <item row="1" column="0">
         <widget class="QLabel" name="modificationTimeLabel">
          <property name="text">
           <string>Modification Time:</string>
          </property>
+         <property name="rfuLocale_setText" stdset="0">
+          <string notr="true">Legacy.s0924514539f82ed4</string>
+         </property>
         </widget>
        </item>
        <item row="1" column="1">
-        <widget class="QDateTimeEdit" name="modificationTimeEdit"/>
+        <widget class="QDateTimeEdit" name="modificationTimeEdit" />
        </item>
        <item row="2" column="0">
         <widget class="QLabel" name="creationTimeLabel">
          <property name="text">
           <string>Creation Time:</string>
          </property>
+         <property name="rfuLocale_setText" stdset="0">
+          <string notr="true">Legacy.s38cd93072c47d597</string>
+         </property>
         </widget>
        </item>
        <item row="2" column="1">
-        <widget class="QDateTimeEdit" name="creationTimeEdit"/>
+        <widget class="QDateTimeEdit" name="creationTimeEdit" />
        </item>
       </layout>
+      <property name="rfuLocale_setTitle" stdset="0">
+       <string notr="true">Legacy.s755f099dbf49d098</string>
+      </property>
      </widget>
     </item>
     <item>
@@ -79,12 +97,18 @@
         <property name="text">
          <string>Refresh</string>
         </property>
+        <property name="rfuLocale_setText" stdset="0">
+         <string notr="true">Legacy.s0e91610117029a62</string>
+        </property>
        </widget>
       </item>
       <item>
        <widget class="QPushButton" name="applyButton">
         <property name="text">
          <string>Apply Changes</string>
+        </property>
+        <property name="rfuLocale_setText" stdset="0">
+         <string notr="true">Legacy.sd80d0faa58963b92</string>
         </property>
        </widget>
       </item>
@@ -105,11 +129,14 @@
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="actionExit"/>
+    <addaction name="actionExit" />
+    <property name="rfuLocale_setTitle" stdset="0">
+     <string notr="true">Legacy.s50009ce1da4d15e1</string>
+    </property>
    </widget>
-   <addaction name="menuFile"/>
+   <addaction name="menuFile" />
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QStatusBar" name="statusbar" />
   <widget class="QToolBar" name="toolBar">
    <property name="windowTitle">
     <string>toolBar</string>
@@ -120,13 +147,22 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <property name="rfuLocale_setWindowTitle" stdset="0">
+    <string notr="true">Legacy.sd735c514fef9e451</string>
+   </property>
   </widget>
   <action name="actionExit">
    <property name="text">
     <string>Exit</string>
    </property>
+   <property name="rfuLocale_setText" stdset="0">
+    <string notr="true">Legacy.sd17d84a604994b72</string>
+   </property>
   </action>
+  <property name="rfuLocale_setWindowTitle" stdset="0">
+   <string notr="true">Legacy.s49f4384bd9c4ded3</string>
+  </property>
  </widget>
- <resources/>
- <connections/>
+ <resources />
+ <connections />
 </ui>

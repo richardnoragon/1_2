@@ -11,6 +11,8 @@ Features:
 - Dynamic menu construction based on application state
 - Menu customization and user preferences
 """
+from src.rfu import font_tokens
+from src.gui import menu_surfaces
 
 import logging
 from dataclasses import dataclass
@@ -631,7 +633,7 @@ class AdvancedFoldersMenuManager(QObject):
         if self.menu_bar:
             return self.menu_bar
 
-        self.menu_bar = QMenuBar(parent_widget)
+        self.menu_bar = menu_surfaces.menu_bar(parent_widget)
         self.menu_bar.setObjectName("AdvancedFoldersMenuBar")
 
         # Sort menus by position
@@ -641,7 +643,7 @@ class AdvancedFoldersMenuManager(QObject):
         for menu_def in sorted_menus:
             if menu_def.visible:
                 menu = self._create_menu(menu_def)
-                self.menu_bar.addMenu(menu)
+                menu_surfaces.add_menu(self.menu_bar, menu)
 
         # Apply styling
         self._apply_menu_styling(self.menu_bar)
@@ -658,7 +660,7 @@ class AdvancedFoldersMenuManager(QObject):
         Returns:
             Created menu
         """
-        menu = QMenu(menu_def.title, self.parent_widget)
+        menu = menu_surfaces.menu(menu_def.title, self.parent_widget)
         menu.setObjectName(f"menu_{menu_def.menu_id}")
 
         # Build menu items
@@ -678,7 +680,7 @@ class AdvancedFoldersMenuManager(QObject):
                 menu.addSeparator()
             elif item.submenu_items:
                 # Create submenu
-                submenu = menu.addMenu(item.title)
+                submenu = menu_surfaces.add_menu(menu, item.title)
                 if item.icon_path:
                     icon = self._load_icon(item.icon_path)
                     submenu.setIcon(icon)
@@ -764,62 +766,62 @@ class AdvancedFoldersMenuManager(QObject):
                 background-color: {token('dialog_background')};
                 border-bottom: 1px solid {token('border_light')};
                 padding: 2px 4px;
-                font-size: 14px;
+
             }}
-            
+
             QMenuBar::item {{
                 background-color: transparent;
                 padding: 6px 12px;
                 margin: 2px;
                 border-radius: 4px;
             }}
-            
+
             QMenuBar::item:selected {{
                 background-color: {token('border_light')};
             }}
-            
+
             QMenuBar::item:pressed {{
                 background-color: {token('border_light')};
             }}
-            
+
             QMenu {{
                 background-color: white;
                 border: 1px solid {token('border_light')};
                 border-radius: 6px;
                 padding: 4px 0px;
             }}
-            
+
             QMenu::item {{
                 padding: 6px 24px 6px 32px;
                 margin: 0px 4px;
                 border-radius: 4px;
             }}
-            
+
             QMenu::item:selected {{
                 background-color: {token('dialog_background')};
                 color: {token('text_primary')};
             }}
-            
+
             QMenu::item:disabled {{
                 color: {token('text_muted')};
             }}
-            
+
             QMenu::separator {{
                 height: 1px;
                 background-color: {token('border_light')};
                 margin: 4px 8px;
             }}
-            
+
             QMenu::indicator {{
                 width: 16px;
                 height: 16px;
                 left: 8px;
             }}
-            
+
             QMenu::indicator:checked {{
                 image: url(:/icons/check.png);
             }}
-            
+
             QMenu::right-arrow {{
                 image: url(:/icons/arrow_right.png);
                 width: 12px;
@@ -827,6 +829,7 @@ class AdvancedFoldersMenuManager(QObject):
             }}
         """
         )
+        font_tokens.bind(menu_bar, "font.body")
 
     def create_context_menu(
         self, context_id: str, items: List[MenuItemDefinition]
@@ -840,7 +843,7 @@ class AdvancedFoldersMenuManager(QObject):
         Returns:
             Created context menu
         """
-        menu = QMenu(self.parent_widget)
+        menu = menu_surfaces.menu(self.parent_widget)
         menu.setObjectName(f"context_menu_{context_id}")
 
         self._build_menu_items(menu, items)
@@ -944,7 +947,11 @@ class AdvancedFoldersMenuManager(QObject):
 
     def save_menu_config(self):
         """Save current menu configuration."""
-        settings = QSettings("RFU", "AdvancedFolders")
+        from src.core.preferences.qt_adapter import DeclaredSettings
+        fields = {"menu/visible": True}
+        fields.update({f"menu/item_{key}_enabled": value.enabled for key, value in self.menu_items.items()})
+        fields.update({f"menu/item_{key}_checked": value.checked for key, value in self.menu_items.items() if value.checkable})
+        settings = DeclaredSettings("advanced-folders-menu", fields, "AdvancedFolders")
 
         # Save menu visibility
         settings.setValue("menu/visible", self.menu_visible)
@@ -959,7 +966,11 @@ class AdvancedFoldersMenuManager(QObject):
 
     def load_menu_config(self):
         """Load menu configuration from settings."""
-        settings = QSettings("RFU", "AdvancedFolders")
+        from src.core.preferences.qt_adapter import DeclaredSettings
+        fields = {"menu/visible": True}
+        fields.update({f"menu/item_{key}_enabled": value.enabled for key, value in self.menu_items.items()})
+        fields.update({f"menu/item_{key}_checked": value.checked for key, value in self.menu_items.items() if value.checkable})
+        settings = DeclaredSettings("advanced-folders-menu", fields, "AdvancedFolders")
 
         # Load menu visibility
         self.menu_visible = settings.value("menu/visible", True, type=bool)

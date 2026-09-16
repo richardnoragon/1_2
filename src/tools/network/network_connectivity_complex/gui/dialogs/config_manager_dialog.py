@@ -1,4 +1,5 @@
 """Configuration manager dialog for network connectivity tools."""
+from src.rfu.localization import localized_widget as _ui_widget, bind_literal as _ui_bind
 
 import json
 from datetime import datetime
@@ -78,30 +79,30 @@ class ProfileSelectionWidget(QWidget):
         layout = QVBoxLayout(self)
 
         # Profile selection
-        profile_group = QGroupBox("Configuration Profiles")
+        profile_group = _ui_widget(QGroupBox, 'Legacy.s92173241fa8518b2', 'setTitle')
         profile_layout = QVBoxLayout(profile_group)
 
         self.profile_list = QListWidget()
-        self.profile_list.setAccessibleName("Configuration profiles list")
+        _ui_bind(self.profile_list, 'setAccessibleName', 'Legacy.s62b8913acbff4fcd')
         self.profile_list.itemClicked.connect(self._on_profile_selected)
         profile_layout.addWidget(self.profile_list)
 
         # Profile actions
         actions_layout = QHBoxLayout()
 
-        self.create_btn = PrimaryButton("Create from Template")
-        self.create_btn.setAccessibleName("Create profile from template")
+        self.create_btn = _ui_widget(PrimaryButton, 'Legacy.sc45ba041c548d349', 'setText')
+        _ui_bind(self.create_btn, 'setAccessibleName', 'Legacy.sfce18c0a8059671c')
         self.create_btn.clicked.connect(self._create_from_template)
         actions_layout.addWidget(self.create_btn)
 
-        self.switch_btn = SecondaryButton("Switch Profile")
-        self.switch_btn.setAccessibleName("Switch to selected profile")
+        self.switch_btn = _ui_widget(SecondaryButton, 'Legacy.s41f8b2daa57fb1e7', 'setText')
+        _ui_bind(self.switch_btn, 'setAccessibleName', 'Legacy.s7059278fa20fa586')
         self.switch_btn.clicked.connect(self._switch_profile)
         self.switch_btn.setEnabled(False)
         actions_layout.addWidget(self.switch_btn)
 
-        self.delete_btn = SecondaryButton("Delete")
-        self.delete_btn.setAccessibleName("Delete selected profile")
+        self.delete_btn = _ui_widget(SecondaryButton, 'Legacy.se2d0a54968ead24e', 'setText')
+        _ui_bind(self.delete_btn, 'setAccessibleName', 'Legacy.s97aeb233defcbb0d')
         self.delete_btn.clicked.connect(self._delete_profile)
         self.delete_btn.setEnabled(False)
         actions_layout.addWidget(self.delete_btn)
@@ -110,10 +111,10 @@ class ProfileSelectionWidget(QWidget):
         layout.addWidget(profile_group)
 
         # Profile details
-        details_group = QGroupBox("Profile Details")
+        details_group = _ui_widget(QGroupBox, 'Legacy.s65f1ee42981d2f57', 'setTitle')
         details_layout = QFormLayout(details_group)
 
-        self.name_label = QLabel("No profile selected")
+        self.name_label = _ui_widget(QLabel, 'Legacy.sd87214dc92810b75', 'setText')
         self.description_label = QLabel("")
         self.use_case_label = QLabel("")
         self.created_label = QLabel("")
@@ -364,17 +365,17 @@ class ValidationResultsWidget(QWidget):
         layout = QVBoxLayout(self)
 
         # Summary
-        self.summary_label = QLabel("No validation results")
+        self.summary_label = _ui_widget(QLabel, 'Legacy.s97ecf88f10e07f5f', 'setText')
         layout.addWidget(self.summary_label)
 
         # Results list
         self.results_list = QListWidget()
-        self.results_list.setAccessibleName("Validation results list")
+        _ui_bind(self.results_list, 'setAccessibleName', 'Legacy.se606c6b856f4fa03')
         layout.addWidget(self.results_list)
 
         # Validation button
-        self.validate_btn = PrimaryButton("Validate Configuration")
-        self.validate_btn.setAccessibleName("Validate configuration")
+        self.validate_btn = _ui_widget(PrimaryButton, 'Legacy.s326e0793bb2837f9', 'setText')
+        _ui_bind(self.validate_btn, 'setAccessibleName', 'Legacy.s756353471d10bffc')
         self.validate_btn.clicked.connect(self.validate_requested)
         layout.addWidget(self.validate_btn)
 
@@ -464,7 +465,7 @@ class ConfigurationManagerDialog(QDialog):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setWindowTitle("Network Connectivity Configuration Manager")
+        _ui_bind(self, 'setWindowTitle', 'Legacy.s1fd7ee2372a3e108')
         self.setMinimumSize(1000, 700)
 
         self.config_service = get_config_service()
@@ -506,7 +507,7 @@ class ConfigurationManagerDialog(QDialog):
 
         # Tab widget
         self.tab_widget = QTabWidget()
-        self.tab_widget.setAccessibleName("Configuration manager tabs")
+        _ui_bind(self.tab_widget, 'setAccessibleName', 'Legacy.s086e12c5fc318e91')
         config_tab = QWidget()
         config_layout = QVBoxLayout(config_tab)
 
@@ -535,31 +536,31 @@ class ConfigurationManagerDialog(QDialog):
         # Button bar
         button_layout = QHBoxLayout()
 
-        self.save_btn = PrimaryButton("Save Changes")
-        self.save_btn.setAccessibleName("Save configuration changes")
+        self.save_btn = _ui_widget(PrimaryButton, 'Legacy.s35322b5bb5a218a1', 'setText')
+        _ui_bind(self.save_btn, 'setAccessibleName', 'Legacy.s85349e11f3f76262')
         self.save_btn.clicked.connect(self._save_configuration)
         self.save_btn.setEnabled(False)
         button_layout.addWidget(self.save_btn)
 
-        self.reset_btn = SecondaryButton("Reset")
-        self.reset_btn.setAccessibleName("Reset configuration")
+        self.reset_btn = _ui_widget(SecondaryButton, 'Legacy.sdaee7606b339f3c3', 'setText')
+        _ui_bind(self.reset_btn, 'setAccessibleName', 'Legacy.se2556f7a4dc85a3e')
         self.reset_btn.clicked.connect(self._reset_configuration)
         button_layout.addWidget(self.reset_btn)
 
-        self.export_btn = SecondaryButton("Export")
-        self.export_btn.setAccessibleName("Export configuration")
+        self.export_btn = _ui_widget(SecondaryButton, 'Legacy.s3664895579f0a7e6', 'setText')
+        _ui_bind(self.export_btn, 'setAccessibleName', 'Legacy.s0657bced852fb1e1')
         self.export_btn.clicked.connect(self._export_configuration)
         button_layout.addWidget(self.export_btn)
 
-        self.import_btn = SecondaryButton("Import")
-        self.import_btn.setAccessibleName("Import configuration")
+        self.import_btn = _ui_widget(SecondaryButton, 'Legacy.s2cff9baabf56ca00', 'setText')
+        _ui_bind(self.import_btn, 'setAccessibleName', 'Legacy.s8a507f40b80fc759')
         self.import_btn.clicked.connect(self._import_configuration)
         button_layout.addWidget(self.import_btn)
 
         button_layout.addStretch()
 
-        self.close_btn = SecondaryButton("Close")
-        self.close_btn.setAccessibleName("Close configuration manager")
+        self.close_btn = _ui_widget(SecondaryButton, 'Legacy.s7d9eb7acb13e2462', 'setText')
+        _ui_bind(self.close_btn, 'setAccessibleName', 'Legacy.sd577dcc2f14d46fd')
         self.close_btn.clicked.connect(self.accept)
         button_layout.addWidget(self.close_btn)
 

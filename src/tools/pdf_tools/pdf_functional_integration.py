@@ -3,6 +3,8 @@
 PDF Functional Integration - Connects operation engine with enhanced PDF tools widget
 Replaces placeholder implementations with functional PDF operations
 """
+from src.rfu.localization import localized_widget as _ui_widget, bind_literal as _ui_bind
+from src.rfu import font_tokens
 
 import logging
 import os
@@ -128,7 +130,7 @@ class PDFProgressDialog(QProgressDialog):
             """
             QProgressDialog {
                 background-color: {token('window_background')};
-                font-family: "Segoe UI", Arial, sans-serif;
+
             }
             QProgressBar {
                 border: 1px solid {token('border_light')};
@@ -143,6 +145,7 @@ class PDFProgressDialog(QProgressDialog):
             }
         """
         )
+        font_tokens.bind(self, "font.body")
 
     def update_progress(self, percentage: float, message: str):
         """Update progress with percentage and message"""
@@ -692,7 +695,7 @@ class PDFFunctionalIntegration:
 
             # Show success dialog
             msg_box = QMessageBox(self.parent_widget)
-            msg_box.setWindowTitle("Operation Successful")
+            _ui_bind(msg_box, 'setWindowTitle', 'Legacy.s7d43bc27dc8e268d')
             msg_box.setIcon(QMessageBox.Information)
             msg_box.setText(message.strip())
 
@@ -1086,29 +1089,29 @@ class PDFFunctionalIntegration:
 
             # Create watermark parameter dialog
             dialog = QDialog(self.parent_widget)
-            dialog.setWindowTitle("Add Watermark")
+            _ui_bind(dialog, 'setWindowTitle', 'Legacy.sa8f1e3a3da712289')
             dialog.setModal(True)
             dialog.resize(400, 300)
 
             layout = QVBoxLayout(dialog)
 
             # Watermark text
-            layout.addWidget(QLabel("Watermark Text:"))
+            layout.addWidget(_ui_widget(QLabel, 'Legacy.s4831e55e352cc005', 'setText'))
             text_edit = QLineEdit()
-            text_edit.setAccessibleName("Watermark text")
+            _ui_bind(text_edit, 'setAccessibleName', 'Legacy.s9429e86ca189b6d4')
             text_edit.setText("CONFIDENTIAL")
             layout.addWidget(text_edit)
 
             # Opacity
-            layout.addWidget(QLabel("Opacity (0-100%):"))
+            layout.addWidget(_ui_widget(QLabel, 'Legacy.s6ff82a627b1d7b3c', 'setText'))
             opacity_layout = QHBoxLayout()
             opacity_slider = QSlider()
-            opacity_slider.setAccessibleName("Watermark opacity")
+            _ui_bind(opacity_slider, 'setAccessibleName', 'Legacy.sd101b50a14cc85ab')
             opacity_slider.setMinimumHeight(44)
             opacity_slider.setOrientation(Qt.Horizontal)
             opacity_slider.setRange(0, 100)
             opacity_slider.setValue(50)
-            opacity_label = QLabel("50%")
+            opacity_label = _ui_widget(QLabel, 'Legacy.s28fdae8deae31d6e', 'setText')
             opacity_slider.valueChanged.connect(
                 lambda v: opacity_label.setText(f"{v}%")
             )
@@ -1117,9 +1120,9 @@ class PDFFunctionalIntegration:
             layout.addLayout(opacity_layout)
 
             # Pages
-            layout.addWidget(QLabel("Pages (comma-separated, leave empty for all):"))
+            layout.addWidget(_ui_widget(QLabel, 'Legacy.s4247685025721151', 'setText'))
             pages_edit = QLineEdit()
-            pages_edit.setAccessibleName("Pages to apply watermark to")
+            _ui_bind(pages_edit, 'setAccessibleName', 'Legacy.s26b22c494bd5facc')
             layout.addWidget(pages_edit)
 
             # Buttons
@@ -1254,36 +1257,36 @@ class PDFFunctionalIntegration:
 
             # Create OCR parameter dialog
             dialog = QDialog(self.parent_widget)
-            dialog.setWindowTitle("OCR Processing")
+            _ui_bind(dialog, 'setWindowTitle', 'Legacy.s72c2c03796c54605')
             dialog.setModal(True)
             dialog.resize(400, 350)
 
             layout = QVBoxLayout(dialog)
 
             # Search text (optional)
-            layout.addWidget(QLabel("Search Text (optional):"))
+            layout.addWidget(_ui_widget(QLabel, 'Legacy.sac3e7e2ff51ac888', 'setText'))
             search_edit = QLineEdit()
-            search_edit.setAccessibleName("Text to search and highlight")
-            search_edit.setPlaceholderText("Enter text to search and highlight...")
+            _ui_bind(search_edit, 'setAccessibleName', 'Legacy.sc6b32b1c9693d3fa')
+            _ui_bind(search_edit, 'setPlaceholderText', 'Legacy.s1cf0bc714bd97903')
             layout.addWidget(search_edit)
 
             # Action type
-            layout.addWidget(QLabel("Action for found text:"))
+            layout.addWidget(_ui_widget(QLabel, 'Legacy.sd5ea1da4ddad5c9d', 'setText'))
             action_combo = QComboBox()
-            action_combo.setAccessibleName("OCR action for found text")
+            _ui_bind(action_combo, 'setAccessibleName', 'Legacy.sef271de3aaff932a')
             action_combo.setMinimumHeight(44)
             action_combo.addItems(["Highlight", "Redact"])
             layout.addWidget(action_combo)
 
             # Pages
-            layout.addWidget(QLabel("Pages (comma-separated, leave empty for all):"))
+            layout.addWidget(_ui_widget(QLabel, 'Legacy.s4247685025721151', 'setText'))
             pages_edit = QLineEdit()
-            pages_edit.setAccessibleName("Pages to apply OCR to")
+            _ui_bind(pages_edit, 'setAccessibleName', 'Legacy.s7726a5bab4a26cc2')
             layout.addWidget(pages_edit)
 
             # Generate output
-            generate_output_check = QCheckBox("Generate text output file")
-            generate_output_check.setAccessibleName("Generate text output file")
+            generate_output_check = _ui_widget(QCheckBox, 'Legacy.s03c806fdfd0fb56b', 'setText')
+            _ui_bind(generate_output_check, 'setAccessibleName', 'Legacy.s03c806fdfd0fb56b')
             generate_output_check.setMinimumHeight(44)
             generate_output_check.setChecked(True)
             layout.addWidget(generate_output_check)
@@ -1435,23 +1438,23 @@ class PDFFunctionalIntegration:
 
             # Create highlighting parameter dialog
             dialog = QDialog(self.parent_widget)
-            dialog.setWindowTitle("Highlight Content")
+            _ui_bind(dialog, 'setWindowTitle', 'Legacy.s25bcd159b6944049')
             dialog.setModal(True)
             dialog.resize(400, 400)
 
             layout = QVBoxLayout(dialog)
 
             # Search text
-            layout.addWidget(QLabel("Search Text:"))
+            layout.addWidget(_ui_widget(QLabel, 'Legacy.s6c5316b7876547e2', 'setText'))
             search_edit = QLineEdit()
-            search_edit.setAccessibleName("Text to search and highlight")
-            search_edit.setPlaceholderText("Enter text to search and highlight...")
+            _ui_bind(search_edit, 'setAccessibleName', 'Legacy.sc6b32b1c9693d3fa')
+            _ui_bind(search_edit, 'setPlaceholderText', 'Legacy.s1cf0bc714bd97903')
             layout.addWidget(search_edit)
 
             # Action type
-            layout.addWidget(QLabel("Action:"))
+            layout.addWidget(_ui_widget(QLabel, 'Legacy.s7d9fda4ea8538475', 'setText'))
             action_combo = QComboBox()
-            action_combo.setAccessibleName("Highlight action type")
+            _ui_bind(action_combo, 'setAccessibleName', 'Legacy.s7bb9007f8c80224b')
             action_combo.setMinimumHeight(44)
             action_combo.addItems(
                 [
@@ -1467,23 +1470,23 @@ class PDFFunctionalIntegration:
             layout.addWidget(action_combo)
 
             # Color selection
-            layout.addWidget(QLabel("Color:"))
+            layout.addWidget(_ui_widget(QLabel, 'Legacy.sfcaed915df957778', 'setText'))
             color_combo = QComboBox()
-            color_combo.setAccessibleName("Highlight color")
+            _ui_bind(color_combo, 'setAccessibleName', 'Legacy.s9cff5f7cb142d31b')
             color_combo.setMinimumHeight(44)
             color_combo.addItems(["Yellow", "Red", "Green", "Blue", "Purple"])
             layout.addWidget(color_combo)
 
             # Opacity
-            layout.addWidget(QLabel("Opacity (0-100%):"))
+            layout.addWidget(_ui_widget(QLabel, 'Legacy.s6ff82a627b1d7b3c', 'setText'))
             opacity_layout = QHBoxLayout()
             opacity_slider = QSlider()
-            opacity_slider.setAccessibleName("Highlight opacity")
+            _ui_bind(opacity_slider, 'setAccessibleName', 'Legacy.s9cb66f7dfb06ee47')
             opacity_slider.setMinimumHeight(44)
             opacity_slider.setOrientation(Qt.Horizontal)
             opacity_slider.setRange(0, 100)
             opacity_slider.setValue(80)
-            opacity_label = QLabel("80%")
+            opacity_label = _ui_widget(QLabel, 'Legacy.sf39dda09980ef9a6', 'setText')
             opacity_slider.valueChanged.connect(
                 lambda v: opacity_label.setText(f"{v}%")
             )
@@ -1492,9 +1495,9 @@ class PDFFunctionalIntegration:
             layout.addLayout(opacity_layout)
 
             # Pages
-            layout.addWidget(QLabel("Pages (comma-separated, leave empty for all):"))
+            layout.addWidget(_ui_widget(QLabel, 'Legacy.s4247685025721151', 'setText'))
             pages_edit = QLineEdit()
-            pages_edit.setAccessibleName("Pages to highlight")
+            _ui_bind(pages_edit, 'setAccessibleName', 'Legacy.s044a0e959246e221')
             layout.addWidget(pages_edit)
 
             # Buttons
@@ -1663,30 +1666,28 @@ class PDFFunctionalIntegration:
 
             # Create conversion parameter dialog
             dialog = QDialog(self.parent_widget)
-            dialog.setWindowTitle("Convert to DOCX")
+            _ui_bind(dialog, 'setWindowTitle', 'Legacy.sc44a9acea69a31dd')
             dialog.setModal(True)
             dialog.resize(400, 250)
 
             layout = QVBoxLayout(dialog)
 
             # Output file
-            layout.addWidget(QLabel("Output DOCX File:"))
+            layout.addWidget(_ui_widget(QLabel, 'Legacy.sb73d080cfb6ff29b', 'setText'))
             output_edit = QLineEdit()
-            output_edit.setAccessibleName("DOCX output file path")
+            _ui_bind(output_edit, 'setAccessibleName', 'Legacy.s36213d4d6825b25f')
             output_edit.setText(os.path.splitext(input_file)[0] + ".docx")
             layout.addWidget(output_edit)
 
             # Pages
-            layout.addWidget(QLabel("Pages (comma-separated, leave empty for all):"))
+            layout.addWidget(_ui_widget(QLabel, 'Legacy.s4247685025721151', 'setText'))
             pages_edit = QLineEdit()
-            pages_edit.setAccessibleName("Pages to convert to DOCX")
+            _ui_bind(pages_edit, 'setAccessibleName', 'Legacy.s935f77e48ec07c77')
             layout.addWidget(pages_edit)
 
             # Create output folder option
-            create_folder_check = QCheckBox("Create output folder for converted files")
-            create_folder_check.setAccessibleName(
-                "Create output folder for converted files"
-            )
+            create_folder_check = _ui_widget(QCheckBox, 'Legacy.s67d69600625e9c94', 'setText')
+            _ui_bind(create_folder_check, 'setAccessibleName', 'Legacy.s67d69600625e9c94')
             create_folder_check.setMinimumHeight(44)
             layout.addWidget(create_folder_check)
 
@@ -1807,37 +1808,37 @@ class PDFFunctionalIntegration:
 
             # Create conversion parameter dialog
             dialog = QDialog(self.parent_widget)
-            dialog.setWindowTitle("Convert to Images")
+            _ui_bind(dialog, 'setWindowTitle', 'Legacy.s13c9c0410e190822')
             dialog.setModal(True)
             dialog.resize(400, 300)
 
             layout = QVBoxLayout(dialog)
 
             # Output directory
-            layout.addWidget(QLabel("Output Directory:"))
+            layout.addWidget(_ui_widget(QLabel, 'Legacy.sf14245e1dd8c28ac', 'setText'))
             output_edit = QLineEdit()
-            output_edit.setAccessibleName("Output directory for converted images")
+            _ui_bind(output_edit, 'setAccessibleName', 'Legacy.s27e2a1d37e66081e')
             output_edit.setText("converted_images")
             layout.addWidget(output_edit)
 
             # Image format
-            layout.addWidget(QLabel("Image Format:"))
+            layout.addWidget(_ui_widget(QLabel, 'Legacy.sf61915c42e108c8a', 'setText'))
             format_combo = QComboBox()
-            format_combo.setAccessibleName("Image output format")
+            _ui_bind(format_combo, 'setAccessibleName', 'Legacy.s5cbac26f26346506')
             format_combo.setMinimumHeight(44)
             format_combo.addItems(["PNG", "JPEG", "BMP", "TIFF"])
             layout.addWidget(format_combo)
 
             # Pages
-            layout.addWidget(QLabel("Pages (comma-separated, leave empty for all):"))
+            layout.addWidget(_ui_widget(QLabel, 'Legacy.s4247685025721151', 'setText'))
             pages_edit = QLineEdit()
-            pages_edit.setAccessibleName("Pages to convert to images")
+            _ui_bind(pages_edit, 'setAccessibleName', 'Legacy.s2324676ee05426ea')
             layout.addWidget(pages_edit)
 
             # Quality/DPI
-            layout.addWidget(QLabel("DPI (Image Quality):"))
+            layout.addWidget(_ui_widget(QLabel, 'Legacy.s005b94ed40a8c7ee', 'setText'))
             dpi_combo = QComboBox()
-            dpi_combo.setAccessibleName("Image DPI quality")
+            _ui_bind(dpi_combo, 'setAccessibleName', 'Legacy.s76715e21e7abb11d')
             dpi_combo.setMinimumHeight(44)
             dpi_combo.addItems(["150", "300", "600", "1200"])
             dpi_combo.setCurrentText("300")
@@ -1956,7 +1957,7 @@ class PDFFunctionalIntegration:
 
             # Create conversion parameter dialog
             dialog = QDialog(self.parent_widget)
-            dialog.setWindowTitle("Convert HTML to PDF")
+            _ui_bind(dialog, 'setWindowTitle', 'Legacy.s3b3039336225bb9e')
             dialog.setModal(True)
             dialog.resize(500, 400)
 
@@ -1964,28 +1965,28 @@ class PDFFunctionalIntegration:
 
             # Create tabs for different input methods
             tab_widget = QTabWidget()
-            tab_widget.setAccessibleName("HTML to PDF input method")
+            _ui_bind(tab_widget, 'setAccessibleName', 'Legacy.sfce5909db84d2826')
             layout.addWidget(tab_widget)
 
             # URL Tab
             url_tab = QWidget()
             url_layout = QVBoxLayout(url_tab)
-            url_layout.addWidget(QLabel("Website URL:"))
+            url_layout.addWidget(_ui_widget(QLabel, 'Legacy.s337c1eee64c21620', 'setText'))
             url_edit = QLineEdit()
-            url_edit.setAccessibleName("Website URL")
-            url_edit.setPlaceholderText("https://example.com")
+            _ui_bind(url_edit, 'setAccessibleName', 'Legacy.seb650fa1243ee6ca')
+            _ui_bind(url_edit, 'setPlaceholderText', 'Legacy.s100680ad546ce6a5')
             url_layout.addWidget(url_edit)
             tab_widget.addTab(url_tab, "From URL")
 
             # File Tab
             file_tab = QWidget()
             file_layout = QVBoxLayout(file_tab)
-            file_layout.addWidget(QLabel("HTML File:"))
+            file_layout.addWidget(_ui_widget(QLabel, 'Legacy.se8474de124b1e083', 'setText'))
             file_input_layout = QHBoxLayout()
             file_edit = QLineEdit()
-            file_edit.setAccessibleName("HTML input file path")
-            browse_btn = QPushButton("Browse")
-            browse_btn.setAccessibleName("Browse for HTML file")
+            _ui_bind(file_edit, 'setAccessibleName', 'Legacy.sfcaca5fd3577d0cb')
+            browse_btn = _ui_widget(QPushButton, 'Legacy.s3227aa9666253f7a', 'setText')
+            _ui_bind(browse_btn, 'setAccessibleName', 'Legacy.sf27c2a505bdc527a')
             browse_btn.setMinimumHeight(44)
 
             def browse_html_file():
@@ -2007,21 +2008,21 @@ class PDFFunctionalIntegration:
             # HTML Content Tab
             html_tab = QWidget()
             html_layout = QVBoxLayout(html_tab)
-            html_layout.addWidget(QLabel("HTML Content:"))
+            html_layout.addWidget(_ui_widget(QLabel, 'Legacy.s4556e3a532f2d839', 'setText'))
             html_edit = QTextEdit()
-            html_edit.setAccessibleName("HTML content editor")
-            html_edit.setPlaceholderText("Enter HTML content here...")
+            _ui_bind(html_edit, 'setAccessibleName', 'Legacy.sbee0cc8829770f04')
+            _ui_bind(html_edit, 'setPlaceholderText', 'Legacy.s78b6d464aa45a561')
             html_layout.addWidget(html_edit)
             tab_widget.addTab(html_tab, "HTML Code")
 
             # Output file
-            layout.addWidget(QLabel("Output PDF File:"))
+            layout.addWidget(_ui_widget(QLabel, 'Legacy.s9a473dc0fcefb929', 'setText'))
             output_input_layout = QHBoxLayout()
             output_edit = QLineEdit()
-            output_edit.setAccessibleName("Output PDF file path")
+            _ui_bind(output_edit, 'setAccessibleName', 'Legacy.se1073b1ca8f9326d')
             output_edit.setText("output.pdf")
-            output_browse_btn = QPushButton("Browse")
-            output_browse_btn.setAccessibleName("Browse for output PDF file")
+            output_browse_btn = _ui_widget(QPushButton, 'Legacy.s3227aa9666253f7a', 'setText')
+            _ui_bind(output_browse_btn, 'setAccessibleName', 'Legacy.sdd70525b8e60871b')
             output_browse_btn.setMinimumHeight(44)
 
             def browse_output_file():
@@ -2290,44 +2291,42 @@ class PDFFunctionalIntegration:
 
             # Create analysis dialog
             dialog = QDialog(self.parent_widget)
-            dialog.setWindowTitle("PDF Analysis Options")
+            _ui_bind(dialog, 'setWindowTitle', 'Legacy.s4615dfbba4fe3375')
             dialog.setModal(True)
             dialog.resize(500, 400)
 
             layout = QVBoxLayout(dialog)
 
             # Analysis options
-            layout.addWidget(QLabel("Select analysis operations:"))
+            layout.addWidget(_ui_widget(QLabel, 'Legacy.s1a7b2ba52fa964a0', 'setText'))
 
-            metadata_check = QCheckBox(
-                "Extract metadata (author, title, creation date)"
-            )
-            metadata_check.setAccessibleName("Extract document metadata")
+            metadata_check = _ui_widget(QCheckBox, 'Legacy.sdb000963854758f1', 'setText')
+            _ui_bind(metadata_check, 'setAccessibleName', 'Legacy.sb7972eefa48a406f')
             metadata_check.setMinimumHeight(44)
             metadata_check.setChecked(True)
             layout.addWidget(metadata_check)
 
-            text_check = QCheckBox("Extract and analyze text content")
-            text_check.setAccessibleName("Extract and analyze text content")
+            text_check = _ui_widget(QCheckBox, 'Legacy.s4012f2827bed7f17', 'setText')
+            _ui_bind(text_check, 'setAccessibleName', 'Legacy.s4012f2827bed7f17')
             text_check.setMinimumHeight(44)
             text_check.setChecked(True)
             layout.addWidget(text_check)
 
-            structure_check = QCheckBox("Analyze document structure")
-            structure_check.setAccessibleName("Analyze document structure")
+            structure_check = _ui_widget(QCheckBox, 'Legacy.s6b746badb1adb425', 'setText')
+            _ui_bind(structure_check, 'setAccessibleName', 'Legacy.s6b746badb1adb425')
             structure_check.setMinimumHeight(44)
             structure_check.setChecked(True)
             layout.addWidget(structure_check)
 
-            images_check = QCheckBox("Count and analyze images")
-            images_check.setAccessibleName("Count and analyze images")
+            images_check = _ui_widget(QCheckBox, 'Legacy.sb9fe9307fa6da148', 'setText')
+            _ui_bind(images_check, 'setAccessibleName', 'Legacy.sb9fe9307fa6da148')
             images_check.setMinimumHeight(44)
             images_check.setChecked(False)
             layout.addWidget(images_check)
 
             # Results display option
-            viewer_check = QCheckBox("Open in interactive PDF miner")
-            viewer_check.setAccessibleName("Open in interactive PDF miner")
+            viewer_check = _ui_widget(QCheckBox, 'Legacy.se9c04eacd709c034', 'setText')
+            _ui_bind(viewer_check, 'setAccessibleName', 'Legacy.se9c04eacd709c034')
             viewer_check.setMinimumHeight(44)
             viewer_check.setChecked(True)
             layout.addWidget(viewer_check)
@@ -2767,13 +2766,13 @@ class PDFFunctionalIntegration:
 
             # Navigation controls
             nav_layout = QHBoxLayout()
-            prev_btn = QPushButton("Previous")
-            prev_btn.setAccessibleName("Go to previous PDF page")
+            prev_btn = _ui_widget(QPushButton, 'Legacy.sa57b08a480b822a0', 'setText')
+            _ui_bind(prev_btn, 'setAccessibleName', 'Legacy.s418bf26aad883015')
             prev_btn.setMinimumHeight(44)
-            next_btn = QPushButton("Next")
-            next_btn.setAccessibleName("Go to next PDF page")
+            next_btn = _ui_widget(QPushButton, 'Legacy.s1ff57a29d7c9d11b', 'setText')
+            _ui_bind(next_btn, 'setAccessibleName', 'Legacy.s2f83d15f79b8b038')
             next_btn.setMinimumHeight(44)
-            page_label = QLabel("Page 1 of 1")
+            page_label = _ui_widget(QLabel, 'Legacy.sd6e19ce6ca2870ce', 'setText')
 
             nav_layout.addWidget(prev_btn)
             nav_layout.addWidget(page_label)
@@ -2940,7 +2939,7 @@ class PDFFunctionalIntegration:
 
             # Results text area
             results_text = QTextEdit()
-            results_text.setAccessibleName("PDF analysis results")
+            _ui_bind(results_text, 'setAccessibleName', 'Legacy.sc1ae7766c84513b6')
             results_text.setReadOnly(True)
 
             # Format results
@@ -2988,8 +2987,8 @@ class PDFFunctionalIntegration:
             layout.addWidget(results_text)
 
             # Close button
-            close_btn = QPushButton("Close")
-            close_btn.setAccessibleName("Close analysis results")
+            close_btn = _ui_widget(QPushButton, 'Legacy.s7d9eb7acb13e2462', 'setText')
+            _ui_bind(close_btn, 'setAccessibleName', 'Legacy.sbdadd64922b88688')
             close_btn.setMinimumHeight(44)
             close_btn.clicked.connect(results_dialog.close)
             layout.addWidget(close_btn)
@@ -3111,14 +3110,14 @@ if __name__ == "__main__":
             super().__init__()
             layout = QVBoxLayout(self)
 
-            merge_btn = QPushButton("Test Merge")
-            merge_btn.setAccessibleName("Test PDF merge functionality")
+            merge_btn = _ui_widget(QPushButton, 'Legacy.s1b8dc18c649988fe', 'setText')
+            _ui_bind(merge_btn, 'setAccessibleName', 'Legacy.s03f58cd52d474c9a')
             merge_btn.setMinimumHeight(44)
-            split_btn = QPushButton("Test Split")
-            split_btn.setAccessibleName("Test PDF split functionality")
+            split_btn = _ui_widget(QPushButton, 'Legacy.sab69e27b31ce7559', 'setText')
+            _ui_bind(split_btn, 'setAccessibleName', 'Legacy.s6fa8aee5f8990482')
             split_btn.setMinimumHeight(44)
-            sign_btn = QPushButton("Test Sign")
-            sign_btn.setAccessibleName("Test PDF sign functionality")
+            sign_btn = _ui_widget(QPushButton, 'Legacy.s7b5958493b464299', 'setText')
+            _ui_bind(sign_btn, 'setAccessibleName', 'Legacy.s25db56747b4a7ff1')
             sign_btn.setMinimumHeight(44)
 
             layout.addWidget(merge_btn)
@@ -3136,7 +3135,7 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
 
     window = QMainWindow()
-    window.setWindowTitle("PDF Functional Integration Test")
+    _ui_bind(window, 'setWindowTitle', 'Legacy.sa1ca6a0fbbd79533')
     window.setCentralWidget(TestWidget())
     window.show()
 

@@ -11,6 +11,8 @@ Features:
 - Context-sensitive tool availability
 - Performance optimized with lazy loading
 """
+from src.rfu.localization import localized_widget as _ui_widget, bind_literal as _ui_bind
+from src.rfu import font_tokens
 
 import logging
 from pathlib import Path
@@ -447,10 +449,11 @@ class AdvancedFoldersToolbar(QObject):
         layout.addStretch()
 
         # Add context indicator
-        self.context_label = QLabel("Default Context")
+        self.context_label = _ui_widget(QLabel, 'Legacy.se0c22ef4359fbe2c', 'setText')
         self.context_label.setStyleSheet(
-            f"QLabel { color: {token('text_muted')}; font-size: 11px; }"
+            f"QLabel {{ color: {token('text_muted')};  }}"
         )
+        font_tokens.bind(self.context_label, "font.body")
         layout.addWidget(self.context_label)
 
         self.logger.info("Quick access bar created")
@@ -483,8 +486,8 @@ class AdvancedFoldersToolbar(QObject):
 
         # Add customization action at the end
         toolbar.addSeparator()
-        customize_action = QAction("Customize...", toolbar)
-        customize_action.setToolTip("Customize toolbar")
+        customize_action = _ui_widget(QAction, 'Legacy.scb8fe55b4ab8b5f6', 'setText', toolbar)
+        _ui_bind(customize_action, 'setToolTip', 'Legacy.sbf907a2e66034c5f')
         customize_action.triggered.connect(self._show_customization_dialog)
         toolbar.addAction(customize_action)
 
@@ -616,13 +619,13 @@ class AdvancedFoldersToolbar(QObject):
                 padding: 2px;
                 spacing: 3px;
             }}
-            
+
             QToolBar::separator {{
                 background-color: {token('border')};
                 width: 1px;
                 margin: 2px 4px;
             }}
-            
+
             QToolButton {{
                 background-color: transparent;
                 border: 1px solid transparent;
@@ -630,22 +633,22 @@ class AdvancedFoldersToolbar(QObject):
                 padding: 4px 8px;
                 margin: 1px;
             }}
-            
+
             QToolButton:hover {{
                 background-color: {token('border_light')};
                 border: 1px solid {token('text_muted')};
             }}
-            
+
             QToolButton:pressed {{
                 background-color: {token('border_light')};
                 border: 1px solid {token('text_muted')};
             }}
-            
+
             QToolButton:checked {{
                 background-color: {token('accent')};
                 border: 1px solid {token('button_primary')};
             }}
-            
+
             QToolButton:disabled {{
                 color: {token('text_muted')};
                 background-color: transparent;
@@ -814,7 +817,11 @@ class AdvancedFoldersToolbar(QObject):
 
     def save_toolbar_config(self):
         """Save current toolbar configuration."""
-        settings = QSettings("RFU", "AdvancedFolders")
+        from src.core.preferences.qt_adapter import DeclaredSettings
+        fields = {"toolbar/main_visible": True}
+        fields.update({f"toolbar/action_{key}_visible": value.visible for key, value in self.action_registry.items()})
+        fields.update({f"toolbar/section_{key}_visible": value.visible for key, value in self.toolbar_sections.items()})
+        settings = DeclaredSettings("advanced-folders-toolbar", fields, "AdvancedFolders")
 
         # Save toolbar visibility
         settings.setValue("toolbar/main_visible", self.toolbar_visible)
@@ -831,7 +838,11 @@ class AdvancedFoldersToolbar(QObject):
 
     def load_toolbar_config(self):
         """Load toolbar configuration from settings."""
-        settings = QSettings("RFU", "AdvancedFolders")
+        from src.core.preferences.qt_adapter import DeclaredSettings
+        fields = {"toolbar/main_visible": True}
+        fields.update({f"toolbar/action_{key}_visible": value.visible for key, value in self.action_registry.items()})
+        fields.update({f"toolbar/section_{key}_visible": value.visible for key, value in self.toolbar_sections.items()})
+        settings = DeclaredSettings("advanced-folders-toolbar", fields, "AdvancedFolders")
 
         # Load toolbar visibility
         self.toolbar_visible = settings.value("toolbar/main_visible", True, type=bool)

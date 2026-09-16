@@ -3,6 +3,7 @@ PDF Text Extraction Module - Migrated Version
 Integrated with main project architecture using BaseWindow.
 Phase 3.1 of PDF utilities integration.
 """
+from src.rfu.localization import localized_widget as _ui_widget, bind_literal as _ui_bind
 
 import sys
 import os
@@ -40,7 +41,7 @@ class ExtractTextWindow(BaseWindow):
         super().__init__(ui_file)
 
         # Set window title
-        self.setWindowTitle("PDF Text Extraction")
+        _ui_bind(self, 'setWindowTitle', 'Legacy.sfe3f6409ec6b4870')
 
         # Initialize logging
         self.logger = LogManager().get_logger("PDF.ExtractText")

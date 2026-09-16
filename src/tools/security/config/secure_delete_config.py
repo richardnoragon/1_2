@@ -60,7 +60,7 @@ class SecureDeleteConfig:
         self.settings = SecureDeleteSettings()
 
         # Ensure config directory exists
-        self.config_dir.mkdir(parents=True, exist_ok=True)
+        # Legacy directories are read only during migration.
 
         # Load existing configuration
         self.load_config()
@@ -82,62 +82,18 @@ class SecureDeleteConfig:
 
         return config_base / "file_utilities_2" / "secure_delete"
 
+    def _preference_store(self):
+        from src.core.preferences.legacy_json import LegacyJSONPreferences
+        return LegacyJSONPreferences("secure-delete", asdict(SecureDeleteSettings()))
+
     def load_config(self) -> bool:
-        """
-        Load configuration from file.
-
-        Returns:
-            True if loaded successfully, False otherwise
-        """
-        try:
-            if self.config_file.exists():
-                with open(self.config_file, "r", encoding="utf-8") as f:
-                    config_data = json.load(f)
-
-                # Update settings with loaded data
-                for key, value in config_data.get("settings", {}).items():
-                    if hasattr(self.settings, key):
-                        setattr(self.settings, key, value)
-
-                self.logger.info("Configuration loaded successfully")
-                return True
-            else:
-                self.logger.info(
-                    "No existing configuration found, using defaults"
-                )
-                self.save_config()  # Save default configuration
-                return True
-
-        except Exception as e:
-            self.logger.error(f"Failed to load configuration: {e}")
-            return False
+        values = self._preference_store().load(self.config_file, extract=lambda data: data["settings"])
+        self.settings = SecureDeleteSettings(**values)
+        return True
 
     def save_config(self) -> bool:
-        """
-        Save current configuration to file.
-
-        Returns:
-            True if saved successfully, False otherwise
-        """
-        try:
-            config_data = {
-                "metadata": {
-                    "version": "1.0.0",
-                    "created": datetime.now().isoformat(),
-                    "description": "Secure Delete Configuration",
-                },
-                "settings": asdict(self.settings),
-            }
-
-            with open(self.config_file, "w", encoding="utf-8") as f:
-                json.dump(config_data, f, indent=2, ensure_ascii=False)
-
-            self.logger.info("Configuration saved successfully")
-            return True
-
-        except Exception as e:
-            self.logger.error(f"Failed to save configuration: {e}")
-            return False
+        self._preference_store().save(asdict(self.settings))
+        return True
 
     def get_setting(self, key: str, default: Any = None) -> Any:
         """

@@ -15,6 +15,7 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
+from src.rfu import font_tokens
 from src.gui.themes import Typography, token
 
 
@@ -53,7 +54,7 @@ class LoadingIndicator(QWidget):
 
     def start(self):
         """Schedule appearance after 300 ms delay."""
-        self._progress_bar.setValue(0)
+        self._progress_bar.setRange(0, 0)
         self._show_timer.start()
 
     def stop(self):
@@ -81,7 +82,7 @@ class LoadingIndicator(QWidget):
         layout.setSpacing(8)
 
         self._message_label = QLabel(message, self)
-        self._message_label.setFont(Typography.body())
+        font_tokens.bind(self._message_label, "font.body")
         self._message_label.setAlignment(Qt.AlignCenter)
         self._message_label.setStyleSheet(f"color: {token('text_secondary')};")
         self._message_label.setVisible(bool(message))
@@ -112,7 +113,7 @@ class LoadingIndicator(QWidget):
             btn_row = QHBoxLayout()
             btn_row.addStretch()
             self._cancel_btn = QPushButton("Cancel", self)
-            self._cancel_btn.setFont(Typography.body())
+            font_tokens.bind(self._cancel_btn, "font.body")
             self._cancel_btn.setMinimumHeight(44)
             self._cancel_btn.setMinimumWidth(120)
             self._cancel_btn.setAccessibleName("Cancel operation")

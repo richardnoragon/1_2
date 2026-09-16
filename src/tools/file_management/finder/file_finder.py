@@ -1,3 +1,5 @@
+from src.rfu.localization import localized_widget as _ui_widget, bind_literal as _ui_bind
+from src.gui import menu_surfaces
 import datetime
 import logging
 import os
@@ -350,10 +352,10 @@ class FileFinderWindow(BaseWindow):
 
         if exit_action is None:
             file_menu = self._resolve_file_menu()
-            exit_action = QAction("Exit", self)
+            exit_action = _ui_widget(QAction, 'Legacy.sd17d84a604994b72', 'setText', self)
             exit_action.setObjectName("actionexit")
             exit_action.setShortcut("Ctrl+Q")
-            exit_action.setStatusTip("Close File Finder")
+            _ui_bind(exit_action, 'setStatusTip', 'Legacy.sce59c0e9d6ab93b5')
             file_menu.addAction(exit_action)
             setattr(self, "actionexit", exit_action)
             self.logger.warning(
@@ -378,7 +380,7 @@ class FileFinderWindow(BaseWindow):
                     break
 
         if menu is None:
-            menu = self.menuBar().addMenu("File")
+            menu = menu_surfaces.add_menu(self.menuBar(), 'File')
             menu.setObjectName("menuFile")
             self.logger.info("Created fallback File menu for File Finder")
 
@@ -909,62 +911,54 @@ class FileFinder(QDialog):
         )
 
         self.pattern_edit = QLineEdit()
-        self.pattern_edit.setAccessibleName("File name pattern")
-        self.pattern_edit.setAccessibleDescription(
-            "Supports wildcards: * matches any characters, ? matches a single character"
-        )
-        self.pattern_edit.setPlaceholderText("*.txt")
+        _ui_bind(self.pattern_edit, 'setAccessibleName', 'Legacy.s82c1d898eb446115')
+        _ui_bind(self.pattern_edit, 'setAccessibleDescription', 'Legacy.s048ea900e2348923')
+        _ui_bind(self.pattern_edit, 'setPlaceholderText', 'Legacy.s79e81fa3bb645261')
 
-        self.recursive_check = QCheckBox("Recursive")
-        self.recursive_check.setAccessibleName("Recursive search")
+        self.recursive_check = _ui_widget(QCheckBox, 'Legacy.s6e7bc12c5b82601b', 'setText')
+        _ui_bind(self.recursive_check, 'setAccessibleName', 'Legacy.s013002ff21455712')
         self.recursive_check.setMinimumHeight(44)
-        self.show_hidden_check = QCheckBox("Show Hidden")
-        self.show_hidden_check.setAccessibleName("Show hidden files")
+        self.show_hidden_check = _ui_widget(QCheckBox, 'Legacy.se20432c9b6cde04b', 'setText')
+        _ui_bind(self.show_hidden_check, 'setAccessibleName', 'Legacy.sb5ede7fb45df0951')
         self.show_hidden_check.setMinimumHeight(44)
 
         self.type_combo = QComboBox()
-        self.type_combo.setAccessibleName("File type filter")
+        _ui_bind(self.type_combo, 'setAccessibleName', 'Legacy.s1f8e0eb460004235')
         self.type_combo.addItems(["All Files", "Text Files", "Images", "Documents"])
 
         self.min_size_spin = QSpinBox()
-        self.min_size_spin.setAccessibleName("Minimum file size")
-        self.min_size_spin.setAccessibleDescription(
-            "In kilobytes; files smaller than this are excluded. Set to 0 for no minimum"
-        )
+        _ui_bind(self.min_size_spin, 'setAccessibleName', 'Legacy.s91a5e537e1bf2422')
+        _ui_bind(self.min_size_spin, 'setAccessibleDescription', 'Legacy.sf46694ae5b264464')
         self.min_size_spin.setMinimumHeight(44)
         self.min_size_spin.setMaximum(999999)
         self.max_size_spin = QSpinBox()
-        self.max_size_spin.setAccessibleName("Maximum file size")
-        self.max_size_spin.setAccessibleDescription(
-            "In kilobytes; files larger than this are excluded. Set to 0 for no maximum"
-        )
+        _ui_bind(self.max_size_spin, 'setAccessibleName', 'Legacy.s0024b1d5348849ce')
+        _ui_bind(self.max_size_spin, 'setAccessibleDescription', 'Legacy.s5c07dc51f6336c9c')
         self.max_size_spin.setMinimumHeight(44)
         self.max_size_spin.setMaximum(999999)
         self.max_size_spin.setValue(100)
 
         self.date_edit = QDateEdit()
         self.date_edit.setDate(QDate.currentDate())
-        self.use_date_check = QCheckBox("Use Date Filter")
-        self.use_date_check.setAccessibleName("Use date filter")
-        self.use_date_check.setAccessibleDescription(
-            "Enables filtering results by file modification date range"
-        )
+        self.use_date_check = _ui_widget(QCheckBox, 'Legacy.sde9b387c3950c763', 'setText')
+        _ui_bind(self.use_date_check, 'setAccessibleName', 'Legacy.secfff0cbbe031759')
+        _ui_bind(self.use_date_check, 'setAccessibleDescription', 'Legacy.sd1fd1c42b7e0ced6')
         self.use_date_check.setMinimumHeight(44)
 
-        self.open_button = PrimaryButton("Open")
-        self.copy_path_button = SecondaryButton("Copy Path")
-        self.cancel_button = SecondaryButton("Cancel")
+        self.open_button = _ui_widget(PrimaryButton, 'Legacy.sed077f3d8125d60d', 'setText')
+        self.copy_path_button = _ui_widget(SecondaryButton, 'Legacy.s0e0269180969ded3', 'setText')
+        self.cancel_button = _ui_widget(SecondaryButton, 'Legacy.s19766ed6ccb2f4a3', 'setText')
 
         self.status_bar = QStatusBar()
 
         self.search_dir = QLineEdit()
-        self.search_dir.setAccessibleName("Search directory")
-        self.search_dir.setPlaceholderText("Search directory")
+        _ui_bind(self.search_dir, 'setAccessibleName', 'Legacy.s38c67f1341ef12a9')
+        _ui_bind(self.search_dir, 'setPlaceholderText', 'Legacy.s38c67f1341ef12a9')
 
         self.search_button = self.gui.search_pushButton
 
         self.results_list = QListWidget()
-        self.results_list.setAccessibleName("Search results")
+        _ui_bind(self.results_list, 'setAccessibleName', 'Legacy.se978b00de465a271')
 
         self.gui.model.rowsInserted.connect(self._sync_results_to_wrapper)
         self.gui.model.modelReset.connect(self._sync_results_to_wrapper)
@@ -972,7 +966,7 @@ class FileFinder(QDialog):
         self.search_button.clicked.disconnect()
         self.search_button.clicked.connect(self._handle_pattern_search)
 
-        self.setWindowTitle("File Finder")
+        _ui_bind(self, 'setWindowTitle', 'Legacy.s6f6e552fa045bf84')
         self.setModal(True)
         ThemeManager.add_theme_changed_callback(self._on_theme_changed)
 

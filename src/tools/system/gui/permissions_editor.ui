@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <ui version="4.0">
  <class>PermissionsEditor</class>
  <widget class="QMainWindow" name="PermissionsEditor">
@@ -37,14 +37,14 @@
     }
     QCheckBox {
         spacing: 8px;
-        font-size: 14px;
+
     }
     QCheckBox::indicator {
         width: 18px;
         height: 18px;
     }
     QLabel {
-        font-size: 14px;
+
         color: #333;
     }
    </string>
@@ -59,10 +59,8 @@
       <property name="alignment">
        <set>Qt::AlignCenter</set>
       </property>
-      <property name="font">
-       <font>
-        <pointsize>12</pointsize>
-       </font>
+      <property name="rfuLocale_setText" stdset="0">
+       <string notr="true">Legacy.s799a0036f0dd9acc</string>
       </property>
      </widget>
     </item>
@@ -77,22 +75,12 @@
       <property name="minimumHeight">
        <number>200</number>
       </property>
-      <property name="font">
-       <font>
-        <pointsize>12</pointsize>
-       </font>
-      </property>
      </widget>
     </item>
     <item>
      <widget class="QGroupBox" name="permissionsGroup">
       <property name="title">
        <string>File Permissions</string>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>12</pointsize>
-       </font>
       </property>
       <layout class="QVBoxLayout" name="permissionsLayout">
        <item>
@@ -103,10 +91,11 @@
          <property name="toolTip">
           <string>Allow reading the file contents</string>
          </property>
-         <property name="font">
-          <font>
-           <pointsize>12</pointsize>
-          </font>
+         <property name="rfuLocale_setText" stdset="0">
+          <string notr="true">Legacy.s38662302ebd3eb1b</string>
+         </property>
+         <property name="rfuLocale_setToolTip" stdset="0">
+          <string notr="true">Legacy.s831088a38840ff19</string>
          </property>
         </widget>
        </item>
@@ -118,10 +107,11 @@
          <property name="toolTip">
           <string>Allow modifying the file contents</string>
          </property>
-         <property name="font">
-          <font>
-           <pointsize>12</pointsize>
-          </font>
+         <property name="rfuLocale_setText" stdset="0">
+          <string notr="true">Legacy.s3adf2b9d56b0628d</string>
+         </property>
+         <property name="rfuLocale_setToolTip" stdset="0">
+          <string notr="true">Legacy.sfbe4a741e2391a38</string>
          </property>
         </widget>
        </item>
@@ -133,14 +123,18 @@
          <property name="toolTip">
           <string>Allow executing the file as a program</string>
          </property>
-         <property name="font">
-          <font>
-           <pointsize>12</pointsize>
-          </font>
+         <property name="rfuLocale_setText" stdset="0">
+          <string notr="true">Legacy.s5dfd36a1d6f0174a</string>
+         </property>
+         <property name="rfuLocale_setToolTip" stdset="0">
+          <string notr="true">Legacy.s7372c874feda0efb</string>
          </property>
         </widget>
        </item>
       </layout>
+      <property name="rfuLocale_setTitle" stdset="0">
+       <string notr="true">Legacy.sd34508eaa65a6f53</string>
+      </property>
      </widget>
     </item>
     <item>
@@ -153,10 +147,8 @@
         <property name="icon">
          <iconset>icons/folder.png</iconset>
         </property>
-        <property name="font">
-         <font>
-          <pointsize>12</pointsize>
-         </font>
+        <property name="rfuLocale_setText" stdset="0">
+         <string notr="true">Legacy.sff52da8b75c1415a</string>
         </property>
        </widget>
       </item>
@@ -181,10 +173,8 @@
         <property name="icon">
          <iconset>icons/check.png</iconset>
         </property>
-        <property name="font">
-         <font>
-          <pointsize>12</pointsize>
-         </font>
+        <property name="rfuLocale_setText" stdset="0">
+         <string notr="true">Legacy.sd665c256868e1ed1</string>
         </property>
        </widget>
       </item>
@@ -205,9 +195,12 @@
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="action_Exit"/>
+    <addaction name="action_Exit" />
+    <property name="rfuLocale_setTitle" stdset="0">
+     <string notr="true">Legacy.s50009ce1da4d15e1</string>
+    </property>
    </widget>
-   <addaction name="menu_File"/>
+   <addaction name="menu_File" />
   </widget>
   <action name="action_Exit">
    <property name="text">
@@ -216,9 +209,15 @@
    <property name="shortcut">
     <string>Alt+F4</string>
    </property>
+   <property name="rfuLocale_setText" stdset="0">
+    <string notr="true">Legacy.sd17d84a604994b72</string>
+   </property>
   </action>
-  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QStatusBar" name="statusbar" />
+  <property name="rfuLocale_setWindowTitle" stdset="0">
+   <string notr="true">Legacy.sbaf645edc7982895</string>
+  </property>
  </widget>
- <resources/>
- <connections/>
+ <resources />
+ <connections />
 </ui>

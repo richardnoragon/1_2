@@ -7,6 +7,7 @@ Spec §5.3: persistent label, inline validation, error state via token.
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QLabel, QLineEdit, QVBoxLayout, QWidget
 
+from src.rfu import font_tokens
 from src.gui.themes import Typography, token
 
 
@@ -41,18 +42,18 @@ class TextInput(QWidget):
         layout.setSpacing(2)
 
         self._label = QLabel(label, self)
-        self._label.setFont(Typography.caption())
+        font_tokens.bind(self._label, "font.caption")
         layout.addWidget(self._label)
 
         self._field = QLineEdit(self)
-        self._field.setFont(Typography.body())
+        font_tokens.bind(self._field, "font.body")
         self._field.setMinimumHeight(44)
         if placeholder:
             self._field.setPlaceholderText(placeholder)
         layout.addWidget(self._field)
 
         self._error_label = QLabel("", self)
-        self._error_label.setFont(Typography.caption())
+        font_tokens.bind(self._error_label, "font.caption")
         self._error_label.setVisible(False)
         layout.addWidget(self._error_label)
 

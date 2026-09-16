@@ -3,6 +3,8 @@
 This module provides functionality to synchronize files between two directories
 with support for mirror, update, and two-way synchronization modes.
 """
+from src.rfu.localization import localized_widget as _ui_widget, bind_literal as _ui_bind
+from src.rfu import font_tokens
 
 import logging
 import os
@@ -536,7 +538,7 @@ class SyncWindow(StandardWindow):
             }}
             QLabel {{
                 color: {token('text_primary')};
-                font-size: 12px;
+
             }}
             QListView {{
                 background-color: {token('window_background')};
@@ -551,6 +553,7 @@ class SyncWindow(StandardWindow):
             }}
         """
         )
+        font_tokens.bind(self, "font.body")
         if hasattr(self, "sync_pushButton"):
             self.sync_pushButton._apply_style()
         if hasattr(self, "select_left_pushButton"):
@@ -577,7 +580,7 @@ class SyncWindow(StandardWindow):
         """Show help dialog for Synchronize tool."""
         help_text = """
         <h2>Synchronize Tool - Help</h2>
-        
+
         <h3>Directory Synchronization:</h3>
         <ul>
         <li><b>Left Directory:</b> The source directory to sync from</li>
@@ -585,14 +588,14 @@ class SyncWindow(StandardWindow):
         <li><b>Compare:</b> Analyze differences between directories</li>
         <li><b>Sync:</b> Execute the synchronization operation</li>
         </ul>
-        
+
         <h3>Sync Modes:</h3>
         <ul>
         <li><b>Mirror Sync:</b> Make target identical to source</li>
         <li><b>Update Sync:</b> Copy newer files only</li>
         <li><b>Two-way Sync:</b> Synchronize both directions</li>
         </ul>
-        
+
         <h3>Features:</h3>
         <ul>
         <li>Visual directory comparison</li>
@@ -600,7 +603,7 @@ class SyncWindow(StandardWindow):
         <li>Detailed sync reports</li>
         <li>Safe file operations with verification</li>
         </ul>
-        
+
         <h3>Keyboard Shortcuts:</h3>
         <ul>
         <li><b>Ctrl+Q:</b> Exit application</li>
@@ -800,18 +803,18 @@ class SyncWindow(StandardWindow):
         if not in_second:
             # Blue for new files
             item.setForeground(QColor("#2196F3"))
-            item.setToolTip("New file")
+            _ui_bind(item, 'setToolTip', 'Legacy.s44dedd0f97fea3c8')
         elif os.path.exists(path1) and os.path.exists(path2):
             time1: float = os.path.getmtime(path1)
             time2: float = os.path.getmtime(path2)
             if time1 > time2:
                 # Green for newer files
                 item.setForeground(QColor("#4CAF50"))
-                item.setToolTip("Newer version")
+                _ui_bind(item, 'setToolTip', 'Legacy.s73c5173a76fdf702')
             elif time1 < time2:
                 # Orange for older files
                 item.setForeground(QColor("#FF5722"))
-                item.setToolTip("Older version")
+                _ui_bind(item, 'setToolTip', 'Legacy.s9231a3fc992ebf63')
         model.appendRow(item)
 
     def get_sync_options(self) -> Dict[str, Any]:

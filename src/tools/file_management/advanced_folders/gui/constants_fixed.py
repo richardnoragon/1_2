@@ -9,6 +9,7 @@ the Advanced Folders GUI components.
 Author: RFU Development Team
 Version: 1.0.0
 """
+from src.rfu import font_tokens
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QColor, QFont
@@ -66,10 +67,10 @@ class Fonts:
     FAMILY_MONOSPACE = "Consolas"
 
     # Font sizes (in points)
-    SIZE_SMALL = 9
-    SIZE_NORMAL = 10
-    SIZE_MEDIUM = 11
-    SIZE_LARGE = 12
+    SIZE_SMALL = 11
+    SIZE_NORMAL = 14
+    SIZE_MEDIUM = 14
+    SIZE_LARGE = 16
     SIZE_XLARGE = 14
     SIZE_TITLE = 16
     SIZE_HEADER = 18
@@ -81,9 +82,7 @@ class Fonts:
     @classmethod
     def get_font(cls, size=None, weight=None, family=None):
         """Create a QFont with specified parameters."""
-        font = QFont()
-        font.setFamily(family or cls.FAMILY_PRIMARY)
-        font.setPointSize(size or cls.SIZE_NORMAL)
+        font = font_tokens.get("font.body", family=family, scale=max(1.0, (size or cls.SIZE_NORMAL) / 14))
 
         if weight is not None:
             font.setWeight(weight)
@@ -194,8 +193,8 @@ class Styles:
         QDialog {{
             background-color: {Colors.BACKGROUND_MAIN};
             color: {Colors.TEXT_PRIMARY};
-            font-family: {Fonts.FAMILY_PRIMARY};
-            font-size: {Fonts.SIZE_NORMAL}pt;
+
+
         }}
     """
 
@@ -205,7 +204,7 @@ class Styles:
             border: 1px solid {Colors.BORDER_LIGHT};
             background-color: {Colors.BACKGROUND_SECONDARY};
         }}
-        
+
         QTabBar::tab {{
             background-color: {Colors.BACKGROUND_PANEL};
             color: {Colors.TEXT_PRIMARY};
@@ -214,13 +213,13 @@ class Styles:
             border: 1px solid {Colors.BORDER_LIGHT};
             border-bottom: none;
         }}
-        
+
         QTabBar::tab:selected {{
             background-color: {Colors.BACKGROUND_SECONDARY};
             color: {Colors.TEXT_ACCENT};
             border-bottom: 2px solid {Colors.PRIMARY_BLUE};
         }}
-        
+
         QTabBar::tab:hover {{
             background-color: {Colors.BACKGROUND_HOVER};
         }}
@@ -233,19 +232,19 @@ class Styles:
             color: white;
             border: none;
             padding: 8px 16px;
-            font-size: {Fonts.SIZE_NORMAL}pt;
+
             font-weight: bold;
             border-radius: 4px;
         }}
-        
+
         QPushButton:hover {{
             background-color: {Colors.PRIMARY_BLUE_HOVER};
         }}
-        
+
         QPushButton:pressed {{
             background-color: {Colors.PRIMARY_BLUE_PRESSED};
         }}
-        
+
         QPushButton:disabled {{
             background-color: {Colors.TEXT_DISABLED};
             color: {Colors.BACKGROUND_MAIN};
@@ -258,15 +257,15 @@ class Styles:
             color: {Colors.TEXT_PRIMARY};
             border: 1px solid {Colors.BORDER_MEDIUM};
             padding: 8px 16px;
-            font-size: {Fonts.SIZE_NORMAL}pt;
+
             border-radius: 4px;
         }}
-        
+
         QPushButton:hover {{
             background-color: {Colors.BACKGROUND_HOVER};
             border-color: {Colors.BORDER_ACCENT};
         }}
-        
+
         QPushButton:pressed {{
             background-color: {Colors.BACKGROUND_SELECTED};
         }}
@@ -279,15 +278,15 @@ class Styles:
             color: {Colors.TEXT_PRIMARY};
             border: 1px solid {Colors.BORDER_LIGHT};
             padding: 6px;
-            font-size: {Fonts.SIZE_NORMAL}pt;
+
             border-radius: 3px;
         }}
-        
+
         QLineEdit:focus, QTextEdit:focus {{
             border-color: {Colors.BORDER_ACCENT};
             background-color: white;
         }}
-        
+
         QLineEdit:disabled, QTextEdit:disabled {{
             background-color: {Colors.BACKGROUND_PANEL};
             color: {Colors.TEXT_DISABLED};
@@ -300,30 +299,30 @@ class Styles:
             background-color: {Colors.BACKGROUND_SECONDARY};
             color: {Colors.TEXT_PRIMARY};
             border: 1px solid {Colors.BORDER_LIGHT};
-            font-size: {Fonts.SIZE_NORMAL}pt;
+
             selection-background-color: {Colors.BACKGROUND_SELECTED};
         }}
-        
+
         QTreeView::item {{
             padding: 4px;
             border: none;
         }}
-        
+
         QTreeView::item:hover {{
             background-color: {Colors.BACKGROUND_HOVER};
         }}
-        
+
         QTreeView::item:selected {{
             background-color: {Colors.BACKGROUND_SELECTED};
             color: {Colors.TEXT_PRIMARY};
         }}
-        
+
         QTreeView::branch:has-children:!has-siblings:closed,
         QTreeView::branch:closed:has-children:has-siblings {{
             border-image: none;
             image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAYAAADgkQYQAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAAdgAAAHYBTnsmCAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAFXSURBVBiVY/z//z8DAwMDw38GBgYGJiYmBhaWfwwsLCwMLCwsDMxMTAwsLCwMbGxsDOzs7Ayc);
         }}
-        
+
         QTreeView::branch:open:has-children:!has-siblings,
         QTreeView::branch:open:has-children:has-siblings {{
             border-image: none;

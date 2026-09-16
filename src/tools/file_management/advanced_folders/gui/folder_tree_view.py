@@ -11,6 +11,9 @@ Features:
 - Real-time folder monitoring and updates
 - Accessibility compliance
 """
+from src.rfu.localization import localized_widget as _ui_widget, bind_literal as _ui_bind
+from src.rfu import font_tokens
+from src.gui import menu_surfaces
 
 import logging
 from pathlib import Path
@@ -248,7 +251,7 @@ class FolderTreeModel(QAbstractItemModel):
         elif role == Qt.FontRole:
             if not node.folder_config:
                 # Bold font for root
-                font = QFont()
+                font = font_tokens.get("font.body")
                 font.setBold(True)
                 return font
 
@@ -460,8 +463,8 @@ class FolderTreeView(QTreeView):
         self.setUniformRowHeights(True)
 
         # Accessibility
-        self.setAccessibleName("Folder Configurations Tree")
-        self.setAccessibleDescription("Tree view of configured advanced folders")
+        _ui_bind(self, 'setAccessibleName', 'Legacy.s8992a9efb7e70bb0')
+        _ui_bind(self, 'setAccessibleDescription', 'Legacy.se1e0050a2b2d198e')
 
     def _connect_signals(self):
         """Connect internal signals."""
@@ -507,11 +510,11 @@ class FolderTreeView(QTreeView):
         index = self.indexAt(position)
         folder_config = self.folder_model.get_folder_configuration(index)
 
-        menu = QMenu(self)
+        menu = menu_surfaces.menu(self)
 
         if folder_config:
             # Folder-specific actions
-            configure_action = QAction("Configure Folder...", self)
+            configure_action = _ui_widget(QAction, 'Legacy.sb2e47ad0e38da8fc', 'setText', self)
             configure_action.triggered.connect(
                 lambda: self.folderConfigurationRequested.emit(folder_config.id)
             )
@@ -528,7 +531,7 @@ class FolderTreeView(QTreeView):
 
             menu.addSeparator()
 
-            delete_action = QAction("Delete Folder", self)
+            delete_action = _ui_widget(QAction, 'Legacy.s0fac0167c61ceabb', 'setText', self)
             delete_action.triggered.connect(
                 lambda: self._confirm_delete_folder(folder_config.id)
             )
@@ -537,11 +540,11 @@ class FolderTreeView(QTreeView):
         # General actions
         menu.addSeparator()
 
-        new_action = QAction("New Folder...", self)
+        new_action = _ui_widget(QAction, 'Legacy.s0709faa6add6fdb7', 'setText', self)
         new_action.triggered.connect(self.newFolderRequested.emit)
         menu.addAction(new_action)
 
-        refresh_action = QAction("Refresh", self)
+        refresh_action = _ui_widget(QAction, 'Legacy.s0e91610117029a62', 'setText', self)
         refresh_action.triggered.connect(self.refresh)
         menu.addAction(refresh_action)
 
@@ -713,10 +716,11 @@ class FolderTreeWidget(QWidget):
         layout.addWidget(self.tree_view)
 
         # Status label
-        self.status_label = QLabel("Ready")
+        self.status_label = _ui_widget(QLabel, 'Legacy.s5fa7aac5375c5815', 'setText')
         self.status_label.setStyleSheet(
-            f"QLabel { color: {token('text_muted')}; font-size: 11px; }"
+            f"QLabel {{ color: {token('text_muted')};  }}"
         )
+        font_tokens.bind(self.status_label, "font.body")
         layout.addWidget(self.status_label)
 
     def _create_toolbar(self, parent_layout: QVBoxLayout):
@@ -736,26 +740,27 @@ class FolderTreeWidget(QWidget):
         # New folder button
         self.new_button = QToolButton()
         self.new_button.setText("New")
-        self.new_button.setToolTip("Create new folder configuration")
-        self.new_button.setAccessibleName("New folder configuration")
+        _ui_bind(self.new_button, 'setToolTip', 'Legacy.sf2ea0079028f81f9')
+        _ui_bind(self.new_button, 'setAccessibleName', 'Legacy.s9b10d101f21fccd6')
         self.new_button.clicked.connect(self.newFolderRequested.emit)
         toolbar_layout.addWidget(self.new_button)
 
         # Refresh button
         self.refresh_button = QToolButton()
         self.refresh_button.setText("Refresh")
-        self.refresh_button.setToolTip("Refresh folder list")
-        self.refresh_button.setAccessibleName("Refresh folder list")
+        _ui_bind(self.refresh_button, 'setToolTip', 'Legacy.s0e8fb9d5e7505def')
+        _ui_bind(self.refresh_button, 'setAccessibleName', 'Legacy.s0e8fb9d5e7505def')
         self.refresh_button.clicked.connect(self.tree_view.refresh)
         toolbar_layout.addWidget(self.refresh_button)
 
         toolbar_layout.addStretch()
 
         # Folder count label
-        self.count_label = QLabel("0 folders")
+        self.count_label = _ui_widget(QLabel, 'Legacy.s222731e08221fabd', 'setText')
         self.count_label.setStyleSheet(
-            f"QLabel { color: {token('text_muted')}; font-size: 11px; }"
+            f"QLabel {{ color: {token('text_muted')};  }}"
         )
+        font_tokens.bind(self.count_label, "font.body")
         toolbar_layout.addWidget(self.count_label)
 
         parent_layout.addWidget(toolbar_frame)

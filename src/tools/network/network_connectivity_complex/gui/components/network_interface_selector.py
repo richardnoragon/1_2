@@ -1,4 +1,5 @@
 """Network interface selector component."""
+from src.rfu.localization import localized_widget as _ui_widget, bind_literal as _ui_bind
 
 from typing import List, Optional, Dict, Any
 from PyQt5.QtWidgets import (
@@ -55,7 +56,7 @@ class NetworkInterfaceSelector(QWidget):
         layout.setSpacing(Spacing.MEDIUM_SPACING)
 
         # Group box
-        self.group_box = QGroupBox("Network Interface")
+        self.group_box = _ui_widget(QGroupBox, 'Legacy.s82cd523f4cac91d5', 'setTitle')
         ThemeManager.style_group_box(self.group_box)
         layout.addWidget(self.group_box)
 
@@ -72,7 +73,7 @@ class NetworkInterfaceSelector(QWidget):
         selection_layout.addWidget(self.interface_combo)
 
         # Refresh button
-        self.refresh_button = QPushButton("Refresh")
+        self.refresh_button = _ui_widget(QPushButton, 'Legacy.s0e91610117029a62', 'setText')
         ThemeManager.style_secondary_button(self.refresh_button)
         self.refresh_button.setMaximumWidth(80)
         selection_layout.addWidget(self.refresh_button)
@@ -84,7 +85,7 @@ class NetworkInterfaceSelector(QWidget):
         self.details_layout.setSpacing(Spacing.SMALL_SPACING)
 
         # Status label
-        self.status_label = QLabel("No interface selected")
+        self.status_label = _ui_widget(QLabel, 'Legacy.s011d14fd5d455b7f', 'setText')
         ThemeManager.style_label(self.status_label)
         self.details_layout.addWidget(self.status_label)
 

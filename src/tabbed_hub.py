@@ -232,6 +232,10 @@ class UtilityWindow(QMainWindow if PYQT5_AVAILABLE else object):
 
         super().__init__(parent_hub)
         self.parent_hub = parent_hub
+        self.utility_widget = utility_widget
+        from src.core.tool_manifest import ToolManifestRegistry
+        manifest = ToolManifestRegistry.lookup(title)
+        self.tool_id = manifest.tool_id if manifest else title
         self.setWindowTitle(f"Richard's File Utilities - {title}")
         self.resize(900, 700)
         self.move(150, 150)
@@ -311,10 +315,23 @@ class UtilityWindow(QMainWindow if PYQT5_AVAILABLE else object):
         ):
             return
 
-        # Get all callbacks from parent and delegate them
+        # Editing a tool must never dispatch an operation against the hub's data.
         parent_callbacks = getattr(self.parent_hub.menu_manager, "callbacks", {})
         for callback_name, callback_func in parent_callbacks.items():
-            self.menu_manager.register_callback(callback_name, callback_func)
+            if callback_name in {"preferences", "show_preferences", "options", "show_options",
+                                 "performance", "show_performance", "about", "user_guide",
+                                 "shortcuts", "log_viewer"}:
+                self.menu_manager.register_callback(callback_name, callback_func)
+        for action, method in {
+            "undo": "undo", "redo": "redo", "cut": "cut", "copy": "copy",
+            "paste": "paste", "select_all": "select_all", "find_action": "find",
+            "replace_action": "replace", "save_file": "save_file",
+            "export_data": "export_data", "import_data": "import_data",
+            "refresh": "refresh_view",
+        }.items():
+            callback = getattr(self.utility_widget, method, None)
+            if callable(callback):
+                self.menu_manager.register_callback(action, callback)
 
     def closeEvent(self, event):
         """Handle close event to clean up properly."""
@@ -593,14 +610,10 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
         main_layout.addWidget(self.tab_widget)
 
         # Create all tabs (from simple_hub.py)
-        self.create_analysis_tab()
-        self.create_file_operations_tab()
-        self.create_metadata_tab()
-        self.create_network_tab()
-        self.create_pdf_tools_tab()
-        self.create_privacy_tab()
-        self.create_security_tab()
-        self.create_system_tab()
+        from src.gui.tool_catalogue import ToolCatalogue
+        from src.rfu.localization import tr
+        self.tool_catalogue = ToolCatalogue(self)
+        self.tab_widget.addTab(self.tool_catalogue, tr("ToolCatalogue.TITLE"))
         self.create_logs_tab()
         self._create_appearance_tab()  # T036 — FR-025
 
@@ -3230,80 +3243,21 @@ class RFUHub(QMainWindow if PYQT5_AVAILABLE else QObject):
         self.logger.info("Import Data requested")
 
     def launch_tool(self, tool_name: str, *args, **kwargs):
-        """
-        Generic tool launcher interface for enterprise integration testing.
-
-        This method provides a unified interface for launching any tool in the RFU suite.
-        It maps tool names to their corresponding open_ methods.
-
-        Args:
-            tool_name (str): Name of the tool to launch
-            *args: Additional arguments to pass to the tool
-            **kwargs: Additional keyword arguments to pass to the tool
-
-        Returns:
-            bool: True if tool launched successfully, False otherwise
-        """
+        """Launch the matrix entry point and retain its window for reopening."""
+        from src.gui.tool_catalogue import launch_registered_tool
+        from src.rfu.localization import tr
         try:
-            # Normalize tool name to method name
-            method_name = (
-                f"open_{tool_name.lower().replace(' ', '_').replace('-', '_')}"
-            )
-
-            # Check if method exists
-            if hasattr(self, method_name):
-                method = getattr(self, method_name)
-                if callable(method):
-                    method(*args, **kwargs)
-                    self.logger.info(f"Successfully launched tool: {tool_name}")
-                    return True
-                else:
-                    self.logger.error(f"Tool method {method_name} is not callable")
-                    return False
-            else:
-                # Try alternative naming patterns
-                alternative_names = [
-                    f"open_{tool_name.lower()}",
-                    f"start_{tool_name.lower()}",
-                    f"show_{tool_name.lower()}",
-                    tool_name.lower().replace(" ", "_"),
-                ]
-
-                for alt_name in alternative_names:
-                    if hasattr(self, alt_name):
-                        method = getattr(self, alt_name)
-                        if callable(method):
-                            method(*args, **kwargs)
-                            self.logger.info(
-                                f"Successfully launched tool: {tool_name} via {alt_name}"
-                            )
-                            return True
-
-                self.logger.error(f"Tool method not found for: {tool_name}")
-                return False
-
-        except Exception as e:
-            self.logger.error(f"Error launching tool {tool_name}: {str(e)}")
+            return launch_registered_tool(self, tool_name)
+        except Exception:
+            self.logger.exception("Tool launch failed: %s", tool_name)
+            self._update_status_bar(tr("ToolCatalogue.UNAVAILABLE"))
+            QMessageBox.warning(self, tool_name, tr("ToolCatalogue.UNAVAILABLE"))
             return False
 
     def get_available_tools(self):
-        """
-        Get list of available tools for enterprise testing.
-
-        Returns:
-            list: List of available tool names
-        """
-        import inspect
-
-        tools = []
-
-        # Find all open_ methods
-        for name, method in inspect.getmembers(self, predicate=inspect.ismethod):
-            if name.startswith("open_") and name != "open_file":
-                tool_name = name[5:].replace("_", " ").title()
-                tools.append(tool_name)
-
-        return sorted(tools)
+        """Return exactly the governed built-in inventory."""
+        from src.core.tool_manifest import ToolManifestRegistry
+        return sorted(entry.display_name for entry in ToolManifestRegistry.builtins())
 
     def print_document(self):
         """Print current document."""

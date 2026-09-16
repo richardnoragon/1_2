@@ -4,7 +4,9 @@ Advanced Folders Widget for RFU Integration.
 This module provides the main GUI widget for Advanced Folders functionality
 that integrates seamlessly with the existing RFU hub architecture.
 """
+from src.rfu.localization import localized_widget as _ui_widget, bind_literal as _ui_bind
 
+from src.rfu import font_tokens
 import logging
 import sys
 from datetime import datetime
@@ -223,7 +225,7 @@ class FolderConfigurationDialog(QDialog):
 
         # Create tab widget for different configuration sections
         self.tab_widget = QTabWidget()
-        self.tab_widget.setAccessibleName("Folder configuration tabs")
+        _ui_bind(self.tab_widget, 'setAccessibleName', 'Legacy.s10f5f99a4fc2c2d8')
         layout.addWidget(self.tab_widget)
 
         # General tab
@@ -263,8 +265,8 @@ class FolderConfigurationDialog(QDialog):
         # Description
         self.description_edit = QTextEdit()
         self.description_edit.setMaximumHeight(100)
-        self.description_edit.setPlaceholderText("Optional description")
-        self.description_edit.setAccessibleName("Folder description")
+        _ui_bind(self.description_edit, 'setPlaceholderText', 'Legacy.sc7b7b7f01360f6a5')
+        _ui_bind(self.description_edit, 'setAccessibleName', 'Legacy.s8a89700a85a66622')
         layout.addRow("Description:", self.description_edit)
 
         # Color scheme
@@ -272,26 +274,26 @@ class FolderConfigurationDialog(QDialog):
         self.color_scheme_combo.addItems(
             ["Default", "Blue", "Green", "Orange", "Purple", "Red"]
         )
-        self.color_scheme_combo.setAccessibleName("Folder color scheme")
+        _ui_bind(self.color_scheme_combo, 'setAccessibleName', 'Legacy.sd5837b88b95afae6')
         layout.addRow("Color Scheme:", self.color_scheme_combo)
 
         # Auto-refresh settings
-        refresh_group = QGroupBox("Auto-Refresh Settings")
+        refresh_group = _ui_widget(QGroupBox, 'Legacy.sa1c43981610b9dcc', 'setTitle')
         refresh_layout = QVBoxLayout(refresh_group)
 
-        self.auto_refresh_cb = QCheckBox("Enable automatic refresh")
+        self.auto_refresh_cb = _ui_widget(QCheckBox, 'Legacy.scaf101bfa40adb62', 'setText')
         self.auto_refresh_cb.setChecked(True)
-        self.auto_refresh_cb.setAccessibleName("Enable automatic refresh")
+        _ui_bind(self.auto_refresh_cb, 'setAccessibleName', 'Legacy.scaf101bfa40adb62')
         refresh_layout.addWidget(self.auto_refresh_cb)
 
         interval_layout = QHBoxLayout()
-        interval_layout.addWidget(QLabel("Refresh interval:"))
+        interval_layout.addWidget(_ui_widget(QLabel, 'Legacy.se56fa8a637a7a377', 'setText'))
         self.refresh_interval_spin = QSpinBox()
         self.refresh_interval_spin.setMinimum(30)
         self.refresh_interval_spin.setMaximum(3600)
         self.refresh_interval_spin.setValue(300)
         self.refresh_interval_spin.setSuffix(" seconds")
-        self.refresh_interval_spin.setAccessibleName("Refresh interval in seconds")
+        _ui_bind(self.refresh_interval_spin, 'setAccessibleName', 'Legacy.s29a85213c92392cc')
         interval_layout.addWidget(self.refresh_interval_spin)
         interval_layout.addStretch()
         refresh_layout.addLayout(interval_layout)
@@ -306,21 +308,21 @@ class FolderConfigurationDialog(QDialog):
         layout = QVBoxLayout(tab)
 
         # Directory list
-        dir_group = QGroupBox("Directory Paths")
+        dir_group = _ui_widget(QGroupBox, 'Legacy.s456ff89e71db3f65', 'setTitle')
         dir_layout = QVBoxLayout(dir_group)
 
         self.directories_list = QListWidget()
-        self.directories_list.setAccessibleName("Configured directory paths")
+        _ui_bind(self.directories_list, 'setAccessibleName', 'Legacy.s66ed4c11ff0f2d49')
         dir_layout.addWidget(self.directories_list)
 
         # Directory buttons
         dir_buttons = QHBoxLayout()
 
-        self.add_dir_btn = SecondaryButton("Add Directory")
+        self.add_dir_btn = _ui_widget(SecondaryButton, 'Legacy.s9b1148b44e17bd59', 'setText')
         self.add_dir_btn.clicked.connect(self.add_directory)
         dir_buttons.addWidget(self.add_dir_btn)
 
-        self.remove_dir_btn = SecondaryButton("Remove Selected")
+        self.remove_dir_btn = _ui_widget(SecondaryButton, 'Legacy.s859af8fa198d67ac', 'setText')
         self.remove_dir_btn.clicked.connect(self.remove_directory)
         dir_buttons.addWidget(self.remove_dir_btn)
 
@@ -330,26 +332,26 @@ class FolderConfigurationDialog(QDialog):
         layout.addWidget(dir_group)
 
         # Directory options
-        options_group = QGroupBox("Directory Options")
+        options_group = _ui_widget(QGroupBox, 'Legacy.s288a6ff45aa0c502', 'setTitle')
         options_layout = QVBoxLayout(options_group)
 
-        self.include_subdirs_cb = QCheckBox("Include subdirectories")
+        self.include_subdirs_cb = _ui_widget(QCheckBox, 'Legacy.s7fe3b250ab4b4940', 'setText')
         self.include_subdirs_cb.setChecked(True)
-        self.include_subdirs_cb.setAccessibleName("Include subdirectories")
+        _ui_bind(self.include_subdirs_cb, 'setAccessibleName', 'Legacy.s7fe3b250ab4b4940')
         options_layout.addWidget(self.include_subdirs_cb)
 
-        self.follow_links_cb = QCheckBox("Follow symbolic links")
+        self.follow_links_cb = _ui_widget(QCheckBox, 'Legacy.s0d9c8c49befb0764', 'setText')
         self.follow_links_cb.setChecked(True)
-        self.follow_links_cb.setAccessibleName("Follow symbolic links")
+        _ui_bind(self.follow_links_cb, 'setAccessibleName', 'Legacy.s0d9c8c49befb0764')
         options_layout.addWidget(self.follow_links_cb)
 
-        self.include_hidden_cb = QCheckBox("Include hidden files")
-        self.include_hidden_cb.setAccessibleName("Include hidden files")
+        self.include_hidden_cb = _ui_widget(QCheckBox, 'Legacy.sb7df2de4db3d21a7', 'setText')
+        _ui_bind(self.include_hidden_cb, 'setAccessibleName', 'Legacy.sb7df2de4db3d21a7')
         options_layout.addWidget(self.include_hidden_cb)
 
-        self.monitor_changes_cb = QCheckBox("Monitor for changes")
+        self.monitor_changes_cb = _ui_widget(QCheckBox, 'Legacy.sae5938769310c6e8', 'setText')
         self.monitor_changes_cb.setChecked(True)
-        self.monitor_changes_cb.setAccessibleName("Monitor for changes")
+        _ui_bind(self.monitor_changes_cb, 'setAccessibleName', 'Legacy.sae5938769310c6e8')
         options_layout.addWidget(self.monitor_changes_cb)
 
         layout.addWidget(options_group)
@@ -362,7 +364,7 @@ class FolderConfigurationDialog(QDialog):
         layout = QVBoxLayout(tab)
 
         # File name pattern
-        pattern_group = QGroupBox("File Name Pattern")
+        pattern_group = _ui_widget(QGroupBox, 'Legacy.sb52262366bd59df4', 'setTitle')
         pattern_layout = QFormLayout(pattern_group)
 
         self.filename_pattern_edit = TextInput(
@@ -373,12 +375,12 @@ class FolderConfigurationDialog(QDialog):
         pattern_layout.addRow(self.filename_pattern_edit)
 
         pattern_options = QHBoxLayout()
-        self.use_regex_cb = QCheckBox("Use regular expressions")
-        self.use_regex_cb.setAccessibleName("Use regular expressions")
+        self.use_regex_cb = _ui_widget(QCheckBox, 'Legacy.sc0518790e25c46eb', 'setText')
+        _ui_bind(self.use_regex_cb, 'setAccessibleName', 'Legacy.sc0518790e25c46eb')
         pattern_options.addWidget(self.use_regex_cb)
 
-        self.case_sensitive_cb = QCheckBox("Case sensitive")
-        self.case_sensitive_cb.setAccessibleName("Case sensitive search")
+        self.case_sensitive_cb = _ui_widget(QCheckBox, 'Legacy.se124ba47cb3f7cda', 'setText')
+        _ui_bind(self.case_sensitive_cb, 'setAccessibleName', 'Legacy.s0b4619acd29cb6c4')
         pattern_options.addWidget(self.case_sensitive_cb)
         pattern_options.addStretch()
 
@@ -386,7 +388,7 @@ class FolderConfigurationDialog(QDialog):
         layout.addWidget(pattern_group)
 
         # Content search
-        content_group = QGroupBox("Content Search")
+        content_group = _ui_widget(QGroupBox, 'Legacy.s1bcee1bee130f191', 'setTitle')
         content_layout = QFormLayout(content_group)
 
         self.content_search_edit = TextInput(
@@ -396,17 +398,15 @@ class FolderConfigurationDialog(QDialog):
         )
         content_layout.addRow(self.content_search_edit)
 
-        self.index_content_cb = QCheckBox("Index file contents for faster searching")
+        self.index_content_cb = _ui_widget(QCheckBox, 'Legacy.sda051e82e704a2f0', 'setText')
         self.index_content_cb.setChecked(True)
-        self.index_content_cb.setAccessibleName(
-            "Index file contents for faster searching"
-        )
+        _ui_bind(self.index_content_cb, 'setAccessibleName', 'Legacy.sda051e82e704a2f0')
         content_layout.addRow(self.index_content_cb)
 
         layout.addWidget(content_group)
 
         # Date range
-        date_group = QGroupBox("Date Range")
+        date_group = _ui_widget(QGroupBox, 'Legacy.s14d74158a8d17afe', 'setTitle')
         date_layout = QFormLayout(date_group)
 
         self.date_from_edit = QDateEdit()
@@ -423,20 +423,20 @@ class FolderConfigurationDialog(QDialog):
         self.date_criteria_combo.addItems(
             ["Modified Date", "Created Date", "Accessed Date"]
         )
-        self.date_criteria_combo.setAccessibleName("Date criteria type")
+        _ui_bind(self.date_criteria_combo, 'setAccessibleName', 'Legacy.s1e0b32769c29a501')
         date_layout.addRow("Date Type:", self.date_criteria_combo)
 
         layout.addWidget(date_group)
 
         # File size
-        size_group = QGroupBox("File Size")
+        size_group = _ui_widget(QGroupBox, 'Legacy.scf18d7d7b624cfde', 'setTitle')
         size_layout = QFormLayout(size_group)
 
         size_min_layout = QHBoxLayout()
         self.size_min_spin = QSpinBox()
         self.size_min_spin.setMaximum(999999)
         self.size_min_spin.setSuffix(" KB")
-        self.size_min_spin.setAccessibleName("Minimum file size in kilobytes")
+        _ui_bind(self.size_min_spin, 'setAccessibleName', 'Legacy.s47e0fdb46fdc1a3a')
         size_min_layout.addWidget(self.size_min_spin)
         size_min_layout.addStretch()
         size_layout.addRow("Minimum size:", size_min_layout)
@@ -446,7 +446,7 @@ class FolderConfigurationDialog(QDialog):
         self.size_max_spin.setMaximum(999999)
         self.size_max_spin.setValue(100)
         self.size_max_spin.setSuffix(" MB")
-        self.size_max_spin.setAccessibleName("Maximum file size in megabytes")
+        _ui_bind(self.size_max_spin, 'setAccessibleName', 'Legacy.s01f6d196df27e7bf')
         size_max_layout.addWidget(self.size_max_spin)
         size_max_layout.addStretch()
         size_layout.addRow("Maximum size:", size_max_layout)
@@ -461,21 +461,21 @@ class FolderConfigurationDialog(QDialog):
         layout = QVBoxLayout(tab)
 
         # Performance options
-        perf_group = QGroupBox("Performance Options")
+        perf_group = _ui_widget(QGroupBox, 'Legacy.s2f64bb04dffd8d7d', 'setTitle')
         perf_layout = QFormLayout(perf_group)
 
-        self.cache_results_cb = QCheckBox("Cache search results")
+        self.cache_results_cb = _ui_widget(QCheckBox, 'Legacy.s1eb2deda9e22ddbc', 'setText')
         self.cache_results_cb.setChecked(True)
-        self.cache_results_cb.setAccessibleName("Cache search results")
+        _ui_bind(self.cache_results_cb, 'setAccessibleName', 'Legacy.s1eb2deda9e22ddbc')
         perf_layout.addRow(self.cache_results_cb)
 
-        self.search_archives_cb = QCheckBox("Search compressed archives")
-        self.search_archives_cb.setAccessibleName("Search compressed archives")
+        self.search_archives_cb = _ui_widget(QCheckBox, 'Legacy.s3eb6e1bdfee1254b', 'setText')
+        _ui_bind(self.search_archives_cb, 'setAccessibleName', 'Legacy.s3eb6e1bdfee1254b')
         perf_layout.addRow(self.search_archives_cb)
 
-        self.include_network_cb = QCheckBox("Include network locations")
+        self.include_network_cb = _ui_widget(QCheckBox, 'Legacy.sa85fd52593975a52', 'setText')
         self.include_network_cb.setChecked(True)
-        self.include_network_cb.setAccessibleName("Include network locations")
+        _ui_bind(self.include_network_cb, 'setAccessibleName', 'Legacy.sa85fd52593975a52')
         perf_layout.addRow(self.include_network_cb)
 
         depth_layout = QHBoxLayout()
@@ -484,7 +484,7 @@ class FolderConfigurationDialog(QDialog):
         self.search_depth_spin.setMaximum(50)
         self.search_depth_spin.setValue(-1)
         self.search_depth_spin.setSpecialValueText("Unlimited")
-        self.search_depth_spin.setAccessibleName("Search depth limit")
+        _ui_bind(self.search_depth_spin, 'setAccessibleName', 'Legacy.s96b595dba8755271')
         depth_layout.addWidget(self.search_depth_spin)
         depth_layout.addStretch()
         perf_layout.addRow("Search depth:", depth_layout)
@@ -494,7 +494,7 @@ class FolderConfigurationDialog(QDialog):
         self.max_results_spin.setMinimum(100)
         self.max_results_spin.setMaximum(100000)
         self.max_results_spin.setValue(10000)
-        self.max_results_spin.setAccessibleName("Maximum search results")
+        _ui_bind(self.max_results_spin, 'setAccessibleName', 'Legacy.sd768e946bca8bb3e')
         max_results_layout.addWidget(self.max_results_spin)
         max_results_layout.addStretch()
         perf_layout.addRow("Maximum results:", max_results_layout)
@@ -502,7 +502,7 @@ class FolderConfigurationDialog(QDialog):
         layout.addWidget(perf_group)
 
         # File type filters
-        filter_group = QGroupBox("File Type Filters")
+        filter_group = _ui_widget(QGroupBox, 'Legacy.s457a3d519ccae90b', 'setTitle')
         filter_layout = QVBoxLayout(filter_group)
 
         # Include extensions  (CP-9b)
@@ -844,10 +844,10 @@ class AdvancedFoldersWidget(StandardWindow if StandardWindow != QWidget else QWi
 
         # Quick search
         self.quick_search_edit = QLineEdit()
-        self.quick_search_edit.setPlaceholderText("Quick search...")
+        _ui_bind(self.quick_search_edit, 'setPlaceholderText', 'Legacy.s3b63576884c68460')
         self.quick_search_edit.setMaximumWidth(200)
         self.quick_search_edit.returnPressed.connect(self.quick_search)
-        self.quick_search_edit.setAccessibleName("Quick search")
+        _ui_bind(self.quick_search_edit, 'setAccessibleName', 'Legacy.s7d186b29779eee7f')
         toolbar_layout.addWidget(self.quick_search_edit)
 
         # Settings button
@@ -862,13 +862,13 @@ class AdvancedFoldersWidget(StandardWindow if StandardWindow != QWidget else QWi
 
         # Panel title
         title_label = QLabel(_AF_Strings.LABEL_PANEL_TITLE)
-        title_label.setFont(Typography.h3())
+        font_tokens.bind(title_label, "font.bodyBold")
         layout.addWidget(title_label)
 
         # Folder list
         self.folder_list = QTreeWidget()
         self.folder_list.setHeaderLabels(["Name", "Directories", "Files"])
-        self.folder_list.setAccessibleName("Advanced folders list")
+        _ui_bind(self.folder_list, 'setAccessibleName', 'Legacy.s1080ddfad88079fd')
         self.folder_list.itemClicked.connect(self.on_folder_selected)
         layout.addWidget(self.folder_list)
 
@@ -888,7 +888,7 @@ class AdvancedFoldersWidget(StandardWindow if StandardWindow != QWidget else QWi
         # Results header
         header_layout = QHBoxLayout()
         self.results_label = QLabel(_AF_Strings.LABEL_RESULTS_TITLE)
-        self.results_label.setFont(Typography.h3())
+        font_tokens.bind(self.results_label, "font.bodyBold")
         header_layout.addWidget(self.results_label)
 
         header_layout.addStretch()
@@ -911,7 +911,7 @@ class AdvancedFoldersWidget(StandardWindow if StandardWindow != QWidget else QWi
         self.results_table.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.results_table.setAlternatingRowColors(True)
         self.results_table.setSortingEnabled(True)
-        self.results_table.setAccessibleName("Search results")
+        _ui_bind(self.results_table, 'setAccessibleName', 'Legacy.se978b00de465a271')
 
         # Set columns
         columns = ["Name", "Path", "Size", "Type", "Modified"]
@@ -993,7 +993,7 @@ class AdvancedFoldersWidget(StandardWindow if StandardWindow != QWidget else QWi
         stats_text = f"""
         <b>{self.current_folder.name}</b><br>
         <i>{self.current_folder.description}</i><br><br>
-        
+
         <b>Directories:</b> {len(self.current_folder.directory_paths)}<br>
         <b>Total Files:</b> {stats.total_files:,}<br>
         <b>Total Size:</b> {self.format_size(stats.total_size)}<br>

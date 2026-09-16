@@ -120,55 +120,19 @@ class SoftwareUpdater(MaintenanceToolBase):
 
         self.require_admin = True
 
+    _PREFERENCE_DEFAULTS = {'auto_check_enabled': True, 'check_interval_hours': 24, 'auto_install_security': False, 'create_restore_points': True, 'backup_before_update': True}
+
+    def _preference_store(self):
+        from src.core.preferences.legacy_json import LegacyJSONPreferences
+        return LegacyJSONPreferences('software-updater', self._PREFERENCE_DEFAULTS)
+
     def _load_configuration(self):
-        """Load updater configuration from file."""
-        config_file = Path("software_maintenance/config/updater_config.json")
-
-        if config_file.exists():
-            try:
-                with open(config_file, "r", encoding="utf-8") as f:
-                    config = json.load(f)
-
-                self.auto_check_enabled = config.get(
-                    "auto_check_enabled", True
-                )
-                self.check_interval_hours = config.get(
-                    "check_interval_hours", 24
-                )
-                self.auto_install_security = config.get(
-                    "auto_install_security", False
-                )
-                self.create_restore_points = config.get(
-                    "create_restore_points", True
-                )
-                self.backup_before_update = config.get(
-                    "backup_before_update", True
-                )
-
-                self.log_info("Configuration loaded successfully")
-
-            except Exception as e:
-                self.log_warning(f"Failed to load configuration: {e}")
+        values = self._preference_store().load(Path("software_maintenance/config/updater_config.json"))
+        for key, value in values.items():
+            setattr(self, key, value)
 
     def _save_configuration(self):
-        """Save updater configuration to file."""
-        config_file = Path("software_maintenance/config/updater_config.json")
-        config_file.parent.mkdir(parents=True, exist_ok=True)
-
-        try:
-            config = {
-                "auto_check_enabled": self.auto_check_enabled,
-                "check_interval_hours": self.check_interval_hours,
-                "auto_install_security": self.auto_install_security,
-                "create_restore_points": self.create_restore_points,
-                "backup_before_update": self.backup_before_update,
-            }
-
-            with open(config_file, "w", encoding="utf-8") as f:
-                json.dump(config, f, indent=2, ensure_ascii=False)
-
-        except Exception as e:
-            self.log_error(f"Failed to save configuration: {e}")
+        self._preference_store().save({key: getattr(self, key) for key in self._PREFERENCE_DEFAULTS})
 
     def _load_update_history(self):
         """Load update history from file."""

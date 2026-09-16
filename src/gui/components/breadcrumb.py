@@ -10,6 +10,7 @@ from typing import List
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtWidgets import QHBoxLayout, QLabel, QPushButton, QWidget
 
+from src.rfu import font_tokens
 from src.gui.themes import Typography, token
 
 
@@ -73,7 +74,7 @@ class Breadcrumb(QWidget):
 
         for i, seg in enumerate(self._segments):
             btn = QPushButton(seg, self)
-            btn.setFont(Typography.caption())
+            font_tokens.bind(btn, "font.caption")
             btn.setFlat(True)
             btn.setMinimumHeight(44)
             btn.setAccessibleName(f"Navigate to {seg}")
@@ -97,6 +98,6 @@ class Breadcrumb(QWidget):
 
             if not is_last:
                 sep = QLabel("›", self)
-                sep.setFont(Typography.caption())
+                font_tokens.bind(sep, "font.caption")
                 sep.setStyleSheet(f"color: {sep_color};")
                 self._layout.insertWidget(self._layout.count() - 1, sep)

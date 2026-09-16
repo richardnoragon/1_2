@@ -2,6 +2,8 @@
 Compress/Decompress Tool for Richard's File Utilities
 Handles compression and decompression with various archive formats.
 """
+from src.rfu.localization import localized_widget as _ui_widget, bind_literal as _ui_bind
+from src.rfu import font_tokens
 
 import json
 import os
@@ -13,6 +15,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
     QApplication,
     QComboBox,
+    QCheckBox,
     QFileDialog,
     QHBoxLayout,
     QLabel,
@@ -362,7 +365,7 @@ class CompressDecompressApp(StandardWindow):
         """Show help dialog for Compress/Decompress tool."""
         help_text = """
         <h2>Compress/Decompress Files - Help</h2>
-        
+
         <h3>Compression:</h3>
         <ul>
         <li><b>Browse Folder:</b> Select the folder you want to compress</li>
@@ -371,20 +374,20 @@ class CompressDecompressApp(StandardWindow):
         <li><b>Password:</b> Optional password protection (ZIP only)</li>
         <li><b>Compression Level:</b> Higher levels = smaller files but slower compression</li>
         </ul>
-        
+
         <h3>Decompression:</h3>
         <ul>
         <li><b>Browse Archive:</b> Select the archive file to decompress</li>
         <li>Files will be extracted to the same directory as the archive</li>
         </ul>
-        
+
         <h3>Supported Formats:</h3>
         <ul>
         <li>ZIP (.zip) - with password support</li>
         <li>TAR.GZ ({ARCHIVE_EXT_TAR_GZ}) - GNU zip compression</li>
         <li>TAR.BZ2 ({ARCHIVE_EXT_TAR_BZ2}) - Bzip2 compression</li>
         </ul>
-        
+
         <h3>Keyboard Shortcuts:</h3>
         <ul>
         <li><b>Ctrl+Q:</b> Exit application</li>
@@ -424,11 +427,11 @@ class CompressDecompressApp(StandardWindow):
             layout = QVBoxLayout(central_widget)
 
         # Create header
-        header_label = QLabel("Compress/Decompress Files")
+        header_label = _ui_widget(QLabel, 'Legacy.s9cb55614120321e9', 'setText')
         header_label.setStyleSheet(
             """
             QLabel {
-                font-size: 18px;
+
                 font-weight: bold;
                 color: {token('text_primary')};
                 padding: 10px;
@@ -438,18 +441,19 @@ class CompressDecompressApp(StandardWindow):
             }
         """
         )
+        font_tokens.bind(header_label, "font.toolHeader")
         layout.addWidget(header_label)
 
         # Compression section
-        layout.addWidget(QLabel("Compression:"))
+        layout.addWidget(_ui_widget(QLabel, 'Legacy.sb67c3682d03a7c51', 'setText'))
 
         # Folder selection
         folder_layout = QHBoxLayout()
         self.lineEditFolder = TextInput("Folder", "Select folder to compress...")
-        self.lineEditFolder.setAccessibleName("Folder to compress")
+        _ui_bind(self.lineEditFolder, 'setAccessibleName', 'Legacy.s8594047f827bc6f1')
         folder_layout.addWidget(self.lineEditFolder)
-        self.buttonBrowseFolder = SecondaryButton("Browse Folder")
-        self.buttonBrowseFolder.setAccessibleName("Browse for folder to compress")
+        self.buttonBrowseFolder = _ui_widget(SecondaryButton, 'Legacy.s28bbf5e4e8dc04d6', 'setText')
+        _ui_bind(self.buttonBrowseFolder, 'setAccessibleName', 'Legacy.saaafca4775ee5372')
         self.buttonBrowseFolder.clicked.connect(self.browse_folder)
         folder_layout.addWidget(self.buttonBrowseFolder)
         layout.addLayout(folder_layout)
@@ -457,19 +461,19 @@ class CompressDecompressApp(StandardWindow):
         # Output file selection
         output_layout = QHBoxLayout()
         self.lineEditOutput = TextInput("Output archive", "Select output archive file...")
-        self.lineEditOutput.setAccessibleName("Output archive file")
+        _ui_bind(self.lineEditOutput, 'setAccessibleName', 'Legacy.s62f202846411176b')
         output_layout.addWidget(self.lineEditOutput)
-        self.buttonBrowseOutput = SecondaryButton("Browse Output")
-        self.buttonBrowseOutput.setAccessibleName("Browse for output archive file")
+        self.buttonBrowseOutput = _ui_widget(SecondaryButton, 'Legacy.s11d127bc1cd471cb', 'setText')
+        _ui_bind(self.buttonBrowseOutput, 'setAccessibleName', 'Legacy.se389efd17aba1b1b')
         self.buttonBrowseOutput.clicked.connect(self.browse_output)
         output_layout.addWidget(self.buttonBrowseOutput)
         layout.addLayout(output_layout)
 
         # Format selection
         format_layout = QHBoxLayout()
-        format_layout.addWidget(QLabel("Format:"))
+        format_layout.addWidget(_ui_widget(QLabel, 'Legacy.s9a5649a42cb2fcef', 'setText'))
         self.comboFormat = QComboBox()
-        self.comboFormat.setAccessibleName("Compression format")
+        _ui_bind(self.comboFormat, 'setAccessibleName', 'Legacy.s0efb90fed246e07c')
         self.comboFormat.addItems([FORMAT_ZIP, FORMAT_TAR_GZ, FORMAT_TAR_BZ2])
         self.comboFormat.currentTextChanged.connect(self.update_output_extension)
         format_layout.addWidget(self.comboFormat)
@@ -477,18 +481,18 @@ class CompressDecompressApp(StandardWindow):
 
         # Password field
         password_layout = QHBoxLayout()
-        password_layout.addWidget(QLabel("Password (optional):"))
+        password_layout.addWidget(_ui_widget(QLabel, 'Legacy.sa1741e8b125b993c', 'setText'))
         self.lineEditPassword = TextInput("Password", "Optional archive password")
-        self.lineEditPassword.setAccessibleName("Archive password")
+        _ui_bind(self.lineEditPassword, 'setAccessibleName', 'Legacy.s3c652b7e4a5f7621')
         self.lineEditPassword.setEchoMode(QLineEdit.Password)
         password_layout.addWidget(self.lineEditPassword)
         layout.addLayout(password_layout)
 
         # Compression level
         level_layout = QHBoxLayout()
-        level_layout.addWidget(QLabel("Compression Level:"))
+        level_layout.addWidget(_ui_widget(QLabel, 'Legacy.s56c9a55dce644508', 'setText'))
         self.sliderCompLevel = QSlider(Qt.Orientation.Horizontal)
-        self.sliderCompLevel.setAccessibleName("Compression level")
+        _ui_bind(self.sliderCompLevel, 'setAccessibleName', 'Legacy.s9889378e7ac0e5b0')
         self.sliderCompLevel.setMinimumHeight(44)
         self.sliderCompLevel.setRange(1, 9)
         self.sliderCompLevel.setValue(6)
@@ -496,32 +500,41 @@ class CompressDecompressApp(StandardWindow):
         layout.addLayout(level_layout)
 
         # Compress button
-        self.buttonCompress = PrimaryButton("Compress")
-        self.buttonCompress.setAccessibleName("Compress files")
+        self.buttonCompress = _ui_widget(PrimaryButton, 'Legacy.s033fc0445b90d3a7', 'setText')
+        _ui_bind(self.buttonCompress, 'setAccessibleName', 'Legacy.s972025296c52c195')
         self.buttonCompress.clicked.connect(self.compress_files)
         layout.addWidget(self.buttonCompress)
 
         # Decompression section
-        layout.addWidget(QLabel("\nDecompression:"))
+        layout.addWidget(_ui_widget(QLabel, 'Legacy.seef49abec6492b6c', 'setText'))
 
         # Archive file selection
         decomp_layout = QHBoxLayout()
         self.lineEditDecompress = TextInput("Archive", "Select archive to decompress...")
-        self.lineEditDecompress.setAccessibleName("Archive to decompress")
-        self.buttonBrowseDecompress = SecondaryButton("Browse Archive")
-        self.buttonBrowseDecompress.setAccessibleName(
-            "Browse for archive to decompress"
-        )
+        _ui_bind(self.lineEditDecompress, 'setAccessibleName', 'Legacy.s2e69eddcb5867c13')
+        self.buttonBrowseDecompress = _ui_widget(SecondaryButton, 'Legacy.s70bcd8e3dce2464e', 'setText')
+        _ui_bind(self.buttonBrowseDecompress, 'setAccessibleName', 'Legacy.sd14ac859f462708b')
         self.buttonBrowseDecompress.clicked.connect(self.browse_decompress)
         decomp_layout.addWidget(self.lineEditDecompress)
         decomp_layout.addWidget(self.buttonBrowseDecompress)
         layout.addLayout(decomp_layout)
 
         # Decompress button
-        self.buttonDecompress = PrimaryButton("Decompress")
-        self.buttonDecompress.setAccessibleName("Decompress archive")
+        self.buttonDecompress = _ui_widget(PrimaryButton, 'Legacy.sba208c4d49178dcb', 'setText')
+        _ui_bind(self.buttonDecompress, 'setAccessibleName', 'Legacy.s9621206a6af2c7d9')
         self.buttonDecompress.clicked.connect(self.decompress_files)
         layout.addWidget(self.buttonDecompress)
+
+        from src.gui.background_task import BackgroundTask
+        self.dry_run_checkbox = _ui_widget(QCheckBox, 'Legacy.s27e7300155f3b95e', 'setText')
+        self.dry_run_checkbox.setChecked(True)
+        _ui_bind(self.dry_run_checkbox, 'setAccessibleName', 'Legacy.s8b592c362e53af20')
+        layout.addWidget(self.dry_run_checkbox)
+        self.archive_task = BackgroundTask(self, "compress-decompress", layout,
+            [self.buttonCompress, self.buttonDecompress, self.dry_run_checkbox,
+             self.lineEditFolder, self.lineEditOutput, self.lineEditDecompress,
+             self.lineEditPassword, self.comboFormat, self.sliderCompLevel])
+        self.undo_supported = False
 
         # Set up file filters based on format
         self.format_filters: Dict[str, str] = {
@@ -563,43 +576,33 @@ class CompressDecompressApp(StandardWindow):
             self.lineEditOutput.setText(output_file)
 
     def compress_files(self):
-        """Compress files using the selected format and settings."""
-        folder_path = self.lineEditFolder.text().strip()
-        output_path = self.lineEditOutput.text().strip()
+        from src.core.archive_operations import plan_compression
+        source, target = self.lineEditFolder.text().strip(), self.lineEditOutput.text().strip()
         password = self.lineEditPassword.text()
-        compression_level = self.sliderCompLevel.value()
-        format_type = self.comboFormat.currentText()
-
-        if not folder_path or not output_path:
-            show_error_dialog(
-                title="Error",
-                message="Please specify both folder and output file.",
-                parent=self,
-            )
+        if password:
+            show_error_dialog("Unsupported password", "Password-protected archive creation is not supported. No archive was written.", self)
             return
+        if not source or not target:
+            return
+        format, level = self.comboFormat.currentText(), self.sliderCompLevel.value()
+        self.archive_task.start("preview-compression", lambda: plan_compression(
+            source, target, format, level, cancel=self.archive_task.cancel), self._archive_planned)
 
-        try:
-            if format_type == FORMAT_ZIP:
-                self._compress_zip(
-                    folder_path, output_path, password, compression_level
-                )
-            elif format_type == FORMAT_TAR_GZ:
-                self._compress_targz(folder_path, output_path, compression_level)
-            elif format_type == FORMAT_TAR_BZ2:
-                self._compress_tarbz2(folder_path, output_path, compression_level)
-
-            show_info_dialog(
-                title="Success",
-                message=f"Files compressed successfully to {output_path}",
-                parent=self,
-            )
-
-        except Exception as e:
-            show_error_dialog(
-                title="Error",
-                message=f"An error occurred: {str(e)}",
-                parent=self,
-            )
+    def _archive_planned(self, plan):
+        from src.core.archive_operations import execute_compression, execute_extraction
+        from src.gui.components.modal import ConfirmationModal
+        from PyQt5.QtWidgets import QDialog
+        summary = f"{len(plan.members)} entries\nOutput: {plan.destination}\n" + "\n".join(item[0] for item in plan.members[:30])
+        if self.dry_run_checkbox.isChecked():
+            show_info_dialog("Archive preview — no files changed", summary, self)
+            return
+        if ConfirmationModal("Apply archive operation", summary + "\nExisting archive output may be replaced. Export has no undo.", parent=self).exec_() != QDialog.Accepted:
+            return
+        password = self.lineEditPassword.text()
+        work = (lambda: execute_compression(plan, self.archive_task.cancel)) if plan.mode == "compress" else (
+            lambda: execute_extraction(plan, password, self.archive_task.cancel))
+        self.archive_task.start("apply-archive", work,
+            lambda _: self.statusBar().showMessage("Archive operation complete. Source files preserved.", 8000))
 
     def _compress_7z(self, folder_path, output_path, password="", compression_level=6):
         """Compress files into a 7Z archive."""
@@ -623,6 +626,8 @@ class CompressDecompressApp(StandardWindow):
 
     def _compress_zip(self, folder_path, output_path, password, compression_level):
         """Compress files into a ZIP archive."""
+        if password:
+            raise ValueError("Password-protected ZIP creation is unsupported")
         compression = zipfile.ZIP_DEFLATED
         with zipfile.ZipFile(
             output_path,
@@ -658,58 +663,25 @@ class CompressDecompressApp(StandardWindow):
             self.lineEditDecompress.setText(archive_file)
 
     def decompress_files(self):
-        """Decompress files from the selected archive."""
-        archive_path = self.lineEditDecompress.text().strip()
-        output_folder = get_existing_directory(self, "Select Output Folder")
-        password = self.lineEditPassword.text()
-
-        if not archive_path or not output_folder:
-            show_error_dialog(
-                title="Error",
-                message="Please specify both archive file and output folder.",
-                parent=self,
-            )
+        from pathlib import Path
+        from src.core.archive_operations import plan_extraction
+        source = self.lineEditDecompress.text().strip()
+        parent = get_existing_directory(self, "Select parent for a new extracted folder")
+        if not source or not parent:
             return
-
-        try:
-            if archive_path.endswith(ARCHIVE_EXT_ZIP):
-                self._decompress_zip(archive_path, output_folder, password)
-            elif archive_path.endswith(ARCHIVE_EXT_TAR_GZ):
-                self._decompress_targz(archive_path, output_folder)
-            elif archive_path.endswith(ARCHIVE_EXT_TAR_BZ2):
-                self._decompress_tarbz2(archive_path, output_folder)
-            else:
-                raise ValueError("Unsupported archive format")
-
-            show_info_dialog(
-                title="Success",
-                message=f"Files decompressed successfully to {output_folder}",
-                parent=self,
-            )
-
-        except Exception as e:
-            show_error_dialog(
-                title="Error",
-                message=f"An error occurred: {str(e)}",
-                parent=self,
-            )
+        destination = Path(parent) / (Path(source).name + "_extracted")
+        self.archive_task.start("preview-extraction", lambda: plan_extraction(
+            source, destination, self.archive_task.cancel), self._archive_planned)
 
     def _decompress_zip(self, archive_path, output_folder, password):
-        """Decompress files from a ZIP archive."""
-        with zipfile.ZipFile(archive_path, "r") as zipf:
-            if password:
-                zipf.setpassword(password.encode())
-            zipf.extractall(output_folder)
+        from src.core.archive_operations import plan_extraction, execute_extraction
+        execute_extraction(plan_extraction(archive_path, output_folder), password)
 
     def _decompress_targz(self, archive_path, output_folder):
-        """Decompress files from a tar.gz archive."""
-        with tarfile.open(archive_path, "r:gz") as tar:
-            tar.extractall(output_folder)
+        self._decompress_zip(archive_path, output_folder, "")
 
     def _decompress_tarbz2(self, archive_path, output_folder):
-        """Decompress files from a tar.bz2 archive."""
-        with tarfile.open(archive_path, "r:bz2") as tar:
-            tar.extractall(output_folder)
+        self._decompress_zip(archive_path, output_folder, "")
 
     # Drag and drop functionality removed for simplicity
     # Can be added back later if needed

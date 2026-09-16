@@ -6,6 +6,8 @@ A streamlined file cataloging utility that creates HTML reports of directory
 contents. This module now lives within the advanced_catalog package so all
 catalog tooling is co-located.
 """
+from src.rfu.localization import localized_widget as _ui_widget, bind_literal as _ui_bind
+from src.rfu import font_tokens
 
 import os
 import sys
@@ -187,7 +189,7 @@ class CatalogWindow(StandardWindow):
         """Show help dialog for File Catalog tool."""
         help_text = """
         <h2>File Catalog Generator - Help</h2>
-        
+
         <h3>How to Create File Catalogs:</h3>
         <ul>
         <li><b>Select Directory:</b> Choose the folder to catalog</li>
@@ -197,7 +199,7 @@ class CatalogWindow(StandardWindow):
             contents</li>
         <li><b>View Results:</b> Open generated catalog in browser</li>
         </ul>
-        
+
         <h3>Catalog Features:</h3>
         <ul>
         <li><b>HTML Output:</b> Professional web-based catalog reports</li>
@@ -205,7 +207,7 @@ class CatalogWindow(StandardWindow):
         <li><b>File Metadata:</b> Show sizes, dates, and properties</li>
         <li><b>Hidden Files:</b> Option to include hidden system files</li>
         </ul>
-        
+
         <h3>Use Cases:</h3>
         <ul>
         <li><b>Documentation:</b> Document project structures</li>
@@ -213,7 +215,7 @@ class CatalogWindow(StandardWindow):
         <li><b>Backup Records:</b> Maintain backup content records</li>
         <li><b>Project Reports:</b> Generate project file listings</li>
         </ul>
-        
+
         <h3>Output Options:</h3>
         <ul>
         <li><b>HTML Format:</b> Web-friendly browsable catalogs</li>
@@ -221,7 +223,7 @@ class CatalogWindow(StandardWindow):
         <li><b>Folder Structure:</b> Hierarchical directory layout</li>
         <li><b>Timestamps:</b> Creation and modification dates</li>
         </ul>
-        
+
         <h3>Best Practices:</h3>
         <ul>
         <li><b>Regular Catalogs:</b> Create periodic directory snapshots</li>
@@ -229,7 +231,7 @@ class CatalogWindow(StandardWindow):
         <li><b>Save Settings:</b> Export/import catalog configurations</li>
         <li><b>Archive Catalogs:</b> Keep catalog records with backups</li>
         </ul>
-        
+
         <h3>Keyboard Shortcuts:</h3>
         <ul>
         <li><b>Ctrl+Q:</b> Exit application</li>
@@ -281,11 +283,11 @@ class CatalogWindow(StandardWindow):
         layout = self.main_layout
 
         # Create header
-        header_label = QLabel("File Catalog Generator")
+        header_label = _ui_widget(QLabel, 'Legacy.s9956f3dc23e55d5e', 'setText')
         header_label.setStyleSheet(
             """
             QLabel {
-                font-size: 18px;
+
                 font-weight: bold;
                 color: {token('text_primary')};
                 padding: 10px;
@@ -295,48 +297,49 @@ class CatalogWindow(StandardWindow):
             }
         """
         )
+        font_tokens.bind(header_label, "font.toolHeader")
         layout.addWidget(header_label)
 
         # Create directory selection
-        dir_group = QGroupBox("Directory Selection")
+        dir_group = _ui_widget(QGroupBox, 'Legacy.s30d2d5574cce5ea3', 'setTitle')
         dir_layout = QGridLayout(dir_group)
 
-        dir_layout.addWidget(QLabel("Directory to Catalog:"), 0, 0)
+        dir_layout.addWidget(_ui_widget(QLabel, 'Legacy.sca6adfcc2ccd304b', 'setText'), 0, 0)
         self.directory_edit = TextInput("Directory", "Select a directory to catalog...")
-        self.directory_edit.setAccessibleName("Directory to catalog")
+        _ui_bind(self.directory_edit, 'setAccessibleName', 'Legacy.s739ca79e74f4c589')
         dir_layout.addWidget(self.directory_edit, 0, 1)
 
-        self.browse_button = SecondaryButton("Browse")
+        self.browse_button = _ui_widget(SecondaryButton, 'Legacy.s3227aa9666253f7a', 'setText')
         self.browse_button.clicked.connect(self.browse_directory)
         dir_layout.addWidget(self.browse_button, 0, 2)
 
         layout.addWidget(dir_group)
 
         # Create catalog options
-        options_group = QGroupBox("Catalog Options")
+        options_group = _ui_widget(QGroupBox, 'Legacy.sc5a975c027679eeb', 'setTitle')
         options_layout = QGridLayout(options_group)
 
-        self.recursive_check = QCheckBox("Include subdirectories")
+        self.recursive_check = _ui_widget(QCheckBox, 'Legacy.s7fe3b250ab4b4940', 'setText')
         self.recursive_check.setChecked(True)
-        self.recursive_check.setAccessibleName("Include subdirectories")
+        _ui_bind(self.recursive_check, 'setAccessibleName', 'Legacy.s7fe3b250ab4b4940')
         self.recursive_check.setMinimumHeight(44)
         options_layout.addWidget(self.recursive_check, 0, 0)
 
-        self.show_sizes_check = QCheckBox("Show file sizes")
+        self.show_sizes_check = _ui_widget(QCheckBox, 'Legacy.s738748170ea6613a', 'setText')
         self.show_sizes_check.setChecked(True)
-        self.show_sizes_check.setAccessibleName("Show file sizes")
+        _ui_bind(self.show_sizes_check, 'setAccessibleName', 'Legacy.s738748170ea6613a')
         self.show_sizes_check.setMinimumHeight(44)
         options_layout.addWidget(self.show_sizes_check, 0, 1)
 
-        self.show_dates_check = QCheckBox("Show modification dates")
+        self.show_dates_check = _ui_widget(QCheckBox, 'Legacy.sf2bd37bcbcd34dec', 'setText')
         self.show_dates_check.setChecked(True)
-        self.show_dates_check.setAccessibleName("Show modification dates")
+        _ui_bind(self.show_dates_check, 'setAccessibleName', 'Legacy.sf2bd37bcbcd34dec')
         self.show_dates_check.setMinimumHeight(44)
         options_layout.addWidget(self.show_dates_check, 1, 0)
 
-        self.show_hidden_check = QCheckBox("Include hidden files")
+        self.show_hidden_check = _ui_widget(QCheckBox, 'Legacy.sb7df2de4db3d21a7', 'setText')
         self.show_hidden_check.setChecked(False)
-        self.show_hidden_check.setAccessibleName("Include hidden files")
+        _ui_bind(self.show_hidden_check, 'setAccessibleName', 'Legacy.sb7df2de4db3d21a7')
         self.show_hidden_check.setMinimumHeight(44)
         options_layout.addWidget(self.show_hidden_check, 1, 1)
 
@@ -345,11 +348,11 @@ class CatalogWindow(StandardWindow):
         # Create action buttons
         button_layout = QHBoxLayout()
 
-        self.generate_button = PrimaryButton("Generate Catalog")
+        self.generate_button = _ui_widget(PrimaryButton, 'Legacy.sb07b8556f6531a91', 'setText')
         self.generate_button.clicked.connect(self.generate_catalog)
         button_layout.addWidget(self.generate_button)
 
-        self.open_catalog_button = SecondaryButton("Open Last Catalog")
+        self.open_catalog_button = _ui_widget(SecondaryButton, 'Legacy.se98680b6ab898d30', 'setText')
         self.open_catalog_button.clicked.connect(self.open_catalog)
         self.open_catalog_button.setEnabled(False)
         button_layout.addWidget(self.open_catalog_button)
@@ -357,19 +360,19 @@ class CatalogWindow(StandardWindow):
         layout.addLayout(button_layout)
 
         # Create preview area
-        preview_group = QGroupBox("File Preview")
+        preview_group = _ui_widget(QGroupBox, 'Legacy.saf831899d9146664', 'setTitle')
         preview_layout = QVBoxLayout(preview_group)
 
-        self.status_label = QLabel("Select a directory to begin")
+        self.status_label = _ui_widget(QLabel, 'Legacy.s2e54cacdcce995a3', 'setText')
         preview_layout.addWidget(self.status_label)
 
         self.file_list = QListWidget()
-        self.file_list.setAccessibleName("File preview list")
+        _ui_bind(self.file_list, 'setAccessibleName', 'Legacy.s311daf9331a5aea4')
         self.file_list.itemClicked.connect(self.show_file_info)
         preview_layout.addWidget(self.file_list)
 
         self.file_info_text = QTextEdit()
-        self.file_info_text.setAccessibleName("File information")
+        _ui_bind(self.file_info_text, 'setAccessibleName', 'Legacy.s375b97d222c0aab7')
         self.file_info_text.setMaximumHeight(80)
         self.file_info_text.setReadOnly(True)
         preview_layout.addWidget(self.file_info_text)
@@ -671,7 +674,7 @@ class CatalogWindow(StandardWindow):
         <strong>Generated:</strong> {timestamp}<br>
         <strong>Options:</strong> {self._get_options_text()}
     </div>
-    
+
     <table>
         <thead>"""
 
@@ -781,7 +784,7 @@ class CatalogWindow(StandardWindow):
         return f"""
         </tbody>
     </table>
-    
+
     <div class="info" style="margin-top: 20px;">
         <strong>Total Files:</strong> {file_count}
     </div>

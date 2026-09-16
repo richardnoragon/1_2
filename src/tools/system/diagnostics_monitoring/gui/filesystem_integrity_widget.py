@@ -1,5 +1,7 @@
 """Filesystem integrity monitoring GUI widget."""
+from src.rfu.localization import localized_widget as _ui_widget, bind_literal as _ui_bind
 
+from src.rfu import font_tokens
 import logging
 from datetime import datetime
 from typing import Any, Dict, List, Optional
@@ -185,7 +187,7 @@ class FilesystemIntegrityWidget(QWidget):
         main_splitter.setSizes([300, 700])
 
         # Status bar
-        self.status_label = QLabel("Ready")
+        self.status_label = _ui_widget(QLabel, 'Legacy.s5fa7aac5375c5815', 'setText')
         layout.addWidget(self.status_label)
 
     def create_control_panel(self) -> QWidget:
@@ -198,48 +200,48 @@ class FilesystemIntegrityWidget(QWidget):
         layout = QVBoxLayout(panel)
 
         # Scan configuration group
-        scan_group = QGroupBox("Scan Configuration")
+        scan_group = _ui_widget(QGroupBox, 'Legacy.sa40ed5c3ef022c1e', 'setTitle')
         scan_layout = QGridLayout(scan_group)
 
         # Scan type selection
-        scan_layout.addWidget(QLabel("Scan Type:"), 0, 0)
+        scan_layout.addWidget(_ui_widget(QLabel, 'Legacy.s7c5499f8e961102e', 'setText'), 0, 0)
         self.scan_type_combo = QComboBox()
-        self.scan_type_combo.setAccessibleName("Scan type")
+        _ui_bind(self.scan_type_combo, 'setAccessibleName', 'Legacy.se317806114c1edbc')
         self.scan_type_combo.addItems(
             ["Quick Scan", "Full Scan", "Deep Scan", "Custom Scan"]
         )
         scan_layout.addWidget(self.scan_type_combo, 0, 1)
 
         # Scan paths
-        scan_layout.addWidget(QLabel("Scan Paths:"), 1, 0)
-        self.paths_button = SecondaryButton("Select Paths...")
-        self.paths_button.setAccessibleName("Select scan paths")
+        scan_layout.addWidget(_ui_widget(QLabel, 'Legacy.sc4d2d59e32b7eb72', 'setText'), 1, 0)
+        self.paths_button = _ui_widget(SecondaryButton, 'Legacy.secbaf4e3bb5b0c32', 'setText')
+        _ui_bind(self.paths_button, 'setAccessibleName', 'Legacy.s4abdc16a2269bf4e')
         self.paths_button.clicked.connect(self.select_scan_paths)
         scan_layout.addWidget(self.paths_button, 1, 1)
 
         # Scan options
-        self.checksum_check = QCheckBox("Verify Checksums")
+        self.checksum_check = _ui_widget(QCheckBox, 'Legacy.s64b94582b99b0bd2', 'setText')
         self.checksum_check.setChecked(True)
-        self.checksum_check.setAccessibleName("Verify checksums")
+        _ui_bind(self.checksum_check, 'setAccessibleName', 'Legacy.s3f87a97e55237187')
         self.checksum_check.setMinimumHeight(44)
         scan_layout.addWidget(self.checksum_check, 2, 0, 1, 2)
 
-        self.permissions_check = QCheckBox("Check Permissions")
+        self.permissions_check = _ui_widget(QCheckBox, 'Legacy.s4f4ffcde6301bf46', 'setText')
         self.permissions_check.setChecked(True)
-        self.permissions_check.setAccessibleName("Check permissions")
+        _ui_bind(self.permissions_check, 'setAccessibleName', 'Legacy.sdba362dfa9b6da40')
         self.permissions_check.setMinimumHeight(44)
         scan_layout.addWidget(self.permissions_check, 3, 0, 1, 2)
 
-        self.timestamps_check = QCheckBox("Verify Timestamps")
+        self.timestamps_check = _ui_widget(QCheckBox, 'Legacy.sec926f2064af2591', 'setText')
         self.timestamps_check.setChecked(True)
-        self.timestamps_check.setAccessibleName("Verify timestamps")
+        _ui_bind(self.timestamps_check, 'setAccessibleName', 'Legacy.s9188cb82b1e97451')
         self.timestamps_check.setMinimumHeight(44)
         scan_layout.addWidget(self.timestamps_check, 4, 0, 1, 2)
 
         # Max depth
-        scan_layout.addWidget(QLabel("Max Depth:"), 5, 0)
+        scan_layout.addWidget(_ui_widget(QLabel, 'Legacy.s99bf46b0d218200c', 'setText'), 5, 0)
         self.max_depth_spin = QSpinBox()
-        self.max_depth_spin.setAccessibleName("Maximum scan depth")
+        _ui_bind(self.max_depth_spin, 'setAccessibleName', 'Legacy.s086863db133708fb')
         self.max_depth_spin.setMinimumHeight(44)
         self.max_depth_spin.setRange(1, 50)
         self.max_depth_spin.setValue(10)
@@ -248,16 +250,16 @@ class FilesystemIntegrityWidget(QWidget):
         layout.addWidget(scan_group)
 
         # Scan controls
-        controls_group = QGroupBox("Scan Controls")
+        controls_group = _ui_widget(QGroupBox, 'Legacy.se546c62dcb440d47', 'setTitle')
         controls_layout = QVBoxLayout(controls_group)
 
-        self.start_scan_button = PrimaryButton("Start Scan")
-        self.start_scan_button.setAccessibleName("Start filesystem scan")
+        self.start_scan_button = _ui_widget(PrimaryButton, 'Legacy.s1f54738da77c209d', 'setText')
+        _ui_bind(self.start_scan_button, 'setAccessibleName', 'Legacy.sfb22949fb501d0f9')
         self.start_scan_button.clicked.connect(self.start_scan)
         controls_layout.addWidget(self.start_scan_button)
 
-        self.stop_scan_button = SecondaryButton("Stop Scan")
-        self.stop_scan_button.setAccessibleName("Stop filesystem scan")
+        self.stop_scan_button = _ui_widget(SecondaryButton, 'Legacy.s2e1e7da9d10ff7b2', 'setText')
+        _ui_bind(self.stop_scan_button, 'setAccessibleName', 'Legacy.s05e0cb67ec50f511')
         self.stop_scan_button.clicked.connect(self.stop_scan)
         self.stop_scan_button.setEnabled(False)
         controls_layout.addWidget(self.stop_scan_button)
@@ -265,34 +267,34 @@ class FilesystemIntegrityWidget(QWidget):
         layout.addWidget(controls_group)
 
         # Progress group
-        progress_group = QGroupBox("Scan Progress")
+        progress_group = _ui_widget(QGroupBox, 'Legacy.sad8df5f5b74f251b', 'setTitle')
         progress_layout = QVBoxLayout(progress_group)
 
         self.progress_bar = LoadingIndicator(parent=self, message="Scanning...")
         progress_layout.addWidget(self.progress_bar)
 
-        self.progress_label = QLabel("No scan running")
+        self.progress_label = _ui_widget(QLabel, 'Legacy.scd60aad235cfdb54', 'setText')
         progress_layout.addWidget(self.progress_label)
 
-        self.files_scanned_label = QLabel("Files scanned: 0")
+        self.files_scanned_label = _ui_widget(QLabel, 'Legacy.s1beb392b337e73e9', 'setText')
         progress_layout.addWidget(self.files_scanned_label)
 
-        self.errors_found_label = QLabel("Errors found: 0")
+        self.errors_found_label = _ui_widget(QLabel, 'Legacy.s0dcbea7ab52c177c', 'setText')
         progress_layout.addWidget(self.errors_found_label)
 
         layout.addWidget(progress_group)
 
         # Scheduled scans group
-        schedule_group = QGroupBox("Scheduled Scans")
+        schedule_group = _ui_widget(QGroupBox, 'Legacy.se06d28c2e1f56c51', 'setTitle')
         schedule_layout = QVBoxLayout(schedule_group)
 
-        self.schedule_button = SecondaryButton("Schedule Scan...")
-        self.schedule_button.setAccessibleName("Schedule a scan")
+        self.schedule_button = _ui_widget(SecondaryButton, 'Legacy.s7a461e20ea5bde6d', 'setText')
+        _ui_bind(self.schedule_button, 'setAccessibleName', 'Legacy.s512053b707c96f43')
         self.schedule_button.clicked.connect(self.schedule_scan)
         schedule_layout.addWidget(self.schedule_button)
 
         self.scheduled_scans_list = QTreeWidget()
-        self.scheduled_scans_list.setAccessibleName("Scheduled scans list")
+        _ui_bind(self.scheduled_scans_list, 'setAccessibleName', 'Legacy.s1fae6b035922ae17')
         self.scheduled_scans_list.setHeaderLabels(["Type", "Next Run", "Recurring"])
         schedule_layout.addWidget(self.scheduled_scans_list)
 
@@ -314,7 +316,7 @@ class FilesystemIntegrityWidget(QWidget):
 
         # Create tab widget for different views
         self.results_tabs = QTabWidget()
-        self.results_tabs.setAccessibleName("Scan results tabs")
+        _ui_bind(self.results_tabs, 'setAccessibleName', 'Legacy.s2e7e0c5de3f1960c')
         layout.addWidget(self.results_tabs)
 
         # Overview tab
@@ -349,7 +351,7 @@ class FilesystemIntegrityWidget(QWidget):
         layout = QVBoxLayout(tab)
 
         # System info group
-        system_group = QGroupBox("System Information")
+        system_group = _ui_widget(QGroupBox, 'Legacy.s8ad54ec1c0dcab4f', 'setTitle')
         system_layout = QGridLayout(system_group)
 
         self.platform_label = QLabel(
@@ -357,24 +359,24 @@ class FilesystemIntegrityWidget(QWidget):
         )
         system_layout.addWidget(self.platform_label, 0, 0, 1, 2)
 
-        self.filesystem_count_label = QLabel("Filesystems: 0")
+        self.filesystem_count_label = _ui_widget(QLabel, 'Legacy.s64be16fe44a8e444', 'setText')
         system_layout.addWidget(self.filesystem_count_label, 1, 0)
 
-        self.last_scan_label = QLabel("Last scan: Never")
+        self.last_scan_label = _ui_widget(QLabel, 'Legacy.s7bdea2f1c92ce392', 'setText')
         system_layout.addWidget(self.last_scan_label, 1, 1)
 
         layout.addWidget(system_group)
 
         # Health status group
-        health_group = QGroupBox("Filesystem Health Status")
+        health_group = _ui_widget(QGroupBox, 'Legacy.sffaa95b91fb393e8', 'setTitle')
         health_layout = QVBoxLayout(health_group)
 
-        self.health_status_label = QLabel("Status: Unknown")
-        self.health_status_label.setFont(Typography.h3())
+        self.health_status_label = _ui_widget(QLabel, 'Legacy.s9abb5dd0a5fbb800', 'setText')
+        font_tokens.bind(self.health_status_label, "font.bodyBold")
         health_layout.addWidget(self.health_status_label)
 
         self.health_details_text = QTextEdit()
-        self.health_details_text.setAccessibleName("Filesystem health details")
+        _ui_bind(self.health_details_text, 'setAccessibleName', 'Legacy.s14af2294df7dde6a')
         self.health_details_text.setMaximumHeight(100)
         self.health_details_text.setReadOnly(True)
         health_layout.addWidget(self.health_details_text)
@@ -382,19 +384,19 @@ class FilesystemIntegrityWidget(QWidget):
         layout.addWidget(health_group)
 
         # Quick stats group
-        stats_group = QGroupBox("Quick Statistics")
+        stats_group = _ui_widget(QGroupBox, 'Legacy.s446e962e75a182ec', 'setTitle')
         stats_layout = QGridLayout(stats_group)
 
-        self.total_scans_label = QLabel("Total scans: 0")
+        self.total_scans_label = _ui_widget(QLabel, 'Legacy.s2f20f816f61b9578', 'setText')
         stats_layout.addWidget(self.total_scans_label, 0, 0)
 
-        self.corruptions_found_label = QLabel("Corruptions found: 0")
+        self.corruptions_found_label = _ui_widget(QLabel, 'Legacy.s8b53120acebdef90', 'setText')
         stats_layout.addWidget(self.corruptions_found_label, 0, 1)
 
-        self.repairs_suggested_label = QLabel("Repairs suggested: 0")
+        self.repairs_suggested_label = _ui_widget(QLabel, 'Legacy.se441ba9bd4f9992a', 'setText')
         stats_layout.addWidget(self.repairs_suggested_label, 1, 0)
 
-        self.avg_scan_time_label = QLabel("Avg scan time: 0s")
+        self.avg_scan_time_label = _ui_widget(QLabel, 'Legacy.s902d8b228e8c900d', 'setText')
         stats_layout.addWidget(self.avg_scan_time_label, 1, 1)
 
         layout.addWidget(stats_group)
@@ -415,7 +417,7 @@ class FilesystemIntegrityWidget(QWidget):
 
         # Results table
         self.results_table = QTableWidget()
-        self.results_table.setAccessibleName("Scan results table")
+        _ui_bind(self.results_table, 'setAccessibleName', 'Legacy.s2768de44db3726b8')
         self.results_table.setColumnCount(6)
         self.results_table.setHorizontalHeaderLabels(
             ["Path", "Type", "Size", "Status", "Issues", "Last Modified"]
@@ -433,8 +435,8 @@ class FilesystemIntegrityWidget(QWidget):
         export_layout = QHBoxLayout()
         export_layout.addStretch()
 
-        self.export_results_button = SecondaryButton("Export Results...")
-        self.export_results_button.setAccessibleName("Export scan results")
+        self.export_results_button = _ui_widget(SecondaryButton, 'Legacy.s5f229386b81f42ba', 'setText')
+        _ui_bind(self.export_results_button, 'setAccessibleName', 'Legacy.s7b71b5ed90c01bf2')
         self.export_results_button.clicked.connect(self.export_results)
         export_layout.addWidget(self.export_results_button)
 
@@ -452,26 +454,26 @@ class FilesystemIntegrityWidget(QWidget):
         layout = QVBoxLayout(tab)
 
         # Corruption summary
-        summary_group = QGroupBox("Corruption Summary")
+        summary_group = _ui_widget(QGroupBox, 'Legacy.sf2fdae1c9b5bcfbe', 'setTitle')
         summary_layout = QGridLayout(summary_group)
 
-        self.corruption_count_label = QLabel("Total corruptions: 0")
+        self.corruption_count_label = _ui_widget(QLabel, 'Legacy.s24669681c9ccce85', 'setText')
         summary_layout.addWidget(self.corruption_count_label, 0, 0)
 
-        self.critical_count_label = QLabel("Critical: 0")
+        self.critical_count_label = _ui_widget(QLabel, 'Legacy.s08ec832fda7a5de3', 'setText')
         summary_layout.addWidget(self.critical_count_label, 0, 1)
 
-        self.high_count_label = QLabel("High: 0")
+        self.high_count_label = _ui_widget(QLabel, 'Legacy.s8e073423f2efe2a5', 'setText')
         summary_layout.addWidget(self.high_count_label, 1, 0)
 
-        self.medium_count_label = QLabel("Medium: 0")
+        self.medium_count_label = _ui_widget(QLabel, 'Legacy.s95ec69717455568c', 'setText')
         summary_layout.addWidget(self.medium_count_label, 1, 1)
 
         layout.addWidget(summary_group)
 
         # Corruption details table
         self.corruption_table = QTableWidget()
-        self.corruption_table.setAccessibleName("Corruption details table")
+        _ui_bind(self.corruption_table, 'setAccessibleName', 'Legacy.sd2c49a3ac0f02a6b')
         self.corruption_table.setColumnCount(5)
         self.corruption_table.setHorizontalHeaderLabels(
             ["Path", "Type", "Severity", "Description", "Timestamp"]
@@ -496,7 +498,7 @@ class FilesystemIntegrityWidget(QWidget):
 
         # Recommendations table
         self.recommendations_table = QTableWidget()
-        self.recommendations_table.setAccessibleName("Repair recommendations table")
+        _ui_bind(self.recommendations_table, 'setAccessibleName', 'Legacy.sb1b83036a54cd94b')
         self.recommendations_table.setColumnCount(6)
         self.recommendations_table.setHorizontalHeaderLabels(
             [
@@ -518,13 +520,13 @@ class FilesystemIntegrityWidget(QWidget):
         # Action buttons
         action_layout = QHBoxLayout()
 
-        self.apply_selected_button = PrimaryButton("Apply Selected")
-        self.apply_selected_button.setAccessibleName("Apply selected repairs")
+        self.apply_selected_button = _ui_widget(PrimaryButton, 'Legacy.sf34d269a21519d7a', 'setText')
+        _ui_bind(self.apply_selected_button, 'setAccessibleName', 'Legacy.s78581cc4028bf380')
         self.apply_selected_button.clicked.connect(self.apply_selected_recommendations)
         action_layout.addWidget(self.apply_selected_button)
 
-        self.generate_script_button = SecondaryButton("Generate Script...")
-        self.generate_script_button.setAccessibleName("Generate repair script")
+        self.generate_script_button = _ui_widget(SecondaryButton, 'Legacy.sbe1b70916791b19d', 'setText')
+        _ui_bind(self.generate_script_button, 'setAccessibleName', 'Legacy.s8ae5fa7184f24caa')
         self.generate_script_button.clicked.connect(self.generate_repair_script)
         action_layout.addWidget(self.generate_script_button)
 
@@ -544,7 +546,7 @@ class FilesystemIntegrityWidget(QWidget):
 
         # History table
         self.history_table = QTableWidget()
-        self.history_table.setAccessibleName("Scan history table")
+        _ui_bind(self.history_table, 'setAccessibleName', 'Legacy.s916e318d5ffea5a8')
         self.history_table.setColumnCount(7)
         self.history_table.setHorizontalHeaderLabels(
             [
@@ -567,13 +569,13 @@ class FilesystemIntegrityWidget(QWidget):
         # History controls
         history_controls = QHBoxLayout()
 
-        self.clear_history_button = SecondaryButton("Clear History")
-        self.clear_history_button.setAccessibleName("Clear scan history")
+        self.clear_history_button = _ui_widget(SecondaryButton, 'Legacy.s9768be40e9310726', 'setText')
+        _ui_bind(self.clear_history_button, 'setAccessibleName', 'Legacy.s6631053318a4f8e9')
         self.clear_history_button.clicked.connect(self.clear_scan_history)
         history_controls.addWidget(self.clear_history_button)
 
-        self.export_history_button = SecondaryButton("Export History...")
-        self.export_history_button.setAccessibleName("Export scan history")
+        self.export_history_button = _ui_widget(SecondaryButton, 'Legacy.s52a3d9b1a8f00476', 'setText')
+        _ui_bind(self.export_history_button, 'setAccessibleName', 'Legacy.s3b7e8958ccc51900')
         self.export_history_button.clicked.connect(self.export_scan_history)
         history_controls.addWidget(self.export_history_button)
 

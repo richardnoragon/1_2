@@ -1,3 +1,5 @@
+from src.rfu.localization import localized_widget as _ui_widget, bind_literal as _ui_bind
+from src.rfu import font_tokens
 from src.gui.themes import ThemeManager, Typography, token
 
 """
@@ -190,7 +192,7 @@ class ProcessMonitorGUI(QMainWindow):
             f"""
             QMainWindow {{
                 background-color: {token('surface')};
-                font-family: 'Segoe UI', Arial, sans-serif;
+
             }}
             QTableWidget {{
                 border: 1px solid {token('border')};
@@ -217,10 +219,11 @@ class ProcessMonitorGUI(QMainWindow):
                 border: 1px solid {token('border')};
                 border-radius: 4px;
                 padding: 8px;
-                font-size: 12px;
+
             }}
         """
         )
+        font_tokens.bind(self, "font.body")
 
         self.worker = None
         self.sort_by = "cpu"
@@ -263,9 +266,9 @@ class ProcessMonitorGUI(QMainWindow):
         layout = QVBoxLayout(central_widget)
 
         # Title
-        title = QLabel("⚡ Process Monitor")
+        title = _ui_widget(QLabel, 'Legacy.s332e600c7df43192', 'setText')
         title.setAlignment(Qt.AlignCenter)
-        title.setFont(Typography.h1())
+        font_tokens.bind(title, "font.toolHeader")
         layout.addWidget(title)
 
         # Control panel
@@ -284,7 +287,7 @@ class ProcessMonitorGUI(QMainWindow):
         control_layout.addWidget(self.auto_refresh_btn)
 
         # Sorting controls
-        control_layout.addWidget(QLabel("Sort by:"))
+        control_layout.addWidget(_ui_widget(QLabel, 'Legacy.s27ab0062ef43bf40', 'setText'))
 
         _SB2 = SecondaryButton if SecondaryButton else QPushButton
         self.sort_cpu_btn = _SB2("CPU")
@@ -309,9 +312,9 @@ class ProcessMonitorGUI(QMainWindow):
         control_layout.addWidget(self.sort_pid_btn)
 
         # Filter
-        control_layout.addWidget(QLabel("Filter:"))
+        control_layout.addWidget(_ui_widget(QLabel, 'Legacy.se1146f006ab341fd', 'setText'))
         self.filter_input = TextInput("Filter", "Enter process name to filter...")
-        self.filter_input.setAccessibleName("Process name filter")
+        _ui_bind(self.filter_input, 'setAccessibleName', 'Legacy.s28be9e922121e88d')
         self.filter_input.textChanged.connect(self._filter_processes)
         control_layout.addWidget(self.filter_input)
 
@@ -329,7 +332,7 @@ class ProcessMonitorGUI(QMainWindow):
 
         # Process table
         self.process_table = QTableWidget()
-        self.process_table.setAccessibleName("Running processes table")
+        _ui_bind(self.process_table, 'setAccessibleName', 'Legacy.s387cd5778dcc70ed')
         self.process_table.setColumnCount(6)
         self.process_table.setHorizontalHeaderLabels(
             [

@@ -6,6 +6,8 @@ This module provides a comprehensive PDF tools interface that dynamically
 discovers and displays tools based on the folder structure, integrating
 seamlessly into the main RFU hub.
 """
+from src.rfu.localization import localized_widget as _ui_widget, bind_literal as _ui_bind
+from src.rfu import font_tokens
 
 import logging
 import os
@@ -243,10 +245,10 @@ class EnhancedPDFToolsWidget(QWidget):
         header_layout = QHBoxLayout(header_frame)
 
         # Current file display
-        file_group = QGroupBox("Current PDF File")
+        file_group = _ui_widget(QGroupBox, 'Legacy.sa945443e70bd24a1', 'setTitle')
         file_layout = QHBoxLayout(file_group)
 
-        self.current_file_label = QLabel("No file selected")
+        self.current_file_label = _ui_widget(QLabel, 'Legacy.s26bfbd5c83f90db3', 'setText')
         self.current_file_label.setStyleSheet(
             f"font-weight: bold; color: {token('text_secondary')};"
         )
@@ -261,7 +263,7 @@ class EnhancedPDFToolsWidget(QWidget):
         header_layout.addWidget(file_group)
 
         # Quick actions
-        actions_group = QGroupBox("Quick Actions")
+        actions_group = _ui_widget(QGroupBox, 'Legacy.s2cc2b6f7f200e65c', 'setTitle')
         actions_layout = QHBoxLayout(actions_group)
 
         # Recent files button
@@ -287,7 +289,7 @@ class EnhancedPDFToolsWidget(QWidget):
         container_layout.setSpacing(15)
 
         # Create title
-        title_label = QLabel("PDF Tools Categories")
+        title_label = _ui_widget(QLabel, 'Legacy.sbac111366bbf94a7', 'setText')
         title_label.setStyleSheet(
             f"""
             font: bold 16pt "Segoe UI";
@@ -483,11 +485,12 @@ class EnhancedPDFToolsWidget(QWidget):
         desc_label.setAlignment(Qt.AlignCenter)
         desc_label.setStyleSheet(
             f"""
-            font-size: 11pt;
+
             color: {token('text_muted')};
             font-weight: normal;
         """
         )
+        font_tokens.bind(desc_label, "font.body")
         layout.addWidget(desc_label)
 
         return frame
@@ -507,15 +510,16 @@ class EnhancedPDFToolsWidget(QWidget):
 
         if not programs:
             # Show message if no programs found
-            no_programs_label = QLabel("No programs found in this category")
+            no_programs_label = _ui_widget(QLabel, 'Legacy.s0df49f6b2ebc9d69', 'setText')
             no_programs_label.setAlignment(Qt.AlignCenter)
             no_programs_label.setStyleSheet(
                 f"""
-                font-size: 12pt;
+
                 color: {token('text_muted')};
                 margin: 50px;
             """
             )
+            font_tokens.bind(no_programs_label, "font.body")
             self.programs_layout.addWidget(no_programs_label, 0, 0, 1, 2)
         else:
             # Create program buttons
@@ -672,11 +676,12 @@ class EnhancedPDFToolsWidget(QWidget):
         desc_label.setAlignment(Qt.AlignCenter)
         desc_label.setStyleSheet(
             f"""
-            font-size: 10pt;
+
             color: {token('text_muted')};
             font-weight: normal;
         """
         )
+        font_tokens.bind(desc_label, "font.body")
         layout.addWidget(desc_label)
 
         return frame
@@ -794,7 +799,7 @@ class EnhancedPDFToolsWidget(QWidget):
         status_layout.addWidget(self.progress_bar)
 
         # Status label
-        self.status_label = QLabel("Ready")
+        self.status_label = _ui_widget(QLabel, 'Legacy.s5fa7aac5375c5815', 'setText')
         self.status_label.setStyleSheet(
             f"font-weight: bold; color: {token('text_secondary')};"
         )
@@ -808,7 +813,7 @@ class EnhancedPDFToolsWidget(QWidget):
             """
             QWidget {
                 background-color: {token('window_background')};
-                font-family: "Segoe UI", Arial, sans-serif;
+
             }
             QGroupBox {
                 font-weight: bold;
@@ -824,6 +829,7 @@ class EnhancedPDFToolsWidget(QWidget):
             }
         """
         )
+        font_tokens.bind(self, "font.body")
 
     def setup_connections(self):
         """Setup signal connections and event handlers"""
@@ -871,14 +877,14 @@ class EnhancedPDFToolsWidget(QWidget):
         from PyQt5.QtWidgets import QDialog, QDialogButtonBox, QListWidget
 
         dialog = QDialog(self)
-        dialog.setWindowTitle("Recent PDF Files")
+        _ui_bind(dialog, 'setWindowTitle', 'Legacy.s46a0a51c6c005e8a')
         dialog.setModal(True)
         dialog.resize(400, 300)
 
         layout = QVBoxLayout(dialog)
 
         file_list = QListWidget()
-        file_list.setAccessibleName("Recent PDF files list")
+        _ui_bind(file_list, 'setAccessibleName', 'Legacy.sb29724f35ef1bc57')
         for file_path in self.state_manager.recent_files:
             if os.path.exists(file_path):
                 file_list.addItem(f"{os.path.basename(file_path)} - {file_path}")
@@ -924,7 +930,7 @@ if __name__ == "__main__":
 
     # Create test window
     window = QMainWindow()
-    window.setWindowTitle("Enhanced PDF Tools Test")
+    _ui_bind(window, 'setWindowTitle', 'Legacy.s4aef30658a21c96e')
     window.setGeometry(200, 200, 1000, 800)
 
     # Create and set the PDF tools widget

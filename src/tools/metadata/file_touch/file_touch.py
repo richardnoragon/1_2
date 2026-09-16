@@ -1,3 +1,4 @@
+from src.rfu.localization import localized_widget as _ui_widget, bind_literal as _ui_bind
 import logging
 import os
 import platform
@@ -312,9 +313,9 @@ class FileTouchWindow(BaseWindow):
         # Add profile combo box to toolbar if toolbar exists
         if hasattr(self, "toolBar"):
             self.profileCombo = QComboBox(self)
-            self.profileCombo.setAccessibleName("Timestamp profile")
+            _ui_bind(self.profileCombo, 'setAccessibleName', 'Legacy.s55c708af8fd15614')
             self.profileCombo.setMinimumHeight(44)
-            self.toolBar.addWidget(QLabel("Profile: "))
+            self.toolBar.addWidget(_ui_widget(QLabel, 'Legacy.s51aa1b8bfaff8c46', 'setText'))
             self.toolBar.addWidget(self.profileCombo)
 
             # Add profile management buttons

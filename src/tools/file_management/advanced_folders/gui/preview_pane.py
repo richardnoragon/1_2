@@ -11,6 +11,8 @@ Features:
 - Performance optimization
 - Error handling and fallbacks
 """
+from src.rfu.localization import localized_widget as _ui_widget, bind_literal as _ui_bind
+from src.rfu import font_tokens
 
 import logging
 import mimetypes
@@ -480,7 +482,7 @@ class PreviewPaneWidget(QWidget):
         header_layout.setContentsMargins(8, 4, 8, 4)
 
         # File name label
-        self.file_name_label = QLabel("No file selected")
+        self.file_name_label = _ui_widget(QLabel, 'Legacy.s26bfbd5c83f90db3', 'setText')
         self.file_name_label.setStyleSheet(
             f"font-weight: bold; color: {token('text_primary')};"
         )
@@ -503,7 +505,7 @@ class PreviewPaneWidget(QWidget):
         """
         self.content_tabs = QTabWidget()
         self.content_tabs.setTabPosition(QTabWidget.North)
-        self.content_tabs.setAccessibleName("File preview content tabs")
+        _ui_bind(self.content_tabs, 'setAccessibleName', 'Legacy.saa1b4cff7f8b3875')
 
         # Preview tab
         self._create_preview_tab()
@@ -529,7 +531,7 @@ class PreviewPaneWidget(QWidget):
         self.preview_scroll.setAlignment(Qt.AlignCenter)
 
         # Preview content widget
-        self.preview_content = QLabel("Select a file to preview")
+        self.preview_content = _ui_widget(QLabel, 'Legacy.s2a7677d4a522ac3e', 'setText')
         self.preview_content.setAlignment(Qt.AlignCenter)
         self.preview_content.setStyleSheet(
             """
@@ -560,7 +562,7 @@ class PreviewPaneWidget(QWidget):
         self.metadata_text = QTextEdit()
         self.metadata_text.setReadOnly(True)
         self.metadata_text.setPlainText("No metadata available")
-        self.metadata_text.setAccessibleName("File metadata")
+        _ui_bind(self.metadata_text, 'setAccessibleName', 'Legacy.seafcd1d42c0273a8')
 
         metadata_layout.addWidget(self.metadata_text)
 
@@ -577,7 +579,7 @@ class PreviewPaneWidget(QWidget):
         self.properties_text = QTextEdit()
         self.properties_text.setReadOnly(True)
         self.properties_text.setPlainText("No properties available")
-        self.properties_text.setAccessibleName("File properties")
+        _ui_bind(self.properties_text, 'setAccessibleName', 'Legacy.s5d9ebf270a8acd12')
 
         properties_layout.addWidget(self.properties_text)
 
@@ -597,7 +599,7 @@ class PreviewPaneWidget(QWidget):
         status_layout.setContentsMargins(8, 4, 8, 4)
 
         # Status label
-        self.status_label = QLabel("Ready")
+        self.status_label = _ui_widget(QLabel, 'Legacy.s5fa7aac5375c5815', 'setText')
         self.status_label.setStyleSheet(f"color: {token('text_primary')};")
 
         status_layout.addWidget(self.status_label)
@@ -643,25 +645,24 @@ class PreviewPaneWidget(QWidget):
             QTextEdit {{
                 border: 1px solid {token('border')};
                 background-color: white;
-                font-family: 'Courier New', monospace;
-                font-size: 10pt;
+
+
             }}
         """
         )
+        font_tokens.bind(self, "font.body")
 
     def _setup_accessibility(self):
         """Setup accessibility features."""
         # Set accessible names
-        self.setAccessibleName("File Preview Pane")
-        self.setAccessibleDescription(
-            "Displays preview and metadata for selected files"
-        )
+        _ui_bind(self, 'setAccessibleName', 'Legacy.s95ead592f3f6f41c')
+        _ui_bind(self, 'setAccessibleDescription', 'Legacy.s4b28a08ab4e5f6f7')
 
         # Set tab accessible names
-        self.content_tabs.setAccessibleName("Preview Content Tabs")
-        self.preview_widget.setAccessibleName("File Preview")
-        self.metadata_widget.setAccessibleName("File Metadata")
-        self.properties_widget.setAccessibleName("File Properties")
+        _ui_bind(self.content_tabs, 'setAccessibleName', 'Legacy.se92e7816e57afeca')
+        _ui_bind(self.preview_widget, 'setAccessibleName', 'Legacy.saf831899d9146664')
+        _ui_bind(self.metadata_widget, 'setAccessibleName', 'Legacy.s6c3893e88971f030')
+        _ui_bind(self.properties_widget, 'setAccessibleName', 'Legacy.s4d04451a8f4f6d04')
 
         # Set keyboard focus policy
         self.setFocusPolicy(Qt.StrongFocus)
@@ -799,7 +800,7 @@ class PreviewPaneWidget(QWidget):
             self.preview_content.deleteLater()
             self.preview_content = QTextEdit()
             self.preview_content.setReadOnly(True)
-            self.preview_content.setAccessibleName("File preview content")
+            _ui_bind(self.preview_content, 'setAccessibleName', 'Legacy.sc6308f245b633c04')
             self.preview_scroll.setWidget(self.preview_content)
 
         self.preview_content.setPlainText(content)
@@ -879,15 +880,15 @@ class PreviewPaneWidget(QWidget):
         mime_type = content_data.get("mime_type", "Unknown")
 
         info_text = f"""
-        <div style="text-align: center; font-family: Arial, sans-serif;">
+        <div style="text-align: center; ">
             <h2 style=f"color: {token('text_primary')}; margin-bottom: 20px;">{file_type}</h2>
-            <p style=f"color: {token('text_muted')}; font-size: 14px; margin: 10px;">
+            <p style=f"color: {token('text_muted')};  margin: 10px;">
                 <strong>File:</strong> {file_name}
             </p>
-            <p style=f"color: {token('text_muted')}; font-size: 14px; margin: 10px;">
+            <p style=f"color: {token('text_muted')};  margin: 10px;">
                 <strong>Type:</strong> {mime_type}
             </p>
-            <p style=f"color: {token('text_muted')}; font-size: 12px; margin-top: 20px;">
+            <p style=f"color: {token('text_muted')};  margin-top: 20px;">
                 Preview not available for this file type
             </p>
         </div>
@@ -1033,7 +1034,7 @@ class PreviewPaneWidget(QWidget):
         # Reset preview content
         if not isinstance(self.preview_content, QLabel):
             self.preview_content.deleteLater()
-            self.preview_content = QLabel("Select a file to preview")
+            self.preview_content = _ui_widget(QLabel, 'Legacy.s2a7677d4a522ac3e', 'setText')
             self.preview_content.setAlignment(Qt.AlignCenter)
             self.preview_scroll.setWidget(self.preview_content)
 

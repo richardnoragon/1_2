@@ -1,234 +1,195 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <ui version="4.0">
-    <class>MainWindow</class>
-    <widget class="QMainWindow" name="MainWindow">
-        <property name="geometry">
-            <rect>
-                <x>0</x>
-                <y>0</y>
-                <width>800</width>
-                <height>650</height>
-            </rect>
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>650</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>File Organizer</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <layout class="QHBoxLayout" name="directoryLayout">
+      <item>
+       <widget class="QPushButton" name="selectFolderButton">
+        <property name="minimumSize">
+         <size>
+          <width>150</width>
+          <height>30</height>
+         </size>
         </property>
-        <property name="windowTitle">
-            <string>File Organizer</string>
+        <property name="text">
+         <string>Select Folder</string>
         </property>
-        <property name="font">
-            <font>
-                <pointsize>12</pointsize>
-            </font>
+        <property name="rfuLocale_setText" stdset="0">
+         <string notr="true">Legacy.se597da9c984517f8</string>
         </property>
-        <widget class="QWidget" name="centralwidget">
-            <property name="font">
-                <font>
-                    <pointsize>12</pointsize>
-                </font>
-            </property>
-            <layout class="QVBoxLayout" name="verticalLayout">
-                <item>
-                    <layout class="QHBoxLayout" name="directoryLayout">
-                        <item>
-                            <widget class="QPushButton" name="selectFolderButton">
-                                <property name="minimumSize">
-                                    <size>
-                                        <width>150</width>
-                                        <height>30</height>
-                                    </size>
-                                </property>
-                                <property name="text">
-                                    <string>Select Folder</string>
-                                </property>
-                                <property name="font">
-                                    <font>
-                                        <pointsize>12</pointsize>
-                                    </font>
-                                </property>
-                            </widget>
-                        </item>
-                        <item>
-                            <widget class="QLabel" name="directory_label">
-                                <property name="text">
-                                    <string>No folder selected</string>
-                                </property>
-                                <property name="font">
-                                    <font>
-                                        <pointsize>12</pointsize>
-                                    </font>
-                                </property>
-                                <property name="styleSheet">
-                                    <string>QLabel { border: 1px solid gray; padding: 5px;
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="directory_label">
+        <property name="text">
+         <string>No folder selected</string>
+        </property>
+        <property name="styleSheet">
+         <string>QLabel { border: 1px solid gray; padding: 5px;
                                         background-color: #f0f0f0; }</string>
-                                </property>
-                            </widget>
-                        </item>
-                    </layout>
-                </item>
-                <item>
-                    <layout class="QHBoxLayout" name="horizontalLayout">
-                        <item>
-                            <widget class="QListView" name="listListView">
-                                <property name="minimumSize">
-                                    <size>
-                                        <width>400</width>
-                                        <height>400</height>
-                                    </size>
-                                </property>
-                                <property name="font">
-                                    <font>
-                                        <pointsize>12</pointsize>
-                                    </font>
-                                </property>
-                            </widget>
-                        </item>
-                        <item>
-                            <widget class="QCheckBox" name="recursiveCheckBox">
-                                <property name="text">
-                                    <string>Include Subfolders</string>
-                                </property>
-                                <property name="font">
-                                    <font>
-                                        <pointsize>12</pointsize>
-                                    </font>
-                                </property>
-                            </widget>
-                        </item>
-                    </layout>
-                </item>
-                <item>
-                    <widget class="QPushButton" name="rulesButton">
-                        <property name="minimumSize">
-                            <size>
-                                <width>200</width>
-                                <height>40</height>
-                            </size>
-                        </property>
-                        <property name="text">
-                            <string>Manage Rules</string>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>12</pointsize>
-                            </font>
-                        </property>
-                    </widget>
-                </item>
-                <item>
-                    <widget class="QPushButton" name="previewPushButton">
-                        <property name="minimumSize">
-                            <size>
-                                <width>200</width>
-                                <height>40</height>
-                            </size>
-                        </property>
-                        <property name="text">
-                            <string>Preview (Dry Run)</string>
-                        </property>
-                        <property name="toolTip">
-                            <string>Simulate organization without moving files. Shows what would be
+        </property>
+        <property name="rfuLocale_setText" stdset="0">
+         <string notr="true">Legacy.sd987e033568e0872</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QListView" name="listListView">
+        <property name="minimumSize">
+         <size>
+          <width>400</width>
+          <height>400</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="recursiveCheckBox">
+        <property name="text">
+         <string>Include Subfolders</string>
+        </property>
+        <property name="rfuLocale_setText" stdset="0">
+         <string notr="true">Legacy.s34a1a4128764bec8</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <widget class="QPushButton" name="rulesButton">
+      <property name="minimumSize">
+       <size>
+        <width>200</width>
+        <height>40</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>Manage Rules</string>
+      </property>
+      <property name="rfuLocale_setText" stdset="0">
+       <string notr="true">Legacy.s7957995f5674688c</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="previewPushButton">
+      <property name="minimumSize">
+       <size>
+        <width>200</width>
+        <height>40</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>Preview (Dry Run)</string>
+      </property>
+      <property name="toolTip">
+       <string>Simulate organization without moving files. Shows what would be
                                 moved where.</string>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>12</pointsize>
-                            </font>
-                        </property>
-                    </widget>
-                </item>
-                <item>
-                    <widget class="QPushButton" name="organizePushButton">
-                        <property name="minimumSize">
-                            <size>
-                                <width>200</width>
-                                <height>40</height>
-                            </size>
-                        </property>
-                        <property name="text">
-                            <string>Organize Files</string>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>12</pointsize>
-                            </font>
-                        </property>
-                    </widget>
-                </item>
-                <item>
-                    <widget class="QLabel" name="status_label">
-                        <property name="text">
-                            <string>Select a folder to begin</string>
-                        </property>
-                        <property name="font">
-                            <font>
-                                <pointsize>12</pointsize>
-                            </font>
-                        </property>
-                        <property name="styleSheet">
-                            <string>QLabel { border: 1px solid gray; padding: 5px; background-color:
+      </property>
+      <property name="rfuLocale_setText" stdset="0">
+       <string notr="true">Legacy.s7d00bc9e9b8f09b3</string>
+      </property>
+      <property name="rfuLocale_setToolTip" stdset="0">
+       <string notr="true">Legacy.s5e3b362b5644c778</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="organizePushButton">
+      <property name="minimumSize">
+       <size>
+        <width>200</width>
+        <height>40</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>Organize Files</string>
+      </property>
+      <property name="rfuLocale_setText" stdset="0">
+       <string notr="true">Legacy.s93891996bc022bc8</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="status_label">
+      <property name="text">
+       <string>Select a folder to begin</string>
+      </property>
+      <property name="styleSheet">
+       <string>QLabel { border: 1px solid gray; padding: 5px; background-color:
                                 #e8f4fd; }</string>
-                        </property>
-                        <property name="alignment">
-                            <set>Qt::AlignCenter</set>
-                        </property>
-                    </widget>
-                </item>
-            </layout>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+      <property name="rfuLocale_setText" stdset="0">
+       <string notr="true">Legacy.s3326bee9808eb224</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>800</width>
+     <height>18</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionselect" />
+    <addaction name="actionexit" />
+    <property name="rfuLocale_setTitle" stdset="0">
+     <string notr="true">Legacy.s50009ce1da4d15e1</string>
+    </property>
+   </widget>
+   <addaction name="menuFile" />
+  </widget>
+  <widget class="QStatusBar" name="statusbar">
         </widget>
-        <widget class="QMenuBar" name="menubar">
-            <property name="geometry">
-                <rect>
-                    <x>0</x>
-                    <y>0</y>
-                    <width>800</width>
-                    <height>18</height>
-                </rect>
-            </property>
-            <property name="font">
-                <font>
-                    <pointsize>12</pointsize>
-                </font>
-            </property>
-            <widget class="QMenu" name="menuFile">
-                <property name="title">
-                    <string>File</string>
-                </property>
-                <property name="font">
-                    <font>
-                        <pointsize>12</pointsize>
-                    </font>
-                </property>
-                <addaction name="actionselect" />
-                <addaction name="actionexit" />
-            </widget>
-            <addaction name="menuFile" />
-        </widget>
-        <widget class="QStatusBar" name="statusbar">
-            <property name="font">
-                <font>
-                    <pointsize>12</pointsize>
-                </font>
-            </property>
-        </widget>
-        <action name="actionselect">
-            <property name="text">
-                <string>select</string>
-            </property>
-            <property name="font">
-                <font>
-                    <pointsize>12</pointsize>
-                </font>
-            </property>
-        </action>
-        <action name="actionexit">
-            <property name="text">
-                <string>exit</string>
-            </property>
-            <property name="font">
-                <font>
-                    <pointsize>12</pointsize>
-                </font>
-            </property>
-        </action>
-    </widget>
-    <resources />
-    <connections />
+  <action name="actionselect">
+   <property name="text">
+    <string>select</string>
+   </property>
+   <property name="rfuLocale_setText" stdset="0">
+    <string notr="true">Legacy.sb1a36d25d9633ed2</string>
+   </property>
+  </action>
+  <action name="actionexit">
+   <property name="text">
+    <string>exit</string>
+   </property>
+   <property name="rfuLocale_setText" stdset="0">
+    <string notr="true">Legacy.se596899f114b5162</string>
+   </property>
+  </action>
+  <property name="rfuLocale_setWindowTitle" stdset="0">
+   <string notr="true">Legacy.s49f2d53f01fc2169</string>
+  </property>
+ </widget>
+ <resources />
+ <connections />
 </ui>

@@ -3,7 +3,9 @@ Simple System Information Tool for Richard's File Utilities
 
 A comprehensive system information viewer with hardware and software details.
 """
+from src.rfu.localization import localized_widget as _ui_widget, bind_literal as _ui_bind
 
+from src.rfu import font_tokens
 import logging
 import os
 import platform
@@ -240,7 +242,7 @@ class SimpleSystemInfoGUI(QMainWindow):
             f"""
             QMainWindow {{
                 background-color: {token('surface')};
-                font-family: 'Segoe UI', Arial, sans-serif;
+
             }}
             QGroupBox {{
                 font-weight: bold;
@@ -259,7 +261,7 @@ class SimpleSystemInfoGUI(QMainWindow):
                 color: white;
                 border: none;
                 padding: 8px 16px;
-                font-size: 14px;
+
                 border-radius: 4px;
                 font-weight: bold;
             }}
@@ -273,8 +275,8 @@ class SimpleSystemInfoGUI(QMainWindow):
                 border: 1px solid {token('border')};
                 border-radius: 4px;
                 padding: 8px;
-                font-family: 'Courier New', monospace;
-                font-size: 11px;
+
+
                 background-color: white;
             }}
             QTabWidget::pane {{
@@ -294,6 +296,7 @@ class SimpleSystemInfoGUI(QMainWindow):
             }}
         """
         )
+        font_tokens.bind(self, "font.body")
 
         self.worker = None
         self._setup_ui()
@@ -334,24 +337,24 @@ class SimpleSystemInfoGUI(QMainWindow):
         layout = QVBoxLayout(central_widget)
 
         # Title
-        title = QLabel("💻 System Information")
+        title = _ui_widget(QLabel, 'Legacy.sa01f4b59597042ba', 'setText')
         title.setAlignment(Qt.AlignCenter)
-        title.setFont(Typography.h1())
+        font_tokens.bind(title, "font.toolHeader")
         layout.addWidget(title)
 
         # Control buttons
         button_layout = QHBoxLayout()
 
-        self.refresh_btn = PrimaryButton("🔄 Refresh")
+        self.refresh_btn = _ui_widget(PrimaryButton, 'Legacy.sd58ef9350316750e', 'setText')
         self.refresh_btn.clicked.connect(self._load_system_info)
         button_layout.addWidget(self.refresh_btn)
 
-        self.auto_refresh_btn = SecondaryButton("⏱️ Auto Refresh (5s)")
+        self.auto_refresh_btn = _ui_widget(SecondaryButton, 'Legacy.s73c70f8ca1fa1625', 'setText')
         self.auto_refresh_btn.clicked.connect(self._toggle_auto_refresh)
         self.auto_refresh_btn.setCheckable(True)
         button_layout.addWidget(self.auto_refresh_btn)
 
-        self.export_btn = SecondaryButton("💾 Export Info")
+        self.export_btn = _ui_widget(SecondaryButton, 'Legacy.s1bf0097d6da71a86', 'setText')
         self.export_btn.clicked.connect(self._export_info)
         button_layout.addWidget(self.export_btn)
 
@@ -360,36 +363,36 @@ class SimpleSystemInfoGUI(QMainWindow):
 
         # Tab widget for different information categories
         self.tab_widget = QTabWidget()
-        self.tab_widget.setAccessibleName("System information tabs")
+        _ui_bind(self.tab_widget, 'setAccessibleName', 'Legacy.s61372eed567e609f')
         layout.addWidget(self.tab_widget)
 
         # System tab
         self.system_text = QTextEdit()
-        self.system_text.setAccessibleName("System information")
+        _ui_bind(self.system_text, 'setAccessibleName', 'Legacy.sb120922cdf69ede3')
         self.system_text.setReadOnly(True)
         self.tab_widget.addTab(self.system_text, "System")
 
         # Hardware tab
         self.hardware_text = QTextEdit()
-        self.hardware_text.setAccessibleName("Hardware information")
+        _ui_bind(self.hardware_text, 'setAccessibleName', 'Legacy.s7d55b02e38e5a033')
         self.hardware_text.setReadOnly(True)
         self.tab_widget.addTab(self.hardware_text, "Hardware")
 
         # Storage tab
         self.storage_text = QTextEdit()
-        self.storage_text.setAccessibleName("Storage information")
+        _ui_bind(self.storage_text, 'setAccessibleName', 'Legacy.s009fbf9dfd1cb1c7')
         self.storage_text.setReadOnly(True)
         self.tab_widget.addTab(self.storage_text, "Storage")
 
         # Network tab
         self.network_text = QTextEdit()
-        self.network_text.setAccessibleName("Network information")
+        _ui_bind(self.network_text, 'setAccessibleName', 'Legacy.s35cd8271a59e0b52')
         self.network_text.setReadOnly(True)
         self.tab_widget.addTab(self.network_text, "Network")
 
         # Processes tab
         self.processes_text = QTextEdit()
-        self.processes_text.setAccessibleName("Top processes information")
+        _ui_bind(self.processes_text, 'setAccessibleName', 'Legacy.s93e0ba7f55d76615')
         self.processes_text.setReadOnly(True)
         self.tab_widget.addTab(self.processes_text, "Top Processes")
 

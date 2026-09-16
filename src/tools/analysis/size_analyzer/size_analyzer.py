@@ -4,6 +4,8 @@ Size Analyzer Tool for Richard's File Utilities
 
 A streamlined size analyzer utility with essential functionality.
 """
+from src.rfu.localization import localized_widget as _ui_widget, bind_literal as _ui_bind
+from src.rfu import font_tokens
 
 import logging
 import sys
@@ -252,7 +254,7 @@ class SizeAnalyzerGUI(StandardWindow):
         """Show help dialog for Size Analyzer tool."""
         help_text = """
         <h2>Size Analyzer - Help</h2>
-        
+
         <h3>How to Analyze Directory Sizes:</h3>
         <ul>
         <li><b>Select Directory:</b> Choose the folder to analyze</li>
@@ -260,7 +262,7 @@ class SizeAnalyzerGUI(StandardWindow):
         <li><b>View Results:</b> Review folder/file size breakdown</li>
         <li><b>Export Data:</b> Save analysis results to file</li>
         </ul>
-        
+
         <h3>Analysis Features:</h3>
         <ul>
         <li><b>Directory Tree:</b> Hierarchical view of folder sizes</li>
@@ -270,7 +272,7 @@ class SizeAnalyzerGUI(StandardWindow):
         <li><b>Name Range Filter:</b> Limit scans to names between
         two values</li>
         </ul>
-        
+
         <h3>Size Information:</h3>
         <ul>
         <li><b>Bytes Display:</b> Precise file sizes in bytes</li>
@@ -278,7 +280,7 @@ class SizeAnalyzerGUI(StandardWindow):
         <li><b>Percentage View:</b> Relative size percentages</li>
         <li><b>File Count:</b> Number of files in each directory</li>
         </ul>
-        
+
         <h3>Use Cases:</h3>
         <ul>
         <li><b>Disk Cleanup:</b> Find largest files consuming space</li>
@@ -286,7 +288,7 @@ class SizeAnalyzerGUI(StandardWindow):
         <li><b>Archive Planning:</b> Identify candidates for archival</li>
         <li><b>System Optimization:</b> Locate space-wasting files</li>
         </ul>
-        
+
         <h3>Best Practices:</h3>
         <ul>
         <li><b>Regular Analysis:</b> Regular checks prevent space issues</li>
@@ -294,7 +296,7 @@ class SizeAnalyzerGUI(StandardWindow):
         <li><b>Archive Old Data:</b> Archive unused large files externally</li>
         <li><b>Monitor Growth:</b> Track how directories grow over time</li>
         </ul>
-        
+
         <h3>Keyboard Shortcuts:</h3>
         <ul>
         <li><b>Ctrl+Q:</b> Exit application</li>
@@ -343,7 +345,7 @@ class SizeAnalyzerGUI(StandardWindow):
         header_label.setStyleSheet(
             """
             QLabel {
-                font-size: 18px;
+
                 font-weight: bold;
                 color: {token('text_primary')};
                 padding: 10px;
@@ -353,51 +355,50 @@ class SizeAnalyzerGUI(StandardWindow):
             }
         """
         )
+        font_tokens.bind(header_label, "font.toolHeader")
         layout.addWidget(header_label)
 
         # Add analysis area
-        analysis_group = QGroupBox("Analysis Results")
+        analysis_group = _ui_widget(QGroupBox, 'Legacy.s91a7c35939669d20', 'setTitle')
         analysis_layout = QVBoxLayout(analysis_group)
 
         self.results_list = QListWidget()
-        self.results_list.setAccessibleName("Analysis results")
+        _ui_bind(self.results_list, 'setAccessibleName', 'Legacy.sfdce2b553a3f77ec')
         analysis_layout.addWidget(self.results_list)
 
-        self.status_label = QLabel("Idle")
+        self.status_label = _ui_widget(QLabel, 'Legacy.sab0171ca0494d441', 'setText')
         self.status_label.setStyleSheet(
             f"color: {token('text_primary')}; padding: 4px 0;"
         )
         analysis_layout.addWidget(self.status_label)
 
-        filter_group = QGroupBox("File Name Range Filter (Optional)")
+        filter_group = _ui_widget(QGroupBox, 'Legacy.se2458f67b3bbd4d1', 'setTitle')
         filter_layout = QVBoxLayout()
         filter_group.setLayout(filter_layout)
 
         self.start_range_input = TextInput("Start", "e.g., A or 100")
-        self.start_range_input.setAccessibleName("Start of range")
-        self.start_range_input.setToolTip("Starting file name or index range")
+        _ui_bind(self.start_range_input, 'setAccessibleName', 'Legacy.sd345d924358540e5')
+        _ui_bind(self.start_range_input, 'setToolTip', 'Legacy.s7074ec3ae79fbf3c')
         filter_layout.addWidget(self.start_range_input)
 
         self.end_range_input = TextInput("End", "e.g., D or 399")
-        self.end_range_input.setAccessibleName("End of range")
-        self.end_range_input.setToolTip("Ending file name or index range")
+        _ui_bind(self.end_range_input, 'setAccessibleName', 'Legacy.s51dcb342f1f938a7')
+        _ui_bind(self.end_range_input, 'setToolTip', 'Legacy.s6cd5e4bebfbb5425')
         filter_layout.addWidget(self.end_range_input)
 
         analysis_layout.addWidget(filter_group)
 
-        self.analyze_button = PrimaryButton("Start Analysis")
+        self.analyze_button = _ui_widget(PrimaryButton, 'Legacy.sf42900d778c8a6c3', 'setText')
         self.analyze_button.clicked.connect(self.start_analysis)
         analysis_layout.addWidget(self.analyze_button)
 
-        self.cancel_button = SecondaryButton("Stop Analysis")
+        self.cancel_button = _ui_widget(SecondaryButton, 'Legacy.s317e0ae1990cb986', 'setText')
         self.cancel_button.setEnabled(False)
         self.cancel_button.clicked.connect(self.stop_analysis)
         analysis_layout.addWidget(self.cancel_button)
 
         layout.addWidget(analysis_group)
-        content_label = QLabel(
-            "Use Start Analysis to scan a directory. Results appear above."
-        )
+        content_label = _ui_widget(QLabel, 'Legacy.sc7731d2a503caf9c', 'setText')
         content_label.setStyleSheet(f"padding: 20px; color: {token('text_muted')};")
         layout.addWidget(content_label)
 
@@ -412,7 +413,7 @@ class SizeAnalyzerGUI(StandardWindow):
             self._loading = None
 
         # Add action button
-        self.action_button = SecondaryButton("Execute Action")
+        self.action_button = _ui_widget(SecondaryButton, 'Legacy.sbb791fe68da8c0d5', 'setText')
         self.action_button.clicked.connect(self.execute_action)
         layout.addWidget(self.action_button)
 

@@ -4,6 +4,7 @@ Privacy Tools Hub GUI
 Main interface for accessing all privacy cleaning tools.
 Provides a unified interface with tabs for each tool category.
 """
+from src.rfu.localization import localized_widget as _ui_widget, bind_literal as _ui_bind
 
 import logging
 import sys
@@ -238,7 +239,7 @@ class PrivacyToolsHub(StandardWindow):
         """Setup the user interface."""
         # Create main tab widget
         self.tab_widget = QTabWidget()
-        self.tab_widget.setAccessibleName("Privacy tools tabs")
+        _ui_bind(self.tab_widget, 'setAccessibleName', 'Legacy.s2b7cda9fe7e3bde5')
         self.main_layout.addWidget(self.tab_widget)
 
         # Create tabs for each tool category
@@ -279,7 +280,7 @@ class PrivacyToolsHub(StandardWindow):
         browser_layout = QVBoxLayout()
 
         self.browser_list = QListWidget()
-        self.browser_list.setAccessibleName("Detected browsers list")
+        _ui_bind(self.browser_list, 'setAccessibleName', 'Legacy.sdb6bd3ea94e8a4b2')
         browser_layout.addWidget(self.browser_list)
 
         refresh_btn = self.create_button(
@@ -317,17 +318,13 @@ class PrivacyToolsHub(StandardWindow):
         options_group = self.create_group_box("Options")
         options_layout = QVBoxLayout()
 
-        self.trash_secure_check = QCheckBox("Secure deletion (overwrite files)")
-        self.trash_secure_check.setAccessibleName("Secure deletion")
-        self.trash_secure_check.setAccessibleDescription(
-            "Overwrites file content before deletion to prevent data recovery"
-        )
+        self.trash_secure_check = _ui_widget(QCheckBox, 'Legacy.sc300110d3b6f5920', 'setText')
+        _ui_bind(self.trash_secure_check, 'setAccessibleName', 'Legacy.s4a4f3b76af8cf6f6')
+        _ui_bind(self.trash_secure_check, 'setAccessibleDescription', 'Legacy.sb6689243225d1cde')
         self.trash_secure_check.setMinimumHeight(44)
-        self.trash_backup_check = QCheckBox("Create backup before deletion")
-        self.trash_backup_check.setAccessibleName("Create backup before deletion")
-        self.trash_backup_check.setAccessibleDescription(
-            "Creates a copy of files before they are permanently deleted"
-        )
+        self.trash_backup_check = _ui_widget(QCheckBox, 'Legacy.sb7a668841586bb19', 'setText')
+        _ui_bind(self.trash_backup_check, 'setAccessibleName', 'Legacy.sb7a668841586bb19')
+        _ui_bind(self.trash_backup_check, 'setAccessibleDescription', 'Legacy.s206c026d550ad777')
         self.trash_backup_check.setMinimumHeight(44)
 
         options_layout.addWidget(self.trash_secure_check)
@@ -340,7 +337,7 @@ class PrivacyToolsHub(StandardWindow):
         preview_layout = QVBoxLayout()
 
         self.trash_preview_text = QTextEdit()
-        self.trash_preview_text.setAccessibleName("Trash operation preview")
+        _ui_bind(self.trash_preview_text, 'setAccessibleName', 'Legacy.s8d8b0ca08efdf9d9')
         self.trash_preview_text.setMaximumHeight(150)
         preview_layout.addWidget(self.trash_preview_text)
 
@@ -398,23 +395,19 @@ class PrivacyToolsHub(StandardWindow):
 
         # Domain filter
         domain_layout = QHBoxLayout()
-        domain_layout.addWidget(QLabel("Domain filter:"))
+        domain_layout.addWidget(_ui_widget(QLabel, 'Legacy.s9fd95365f4c7fd13', 'setText'))
         self.domain_filter_edit = TextInput("Domain filter", "e.g., google.com (optional)")
-        self.domain_filter_edit.setAccessibleName("Domain filter")
-        self.domain_filter_edit.setAccessibleDescription(
-            "Enter a domain to delete only cookies from that site; leave blank for all"
-        )
+        _ui_bind(self.domain_filter_edit, 'setAccessibleName', 'Legacy.sfbfc844dcd2b3556')
+        _ui_bind(self.domain_filter_edit, 'setAccessibleDescription', 'Legacy.s9d511f30952b53d0')
         domain_layout.addWidget(self.domain_filter_edit)
         filter_layout.addLayout(domain_layout)
 
         # Age filter
         age_layout = QHBoxLayout()
-        age_layout.addWidget(QLabel("Delete cookies older than:"))
+        age_layout.addWidget(_ui_widget(QLabel, 'Legacy.sb7f49e5dac6d28ad', 'setText'))
         self.age_spinbox = QSpinBox()
-        self.age_spinbox.setAccessibleName("Delete cookies older than (days)")
-        self.age_spinbox.setAccessibleDescription(
-            "Only cookies older than this many days are deleted; 0 deletes all"
-        )
+        _ui_bind(self.age_spinbox, 'setAccessibleName', 'Legacy.s3fb669dcb494e136')
+        _ui_bind(self.age_spinbox, 'setAccessibleDescription', 'Legacy.sc97f4ade6e835521')
         self.age_spinbox.setMinimumHeight(44)
         self.age_spinbox.setRange(0, 365)
         self.age_spinbox.setValue(0)
@@ -423,11 +416,9 @@ class PrivacyToolsHub(StandardWindow):
         filter_layout.addLayout(age_layout)
 
         # Backup option
-        self.cookies_backup_check = QCheckBox("Create backup before deletion")
-        self.cookies_backup_check.setAccessibleName("Create cookies backup")
-        self.cookies_backup_check.setAccessibleDescription(
-            "Saves a backup of all cookies before any deletion takes place"
-        )
+        self.cookies_backup_check = _ui_widget(QCheckBox, 'Legacy.sb7a668841586bb19', 'setText')
+        _ui_bind(self.cookies_backup_check, 'setAccessibleName', 'Legacy.sff398ee50cf8db13')
+        _ui_bind(self.cookies_backup_check, 'setAccessibleDescription', 'Legacy.sf48f645084224b9e')
         self.cookies_backup_check.setMinimumHeight(44)
         filter_layout.addWidget(self.cookies_backup_check)
 
@@ -439,7 +430,7 @@ class PrivacyToolsHub(StandardWindow):
         preview_layout = QVBoxLayout()
 
         self.cookies_preview_text = QTextEdit()
-        self.cookies_preview_text.setAccessibleName("Cookies operation preview")
+        _ui_bind(self.cookies_preview_text, 'setAccessibleName', 'Legacy.s7988566701d1266a')
         self.cookies_preview_text.setMaximumHeight(150)
         preview_layout.addWidget(self.cookies_preview_text)
 
@@ -474,7 +465,7 @@ class PrivacyToolsHub(StandardWindow):
         header = self.create_header("Delete Browser History")
         layout.addWidget(header)
 
-        info_label = QLabel("Browser history deletion tool will be implemented here.")
+        info_label = _ui_widget(QLabel, 'Legacy.sa032849be8fe9ee6', 'setText')
         ThemeManager.style_label(info_label)
         layout.addWidget(info_label)
 
@@ -488,7 +479,7 @@ class PrivacyToolsHub(StandardWindow):
         header = self.create_header("Delete File History")
         layout.addWidget(header)
 
-        info_label = QLabel("File history deletion tool will be implemented here.")
+        info_label = _ui_widget(QLabel, 'Legacy.s1d96289264b27f9d', 'setText')
         ThemeManager.style_label(info_label)
         layout.addWidget(info_label)
 
@@ -502,7 +493,7 @@ class PrivacyToolsHub(StandardWindow):
         header = self.create_header("Delete Browser Downloads")
         layout.addWidget(header)
 
-        info_label = QLabel("Browser downloads deletion tool will be implemented here.")
+        info_label = _ui_widget(QLabel, 'Legacy.s6406272e28f416d3', 'setText')
         ThemeManager.style_label(info_label)
         layout.addWidget(info_label)
 

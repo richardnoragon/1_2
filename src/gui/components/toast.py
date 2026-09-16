@@ -11,6 +11,7 @@ from typing import Literal
 from PyQt5.QtCore import QPropertyAnimation, QRect, Qt, QTimer
 from PyQt5.QtWidgets import QHBoxLayout, QLabel, QWidget
 
+from src.rfu import font_tokens
 from src.gui.themes import Typography, token
 
 _log = logging.getLogger("RFU.components.toast")
@@ -79,7 +80,7 @@ class ToastNotification(QWidget):
         layout.setContentsMargins(16, 12, 16, 12)
 
         self._label = QLabel(message or "", self)
-        self._label.setFont(Typography.body())
+        font_tokens.bind(self._label, "font.body")
         self._label.setWordWrap(True)
         layout.addWidget(self._label)
 
@@ -99,9 +100,12 @@ class ToastNotification(QWidget):
 
     def show_message(self, message: str, role: ToastRole = None):
         """Update message (and optionally role) then show the toast."""
+        if role is not None and role not in _ROLE_PREFIX:
+            raise ValueError(f"Invalid toast role: {role!r}")
         if role and role != self._role:
             self._role = role
             self._apply_style(role)
+        self.setAccessibleName(f"{self._role.capitalize()} notification")
         prefix = _ROLE_PREFIX.get(self._role, "")
         self._label.setText(prefix + message)
         self.setAccessibleDescription(message)

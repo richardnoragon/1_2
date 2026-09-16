@@ -2,6 +2,8 @@
 """
 Simple Checksum GUI for Richard's File Utilities
 """
+from src.rfu.localization import localized_widget as _ui_widget, bind_literal as _ui_bind
+from src.rfu import font_tokens
 
 import hashlib
 import logging
@@ -213,7 +215,7 @@ class ChecksumGUI(StandardWindow):
         """Show help dialog for Checksum Calculator tool."""
         help_text = """
         <h2>File Checksum Calculator - Help</h2>
-        
+
         <h3>How to Calculate Checksums:</h3>
         <ul>
         <li><b>Select Files:</b> Choose one or more files to calculate
@@ -223,7 +225,7 @@ class ChecksumGUI(StandardWindow):
         <li><b>Copy Results:</b> Copy checksums to clipboard for
             verification</li>
         </ul>
-        
+
         <h3>Checksum Algorithms:</h3>
         <ul>
         <li><b>MD5:</b> Fast, 128-bit hash (legacy, less secure)</li>
@@ -231,7 +233,7 @@ class ChecksumGUI(StandardWindow):
         <li><b>SHA256:</b> Secure 256-bit hash (recommended)</li>
         <li><b>SHA512:</b> Most secure 512-bit hash (slower but strongest)</li>
         </ul>
-        
+
         <h3>Use Cases:</h3>
         <ul>
         <li><b>File Integrity:</b> Verify files haven't been corrupted</li>
@@ -241,7 +243,7 @@ class ChecksumGUI(StandardWindow):
         <li><b>Duplicate Detection:</b> Compare checksums to find
             duplicates</li>
         </ul>
-        
+
         <h3>Best Practices:</h3>
         <ul>
         <li><b>Use SHA256:</b> Most balanced option for security and speed</li>
@@ -250,7 +252,7 @@ class ChecksumGUI(StandardWindow):
         <li><b>Batch Processing:</b> Calculate multiple files at once</li>
         <li><b>Regular Checks:</b> Verify important files periodically</li>
         </ul>
-        
+
         <h3>Keyboard Shortcuts:</h3>
         <ul>
         <li><b>Ctrl+Q:</b> Exit application</li>
@@ -305,11 +307,11 @@ class ChecksumGUI(StandardWindow):
             layout = QVBoxLayout(central_widget)
 
         # Add header
-        header_label = QLabel("File Checksum Calculator")
+        header_label = _ui_widget(QLabel, 'Legacy.s1a16191c34e0ab22', 'setText')
         header_label.setStyleSheet(
             f"""
             QLabel {{
-                font-size: 18px;
+
                 font-weight: bold;
                 color: {token('text_primary')};
                 padding: 10px;
@@ -319,29 +321,30 @@ class ChecksumGUI(StandardWindow):
             }}
         """
         )
+        font_tokens.bind(header_label, "font.toolHeader")
         layout.addWidget(header_label)
 
         # File selection
-        file_group = QGroupBox("File Selection")
+        file_group = _ui_widget(QGroupBox, 'Legacy.s1eef7fd26962e3d2', 'setTitle')
         file_layout = QVBoxLayout(file_group)
 
-        select_button = SecondaryButton("Select File")
+        select_button = _ui_widget(SecondaryButton, 'Legacy.s79f376f90b59c3bc', 'setText')
         select_button.clicked.connect(self.select_file)
         file_layout.addWidget(select_button)
 
-        self.file_label = QLabel("No file selected")
+        self.file_label = _ui_widget(QLabel, 'Legacy.s26bfbd5c83f90db3', 'setText')
         file_layout.addWidget(self.file_label)
 
         layout.addWidget(file_group)
 
         # Calculate button
-        calc_button = PrimaryButton("Calculate MD5 Checksum")
+        calc_button = _ui_widget(PrimaryButton, 'Legacy.s5178175b4930a8f0', 'setText')
         calc_button.clicked.connect(self.calculate_checksum)
         layout.addWidget(calc_button)
 
         # Results
         self.results_list = QListWidget()
-        self.results_list.setAccessibleName("Checksum results")
+        _ui_bind(self.results_list, 'setAccessibleName', 'Legacy.seabecb7f84a47524')
         layout.addWidget(self.results_list)
 
         # Loading indicator (PERF-3a/3b)
