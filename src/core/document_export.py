@@ -24,7 +24,8 @@ def atomic_export(destination, sources, write, cancel=None):
     try:
         write(temporary)
         check_cancel(cancel)
-        with temporary.open('rb') as stream:
+        # Windows FlushFileBuffers requires a writable descriptor.
+        with temporary.open('r+b') as stream:
             os.fsync(stream.fileno())
         os.replace(temporary, destination)
     finally:

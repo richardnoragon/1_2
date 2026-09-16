@@ -58,7 +58,7 @@ def benchmark(directory, size=128 * 1024 * 1024, cancelled=lambda: False):
     """Sequential cached-file measurement, not a hardware maximum or raw-disk test."""
     if not 1024 * 1024 <= size <= 512 * 1024 * 1024:
         raise ValueError('Benchmark size out of range')
-    if psutil.disk_usage(directory).free < size + 64 * 1024 * 1024:
+    if psutil.disk_usage(os.fspath(directory)).free < size + 64 * 1024 * 1024:
         raise OSError('Insufficient free space for benchmark')
     block = os.urandom(1024 * 1024)
     name = None

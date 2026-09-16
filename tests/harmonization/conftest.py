@@ -17,3 +17,12 @@ def fail_on_qt_exception(monkeypatch):
     monkeypatch.setattr(sys, "excepthook", lambda kind, value, trace: errors.append(value))
     yield
     assert not errors, f"Unhandled Qt callback exceptions: {errors}"
+
+
+def pytest_sessionfinish(session, exitstatus):
+    # Release SQLite handles before TemporaryDirectory cleanup on Windows.
+    from PyQt5.QtCore import QThreadPool
+    pool = QThreadPool.globalInstance()
+    if pool is not None:
+        pool.waitForDone(5000)
+    DatabaseManager().close_all_connections()

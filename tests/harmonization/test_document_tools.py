@@ -33,7 +33,7 @@ def test_inventory_governs_36_real_entrypoints():
     assert {e.tool_id for e in entries} == {r['id'] for r in load_inventory()['tools']}
     for entry in entries:
         path = Path(*entry.module_path.split('.')).with_suffix('.py')
-        tree = ast.parse(path.read_text())
+        tree = ast.parse(path.read_text(encoding='utf-8-sig'))
         assert any(isinstance(node, ast.ClassDef) and node.name == entry.class_name
                    for node in tree.body), entry.tool_id
         for alias in entry.aliases:
